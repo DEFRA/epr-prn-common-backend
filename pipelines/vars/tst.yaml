@@ -1,6 +1,6 @@
 variables:
   azureSubscription: 'AZD-RWD-TST1'
-  docker.imageName: 'antivirusresult'
+  docker.imageName: 'eprprnaccreditationbackend'
   acr.azureContainerRegistryName: 'tstrwdinfac1401'
-  acr.repositoryName: 'antivirusrepository'
+  acr.repositoryName: 'eprprnaccreditationbackend'
   serviceName: 'tstrwdwebfa1405'

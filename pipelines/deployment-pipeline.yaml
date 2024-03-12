@@ -17,8 +17,8 @@ parameters:
     - Team-7_Oscar
     - Team-8_Pre-TST
     - Team-9_Ops
-    - Team-10
-    - Team 11
+    - Team-10_Willow-development
+    - Team-11_Pondscrum-development
 - name: envToDeploy
   displayName: 'Target Environment to deploy:    (select "development" for Team 10-11)'
   default: development

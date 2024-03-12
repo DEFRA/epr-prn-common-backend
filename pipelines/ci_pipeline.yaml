@@ -30,9 +30,9 @@ variables:
   - name: testProjectFolder
     value: 'EPR.Antivirus.Function.UnitTests'
   - name: sonarQubeProjectKey
-    value: epr-anti-virus-function-app
+    value: epr-prn-accreditation-back-end
   - name: sonarQubeProjectName
-    value: epr-anti-virus-function-app
+    value: epr-prn-accreditation-back-end
   - name: runNugetTasks
     value: true
 
