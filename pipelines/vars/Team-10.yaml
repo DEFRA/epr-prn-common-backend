@@ -1,0 +1,6 @@
+variables:
+  azureSubscription: 'AZD-RWD-DEV10'
+  docker.imageName: 'accreditationbackend'
+  acr.azureContainerRegistryName: 'DEVRWDINFAC1401'
+  acr.repositoryName: 'eprprnaccreditationbackend'
+  serviceName: 'DEVRWDWEBRGA401'

@@ -1,0 +1,6 @@
+variables:
+  azureSubscription: 'AZR-RWD-PRE1'
+  docker.imageName: 'antivirusresult'
+  acr.azureContainerRegistryName: 'prerwdinfac1401'
+  acr.repositoryName: 'antivirusrepository'
+  serviceName: 'prerwdwebfa1405'
