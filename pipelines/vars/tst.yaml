@@ -1,6 +1,6 @@
 variables:
   azureSubscription: 'AZD-RWD-TST1'
-  docker.imageName: 'eprprnaccreditationbackend'
+  docker.imageName: 'epraccreditationbackend'
   acr.azureContainerRegistryName: 'tstrwdinfac1401'
-  acr.repositoryName: 'eprprnaccreditationbackend'
+  acr.repositoryName: 'epraccreditationbackendrepository'
   serviceName: 'tstrwdwebfa1405'

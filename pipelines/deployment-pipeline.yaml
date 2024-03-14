@@ -20,7 +20,7 @@ parameters:
     - Team-10_Willow-development
     - Team-11_Pondscrum-development
 - name: envToDeploy
-  displayName: 'Target Environment to deploy:    (select "development" for Team 10-11)'
+  displayName: 'Target Environment to deploy:    (select "development" for Team 1-11)'
   default: development
   type: string
   values:
