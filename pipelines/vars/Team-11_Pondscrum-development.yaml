@@ -3,4 +3,4 @@ variables:
   docker.imageName: 'epraccreditationbackend'
   acr.azureContainerRegistryName: 'DEVRWDINFAC1401'
   acr.repositoryName: 'epraccreditationbackendrepository'
-  serviceName: 'DEVRWDWEBWAB419'
+  serviceName: 'DEVRWDWEBWAB418'
