@@ -89,7 +89,10 @@ namespace EPR.Accreditation.API.Repositories
                 foreach (var o in entity.OverseasReprocessingSites)
                 {
                     if (o.Id == default)
+                    {
+                        o.ExternalId = Guid.NewGuid();
                         await _accreditationContext.OverseasReprocessingSite.AddAsync(o);
+                    }
 
                     if (o.WastePermit != null &&
                         o.WastePermit.Id == default)
@@ -101,7 +104,10 @@ namespace EPR.Accreditation.API.Repositories
 
             if (entity.Site != null &&
                 entity.Site.Id == default)
+            {
+                entity.Site.ExternalId = Guid.NewGuid();
                 await _accreditationContext.Site.AddAsync(entity.Site);
+            }
 
             if (entity.WastePermit != null &&
                 entity.WastePermit.Id == default)
