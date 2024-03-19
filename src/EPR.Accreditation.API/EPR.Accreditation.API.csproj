@@ -2,12 +2,17 @@
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
-    <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="13.0.1" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\EPR.Accreditation.API.Common\EPR.Accreditation.API.Common.csproj" />
+    <ProjectReference Include="..\EPR.Accreditation.Common.Data\EPR.Accreditation.API.Common.Data.csproj" />
   </ItemGroup>
 
 </Project>
