@@ -26,9 +26,9 @@ variables:
   - name: solutionFolder
     value: src
   - name: projectFolder
-    value: EPR.Antivirus.Function
+    value: EPR.Accreditation.API
   - name: testProjectFolder
-    value: 'EPR.Antivirus.Function.UnitTests'
+    value: 'EPR.Accreditation.API.UnitTests'
   - name: sonarQubeProjectKey
     value: epr-prn-accreditation-back-end
   - name: sonarQubeProjectName
