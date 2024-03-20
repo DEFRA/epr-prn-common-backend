@@ -44,7 +44,7 @@ namespace EPR.Accreditation.API.Repositories
             {
                 entity.SiteId = await _accreditationContext
                     .Accreditation
-                    .Where(a => 
+                    .Where(a =>
                         a.ExternalId == externalId &&
                         a.SiteId.HasValue &&
                         a.Site.ExternalId == siteId)
@@ -60,7 +60,7 @@ namespace EPR.Accreditation.API.Repositories
                         o.ExternalId == overseasSiteId)
                     .Select(o => o.Id)
                     .SingleAsync();
-                
+
             }
 
             await _accreditationContext.AccreditationMaterial.AddAsync(entity);
@@ -136,8 +136,8 @@ namespace EPR.Accreditation.API.Repositories
         {
             var file = await _accreditationContext
                 .FileUpload
-                .Where(f => 
-                    f.Accreditation.ExternalId == externalId && 
+                .Where(f =>
+                    f.Accreditation.ExternalId == externalId &&
                     f.FileId == fileId)
                 .FirstOrDefaultAsync();
 
@@ -173,13 +173,13 @@ namespace EPR.Accreditation.API.Repositories
         }
 
         public async Task AddFile(
-            Guid externalId, 
+            Guid externalId,
             DTO.FileUpload fileUpload)
         {
             var entity = _mapper.Map<Data.FileUpload>(fileUpload);
-            
+
             // get the id of the accreditation that this upload is related to
-            var accreditationId = 
+            var accreditationId =
                 await _accreditationContext
                 .Accreditation
                 .Where(a => a.ExternalId == externalId)
@@ -216,7 +216,7 @@ namespace EPR.Accreditation.API.Repositories
                         a.Site != null &&
                         a.Site.ExternalId == siteExternalId &&
                         a.Site.AccreditationMaterials.Any(m => m.ExternalId == materialExternalId))
-                    .Select(a => 
+                    .Select(a =>
                         a.Site.AccreditationMaterials.FirstOrDefault(m => m.ExternalId == materialExternalId))
                     .SingleOrDefaultAsync();
             }
@@ -241,7 +241,7 @@ namespace EPR.Accreditation.API.Repositories
             // copy the updates over to the db entity
             entity = _mapper.Map(material, entity);
 
-            foreach(var wasteCode in entity.WasteCodes)
+            foreach (var wasteCode in entity.WasteCodes)
             {
                 if (wasteCode.Id == default)
                     _accreditationContext.WasteCodes.Add(wasteCode);
@@ -297,6 +297,19 @@ namespace EPR.Accreditation.API.Repositories
                 .OrderBy(c => c.Name)
                 .Select(c => _mapper.Map<DTO.Country>(c))
                 .ToListAsync();
+        }
+
+        public async Task<SaveAndContinue> GetSaveAndContinue(Guid externalId)
+        {
+            var saveAndContinue = await _accreditationContext
+                .SaveAndContinue
+                .Where(s => s.Accreditation.ExternalId == externalId)
+                .Select(s =>
+                    _mapper.Map<DTO.SaveAndContinue>(s)
+                )
+                .SingleOrDefaultAsync();
+
+            return saveAndContinue;
         }
     }
 }

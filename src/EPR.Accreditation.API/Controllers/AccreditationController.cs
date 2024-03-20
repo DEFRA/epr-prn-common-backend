@@ -1,6 +1,6 @@
-﻿using DTO = EPR.Accreditation.API.Common.Dtos;
-using EPR.Accreditation.API.Services.Interfaces;
+﻿using EPR.Accreditation.API.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using DTO = EPR.Accreditation.API.Common.Dtos;
 
 namespace EPR.Accreditation.API.Controllers
 {
@@ -53,7 +53,7 @@ namespace EPR.Accreditation.API.Controllers
             return Ok(fileUploadRecords);
         }
 
-        [HttpGet(("{id}/Site/{siteExternalId}/Material/{materialExternalId}"))]
+        [HttpGet("{id}/Site/{siteExternalId}/Material/{materialExternalId}")]
         [ProducesResponseType(typeof(DTO.AccreditationMaterial), 200)]
         public async Task<IActionResult> GetSiteMaterial(
             Guid id,
@@ -72,7 +72,7 @@ namespace EPR.Accreditation.API.Controllers
             return Ok(material);
         }
 
-        [HttpGet(("{id}/OverseasSite/{siteExternalId}/Material/{materialExternalId}"))]
+        [HttpGet("{id}/OverseasSite/{siteExternalId}/Material/{materialExternalId}")]
         [ProducesResponseType(typeof(DTO.AccreditationMaterial), 200)]
         public async Task<IActionResult> GetOverseasSiteMaterial(
             Guid id,
@@ -85,17 +85,29 @@ namespace EPR.Accreditation.API.Controllers
                 overseasSiteExternalId,
                 materialExternalId);
 
-            if (material == null) 
+            if (material == null)
                 return NotFound();
 
             return Ok(material);
+        }
+
+        [HttpGet("{id}/SaveAndContinue")]
+        [ProducesResponseType(typeof(DTO.SaveAndContinue), 200)]
+        public async Task<IActionResult> GetSaveAndContinue(Guid id)
+        {
+            var saveAndContinue = await _accreditationService.GetSaveAndContinue(id);
+
+            if (saveAndContinue == null)
+                return NotFound();
+
+            return Ok(saveAndContinue);
         }
         #endregion
 
         #region Post methods
         [HttpPost]
         [ProducesResponseType(typeof(Guid), 200)]
-        public async Task<IActionResult> CreateAccredition([FromBody]DTO.Accreditation accreditation)
+        public async Task<IActionResult> CreateAccredition([FromBody] DTO.Accreditation accreditation)
         {
             if (accreditation == null)
                 return BadRequest("Accredition data not suppleid");
@@ -108,13 +120,13 @@ namespace EPR.Accreditation.API.Controllers
         [HttpPost("{id}/Files")]
         public async Task<IActionResult> AddFile(
             Guid id,
-            [FromBody]DTO.FileUpload fileUpload)
+            [FromBody] DTO.FileUpload fileUpload)
         {
             if (fileUpload == null)
                 return BadRequest("No file upload record supplied");
 
             await _accreditationService.AddFile(
-                id, 
+                id,
                 fileUpload);
 
             return Ok();
@@ -124,7 +136,7 @@ namespace EPR.Accreditation.API.Controllers
         public async Task<IActionResult> CreateSiteMaterial(
             Guid id,
             Guid siteExternalId,
-            [FromBody]DTO.AccreditationMaterial accreditationMaterial)
+            [FromBody] DTO.AccreditationMaterial accreditationMaterial)
         {
             if (accreditationMaterial == null)
                 return BadRequest();
@@ -142,7 +154,7 @@ namespace EPR.Accreditation.API.Controllers
         public async Task<IActionResult> CreateOverseasSiteMaterial(
             Guid id,
             Guid overseasExternalSiteId,
-            [FromBody]DTO.AccreditationMaterial accreditationMaterial)
+            [FromBody] DTO.AccreditationMaterial accreditationMaterial)
         {
             if (accreditationMaterial == null)
                 return BadRequest();
@@ -161,7 +173,7 @@ namespace EPR.Accreditation.API.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateAccreditation(
             Guid id,
-            [FromBody]DTO.Accreditation accreditation)
+            [FromBody] DTO.Accreditation accreditation)
         {
             if (accreditation == null)
                 return BadRequest();
@@ -181,7 +193,7 @@ namespace EPR.Accreditation.API.Controllers
             Guid id,
             Guid siteExternalId,
             Guid materialExternalId,
-            [FromBody]DTO.AccreditationMaterial accreditationMaterial)
+            [FromBody] DTO.AccreditationMaterial accreditationMaterial)
         {
             if (materialExternalId != accreditationMaterial.ExternalId)
                 return BadRequest("External ID does not match");
@@ -190,7 +202,7 @@ namespace EPR.Accreditation.API.Controllers
                 id,
                 siteExternalId,
                 null,
-                materialExternalId, 
+                materialExternalId,
                 accreditationMaterial);
 
             return Ok();
@@ -201,7 +213,7 @@ namespace EPR.Accreditation.API.Controllers
             Guid id,
             Guid siteExternalId,
             Guid materialExternalId,
-            [FromBody]DTO.AccreditationMaterial accreditationMaterial)
+            [FromBody] DTO.AccreditationMaterial accreditationMaterial)
         {
             if (materialExternalId != accreditationMaterial.ExternalId)
                 return BadRequest("External ID does not match");

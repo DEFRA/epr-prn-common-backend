@@ -1,7 +1,7 @@
-﻿using DTO = EPR.Accreditation.API.Common.Dtos;
+﻿using EPR.Accreditation.API.Common.Dtos;
 using EPR.Accreditation.API.Repositories.Interfaces;
 using EPR.Accreditation.API.Services.Interfaces;
-using EPR.Accreditation.API.Common.Dtos;
+using DTO = EPR.Accreditation.API.Common.Dtos;
 
 namespace EPR.Accreditation.API.Services
 {
@@ -77,11 +77,11 @@ namespace EPR.Accreditation.API.Services
         }
 
         public async Task DeleteFile(
-            Guid externalId, 
+            Guid externalId,
             Guid fileId)
         {
             await _repository.DeleteFile(
-                externalId, 
+                externalId,
                 fileId);
         }
 
@@ -91,7 +91,7 @@ namespace EPR.Accreditation.API.Services
         }
 
         public async Task AddFile(
-            Guid id, 
+            Guid id,
             DTO.FileUpload fileUpload)
         {
             await _repository.AddFile(
@@ -140,6 +140,11 @@ namespace EPR.Accreditation.API.Services
                 siteExternalId,
                 overseasSiteExternalId,
                 materialExternalId);
+        }
+
+        public async Task<SaveAndContinue> GetSaveAndContinue(Guid externalId)
+        {
+            return await _repository.GetSaveAndContinue(externalId);
         }
     }
 }
