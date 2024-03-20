@@ -237,6 +237,14 @@ namespace EPR.Accreditation.API.Controllers
 
             return Ok();
         }
+
+        [HttpDelete("{id}/SaveAndContinue")]
+        public async Task<IActionResult> DeleteSaveAndContinue(Guid id)
+        {
+            await _accreditationService.DeleteSaveAndContinue(id);
+
+            return Ok();
+        }
         #endregion
     }
 }

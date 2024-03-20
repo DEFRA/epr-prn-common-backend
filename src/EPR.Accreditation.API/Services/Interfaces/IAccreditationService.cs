@@ -44,5 +44,7 @@ namespace EPR.Accreditation.API.Services.Interfaces
             Guid materialExternalId);
 
         Task<DTO.SaveAndContinue> GetSaveAndContinue(Guid externalId);
+
+        Task DeleteSaveAndContinue(Guid externalId);
     }
 }

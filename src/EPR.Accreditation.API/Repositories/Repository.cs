@@ -311,5 +311,20 @@ namespace EPR.Accreditation.API.Repositories
 
             return saveAndContinue;
         }
+
+        public async Task DeleteSaveAndContinue(Guid externalId)
+        {
+            var saveAndContinue = await _accreditationContext
+                .SaveAndContinue
+                .Where(s => s.Accreditation.ExternalId == externalId)
+                .SingleOrDefaultAsync();
+
+            if (saveAndContinue == null)
+                throw new NullReferenceException(nameof(saveAndContinue));
+
+            _accreditationContext.Remove(saveAndContinue);
+
+            await _accreditationContext.SaveChangesAsync();
+        }
     }
 }
