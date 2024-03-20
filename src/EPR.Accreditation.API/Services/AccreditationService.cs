@@ -151,5 +151,12 @@ namespace EPR.Accreditation.API.Services
         {
             await _repository.DeleteSaveAndContinue(externalId);
         }
+
+        public async Task AddSaveAndContinue(
+            Guid id,
+            DTO.SaveAndContinue saveAndContinue)
+        {
+            await _repository.AddSaveAndContinue(id, saveAndContinue);
+        }
     }
 }

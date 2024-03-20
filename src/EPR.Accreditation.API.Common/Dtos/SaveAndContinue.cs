@@ -2,7 +2,7 @@
 {
     public class SaveAndContinue
     {
-        public Guid AccreditationId { get; set; }
+        public int AccreditationId { get; set; }
 
         public string Area { get; set; }
 

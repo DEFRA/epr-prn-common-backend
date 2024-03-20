@@ -90,18 +90,6 @@ namespace EPR.Accreditation.API.Controllers
 
             return Ok(material);
         }
-
-        [HttpGet("{id}/SaveAndContinue")]
-        [ProducesResponseType(typeof(DTO.SaveAndContinue), 200)]
-        public async Task<IActionResult> GetSaveAndContinue(Guid id)
-        {
-            var saveAndContinue = await _accreditationService.GetSaveAndContinue(id);
-
-            if (saveAndContinue == null)
-                return NotFound();
-
-            return Ok(saveAndContinue);
-        }
         #endregion
 
         #region Post methods
@@ -234,14 +222,6 @@ namespace EPR.Accreditation.API.Controllers
         public async Task<IActionResult> DeleteFile(Guid id, Guid fileId)
         {
             await _accreditationService.DeleteFile(id, fileId);
-
-            return Ok();
-        }
-
-        [HttpDelete("{id}/SaveAndContinue")]
-        public async Task<IActionResult> DeleteSaveAndContinue(Guid id)
-        {
-            await _accreditationService.DeleteSaveAndContinue(id);
 
             return Ok();
         }

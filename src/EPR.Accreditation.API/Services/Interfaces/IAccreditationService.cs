@@ -46,5 +46,9 @@ namespace EPR.Accreditation.API.Services.Interfaces
         Task<DTO.SaveAndContinue> GetSaveAndContinue(Guid externalId);
 
         Task DeleteSaveAndContinue(Guid externalId);
+
+        Task AddSaveAndContinue(
+            Guid externalId,
+            DTO.SaveAndContinue saveAndContinue);
     }
 }

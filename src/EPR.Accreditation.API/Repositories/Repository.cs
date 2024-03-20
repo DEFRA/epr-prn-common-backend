@@ -314,16 +314,49 @@ namespace EPR.Accreditation.API.Repositories
 
         public async Task DeleteSaveAndContinue(Guid externalId)
         {
-            var saveAndContinue = await _accreditationContext
+            var saveAndContinueId = await _accreditationContext
                 .SaveAndContinue
                 .Where(s => s.Accreditation.ExternalId == externalId)
+                .Select(s => s.Id)
+                .FirstOrDefaultAsync();
+
+            if (saveAndContinueId == default)
+                return;
+
+            // Create a new instance of the entity with the primary key set
+            var entityToDelete = new Data.SaveAndContinue
+            {
+                Id = saveAndContinueId
+            };
+
+            // Attach the entity to the context and mark it as deleted
+            _accreditationContext.Entry(entityToDelete).State = EntityState.Deleted;
+
+            // Save changes to the database
+            await _accreditationContext.SaveChangesAsync();
+        }
+
+        public async Task AddSaveAndContinue(
+            Guid externalId,
+            DTO.SaveAndContinue saveAndContinue)
+        {
+            var entity = _mapper.Map<Data.SaveAndContinue>(saveAndContinue);
+
+            // get the id of the accreditation that this save and continue record is related to
+            var accreditationId =
+                await _accreditationContext
+                .Accreditation
+                .Where(a => a.ExternalId == externalId)
+                .Select(a => a.Id)
                 .SingleOrDefaultAsync();
 
-            if (saveAndContinue == null)
-                throw new NullReferenceException(nameof(saveAndContinue));
+            // TODO need to handle an entity that's not found better here
+            if (accreditationId == default)
+                throw new NotFoundException($"Save and continue record does not exist for External ID: {externalId}");
 
-            _accreditationContext.Remove(saveAndContinue);
+            entity.AccreditationId = accreditationId;
 
+            await _accreditationContext.SaveAndContinue.AddAsync(entity);
             await _accreditationContext.SaveChangesAsync();
         }
     }
