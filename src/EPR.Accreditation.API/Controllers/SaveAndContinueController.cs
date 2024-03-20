@@ -15,7 +15,7 @@ namespace EPR.Accreditation.API.Controllers
             _accreditationService = accreditationService ?? throw new ArgumentNullException(nameof(accreditationService));
         }
 
-        [HttpGet("{id}/SaveAndContinue")]
+        [HttpGet("{id}")]
         [ProducesResponseType(typeof(DTO.SaveAndContinue), 200)]
         public async Task<IActionResult> GetSaveAndContinue(Guid id)
         {
@@ -27,7 +27,7 @@ namespace EPR.Accreditation.API.Controllers
             return Ok(saveAndContinue);
         }
 
-        [HttpPost("{id}/SaveAndContinue")]
+        [HttpPost("{id}")]
         public async Task<IActionResult> AddSaveAndContinue(
             Guid id,
             [FromBody] DTO.SaveAndContinue saveAndContinue)
@@ -42,7 +42,7 @@ namespace EPR.Accreditation.API.Controllers
             return Ok();
         }
 
-        [HttpDelete("{id}/SaveAndContinue")]
+        [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteSaveAndContinue(Guid id)
         {
             await _accreditationService.DeleteSaveAndContinue(id);
