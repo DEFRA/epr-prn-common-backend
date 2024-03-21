@@ -91,11 +91,11 @@ namespace EPR.Accreditation.API.Services
         }
 
         public async Task AddFile(
-            Guid id,
+            Guid externalId,
             DTO.FileUpload fileUpload)
         {
             await _repository.AddFile(
-                id, fileUpload);
+                externalId, fileUpload);
         }
 
         public async Task UpdateMaterail(
@@ -153,10 +153,10 @@ namespace EPR.Accreditation.API.Services
         }
 
         public async Task AddSaveAndContinue(
-            Guid id,
+            Guid externalId,
             DTO.SaveAndContinue saveAndContinue)
         {
-            await _repository.AddSaveAndContinue(id, saveAndContinue);
+            await _repository.AddSaveAndContinue(externalId, saveAndContinue);
         }
     }
 }

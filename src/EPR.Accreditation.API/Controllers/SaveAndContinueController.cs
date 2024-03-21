@@ -5,7 +5,7 @@ using DTO = EPR.Accreditation.API.Common.Dtos;
 namespace EPR.Accreditation.API.Controllers
 {
     [ApiController]
-    [Route("/api/[controller]")]
+    [Route("/api/[controller]/{id}")]
     public class SaveAndContinueController : ControllerBase
     {
         protected readonly IAccreditationService _accreditationService;
@@ -15,7 +15,7 @@ namespace EPR.Accreditation.API.Controllers
             _accreditationService = accreditationService ?? throw new ArgumentNullException(nameof(accreditationService));
         }
 
-        [HttpGet("{id}")]
+        [HttpGet]
         [ProducesResponseType(typeof(DTO.SaveAndContinue), 200)]
         public async Task<IActionResult> GetSaveAndContinue(Guid id)
         {
@@ -27,7 +27,7 @@ namespace EPR.Accreditation.API.Controllers
             return Ok(saveAndContinue);
         }
 
-        [HttpPost("{id}")]
+        [HttpPost]
         public async Task<IActionResult> AddSaveAndContinue(
             Guid id,
             [FromBody] DTO.SaveAndContinue saveAndContinue)
@@ -42,7 +42,7 @@ namespace EPR.Accreditation.API.Controllers
             return Ok();
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete]
         public async Task<IActionResult> DeleteSaveAndContinue(Guid id)
         {
             await _accreditationService.DeleteSaveAndContinue(id);
