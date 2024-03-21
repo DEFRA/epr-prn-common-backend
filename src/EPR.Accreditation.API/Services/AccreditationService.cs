@@ -142,6 +142,48 @@ namespace EPR.Accreditation.API.Services
                 materialExternalId);
         }
 
+        public async Task<DTO.Site> GetSite(
+            Guid externalId,
+            Guid siteExternalId)
+        {
+            return await _repository.GetSite(externalId, siteExternalId);
+        }
+
+        public async Task<Guid> CreateSite(
+            Guid externalId,
+            Site site)
+        {
+            return await _repository.CreateSite(
+                externalId,
+                site);
+        }
+
+        public Task UpdateSite(Site site)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<DTO.OverseasReprocessingSite> GetOverseasSite(
+            Guid externalId,
+            Guid siteExternalId)
+        {
+            return await _repository.GetOverseasSite(externalId, siteExternalId);
+        }
+
+        public async Task<Guid> CreateOverseasSite(
+            Guid externalId,
+            OverseasReprocessingSite overseasReprocessingSite)
+        {
+            return await _repository.CreateOverseasSite(
+                externalId,
+                overseasReprocessingSite);
+        }
+
+        public Task UpdateOverseasSite(OverseasReprocessingSite overseasReprocessingSite)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task<SaveAndContinue> GetSaveAndContinue(Guid externalId)
         {
             return await _repository.GetSaveAndContinue(externalId);

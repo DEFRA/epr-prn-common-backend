@@ -241,10 +241,13 @@ namespace EPR.Accreditation.API.Repositories
             // copy the updates over to the db entity
             entity = _mapper.Map(material, entity);
 
-            foreach (var wasteCode in entity.WasteCodes)
+            if (entity.WasteCodes != null)
             {
-                if (wasteCode.Id == default)
-                    _accreditationContext.WasteCodes.Add(wasteCode);
+                foreach (var wasteCode in entity.WasteCodes)
+                {
+                    if (wasteCode.Id == default)
+                        _accreditationContext.WasteCodes.Add(wasteCode);
+                }
             }
 
             // save the changes
@@ -297,6 +300,89 @@ namespace EPR.Accreditation.API.Repositories
                 .OrderBy(c => c.Name)
                 .Select(c => _mapper.Map<DTO.Country>(c))
                 .ToListAsync();
+        }
+
+        public async Task<Site> GetSite(
+            Guid id,
+            Guid siteExternalId)
+        {
+            return await _accreditationContext
+                .Accreditation
+                .Where(a => a.ExternalId == id && a.Site.ExternalId == siteExternalId)
+                .Select(a => _mapper.Map<DTO.Site>(a.Site))
+                .SingleOrDefaultAsync();
+        }
+
+        public async Task<Guid> CreateSite(
+            Guid externalId,
+            Site site)
+        {
+            // add the site id to the accreditation record
+            var accreditionEntity = await _accreditationContext
+                .Accreditation
+                .Where(a => a.ExternalId == externalId)
+                .SingleOrDefaultAsync();
+
+            if (accreditionEntity == null)
+                throw new NotFoundException("Accreditation entity not found");
+
+            var entity = _mapper.Map<Data.Site>(site);
+
+            entity.ExternalId = Guid.NewGuid();
+            await _accreditationContext.Site.AddAsync(entity);
+
+            // perform a save so that we have the id of the site
+            await _accreditationContext.SaveChangesAsync();
+
+            accreditionEntity.SiteId = entity.Id;
+
+            await _accreditationContext.SaveChangesAsync();
+
+            return entity.ExternalId;
+        }
+
+        public Task UpdateSite(Site site)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<DTO.OverseasReprocessingSite> GetOverseasSite(
+            Guid id,
+            Guid overseasSiteExternalId)
+        {
+            return await _accreditationContext
+                .OverseasReprocessingSite
+                .Where(o => o.Accreditation.ExternalId == id && o.ExternalId == overseasSiteExternalId)
+                .Select(o => _mapper.Map<DTO.OverseasReprocessingSite>(o))
+                .SingleOrDefaultAsync();
+        }
+
+        public async Task<Guid> CreateOverseasSite(
+            Guid id,
+            DTO.OverseasReprocessingSite site)
+        {
+            var accreditationId = await _accreditationContext
+                .Accreditation
+                .Where(a => a.ExternalId == id)
+                .Select(a => (int?)a.Id)
+                .SingleOrDefaultAsync();
+
+            if (accreditationId == null)
+                throw new NotFoundException();
+
+            var entity = _mapper.Map<Data.OverseasReprocessingSite>(site);
+            entity.AccreditationId = accreditationId.Value;
+            entity.ExternalId = Guid.NewGuid();
+
+            await _accreditationContext.OverseasReprocessingSite.AddAsync(entity);
+            await _accreditationContext.SaveChangesAsync();
+
+            return entity.ExternalId;
+        }
+
+        public async Task UpdateOverseasSite(DTO.OverseasReprocessingSite site)
+        {
+            throw new NotImplementedException();
         }
 
         public async Task<SaveAndContinue> GetSaveAndContinue(Guid externalId)
