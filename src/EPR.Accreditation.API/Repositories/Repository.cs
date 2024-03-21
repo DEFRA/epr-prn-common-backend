@@ -44,7 +44,7 @@ namespace EPR.Accreditation.API.Repositories
             {
                 entity.SiteId = await _accreditationContext
                     .Accreditation
-                    .Where(a => 
+                    .Where(a =>
                         a.ExternalId == externalId &&
                         a.SiteId.HasValue &&
                         a.Site.ExternalId == siteId)
@@ -60,7 +60,7 @@ namespace EPR.Accreditation.API.Repositories
                         o.ExternalId == overseasSiteId)
                     .Select(o => o.Id)
                     .SingleAsync();
-                
+
             }
 
             await _accreditationContext.AccreditationMaterial.AddAsync(entity);
@@ -136,8 +136,8 @@ namespace EPR.Accreditation.API.Repositories
         {
             var file = await _accreditationContext
                 .FileUpload
-                .Where(f => 
-                    f.Accreditation.ExternalId == externalId && 
+                .Where(f =>
+                    f.Accreditation.ExternalId == externalId &&
                     f.FileId == fileId)
                 .FirstOrDefaultAsync();
 
@@ -173,13 +173,13 @@ namespace EPR.Accreditation.API.Repositories
         }
 
         public async Task AddFile(
-            Guid externalId, 
+            Guid externalId,
             DTO.FileUpload fileUpload)
         {
             var entity = _mapper.Map<Data.FileUpload>(fileUpload);
-            
+
             // get the id of the accreditation that this upload is related to
-            var accreditationId = 
+            var accreditationId =
                 await _accreditationContext
                 .Accreditation
                 .Where(a => a.ExternalId == externalId)
@@ -216,7 +216,7 @@ namespace EPR.Accreditation.API.Repositories
                         a.Site != null &&
                         a.Site.ExternalId == siteExternalId &&
                         a.Site.AccreditationMaterials.Any(m => m.ExternalId == materialExternalId))
-                    .Select(a => 
+                    .Select(a =>
                         a.Site.AccreditationMaterials.FirstOrDefault(m => m.ExternalId == materialExternalId))
                     .SingleOrDefaultAsync();
             }
@@ -314,7 +314,7 @@ namespace EPR.Accreditation.API.Repositories
         }
 
         public async Task<Guid> CreateSite(
-            Guid externalId, 
+            Guid externalId,
             Site site)
         {
             // add the site id to the accreditation record
@@ -376,13 +376,74 @@ namespace EPR.Accreditation.API.Repositories
 
             await _accreditationContext.OverseasReprocessingSite.AddAsync(entity);
             await _accreditationContext.SaveChangesAsync();
-            
+
             return entity.ExternalId;
         }
 
         public async Task UpdateOverseasSite(DTO.OverseasReprocessingSite site)
         {
             throw new NotImplementedException();
+        }
+
+        public async Task<SaveAndContinue> GetSaveAndContinue(Guid externalId)
+        {
+            var saveAndContinue = await _accreditationContext
+                .SaveAndContinue
+                .Where(s => s.Accreditation.ExternalId == externalId)
+                .Select(s =>
+                    _mapper.Map<DTO.SaveAndContinue>(s)
+                )
+                .SingleOrDefaultAsync();
+
+            return saveAndContinue;
+        }
+
+        public async Task DeleteSaveAndContinue(Guid externalId)
+        {
+            var saveAndContinueId = await _accreditationContext
+                .SaveAndContinue
+                .Where(s => s.Accreditation.ExternalId == externalId)
+                .Select(s => s.Id)
+                .FirstOrDefaultAsync();
+
+            if (saveAndContinueId == default)
+                return;
+
+            // Create a new instance of the entity with the primary key set
+            var entityToDelete = new Data.SaveAndContinue
+            {
+                Id = saveAndContinueId
+            };
+
+            // Attach the entity to the context and mark it as deleted
+            _accreditationContext.Entry(entityToDelete).State = EntityState.Deleted;
+
+            // Save changes to the database
+            await _accreditationContext.SaveChangesAsync();
+        }
+
+        public async Task AddSaveAndContinue(
+            Guid externalId,
+            DTO.SaveAndContinue saveAndContinue)
+        {
+            var entity = _mapper.Map<Data.SaveAndContinue>(saveAndContinue);
+
+            // get the id of the accreditation that this save and continue record is related to
+            var accreditationId =
+                await _accreditationContext
+                .Accreditation
+                .Where(a => a.ExternalId == externalId)
+                .Select(a => a.Id)
+                .SingleOrDefaultAsync();
+
+            // TODO need to handle an entity that's not found better here
+            if (accreditationId == default)
+                throw new NotFoundException($"Save and continue record does not exist for External ID: {externalId}");
+
+            entity.AccreditationId = accreditationId;
+
+            await _accreditationContext.SaveAndContinue.AddAsync(entity);
+            await _accreditationContext.SaveChangesAsync();
         }
     }
 }

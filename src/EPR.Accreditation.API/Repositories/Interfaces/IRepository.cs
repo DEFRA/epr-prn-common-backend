@@ -15,7 +15,7 @@ namespace EPR.Accreditation.API.Repositories.Interfaces
             DTO.AccreditationMaterial accreditationMaterial);
 
         Task AddFile(
-            Guid externalId, 
+            Guid externalId,
             DTO.FileUpload fileUpload);
 
         Task UpdateAccreditation(
@@ -36,7 +36,7 @@ namespace EPR.Accreditation.API.Repositories.Interfaces
         Task<IEnumerable<DTO.AccreditationTaskProgress>> GetTaskProgress(Guid externalId);
 
         Task DeleteFile(
-            Guid id, 
+            Guid id,
             Guid fileId);
 
         Task<DTO.AccreditationMaterial> GetMaterial(
@@ -50,7 +50,7 @@ namespace EPR.Accreditation.API.Repositories.Interfaces
             Guid siteExternalId);
 
         Task<Guid> CreateSite(
-            Guid externalId, 
+            Guid externalId,
             DTO.Site site);
 
         Task UpdateSite(DTO.Site site);
@@ -64,5 +64,13 @@ namespace EPR.Accreditation.API.Repositories.Interfaces
             DTO.OverseasReprocessingSite site);
 
         Task UpdateOverseasSite(DTO.OverseasReprocessingSite site);
+
+        Task<DTO.SaveAndContinue> GetSaveAndContinue(Guid id);
+
+        Task DeleteSaveAndContinue(Guid id);
+
+        Task AddSaveAndContinue(
+            Guid externalId,
+            DTO.SaveAndContinue saveAndContinue);
     }
 }

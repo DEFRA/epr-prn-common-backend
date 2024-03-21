@@ -64,6 +64,9 @@ namespace EPR.Accreditation.API.Profiles
                 .ReverseMap()
                 .MapOnlyNonDefault();
 
+            CreateMap<Data.SaveAndContinue, DTO.SaveAndContinue>()
+                .ReverseMap();
+
             CreateMap<Data.Lookups.Country, DTO.Country>()
                 .ReverseMap();
         }

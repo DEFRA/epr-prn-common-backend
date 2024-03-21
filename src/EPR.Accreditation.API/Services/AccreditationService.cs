@@ -1,7 +1,7 @@
-﻿using DTO = EPR.Accreditation.API.Common.Dtos;
+﻿using EPR.Accreditation.API.Common.Dtos;
 using EPR.Accreditation.API.Repositories.Interfaces;
 using EPR.Accreditation.API.Services.Interfaces;
-using EPR.Accreditation.API.Common.Dtos;
+using DTO = EPR.Accreditation.API.Common.Dtos;
 
 namespace EPR.Accreditation.API.Services
 {
@@ -77,11 +77,11 @@ namespace EPR.Accreditation.API.Services
         }
 
         public async Task DeleteFile(
-            Guid externalId, 
+            Guid externalId,
             Guid fileId)
         {
             await _repository.DeleteFile(
-                externalId, 
+                externalId,
                 fileId);
         }
 
@@ -91,11 +91,11 @@ namespace EPR.Accreditation.API.Services
         }
 
         public async Task AddFile(
-            Guid id, 
+            Guid externalId,
             DTO.FileUpload fileUpload)
         {
             await _repository.AddFile(
-                id, fileUpload);
+                externalId, fileUpload);
         }
 
         public async Task UpdateMaterail(
@@ -182,6 +182,23 @@ namespace EPR.Accreditation.API.Services
         public Task UpdateOverseasSite(OverseasReprocessingSite overseasReprocessingSite)
         {
             throw new NotImplementedException();
+        }
+
+        public async Task<SaveAndContinue> GetSaveAndContinue(Guid externalId)
+        {
+            return await _repository.GetSaveAndContinue(externalId);
+        }
+
+        public async Task DeleteSaveAndContinue(Guid externalId)
+        {
+            await _repository.DeleteSaveAndContinue(externalId);
+        }
+
+        public async Task AddSaveAndContinue(
+            Guid externalId,
+            DTO.SaveAndContinue saveAndContinue)
+        {
+            await _repository.AddSaveAndContinue(externalId, saveAndContinue);
         }
     }
 }

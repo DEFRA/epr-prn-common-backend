@@ -1,6 +1,6 @@
-﻿using DTO = EPR.Accreditation.API.Common.Dtos;
-using EPR.Accreditation.API.Services.Interfaces;
+﻿using EPR.Accreditation.API.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using DTO = EPR.Accreditation.API.Common.Dtos;
 
 namespace EPR.Accreditation.API.Controllers
 {

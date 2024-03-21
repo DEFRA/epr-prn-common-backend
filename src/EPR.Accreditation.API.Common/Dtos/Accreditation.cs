@@ -5,7 +5,7 @@ namespace EPR.Accreditation.API.Common.Dtos
     public class Accreditation
     {
         public Guid? ExternalId { get; set; } // This has a unique key added via the dbcontext
-        
+
         public Enums.OperatorType OperatorTypeId { get; set; }
 
         [MaxLength(12)]

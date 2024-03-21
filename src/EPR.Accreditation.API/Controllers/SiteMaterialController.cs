@@ -1,6 +1,6 @@
-﻿using DTO = EPR.Accreditation.API.Common.Dtos;
+﻿using EPR.Accreditation.API.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using EPR.Accreditation.API.Services.Interfaces;
+using DTO = EPR.Accreditation.API.Common.Dtos;
 
 namespace EPR.Accreditation.API.Controllers
 {
@@ -16,7 +16,7 @@ namespace EPR.Accreditation.API.Controllers
             _accreditationService = accreditationService ?? throw new ArgumentNullException(nameof(accreditationService));
         }
 
-        [HttpGet(("{materialExternalId}"))]
+        [HttpGet("{materialExternalId}")]
         [ProducesResponseType(typeof(DTO.AccreditationMaterial), 200)]
         public async Task<IActionResult> GetSiteMaterial(
             Guid externalId,

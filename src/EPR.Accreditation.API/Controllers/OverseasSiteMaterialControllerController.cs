@@ -15,7 +15,7 @@ namespace EPR.Accreditation.API.Controllers
             _accreditationService = accreditationService ?? throw new ArgumentNullException(nameof(accreditationService));
         }
 
-        [HttpGet(("{materialExternalId}"))]
+        [HttpGet("{materialExternalId}")]
         [ProducesResponseType(typeof(DTO.AccreditationMaterial), 200)]
         public async Task<IActionResult> GetOverseasSiteMaterial(
             Guid externalId,
