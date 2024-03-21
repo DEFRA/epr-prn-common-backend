@@ -4,7 +4,7 @@ trigger:
       - '*'
   paths:
     include:
-      - 'PRN.Src/*'
+      - 'src/*'
 
 parameters:
 - name: runTests
@@ -22,26 +22,25 @@ parameters:
 pool: DEFRA-COMMON-ubuntu2004-SSV3
 
 variables:
-  - template: vars/Team-4_QA-development.yaml
+  - template: vars/Team-10_Willow-development.yaml
   - name: solutionFolder
-    value: PRN.Src
+    value: src
   - name: projectFolder
-    value: EPR.Antivirus.Function
+    value: EPR.Accreditation.API
   - name: testProjectFolder
-    value: 'EPR.Antivirus.Function.UnitTests'
+    value: 'EPR.Accreditation.UnitTests'
   - name: sonarQubeProjectKey
-    value: epr-anti-virus-function-app
+    value: epr-prn-accreditation-back-end
   - name: sonarQubeProjectName
-    value: epr-anti-virus-function-app
+    value: epr-prn-accreditation-back-end
   - name: runNugetTasks
-    value: true
+    value: false
 
 resources:
   repositories:
     - repository: CommonTemplates
-      name: defra/epr-prn-accreditation-back-end
-      type: github
-      endpoint: defra
+      name: RWD-CPR-EPR4P-ADO/epr-webapps-code-deploy-templates
+      type: git
       ref: main
 
 extends:
