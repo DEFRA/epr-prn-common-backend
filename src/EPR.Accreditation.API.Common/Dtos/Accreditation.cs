@@ -27,10 +27,6 @@ namespace EPR.Accreditation.API.Common.Dtos
 
         public DateTime? UpdatedOn { get; set; }
 
-        public Site Site { get; set; }
-
-        public IEnumerable<OverseasReprocessingSite> OverseasReprocessingSites { get; set; }
-
         public WastePermit WastePermit { get; set; }
     }
 }
