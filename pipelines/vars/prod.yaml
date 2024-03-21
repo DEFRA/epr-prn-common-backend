@@ -1,6 +1,6 @@
 variables:
   azureSubscription: 'AZR-RWD-PRD1'
-  docker.imageName: 'antivirusresult'
+  docker.imageName: 'epraccreditationbackend'
   acr.azureContainerRegistryName: 'prdrwdinfac1401'
-  acr.repositoryName: 'antivirusrepository'
-  serviceName: 'prdrwdwebfa1405'
+  acr.repositoryName: 'epraccreditationbackendrepository'
+  serviceName: 'PRDRWDWEBWA1418'
