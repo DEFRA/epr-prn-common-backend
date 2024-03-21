@@ -1,4 +1,5 @@
 ﻿using EPR.Accreditation.API.Common.Data.DataModels.BaseClasses;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EPR.Accreditation.API.Common.Data.DataModels
@@ -15,6 +16,7 @@ namespace EPR.Accreditation.API.Common.Data.DataModels
         [Column(TypeName = "decimal(10,3)")]
         public decimal WeeklyCapacity { get;set; }
 
+        [MaxLength(200)]
         public string WasteSource { get; set; }
 
         [ForeignKey("Site")]

@@ -4,6 +4,7 @@ using EPR.Accreditation.API.Common.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EPR.Accreditation.API.Common.Data.Migrations
 {
     [DbContext(typeof(AccreditationContext))]
-    partial class AccreditationContextModelSnapshot : ModelSnapshot
+    [Migration("20240321140215_waste-source-limit")]
+    partial class wastesourcelimit
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
