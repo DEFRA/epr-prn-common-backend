@@ -2,8 +2,6 @@
 {
     public class SaveAndContinue
     {
-        public int AccreditationId { get; set; }
-
         public string Area { get; set; }
 
         public string Controller { get; set; }
