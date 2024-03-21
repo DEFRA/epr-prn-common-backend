@@ -28,7 +28,7 @@ variables:
   - name: projectFolder
     value: EPR.Accreditation.API
   - name: testProjectFolder
-    value: 'EPR.Accreditation.API.UnitTests'
+    value: 'EPR.Accreditation.UnitTests'
   - name: sonarQubeProjectKey
     value: epr-prn-accreditation-back-end
   - name: sonarQubeProjectName
