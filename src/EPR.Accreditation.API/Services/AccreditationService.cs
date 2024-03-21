@@ -189,6 +189,11 @@ namespace EPR.Accreditation.API.Services
             return await _repository.GetSaveAndContinue(externalId);
         }
 
+        public async Task<bool> GetHasApplicationSaved(Guid externalId)
+        {
+            return await _repository.GetHasApplicationSaved(externalId);
+        }
+
         public async Task DeleteSaveAndContinue(Guid externalId)
         {
             await _repository.DeleteSaveAndContinue(externalId);
