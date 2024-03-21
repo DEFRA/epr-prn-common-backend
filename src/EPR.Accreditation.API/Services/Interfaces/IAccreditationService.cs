@@ -42,5 +42,25 @@ namespace EPR.Accreditation.API.Services.Interfaces
             Guid? siteExternalId,
             Guid? overseasSiteExternalId,
             Guid materialExternalId);
+
+        Task<DTO.Site> GetSite(
+            Guid externalId,
+            Guid siteExternalId);
+
+        Task<Guid> CreateSite(
+            Guid externalId,
+            DTO.Site site);
+
+        Task UpdateSite(DTO.Site site);
+
+        Task<DTO.OverseasReprocessingSite> GetOverseasSite(
+            Guid externalId,
+            Guid siteExternalId);
+
+        Task<Guid> CreateOverseasSite(
+            Guid externalId, 
+            DTO.OverseasReprocessingSite site);
+
+        public Task UpdateOverseasSite(DTO.OverseasReprocessingSite site);
     }
 }
