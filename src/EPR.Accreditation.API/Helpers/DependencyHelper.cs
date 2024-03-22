@@ -12,7 +12,8 @@ namespace EPR.Accreditation.API.Helpers
             services
                 .AddScoped<IRepository, Repository>()
                 .AddScoped<IAccreditationService, AccreditationService>()
-                .AddScoped<ICountryService, CountryService>();
+                .AddScoped<ICountryService, CountryService>()
+                .AddScoped<IMaterialService, MaterialService>();
 
             return services;
         }

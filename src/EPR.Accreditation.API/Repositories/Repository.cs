@@ -458,5 +458,13 @@ namespace EPR.Accreditation.API.Repositories
             await _accreditationContext.SaveAndContinue.AddAsync(entity);
             await _accreditationContext.SaveChangesAsync();
         }
+
+        public async Task<IEnumerable<Material>> GetMaterials()
+        {
+            return await _accreditationContext
+                .Material
+                .Select(m => _mapper.Map<DTO.Material>(m))
+                .ToListAsync();
+        }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using EPR.Accreditation.API.Common.Data.DataModels;
 using EPR.Accreditation.API.Common.Data.DataModels.Lookups;
+using EPR.Accreditation.API.Common.Data.SeedData;
 using EPR.Accreditation.SeedData;
 using Microsoft.EntityFrameworkCore;
 
@@ -103,6 +104,8 @@ namespace EPR.Accreditation.API.Common.Data
         public virtual DbSet<WasteCode> WasteCodes { get; set; }
 
         public virtual DbSet<SaveAndContinue> SaveAndContinue { get; set; }
+
+        public virtual DbSet<Material> Material { get; set; }
 
         #region Lookups
         public virtual DbSet<AccreditationStatus> AccreditationStatus { get; set; }
