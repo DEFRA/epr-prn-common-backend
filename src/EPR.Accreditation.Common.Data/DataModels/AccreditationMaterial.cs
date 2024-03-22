@@ -8,6 +8,7 @@ namespace EPR.Accreditation.API.Common.Data.DataModels
     {
         public Guid ExternalId { get; set; }
 
+        [ForeignKey("Material")]
         public int MaterialId { get; set; }
 
         [Column(TypeName = "decimal(10,3)")]
@@ -35,6 +36,8 @@ namespace EPR.Accreditation.API.Common.Data.DataModels
         public virtual ICollection<AccreditationTaskProgressMaterial> AccreditationTaskProgressMaterials { get; set; }
 
         public virtual ICollection<WasteCode> WasteCodes { get; set; }
+
+        public virtual Material Material { get; set; }
         #endregion
     }
 }

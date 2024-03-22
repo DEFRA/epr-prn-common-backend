@@ -74,5 +74,7 @@ namespace EPR.Accreditation.API.Repositories.Interfaces
         Task AddSaveAndContinue(
             Guid externalId,
             DTO.SaveAndContinue saveAndContinue);
+
+        Task<IEnumerable<DTO.Material>> GetMaterials();
     }
 }
