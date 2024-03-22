@@ -401,19 +401,6 @@ namespace EPR.Accreditation.API.Repositories
             return saveAndContinue;
         }
 
-        public async Task<bool> GetHasApplicationSaved(Guid externalId)
-        {
-            var saveAndContinue = await _accreditationContext
-                .SaveAndContinue
-                .Where(s => s.Accreditation.ExternalId == externalId)
-                .SingleOrDefaultAsync();
-
-            if (saveAndContinue == null)
-                return false;
-            else
-                return true;
-        }
-
         public async Task DeleteSaveAndContinue(Guid externalId)
         {
             var saveAndContinueId = await _accreditationContext

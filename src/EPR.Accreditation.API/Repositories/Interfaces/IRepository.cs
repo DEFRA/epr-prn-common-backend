@@ -67,8 +67,6 @@ namespace EPR.Accreditation.API.Repositories.Interfaces
 
         Task<DTO.SaveAndContinue> GetSaveAndContinue(Guid id);
 
-        Task<bool> GetHasApplicationSaved(Guid id);
-
         Task DeleteSaveAndContinue(Guid id);
 
         Task AddSaveAndContinue(

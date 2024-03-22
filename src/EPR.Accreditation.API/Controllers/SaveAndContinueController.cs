@@ -27,15 +27,6 @@ namespace EPR.Accreditation.API.Controllers
             return Ok(saveAndContinue);
         }
 
-        [HttpGet("/api/[controller]/HasApplicationSaved/{id}")]
-        [ProducesResponseType(typeof(bool), 200)]
-        public async Task<IActionResult> GetHasApplicationSaved(Guid id)
-        {
-            var hasApplicationSaved = await _accreditationService.GetHasApplicationSaved(id);
-
-            return Ok(hasApplicationSaved);
-        }
-
         [HttpPost]
         public async Task<IActionResult> AddSaveAndContinue(
             Guid id,
