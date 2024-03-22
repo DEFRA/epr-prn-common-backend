@@ -267,6 +267,8 @@ namespace EPR.Accreditation.API.Repositories
                 // get the site based material
                 entity = await _accreditationContext
                     .Accreditation
+                    .Include(a => a.Site.AccreditationMaterials)
+                        .ThenInclude(am => am.Material)
                     .Where(a =>
                         a.ExternalId == externalId &&
                     a.Site != null &&
@@ -281,6 +283,7 @@ namespace EPR.Accreditation.API.Repositories
                 // get the overseas site based material
                 entity = await _accreditationContext
                     .AccreditationMaterial
+                    .Include(am => am.Material)
                     .Where(m =>
                         m.ExternalId == materialExternalId &&
                         m.OverseasReprocessingSite != null &&

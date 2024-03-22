@@ -8,6 +8,8 @@ namespace EPR.Accreditation.API.Common.Dtos
 
         public Guid ExternalId { get; set; }
 
+        public int MaterialId { get; set; }
+
         public decimal AnnualCapacity { get; set; }
 
         public decimal WeeklyCapacity { get; set; }
@@ -18,5 +20,7 @@ namespace EPR.Accreditation.API.Common.Dtos
         public MaterialReprocessorDetails MaterialReprocessorDetails { get; set; }
 
         public IEnumerable<WasteCode> WasteCodes { get; set; }
+
+        public Material Material { get; set; }
     }
 }
