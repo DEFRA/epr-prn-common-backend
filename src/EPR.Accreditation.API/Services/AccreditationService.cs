@@ -20,9 +20,6 @@ namespace EPR.Accreditation.API.Services
             if (accreditation == null)
                 throw new ArgumentNullException(nameof(accreditation));
 
-            if (accreditation.ExternalId != null)
-                throw new Exception("New accreditation cannot have a populated External Id");
-
             // set the external id for the accreditation
             accreditation.ExternalId = Guid.NewGuid();
             accreditation.AccreditationStatusId = Common.Enums.AccreditationStatus.Started;
