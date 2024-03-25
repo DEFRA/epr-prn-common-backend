@@ -184,21 +184,21 @@ namespace EPR.Accreditation.API.Services
             throw new NotImplementedException();
         }
 
-        public async Task<SaveAndContinue> GetSaveAndContinue(Guid externalId)
+        public async Task<SaveAndComeBack> GetSaveAndComeBack(Guid externalId)
         {
-            return await _repository.GetSaveAndContinue(externalId);
+            return await _repository.GetSaveAndComeBack(externalId);
         }
 
-        public async Task DeleteSaveAndContinue(Guid externalId)
+        public async Task DeleteSaveAndComeBack(Guid externalId)
         {
-            await _repository.DeleteSaveAndContinue(externalId);
+            await _repository.DeleteSaveAndComeBack(externalId);
         }
 
-        public async Task AddSaveAndContinue(
+        public async Task AddSaveAndComeBack(
             Guid externalId,
-            DTO.SaveAndContinue saveAndContinue)
+            DTO.SaveAndComeBack saveAndComeBack)
         {
-            await _repository.AddSaveAndContinue(externalId, saveAndContinue);
+            await _repository.AddSaveAndComeBack(externalId, saveAndComeBack);
         }
     }
 }

@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EPR.Accreditation.API.Common.Data.DataModels
 {
-    public class SaveAndContinue : IdBaseEntity
+    public class SaveAndComeBack : IdBaseEntity
     {
         [MaxLength(30)]
         public string Area { get; set; }

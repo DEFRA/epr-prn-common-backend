@@ -63,7 +63,7 @@ namespace EPR.Accreditation.API.Common.Data
                 .HasIndex(d => d.AccreditationMaterialId)
                 .IsUnique();
 
-            modelBuilder.Entity<SaveAndContinue>()
+            modelBuilder.Entity<SaveAndComeBack>()
                 .HasIndex(s => s.AccreditationId)
                 .IsUnique();
 
@@ -103,7 +103,7 @@ namespace EPR.Accreditation.API.Common.Data
 
         public virtual DbSet<WasteCode> WasteCodes { get; set; }
 
-        public virtual DbSet<SaveAndContinue> SaveAndContinue { get; set; }
+        public virtual DbSet<SaveAndComeBack> SaveAndComeBack { get; set; }
 
         public virtual DbSet<Material> Material { get; set; }
 

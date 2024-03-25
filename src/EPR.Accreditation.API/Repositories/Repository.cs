@@ -388,23 +388,23 @@ namespace EPR.Accreditation.API.Repositories
             throw new NotImplementedException();
         }
 
-        public async Task<SaveAndContinue> GetSaveAndContinue(Guid externalId)
+        public async Task<SaveAndComeBack> GetSaveAndComeBack(Guid externalId)
         {
             var saveAndContinue = await _accreditationContext
-                .SaveAndContinue
+                .SaveAndComeBack
                 .Where(s => s.Accreditation.ExternalId == externalId)
                 .Select(s =>
-                    _mapper.Map<DTO.SaveAndContinue>(s)
+                    _mapper.Map<DTO.SaveAndComeBack>(s)
                 )
                 .SingleOrDefaultAsync();
 
             return saveAndContinue;
         }
 
-        public async Task DeleteSaveAndContinue(Guid externalId)
+        public async Task DeleteSaveAndComeBack(Guid externalId)
         {
             var saveAndContinueId = await _accreditationContext
-                .SaveAndContinue
+                .SaveAndComeBack
                 .Where(s => s.Accreditation.ExternalId == externalId)
                 .Select(s => s.Id)
                 .FirstOrDefaultAsync();
@@ -413,7 +413,7 @@ namespace EPR.Accreditation.API.Repositories
                 return;
 
             // Create a new instance of the entity with the primary key set
-            var entityToDelete = new Data.SaveAndContinue
+            var entityToDelete = new Data.SaveAndComeBack
             {
                 Id = saveAndContinueId
             };
@@ -425,11 +425,11 @@ namespace EPR.Accreditation.API.Repositories
             await _accreditationContext.SaveChangesAsync();
         }
 
-        public async Task AddSaveAndContinue(
+        public async Task AddSaveAndComeBack(
             Guid externalId,
-            DTO.SaveAndContinue saveAndContinue)
+            DTO.SaveAndComeBack saveAndContinue)
         {
-            var entity = _mapper.Map<Data.SaveAndContinue>(saveAndContinue);
+            var entity = _mapper.Map<Data.SaveAndComeBack>(saveAndContinue);
 
             // get the id of the accreditation that this save and continue record is related to
             var accreditationId =
@@ -445,7 +445,7 @@ namespace EPR.Accreditation.API.Repositories
 
             entity.AccreditationId = accreditationId;
 
-            await _accreditationContext.SaveAndContinue.AddAsync(entity);
+            await _accreditationContext.SaveAndComeBack.AddAsync(entity);
             await _accreditationContext.SaveChangesAsync();
         }
 

@@ -63,12 +63,12 @@ namespace EPR.Accreditation.API.Services.Interfaces
 
         public Task UpdateOverseasSite(DTO.OverseasReprocessingSite site);
 
-        Task<DTO.SaveAndContinue> GetSaveAndContinue(Guid externalId);
+        Task<DTO.SaveAndComeBack> GetSaveAndComeBack(Guid externalId);
 
-        Task DeleteSaveAndContinue(Guid externalId);
+        Task DeleteSaveAndComeBack(Guid externalId);
 
-        Task AddSaveAndContinue(
+        Task AddSaveAndComeBack(
             Guid externalId,
-            DTO.SaveAndContinue saveAndContinue);
+            DTO.SaveAndComeBack saveAndContinue);
     }
 }
