@@ -15,7 +15,6 @@ namespace EPR.Accreditation.API.Common.Data.DataModels
         [MaxLength(30)]
         public string Action { get; set; }
 
-        [MaxLength(60)]
         public string Parameters { get; set; }
 
         [ForeignKey("Accreditation")]
