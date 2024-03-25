@@ -17,6 +17,7 @@ ENV NODE_EXTRA_CA_CERTS=/usr/local/share/ca-certificates/internal-ca.crt
 
 COPY --chown=dotnet:dotnet . .
 WORKDIR /home/dotnet/EPR.Accreditation.API
+RUN dotnet publish -c Release -o out
 
 FROM defradigital/dotnetcore:dotnet6.0
 COPY --from=build-env --chown=dotnet /home/dotnet/EPR.Accreditation.API/out .
