@@ -6,20 +6,20 @@ namespace EPR.Accreditation.API.Controllers
 {
     [ApiController]
     [Route("/api/[controller]/{id}")]
-    public class SaveAndContinueController : ControllerBase
+    public class SaveAndComeBackController : ControllerBase
     {
         protected readonly IAccreditationService _accreditationService;
 
-        public SaveAndContinueController(IAccreditationService accreditationService)
+        public SaveAndComeBackController(IAccreditationService accreditationService)
         {
             _accreditationService = accreditationService ?? throw new ArgumentNullException(nameof(accreditationService));
         }
 
         [HttpGet]
-        [ProducesResponseType(typeof(DTO.SaveAndContinue), 200)]
-        public async Task<IActionResult> GetSaveAndContinue(Guid id)
+        [ProducesResponseType(typeof(DTO.SaveAndComeBack), 200)]
+        public async Task<IActionResult> GetSaveAndComeBack(Guid id)
         {
-            var saveAndContinue = await _accreditationService.GetSaveAndContinue(id);
+            var saveAndContinue = await _accreditationService.GetSaveAndComeBack(id);
 
             if (saveAndContinue == null)
                 return NotFound();
@@ -28,24 +28,24 @@ namespace EPR.Accreditation.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddSaveAndContinue(
+        public async Task<IActionResult> AddSaveAndComeBack(
             Guid id,
-            [FromBody] DTO.SaveAndContinue saveAndContinue)
+            [FromBody] DTO.SaveAndComeBack saveAndComeBack)
         {
-            if (saveAndContinue == null)
+            if (saveAndComeBack == null)
                 return BadRequest("No saveAndContinue record supplied");
 
-            await _accreditationService.AddSaveAndContinue(
+            await _accreditationService.AddSaveAndComeBack(
                 id,
-                saveAndContinue);
+                saveAndComeBack);
 
             return Ok();
         }
 
         [HttpDelete]
-        public async Task<IActionResult> DeleteSaveAndContinue(Guid id)
+        public async Task<IActionResult> DeleteSaveAndComeBack(Guid id)
         {
-            await _accreditationService.DeleteSaveAndContinue(id);
+            await _accreditationService.DeleteSaveAndComeBack(id);
 
             return Ok();
         }

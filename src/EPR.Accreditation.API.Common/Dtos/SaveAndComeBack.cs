@@ -1,6 +1,6 @@
 ﻿namespace EPR.Accreditation.API.Common.Dtos
 {
-    public class SaveAndContinue
+    public class SaveAndComeBack
     {
         public string Area { get; set; }
 
