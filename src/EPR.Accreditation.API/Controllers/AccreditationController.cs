@@ -92,9 +92,6 @@ namespace EPR.Accreditation.API.Controllers
             if (accreditation == null)
                 return BadRequest();
 
-            if (id != accreditation.ExternalId)
-                return BadRequest("External ID does not match");
-
             await _accreditationService.UpdateAccreditation(
                 id,
                 accreditation);
