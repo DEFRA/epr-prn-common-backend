@@ -21,7 +21,7 @@ namespace EPR.Accreditation.API.Common.Data.DataModels
 
         public virtual OverseasReprocessingSite OverseasReprocessingSite { get; set; }
 
-        public virtual OverseasAgent OverseasAgent { get; set; }
+        public virtual OverseasContactPerson OverseasContactPerson { get; set; }
         #endregion
     }
 }
