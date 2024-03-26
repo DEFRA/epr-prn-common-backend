@@ -19,7 +19,7 @@ namespace EPR.Accreditation.API.Profiles
                 .ReverseMap()
                 .MapOnlyNonDefault();
 
-            CreateMap<Data.OverseasAgent, DTO.OverseasAgent>()
+            CreateMap<Data.OverseasContactPerson, DTO.OverseasContactPerson>()
                 .MapOnlyNonDefault()
                 .ReverseMap()
                 .MapOnlyNonDefault();

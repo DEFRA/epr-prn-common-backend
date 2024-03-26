@@ -1,15 +1,12 @@
-﻿using EPR.Accreditation.API.Common.Data.DataModels.BaseClasses;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace EPR.Accreditation.API.Common.Data.DataModels
+namespace EPR.Accreditation.API.Common.Dtos
 {
-    public class OverseasAgent : IdBaseEntity
+    public class OverseasContactPerson
     {
-        [ForeignKey("OverseasAddress")]
         public int OverseasAddressId { get; set; }
 
-        [ForeignKey("OverseasReprocessingSite")]
         public int OverseasReprocessingSiteId { get; set; }
 
         [MaxLength(100)]
@@ -24,10 +21,10 @@ namespace EPR.Accreditation.API.Common.Data.DataModels
         [MaxLength(50)]
         public string Email { get; set; }
 
-        #region Navigation properties
+        public Enums.OverseasPersonType OverseasPersonTypeId { get; set; }
+
         public virtual OverseasAddress OverseasAddress { get; set; }
 
         public virtual OverseasReprocessingSite OverseasReprocessingSite { get; set; }
-        #endregion
     }
 }
