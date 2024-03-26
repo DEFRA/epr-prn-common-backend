@@ -57,7 +57,7 @@ namespace EPR.Accreditation.API.Controllers
         #region Post methods
         [HttpPost]
         [ProducesResponseType(typeof(Guid), 200)]
-        public async Task<IActionResult> CreateAccredition([FromBody] DTO.Accreditation accreditation)
+        public async Task<IActionResult> CreateAccreditation([FromBody] DTO.Accreditation accreditation)
         {
             if (accreditation == null)
                 return BadRequest("Accredition data not suppleid");
