@@ -1,4 +1,5 @@
 ﻿using EPR.Accreditation.API.Common.Data.DataModels.BaseClasses;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EPR.Accreditation.API.Common.Data.DataModels
@@ -7,6 +8,7 @@ namespace EPR.Accreditation.API.Common.Data.DataModels
     {
         public Guid ExternalId { get; set; }
 
+        [ForeignKey("Material")]
         public int MaterialId { get; set; }
 
         [Column(TypeName = "decimal(10,3)")]
@@ -15,6 +17,7 @@ namespace EPR.Accreditation.API.Common.Data.DataModels
         [Column(TypeName = "decimal(10,3)")]
         public decimal WeeklyCapacity { get;set; }
 
+        [MaxLength(200)]
         public string WasteSource { get; set; }
 
         [ForeignKey("Site")]
@@ -33,6 +36,8 @@ namespace EPR.Accreditation.API.Common.Data.DataModels
         public virtual ICollection<AccreditationTaskProgressMaterial> AccreditationTaskProgressMaterials { get; set; }
 
         public virtual ICollection<WasteCode> WasteCodes { get; set; }
+
+        public virtual Material Material { get; set; }
         #endregion
     }
 }

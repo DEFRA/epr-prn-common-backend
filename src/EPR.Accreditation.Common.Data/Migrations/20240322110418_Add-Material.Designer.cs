@@ -4,6 +4,7 @@ using EPR.Accreditation.API.Common.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EPR.Accreditation.API.Common.Data.Migrations
 {
     [DbContext(typeof(AccreditationContext))]
-    partial class AccreditationContextModelSnapshot : ModelSnapshot
+    [Migration("20240322110418_Add-Material")]
+    partial class AddMaterial
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -2292,7 +2294,7 @@ namespace EPR.Accreditation.API.Common.Data.Migrations
                     b.ToTable("ReprocessorSupportingInformation");
                 });
 
-            modelBuilder.Entity("EPR.Accreditation.API.Common.Data.DataModels.SaveAndComeBack", b =>
+            modelBuilder.Entity("EPR.Accreditation.API.Common.Data.DataModels.SaveAndContinue", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -2316,14 +2318,15 @@ namespace EPR.Accreditation.API.Common.Data.Migrations
                         .HasColumnType("nvarchar(30)");
 
                     b.Property<string>("Parameters")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(60)
+                        .HasColumnType("nvarchar(60)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("AccreditationId")
                         .IsUnique();
 
-                    b.ToTable("SaveAndComeBack");
+                    b.ToTable("SaveAndContinue");
                 });
 
             modelBuilder.Entity("EPR.Accreditation.API.Common.Data.DataModels.Site", b =>
@@ -2678,7 +2681,7 @@ namespace EPR.Accreditation.API.Common.Data.Migrations
                     b.Navigation("ReprocessorSupportingInformationType");
                 });
 
-            modelBuilder.Entity("EPR.Accreditation.API.Common.Data.DataModels.SaveAndComeBack", b =>
+            modelBuilder.Entity("EPR.Accreditation.API.Common.Data.DataModels.SaveAndContinue", b =>
                 {
                     b.HasOne("EPR.Accreditation.API.Common.Data.DataModels.Accreditation", "Accreditation")
                         .WithMany()

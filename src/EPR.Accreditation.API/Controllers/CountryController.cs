@@ -6,11 +6,11 @@ namespace EPR.Accreditation.API.Controllers
 {
     [ApiController]
     [Route("/api/[controller]")]
-    public class Country : ControllerBase
+    public class CountryController : ControllerBase
     {
         public readonly ICountryService _countryService;
 
-        public Country(ICountryService countryService)
+        public CountryController(ICountryService countryService)
         {
             _countryService = countryService ?? throw new ArgumentNullException(nameof(countryService));
         }

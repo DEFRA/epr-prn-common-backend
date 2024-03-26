@@ -1,7 +1,7 @@
-﻿using DTO = EPR.Accreditation.API.Common.Dtos;
+﻿using EPR.Accreditation.API.Common.Dtos;
 using EPR.Accreditation.API.Repositories.Interfaces;
 using EPR.Accreditation.API.Services.Interfaces;
-using EPR.Accreditation.API.Common.Dtos;
+using DTO = EPR.Accreditation.API.Common.Dtos;
 
 namespace EPR.Accreditation.API.Services
 {
@@ -19,9 +19,6 @@ namespace EPR.Accreditation.API.Services
             // perform checks against the accreditation
             if (accreditation == null)
                 throw new ArgumentNullException(nameof(accreditation));
-
-            if (accreditation.ExternalId != null)
-                throw new Exception("New accreditation cannot have a populated External Id");
 
             // set the external id for the accreditation
             accreditation.ExternalId = Guid.NewGuid();
@@ -77,11 +74,11 @@ namespace EPR.Accreditation.API.Services
         }
 
         public async Task DeleteFile(
-            Guid externalId, 
+            Guid externalId,
             Guid fileId)
         {
             await _repository.DeleteFile(
-                externalId, 
+                externalId,
                 fileId);
         }
 
@@ -91,11 +88,11 @@ namespace EPR.Accreditation.API.Services
         }
 
         public async Task AddFile(
-            Guid id, 
+            Guid externalId,
             DTO.FileUpload fileUpload)
         {
             await _repository.AddFile(
-                id, fileUpload);
+                externalId, fileUpload);
         }
 
         public async Task UpdateMaterail(
@@ -140,6 +137,65 @@ namespace EPR.Accreditation.API.Services
                 siteExternalId,
                 overseasSiteExternalId,
                 materialExternalId);
+        }
+
+        public async Task<DTO.Site> GetSite(
+            Guid externalId,
+            Guid siteExternalId)
+        {
+            return await _repository.GetSite(externalId, siteExternalId);
+        }
+
+        public async Task<Guid> CreateSite(
+            Guid externalId,
+            Site site)
+        {
+            return await _repository.CreateSite(
+                externalId,
+                site);
+        }
+
+        public Task UpdateSite(Site site)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<DTO.OverseasReprocessingSite> GetOverseasSite(
+            Guid externalId,
+            Guid siteExternalId)
+        {
+            return await _repository.GetOverseasSite(externalId, siteExternalId);
+        }
+
+        public async Task<Guid> CreateOverseasSite(
+            Guid externalId,
+            OverseasReprocessingSite overseasReprocessingSite)
+        {
+            return await _repository.CreateOverseasSite(
+                externalId,
+                overseasReprocessingSite);
+        }
+
+        public Task UpdateOverseasSite(OverseasReprocessingSite overseasReprocessingSite)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<SaveAndComeBack> GetSaveAndComeBack(Guid externalId)
+        {
+            return await _repository.GetSaveAndComeBack(externalId);
+        }
+
+        public async Task DeleteSaveAndComeBack(Guid externalId)
+        {
+            await _repository.DeleteSaveAndComeBack(externalId);
+        }
+
+        public async Task AddSaveAndComeBack(
+            Guid externalId,
+            DTO.SaveAndComeBack saveAndComeBack)
+        {
+            await _repository.AddSaveAndComeBack(externalId, saveAndComeBack);
         }
     }
 }

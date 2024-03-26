@@ -1,5 +1,6 @@
 ﻿using EPR.Accreditation.API.Common.Data.DataModels;
 using EPR.Accreditation.API.Common.Data.DataModels.Lookups;
+using EPR.Accreditation.API.Common.Data.SeedData;
 using EPR.Accreditation.SeedData;
 using Microsoft.EntityFrameworkCore;
 
@@ -62,6 +63,10 @@ namespace EPR.Accreditation.API.Common.Data
                 .HasIndex(d => d.AccreditationMaterialId)
                 .IsUnique();
 
+            modelBuilder.Entity<SaveAndComeBack>()
+                .HasIndex(s => s.AccreditationId)
+                .IsUnique();
+
             // seed the lookup tables
             InitialDataSeed.Seed(modelBuilder);
 
@@ -78,7 +83,7 @@ namespace EPR.Accreditation.API.Common.Data
 
         public virtual DbSet<ExemptionReference> ExemptionReference { get; set; }
 
-        public virtual DbSet<FileUpload> FileUpload  { get; set; }
+        public virtual DbSet<FileUpload> FileUpload { get; set; }
 
         public virtual DbSet<MaterialReprocessorDetails> MaterialReprocessorDetails { get; set; }
 
@@ -97,6 +102,10 @@ namespace EPR.Accreditation.API.Common.Data
         public virtual DbSet<WastePermit> WastePermit { get; set; }
 
         public virtual DbSet<WasteCode> WasteCodes { get; set; }
+
+        public virtual DbSet<SaveAndComeBack> SaveAndComeBack { get; set; }
+
+        public virtual DbSet<Material> Material { get; set; }
 
         #region Lookups
         public virtual DbSet<AccreditationStatus> AccreditationStatus { get; set; }
