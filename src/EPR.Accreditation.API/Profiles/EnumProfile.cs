@@ -17,6 +17,7 @@ namespace EPR.Accreditation.API.Profiles
             CreateMap<Data.TaskName, DTO.TaskName>();
             CreateMap<Data.TaskStatus, DTO.TaskStatus>();
             CreateMap<Data.WasteCodeType, DTO.WasteCodeType>();
+            CreateMap<Data.OverseasPersonType, DTO.OverseasPersonType>();
         }
     }
 }

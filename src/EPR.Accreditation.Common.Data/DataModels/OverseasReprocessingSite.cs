@@ -28,7 +28,7 @@ namespace EPR.Accreditation.API.Common.Data.DataModels
 
         public virtual OverseasAddress OverseasAddress { get; set; }
 
-        public virtual OverseasAgent OverseasAgent { get; set; }
+        public virtual OverseasContactPerson OverseasContactPerson { get; set; }
 
         // this will probably go in the end - Exporters are unlikely to need WastePermit info.
         // but for now, it is in the journey
