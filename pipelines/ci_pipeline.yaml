@@ -11,6 +11,11 @@ parameters:
   displayName: Run tests
   type: boolean
   default: true
+- name: runOWASPScan
+  displayName: Run OWASPScan
+  type: boolean
+  default: false
+
 - name: sonarqubeInstance
   displayName: 'Select SonarQube for v9.9 or SonarQubeLatest for 10.4'
   type: string
@@ -52,6 +57,7 @@ extends:
     sonarQubeProjectKey: ${{ variables.sonarQubeProjectKey }}
     sonarQubeProjectName: ${{ variables.sonarQubeProjectName }}
     runTests: ${{ parameters.runTests }}
+    o	runOWASPScan: ${{ parameters.runOWASPScan }}
     azureSubscription: $(azureSubscription)
     acrAzureContainerRegistryName: $(acr.azureContainerRegistryName)
     acrRepositoryName: $(acr.repositoryName)
