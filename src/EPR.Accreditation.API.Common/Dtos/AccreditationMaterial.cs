@@ -4,8 +4,6 @@ namespace EPR.Accreditation.API.Common.Dtos
 {
     public class AccreditationMaterial
     {
-        public int Id { get; set; }
-
         public Guid ExternalId { get; set; }
 
         public int MaterialId { get; set; }
