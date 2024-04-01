@@ -270,7 +270,7 @@ namespace EPR.Accreditation.API.Repositories
                     .Accreditation
                     .Include(a => a.Site.AccreditationMaterials)
                         .ThenInclude(am => am.Material)
-                    .Include(a => a.Site.AccreditationMaterials)                        
+                    .Include(a => a.Site.AccreditationMaterials)
                         .ThenInclude(am => am.MaterialReprocessorDetails)
                     .Where(a =>
                         a.ExternalId == externalId &&
@@ -459,6 +459,19 @@ namespace EPR.Accreditation.API.Repositories
                 .Material
                 .Select(m => _mapper.Map<DTO.Material>(m))
                 .ToListAsync();
+        }
+
+        public async Task<ExemptionReference> GetExemptionReference(int? siteId)
+        {
+            var exemptionReference = await _accreditationContext
+                .ExemptionReference
+                .Where(e => e.SiteId == siteId)
+                .Select(e =>
+                    _mapper.Map<DTO.ExemptionReference>(e)
+                )
+                .SingleOrDefaultAsync();
+
+            return exemptionReference;
         }
     }
 }

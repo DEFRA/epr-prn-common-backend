@@ -1,6 +1,5 @@
 ﻿using EPR.Accreditation.API.Common.Data.DataModels;
 using EPR.Accreditation.API.Common.Data.DataModels.Lookups;
-using EPR.Accreditation.API.Common.Data.SeedData;
 using EPR.Accreditation.SeedData;
 using Microsoft.EntityFrameworkCore;
 
@@ -65,6 +64,10 @@ namespace EPR.Accreditation.API.Common.Data
 
             modelBuilder.Entity<SaveAndComeBack>()
                 .HasIndex(s => s.AccreditationId)
+                .IsUnique();
+
+            modelBuilder.Entity<ExemptionReference>()
+                .HasIndex(s => s.SiteId)
                 .IsUnique();
 
             // seed the lookup tables

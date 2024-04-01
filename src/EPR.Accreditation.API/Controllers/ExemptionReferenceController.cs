@@ -17,8 +17,11 @@ namespace EPR.Accreditation.API.Controllers
 
         [HttpGet]
         [ProducesResponseType(typeof(DTO.ExemptionReference), 200)]
-        public async Task<IActionResult> GetExemptionReference(Guid id)
+        public async Task<IActionResult> GetExemptionReference(int? id)
         {
+            if (id == null)
+                return NotFound();
+
             var exemptionReference = await _accreditationService.GetExemptionReference(id);
 
             if (exemptionReference == null)
