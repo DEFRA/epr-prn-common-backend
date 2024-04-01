@@ -473,5 +473,27 @@ namespace EPR.Accreditation.API.Repositories
 
             return exemptionReference;
         }
+
+        public async Task AddExemptionReference(int externalSiteId, ExemptionReference exemptionReference)
+        {
+            var entity = _mapper.Map<Data.ExemptionReference>(exemptionReference);
+
+            // get the id of the site that this exemption reference record is related to
+            var siteId =
+                await _accreditationContext
+                .Site
+                .Where(site => site.Id == externalSiteId)
+                .Select(site => site.Id)
+                .SingleOrDefaultAsync();
+
+            // TODO need to handle an entity that's not found better here
+            if (siteId == default)
+                throw new NotFoundException($"Exemption reference record does not exist for Site ID: {externalSiteId}");
+
+            entity.SiteId = siteId;
+
+            await _accreditationContext.ExemptionReference.AddAsync(entity);
+            await _accreditationContext.SaveChangesAsync();
+        }
     }
 }

@@ -77,6 +77,9 @@ namespace EPR.Accreditation.API.Profiles
 
             CreateMap<Data.Material, DTO.Material>()
                 .ReverseMap();
+
+            CreateMap<Data.ExemptionReference, DTO.ExemptionReference>()
+                .ReverseMap();
         }
     }
 }
