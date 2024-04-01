@@ -71,6 +71,6 @@ namespace EPR.Accreditation.API.Services.Interfaces
             Guid externalId,
             DTO.SaveAndComeBack saveAndContinue);
 
-        Task<DTO.ExemptionReference> GetExemptionReference(int? siteId);
+        Task<DTO.ExemptionReference> GetExemptionReference(int siteId);
     }
 }

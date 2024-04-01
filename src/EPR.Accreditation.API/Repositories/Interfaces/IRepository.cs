@@ -75,6 +75,6 @@ namespace EPR.Accreditation.API.Repositories.Interfaces
 
         Task<IEnumerable<DTO.Material>> GetMaterials();
 
-        Task<DTO.ExemptionReference> GetExemptionReference(int? id);
+        Task<DTO.ExemptionReference> GetExemptionReference(int id);
     }
 }

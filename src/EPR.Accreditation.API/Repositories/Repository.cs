@@ -461,7 +461,7 @@ namespace EPR.Accreditation.API.Repositories
                 .ToListAsync();
         }
 
-        public async Task<ExemptionReference> GetExemptionReference(int? siteId)
+        public async Task<ExemptionReference> GetExemptionReference(int siteId)
         {
             var exemptionReference = await _accreditationContext
                 .ExemptionReference

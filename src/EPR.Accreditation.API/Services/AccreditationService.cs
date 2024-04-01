@@ -198,7 +198,7 @@ namespace EPR.Accreditation.API.Services
             await _repository.AddSaveAndComeBack(externalId, saveAndComeBack);
         }
 
-        public async Task<ExemptionReference> GetExemptionReference(int? siteId)
+        public async Task<ExemptionReference> GetExemptionReference(int siteId)
         {
             return await _repository.GetExemptionReference(siteId);
         }
