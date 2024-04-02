@@ -505,8 +505,8 @@ namespace EPR.Accreditation.API.Repositories
         }
 
         public async Task UpdateExemptionReference(
-            int siteId,
             int exemptionReferenceId,
+            int siteId,
             DTO.ExemptionReference exemptionReference)
         {
             var entity = default(Data.ExemptionReference);
