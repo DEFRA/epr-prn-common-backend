@@ -474,7 +474,7 @@ namespace EPR.Accreditation.API.Repositories
             return exemptionReference;
         }
 
-        public async Task AddExemptionReference(
+        public async Task<int> AddExemptionReference(
             int externalSiteId,
             ExemptionReference exemptionReference)
         {
@@ -490,12 +490,14 @@ namespace EPR.Accreditation.API.Repositories
 
             // TODO need to handle an entity that's not found better here
             if (siteId == default)
-                throw new NotFoundException($"Exemption reference record does not exist for Site ID: {externalSiteId}");
+                throw new NotFoundException($"Site record does not exist for Site ID: {externalSiteId}");
 
             entity.SiteId = siteId;
 
             await _accreditationContext.ExemptionReference.AddAsync(entity);
             await _accreditationContext.SaveChangesAsync();
+
+            return entity.Id;
         }
 
         public async Task UpdateExemptionReference(

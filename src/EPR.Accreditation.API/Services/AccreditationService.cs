@@ -203,11 +203,13 @@ namespace EPR.Accreditation.API.Services
             return await _repository.GetExemptionReference(siteId);
         }
 
-        public async Task AddExemptionReference(
+        public async Task<int> CreateExemptionReference(
             int siteId,
             DTO.ExemptionReference exemptionReference)
         {
-            await _repository.AddExemptionReference(siteId, exemptionReference);
+            return await _repository.AddExemptionReference(
+                siteId,
+                exemptionReference);
         }
 
         public async Task UpdateExemptionReference(

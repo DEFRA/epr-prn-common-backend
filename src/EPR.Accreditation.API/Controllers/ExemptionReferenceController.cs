@@ -5,7 +5,7 @@ using DTO = EPR.Accreditation.API.Common.Dtos;
 namespace EPR.Accreditation.API.Controllers
 {
     [ApiController]
-    [Route("api/Site/{siteId}/ExemptionReference")]
+    [Route("api/Site/{siteId}")]
     public class ExemptionReferenceController : ControllerBase
     {
         protected readonly IAccreditationService _accreditationService;
@@ -27,19 +27,19 @@ namespace EPR.Accreditation.API.Controllers
             return Ok(exemptionReference);
         }
 
-        [HttpPost("{exemptionReferenceId}")]
-        public async Task<IActionResult> AddExemptionReference(
-            int exemptionReferenceId,
+        [HttpPost]
+        public async Task<IActionResult> CreateExemptionReference(
+            int siteId,
             [FromBody] DTO.ExemptionReference exemptionReference)
         {
             if (exemptionReference == null)
-                return BadRequest("No exemption reference supplied");
+                return BadRequest();
 
-            await _accreditationService.AddExemptionReference(
-                exemptionReferenceId,
+            var exemptionReferenceId = await _accreditationService.CreateExemptionReference(
+                siteId,
                 exemptionReference);
 
-            return Ok();
+            return Ok(exemptionReferenceId);
         }
 
         [HttpPut("{exemptionReferenceId}")]

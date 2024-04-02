@@ -77,7 +77,7 @@ namespace EPR.Accreditation.API.Repositories.Interfaces
 
         Task<DTO.ExemptionReference> GetExemptionReference(int id);
 
-        Task AddExemptionReference(
+        Task<int> AddExemptionReference(
             int siteId,
             DTO.ExemptionReference exemptionReference);
 
