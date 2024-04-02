@@ -5,7 +5,7 @@ using DTO = EPR.Accreditation.API.Common.Dtos;
 namespace EPR.Accreditation.API.Controllers
 {
     [ApiController]
-    [Route("/api/[controller]/{id}")]
+    [Route("api/Site/{siteId}/ExemptionReference")]
     public class ExemptionReferenceController : ControllerBase
     {
         protected readonly IAccreditationService _accreditationService;
@@ -15,11 +15,11 @@ namespace EPR.Accreditation.API.Controllers
             _accreditationService = accreditationService ?? throw new ArgumentNullException(nameof(accreditationService));
         }
 
-        [HttpGet]
+        [HttpGet("{exemptionReferenceId}")]
         [ProducesResponseType(typeof(DTO.ExemptionReference), 200)]
-        public async Task<IActionResult> GetExemptionReference(int id)
+        public async Task<IActionResult> GetExemptionReference(int exemptionReferenceId)
         {
-            var exemptionReference = await _accreditationService.GetExemptionReference(id);
+            var exemptionReference = await _accreditationService.GetExemptionReference(exemptionReferenceId);
 
             if (exemptionReference == null)
                 return NotFound();
@@ -27,22 +27,22 @@ namespace EPR.Accreditation.API.Controllers
             return Ok(exemptionReference);
         }
 
-        [HttpPost]
+        [HttpPost("{exemptionReferenceId}")]
         public async Task<IActionResult> AddExemptionReference(
-            int id,
+            int exemptionReferenceId,
             [FromBody] DTO.ExemptionReference exemptionReference)
         {
             if (exemptionReference == null)
                 return BadRequest("No exemption reference supplied");
 
             await _accreditationService.AddExemptionReference(
-                id,
+                exemptionReferenceId,
                 exemptionReference);
 
             return Ok();
         }
 
-        [HttpPut]
+        [HttpPut("{exemptionReferenceId}")]
         public async Task<IActionResult> UpdateExemptionReference(
             int siteId,
             int exemptionReferenceId,
