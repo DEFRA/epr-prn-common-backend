@@ -41,5 +41,19 @@ namespace EPR.Accreditation.API.Controllers
 
             return Ok();
         }
+
+        [HttpPut]
+        public async Task<IActionResult> UpdateExemptionReference(
+            int siteId,
+            int exemptionReferenceId,
+            [FromBody] DTO.ExemptionReference exemptionReference)
+        {
+            await _accreditationService.UpdateExemptionReference(
+                siteId,
+                exemptionReferenceId,
+                exemptionReference);
+
+            return Ok();
+        }
     }
 }

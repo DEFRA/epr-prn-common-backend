@@ -474,7 +474,9 @@ namespace EPR.Accreditation.API.Repositories
             return exemptionReference;
         }
 
-        public async Task AddExemptionReference(int externalSiteId, ExemptionReference exemptionReference)
+        public async Task AddExemptionReference(
+            int externalSiteId,
+            ExemptionReference exemptionReference)
         {
             var entity = _mapper.Map<Data.ExemptionReference>(exemptionReference);
 
@@ -493,6 +495,30 @@ namespace EPR.Accreditation.API.Repositories
             entity.SiteId = siteId;
 
             await _accreditationContext.ExemptionReference.AddAsync(entity);
+            await _accreditationContext.SaveChangesAsync();
+        }
+
+        public async Task UpdateExemptionReference(
+            int siteId,
+            int exemptionReferenceId,
+            DTO.ExemptionReference exemptionReference)
+        {
+            var entity = default(Data.ExemptionReference);
+
+            entity = await _accreditationContext
+                .ExemptionReference
+                .Where(er =>
+                er.Id == exemptionReferenceId &&
+                er.SiteId == siteId)
+                .Select(er => er)
+                .SingleOrDefaultAsync();
+
+            if (entity == null)
+                throw new NotFoundException($"Exemption reference not found for Site ID: {siteId}, Exemption reference ID: {exemptionReferenceId}");
+
+            // copy the updates over to the db entity
+            entity = _mapper.Map(exemptionReference, entity);
+
             await _accreditationContext.SaveChangesAsync();
         }
     }

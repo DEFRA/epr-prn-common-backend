@@ -80,5 +80,10 @@ namespace EPR.Accreditation.API.Repositories.Interfaces
         Task AddExemptionReference(
             int siteId,
             DTO.ExemptionReference exemptionReference);
+
+        Task UpdateExemptionReference(
+            int siteId,
+            int exemptionReferenceId,
+            DTO.ExemptionReference exemptionReference);
     }
 }
