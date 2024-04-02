@@ -461,11 +461,15 @@ namespace EPR.Accreditation.API.Repositories
                 .ToListAsync();
         }
 
-        public async Task<ExemptionReference> GetExemptionReference(int siteId)
+        public async Task<ExemptionReference> GetExemptionReference(
+            int exemptionReferenceId,
+            int siteId)
         {
             var exemptionReference = await _accreditationContext
                 .ExemptionReference
-                .Where(e => e.SiteId == siteId)
+                .Where(e =>
+                e.Id == exemptionReferenceId &&
+                e.SiteId == siteId)
                 .Select(e =>
                     _mapper.Map<DTO.ExemptionReference>(e)
                 )

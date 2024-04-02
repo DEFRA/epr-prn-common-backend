@@ -15,11 +15,15 @@ namespace EPR.Accreditation.API.Controllers
             _accreditationService = accreditationService ?? throw new ArgumentNullException(nameof(accreditationService));
         }
 
-        [HttpGet("{exemptionReferenceId}")]
+        [HttpGet("ExemptionReference/{exemptionReferenceId}")]
         [ProducesResponseType(typeof(DTO.ExemptionReference), 200)]
-        public async Task<IActionResult> GetExemptionReference(int exemptionReferenceId)
+        public async Task<IActionResult> GetExemptionReference(
+            int exemptionReferenceId,
+            int siteId)
         {
-            var exemptionReference = await _accreditationService.GetExemptionReference(exemptionReferenceId);
+            var exemptionReference = await _accreditationService.GetExemptionReference(
+                exemptionReferenceId,
+                siteId);
 
             if (exemptionReference == null)
                 return NotFound();
@@ -42,7 +46,7 @@ namespace EPR.Accreditation.API.Controllers
             return Ok(exemptionReferenceId);
         }
 
-        [HttpPut("{exemptionReferenceId}")]
+        [HttpPut("ExemptionReference/{exemptionReferenceId}")]
         public async Task<IActionResult> UpdateExemptionReference(
             int siteId,
             int exemptionReferenceId,
