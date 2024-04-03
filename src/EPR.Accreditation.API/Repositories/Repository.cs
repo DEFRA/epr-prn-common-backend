@@ -198,64 +198,7 @@ namespace EPR.Accreditation.API.Repositories
             await _accreditationContext.SaveChangesAsync();
         }
 
-        public async Task UpdateMaterial(
-            Guid externalId,
-            Guid? siteExternalId,
-            Guid? overseasSiteExternalId,
-            Guid materialExternalId,
-            DTO.AccreditationMaterial material)
-        {
-            var entity = default(Data.AccreditationMaterial);
-
-            if (siteExternalId != null)
-            {
-                // get  the site based material
-                entity = await _accreditationContext
-                    .Accreditation
-                    .Where(a =>
-                        a.ExternalId == externalId &&
-                        a.Site != null &&
-                        a.Site.ExternalId == siteExternalId &&
-                        a.Site.AccreditationMaterials.Any(m => m.ExternalId == materialExternalId))
-                    .Select(a =>
-                        a.Site.AccreditationMaterials.FirstOrDefault(m => m.ExternalId == materialExternalId))
-                    .SingleOrDefaultAsync();
-            }
-            else
-            {
-                // get the overseas site based material
-                entity = await _accreditationContext
-                    .AccreditationMaterial
-                    .Where(m =>
-                        m.ExternalId == materialExternalId &&
-                        m.OverseasReprocessingSite != null &&
-                        m.OverseasReprocessingSite.ExternalId == overseasSiteExternalId &&
-                        m.OverseasReprocessingSite.Accreditation.ExternalId == externalId)
-                    .Select(m => m)
-                    .SingleOrDefaultAsync();
-            }
-
-            // TODO need to handle an entity that's not found better here
-            if (entity == null)
-                throw new NotFoundException($"Material not found for External ID: {externalId}, Site External ID: {siteExternalId}, Overseas External ID: {overseasSiteExternalId}, Material External ID: {materialExternalId}");
-
-            // copy the updates over to the db entity
-            entity = _mapper.Map(material, entity);
-
-            if (entity.WasteCodes != null)
-            {
-                foreach (var wasteCode in entity.WasteCodes)
-                {
-                    if (wasteCode.Id == default)
-                        _accreditationContext.WasteCodes.Add(wasteCode);
-                }
-            }
-
-            // save the changes
-            await _accreditationContext.SaveChangesAsync();
-        }
-
-        public async Task<DTO.AccreditationMaterial> GetMaterial(
+        protected async Task<Data.AccreditationMaterial> GetAccreditationSiteMaterial(
             Guid externalId,
             Guid? siteExternalId,
             Guid? overseasSiteExternalId,
@@ -297,7 +240,47 @@ namespace EPR.Accreditation.API.Repositories
                     .SingleOrDefaultAsync();
             }
 
+            return entity;
+        }
+
+        public async Task<DTO.AccreditationMaterial> GetMaterial(
+            Guid externalId,
+            Guid? siteExternalId,
+            Guid? overseasSiteExternalId,
+            Guid materialExternalId)
+        {
+            var entity = await GetAccreditationSiteMaterial(externalId, siteExternalId, overseasSiteExternalId, materialExternalId);
+
             return _mapper.Map<DTO.AccreditationMaterial>(entity);
+        }
+
+        public async Task UpdateMaterial(
+            Guid externalId,
+            Guid? siteExternalId,
+            Guid? overseasSiteExternalId,
+            Guid materialExternalId,
+            DTO.AccreditationMaterial material)
+        {
+            var entity = await GetAccreditationSiteMaterial(externalId, siteExternalId, overseasSiteExternalId, materialExternalId);
+
+            // TODO need to handle an entity that's not found better here
+            if (entity == null)
+                throw new NotFoundException($"Material not found for External ID: {externalId}, Site External ID: {siteExternalId}, Overseas External ID: {overseasSiteExternalId}, Material External ID: {materialExternalId}");
+
+            // copy the updates over to the db entity
+            entity = _mapper.Map(material, entity);
+
+            if (entity.WasteCodes != null)
+            {
+                foreach (var wasteCode in entity.WasteCodes)
+                {
+                    if (wasteCode.Id == default)
+                        _accreditationContext.WasteCodes.Add(wasteCode);
+                }
+            }
+
+            // save the changes
+            await _accreditationContext.SaveChangesAsync();
         }
 
         public async Task<IEnumerable<Country>> GetCountries()
