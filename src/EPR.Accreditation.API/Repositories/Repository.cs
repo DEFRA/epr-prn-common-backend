@@ -298,6 +298,8 @@ namespace EPR.Accreditation.API.Repositories
         {
             return await _accreditationContext
                 .Accreditation
+                .Include(a => a.Site)
+                    .ThenInclude(s => s.ExemptionReferences)
                 .Where(a => a.ExternalId == id && a.Site.ExternalId == siteExternalId)
                 .Select(a => _mapper.Map<DTO.Site>(a.Site))
                 .SingleOrDefaultAsync();
