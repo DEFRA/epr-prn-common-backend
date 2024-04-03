@@ -338,6 +338,8 @@ namespace EPR.Accreditation.API.Repositories
         {
             var entity = await _accreditationContext
                 .Accreditation
+                .Include(a => a.Site)
+                    .ThenInclude(s => s.ExemptionReferences)
                 .Where(a =>
                     a.ExternalId == externalId &&
                     a.Site.ExternalId == externalSiteId)
@@ -346,6 +348,9 @@ namespace EPR.Accreditation.API.Repositories
 
             if (entity == null)
                 throw new NotFoundException();
+
+            if (entity.ExemptionReferences.Any())
+                entity.ExemptionReferences.Clear();
 
             entity = _mapper.Map(site, entity);
 
