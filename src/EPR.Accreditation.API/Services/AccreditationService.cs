@@ -155,9 +155,15 @@ namespace EPR.Accreditation.API.Services
                 site);
         }
 
-        public Task UpdateSite(Site site)
+        public async Task UpdateSite(
+            Guid externalId,
+            Guid siteExternalId,
+            DTO.Site site)
         {
-            throw new NotImplementedException();
+            await _repository.UpdateSite(
+                externalId,
+                siteExternalId,
+                site);
         }
 
         public async Task<DTO.OverseasReprocessingSite> GetOverseasSite(

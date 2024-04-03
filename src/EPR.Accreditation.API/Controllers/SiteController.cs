@@ -36,7 +36,7 @@ namespace EPR.Accreditation.API.Controllers
         [ProducesResponseType(typeof(Guid), 200)]
         public async Task<IActionResult> CreateSite(
             Guid externalId,
-            DTO.Site site)
+            [FromBody] DTO.Site site)
         {
             var siteExternalId = await _accreditationService.CreateSite(
                 externalId,
@@ -45,10 +45,16 @@ namespace EPR.Accreditation.API.Controllers
             return Ok(siteExternalId);
         }
 
-        [HttpPut]
-        public async Task<IActionResult> UpdateSite(DTO.Site site)
+        [HttpPut("{siteExternalId}")]
+        public async Task<IActionResult> UpdateSite(
+            Guid externalId,
+            Guid siteExternalId,
+            [FromBody] DTO.Site site)
         {
-            await _accreditationService.UpdateSite(site);
+            await _accreditationService.UpdateSite(
+                externalId,
+                siteExternalId,
+                site);
 
             return Ok();
         }

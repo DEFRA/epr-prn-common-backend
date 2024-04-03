@@ -331,9 +331,25 @@ namespace EPR.Accreditation.API.Repositories
             return entity.ExternalId;
         }
 
-        public Task UpdateSite(Site site)
+        public async Task UpdateSite(
+            Guid externalId,
+            Guid externalSiteId,
+            Site site)
         {
-            throw new NotImplementedException();
+            var entity = await _accreditationContext
+                .Accreditation
+                .Where(a =>
+                    a.ExternalId == externalId &&
+                    a.Site.ExternalId == externalSiteId)
+                .Select(a => a.Site)
+                .SingleOrDefaultAsync();
+
+            if (entity == null)
+                throw new NotFoundException();
+
+            entity = _mapper.Map(site, entity);
+
+            await _accreditationContext.SaveChangesAsync();
         }
 
         public async Task<DTO.OverseasReprocessingSite> GetOverseasSite(

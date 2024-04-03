@@ -18,6 +18,8 @@
 
         public Guid OrganisationId { get; set; }
 
-        public IEnumerable<SiteAuthority> SiteAuthorties { get; set;}
+        public IEnumerable<SiteAuthority> SiteAuthorties { get; set; }
+
+        public IEnumerable<ExemptionReference> ExemptionReferences { get; set; }
     }
 }

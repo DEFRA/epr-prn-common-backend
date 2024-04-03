@@ -32,6 +32,8 @@ namespace EPR.Accreditation.API.Profiles
             CreateMap<Data.Site, DTO.Site>()
                 .MapOnlyNonDefault()
                 .ReverseMap()
+                .ForMember(d => d.Accreditations, o => o.Ignore())
+                .ForMember(d => d.AccreditationMaterials, o => o.Ignore())
                 .MapOnlyNonDefault();
 
             CreateMap<Data.SiteAuthority, DTO.SiteAuthority>()
@@ -76,6 +78,9 @@ namespace EPR.Accreditation.API.Profiles
                 .ReverseMap();
 
             CreateMap<Data.Material, DTO.Material>()
+                .ReverseMap();
+
+            CreateMap<Data.ExemptionReference, DTO.ExemptionReference>()
                 .ReverseMap();
         }
     }
