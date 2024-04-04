@@ -195,68 +195,31 @@ namespace EPR.Accreditation.API.Repositories
             await _accreditationContext.SaveChangesAsync();
         }
 
-        protected async Task<Data.AccreditationMaterial> GetAccreditationSiteMaterial(
-            Guid externalId,
-            Guid? overseasSiteExternalId,
-            Guid materialExternalId)
-        {
-            var entity = default(Data.AccreditationMaterial);
-
-            if (overseasSiteExternalId == null)
-            {
-                // get the site based material
-                entity = await _accreditationContext
-                    .Accreditation
-                    .Include(a => a.Site.AccreditationMaterials)
-                        .ThenInclude(am => am.Material)
-                    .Include(a => a.Site.AccreditationMaterials)
-                        .ThenInclude(am => am.MaterialReprocessorDetails)
-                    .Where(a =>
-                        a.ExternalId == externalId &&
-                        a.Site != null &&
-                        a.Site.AccreditationMaterials.Any(m => m.ExternalId == materialExternalId))
-                    .Select(a =>
-                        a.Site.AccreditationMaterials.FirstOrDefault(m => m.ExternalId == materialExternalId))
-                    .SingleOrDefaultAsync();
-            }
-            else
-            {
-                // get the overseas site based material
-                entity = await _accreditationContext
-                    .AccreditationMaterial
-                    .Include(am => am.Material)
-                    .Include(am => am.MaterialReprocessorDetails)
-                    .Where(m =>
-                        m.ExternalId == materialExternalId &&
-                        m.OverseasReprocessingSite != null &&
-                        m.OverseasReprocessingSite.ExternalId == overseasSiteExternalId &&
-                        m.OverseasReprocessingSite.Accreditation.ExternalId == externalId)
-                    .Select(m => m)
-                    .SingleOrDefaultAsync();
-            }
-
-            return entity;
-        }
+        
 
         public async Task<DTO.AccreditationMaterial> GetMaterial(
             Guid externalId,
-            Guid? siteExternalId,
             Guid? overseasSiteExternalId,
             Guid materialExternalId)
         {
-            var entity = await GetAccreditationSiteMaterial(externalId, siteExternalId, overseasSiteExternalId, materialExternalId);
+            var entity = await GetAccreditationSiteMaterial(
+                externalId, 
+                overseasSiteExternalId, 
+                materialExternalId);
 
             return _mapper.Map<DTO.AccreditationMaterial>(entity);
         }
 
         public async Task UpdateMaterial(
             Guid externalId,
-            Guid? siteExternalId,
             Guid? overseasSiteExternalId,
             Guid materialExternalId,
             DTO.AccreditationMaterial material)
         {
-            var entity = await GetAccreditationSiteMaterial(externalId, siteExternalId, overseasSiteExternalId, materialExternalId);
+            var entity = await GetAccreditationSiteMaterial(
+                externalId, 
+                overseasSiteExternalId, 
+                materialExternalId);
 
             // TODO need to handle an entity that's not found better here
             if (entity == null)
@@ -276,49 +239,6 @@ namespace EPR.Accreditation.API.Repositories
 
             // save the changes
             await _accreditationContext.SaveChangesAsync();
-        }
-
-        public async Task<DTO.AccreditationMaterial> GetMaterial(
-            Guid externalId,
-            Guid? overseasSiteExternalId,
-            Guid materialExternalId)
-        {
-            var entity = default(Data.AccreditationMaterial);
-
-            if (overseasSiteExternalId == null)
-            {
-                // get the site based material
-                entity = await _accreditationContext
-                    .Accreditation
-                    .Include(a => a.Site.AccreditationMaterials)
-                        .ThenInclude(am => am.Material)
-                    .Include(a => a.Site.AccreditationMaterials)                        
-                        .ThenInclude(am => am.MaterialReprocessorDetails)
-                    .Where(a =>
-                        a.ExternalId == externalId &&
-                    a.Site != null &&
-                        a.Site.AccreditationMaterials.Any(m => m.ExternalId == materialExternalId))
-                    .Select(a =>
-                        a.Site.AccreditationMaterials.FirstOrDefault(m => m.ExternalId == materialExternalId))
-                    .SingleOrDefaultAsync();
-            }
-            else
-            {
-                // get the overseas site based material
-                entity = await _accreditationContext
-                    .AccreditationMaterial
-                    .Include(am => am.Material)
-                    .Include(am => am.MaterialReprocessorDetails)
-                    .Where(m =>
-                        m.ExternalId == materialExternalId &&
-                        m.OverseasReprocessingSite != null &&
-                        m.OverseasReprocessingSite.ExternalId == overseasSiteExternalId &&
-                        m.OverseasReprocessingSite.Accreditation.ExternalId == externalId)
-                    .Select(m => m)
-                    .SingleOrDefaultAsync();
-            }
-
-            return _mapper.Map<DTO.AccreditationMaterial>(entity);
         }
 
         public async Task<IEnumerable<DTO.Country>> GetCountries()
@@ -493,6 +413,49 @@ namespace EPR.Accreditation.API.Repositories
                 .Material
                 .Select(m => _mapper.Map<DTO.Material>(m))
                 .ToListAsync();
+        }
+
+        protected async Task<Data.AccreditationMaterial> GetAccreditationSiteMaterial(
+            Guid externalId,
+            Guid? overseasSiteExternalId,
+            Guid materialExternalId)
+        {
+            var entity = default(Data.AccreditationMaterial);
+
+            if (overseasSiteExternalId == null)
+            {
+                // get the site based material
+                entity = await _accreditationContext
+                    .Accreditation
+                    .Include(a => a.Site.AccreditationMaterials)
+                        .ThenInclude(am => am.Material)
+                    .Include(a => a.Site.AccreditationMaterials)
+                        .ThenInclude(am => am.MaterialReprocessorDetails)
+                    .Where(a =>
+                        a.ExternalId == externalId &&
+                        a.Site != null &&
+                        a.Site.AccreditationMaterials.Any(m => m.ExternalId == materialExternalId))
+                    .Select(a =>
+                        a.Site.AccreditationMaterials.FirstOrDefault(m => m.ExternalId == materialExternalId))
+                    .SingleOrDefaultAsync();
+            }
+            else
+            {
+                // get the overseas site based material
+                entity = await _accreditationContext
+                    .AccreditationMaterial
+                    .Include(am => am.Material)
+                    .Include(am => am.MaterialReprocessorDetails)
+                    .Where(m =>
+                        m.ExternalId == materialExternalId &&
+                        m.OverseasReprocessingSite != null &&
+                        m.OverseasReprocessingSite.ExternalId == overseasSiteExternalId &&
+                        m.OverseasReprocessingSite.Accreditation.ExternalId == externalId)
+                    .Select(m => m)
+                    .SingleOrDefaultAsync();
+            }
+
+            return entity;
         }
     }
 }
