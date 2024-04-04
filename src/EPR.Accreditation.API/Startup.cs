@@ -48,7 +48,8 @@ namespace EPR.Accreditation.API
             }
 
             app.UseMiddleware<ExceptionHandlingMiddleware>();
-            app.UseHttpsRedirection();
+            // Temporarily disable to troubleshoot deployment issues
+            // app.UseHttpsRedirection();
             app.UseRouting();
             app.UseAuthorization();
             app.UseEndpoints(endpoints =>

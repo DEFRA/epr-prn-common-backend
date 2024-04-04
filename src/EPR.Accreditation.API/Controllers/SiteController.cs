@@ -16,15 +16,13 @@ namespace EPR.Accreditation.API.Controllers
             _accreditationService = accreditationService ?? throw new ArgumentNullException(nameof(accreditationService));
         }
 
-        [HttpGet("{siteExternalId}")]
+        [HttpGet]
         [ProducesResponseType(typeof(DTO.Site), 200)]
         public async Task<IActionResult> GetSite(
-            Guid externalId,
-            Guid siteExternalId)
+            Guid externalId)
         {
             var site = await _accreditationService.GetSite(
-                externalId,
-                siteExternalId);
+                externalId);
 
             if (site == null)
                 return NotFound();
@@ -45,15 +43,13 @@ namespace EPR.Accreditation.API.Controllers
             return Ok(siteExternalId);
         }
 
-        [HttpPut("{siteExternalId}")]
+        [HttpPut]
         public async Task<IActionResult> UpdateSite(
             Guid externalId,
-            Guid siteExternalId,
             [FromBody] DTO.Site site)
         {
             await _accreditationService.UpdateSite(
                 externalId,
-                siteExternalId,
                 site);
 
             return Ok();
