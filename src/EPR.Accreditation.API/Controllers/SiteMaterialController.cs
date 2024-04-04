@@ -5,7 +5,7 @@ using DTO = EPR.Accreditation.API.Common.Dtos;
 namespace EPR.Accreditation.API.Controllers
 {
     [ApiController]
-    [Route("api/Accreditation/{externalId}/Site/{siteExternalId}/Material")]
+    [Route("api/Accreditation/{externalId}/Site/Material")]
     public class SiteMaterialController : ControllerBase
     {
         protected readonly IAccreditationService _accreditationService;
@@ -20,12 +20,10 @@ namespace EPR.Accreditation.API.Controllers
         [ProducesResponseType(typeof(DTO.AccreditationMaterial), 200)]
         public async Task<IActionResult> GetSiteMaterial(
             Guid externalId,
-            Guid siteExternalId,
             Guid materialExternalId)
         {
             var material = await _accreditationService.GetMaterial(
                 externalId,
-                siteExternalId,
                 null,
                 materialExternalId);
 
@@ -38,7 +36,6 @@ namespace EPR.Accreditation.API.Controllers
         [HttpPost()]
         public async Task<IActionResult> CreateSiteMaterial(
             Guid externalId,
-            Guid siteExternalId,
             [FromBody] DTO.AccreditationMaterial accreditationMaterial)
         {
             if (accreditationMaterial == null)
@@ -46,7 +43,6 @@ namespace EPR.Accreditation.API.Controllers
 
             var materialId = await _accreditationService.CreateMaterial(
                 externalId,
-                siteExternalId,
                 null,
                 accreditationMaterial);
 
@@ -56,13 +52,11 @@ namespace EPR.Accreditation.API.Controllers
         [HttpPut("{materialExternalId}")]
         public async Task<IActionResult> UpdateSiteMaterial(
             Guid externalId,
-            Guid siteExternalId,
             Guid materialExternalId,
             [FromBody] DTO.AccreditationMaterial accreditationMaterial)
         {
             await _accreditationService.UpdateMaterail(
                 externalId,
-                siteExternalId,
                 null,
                 materialExternalId,
                 accreditationMaterial);

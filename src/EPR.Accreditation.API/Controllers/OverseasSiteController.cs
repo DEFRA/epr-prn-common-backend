@@ -16,13 +16,13 @@ namespace EPR.Accreditation.API.Controllers
             _accreditationService = accreditationService ?? throw new ArgumentNullException(nameof(accreditationService));
         }
 
-        [HttpGet]
+        [HttpGet("{siteExternalId}")]
         [ProducesResponseType(typeof(DTO.OverseasReprocessingSite), 200)]
         public async Task<IActionResult> GetSite(
             Guid externalId,
             Guid siteExternalId)
         {
-            var site = await _accreditationService.GetSite(
+            var site = await _accreditationService.GetOverseasSite(
                 externalId,
                 siteExternalId);
 
