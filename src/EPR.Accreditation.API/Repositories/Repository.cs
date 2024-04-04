@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using EPR.Accreditation.API.Common.Data;
+using EPR.Accreditation.API.Common.Data.DataModels;
 using EPR.Accreditation.API.Common.Data.Enums;
-using EPR.Accreditation.API.Common.Dtos;
 using EPR.Accreditation.API.Helpers;
 using EPR.Accreditation.API.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -34,20 +34,18 @@ namespace EPR.Accreditation.API.Repositories
 
         public async Task<Guid> AddAccreditationMaterial(
             Guid externalId,
-            Guid? siteId,
             Guid? overseasSiteId,
             DTO.AccreditationMaterial material)
         {
             var entity = _mapper.Map<Data.AccreditationMaterial>(material);
 
-            if (siteId != null)
+            if (overseasSiteId == null)
             {
                 entity.SiteId = await _accreditationContext
                     .Accreditation
                     .Where(a =>
                         a.ExternalId == externalId &&
-                        a.SiteId.HasValue &&
-                        a.Site.ExternalId == siteId)
+                        a.SiteId.HasValue)
                     .Select(a => a.SiteId)
                     .SingleAsync();
             }
@@ -60,7 +58,6 @@ namespace EPR.Accreditation.API.Repositories
                         o.ExternalId == overseasSiteId)
                     .Select(o => o.Id)
                     .SingleAsync();
-
             }
 
             await _accreditationContext.AccreditationMaterial.AddAsync(entity);
@@ -200,14 +197,13 @@ namespace EPR.Accreditation.API.Repositories
 
         public async Task UpdateMaterial(
             Guid externalId,
-            Guid? siteExternalId,
             Guid? overseasSiteExternalId,
             Guid materialExternalId,
             DTO.AccreditationMaterial material)
         {
             var entity = default(Data.AccreditationMaterial);
 
-            if (siteExternalId != null)
+            if (overseasSiteExternalId == null)
             {
                 // get  the site based material
                 entity = await _accreditationContext
@@ -215,7 +211,6 @@ namespace EPR.Accreditation.API.Repositories
                     .Where(a =>
                         a.ExternalId == externalId &&
                         a.Site != null &&
-                        a.Site.ExternalId == siteExternalId &&
                         a.Site.AccreditationMaterials.Any(m => m.ExternalId == materialExternalId))
                     .Select(a =>
                         a.Site.AccreditationMaterials.FirstOrDefault(m => m.ExternalId == materialExternalId))
@@ -237,7 +232,7 @@ namespace EPR.Accreditation.API.Repositories
 
             // TODO need to handle an entity that's not found better here
             if (entity == null)
-                throw new NotFoundException($"Material not found for External ID: {externalId}, Site External ID: {siteExternalId}, Overseas External ID: {overseasSiteExternalId}, Material External ID: {materialExternalId}");
+                throw new NotFoundException($"Material not found for External ID: {externalId}, Overseas External ID: {overseasSiteExternalId}, Material External ID: {materialExternalId}");
 
             // copy the updates over to the db entity
             entity = _mapper.Map(material, entity);
@@ -257,13 +252,12 @@ namespace EPR.Accreditation.API.Repositories
 
         public async Task<DTO.AccreditationMaterial> GetMaterial(
             Guid externalId,
-            Guid? siteExternalId,
             Guid? overseasSiteExternalId,
             Guid materialExternalId)
         {
             var entity = default(Data.AccreditationMaterial);
 
-            if (siteExternalId != null)
+            if (overseasSiteExternalId == null)
             {
                 // get the site based material
                 entity = await _accreditationContext
@@ -275,7 +269,6 @@ namespace EPR.Accreditation.API.Repositories
                     .Where(a =>
                         a.ExternalId == externalId &&
                     a.Site != null &&
-                        a.Site.ExternalId == siteExternalId &&
                         a.Site.AccreditationMaterials.Any(m => m.ExternalId == materialExternalId))
                     .Select(a =>
                         a.Site.AccreditationMaterials.FirstOrDefault(m => m.ExternalId == materialExternalId))
@@ -300,7 +293,7 @@ namespace EPR.Accreditation.API.Repositories
             return _mapper.Map<DTO.AccreditationMaterial>(entity);
         }
 
-        public async Task<IEnumerable<Country>> GetCountries()
+        public async Task<IEnumerable<DTO.Country>> GetCountries()
         {
             return await _accreditationContext
                 .Country
@@ -309,20 +302,19 @@ namespace EPR.Accreditation.API.Repositories
                 .ToListAsync();
         }
 
-        public async Task<Site> GetSite(
-            Guid id,
-            Guid siteExternalId)
+        public async Task<DTO.Site> GetSite(
+            Guid id)
         {
             return await _accreditationContext
                 .Accreditation
-                .Where(a => a.ExternalId == id && a.Site.ExternalId == siteExternalId)
+                .Where(a => a.ExternalId == id && a.SiteId.HasValue)
                 .Select(a => _mapper.Map<DTO.Site>(a.Site))
                 .SingleOrDefaultAsync();
         }
 
         public async Task<Guid> CreateSite(
             Guid externalId,
-            Site site)
+            DTO.Site site)
         {
             // add the site id to the accreditation record
             var accreditionEntity = await _accreditationContext
@@ -348,9 +340,23 @@ namespace EPR.Accreditation.API.Repositories
             return entity.ExternalId;
         }
 
-        public Task UpdateSite(Site site)
+        public async Task UpdateSite(
+            Guid externalId,
+            DTO.Site site)
         {
-            throw new NotImplementedException();
+            // get site from the accreditation
+            var entity = await _accreditationContext
+                .Accreditation
+                .Where(a => a.ExternalId == externalId
+                    && a.SiteId.HasValue)
+                .Select(a => a.Site)
+                .SingleOrDefaultAsync();
+
+            if (entity == null)
+                throw new NotFoundException();
+
+            entity = _mapper.Map(site, entity);
+            await _accreditationContext.SaveChangesAsync();
         }
 
         public async Task<DTO.OverseasReprocessingSite> GetOverseasSite(
@@ -392,7 +398,7 @@ namespace EPR.Accreditation.API.Repositories
             throw new NotImplementedException();
         }
 
-        public async Task<SaveAndComeBack> GetSaveAndComeBack(Guid externalId)
+        public async Task<DTO.SaveAndComeBack> GetSaveAndComeBack(Guid externalId)
         {
             var saveAndContinue = await _accreditationContext
                 .SaveAndComeBack
@@ -453,7 +459,7 @@ namespace EPR.Accreditation.API.Repositories
             await _accreditationContext.SaveChangesAsync();
         }
 
-        public async Task<IEnumerable<Material>> GetMaterials()
+        public async Task<IEnumerable<DTO.Material>> GetMaterials()
         {
             return await _accreditationContext
                 .Material

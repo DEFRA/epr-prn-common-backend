@@ -24,7 +24,6 @@ namespace EPR.Accreditation.API.Controllers
         {
             var material = await _accreditationService.GetMaterial(
                 externalId,
-                null,
                 overseasSiteExternalId,
                 materialExternalId);
 
@@ -45,7 +44,6 @@ namespace EPR.Accreditation.API.Controllers
 
             var materialId = await _accreditationService.CreateMaterial(
                 externalId,
-                null,
                 overseasExternalSiteId,
                 accreditationMaterial);
 
@@ -64,7 +62,6 @@ namespace EPR.Accreditation.API.Controllers
 
             await _accreditationService.UpdateMaterail(
                 externalId,
-                null,
                 siteExternalId,
                 materialExternalId,
                 accreditationMaterial);
