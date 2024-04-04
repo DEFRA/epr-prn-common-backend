@@ -31,10 +31,16 @@ namespace EPR.Accreditation.API.Profiles
 
             CreateMap<Data.Site, DTO.Site>()
                 .MapOnlyNonDefault()
-                .ReverseMap()
-                .ForMember(d => d.Accreditations, o => o.Ignore())
-                .ForMember(d => d.AccreditationMaterials, o => o.Ignore())
-                .MapOnlyNonDefault();
+                //.ReverseMap()
+                //.ForMember(d => d.Accreditations, o => o.Ignore())
+                //.ForMember(d => d.AccreditationMaterials, o => o.Ignore())
+                .ForMember(d => d.ExemptionReferences, opt => opt.MapFrom(src => src.ExemptionReferences.Select(er => er.Reference)));
+
+            //CreateMap<DTO.Site, Data.Site>()
+            //    .MapOnlyNonDefault()
+            //    .ForMember(d => d.Accreditations, o => o.Ignore())
+            //    .ForMember(d => d.AccreditationMaterials, o => o.Ignore())
+            //    .ForMember(d => d.ExemptionReferences, opt => opt.MapFrom(src => src.ExemptionReferences.Select(er => er.Reference)));
 
             CreateMap<Data.SiteAuthority, DTO.SiteAuthority>()
                 .MapOnlyNonDefault()
