@@ -5,7 +5,7 @@ using DTO = EPR.Accreditation.API.Common.Dtos;
 namespace EPR.Accreditation.API.Controllers
 {
     [ApiController]
-    [Route("api/Accreditation/{externalId}")]
+    [Route("/api/[controller]")]
     public class AccreditationController : ControllerBase
     {
         protected readonly IAccreditationService _accreditationService;
