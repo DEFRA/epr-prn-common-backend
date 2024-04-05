@@ -20,9 +20,6 @@ namespace EPR.Accreditation.API.Services
             if (accreditation == null)
                 throw new ArgumentNullException(nameof(accreditation));
 
-            if (accreditation.ExternalId != null)
-                throw new Exception("New accreditation cannot have a populated External Id");
-
             // set the external id for the accreditation
             accreditation.ExternalId = Guid.NewGuid();
             accreditation.AccreditationStatusId = Common.Enums.AccreditationStatus.Started;
@@ -32,23 +29,13 @@ namespace EPR.Accreditation.API.Services
 
         public async Task<Guid> CreateMaterial(
             Guid externalId,
-            Guid? siteId,
             Guid? overseasSiteId,
             AccreditationMaterial accreditationMaterial)
         {
-            if (siteId == null &&
-                overseasSiteId == null)
-                throw new ArgumentNullException("Neither site Id or overseas site Id have been provided");
-
-            if (siteId != null &&
-                overseasSiteId != null)
-                throw new ArgumentException("Cannopt add a material with both a site Id and overseas site Id");
-
             accreditationMaterial.ExternalId = Guid.NewGuid();
 
             return await _repository.AddAccreditationMaterial(
                 externalId,
-                siteId,
                 overseasSiteId,
                 accreditationMaterial);
         }
@@ -100,22 +87,12 @@ namespace EPR.Accreditation.API.Services
 
         public async Task UpdateMaterail(
             Guid externalId,
-            Guid? siteId,
             Guid? overseasSiteId,
             Guid materialExternalId,
             AccreditationMaterial accreditationMaterial)
         {
-            if (siteId == null &&
-                overseasSiteId == null)
-                throw new ArgumentNullException("Neither site Id or overseas site Id have been provided");
-
-            if (siteId != null &&
-                overseasSiteId != null)
-                throw new ArgumentException("Cannopt add a material with both a site Id and overseas site Id");
-
             await _repository.UpdateMaterial(
                 externalId,
-                siteId,
                 overseasSiteId,
                 materialExternalId,
                 accreditationMaterial);
@@ -123,30 +100,19 @@ namespace EPR.Accreditation.API.Services
 
         public async Task<AccreditationMaterial> GetMaterial(
             Guid externalId,
-            Guid? siteExternalId,
             Guid? overseasSiteExternalId,
             Guid materialExternalId)
         {
-            if (siteExternalId == null &&
-                overseasSiteExternalId == null)
-                throw new ArgumentNullException("Neither site Id or overseas site Id have been provided");
-
-            if (siteExternalId != null &&
-                overseasSiteExternalId != null)
-                throw new ArgumentException("Cannopt add a material with both a site Id and overseas site Id");
-
             return await _repository.GetMaterial(
                 externalId,
-                siteExternalId,
                 overseasSiteExternalId,
                 materialExternalId);
         }
 
         public async Task<DTO.Site> GetSite(
-            Guid externalId,
-            Guid siteExternalId)
+            Guid externalId)
         {
-            return await _repository.GetSite(externalId, siteExternalId);
+            return await _repository.GetSite(externalId);
         }
 
         public async Task<Guid> CreateSite(
@@ -158,16 +124,20 @@ namespace EPR.Accreditation.API.Services
                 site);
         }
 
-        public Task UpdateSite(Site site)
+        public async Task UpdateSite(
+            Guid externalId,
+            Site site)
         {
-            throw new NotImplementedException();
+            await _repository.UpdateSite(
+                externalId,
+                site);
         }
 
         public async Task<DTO.OverseasReprocessingSite> GetOverseasSite(
             Guid externalId,
-            Guid siteExternalId)
+            Guid overseasSiteExternalId)
         {
-            return await _repository.GetOverseasSite(externalId, siteExternalId);
+            return await _repository.GetOverseasSite(externalId, overseasSiteExternalId);
         }
 
         public async Task<Guid> CreateOverseasSite(

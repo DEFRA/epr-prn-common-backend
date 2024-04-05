@@ -19,7 +19,7 @@ namespace EPR.Accreditation.API.Profiles
                 .ReverseMap()
                 .MapOnlyNonDefault();
 
-            CreateMap<Data.OverseasAgent, DTO.OverseasAgent>()
+            CreateMap<Data.OverseasContactPerson, DTO.OverseasContactPerson>()
                 .MapOnlyNonDefault()
                 .ReverseMap()
                 .MapOnlyNonDefault();
@@ -59,6 +59,11 @@ namespace EPR.Accreditation.API.Profiles
                 .ReverseMap()
                 .MapOnlyNonDefault();
 
+            CreateMap<Data.MaterialReprocessorDetails, DTO.MaterialReprocessorDetails>()
+                .MapOnlyNonDefault()
+                .ReverseMap()
+                .MapOnlyNonDefault();
+
             CreateMap<Data.WastePermit, DTO.WastePermit>()
                 .MapOnlyNonDefault()
                 .ReverseMap()
@@ -70,7 +75,7 @@ namespace EPR.Accreditation.API.Profiles
             CreateMap<Data.Lookups.Country, DTO.Country>()
                 .ReverseMap();
 
-            CreateMap<Data.Material, DTO.Material>() 
+            CreateMap<Data.Material, DTO.Material>()
                 .ReverseMap();
         }
     }

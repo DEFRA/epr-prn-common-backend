@@ -8,7 +8,6 @@ namespace EPR.Accreditation.API.Services.Interfaces
 
         Task<Guid> CreateMaterial(
             Guid externalId,
-            Guid? siteId,
             Guid? overseasSiteId,
             DTO.AccreditationMaterial accreditationMaterial);
 
@@ -22,7 +21,6 @@ namespace EPR.Accreditation.API.Services.Interfaces
 
         Task UpdateMaterail(
             Guid externalId,
-            Guid? siteId,
             Guid? overseasSiteId,
             Guid materialExternalId,
             DTO.AccreditationMaterial accreditationMaterial);
@@ -39,23 +37,23 @@ namespace EPR.Accreditation.API.Services.Interfaces
 
         Task<DTO.AccreditationMaterial> GetMaterial(
             Guid externalId,
-            Guid? siteExternalId,
             Guid? overseasSiteExternalId,
             Guid materialExternalId);
 
         Task<DTO.Site> GetSite(
-            Guid externalId,
-            Guid siteExternalId);
+            Guid externalId);
 
         Task<Guid> CreateSite(
             Guid externalId,
             DTO.Site site);
 
-        Task UpdateSite(DTO.Site site);
+        Task UpdateSite(
+            Guid externalId,
+            DTO.Site site);
 
         Task<DTO.OverseasReprocessingSite> GetOverseasSite(
             Guid externalId,
-            Guid siteExternalId);
+            Guid overseasSiteExternalId);
 
         Task<Guid> CreateOverseasSite(
             Guid externalId,

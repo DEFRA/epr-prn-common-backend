@@ -47,11 +47,11 @@ namespace EPR.Accreditation.API.Common.Data
                 .HasIndex(w => w.OverseasAddressId)
                 .IsUnique();
 
-            modelBuilder.Entity<OverseasAgent>()
+            modelBuilder.Entity<OverseasContactPerson>()
                 .HasIndex(oa => oa.OverseasAddressId)
                 .IsUnique();
 
-            modelBuilder.Entity<OverseasAgent>()
+            modelBuilder.Entity<OverseasContactPerson>()
                 .HasIndex(oa => oa.OverseasReprocessingSiteId)
                 .IsUnique();
 
@@ -89,7 +89,7 @@ namespace EPR.Accreditation.API.Common.Data
 
         public virtual DbSet<OverseasAddress> OverseasAddress { get; set; }
 
-        public virtual DbSet<OverseasAgent> OverseasAgent { get; set; }
+        public virtual DbSet<OverseasContactPerson> OverseasContactPerson { get; set; }
 
         public virtual DbSet<OverseasReprocessingSite> OverseasReprocessingSite { get; set; }
 
@@ -125,6 +125,8 @@ namespace EPR.Accreditation.API.Common.Data
         public virtual DbSet<DataModels.Lookups.TaskStatus> TaskStatus { get; set; }
 
         public virtual DbSet<WasteCodeType> WasteCodeType { get; set; }
+
+        public virtual DbSet<OverseasPersonType> OverseasPersonType { get; set; }
         #endregion
     }
 }
