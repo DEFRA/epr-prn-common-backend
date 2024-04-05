@@ -8,8 +8,6 @@ namespace EPR.Accreditation.API.Common.Data.DataModels
         [ForeignKey("AccreditationMaterial")]
         public int AccreditationMaterialId { get; set; }
 
-        public bool WasteLastYear { get; set; }
-
         [Column(TypeName = "decimal(10,3)")]
         public decimal? UkPackagingWaste { get; set; }
 
