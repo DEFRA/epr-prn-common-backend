@@ -14,7 +14,7 @@ namespace EPR.Accreditation.API.Repositories
     {
         protected IMapper _mapper;
         protected readonly AccreditationContext _accreditationContext;
-
+        
         public Repository(
             IMapper mapper,
             AccreditationContext accreditationContext)
@@ -305,14 +305,13 @@ namespace EPR.Accreditation.API.Repositories
                 .ToListAsync();
         }
 
-        public async Task<Site> GetSite(
-            Guid id,
-            Guid siteExternalId)
+        public async Task<DTO.Site> GetSite(
+            Guid id)
         {
-            return await _accreditationContext
-                .Accreditation
-                .Where(a => a.ExternalId == id && a.Site.ExternalId == siteExternalId)
-                .Select(a => _mapper.Map<DTO.Site>(a.Site))
+           return await _accreditationContext
+                .Site
+                .Where(a => a.ExternalId == id)
+                .Select(a => _mapper.Map<DTO.Site>(a))
                 .SingleOrDefaultAsync();
         }
 
