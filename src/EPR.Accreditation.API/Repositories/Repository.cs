@@ -220,9 +220,17 @@ namespace EPR.Accreditation.API.Repositories
                 overseasSiteExternalId,
                 materialExternalId);
 
-            // TODO need to handle an entity that's not found better here
             if (entity == null)
                 throw new NotFoundException($"Material not found for External ID: {externalId}, Overseas External ID: {overseasSiteExternalId}, Material External ID: {materialExternalId}");
+
+            // waste last year has changed, therefore MaterialReprocessorDetails
+            // are invalid and should be cleared down
+            if (entity.WasteLastYear !=
+                material.WasteLastYear &&
+                entity.MaterialReprocessorDetails != null)
+            {
+                _accreditationContext.Remove(entity.MaterialReprocessorDetails);
+            }
 
             // copy the updates over to the db entity
             entity = _mapper.Map(material, entity);
