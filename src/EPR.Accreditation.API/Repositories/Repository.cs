@@ -301,15 +301,15 @@ namespace EPR.Accreditation.API.Repositories
                 .Where(a => a.ExternalId == externalId
                     && a.SiteId.HasValue)
                 .Select(a => a.Site)
-                .SingleOrDefaultAsync();
-
-            if (entity == null)
-                throw new NotFoundException();
+                .SingleOrDefaultAsync()
+                ?? throw new NotFoundException();
 
             if (entity.ExemptionReferences.Any())
                 entity.ExemptionReferences.Clear();
 
-            entity = _mapper.Map(site, entity);
+            foreach (var reference in site.ExemptionReferences.Where(x => !string.IsNullOrWhiteSpace(x)))
+                entity.ExemptionReferences.Add(new Data.ExemptionReference { Reference = reference });
+
             await _accreditationContext.SaveChangesAsync();
         }
 
