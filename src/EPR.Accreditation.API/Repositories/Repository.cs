@@ -439,6 +439,7 @@ namespace EPR.Accreditation.API.Repositories
                         .ThenInclude(am => am.Material)
                     .Include(a => a.Site.AccreditationMaterials)
                         .ThenInclude(am => am.MaterialReprocessorDetails)
+                        .ThenInclude(mrp => mrp.ReprocessorSupportingInformation)
                     .Where(a =>
                         a.ExternalId == externalId &&
                         a.Site != null &&
@@ -454,6 +455,7 @@ namespace EPR.Accreditation.API.Repositories
                     .AccreditationMaterial
                     .Include(am => am.Material)
                     .Include(am => am.MaterialReprocessorDetails)
+                        .ThenInclude(mrp => mrp.ReprocessorSupportingInformation)
                     .Where(m =>
                         m.ExternalId == materialExternalId &&
                         m.OverseasReprocessingSite != null &&
