@@ -73,6 +73,11 @@ namespace EPR.Accreditation.API.Profiles
                 .ReverseMap()
                 .MapOnlyNonDefault();
 
+            CreateMap<Data.ReprocessorSupportingInformation, DTO.ReprocessorSupportingInformation>()
+                .MapOnlyNonDefault()
+                .ReverseMap()
+                .MapOnlyNonDefault();
+
             CreateMap<Data.WastePermit, DTO.WastePermit>()
                 .MapOnlyNonDefault()
                 .ReverseMap()

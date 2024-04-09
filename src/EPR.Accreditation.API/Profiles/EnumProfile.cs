@@ -8,16 +8,17 @@ namespace EPR.Accreditation.API.Profiles
     {
         public EnumProfile()
         {
-            CreateMap<Data.AccreditationStatus, DTO.AccreditationStatus>();
-            CreateMap<Data.FileUploadStatus, DTO.FileUploadStatus>();
-            CreateMap<Data.FileUploadType, DTO.FileUploadType>();
-            CreateMap<Data.OperatorType, DTO.OperatorType>();
-            CreateMap<Data.ReprocessorSupportingInformationType, DTO.ReprocessorSupportingInformationType>();
-            CreateMap<Data.SupportingInformationType, DTO.SupportingInformationType>();
-            CreateMap<Data.TaskName, DTO.TaskName>();
-            CreateMap<Data.TaskStatus, DTO.TaskStatus>();
-            CreateMap<Data.WasteCodeType, DTO.WasteCodeType>();
-            CreateMap<Data.OverseasPersonType, DTO.OverseasPersonType>();
+            CreateMap<Data.AccreditationStatus, DTO.AccreditationStatus>().ReverseMap();
+            CreateMap<Data.FileUploadStatus, DTO.FileUploadStatus>().ReverseMap();
+            CreateMap<Data.FileUploadType, DTO.FileUploadType>().ReverseMap();
+            CreateMap<Data.OperatorType, DTO.OperatorType>().ReverseMap();
+            CreateMap<Data.ReprocessorSupportingInformationType, DTO.ReprocessorSupportingInformationType>().ReverseMap();
+            CreateMap<Data.SupportingInformationType, DTO.SupportingInformationType>().ReverseMap();
+            CreateMap<Data.TaskName, DTO.TaskName>().ReverseMap();
+            CreateMap<Data.TaskStatus, DTO.TaskStatus>().ReverseMap();
+            CreateMap<Data.WasteCodeType, DTO.WasteCodeType>().ReverseMap();
+            CreateMap<Data.OverseasPersonType, DTO.OverseasPersonType>().ReverseMap();
+
         }
     }
 }
