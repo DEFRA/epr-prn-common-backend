@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using EPR.Accreditation.API.Common.Data;
-using EPR.Accreditation.API.Common.Data.DataModels;
 using EPR.Accreditation.API.Common.Data.Enums;
 using EPR.Accreditation.API.Helpers;
 using EPR.Accreditation.API.Repositories.Interfaces;
@@ -195,7 +194,7 @@ namespace EPR.Accreditation.API.Repositories
             await _accreditationContext.SaveChangesAsync();
         }
 
-        
+
 
         public async Task<DTO.AccreditationMaterial> GetMaterial(
             Guid externalId,
@@ -203,8 +202,8 @@ namespace EPR.Accreditation.API.Repositories
             Guid materialExternalId)
         {
             var entity = await GetAccreditationSiteMaterial(
-                externalId, 
-                overseasSiteExternalId, 
+                externalId,
+                overseasSiteExternalId,
                 materialExternalId);
 
             return _mapper.Map<DTO.AccreditationMaterial>(entity);
@@ -217,8 +216,8 @@ namespace EPR.Accreditation.API.Repositories
             DTO.AccreditationMaterial material)
         {
             var entity = await GetAccreditationSiteMaterial(
-                externalId, 
-                overseasSiteExternalId, 
+                externalId,
+                overseasSiteExternalId,
                 materialExternalId);
 
             if (entity == null)
@@ -263,6 +262,8 @@ namespace EPR.Accreditation.API.Repositories
         {
             return await _accreditationContext
                 .Accreditation
+                .Include(a => a.Site)
+                    .ThenInclude(s => s.ExemptionReferences)
                 .Where(a => a.ExternalId == id && a.SiteId.HasValue)
                 .Select(a => _mapper.Map<DTO.Site>(a.Site))
                 .SingleOrDefaultAsync();
@@ -303,15 +304,20 @@ namespace EPR.Accreditation.API.Repositories
             // get site from the accreditation
             var entity = await _accreditationContext
                 .Accreditation
+                .Include(a => a.Site)
+                    .ThenInclude(s => s.ExemptionReferences)
                 .Where(a => a.ExternalId == externalId
                     && a.SiteId.HasValue)
                 .Select(a => a.Site)
-                .SingleOrDefaultAsync();
+                .SingleOrDefaultAsync()
+                ?? throw new NotFoundException();
 
-            if (entity == null)
-                throw new NotFoundException();
+            if (entity.ExemptionReferences.Any())
+                entity.ExemptionReferences.Clear();
 
-            entity = _mapper.Map(site, entity);
+            foreach (var reference in site.ExemptionReferences.Where(x => !string.IsNullOrWhiteSpace(x)))
+                entity.ExemptionReferences.Add(new Data.ExemptionReference { Reference = reference });
+
             await _accreditationContext.SaveChangesAsync();
         }
 

@@ -50,7 +50,7 @@ namespace EPR.Accreditation.API.Repositories.Interfaces
             DTO.Site site);
 
         Task UpdateSite(
-            Guid externalId, 
+            Guid externalId,
             DTO.Site site);
 
         Task<DTO.OverseasReprocessingSite> GetOverseasSite(
