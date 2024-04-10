@@ -2,6 +2,7 @@
 using EPR.Accreditation.API.Common.Data;
 using EPR.Accreditation.API.Common.Data.DataModels;
 using EPR.Accreditation.API.Common.Data.Enums;
+using EPR.Accreditation.API.Common.Dtos;
 using EPR.Accreditation.API.Helpers;
 using EPR.Accreditation.API.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -464,6 +465,20 @@ namespace EPR.Accreditation.API.Repositories
             }
 
             return entity;
+        }
+
+        public async Task SetOverseasAgent(Guid externalId, bool? hasOverseasAgent)
+        {
+            var entity = await _accreditationContext
+                .Accreditation
+                .Where(a => a.ExternalId == externalId)
+                .FirstOrDefaultAsync();
+
+            if (entity == null)
+                throw new NotFoundException($"Accreditation record not found for External ID: {externalId}");
+
+            entity.HasOverseasAgent = hasOverseasAgent;
+            await _accreditationContext.SaveChangesAsync();
         }
     }
 }

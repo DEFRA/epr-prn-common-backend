@@ -33,6 +33,8 @@ namespace EPR.Accreditation.API.Common.Data.DataModels
 
         public DateTime? UpdatedOn { get; set; }
 
+        public bool? HasOverseasAgent { get; set; }
+
         #region Navigation properties
         public virtual Site Site { get; set; }
 

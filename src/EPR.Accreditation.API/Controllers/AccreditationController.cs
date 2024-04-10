@@ -98,6 +98,18 @@ namespace EPR.Accreditation.API.Controllers
 
             return Ok();
         }
+
+        [HttpPut("{id}/HasOverseasAgent")]
+        public async Task<IActionResult> HasOverseasAgent(
+            Guid id,
+            [FromBody] bool? hasOverseasAgent)
+        {
+            await _accreditationService.SetOverseasAgent(
+                id,
+                hasOverseasAgent);
+
+            return Ok();
+        }
         #endregion
 
         #region Delete methods
