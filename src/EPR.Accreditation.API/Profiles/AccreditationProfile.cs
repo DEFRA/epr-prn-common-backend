@@ -2,6 +2,7 @@
 using EPR.Accreditation.API.Helpers;
 using Data = EPR.Accreditation.API.Common.Data.DataModels;
 using DTO = EPR.Accreditation.API.Common.Dtos;
+using Enums = EPR.Accreditation.API.Common.Data.Enums;
 
 namespace EPR.Accreditation.API.Profiles
 {
@@ -71,7 +72,46 @@ namespace EPR.Accreditation.API.Profiles
             CreateMap<Data.MaterialReprocessorDetails, DTO.MaterialReprocessorDetails>()
                 .MapOnlyNonDefault()
                 .ReverseMap()
-                .MapOnlyNonDefault();
+                .MapOnlyNonDefault()
+                .ForMember(d => 
+                    d.ReprocessorSupportingInformation, o => 
+                    o.MapFrom((s, d, m, context) =>
+                    {
+                        // if there is source no list, return the original destination list
+                        if (s.ReprocessorSupportingInformation.FirstOrDefault() == null)
+                            return d.ReprocessorSupportingInformation;
+
+                        // get distinct types from the incoming list.
+                        var sourceTypes = context.Mapper.Map<List<Enums.ReprocessorSupportingInformationType>>
+                            (s.ReprocessorSupportingInformation
+                            .Select(r => r.ReprocessorSupportingInformationTypeId)
+                            .Distinct()
+                            .ToList());
+
+                        var list = new List<Data.ReprocessorSupportingInformation>();
+
+                        // loop through the source types and add the items that are not the source
+                        // type to the list and then add the source list
+                        // this ensures that if there is only one incoming type we get a list that
+                        // comprises both types still and the data gets updated as we would expect
+                        foreach (var sourceType in sourceTypes)
+                        {
+                            if (d.ReprocessorSupportingInformation != null)
+                            {
+                                // get the source type - we are
+                                list.AddRange(d
+                                    .ReprocessorSupportingInformation
+                                    .Where(d =>
+                                        d.ReprocessorSupportingInformationTypeId != sourceType)
+                                    .ToList());
+                            }
+
+                            list.AddRange(context.Mapper.Map<List<Data.ReprocessorSupportingInformation>>(
+                                s.ReprocessorSupportingInformation.Where(r => 
+                                    r.ReprocessorSupportingInformationTypeId == context.Mapper.Map<Common.Enums.ReprocessorSupportingInformationType>(sourceType))));
+                        }
+                        return list;
+                    }));
 
             CreateMap<Data.ReprocessorSupportingInformation, DTO.ReprocessorSupportingInformation>()
                 .MapOnlyNonDefault()
