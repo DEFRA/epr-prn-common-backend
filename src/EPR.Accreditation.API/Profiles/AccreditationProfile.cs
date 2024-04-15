@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using EPR.Accreditation.API.Helpers;
+using EPR.Accreditation.API.Helpers.Comparers;
 using System.Linq;
 using Data = EPR.Accreditation.API.Common.Data.DataModels;
 using DTO = EPR.Accreditation.API.Common.Dtos;
@@ -9,6 +10,9 @@ namespace EPR.Accreditation.API.Profiles
 {
     public class AccreditationProfile : Profile
     {
+        private readonly ReprocessorSupportingInformationDtoComparer _reprocessorSupportingInformationDtoComparer = new ReprocessorSupportingInformationDtoComparer();
+        private ReprocessorSupportingInformationDataComparer _reprocessorSupportingInformationDataComparer = new ReprocessorSupportingInformationDataComparer();
+
         public AccreditationProfile()
         {
             CreateMap<Data.Accreditation, DTO.Accreditation>()
@@ -77,70 +81,57 @@ namespace EPR.Accreditation.API.Profiles
                 .ForMember(d =>
                     // Mapping of ReprocessorSupportingInformation is complicated as it needs to represent two versions of data,
                     // and an update may just include one set of data. So we need to carefully manage the merging of the data
+                    // We also want to ensure that as little updates to the database occur, so need to ensure we work with
+                    // the destination list
                     d.ReprocessorSupportingInformation, o =>
                     o.MapFrom((s, d, m, context) =>
                     {
-                        if (s.ReprocessorSupportingInformation == null)
-                            // for some reason just returning the original list results in the assigning of an empty list
-                            // re-mapping (presumably creating a new version) fixes this issue
-                            return context.Mapper.Map<IList<Data.ReprocessorSupportingInformation>>(d.ReprocessorSupportingInformation);
-
-                        // if there is source no list, return the original destination list
-                        if (s.ReprocessorSupportingInformation.FirstOrDefault() == null)
-                            return context.Mapper.Map<IList<Data.ReprocessorSupportingInformation>>(d.ReprocessorSupportingInformation);
-
-                        var dtoAsDataList = s.ReprocessorSupportingInformation
-                            .Select(
-                                dm =>
-                                    new Data.ReprocessorSupportingInformation
-                                    {
-                                        Type = dm.Type,
-                                        Tonnes = dm.Tonnes 
-                                    });
-
-                        // if incoming and original list are the same, just return the original list
-                        if (d.ReprocessorSupportingInformation.SequenceEqual(
-                            dtoAsDataList, 
-                            new ReprocessorSupportingInformationComparer()))
+                        // if incoming list is null, return original list
+                        // for some reason just returning the original list results in the assigning of an empty list
+                        // re-mapping (presumably creating a new version) fixes this issue
+                        if (s.ReprocessorSupportingInformation == null ||
+                            !s.ReprocessorSupportingInformation.Any())
                         {
                             return context.Mapper.Map<IList<Data.ReprocessorSupportingInformation>>(d.ReprocessorSupportingInformation);
                         }
 
-                        // get distinct types from the incoming list.
-                        var sourceTypes = context.Mapper.Map<List<Enums.ReprocessorSupportingInformationType>>
-                            (s.ReprocessorSupportingInformation
-                            .Select(r => r.ReprocessorSupportingInformationTypeId)
-                            .Distinct()
-                            .ToList());
+                        // get the incoming source list type
+                        var sourceType = context.Mapper.Map<Enums.ReprocessorSupportingInformationType>(s.ReprocessorSupportingInformation.First().ReprocessorSupportingInformationTypeId);
 
-                        var list = new List<Data.ReprocessorSupportingInformation>();
-
-                        // loop through the source types and add the items that are not the source
-                        // type to the list and then add the source list
-                        // this ensures that if there is only one incoming type we get a list that
-                        // comprises both types still and the data gets updated as we would expect
-                        foreach (var sourceType in sourceTypes)
+                        // loop through to see if any entries need removing
+                        foreach (var item in d.ReprocessorSupportingInformation)
                         {
-                            if (d.ReprocessorSupportingInformation != null)
+                            if (item.ReprocessorSupportingInformationTypeId != sourceType)
+                                continue;
+
+                            if (!s.ReprocessorSupportingInformation.Contains(
+                                new DTO.ReprocessorSupportingInformation
+                                {
+                                    Type = item.Type,
+                                    Tonnes = item.Tonnes
+                                },
+                                _reprocessorSupportingInformationDtoComparer))
                             {
-                                // get the source type - we are
-                                list.AddRange(d
-                                    .ReprocessorSupportingInformation
-                                    .Where(d =>
-                                        d.ReprocessorSupportingInformationTypeId != sourceType)
-                                    .ToList());
+                                d.ReprocessorSupportingInformation.Remove(item);
                             }
-
-                            list.AddRange(context.Mapper.Map<List<Data.ReprocessorSupportingInformation>>(
-                                s.ReprocessorSupportingInformation.Where(r =>
-                                    r.ReprocessorSupportingInformationTypeId == context.Mapper.Map<Common.Enums.ReprocessorSupportingInformationType>(sourceType))));
                         }
 
-                        d.ReprocessorSupportingInformation.Clear();
-                        
-                        foreach(var item in list)
+                        // loop through to see if any entries need adding
+                        foreach(var item in s.ReprocessorSupportingInformation)
                         {
-                            d.ReprocessorSupportingInformation.Add(item);
+                            var newDataItem = new Data.ReprocessorSupportingInformation
+                            {
+                                ReprocessorSupportingInformationTypeId = sourceType,
+                                Type = item.Type,
+                                Tonnes = item.Tonnes
+                            };
+
+                            if (!d.ReprocessorSupportingInformation.Contains(
+                                newDataItem,
+                                _reprocessorSupportingInformationDataComparer))
+                            {
+                                d.ReprocessorSupportingInformation.Add(newDataItem);
+                            }
                         }
 
                         return context.Mapper.Map<IList<Data.ReprocessorSupportingInformation>>(d.ReprocessorSupportingInformation);
