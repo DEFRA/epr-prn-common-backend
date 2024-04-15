@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using EPR.Accreditation.API.Helpers;
+using System.Linq;
 using Data = EPR.Accreditation.API.Common.Data.DataModels;
 using DTO = EPR.Accreditation.API.Common.Dtos;
 using Enums = EPR.Accreditation.API.Common.Data.Enums;
@@ -73,13 +74,37 @@ namespace EPR.Accreditation.API.Profiles
                 .MapOnlyNonDefault()
                 .ReverseMap()
                 .MapOnlyNonDefault()
-                .ForMember(d => 
-                    d.ReprocessorSupportingInformation, o => 
+                .ForMember(d =>
+                    // Mapping of ReprocessorSupportingInformation is complicated as it needs to represent two versions of data,
+                    // and an update may just include one set of data. So we need to carefully manage the merging of the data
+                    d.ReprocessorSupportingInformation, o =>
                     o.MapFrom((s, d, m, context) =>
                     {
+                        if (s.ReprocessorSupportingInformation == null)
+                            // for some reason just returning the original list results in the assigning of an empty list
+                            // re-mapping (presumably creating a new version) fixes this issue
+                            return context.Mapper.Map<IList<Data.ReprocessorSupportingInformation>>(d.ReprocessorSupportingInformation);
+
                         // if there is source no list, return the original destination list
                         if (s.ReprocessorSupportingInformation.FirstOrDefault() == null)
-                            return d.ReprocessorSupportingInformation;
+                            return context.Mapper.Map<IList<Data.ReprocessorSupportingInformation>>(d.ReprocessorSupportingInformation);
+
+                        var dtoAsDataList = s.ReprocessorSupportingInformation
+                            .Select(
+                                dm =>
+                                    new Data.ReprocessorSupportingInformation
+                                    {
+                                        Type = dm.Type,
+                                        Tonnes = dm.Tonnes 
+                                    });
+
+                        // if incoming and original list are the same, just return the original list
+                        if (d.ReprocessorSupportingInformation.SequenceEqual(
+                            dtoAsDataList, 
+                            new ReprocessorSupportingInformationComparer()))
+                        {
+                            return context.Mapper.Map<IList<Data.ReprocessorSupportingInformation>>(d.ReprocessorSupportingInformation);
+                        }
 
                         // get distinct types from the incoming list.
                         var sourceTypes = context.Mapper.Map<List<Enums.ReprocessorSupportingInformationType>>
@@ -107,10 +132,18 @@ namespace EPR.Accreditation.API.Profiles
                             }
 
                             list.AddRange(context.Mapper.Map<List<Data.ReprocessorSupportingInformation>>(
-                                s.ReprocessorSupportingInformation.Where(r => 
+                                s.ReprocessorSupportingInformation.Where(r =>
                                     r.ReprocessorSupportingInformationTypeId == context.Mapper.Map<Common.Enums.ReprocessorSupportingInformationType>(sourceType))));
                         }
-                        return list;
+
+                        d.ReprocessorSupportingInformation.Clear();
+                        
+                        foreach(var item in list)
+                        {
+                            d.ReprocessorSupportingInformation.Add(item);
+                        }
+
+                        return context.Mapper.Map<IList<Data.ReprocessorSupportingInformation>>(d.ReprocessorSupportingInformation);
                     }));
 
             CreateMap<Data.ReprocessorSupportingInformation, DTO.ReprocessorSupportingInformation>()
