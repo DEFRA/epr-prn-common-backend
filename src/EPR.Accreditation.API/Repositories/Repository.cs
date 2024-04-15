@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using EPR.Accreditation.API.Common.Data;
+using EPR.Accreditation.API.Common.Data.DataModels;
 using EPR.Accreditation.API.Common.Data.Enums;
 using EPR.Accreditation.API.Helpers;
 using EPR.Accreditation.API.Repositories.Interfaces;
@@ -325,11 +326,14 @@ namespace EPR.Accreditation.API.Repositories
             Guid id,
             Guid overseasSiteExternalId)
         {
-            return await _accreditationContext
+            var site = await _accreditationContext
                 .OverseasReprocessingSite
+                .Include(x => x.OverseasAddress)
                 .Where(o => o.Accreditation.ExternalId == id && o.ExternalId == overseasSiteExternalId)
-                .Select(o => _mapper.Map<DTO.OverseasReprocessingSite>(o))
                 .SingleOrDefaultAsync();
+
+            var siteDto = _mapper.Map<DTO.OverseasReprocessingSite>(site);
+            return siteDto;
         }
 
         public async Task<Guid> CreateOverseasSite(
@@ -357,7 +361,18 @@ namespace EPR.Accreditation.API.Repositories
 
         public async Task UpdateOverseasSite(DTO.OverseasReprocessingSite site)
         {
-            throw new NotImplementedException();
+            var entity = await _accreditationContext
+                .OverseasReprocessingSite
+                .Where(a => a.ExternalId == site.ExternalId)
+                .SingleOrDefaultAsync()
+                ?? throw new NotFoundException();
+
+            entity.UkPorts = site.UkPorts;
+            entity.Outputs = site.Outputs;
+            entity.RejectedPlans = site.RejectedPlans;
+            entity.OverseasAddress = _mapper.Map<OverseasAddress>(site.OverseasAddress);
+
+            await _accreditationContext.SaveChangesAsync();
         }
 
         public async Task<DTO.SaveAndComeBack> GetSaveAndComeBack(Guid externalId)
