@@ -1,4 +1,5 @@
 ﻿using EPR.Accreditation.API.Helpers;
+using System.Diagnostics;
 
 namespace EPR.Accreditation.API.Middleware
 {
@@ -28,6 +29,9 @@ namespace EPR.Accreditation.API.Middleware
             {
                 // Log other exceptions
                 context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+#if DEBUG
+                Debug.WriteLine($"{ex.Message}{Environment.NewLine}{ex.StackTrace}");
+#endif
             }
         }
     }
