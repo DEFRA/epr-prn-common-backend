@@ -329,7 +329,7 @@ namespace EPR.Accreditation.API.Repositories
             var site = await _accreditationContext
                 .OverseasReprocessingSite
                 .Include(x => x.OverseasAddress)
-                .Where(o => o.Accreditation.ExternalId == id && o.ExternalId == overseasSiteExternalId)
+                .Where(o => o.ExternalId == overseasSiteExternalId)
                 .SingleOrDefaultAsync();
 
             var siteDto = _mapper.Map<DTO.OverseasReprocessingSite>(site);
