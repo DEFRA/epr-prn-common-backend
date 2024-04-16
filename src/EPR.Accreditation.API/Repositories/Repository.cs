@@ -226,8 +226,8 @@ namespace EPR.Accreditation.API.Repositories
 
             // waste last year has changed, therefore MaterialReprocessorDetails
             // are invalid and should be cleared down
-            if (entity.WasteLastYear !=
-                material.WasteLastYear &&
+            if (material.WasteLastYear.HasValue &&
+                entity.WasteLastYear != material.WasteLastYear &&
                 entity.MaterialReprocessorDetails != null)
             {
                 _accreditationContext.Remove(entity.MaterialReprocessorDetails);
