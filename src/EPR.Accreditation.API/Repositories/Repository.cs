@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using EPR.Accreditation.API.Common.Data;
 using EPR.Accreditation.API.Common.Data.Enums;
+using EPR.Accreditation.API.Common.Dtos;
 using EPR.Accreditation.API.Helpers;
 using EPR.Accreditation.API.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -472,6 +473,11 @@ namespace EPR.Accreditation.API.Repositories
             }
 
             return entity;
+        }
+
+        public Task<Guid> AddPackageRecyclingNote(PackageRecyclingNote prn)
+        {
+            throw new NotImplementedException();
         }
     }
 }

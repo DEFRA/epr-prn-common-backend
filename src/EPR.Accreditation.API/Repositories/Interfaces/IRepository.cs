@@ -72,5 +72,9 @@ namespace EPR.Accreditation.API.Repositories.Interfaces
             DTO.SaveAndComeBack saveAndContinue);
 
         Task<IEnumerable<DTO.Material>> GetMaterials();
+
+        #region PRN Management
+        Task<Guid> AddPackageRecyclingNote(DTO.PackageRecyclingNote prn);
+        #endregion
     }
 }

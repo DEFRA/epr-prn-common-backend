@@ -107,6 +107,10 @@ namespace EPR.Accreditation.API.Common.Data
 
         public virtual DbSet<Material> Material { get; set; }
 
+        public virtual DbSet<PackageRecyclingNote> PackageRecyclingNote { get; set; }
+
+
+
         #region Lookups
         public virtual DbSet<AccreditationStatus> AccreditationStatus { get; set; }
 
