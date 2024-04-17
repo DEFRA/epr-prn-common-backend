@@ -107,9 +107,20 @@ namespace EPR.Accreditation.API.Common.Data
 
         public virtual DbSet<Material> Material { get; set; }
 
+        /// <summary>
+        /// Gets or sets the PRN table.
+        /// </summary>
         public virtual DbSet<PackageRecyclingNote> PackageRecyclingNote { get; set; }
 
+        /// <summary>
+        /// Gets or sets the PrnStatus table.
+        /// </summary>
+        public DbSet<PrnStatus> PrnStatuses { get; set; }
 
+        /// <summary>
+        /// Gets or sets the PrnStatusHistory table.
+        /// </summary>
+        public DbSet<PrnStatusHistory> PrnStatusHistories { get; set; }
 
         #region Lookups
         public virtual DbSet<AccreditationStatus> AccreditationStatus { get; set; }
