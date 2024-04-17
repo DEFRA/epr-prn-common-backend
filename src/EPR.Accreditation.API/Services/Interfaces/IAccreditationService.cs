@@ -68,9 +68,5 @@ namespace EPR.Accreditation.API.Services.Interfaces
         Task AddSaveAndComeBack(
             Guid externalId,
             DTO.SaveAndComeBack saveAndContinue);
-
-        Task SetOverseasAgent(
-            Guid externalId,
-            bool? hasOverseasAgent);
     }
 }

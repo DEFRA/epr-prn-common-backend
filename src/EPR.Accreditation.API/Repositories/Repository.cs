@@ -107,7 +107,7 @@ namespace EPR.Accreditation.API.Repositories
                 await _accreditationContext.Site.AddAsync(entity.Site);
             }
 
-            if (entity.WastePermit == null &&
+            if (entity.WastePermit != null &&
                 entity.WastePermit.Id == default)
                 await _accreditationContext.WastePermit.AddAsync(entity.WastePermit);
 
@@ -473,20 +473,6 @@ namespace EPR.Accreditation.API.Repositories
             }
 
             return entity;
-        }
-
-        public async Task SetOverseasAgent(Guid externalId, bool? hasOverseasAgent)
-        {
-            var entity = await _accreditationContext
-                .Accreditation
-                .Where(a => a.ExternalId == externalId)
-                .FirstOrDefaultAsync();
-
-            if (entity == null)
-                throw new NotFoundException($"Accreditation record not found for External ID: {externalId}");
-
-            entity.HasOverseasAgent = hasOverseasAgent;
-            await _accreditationContext.SaveChangesAsync();
         }
     }
 }

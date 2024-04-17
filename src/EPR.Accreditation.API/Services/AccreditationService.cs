@@ -170,12 +170,5 @@ namespace EPR.Accreditation.API.Services
         {
             await _repository.AddSaveAndComeBack(externalId, saveAndComeBack);
         }
-
-        public async Task SetOverseasAgent(
-            Guid externalId,
-            bool? hasOverseasAgent)
-        {
-            await _repository.SetOverseasAgent(externalId, hasOverseasAgent);
-        }
     }
 }

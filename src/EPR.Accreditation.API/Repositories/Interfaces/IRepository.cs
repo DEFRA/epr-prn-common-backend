@@ -72,7 +72,5 @@ namespace EPR.Accreditation.API.Repositories.Interfaces
             DTO.SaveAndComeBack saveAndContinue);
 
         Task<IEnumerable<DTO.Material>> GetMaterials();
-
-        Task SetOverseasAgent(Guid id, bool? hasOverseasAgent);
     }
 }
