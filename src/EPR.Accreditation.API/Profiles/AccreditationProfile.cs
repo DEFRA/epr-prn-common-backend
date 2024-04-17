@@ -95,6 +95,11 @@ namespace EPR.Accreditation.API.Profiles
                             return context.Mapper.Map<IList<Data.ReprocessorSupportingInformation>>(d.ReprocessorSupportingInformation);
                         }
 
+                        if (d.ReprocessorSupportingInformation == null)
+                        {
+                            d.ReprocessorSupportingInformation = new List<Data.ReprocessorSupportingInformation>();
+                        }
+
                         // get the incoming source list type
                         var sourceType = context.Mapper.Map<Enums.ReprocessorSupportingInformationType>(s.ReprocessorSupportingInformation.First().ReprocessorSupportingInformationTypeId);
 

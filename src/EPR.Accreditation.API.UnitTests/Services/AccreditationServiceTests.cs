@@ -1,4 +1,5 @@
-﻿using EPR.Accreditation.API.Repositories.Interfaces;
+﻿using EPR.Accreditation.API.Common.Dtos;
+using EPR.Accreditation.API.Repositories.Interfaces;
 using EPR.Accreditation.API.Services;
 using Moq;
 
@@ -192,6 +193,87 @@ namespace EPR.Accreditation.API.UnitTests.Services
 
             //Assert
             _mockRepository.Verify(r => r.DeleteSaveAndComeBack(externalId), Times.Once);
+        }
+
+        [TestMethod]
+        public async Task CreateOverseasSite_ValidData_ReturnsNewGuid()
+        {
+            // Arrange
+            var externalId = Guid.NewGuid();
+            var overseasReprocessingSite = new OverseasReprocessingSite();
+            var expectedGuid = Guid.NewGuid();
+
+            _mockRepository.Setup(r =>
+                r.CreateOverseasSite(
+                    externalId,
+                    overseasReprocessingSite))
+                .ReturnsAsync(expectedGuid);
+
+            // Act
+            var result = await _accreditationService.CreateOverseasSite(externalId, overseasReprocessingSite);
+
+            // Assert
+            Assert.AreEqual(expectedGuid, result);
+
+            _mockRepository.Verify(r => r.CreateOverseasSite(externalId, overseasReprocessingSite), Times.Once);
+        }
+
+        [TestMethod]
+        public async Task GetOverseasSite_ExistingSite_ReturnsSite()
+        {
+            // Arrange
+            var externalId = Guid.NewGuid();
+            var overseasSiteExternalId = Guid.NewGuid();
+            var expectedSite = new OverseasReprocessingSite();
+
+            _mockRepository.Setup(r =>
+                r.GetOverseasSite(
+                    externalId,
+                    overseasSiteExternalId))
+                .ReturnsAsync(expectedSite);
+
+            // Act
+            var result = await _accreditationService.GetOverseasSite(externalId, overseasSiteExternalId);
+
+            // Assert
+            Assert.AreEqual(expectedSite, result);
+
+            _mockRepository.Verify(r => r.GetOverseasSite(externalId, overseasSiteExternalId), Times.Once);
+        }
+
+        [TestMethod]
+        public async Task GetOverseasSite_NonExistingSite_ReturnsNull()
+        {
+            // Arrange
+            var externalId = Guid.NewGuid();
+            var overseasSiteExternalId = Guid.NewGuid();
+
+            _mockRepository.Setup(r =>
+                r.GetOverseasSite(
+                    externalId,
+                    overseasSiteExternalId))
+                .ReturnsAsync((OverseasReprocessingSite)null);
+
+            // Act
+            var result = await _accreditationService.GetOverseasSite(externalId, overseasSiteExternalId);
+
+            // Assert
+            Assert.IsNull(result);
+
+            _mockRepository.Verify(r => r.GetOverseasSite(externalId, overseasSiteExternalId), Times.Once);
+        }
+
+        [TestMethod]
+        public async Task UpdateOverseasSite_ValidData_CallsRepositoryWithCorrectParameters()
+        {
+            // Arrange
+            var overseasReprocessingSite = new OverseasReprocessingSite();
+
+            // Act
+            await _accreditationService.UpdateOverseasSite(overseasReprocessingSite);
+
+            // Assert
+            _mockRepository.Verify(x => x.UpdateOverseasSite(overseasReprocessingSite), Times.Once);
         }
     }
 }

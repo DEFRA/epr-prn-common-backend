@@ -149,9 +149,9 @@ namespace EPR.Accreditation.API.Services
                 overseasReprocessingSite);
         }
 
-        public Task UpdateOverseasSite(OverseasReprocessingSite overseasReprocessingSite)
+        public async Task UpdateOverseasSite(OverseasReprocessingSite overseasReprocessingSite)
         {
-            throw new NotImplementedException();
+            await _repository.UpdateOverseasSite(overseasReprocessingSite);
         }
 
         public async Task<SaveAndComeBack> GetSaveAndComeBack(Guid externalId)
