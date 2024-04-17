@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using EPR.Accreditation.API.Common.Data;
-using EPR.Accreditation.API.Common.Data.DataModels;
 using EPR.Accreditation.API.Common.Data.Enums;
 using EPR.Accreditation.API.Helpers;
 using EPR.Accreditation.API.Repositories.Interfaces;
@@ -368,10 +367,12 @@ namespace EPR.Accreditation.API.Repositories
                 .SingleOrDefaultAsync()
                 ?? throw new NotFoundException();
 
-            entity.UkPorts = site.UkPorts;
-            entity.Outputs = site.Outputs;
-            entity.RejectedPlans = site.RejectedPlans;
-            entity.OverseasAddress = _mapper.Map<OverseasAddress>(site.OverseasAddress);
+            if (entity == null)
+            {
+                throw new NotFoundException($"Overseas site not found for Overseas External ID: {site.ExternalId}");
+            }
+
+            _mapper.Map(site, entity);
 
             await _accreditationContext.SaveChangesAsync();
         }
