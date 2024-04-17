@@ -325,11 +325,14 @@ namespace EPR.Accreditation.API.Repositories
             Guid id,
             Guid overseasSiteExternalId)
         {
-            return await _accreditationContext
+            var site = await _accreditationContext
                 .OverseasReprocessingSite
-                .Where(o => o.Accreditation.ExternalId == id && o.ExternalId == overseasSiteExternalId)
-                .Select(o => _mapper.Map<DTO.OverseasReprocessingSite>(o))
+                .Include(x => x.OverseasAddress)
+                .Where(o => o.ExternalId == overseasSiteExternalId)
                 .SingleOrDefaultAsync();
+
+            var siteDto = _mapper.Map<DTO.OverseasReprocessingSite>(site);
+            return siteDto;
         }
 
         public async Task<Guid> CreateOverseasSite(
@@ -357,7 +360,21 @@ namespace EPR.Accreditation.API.Repositories
 
         public async Task UpdateOverseasSite(DTO.OverseasReprocessingSite site)
         {
-            throw new NotImplementedException();
+            // get overseas site from the accreditation
+            var entity = await _accreditationContext
+                .OverseasReprocessingSite
+                .Where(a => a.ExternalId == site.ExternalId)
+                .SingleOrDefaultAsync()
+                ?? throw new NotFoundException();
+
+            if (entity == null)
+            {
+                throw new NotFoundException($"Overseas site not found for Overseas External ID: {site.ExternalId}");
+            }
+
+            _mapper.Map(site, entity);
+
+            await _accreditationContext.SaveChangesAsync();
         }
 
         public async Task<DTO.SaveAndComeBack> GetSaveAndComeBack(Guid externalId)
