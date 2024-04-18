@@ -466,7 +466,7 @@ namespace EPR.Accreditation.API.Repositories
                     .Where(a =>
                         a.ExternalId == externalId &&
                         a.Site != null &&
-                        a.Site.AccreditationMaterials.Any(m => m.ExternalId == materialExternalId))
+                        a.Site.AccreditationMaterials.Any(m => m.id == materialid))
                     .Select(a =>
                         a.Site.AccreditationMaterials.FirstOrDefault(m => m.ExternalId == materialExternalId))
                     .SingleOrDefaultAsync();
