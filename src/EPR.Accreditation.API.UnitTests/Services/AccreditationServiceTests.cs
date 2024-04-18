@@ -22,97 +22,97 @@ namespace EPR.Accreditation.API.UnitTests.Services
         public async Task GetAccreditation_WithValidId_ReturnsAccreditation()
         {
             // Arrange
-            var externalId = Guid.NewGuid();
+            var id = Guid.NewGuid();
             var expectedAccreditation = new Common.Dtos.Accreditation();
 
-            _mockRepository.Setup(r => r.GetById(externalId)).ReturnsAsync(expectedAccreditation);
+            _mockRepository.Setup(r => r.GetAccreditation(id)).ReturnsAsync(expectedAccreditation);
 
             // Act
-            var result = await _accreditationService.GetAccreditation(externalId);
+            var result = await _accreditationService.GetAccreditation(id);
 
             // Assert
             Assert.IsNotNull(result);
             Assert.AreEqual(expectedAccreditation, result);
 
-            _mockRepository.Verify(r => r.GetById(externalId), Times.Once());
+            _mockRepository.Verify(r => r.GetAccreditation(id), Times.Once());
         }
 
         [TestMethod]
         public async Task GetAccreditation_WithInvalidId_ReturnsNull()
         {
             // Arrange
-            var externalId = Guid.NewGuid();
+            var id = Guid.NewGuid();
 
-            _mockRepository.Setup(r => r.GetById(externalId)).ReturnsAsync((Common.Dtos.Accreditation)null);
+            _mockRepository.Setup(r => r.GetAccreditation(id)).ReturnsAsync((Common.Dtos.Accreditation)null);
 
             // Act
-            var result = await _accreditationService.GetAccreditation(externalId);
+            var result = await _accreditationService.GetAccreditation(id);
 
             // Assert
             Assert.IsNull(result);
 
-            _mockRepository.Verify(r => r.GetById(externalId), Times.Once);
+            _mockRepository.Verify(r => r.GetAccreditation(id), Times.Once);
         }
 
         [TestMethod]
         public async Task UpdateAccreditation_CallsRepositoryWithCorrectParameters()
         {
             // Arrange
-            var externalId = Guid.NewGuid();
+            var id = Guid.NewGuid();
             var accreditation = new Common.Dtos.Accreditation();
 
             // Act
-            await _accreditationService.UpdateAccreditation(externalId, accreditation);
+            await _accreditationService.UpdateAccreditation(id, accreditation);
 
             // Assert
-            _mockRepository.Verify(r => r.UpdateAccreditation(externalId, accreditation), Times.Once);
+            _mockRepository.Verify(r => r.UpdateAccreditation(id, accreditation), Times.Once);
         }
 
         [TestMethod]
         public async Task GetMaterial_CallsRepositoryWithCorrectParameters()
         {
             // Arrange
-            var externalId = Guid.NewGuid();
-            var overseasSiteExternalId = Guid.NewGuid();
-            var materialExternalId = Guid.NewGuid();
+            var id = Guid.NewGuid();
+            var overseasSiteid = Guid.NewGuid();
+            var materialid = Guid.NewGuid();
 
             // Act
             await _accreditationService.GetMaterial(
-                externalId,
-                overseasSiteExternalId,
-                materialExternalId);
+                id,
+                overseasSiteid,
+                materialid);
 
             // Assert
             _mockRepository.Verify(r =>
                 r.GetMaterial(
-                    externalId,
-                    overseasSiteExternalId,
-                    materialExternalId), Times.Once);
+                    id,
+                    overseasSiteid,
+                    materialid), Times.Once);
         }
 
         [TestMethod]
         public async Task UpdateMaterial_CallsRepositoryWithCorrectParameters()
         {
             // Arrange
-            var externalId = Guid.NewGuid();
+            var id = Guid.NewGuid();
             var overseasSiteId = Guid.NewGuid();
-            var materialExternalId = Guid.NewGuid();
+            var materialid = Guid.NewGuid();
             var accreditationMaterial = new Common.Dtos.AccreditationMaterial();
 
             // Act
             await _accreditationService
                 .UpdateMaterail(
-                externalId,
+                id,
                 overseasSiteId,
-                materialExternalId,
+                materialid,
                 accreditationMaterial);
 
             //Assert
             _mockRepository.Verify(r =>
             r.UpdateMaterial(
-                externalId,
+                id,
                 overseasSiteId,
-                materialExternalId,
+                materialid,
                 accreditationMaterial), Times.Once);
         }
 
@@ -120,160 +120,170 @@ namespace EPR.Accreditation.API.UnitTests.Services
         public async Task GetSite_WithValidId_ReturnsSite()
         {
             // Arrange
-            var externalId = Guid.NewGuid();
+            var id = Guid.NewGuid();
             var expectedSite = new Common.Dtos.Site();
 
-            _mockRepository.Setup(r => r.GetSite(externalId)).ReturnsAsync(expectedSite);
+            _mockRepository.Setup(r => r.GetSite(id)).ReturnsAsync(expectedSite);
 
             // Act
-            var result = await _accreditationService.GetSite(externalId);
+            var result = await _accreditationService.GetSite(id);
 
             // Assert
             Assert.IsNotNull(result);
             Assert.AreEqual(expectedSite, result);
 
-            _mockRepository.Verify(r => r.GetSite(externalId), Times.Once());
+            _mockRepository.Verify(r => r.GetSite(id), Times.Once());
         }
 
         [TestMethod]
         public async Task UpdateSite_CallsRepositoryWithCorrectParameters()
         {
             // Arrange
-            var externalId = Guid.NewGuid();
+            var id = Guid.NewGuid();
             var site = new Common.Dtos.Site();
 
             // Act
-            await _accreditationService.UpdateSite(externalId, site);
+            await _accreditationService.UpdateSite(id, site);
 
             //Assert
-            _mockRepository.Verify(r => r.UpdateSite(externalId, site), Times.Once);
+            _mockRepository.Verify(r => r.UpdateSite(id, site), Times.Once);
         }
 
         [TestMethod]
         public async Task GetSaveAndComeBack_WithValidId_ReturnsSaveAndComeBack()
         {
             // Arrange
-            var externalId = Guid.NewGuid();
+            var id = Guid.NewGuid();
             var expectedSaveAndComeBack = new Common.Dtos.SaveAndComeBack();
 
-            _mockRepository.Setup(r => r.GetSaveAndComeBack(externalId)).ReturnsAsync(expectedSaveAndComeBack);
+            _mockRepository.Setup(r => r.GetSaveAndComeBack(id)).ReturnsAsync(expectedSaveAndComeBack);
 
             // Act
-            var result = await _accreditationService.GetSaveAndComeBack(externalId);
+            var result = await _accreditationService.GetSaveAndComeBack(id);
 
             // Assert
             Assert.IsNotNull(result);
             Assert.AreEqual(expectedSaveAndComeBack, result);
 
-            _mockRepository.Verify(r => r.GetSaveAndComeBack(externalId), Times.Once());
+            _mockRepository.Verify(r => r.GetSaveAndComeBack(id), Times.Once());
         }
 
         [TestMethod]
         public async Task AddSaveAndComeBack_CallsRepositoryWithCorrectParameters()
         {
             // Arrange
-            var externalId = Guid.NewGuid();
+            var id = Guid.NewGuid();
             var saveAndComeBack = new Common.Dtos.SaveAndComeBack();
 
             // Act
-            await _accreditationService.AddSaveAndComeBack(externalId, saveAndComeBack);
+            await _accreditationService.AddSaveAndComeBack(id, saveAndComeBack);
 
             //Assert
-            _mockRepository.Verify(r => r.AddSaveAndComeBack(externalId, saveAndComeBack), Times.Once);
+            _mockRepository.Verify(r => r.AddSaveAndComeBack(id, saveAndComeBack), Times.Once);
         }
 
         [TestMethod]
         public async Task DeleteSaveAndComeBack_CallsRepositoryWithCorrectParameters()
         {
             // Arrange
-            var externalId = Guid.NewGuid();
+            var id = Guid.NewGuid();
 
             // Act
-            await _accreditationService.DeleteSaveAndComeBack(externalId);
+            await _accreditationService.DeleteSaveAndComeBack(id);
 
             //Assert
-            _mockRepository.Verify(r => r.DeleteSaveAndComeBack(externalId), Times.Once);
+            _mockRepository.Verify(r => r.DeleteSaveAndComeBack(id), Times.Once);
         }
 
         [TestMethod]
         public async Task CreateOverseasSite_ValidData_ReturnsNewGuid()
         {
             // Arrange
-            var externalId = Guid.NewGuid();
+            var id = Guid.NewGuid();
             var overseasReprocessingSite = new OverseasReprocessingSite();
             var expectedGuid = Guid.NewGuid();
 
             _mockRepository.Setup(r =>
                 r.CreateOverseasSite(
-                    externalId,
+                    id,
                     overseasReprocessingSite))
                 .ReturnsAsync(expectedGuid);
 
             // Act
-            var result = await _accreditationService.CreateOverseasSite(externalId, overseasReprocessingSite);
+            var result = await _accreditationService.CreateOverseasSite(id, overseasReprocessingSite);
 
             // Assert
             Assert.AreEqual(expectedGuid, result);
 
-            _mockRepository.Verify(r => r.CreateOverseasSite(externalId, overseasReprocessingSite), Times.Once);
+            _mockRepository.Verify(r => r.CreateOverseasSite(id, overseasReprocessingSite), Times.Once);
         }
 
         [TestMethod]
         public async Task GetOverseasSite_ExistingSite_ReturnsSite()
         {
             // Arrange
-            var externalId = Guid.NewGuid();
-            var overseasSiteExternalId = Guid.NewGuid();
+            var id = Guid.NewGuid();
+            var overseasSiteid = Guid.NewGuid();
             var expectedSite = new OverseasReprocessingSite();
 
             _mockRepository.Setup(r =>
                 r.GetOverseasSite(
-                    externalId,
-                    overseasSiteExternalId))
+                    id,
+                    overseasSiteid))
                 .ReturnsAsync(expectedSite);
 
             // Act
-            var result = await _accreditationService.GetOverseasSite(externalId, overseasSiteExternalId);
+            var result = await _accreditationService.GetOverseasSite(id, overseasSiteid);
 
             // Assert
             Assert.AreEqual(expectedSite, result);
 
-            _mockRepository.Verify(r => r.GetOverseasSite(externalId, overseasSiteExternalId), Times.Once);
+            _mockRepository.Verify(r => r.GetOverseasSite(id, overseasSiteid), Times.Once);
         }
 
         [TestMethod]
         public async Task GetOverseasSite_NonExistingSite_ReturnsNull()
         {
             // Arrange
-            var externalId = Guid.NewGuid();
-            var overseasSiteExternalId = Guid.NewGuid();
+            var id = Guid.NewGuid();
+            var overseasSiteid = Guid.NewGuid();
 
             _mockRepository.Setup(r =>
                 r.GetOverseasSite(
-                    externalId,
-                    overseasSiteExternalId))
+                    id,
+                    overseasSiteid))
                 .ReturnsAsync((OverseasReprocessingSite)null);
 
             // Act
-            var result = await _accreditationService.GetOverseasSite(externalId, overseasSiteExternalId);
+            var result = await _accreditationService.GetOverseasSite(id, overseasSiteid);
 
             // Assert
             Assert.IsNull(result);
 
-            _mockRepository.Verify(r => r.GetOverseasSite(externalId, overseasSiteExternalId), Times.Once);
+            _mockRepository.Verify(r => r.GetOverseasSite(id, overseasSiteid), Times.Once);
         }
 
         [TestMethod]
         public async Task UpdateOverseasSite_ValidData_CallsRepositoryWithCorrectParameters()
         {
             // Arrange
+            var id = Guid.NewGuid();
+            var overseasSiteId = Guid.NewGuid();
             var overseasReprocessingSite = new OverseasReprocessingSite();
 
             // Act
-            await _accreditationService.UpdateOverseasSite(overseasReprocessingSite);
+            await _accreditationService.UpdateOverseasSite(
+                id,
+                overseasSiteId,
+                overseasReprocessingSite);
 
             // Assert
-            _mockRepository.Verify(x => x.UpdateOverseasSite(overseasReprocessingSite), Times.Once);
+            _mockRepository.Verify(x => 
+                x.UpdateOverseasSite(
+                    id,
+                    overseasSiteId,
+                    overseasReprocessingSite),
+                Times.Once);
         }
     }
 }

@@ -2,8 +2,6 @@
 {
     public class MaterialReprocessorDetails
     {
-        public int Id { get; set; }
-
         public decimal? UkPackagingWaste { get; set; }
 
         public decimal? NonUkPackagingWaste { get; set; }

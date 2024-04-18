@@ -5,7 +5,7 @@ using DTO = EPR.Accreditation.API.Common.Dtos;
 namespace EPR.Accreditation.API.Controllers
 {
     [ApiController]
-    [Route("/api/Accreditation/{externalId}/[controller]")]
+    [Route("/api/Accreditation/{id}/[controller]")]
     public class OverseasSiteController : ControllerBase
     {
         protected readonly IAccreditationService _accreditationService;
@@ -16,15 +16,15 @@ namespace EPR.Accreditation.API.Controllers
             _accreditationService = accreditationService ?? throw new ArgumentNullException(nameof(accreditationService));
         }
 
-        [HttpGet("{siteExternalId}")]
+        [HttpGet("{siteid}")]
         [ProducesResponseType(typeof(DTO.OverseasReprocessingSite), 200)]
         public async Task<IActionResult> GetSite(
-            Guid externalId,
-            Guid siteExternalId)
+            Guid id,
+            Guid siteid)
         {
             var site = await _accreditationService.GetOverseasSite(
-                externalId,
-                siteExternalId);
+                id,
+                siteid);
 
             if (site == null)
                 return NotFound();
@@ -35,20 +35,26 @@ namespace EPR.Accreditation.API.Controllers
         [HttpPost]
         [ProducesResponseType(typeof(Guid), 200)]
         public async Task<IActionResult> CreateSite(
-            Guid externalId,
+            Guid id,
             DTO.OverseasReprocessingSite overseasSite)
         {
-            var siteExternalId = await _accreditationService.CreateOverseasSite(
-                externalId,
+            var siteid = await _accreditationService.CreateOverseasSite(
+                id,
                 overseasSite);
 
-            return Ok(siteExternalId);
+            return Ok(siteid);
         }
 
         [HttpPut]
-        public async Task<IActionResult> UpdateSite(DTO.OverseasReprocessingSite oeverseasSite)
+        public async Task<IActionResult> UpdateSite(
+            Guid id,
+            Guid overseasSiteId,
+            DTO.OverseasReprocessingSite overseasSite)
         {
-            await _accreditationService.UpdateOverseasSite(oeverseasSite);
+            await _accreditationService.UpdateOverseasSite(
+                id,
+                overseasSiteId,
+                overseasSite);
 
             return Ok();
         }

@@ -22,86 +22,86 @@ namespace EPR.Accreditation.API.UnitTests.Controllers
         public async Task GetSiteMaterial_WithValidMaterialId_ReturnsOkWithMaterial()
         {
             // Arrange
-            var externalId = Guid.NewGuid();
-            var materialExternalId = Guid.NewGuid();
+            var id = Guid.NewGuid();
+            var materialid = Guid.NewGuid();
             var expectedMaterial = new Common.Dtos.AccreditationMaterial();
 
             _mockAccreditationService.Setup(s =>
                 s.GetMaterial(
-                    externalId,
+                    id,
                     null,
-                    materialExternalId))
+                    materialid))
                 .ReturnsAsync(expectedMaterial);
 
             // Act
-            var result = await _siteMaterialController.GetSiteMaterial(externalId, materialExternalId) as OkObjectResult;
+            var result = await _siteMaterialController.GetSiteMaterial(id, materialid) as OkObjectResult;
 
             // Assert
             Assert.IsNotNull(result);
             Assert.AreEqual(200, result.StatusCode);
             Assert.AreSame(expectedMaterial, result.Value);
 
-            _mockAccreditationService.Verify(s => s.GetMaterial(externalId, null, materialExternalId), Times.Once());
+            _mockAccreditationService.Verify(s => s.GetMaterial(id, null, materialid), Times.Once());
         }
 
         [TestMethod]
         public async Task GetSiteMaterial_WithInvalidMaterialId_ReturnsNotFound()
         {
             // Arrange
-            var externalId = Guid.NewGuid();
-            var materialExternalId = Guid.NewGuid();
+            var id = Guid.NewGuid();
+            var materialid = Guid.NewGuid();
 
             _mockAccreditationService.Setup(s =>
                 s.GetMaterial(
-                    externalId,
+                    id,
                     null,
-                    materialExternalId))
+                    materialid))
                 .ReturnsAsync((Common.Dtos.AccreditationMaterial)null);
 
             // Act
-            var result = await _siteMaterialController.GetSiteMaterial(externalId, materialExternalId) as NotFoundResult;
+            var result = await _siteMaterialController.GetSiteMaterial(id, materialid) as NotFoundResult;
 
             // Assert
             Assert.IsNotNull(result);
             Assert.AreEqual(404, result.StatusCode);
 
-            _mockAccreditationService.Verify(s => s.GetMaterial(externalId, null, materialExternalId), Times.Once());
+            _mockAccreditationService.Verify(s => s.GetMaterial(id, null, materialid), Times.Once());
         }
 
         [TestMethod]
         public async Task CreateSiteMaterial_WithValidInput_ReturnsOkWithMaterialId()
         {
             // Arrange
-            var externalId = Guid.NewGuid();
+            var id = Guid.NewGuid();
             var accreditationMaterial = new Common.Dtos.AccreditationMaterial();
             var expectedMaterialId = Guid.NewGuid();
 
             _mockAccreditationService.Setup(s =>
             s.CreateMaterial(
-                externalId,
+                id,
                 null,
                 accreditationMaterial))
             .ReturnsAsync(expectedMaterialId);
 
             // Act
-            var result = await _siteMaterialController.CreateSiteMaterial(externalId, accreditationMaterial) as OkObjectResult;
+            var result = await _siteMaterialController.CreateSiteMaterial(id, accreditationMaterial) as OkObjectResult;
 
             // Assert
             Assert.IsNotNull(result);
             Assert.AreEqual(200, result.StatusCode);
             Assert.AreEqual(expectedMaterialId, result.Value);
 
-            _mockAccreditationService.Verify(s => s.CreateMaterial(externalId, null, accreditationMaterial), Times.Once());
+            _mockAccreditationService.Verify(s => s.CreateMaterial(id, null, accreditationMaterial), Times.Once());
         }
 
         [TestMethod]
         public async Task CreateSiteMaterial_WithNullInput_ReturnsBadRequest()
         {
             // Arrange
-            var externalId = Guid.NewGuid();
+            var id = Guid.NewGuid();
 
             // Act
-            var result = await _siteMaterialController.CreateSiteMaterial(externalId, null) as BadRequestResult;
+            var result = await _siteMaterialController.CreateSiteMaterial(id, null) as BadRequestResult;
 
             // Assert
             Assert.IsNotNull(result);
@@ -115,15 +115,15 @@ namespace EPR.Accreditation.API.UnitTests.Controllers
         public async Task UpdateSiteMaterial_CallsServiceWithCorrectParametersAndReturnsOk()
         {
             // Arrange
-            var externalId = Guid.NewGuid();
-            var materialExternalId = Guid.NewGuid();
+            var id = Guid.NewGuid();
+            var materialid = Guid.NewGuid();
             var accreditationMaterial = new Common.Dtos.AccreditationMaterial();
 
             // Act
             var result = await _siteMaterialController
                 .UpdateSiteMaterial(
-                externalId,
-                materialExternalId,
+                id,
+                materialid,
                 accreditationMaterial) as OkResult;
 
             // Assert
@@ -131,7 +131,7 @@ namespace EPR.Accreditation.API.UnitTests.Controllers
             Assert.AreEqual(200, result.StatusCode);
 
             _mockAccreditationService
-                .Verify(s => s.UpdateMaterail(externalId, null, materialExternalId, accreditationMaterial), Times.Once);
+                .Verify(s => s.UpdateMaterail(id, null, materialid, accreditationMaterial), Times.Once);
         }
     }
 }
