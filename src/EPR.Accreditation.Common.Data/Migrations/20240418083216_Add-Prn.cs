@@ -127,6 +127,23 @@ namespace EPR.Accreditation.API.Common.Data.Migrations
                 name: "IX_PrnStatusHistory_PrnStatusId",
                 table: "PrnStatusHistory",
                 column: "PrnStatusId");
+
+            migrationBuilder.InsertData(
+                 //schema: "Lookup",
+            table: "PrnStatus",
+            columns: new[] { "Id", "StatusName", "StatusDescription" },
+            values: new object[,]
+            {
+                { 0, "Undefined", "Undefined"},
+                { 1, "Draft", "Draft" },
+                { 2, "Awaiting Auth", "Awaiting Authorisation" },
+                { 3, "Cancelled", "Cancelled" },
+                { 4, "Awaiting Accept", "Awaiting Acceptance" },
+                { 5, "Cancelled", "Cancelled" },
+                { 6, "Rejected", "Rejected" },
+                { 7, "Accepted", "Accepted" },
+                { 8, "Cancel Req", "Cancellation Requested" },
+            });
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
