@@ -91,8 +91,12 @@ namespace EPR.Accreditation.API.Services
             Guid materialid,
             AccreditationMaterial accreditationMaterial)
         {
-            accreditationMaterial.WasteCodes =
-                accreditationMaterial.WasteCodes.Distinct(new WasteCodeDtoComparer());
+            if (accreditationMaterial.WasteCodes != null &&
+                accreditationMaterial.WasteCodes.Any())
+            {
+                accreditationMaterial.WasteCodes =
+                    accreditationMaterial.WasteCodes.Distinct(new WasteCodeDtoComparer());
+            }
 
             await _repository.UpdateMaterial(
                 id,

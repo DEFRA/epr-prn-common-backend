@@ -1,4 +1,5 @@
 ﻿using EPR.Accreditation.API.Common.Dtos;
+using EPR.Accreditation.API.Helpers;
 using EPR.Accreditation.API.Repositories.Interfaces;
 using EPR.Accreditation.API.Services;
 using Moq;
@@ -87,11 +88,12 @@ namespace EPR.Accreditation.API.UnitTests.Services
                 r.GetMaterial(
                     id,
                     overseasSiteid,
-                    materialid), Times.Once);
+                    materialid),
+                Times.Once);
         }
 
         [TestMethod]
-        public async Task UpdateMaterial_CallsRepositoryWithCorrectParameters()
+        public async Task UpdateMaterial_NullWastesCodes_CallsRepositoryWithCorrectParameters()
         {
             // Arrange
             var id = Guid.NewGuid();
@@ -107,13 +109,133 @@ namespace EPR.Accreditation.API.UnitTests.Services
                 materialid,
                 accreditationMaterial);
 
-            //Assert
+            // Assert
             _mockRepository.Verify(r =>
-            r.UpdateMaterial(
+                r.UpdateMaterial(
+                    id,
+                    overseasSiteId,
+                    materialid,
+                    accreditationMaterial),
+                Times.Once);
+        }
+
+        [TestMethod]
+        public async Task UpdateMaterial_EmptyWastesCodes_CallsRepositoryWithCorrectParameters()
+        {
+            // Arrange
+            var id = Guid.NewGuid();
+            var overseasSiteId = Guid.NewGuid();
+            var materialid = Guid.NewGuid();
+            var accreditationMaterial = new Common.Dtos.AccreditationMaterial
+            {
+                WasteCodes = new List<WasteCode>()
+            };
+
+            // Act
+            await _accreditationService
+                .UpdateMaterail(
                 id,
                 overseasSiteId,
                 materialid,
-                accreditationMaterial), Times.Once);
+                accreditationMaterial);
+
+            // Assert
+            _mockRepository.Verify(r =>
+                r.UpdateMaterial(
+                    id,
+                    overseasSiteId,
+                    materialid,
+                    accreditationMaterial),
+                Times.Once);
+        }
+
+        [TestMethod]
+        public async Task UpdateMaterial_SingleItemWastesCodes_CallsRepositoryWithCorrectParameters()
+        {
+            // Arrange
+            var id = Guid.NewGuid();
+            var overseasSiteId = Guid.NewGuid();
+            var materialid = Guid.NewGuid();
+            var wasteCodeValue = "VALUE";
+            var accreditationMaterial = new Common.Dtos.AccreditationMaterial
+            {
+                WasteCodes = new List<WasteCode>
+                { 
+                    new()
+                    {
+                        Code = wasteCodeValue
+                    }
+                }
+            };
+
+            // Act
+            await _accreditationService
+                .UpdateMaterail(
+                id,
+                overseasSiteId,
+                materialid,
+                accreditationMaterial);
+
+            // Assert
+            _mockRepository.Verify(r =>
+                r.UpdateMaterial(
+                    id,
+                    overseasSiteId,
+                    materialid,
+                    It.Is<AccreditationMaterial>(p => 
+                        p.WasteCodes != null && 
+                        p.WasteCodes.First().Code == wasteCodeValue)),
+                Times.Once);
+        }
+
+        [TestMethod]
+        public async Task UpdateMaterial_MultipleIncludingDuplicatesItemWastesCodes_CallsRepositoryWithCorrectParameters()
+        {
+            // Arrange
+            var id = Guid.NewGuid();
+            var overseasSiteId = Guid.NewGuid();
+            var materialid = Guid.NewGuid();
+            var wasteCodeValue = "VALUE";
+            var wasteCodeValue2 = "VALUE2";
+            var accreditationMaterial = new Common.Dtos.AccreditationMaterial
+            {
+                WasteCodes = new List<WasteCode>
+                {
+                    new()
+                    {
+                        Code = wasteCodeValue
+                    },
+                    new()
+                    {
+                        Code = wasteCodeValue
+                    },
+                    new()
+                    {
+                        Code = wasteCodeValue2
+                    }
+                }
+            };
+
+            // Act
+            await _accreditationService
+                .UpdateMaterail(
+                id,
+                overseasSiteId,
+                materialid,
+                accreditationMaterial);
+
+            // Assert
+            _mockRepository.Verify(r =>
+                r.UpdateMaterial(
+                    id,
+                    overseasSiteId,
+                    materialid,
+                    It.Is<AccreditationMaterial>(p => 
+                        p.WasteCodes != null && 
+                        p.WasteCodes.ToList().Count == 2 &&
+                        p.WasteCodes.ToList()[0].Code == wasteCodeValue &&
+                        p.WasteCodes.ToList()[1].Code == wasteCodeValue2)),
+                Times.Once);
         }
 
         [TestMethod]
@@ -196,9 +318,15 @@ namespace EPR.Accreditation.API.UnitTests.Services
         }
 
         [TestMethod]
-        public async Task CreateOverseasSite_ValidData_ReturnsNewGuid()
+        public async Task CreateOverseasSite_ExporterAccreditationExists_ReturnsNewGuid()
         {
             // Arrange
+            _mockRepository.Setup(r => r.GetAccreditation(It.IsAny<Guid>())).ReturnsAsync(
+                new Common.Dtos.Accreditation
+                {
+                    OperatorTypeId = Common.Enums.OperatorType.Exporter
+                });
+
             var id = Guid.NewGuid();
             var overseasReprocessingSite = new OverseasReprocessingSite();
             var expectedGuid = Guid.NewGuid();
@@ -216,6 +344,44 @@ namespace EPR.Accreditation.API.UnitTests.Services
             Assert.AreEqual(expectedGuid, result);
 
             _mockRepository.Verify(r => r.CreateOverseasSite(id, overseasReprocessingSite), Times.Once);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(NotFoundException))]
+        public async Task CreateOverseasSite_AccreditationDoesNotExist_ThrowsNotFoundException()
+        {
+            // Arrange
+            var overseasReprocessingSite = new OverseasReprocessingSite();
+
+            // Act
+            var result = await _accreditationService.CreateOverseasSite(
+                Guid.NewGuid(),
+                overseasReprocessingSite);
+
+            // Assert
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidOperationException))]
+        public async Task CreateOverseasSite_AccreditationNotExporter_ThrowsInvalidOperationException()
+        {
+            // Arrange
+            _mockRepository
+                .Setup(r =>
+                    r.GetAccreditation(It.IsAny<Guid>()))
+                .ReturnsAsync(
+                    new Common.Dtos.Accreditation
+                    {
+                        OperatorTypeId = Common.Enums.OperatorType.Reprocessor
+                    });
+            var overseasReprocessingSite = new OverseasReprocessingSite();
+
+            // Act
+            var result = await _accreditationService.CreateOverseasSite(
+                Guid.NewGuid(),
+                overseasReprocessingSite);
+
+            // Assert
         }
 
         [TestMethod]
