@@ -74,7 +74,33 @@ namespace EPR.Accreditation.API.Repositories.Interfaces
         Task<IEnumerable<DTO.Material>> GetMaterials();
 
         #region PRN Management
-        Task<Guid> AddPackageRecyclingNote(DTO.PackageRecyclingNote prn);
+
+        /// <summary>
+        /// Saves a new PRN to the database.
+        /// </summary>
+        /// <param name="prn">The PRN to save.</param>
+        /// <returns>The GUID that identifies the PRN.</returns>
+        Task AddPackageRecyclingNote(DTO.PackageRecyclingNote prn);
+
+        /// <summary>
+        /// Retrieves details of a PRN from the database.
+        /// </summary>
+        /// <param name="id">The GUID of the PRN to retrieve.</param>
+        /// <returns>A <see cref="DTO.PackageRecyclingNote"/> object.</returns>
+        Task<DTO.PackageRecyclingNote>GetPackageRecyclingNote(Guid id);
+
+        /// <summary>
+        /// Retrieves a list of the PRNs associated with the specified Organisation
+        /// </summary>
+        /// <param name="organisationId">The ID of the organisation.</param>
+        /// <returns>An enumerable of PRN IDs.</returns>
+        Task<IEnumerable<Guid>> GetPrnsForOrganisation(Guid organisationId);
+
+        /// <summary>
+        /// Deletes a PRN.
+        /// </summary>
+        /// <param name="id">The ID of the PRN to delete.</param>
+        Task DeletePrn(Guid id);
         #endregion
     }
 }

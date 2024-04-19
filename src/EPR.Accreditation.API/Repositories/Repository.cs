@@ -475,9 +475,53 @@ namespace EPR.Accreditation.API.Repositories
             return entity;
         }
 
-        public Task<Guid> AddPackageRecyclingNote(PackageRecyclingNote prn)
+        /// <inheritdoc/>
+        public async Task AddPackageRecyclingNote(DTO.PackageRecyclingNote prn)
         {
-            throw new NotImplementedException();
+            var entity = _mapper.Map<Data.PackageRecyclingNote>(prn);
+            _accreditationContext.PackageRecyclingNote.Add(entity);
+            await _accreditationContext.SaveChangesAsync();
+        }
+
+        /// <inheritdoc>
+        public async Task<DTO.PackageRecyclingNote> GetPackageRecyclingNote(Guid id)
+        {
+            var prn = await _accreditationContext
+               .PackageRecyclingNote
+                   .Include(a => a.Site)
+               .Where(a => a.ExternalId == id)
+               .Select(a =>
+                   _mapper.Map<DTO.PackageRecyclingNote>(a)
+               )
+               .FirstOrDefaultAsync();
+
+            return prn;
+        }
+
+        /// <inheritdoc>
+        public async Task<IEnumerable<Guid>> GetPrnsForOrganisation(Guid organisationId)
+        {
+            var prn = await _accreditationContext
+               .PackageRecyclingNote
+                   .Include(a => a.Site)
+               .Where(a => a.OrganisationId == organisationId)
+               .Select(prn => prn.ExternalId)
+               .ToListAsync();
+
+            return prn;
+        }
+
+        /// <inheritdoc>
+        public async Task DeletePrn(Guid id)
+        {
+            var prn = await _accreditationContext
+            .PackageRecyclingNote
+                .Include(a => a.Site)
+            .Where(a => a.ExternalId == id)
+            .FirstOrDefaultAsync();
+
+            _accreditationContext.PackageRecyclingNote.Remove(prn);
+            await _accreditationContext.SaveChangesAsync();
         }
     }
 }

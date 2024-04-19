@@ -14,7 +14,7 @@ namespace EPR.Accreditation.API.Services
             _repository = repository ?? throw new ArgumentNullException(nameof(repository));
         }
 
-        public async Task<Guid> CreatePackageRecyclingNote(DTO.PackageRecyclingNote prn)
+        public async Task CreatePackageRecyclingNote(DTO.PackageRecyclingNote prn)
         {
             // perform checks against the prn
             if (prn == null)
@@ -22,12 +22,16 @@ namespace EPR.Accreditation.API.Services
 
             // set the external id for the prn
             prn.ExternalId = Guid.NewGuid();
-            return await _repository.AddPackageRecyclingNote(prn);
+            await _repository.AddPackageRecyclingNote(prn);
         }
 
-        public Task<PackageRecyclingNote> GetPackageRecyclingNote(Guid externalId)
-        {
-            throw new NotImplementedException();
-        }
+        public async Task<PackageRecyclingNote> GetPackageRecyclingNote(Guid externalId)
+            => await _repository.GetPackageRecyclingNote(externalId);
+
+        public async Task<IEnumerable<Guid>> GetPrnsForOrganisation(Guid organisationId)
+            => await _repository.GetPrnsForOrganisation(organisationId);
+
+        public async Task DeletePrn(Guid prnId)
+            => await _repository.DeletePrn(prnId);
     }
 }

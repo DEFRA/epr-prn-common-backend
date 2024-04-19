@@ -6,7 +6,7 @@ using DTO = EPR.Accreditation.API.Common.Dtos;
 namespace EPR.Accreditation.API.Controllers
 {
     [ApiController]
-    [Route("/api/[controller]")]
+    [Route("/api/prn")]
     public class PackageRecyclingNoteController : ControllerBase
     {
         protected readonly IPackageRecyclingNoteService _prnService;
@@ -29,6 +29,18 @@ namespace EPR.Accreditation.API.Controllers
             return Ok(prn);
         }
 
+        [HttpGet("prn/organisation/{id}")]
+        [ProducesResponseType(typeof(IEnumerable<Guid>), 200)]
+        public async Task<IActionResult> GetOrganisationPrns(Guid id)
+        {
+            var prn = await _prnService.GetPrnsForOrganisation(id);
+
+            if (prn == null)
+                return NotFound();
+
+            return Ok(prn);
+        }
+
 
 
 
@@ -42,9 +54,9 @@ namespace EPR.Accreditation.API.Controllers
             if (accreditation == null)
                 return BadRequest("Package Recycling Note data not suppleid");
 
-            var externalId = await _prnService.CreatePackageRecyclingNote(accreditation);
+            await _prnService.CreatePackageRecyclingNote(accreditation);
 
-            return Ok(externalId);
+            return Ok();
         }
         #endregion
 
@@ -53,6 +65,14 @@ namespace EPR.Accreditation.API.Controllers
         #endregion
 
         #region Delete methods
+        
+        [HttpDelete]
+        public async Task<IActionResult> DeletePackagingRecyclingNote(Guid id)
+        {
+            await _prnService.DeletePrn(id);
+
+            return Ok();
+        }
 
         #endregion
     }
