@@ -6,69 +6,72 @@ namespace EPR.Accreditation.API.Repositories.Interfaces
     {
         Task<IEnumerable<DTO.Country>> GetCountries();
 
+        Task<DTO.Accreditation> GetAccreditation(Guid id);
+
         Task<Guid> AddAccreditation(DTO.Accreditation accreditation);
 
         Task<Guid> AddAccreditationMaterial(
-            Guid externalId,
+            Guid id,
             Guid? overseasSiteId,
             DTO.AccreditationMaterial accreditationMaterial);
 
         Task AddFile(
-            Guid externalId,
+            Guid id,
             DTO.FileUpload fileUpload);
 
         Task UpdateAccreditation(
-            Guid externalId,
+            Guid id,
             DTO.Accreditation accreditation);
 
         Task UpdateMaterial(
-            Guid externalId,
+            Guid id,
             Guid? overseasSiteId,
-            Guid materialExternalId,
+            Guid materialid,
             DTO.AccreditationMaterial material);
-
-        Task<DTO.Accreditation> GetById(Guid id);
 
         Task<IEnumerable<DTO.FileUpload>> GetFileRecords(Guid id);
 
-        Task<IEnumerable<DTO.AccreditationTaskProgress>> GetTaskProgress(Guid externalId);
+        Task<IEnumerable<DTO.AccreditationTaskProgress>> GetTaskProgress(Guid id);
 
         Task DeleteFile(
             Guid id,
             Guid fileId);
 
         Task<DTO.AccreditationMaterial> GetMaterial(
-            Guid externalId,
-            Guid? overseasSiteExternalId,
-            Guid materialExternalId);
+            Guid id,
+            Guid? overseasSiteid,
+            Guid materialid);
 
         Task<DTO.Site> GetSite(
             Guid id);
 
         Task<Guid> CreateSite(
-            Guid externalId,
+            Guid id,
             DTO.Site site);
 
         Task UpdateSite(
-            Guid externalId,
+            Guid id,
             DTO.Site site);
 
         Task<DTO.OverseasReprocessingSite> GetOverseasSite(
             Guid id,
-            Guid siteExternalId);
+            Guid siteid);
 
         Task<Guid> CreateOverseasSite(
             Guid id,
             DTO.OverseasReprocessingSite site);
 
-        Task UpdateOverseasSite(DTO.OverseasReprocessingSite site);
+        Task UpdateOverseasSite(
+            Guid id,
+            Guid overseasSiteId,
+            DTO.OverseasReprocessingSite site);
 
         Task<DTO.SaveAndComeBack> GetSaveAndComeBack(Guid id);
 
         Task DeleteSaveAndComeBack(Guid id);
 
         Task AddSaveAndComeBack(
-            Guid externalId,
+            Guid id,
             DTO.SaveAndComeBack saveAndContinue);
 
         Task<IEnumerable<DTO.Material>> GetMaterials();

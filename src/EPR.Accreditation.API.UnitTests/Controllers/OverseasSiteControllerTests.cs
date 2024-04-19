@@ -20,92 +20,102 @@
         }
 
         [TestMethod]
-        public async Task CreateSite_ValidData_ReturnsOkResultWithSiteExternalId()
+        public async Task CreateSite_ValidData_ReturnsOkResultWithSiteid()
         {
             // Arrange
-            var externalId = Guid.NewGuid();
+            var id = Guid.NewGuid();
             var overseasSite = new OverseasReprocessingSite();
-            var expectedSiteExternalId = Guid.NewGuid();
+            var expectedSiteid = Guid.NewGuid();
 
             _mockAcreditationService.Setup(s =>
                 s.CreateOverseasSite(
-                    externalId,
+                    id,
                     overseasSite))
-                .ReturnsAsync(expectedSiteExternalId);
+                .ReturnsAsync(expectedSiteid);
 
             // Act
-            var result = await _overseasSiteController.CreateSite(externalId, overseasSite) as OkObjectResult;
+            var result = await _overseasSiteController.CreateSite(id, overseasSite) as OkObjectResult;
 
             // Assert
             Assert.IsNotNull(result);
             Assert.AreEqual(200, result.StatusCode);
-            Assert.AreEqual(expectedSiteExternalId, result.Value);
+            Assert.AreEqual(expectedSiteid, result.Value);
 
-            _mockAcreditationService.Verify(s => s.CreateOverseasSite(externalId, overseasSite), Times.Once());
+            _mockAcreditationService.Verify(s => s.CreateOverseasSite(id, overseasSite), Times.Once());
         }
 
         [TestMethod]
         public async Task GetSite_ExistingSite_ReturnsOkResultWithSite()
         {
             // Arrange
-            var externalId = Guid.NewGuid();
-            var siteExternalId = Guid.NewGuid();
+            var id = Guid.NewGuid();
+            var siteid = Guid.NewGuid();
             var expectedSite = new OverseasReprocessingSite();
 
             _mockAcreditationService.Setup(s =>
                 s.GetOverseasSite(
-                    externalId,
-                    siteExternalId))
+                    id,
+                    siteid))
                 .ReturnsAsync(expectedSite);
 
             // Act
-            var result = await _overseasSiteController.GetSite(externalId, siteExternalId) as OkObjectResult;
+            var result = await _overseasSiteController.GetSite(id, siteid) as OkObjectResult;
 
             // Assert
             Assert.IsNotNull(result);
             Assert.AreEqual(200, result.StatusCode);
             Assert.AreEqual(expectedSite, result.Value);
 
-            _mockAcreditationService.Verify(s => s.GetOverseasSite(externalId, siteExternalId), Times.Once());
+            _mockAcreditationService.Verify(s => s.GetOverseasSite(id, siteid), Times.Once());
         }
 
         [TestMethod]
         public async Task GetSite_NonExistingSite_ReturnsNotFoundResult()
         {
             // Arrange
-            var externalId = Guid.NewGuid();
-            var siteExternalId = Guid.NewGuid();
+            var id = Guid.NewGuid();
+            var siteid = Guid.NewGuid();
 
             _mockAcreditationService.Setup(s =>
                 s.GetOverseasSite(
-                    externalId,
-                    siteExternalId))
+                    id,
+                    siteid))
                 .ReturnsAsync((OverseasReprocessingSite)null);
 
             // Act
-            var result = await _overseasSiteController.GetSite(externalId, siteExternalId) as NotFoundResult;
+            var result = await _overseasSiteController.GetSite(id, siteid) as NotFoundResult;
 
             // Assert
             Assert.IsNotNull(result);
             Assert.AreEqual(404, result.StatusCode);
 
-            _mockAcreditationService.Verify(s => s.GetOverseasSite(externalId, siteExternalId), Times.Once());
+            _mockAcreditationService.Verify(s => s.GetOverseasSite(id, siteid), Times.Once());
         }
 
         [TestMethod]
         public async Task UpdateSite_ValidData_ReturnsOkResult()
         {
             // Arrange
+            var id = Guid.NewGuid();
+            var overseasSiteId = Guid.NewGuid();
             var overseasSite = new OverseasReprocessingSite();
 
             // Act
-            var result = await _overseasSiteController.UpdateSite(overseasSite) as OkResult;
+            var result = await _overseasSiteController.UpdateSite(
+                id,
+                overseasSiteId,
+                overseasSite) as OkResult;
 
             // Assert
             Assert.IsNotNull(result);
             Assert.AreEqual(200, result.StatusCode);
 
-            _mockAcreditationService.Verify(s => s.UpdateOverseasSite(overseasSite), Times.Once());
+            _mockAcreditationService.Verify(s => 
+                s.UpdateOverseasSite(
+                    id,
+                    overseasSiteId,
+                    overseasSite),
+                Times.Once());
         }
     }
 }

@@ -1,4 +1,6 @@
 ﻿using EPR.Accreditation.API.Common.Dtos;
+using EPR.Accreditation.API.Helpers;
+using EPR.Accreditation.API.Helpers.Comparers;
 using EPR.Accreditation.API.Repositories.Interfaces;
 using EPR.Accreditation.API.Services.Interfaces;
 using DTO = EPR.Accreditation.API.Common.Dtos;
@@ -28,147 +30,184 @@ namespace EPR.Accreditation.API.Services
         }
 
         public async Task<Guid> CreateMaterial(
-            Guid externalId,
+            Guid id,
             Guid? overseasSiteId,
             AccreditationMaterial accreditationMaterial)
         {
-            accreditationMaterial.ExternalId = Guid.NewGuid();
-
             return await _repository.AddAccreditationMaterial(
-                externalId,
+                id,
                 overseasSiteId,
                 accreditationMaterial);
         }
 
         public async Task UpdateAccreditation(
-            Guid externalId,
+            Guid id,
             DTO.Accreditation accreditation)
         {
             await _repository.UpdateAccreditation(
-                externalId,
+                id,
                 accreditation);
         }
 
-        public async Task<DTO.Accreditation> GetAccreditation(Guid externalId)
+        public async Task<DTO.Accreditation> GetAccreditation(Guid id)
         {
-            var accreditation = await _repository.GetById(externalId);
+            var accreditation = await _repository.GetAccreditation(id);
 
             return accreditation;
         }
 
-        public async Task<IEnumerable<FileUpload>> GetFileRecords(Guid externalId)
+        public async Task<IEnumerable<FileUpload>> GetFileRecords(Guid id)
         {
-            var fileUploadRecords = await _repository.GetFileRecords(externalId);
+            var fileUploadRecords = await _repository.GetFileRecords(id);
 
             return fileUploadRecords;
         }
 
         public async Task DeleteFile(
-            Guid externalId,
+            Guid id,
             Guid fileId)
         {
             await _repository.DeleteFile(
-                externalId,
+                id,
                 fileId);
         }
 
-        public async Task<IEnumerable<AccreditationTaskProgress>> GetTaskProgress(Guid externalId)
+        public async Task<IEnumerable<AccreditationTaskProgress>> GetTaskProgress(Guid id)
         {
-            return await _repository.GetTaskProgress(externalId);
+            return await _repository.GetTaskProgress(id);
         }
 
         public async Task AddFile(
-            Guid externalId,
+            Guid id,
             DTO.FileUpload fileUpload)
         {
             await _repository.AddFile(
-                externalId, fileUpload);
+                id, fileUpload);
         }
 
         public async Task UpdateMaterail(
-            Guid externalId,
+            Guid id,
             Guid? overseasSiteId,
-            Guid materialExternalId,
+            Guid materialid,
             AccreditationMaterial accreditationMaterial)
         {
+            if (accreditationMaterial.WasteCodes != null &&
+                accreditationMaterial.WasteCodes.Any())
+            {
+                accreditationMaterial.WasteCodes =
+                    accreditationMaterial.WasteCodes.Distinct(new WasteCodeDtoComparer());
+            }
+
             await _repository.UpdateMaterial(
-                externalId,
+                id,
                 overseasSiteId,
-                materialExternalId,
+                materialid,
                 accreditationMaterial);
         }
 
         public async Task<AccreditationMaterial> GetMaterial(
-            Guid externalId,
-            Guid? overseasSiteExternalId,
-            Guid materialExternalId)
+            Guid id,
+            Guid? overseasSiteid,
+            Guid materialid)
         {
             return await _repository.GetMaterial(
-                externalId,
-                overseasSiteExternalId,
-                materialExternalId);
+                id,
+                overseasSiteid,
+                materialid);
         }
 
         public async Task<DTO.Site> GetSite(
-            Guid externalId)
+            Guid id)
         {
-            return await _repository.GetSite(externalId);
+            return await _repository.GetSite(id);
         }
 
         public async Task<Guid> CreateSite(
-            Guid externalId,
+            Guid id,
             Site site)
         {
+            // ensure accreditation is an exporter
+            var accreditation = await _repository.GetAccreditation(id);
+
+            if (accreditation == null)
+            {
+                throw new NotFoundException($"No accreditation found with ID: {id}");
+            }
+
+            if (accreditation.OperatorTypeId != Common.Enums.OperatorType.Reprocessor)
+            {
+                throw new InvalidOperationException($"Cannot add Overseas Site to Reprocessor Accreditation. Id: {id}");
+            }
+
             return await _repository.CreateSite(
-                externalId,
+                id,
                 site);
         }
 
         public async Task UpdateSite(
-            Guid externalId,
+            Guid id,
             Site site)
         {
             await _repository.UpdateSite(
-                externalId,
+                id,
                 site);
         }
 
         public async Task<DTO.OverseasReprocessingSite> GetOverseasSite(
-            Guid externalId,
-            Guid overseasSiteExternalId)
+            Guid id,
+            Guid overseasSiteid)
         {
-            return await _repository.GetOverseasSite(externalId, overseasSiteExternalId);
+            return await _repository.GetOverseasSite(id, overseasSiteid);
         }
 
         public async Task<Guid> CreateOverseasSite(
-            Guid externalId,
+            Guid id,
             OverseasReprocessingSite overseasReprocessingSite)
         {
+            // ensure accreditation is an exporter
+            var accreditation = await _repository.GetAccreditation(id);
+
+            if (accreditation ==  null)
+            {
+                throw new NotFoundException($"No accreditation found with ID: {id}");
+            }
+
+            if (accreditation.OperatorTypeId != Common.Enums.OperatorType.Exporter)
+            {
+                throw new InvalidOperationException($"Cannot add Overseas Site to Reprocessor Accreditation. Id: {id}");
+            }
+
             return await _repository.CreateOverseasSite(
-                externalId,
+                id,
                 overseasReprocessingSite);
         }
 
-        public async Task UpdateOverseasSite(OverseasReprocessingSite overseasReprocessingSite)
+        public async Task UpdateOverseasSite(
+            Guid id,
+            Guid overseasSiteId,
+            OverseasReprocessingSite overseasReprocessingSite)
         {
-            await _repository.UpdateOverseasSite(overseasReprocessingSite);
+            await _repository.UpdateOverseasSite(
+                id,
+                overseasSiteId,
+                overseasReprocessingSite);
         }
 
-        public async Task<SaveAndComeBack> GetSaveAndComeBack(Guid externalId)
+        public async Task<SaveAndComeBack> GetSaveAndComeBack(Guid id)
         {
-            return await _repository.GetSaveAndComeBack(externalId);
+            return await _repository.GetSaveAndComeBack(id);
         }
 
-        public async Task DeleteSaveAndComeBack(Guid externalId)
+        public async Task DeleteSaveAndComeBack(Guid id)
         {
-            await _repository.DeleteSaveAndComeBack(externalId);
+            await _repository.DeleteSaveAndComeBack(id);
         }
 
         public async Task AddSaveAndComeBack(
-            Guid externalId,
+            Guid id,
             DTO.SaveAndComeBack saveAndComeBack)
         {
-            await _repository.AddSaveAndComeBack(externalId, saveAndComeBack);
+            await _repository.AddSaveAndComeBack(id, saveAndComeBack);
         }
     }
 }

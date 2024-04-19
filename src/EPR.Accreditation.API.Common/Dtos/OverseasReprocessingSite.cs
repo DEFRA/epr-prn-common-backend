@@ -4,10 +4,6 @@ namespace EPR.Accreditation.API.Common.Dtos
 {
     public class OverseasReprocessingSite
     {
-        public Guid? ExternalId { get; set; } // This has a unique key added via the dbcontext
-
-        public int Id { get; set; }
-
         public int AccreditationId { get; set; }
 
         public int? OverseasAddressId { get; set; } // unique key as this is a one to one relationship

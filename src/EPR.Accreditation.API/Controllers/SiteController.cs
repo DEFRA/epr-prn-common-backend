@@ -5,7 +5,7 @@ using DTO = EPR.Accreditation.API.Common.Dtos;
 namespace EPR.Accreditation.API.Controllers
 {
     [ApiController]
-    [Route("/api/Accreditation/{externalId}/[controller]")]
+    [Route("/api/Accreditation/{id}/[controller]")]
     public class SiteController : ControllerBase
     {
         protected readonly IAccreditationService _accreditationService;
@@ -19,10 +19,10 @@ namespace EPR.Accreditation.API.Controllers
         [HttpGet]
         [ProducesResponseType(typeof(DTO.Site), 200)]
         public async Task<IActionResult> GetSite(
-            Guid externalId)
+            Guid id)
         {
             var site = await _accreditationService.GetSite(
-                externalId);
+                id);
 
             if (site == null)
                 return NotFound();
@@ -33,23 +33,23 @@ namespace EPR.Accreditation.API.Controllers
         [HttpPost]
         [ProducesResponseType(typeof(Guid), 200)]
         public async Task<IActionResult> CreateSite(
-            Guid externalId,
+            Guid id,
             [FromBody] DTO.Site site)
         {
-            var siteExternalId = await _accreditationService.CreateSite(
-                externalId,
+            var siteid = await _accreditationService.CreateSite(
+                id,
                 site);
 
-            return Ok(siteExternalId);
+            return Ok(siteid);
         }
 
         [HttpPut]
         public async Task<IActionResult> UpdateSite(
-            Guid externalId,
+            Guid id,
             [FromBody] DTO.Site site)
         {
             await _accreditationService.UpdateSite(
-                externalId,
+                id,
                 site);
 
             return Ok();

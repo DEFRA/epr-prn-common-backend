@@ -2,10 +2,6 @@
 {
     public class Site
     {
-        public int Id { get; set; }
-
-        public Guid ExternalId { get; set; }
-
         public string Address1 { get; set; }
 
         public string Address2 { get; set; }
