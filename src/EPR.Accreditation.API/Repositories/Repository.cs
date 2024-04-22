@@ -24,17 +24,21 @@ namespace EPR.Accreditation.API.Repositories
 
         public async Task<DTO.Accreditation> GetAccreditation(Guid id)
         {
-            var accreditation = await _accreditationContext
+            var result = await _accreditationContext
                 .Accreditation
                     .Include(a => a.Site)
                     .Include(a => a.OverseasReprocessingSites)
+                        .ThenInclude(am => am.AccreditationMaterials)
+                        .ThenInclude(m => m.Material)
                     .Include(a => a.WastePermit)
                 .Where(a => a.ExternalId == id)
-                .Select(a =>
-                    _mapper.Map<DTO.Accreditation>(a)
-                )
+                //.Select(a =>
+                //    _mapper.Map<DTO.Accreditation>(a)
+                //)
                 .FirstOrDefaultAsync();
 
+
+            var accreditation = _mapper.Map<DTO.Accreditation>(result);
             return accreditation;
         }
 
@@ -340,7 +344,9 @@ namespace EPR.Accreditation.API.Repositories
         {
             var accreditationId = await _accreditationContext
                 .Accreditation
-                .Where(a => a.ExternalId == id)
+                .Where(a =>
+                    a.ExternalId == id &&
+                    a.OperatorTypeId == OperatorType.Exporter)
                 .Select(a => (int?)a.Id)
                 .SingleOrDefaultAsync();
 
@@ -365,8 +371,8 @@ namespace EPR.Accreditation.API.Repositories
             // get overseas site from the accreditation
             var entity = await _accreditationContext
                 .OverseasReprocessingSite
-                .Where(a => 
-                    a.ExternalId == overseasSiteId && 
+                .Where(a =>
+                    a.ExternalId == overseasSiteId &&
                     a.Accreditation != null &&
                     a.Accreditation.ExternalId == id)
                 .SingleOrDefaultAsync()

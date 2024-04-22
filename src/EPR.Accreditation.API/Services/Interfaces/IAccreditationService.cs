@@ -1,4 +1,5 @@
-﻿using DTO = EPR.Accreditation.API.Common.Dtos;
+﻿using EPR.Accreditation.API.Common.Enums;
+using DTO = EPR.Accreditation.API.Common.Dtos;
 
 namespace EPR.Accreditation.API.Services.Interfaces
 {
@@ -71,5 +72,9 @@ namespace EPR.Accreditation.API.Services.Interfaces
         Task AddSaveAndComeBack(
             Guid id,
             DTO.SaveAndComeBack saveAndContinue);
+
+        Task<DTO.CheckAnswers> GetCheckAnswers(
+            Guid id,
+            CheckAnswersSection section);
     }
 }

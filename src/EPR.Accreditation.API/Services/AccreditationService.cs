@@ -1,8 +1,10 @@
 ﻿using EPR.Accreditation.API.Common.Dtos;
+using EPR.Accreditation.API.Common.Enums;
 using EPR.Accreditation.API.Helpers;
 using EPR.Accreditation.API.Helpers.Comparers;
 using EPR.Accreditation.API.Repositories.Interfaces;
 using EPR.Accreditation.API.Services.Interfaces;
+using EPR.Accreditation.Facade.Common.Dtos;
 using DTO = EPR.Accreditation.API.Common.Dtos;
 
 namespace EPR.Accreditation.API.Services
@@ -167,7 +169,7 @@ namespace EPR.Accreditation.API.Services
             // ensure accreditation is an exporter
             var accreditation = await _repository.GetAccreditation(id);
 
-            if (accreditation ==  null)
+            if (accreditation == null)
             {
                 throw new NotFoundException($"No accreditation found with ID: {id}");
             }
@@ -208,6 +210,54 @@ namespace EPR.Accreditation.API.Services
             DTO.SaveAndComeBack saveAndComeBack)
         {
             await _repository.AddSaveAndComeBack(id, saveAndComeBack);
+        }
+
+        public async Task<CheckAnswers> GetCheckAnswers(Guid id, CheckAnswersSection section)
+        {
+            var accreditation = await GetAccreditation(id);
+            var checkAnswersDto = new CheckAnswers();
+
+
+            switch (section) //TODO: Commodity codes come from the accreditationMaterial but need to map that in profile somehow
+            {
+                case CheckAnswersSection.AboutMaterialExporter:
+                    if (accreditation.OperatorTypeId != OperatorType.Exporter)
+                    {
+                        return new CheckAnswers();
+                    }
+                    else
+                    {
+                        var accreditationMaterial = accreditation.OverseasSites.FirstOrDefault().AccreditationMaterials.FirstOrDefault();
+                        var sourceOfWaste = accreditation.OverseasSites.FirstOrDefault().AccreditationMaterials.FirstOrDefault().WasteSource;
+                        //var commodityCode = accreditation.OverseasSites.FirstOrDefault().AccreditationMaterials.FirstOrDefault().WasteCodes.FirstOrDefault().Code;
+                        var peopleWithAuthority = new List<string>
+                        {
+                            "Andrew Shey, Management Accountant",
+                            "Gary Law, Strategic Buyer",
+                            "Scott McAlallister, PRN signatory"
+                        };
+
+                        var isCompleted = false;
+
+                        if (accreditationMaterial != null && sourceOfWaste != null && peopleWithAuthority.Any())
+                        {
+                            isCompleted = true;
+                        }
+
+                        var sectionRows = new List<CheckAnswersRowDto>();
+
+                        return new CheckAnswers
+                        {
+                            Id = id,
+                            Completed = isCompleted,
+                            SiteAddress = accreditation.OverseasSites.FirstOrDefault().OverseasAddress.Address,
+                            SectionRows = sectionRows
+                        };
+                    }
+            }
+
+            return checkAnswersDto;
+
         }
     }
 }

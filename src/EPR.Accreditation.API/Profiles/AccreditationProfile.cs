@@ -18,6 +18,8 @@ namespace EPR.Accreditation.API.Profiles
         public AccreditationProfile()
         {
             CreateMap<Data.Accreditation, DTO.Accreditation>()
+                .ForMember(dest => dest.Site, opt => opt.MapFrom(src => src.Site))
+                .ForMember(dest => dest.OverseasSites, opt => opt.MapFrom(src => src.OverseasReprocessingSites))
                 .MapOnlyNonDefault()
                 .ReverseMap()
                 .MapOnlyNonDefault();
@@ -69,7 +71,7 @@ namespace EPR.Accreditation.API.Profiles
                     // and an update may just include one set of data. So we need to carefully manage the merging of the data
                     // We also want to ensure that as little updates to the database occur, so need to ensure we work with
                     // the destination list
-                    d.WasteCodes, 
+                    d.WasteCodes,
                     o =>
 
                         o.MapFrom((s, d, m, context) =>
@@ -189,7 +191,7 @@ namespace EPR.Accreditation.API.Profiles
                             }
 
                             // loop through to see if any entries need adding
-                            foreach(var item in s.ReprocessorSupportingInformation)
+                            foreach (var item in s.ReprocessorSupportingInformation)
                             {
                                 var newDataItem = new Data.ReprocessorSupportingInformation
                                 {

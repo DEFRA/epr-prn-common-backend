@@ -22,5 +22,7 @@ namespace EPR.Accreditation.API.Common.Dtos
         public OverseasAgent OverseasAgent { get; set; }
 
         public OverseasAddress OverseasAddress { get; set; }
+
+        public ICollection<AccreditationMaterial> AccreditationMaterials { get; set; }
     }
 }
