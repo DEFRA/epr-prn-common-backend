@@ -95,7 +95,10 @@ namespace EPR.Accreditation.API.Services
                 accreditationMaterial.WasteCodes.Any())
             {
                 accreditationMaterial.WasteCodes =
-                    accreditationMaterial.WasteCodes.Distinct(new WasteCodeDtoComparer());
+                    accreditationMaterial
+                        .WasteCodes
+                        .Where(wc => !string.IsNullOrWhiteSpace(wc.Code))
+                        .Distinct(new WasteCodeDtoComparer());
             }
 
             await _repository.UpdateMaterial(
