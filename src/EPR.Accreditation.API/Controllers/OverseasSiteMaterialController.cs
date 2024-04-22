@@ -5,27 +5,27 @@ using DTO = EPR.Accreditation.API.Common.Dtos;
 namespace EPR.Accreditation.API.Controllers
 {
     [ApiController]
-    [Route("api/Accreditation/{externalId}/OverseasSite/{overseasExternalSiteId}/Material")]
-    public class OverseasSiteMaterialControllerController : ControllerBase
+    [Route("api/Accreditation/{id}/OverseasSite/{overseasSiteId}/Material")]
+    public class OverseasSiteMaterialController : ControllerBase
     {
         protected readonly IAccreditationService _accreditationService;
 
-        public OverseasSiteMaterialControllerController(IAccreditationService accreditationService)
+        public OverseasSiteMaterialController(IAccreditationService accreditationService)
         {
             _accreditationService = accreditationService ?? throw new ArgumentNullException(nameof(accreditationService));
         }
 
-        [HttpGet("{materialExternalId}")]
+        [HttpGet("{materialid}")]
         [ProducesResponseType(typeof(DTO.AccreditationMaterial), 200)]
         public async Task<IActionResult> GetOverseasSiteMaterial(
-            Guid externalId,
-            Guid overseasSiteExternalId,
-            Guid materialExternalId)
+            Guid id,
+            Guid overseasSiteId,
+            Guid materialid)
         {
             var material = await _accreditationService.GetMaterial(
-                externalId,
-                overseasSiteExternalId,
-                materialExternalId);
+                id,
+                overseasSiteId,
+                materialid);
 
             if (material == null)
                 return NotFound();
@@ -33,37 +33,34 @@ namespace EPR.Accreditation.API.Controllers
             return Ok(material);
         }
 
-        [HttpPost()]
+        [HttpPost]
         public async Task<IActionResult> CreateOverseasSiteMaterial(
-            Guid externalId,
-            Guid overseasExternalSiteId,
+            Guid id,
+            Guid overseasSiteId,
             [FromBody] DTO.AccreditationMaterial accreditationMaterial)
         {
             if (accreditationMaterial == null)
                 return BadRequest();
 
             var materialId = await _accreditationService.CreateMaterial(
-                externalId,
-                overseasExternalSiteId,
+                id,
+                overseasSiteId,
                 accreditationMaterial);
 
             return Ok(materialId);
         }
 
-        [HttpPut("{materialExternalId}")]
+        [HttpPut("{materialid}")]
         public async Task<IActionResult> UpdateOverseasSiteMaterial(
-            Guid externalId,
-            Guid siteExternalId,
-            Guid materialExternalId,
+            Guid id,
+            Guid overseasSiteId,
+            Guid materialid,
             [FromBody] DTO.AccreditationMaterial accreditationMaterial)
         {
-            if (materialExternalId != accreditationMaterial.ExternalId)
-                return BadRequest("External ID does not match");
-
             await _accreditationService.UpdateMaterail(
-                externalId,
-                siteExternalId,
-                materialExternalId,
+                id,
+                overseasSiteId,
+                materialid,
                 accreditationMaterial);
 
             return Ok();

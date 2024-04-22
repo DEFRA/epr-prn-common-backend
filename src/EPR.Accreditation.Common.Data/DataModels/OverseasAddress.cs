@@ -11,7 +11,7 @@ namespace EPR.Accreditation.API.Common.Data.DataModels
         public string Name { get; set; }
 
         [ForeignKey("Country")]
-        public int CountryId { get; set; }
+        public int? CountryId { get; set; }
 
         [MaxLength(500)]
         public string Address { get; set; }
