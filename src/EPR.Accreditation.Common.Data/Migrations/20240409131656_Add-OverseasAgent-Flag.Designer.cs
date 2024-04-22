@@ -4,6 +4,7 @@ using EPR.Accreditation.API.Common.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EPR.Accreditation.API.Common.Data.Migrations
 {
     [DbContext(typeof(AccreditationContext))]
-    partial class AccreditationContextModelSnapshot : ModelSnapshot
+    [Migration("20240409131656_Add-OverseasAgent-Flag")]
+    partial class AddOverseasAgentFlag
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -2185,7 +2187,7 @@ namespace EPR.Accreditation.API.Common.Data.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
-                    b.Property<int?>("CountryId")
+                    b.Property<int>("CountryId")
                         .HasColumnType("int");
 
                     b.Property<string>("Name")
@@ -2639,7 +2641,9 @@ namespace EPR.Accreditation.API.Common.Data.Migrations
                 {
                     b.HasOne("EPR.Accreditation.API.Common.Data.DataModels.Lookups.Country", "Country")
                         .WithMany("OverseasAddresses")
-                        .HasForeignKey("CountryId");
+                        .HasForeignKey("CountryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Country");
                 });

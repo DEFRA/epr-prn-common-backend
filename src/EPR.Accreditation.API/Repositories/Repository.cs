@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using EPR.Accreditation.API.Common.Data;
 using EPR.Accreditation.API.Common.Data.Enums;
+using EPR.Accreditation.API.Common.Dtos;
 using EPR.Accreditation.API.Helpers;
 using EPR.Accreditation.API.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -123,7 +124,7 @@ namespace EPR.Accreditation.API.Repositories
                 await _accreditationContext.Site.AddAsync(entity.Site);
             }
 
-            if (entity.WastePermit == null &&
+            if (entity.WastePermit != null &&
                 entity.WastePermit.Id == default)
                 await _accreditationContext.WastePermit.AddAsync(entity.WastePermit);
 
