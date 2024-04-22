@@ -31,6 +31,9 @@ namespace EPR.Accreditation.API.Services
         public async Task<IEnumerable<Guid>> GetPrnsForOrganisation(Guid organisationId)
             => await _repository.GetPrnsForOrganisation(organisationId);
 
+        public async Task UpdatePrnStatus(DTO.PrnStatusHistory status)
+            => await _repository.UpdatePrnStatus(status);
+
         public async Task DeletePrn(Guid prnId)
             => await _repository.DeletePrn(prnId);
     }

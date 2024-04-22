@@ -13,7 +13,8 @@ namespace EPR.Accreditation.API.Helpers
                 .AddScoped<IRepository, Repository>()
                 .AddScoped<IAccreditationService, AccreditationService>()
                 .AddScoped<ICountryService, CountryService>()
-                .AddScoped<IMaterialService, MaterialService>();
+                .AddScoped<IMaterialService, MaterialService>()
+                .AddScoped<IPackageRecyclingNoteService, PackageRecyclingNoteService>();
 
             return services;
         }

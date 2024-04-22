@@ -54,24 +54,53 @@ namespace EPR.Accreditation.API.Controllers
             if (accreditation == null)
                 return BadRequest("Package Recycling Note data not suppleid");
 
-            await _prnService.CreatePackageRecyclingNote(accreditation);
+            try
+            {
+                await _prnService.CreatePackageRecyclingNote(accreditation);
+                return Ok();
+            }
+            catch
+            {
 
-            return Ok();
+                return BadRequest();
+            }
+            
         }
         #endregion
 
         #region Put methods
 
+        [HttpPut]
+        public async Task<IActionResult> UpdatePrnStatus(DTO.PrnStatusHistory status)
+        {
+            try
+            {
+                await _prnService.UpdatePrnStatus(status);
+                return Ok();
+            }
+            catch 
+            {
+                return BadRequest();
+            }
+        }
+
         #endregion
 
         #region Delete methods
-        
+
         [HttpDelete]
         public async Task<IActionResult> DeletePackagingRecyclingNote(Guid id)
         {
-            await _prnService.DeletePrn(id);
+            try
+            {
+                await _prnService.DeletePrn(id);
+                return Ok();
+            }
+            catch
+            {
+                return BadRequest($"Unable to delete {id}");
+            }
 
-            return Ok();
         }
 
         #endregion

@@ -498,6 +498,17 @@ namespace EPR.Accreditation.API.Repositories
             return prn;
         }
 
+        private async Task<Data.PackageRecyclingNote> GetPackageRecyclingNote(int id)
+        {
+            var prn = await _accreditationContext
+               .PackageRecyclingNote
+                   .Include(a => a.Site)
+               .Where(a => a.Id == id)
+               .FirstOrDefaultAsync();
+
+            return prn;
+        }
+
         /// <inheritdoc>
         public async Task<IEnumerable<Guid>> GetPrnsForOrganisation(Guid organisationId)
         {
@@ -509,6 +520,22 @@ namespace EPR.Accreditation.API.Repositories
                .ToListAsync();
 
             return prn;
+        }
+
+        /// <inheritdoc>
+        public async Task UpdatePrnStatus(DTO.PrnStatusHistory status)
+        {
+            // Update the PRN record to the new status.
+            var prn = await GetPackageRecyclingNote(status.PrnId);
+            prn.PrnStatusId = status.PrnStatusId;
+            _accreditationContext.Update(prn);
+
+            // Add a new PRN status history record.
+            var entity = _mapper.Map<Data.PrnStatusHistory>(status);
+            _accreditationContext.PrnStatusHistories.Add(entity);
+
+            // Save the changes.
+            await _accreditationContext.SaveChangesAsync();
         }
 
         /// <inheritdoc>

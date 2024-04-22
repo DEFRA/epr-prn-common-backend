@@ -97,6 +97,12 @@ namespace EPR.Accreditation.API.Repositories.Interfaces
         Task<IEnumerable<Guid>> GetPrnsForOrganisation(Guid organisationId);
 
         /// <summary>
+        /// Updates the status of a PRN.
+        /// </summary>
+        /// <param name = "status" > The details of the status update.</param>
+        Task UpdatePrnStatus(DTO.PrnStatusHistory status);
+
+        /// <summary>
         /// Deletes a PRN.
         /// </summary>
         /// <param name="id">The ID of the PRN to delete.</param>
