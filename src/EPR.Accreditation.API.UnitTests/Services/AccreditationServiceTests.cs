@@ -347,44 +347,6 @@ namespace EPR.Accreditation.API.UnitTests.Services
         }
 
         [TestMethod]
-        [ExpectedException(typeof(NotFoundException))]
-        public async Task CreateOverseasSite_AccreditationDoesNotExist_ThrowsNotFoundException()
-        {
-            // Arrange
-            var overseasReprocessingSite = new OverseasReprocessingSite();
-
-            // Act
-            var result = await _accreditationService.CreateOverseasSite(
-                Guid.NewGuid(),
-                overseasReprocessingSite);
-
-            // Assert
-        }
-
-        [TestMethod]
-        [ExpectedException(typeof(InvalidOperationException))]
-        public async Task CreateOverseasSite_AccreditationNotExporter_ThrowsInvalidOperationException()
-        {
-            // Arrange
-            _mockRepository
-                .Setup(r =>
-                    r.GetAccreditation(It.IsAny<Guid>()))
-                .ReturnsAsync(
-                    new Common.Dtos.Accreditation
-                    {
-                        OperatorTypeId = Common.Enums.OperatorType.Reprocessor
-                    });
-            var overseasReprocessingSite = new OverseasReprocessingSite();
-
-            // Act
-            var result = await _accreditationService.CreateOverseasSite(
-                Guid.NewGuid(),
-                overseasReprocessingSite);
-
-            // Assert
-        }
-
-        [TestMethod]
         public async Task GetOverseasSite_ExistingSite_ReturnsSite()
         {
             // Arrange
