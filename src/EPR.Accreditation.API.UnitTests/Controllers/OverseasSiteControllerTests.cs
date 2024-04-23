@@ -97,11 +97,13 @@
         {
             // Arrange
             var id = Guid.NewGuid();
+            var siteId = Guid.NewGuid();
             var overseasSite = new OverseasReprocessingSite();
 
             // Act
             var result = await _overseasSiteController.UpdateSite(
                 id,
+                siteId,
                 overseasSite) as OkResult;
 
             // Assert
@@ -111,6 +113,7 @@
             _mockAcreditationService.Verify(s =>
                 s.UpdateOverseasSite(
                     id,
+                    siteId,
                     overseasSite),
                 Times.Once());
         }

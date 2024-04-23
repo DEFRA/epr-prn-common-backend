@@ -396,17 +396,20 @@ namespace EPR.Accreditation.API.UnitTests.Services
         {
             // Arrange
             var id = Guid.NewGuid();
+            var siteId = Guid.NewGuid();
             var overseasReprocessingSite = new OverseasReprocessingSite();
 
             // Act
             await _accreditationService.UpdateOverseasSite(
                 id,
+                siteId,
                 overseasReprocessingSite);
 
             // Assert
             _mockRepository.Verify(r =>
                 r.UpdateOverseasSite(
                     id,
+                    siteId,
                     overseasReprocessingSite),
                 Times.Once);
         }

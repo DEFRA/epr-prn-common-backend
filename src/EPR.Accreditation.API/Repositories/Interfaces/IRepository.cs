@@ -63,6 +63,7 @@ namespace EPR.Accreditation.API.Repositories.Interfaces
 
         Task UpdateOverseasSite(
             Guid id,
+            Guid overseasSiteId,
             DTO.OverseasReprocessingSite site);
 
         Task<DTO.SaveAndComeBack> GetSaveAndComeBack(Guid id);
