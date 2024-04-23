@@ -174,12 +174,10 @@ namespace EPR.Accreditation.API.Services
 
         public async Task UpdateOverseasSite(
             Guid id,
-            Guid overseasSiteId,
             OverseasReprocessingSite overseasReprocessingSite)
         {
             await _repository.UpdateOverseasSite(
                 id,
-                overseasSiteId,
                 overseasReprocessingSite);
         }
 

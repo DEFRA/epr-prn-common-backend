@@ -160,7 +160,7 @@ namespace EPR.Accreditation.API.UnitTests.Services
             var accreditationMaterial = new Common.Dtos.AccreditationMaterial
             {
                 WasteCodes = new List<WasteCode>
-                { 
+                {
                     new()
                     {
                         Code = wasteCodeValue
@@ -182,8 +182,8 @@ namespace EPR.Accreditation.API.UnitTests.Services
                     id,
                     overseasSiteId,
                     materialid,
-                    It.Is<AccreditationMaterial>(p => 
-                        p.WasteCodes != null && 
+                    It.Is<AccreditationMaterial>(p =>
+                        p.WasteCodes != null &&
                         p.WasteCodes.First().Code == wasteCodeValue)),
                 Times.Once);
         }
@@ -230,8 +230,8 @@ namespace EPR.Accreditation.API.UnitTests.Services
                     id,
                     overseasSiteId,
                     materialid,
-                    It.Is<AccreditationMaterial>(p => 
-                        p.WasteCodes != null && 
+                    It.Is<AccreditationMaterial>(p =>
+                        p.WasteCodes != null &&
                         p.WasteCodes.ToList().Count == 2 &&
                         p.WasteCodes.ToList()[0].Code == wasteCodeValue &&
                         p.WasteCodes.ToList()[1].Code == wasteCodeValue2)),
@@ -434,20 +434,17 @@ namespace EPR.Accreditation.API.UnitTests.Services
         {
             // Arrange
             var id = Guid.NewGuid();
-            var overseasSiteId = Guid.NewGuid();
             var overseasReprocessingSite = new OverseasReprocessingSite();
 
             // Act
             await _accreditationService.UpdateOverseasSite(
                 id,
-                overseasSiteId,
                 overseasReprocessingSite);
 
             // Assert
-            _mockRepository.Verify(x => 
-                x.UpdateOverseasSite(
+            _mockRepository.Verify(r =>
+                r.UpdateOverseasSite(
                     id,
-                    overseasSiteId,
                     overseasReprocessingSite),
                 Times.Once);
         }
