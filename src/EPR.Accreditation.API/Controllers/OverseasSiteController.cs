@@ -48,12 +48,10 @@ namespace EPR.Accreditation.API.Controllers
         [HttpPut]
         public async Task<IActionResult> UpdateSite(
             Guid id,
-            Guid overseasSiteId,
             DTO.OverseasReprocessingSite overseasSite)
         {
             await _accreditationService.UpdateOverseasSite(
                 id,
-                overseasSiteId,
                 overseasSite);
 
             return Ok();

@@ -170,7 +170,7 @@ namespace EPR.Accreditation.API.Services
             // ensure accreditation is an exporter
             var accreditation = await _repository.GetAccreditation(id);
 
-            if (accreditation ==  null)
+            if (accreditation == null)
             {
                 throw new NotFoundException($"No accreditation found with ID: {id}");
             }
@@ -187,12 +187,10 @@ namespace EPR.Accreditation.API.Services
 
         public async Task UpdateOverseasSite(
             Guid id,
-            Guid overseasSiteId,
             OverseasReprocessingSite overseasReprocessingSite)
         {
             await _repository.UpdateOverseasSite(
                 id,
-                overseasSiteId,
                 overseasReprocessingSite);
         }
 
