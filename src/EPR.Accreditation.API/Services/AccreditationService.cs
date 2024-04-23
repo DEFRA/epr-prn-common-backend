@@ -167,19 +167,6 @@ namespace EPR.Accreditation.API.Services
             Guid id,
             OverseasReprocessingSite overseasReprocessingSite)
         {
-            // ensure accreditation is an exporter
-            var accreditation = await _repository.GetAccreditation(id);
-
-            if (accreditation == null)
-            {
-                throw new NotFoundException($"No accreditation found with ID: {id}");
-            }
-
-            if (accreditation.OperatorTypeId != Common.Enums.OperatorType.Exporter)
-            {
-                throw new InvalidOperationException($"Cannot add Overseas Site to Reprocessor Accreditation. Id: {id}");
-            }
-
             return await _repository.CreateOverseasSite(
                 id,
                 overseasReprocessingSite);
