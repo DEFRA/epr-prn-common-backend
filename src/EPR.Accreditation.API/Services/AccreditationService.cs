@@ -1,14 +1,14 @@
-﻿using EPR.Accreditation.API.Common.Dtos;
-using EPR.Accreditation.API.Common.Enums;
-using EPR.Accreditation.API.Helpers;
-using EPR.Accreditation.API.Helpers.Comparers;
-using EPR.Accreditation.API.Repositories.Interfaces;
-using EPR.Accreditation.API.Services.Interfaces;
-using EPR.Accreditation.Facade.Common.Dtos;
-using DTO = EPR.Accreditation.API.Common.Dtos;
-
-namespace EPR.Accreditation.API.Services
+﻿namespace EPR.Accreditation.API.Services
 {
+    using EPR.Accreditation.API.Common.Dtos;
+    using EPR.Accreditation.API.Common.Enums;
+    using EPR.Accreditation.API.Helpers;
+    using EPR.Accreditation.API.Helpers.Comparers;
+    using EPR.Accreditation.API.Repositories.Interfaces;
+    using EPR.Accreditation.API.Services.Interfaces;
+    using EPR.Accreditation.Facade.Common.Dtos;
+    using DTO = EPR.Accreditation.API.Common.Dtos;
+
     public class AccreditationService : IAccreditationService
     {
         protected readonly IRepository _repository;
@@ -97,7 +97,10 @@ namespace EPR.Accreditation.API.Services
                 accreditationMaterial.WasteCodes.Any())
             {
                 accreditationMaterial.WasteCodes =
-                    accreditationMaterial.WasteCodes.Distinct(new WasteCodeDtoComparer());
+                    accreditationMaterial
+                        .WasteCodes
+                        .Where(wc => !string.IsNullOrWhiteSpace(wc.Code))
+                        .Distinct(new WasteCodeDtoComparer());
             }
 
             await _repository.UpdateMaterial(
@@ -166,19 +169,6 @@ namespace EPR.Accreditation.API.Services
             Guid id,
             OverseasReprocessingSite overseasReprocessingSite)
         {
-            // ensure accreditation is an exporter
-            var accreditation = await _repository.GetAccreditation(id);
-
-            if (accreditation == null)
-            {
-                throw new NotFoundException($"No accreditation found with ID: {id}");
-            }
-
-            if (accreditation.OperatorTypeId != Common.Enums.OperatorType.Exporter)
-            {
-                throw new InvalidOperationException($"Cannot add Overseas Site to Reprocessor Accreditation. Id: {id}");
-            }
-
             return await _repository.CreateOverseasSite(
                 id,
                 overseasReprocessingSite);

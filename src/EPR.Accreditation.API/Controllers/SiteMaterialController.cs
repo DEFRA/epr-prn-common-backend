@@ -33,7 +33,7 @@ namespace EPR.Accreditation.API.Controllers
             return Ok(material);
         }
 
-        [HttpPost()]
+        [HttpPost]
         public async Task<IActionResult> CreateSiteMaterial(
             Guid id,
             [FromBody] DTO.AccreditationMaterial accreditationMaterial)

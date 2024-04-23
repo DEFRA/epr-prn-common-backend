@@ -344,14 +344,17 @@ namespace EPR.Accreditation.API.Repositories
         {
             var accreditationId = await _accreditationContext
                 .Accreditation
-                .Where(a =>
-                    a.ExternalId == id &&
-                    a.OperatorTypeId == OperatorType.Exporter)
+                .Where(
+                    a =>
+                        a.ExternalId == id &&
+                        a.OperatorTypeId == OperatorType.Exporter) // cannot add an overseas site to a reprocessor
                 .Select(a => (int?)a.Id)
                 .SingleOrDefaultAsync();
 
             if (accreditationId == null)
+            {
                 throw new NotFoundException();
+            }
 
             var entity = _mapper.Map<Data.OverseasReprocessingSite>(site);
             entity.AccreditationId = accreditationId.Value;
@@ -368,15 +371,16 @@ namespace EPR.Accreditation.API.Repositories
             Guid overseasSiteId,
             DTO.OverseasReprocessingSite site)
         {
-            // get overseas site from the accreditation
+            // get overseas site
             var entity = await _accreditationContext
                 .OverseasReprocessingSite
-                .Where(a =>
-                    a.ExternalId == overseasSiteId &&
-                    a.Accreditation != null &&
-                    a.Accreditation.ExternalId == id)
+                .Include(s => s.OverseasAddress)
+                .Where(os =>
+                    os.Accreditation.ExternalId == id &&
+                    os.Accreditation.OperatorTypeId == OperatorType.Exporter &&
+                    os.ExternalId == overseasSiteId)
                 .SingleOrDefaultAsync()
-                ?? throw new NotFoundException();
+                 ?? throw new NotFoundException();
 
             if (entity == null)
             {

@@ -97,23 +97,23 @@
         {
             // Arrange
             var id = Guid.NewGuid();
-            var overseasSiteId = Guid.NewGuid();
+            var siteId = Guid.NewGuid();
             var overseasSite = new OverseasReprocessingSite();
 
             // Act
             var result = await _overseasSiteController.UpdateSite(
                 id,
-                overseasSiteId,
+                siteId,
                 overseasSite) as OkResult;
 
             // Assert
             Assert.IsNotNull(result);
             Assert.AreEqual(200, result.StatusCode);
 
-            _mockAcreditationService.Verify(s => 
+            _mockAcreditationService.Verify(s =>
                 s.UpdateOverseasSite(
                     id,
-                    overseasSiteId,
+                    siteId,
                     overseasSite),
                 Times.Once());
         }

@@ -45,15 +45,15 @@ namespace EPR.Accreditation.API.Controllers
             return Ok(siteid);
         }
 
-        [HttpPut]
+        [HttpPut("{siteid}")]
         public async Task<IActionResult> UpdateSite(
             Guid id,
-            Guid overseasSiteId,
+            Guid siteid,
             DTO.OverseasReprocessingSite overseasSite)
         {
             await _accreditationService.UpdateOverseasSite(
                 id,
-                overseasSiteId,
+                siteid,
                 overseasSite);
 
             return Ok();

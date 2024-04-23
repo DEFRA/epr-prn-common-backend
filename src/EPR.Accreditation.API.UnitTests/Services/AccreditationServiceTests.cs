@@ -160,7 +160,7 @@ namespace EPR.Accreditation.API.UnitTests.Services
             var accreditationMaterial = new Common.Dtos.AccreditationMaterial
             {
                 WasteCodes = new List<WasteCode>
-                { 
+                {
                     new()
                     {
                         Code = wasteCodeValue
@@ -182,8 +182,8 @@ namespace EPR.Accreditation.API.UnitTests.Services
                     id,
                     overseasSiteId,
                     materialid,
-                    It.Is<AccreditationMaterial>(p => 
-                        p.WasteCodes != null && 
+                    It.Is<AccreditationMaterial>(p =>
+                        p.WasteCodes != null &&
                         p.WasteCodes.First().Code == wasteCodeValue)),
                 Times.Once);
         }
@@ -230,8 +230,8 @@ namespace EPR.Accreditation.API.UnitTests.Services
                     id,
                     overseasSiteId,
                     materialid,
-                    It.Is<AccreditationMaterial>(p => 
-                        p.WasteCodes != null && 
+                    It.Is<AccreditationMaterial>(p =>
+                        p.WasteCodes != null &&
                         p.WasteCodes.ToList().Count == 2 &&
                         p.WasteCodes.ToList()[0].Code == wasteCodeValue &&
                         p.WasteCodes.ToList()[1].Code == wasteCodeValue2)),
@@ -347,44 +347,6 @@ namespace EPR.Accreditation.API.UnitTests.Services
         }
 
         [TestMethod]
-        [ExpectedException(typeof(NotFoundException))]
-        public async Task CreateOverseasSite_AccreditationDoesNotExist_ThrowsNotFoundException()
-        {
-            // Arrange
-            var overseasReprocessingSite = new OverseasReprocessingSite();
-
-            // Act
-            var result = await _accreditationService.CreateOverseasSite(
-                Guid.NewGuid(),
-                overseasReprocessingSite);
-
-            // Assert
-        }
-
-        [TestMethod]
-        [ExpectedException(typeof(InvalidOperationException))]
-        public async Task CreateOverseasSite_AccreditationNotExporter_ThrowsInvalidOperationException()
-        {
-            // Arrange
-            _mockRepository
-                .Setup(r =>
-                    r.GetAccreditation(It.IsAny<Guid>()))
-                .ReturnsAsync(
-                    new Common.Dtos.Accreditation
-                    {
-                        OperatorTypeId = Common.Enums.OperatorType.Reprocessor
-                    });
-            var overseasReprocessingSite = new OverseasReprocessingSite();
-
-            // Act
-            var result = await _accreditationService.CreateOverseasSite(
-                Guid.NewGuid(),
-                overseasReprocessingSite);
-
-            // Assert
-        }
-
-        [TestMethod]
         public async Task GetOverseasSite_ExistingSite_ReturnsSite()
         {
             // Arrange
@@ -434,20 +396,20 @@ namespace EPR.Accreditation.API.UnitTests.Services
         {
             // Arrange
             var id = Guid.NewGuid();
-            var overseasSiteId = Guid.NewGuid();
+            var siteId = Guid.NewGuid();
             var overseasReprocessingSite = new OverseasReprocessingSite();
 
             // Act
             await _accreditationService.UpdateOverseasSite(
                 id,
-                overseasSiteId,
+                siteId,
                 overseasReprocessingSite);
 
             // Assert
-            _mockRepository.Verify(x => 
-                x.UpdateOverseasSite(
+            _mockRepository.Verify(r =>
+                r.UpdateOverseasSite(
                     id,
-                    overseasSiteId,
+                    siteId,
                     overseasReprocessingSite),
                 Times.Once);
         }
