@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using EPR.Accreditation.API.Common.Data;
+using EPR.Accreditation.API.Common.Data.DataModels;
 using EPR.Accreditation.API.Common.Data.Enums;
 using EPR.Accreditation.API.Common.Dtos;
 using EPR.Accreditation.API.Helpers;
@@ -476,22 +477,53 @@ namespace EPR.Accreditation.API.Repositories
         }
 
         /// <inheritdoc/>
-        public async Task AddPackageRecyclingNote(DTO.PackageRecyclingNote prn)
+        public async Task<Guid> AddPackageRecyclingNote(DTO.PackageRecyclingNoteRequest prn)
         {
-            var entity = _mapper.Map<Data.PackageRecyclingNote>(prn);
-            _accreditationContext.PackageRecyclingNote.Add(entity);
+            var newPrn = _mapper.Map<Data.PackageRecyclingNote>(prn);
+            newPrn.ExternalId = Guid.NewGuid();
+            newPrn.CreatedDate = DateTime.UtcNow;
+            newPrn.LastUpdatedDate = newPrn.CreatedDate;
+            newPrn.PrnStatusId = (int)Common.Enums.PrnStatus.Draft;
+            _accreditationContext.PackageRecyclingNote.Add(newPrn);
             await _accreditationContext.SaveChangesAsync();
+            return newPrn.ExternalId;
+        }
+
+        // TODO - doesn't yet work correctly.
+        /// <inheritdoc/>
+        public async Task UpdatePrn(Guid prnId, DTO.PrnUpdateRequest updatedData)
+        {
+                // If the update includes a change in status, add a new PRN status history record.
+
+                // Update the PRN record to the new status.
+
+                var updatedPrn = _mapper.Map<PackageRecyclingNote>(updatedData.Prn);
+            var currentPrn = await _accreditationContext
+               .PackageRecyclingNote
+                   .Include(a => a.Site)
+               .Where(a => a.ExternalId == prnId)
+               .FirstOrDefaultAsync();
+            updatedPrn.Id = currentPrn.Id;
+            updatedPrn.CreatedDate = currentPrn.CreatedDate;
+            updatedPrn.ExternalId = prnId;
+            updatedPrn.LastUpdatedDate = DateTime.UtcNow;
+            
+            _accreditationContext.PackageRecyclingNote.Update(updatedPrn);
+
+            await DoUpdatePrnStatus(prnId, updatedData.Status);
+
+            _accreditationContext.SaveChanges();
         }
 
         /// <inheritdoc>
-        public async Task<DTO.PackageRecyclingNote> GetPackageRecyclingNote(Guid id)
+        public async Task<DTO.PackageRecyclingNoteResponse> GetPackageRecyclingNote(Guid id)
         {
             var prn = await _accreditationContext
                .PackageRecyclingNote
                    .Include(a => a.Site)
                .Where(a => a.ExternalId == id)
                .Select(a =>
-                   _mapper.Map<DTO.PackageRecyclingNote>(a)
+                   _mapper.Map<DTO.PackageRecyclingNoteResponse>(a)
                )
                .FirstOrDefaultAsync();
 
@@ -523,19 +555,37 @@ namespace EPR.Accreditation.API.Repositories
         }
 
         /// <inheritdoc>
-        public async Task UpdatePrnStatus(DTO.PrnStatusHistory status)
+        public async Task UpdatePrnStatus(Guid prnId, DTO.PrnStatusHistoryRequest status)
+        {
+
+            await DoUpdatePrnStatus(prnId, status);
+            await _accreditationContext.SaveChangesAsync();
+        }
+
+        /// <summary>
+        /// Performs a PRN status update, but doesn't immideately save the changes.
+        /// </summary>
+        /// <param name="status"></param>
+        /// <exception cref="InvalidOperationException"></exception>
+        private async Task DoUpdatePrnStatus(Guid prnId, DTO.PrnStatusHistoryRequest status)
         {
             // Update the PRN record to the new status.
-            var prn = await GetPackageRecyclingNote(status.PrnId);
+            var prn = await _accreditationContext
+               .PackageRecyclingNote
+                   .Include(a => a.Site)
+               .Where(a => a.ExternalId == prnId)
+               .FirstOrDefaultAsync();
+
             prn.PrnStatusId = status.PrnStatusId;
             _accreditationContext.Update(prn);
 
-            // Add a new PRN status history record.
-            var entity = _mapper.Map<Data.PrnStatusHistory>(status);
-            _accreditationContext.PrnStatusHistories.Add(entity);
-
-            // Save the changes.
-            await _accreditationContext.SaveChangesAsync();
+            // Add a new PRN status history record if needed.
+            if (status.PrnStatusId != prn.PrnStatusId)
+            {   
+                var newStatusHistory = _mapper.Map<Data.PrnStatusHistory>(status);
+                newStatusHistory.CreatedOn = DateTime.UtcNow;
+                _accreditationContext.PrnStatusHistories.Add(newStatusHistory);
+            }
         }
 
         /// <inheritdoc>

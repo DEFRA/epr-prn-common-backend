@@ -17,8 +17,9 @@ namespace EPR.Accreditation.API.Controllers
         }
 
         #region Get methods
+
         [HttpGet("{id}")]
-        [ProducesResponseType(typeof(DTO.PackageRecyclingNote), 200)]
+        [ProducesResponseType(typeof(DTO.PackageRecyclingNoteResponse), 200)]
         public async Task<IActionResult> GetPackageRecyclingNote(Guid id)
         {
             var prn = await _prnService.GetPackageRecyclingNote(id);
@@ -29,7 +30,7 @@ namespace EPR.Accreditation.API.Controllers
             return Ok(prn);
         }
 
-        [HttpGet("prn/organisation/{id}")]
+        [HttpGet("organisation/{id}")]
         [ProducesResponseType(typeof(IEnumerable<Guid>), 200)]
         public async Task<IActionResult> GetOrganisationPrns(Guid id)
         {
@@ -41,45 +42,60 @@ namespace EPR.Accreditation.API.Controllers
             return Ok(prn);
         }
 
-
-
-
         #endregion
 
         #region Post methods
-        [HttpPost]
+        [HttpPost()]
         [ProducesResponseType(typeof(Guid), 200)]
-        public async Task<IActionResult> CreatePackageRecyclingNote([FromBody] DTO.PackageRecyclingNote accreditation)
+        public async Task<IActionResult> CreatePackageRecyclingNote([FromBody] DTO.PackageRecyclingNoteResponse prn)
         {
-            if (accreditation == null)
+            if (prn == null)
                 return BadRequest("Package Recycling Note data not suppleid");
 
             try
             {
-                await _prnService.CreatePackageRecyclingNote(accreditation);
-                return Ok();
+                var id = await _prnService.CreatePackageRecyclingNote(prn);
+                return Ok(id);
             }
             catch
             {
 
                 return BadRequest();
             }
-            
         }
+
+        [HttpPost("status{id}")]
+        public async Task<IActionResult> UpdatePrnStatus(Guid id, DTO.PrnStatusHistoryRequest status)
+        {
+            try
+            {
+                await _prnService.UpdatePrnStatus(id, status);
+                return Ok();
+            }
+            catch
+            {
+                return BadRequest();
+            }
+        }
+
         #endregion
 
         #region Put methods
 
-        [HttpPut]
-        public async Task<IActionResult> UpdatePrnStatus(DTO.PrnStatusHistory status)
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdatePackageRecyclingNote(Guid id, DTO.PrnUpdateRequest prn)
         {
+            if (prn == null)
+                return BadRequest("Package Recycling Note data not supplied");
+
             try
             {
-                await _prnService.UpdatePrnStatus(status);
+                await _prnService.UpdatePrn(id, prn);
                 return Ok();
             }
-            catch 
+            catch
             {
+
                 return BadRequest();
             }
         }
@@ -88,7 +104,7 @@ namespace EPR.Accreditation.API.Controllers
 
         #region Delete methods
 
-        [HttpDelete]
+        [HttpDelete("{id}")]
         public async Task<IActionResult> DeletePackagingRecyclingNote(Guid id)
         {
             try
@@ -100,7 +116,6 @@ namespace EPR.Accreditation.API.Controllers
             {
                 return BadRequest($"Unable to delete {id}");
             }
-
         }
 
         #endregion

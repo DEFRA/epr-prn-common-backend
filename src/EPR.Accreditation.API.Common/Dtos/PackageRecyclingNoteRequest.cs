@@ -3,13 +3,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EPR.Accreditation.API.Common.Dtos
 {
-    public class PackageRecyclingNote
+    public class PackageRecyclingNoteRequest
     {
-        /// <summary>
-        /// Gets or sets the external ID of the PRN.
-        /// </summary>
-        public Guid ExternalId { get; set; } // This has a unique key added via the dbcontext
-
         /// <summary>
         /// Gets or sets the type of the PRN.
         /// </summary>
@@ -27,6 +22,11 @@ namespace EPR.Accreditation.API.Common.Dtos
         public Guid OrganisationId { get; set; }
 
         /// <summary>
+        /// Gets or sets the status of the PRN.
+        /// </summary>
+        public int? PrnStatusId { get; set; }
+
+        /// <summary>
         /// Gets or sets the ID of the site the PRN is for.
         /// </summary>
         public int SiteId { get; set; }
@@ -37,24 +37,9 @@ namespace EPR.Accreditation.API.Common.Dtos
         public Guid CreatedBy { get; set; }
 
         /// <summary>
-        /// Gets or sets the date and time of when the PRN was created.
-        /// </summary>
-        public DateTime CreatedDate { get; set; }
-
-        /// <summary>
         /// Gets or sets the ID of the most recent user to update the PRN.
         /// </summary>
         public Guid LastUpdatedBy { get; set; }
-
-        /// <summary>
-        /// Gets or sets the status of the PRN.
-        /// </summary>
-        public int? PrnStatusId { get; set; }
-
-        /// <summary>
-        /// Gets or sets the date and time when the PRN was last updated.
-        /// </summary>
-        public DateTime LastUpdatedDate { get; set; }
 
         /// <summary>
         /// Gets or sets any notes about the PRN.

@@ -80,14 +80,22 @@ namespace EPR.Accreditation.API.Repositories.Interfaces
         /// </summary>
         /// <param name="prn">The PRN to save.</param>
         /// <returns>The GUID that identifies the PRN.</returns>
-        Task AddPackageRecyclingNote(DTO.PackageRecyclingNote prn);
+        Task<Guid> AddPackageRecyclingNote(DTO.PackageRecyclingNoteRequest prn);
+
+        /// <summary>
+        /// Updates the data of an existing PRN.
+        /// </summary>
+        /// <param name="prnId"></param>
+        /// <param name="updatedData">The new data to update the record with.</param>
+        /// <returns></returns>
+        Task UpdatePrn(Guid prnId, DTO.PrnUpdateRequest updatedData);
 
         /// <summary>
         /// Retrieves details of a PRN from the database.
         /// </summary>
         /// <param name="id">The GUID of the PRN to retrieve.</param>
-        /// <returns>A <see cref="DTO.PackageRecyclingNote"/> object.</returns>
-        Task<DTO.PackageRecyclingNote>GetPackageRecyclingNote(Guid id);
+        /// <returns>A <see cref="DTO.PackageRecyclingNoteResponse"/> object.</returns>
+        Task<DTO.PackageRecyclingNoteResponse>GetPackageRecyclingNote(Guid id);
 
         /// <summary>
         /// Retrieves a list of the PRNs associated with the specified Organisation
@@ -100,7 +108,7 @@ namespace EPR.Accreditation.API.Repositories.Interfaces
         /// Updates the status of a PRN.
         /// </summary>
         /// <param name = "status" > The details of the status update.</param>
-        Task UpdatePrnStatus(DTO.PrnStatusHistory status);
+        Task UpdatePrnStatus(Guid prnId, DTO.PrnStatusHistoryRequest status);
 
         /// <summary>
         /// Deletes a PRN.

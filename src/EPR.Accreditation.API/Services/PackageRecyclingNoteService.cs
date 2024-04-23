@@ -14,25 +14,28 @@ namespace EPR.Accreditation.API.Services
             _repository = repository ?? throw new ArgumentNullException(nameof(repository));
         }
 
-        public async Task CreatePackageRecyclingNote(DTO.PackageRecyclingNote prn)
+        public async Task<Guid> CreatePackageRecyclingNote(DTO.PackageRecyclingNoteRequest prn)
         {
             // perform checks against the prn
             if (prn == null)
+            {
                 throw new ArgumentNullException(nameof(prn));
+            }
 
-            // set the external id for the prn
-            prn.ExternalId = Guid.NewGuid();
-            await _repository.AddPackageRecyclingNote(prn);
+            return await _repository.AddPackageRecyclingNote(prn);
         }
 
-        public async Task<PackageRecyclingNote> GetPackageRecyclingNote(Guid externalId)
+        public async Task UpdatePrn(Guid prnId, DTO.PrnUpdateRequest updatedData)
+            => await _repository.UpdatePrn(prnId, updatedData);
+
+        public async Task<PackageRecyclingNoteResponse> GetPackageRecyclingNote(Guid externalId)
             => await _repository.GetPackageRecyclingNote(externalId);
 
         public async Task<IEnumerable<Guid>> GetPrnsForOrganisation(Guid organisationId)
             => await _repository.GetPrnsForOrganisation(organisationId);
 
-        public async Task UpdatePrnStatus(DTO.PrnStatusHistory status)
-            => await _repository.UpdatePrnStatus(status);
+        public async Task UpdatePrnStatus(Guid prnId, DTO.PrnStatusHistoryRequest status)
+            => await _repository.UpdatePrnStatus(prnId, status);
 
         public async Task DeletePrn(Guid prnId)
             => await _repository.DeletePrn(prnId);

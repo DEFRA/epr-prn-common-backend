@@ -164,11 +164,13 @@ namespace EPR.Accreditation.API.Profiles
             CreateMap<Data.ExemptionReference, DTO.ExemptionReference>()
                 .ReverseMap();
 
-            CreateMap<Data.PackageRecyclingNote, DTO.PackageRecyclingNote>()
-                .ReverseMap();
+            CreateMap<Data.PackageRecyclingNote, DTO.PackageRecyclingNoteResponse>();
 
-            CreateMap<Data.PrnStatusHistory, DTO.PrnStatusHistory>()
-                .ReverseMap();
+            CreateMap<DTO.PackageRecyclingNoteRequest, Data.PackageRecyclingNote>();
+
+            CreateMap<Data.PrnStatusHistory, DTO.PrnStatusHistoryResponse>();
+
+            CreateMap<DTO.PrnStatusHistoryRequest, Data.PrnStatusHistory>();
         }
     }
 }

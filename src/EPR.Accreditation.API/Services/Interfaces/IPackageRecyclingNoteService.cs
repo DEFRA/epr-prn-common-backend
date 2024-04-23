@@ -8,15 +8,17 @@ namespace EPR.Accreditation.API.Services.Interfaces
         /// Retrieve the data for a PRN.
         /// </summary>
         /// <param name="externalId">The ID of the PRN to retrieve data for.</param>
-        /// <returns>A <see cref="DTO.PackageRecyclingNote"/> object.</returns>
-        Task<DTO.PackageRecyclingNote> GetPackageRecyclingNote(Guid externalId);
+        /// <returns>A <see cref="DTO.PackageRecyclingNoteResponse"/> object.</returns>
+        Task<DTO.PackageRecyclingNoteResponse> GetPackageRecyclingNote(Guid externalId);
 
         /// <summary>
         /// Store a new PRN record.
         /// </summary>
         /// <param name="prn"></param>
         /// <returns></returns>
-        Task CreatePackageRecyclingNote(DTO.PackageRecyclingNote prn);
+        Task<Guid> CreatePackageRecyclingNote(DTO.PackageRecyclingNoteRequest prn);
+
+        Task UpdatePrn(Guid prnId, DTO.PrnUpdateRequest newData);
 
         /// <summary>
         /// Retrieve a list of PRNs for the specified organisation.
@@ -29,7 +31,7 @@ namespace EPR.Accreditation.API.Services.Interfaces
         /// Update the status of a PRN.
         /// </summary>
         /// <param name="status">The details of the status update.</param>
-        Task UpdatePrnStatus(DTO.PrnStatusHistory status);
+        Task UpdatePrnStatus(Guid prnId, DTO.PrnStatusHistoryRequest status);
 
         /// <summary>
         /// Delete a PRN.
