@@ -27,12 +27,48 @@ namespace EPR.Accreditation.API.Middleware
             // Handle other exceptions if needed
             catch (Exception ex)
             {
+                var result = FormatException(string.Empty, ex);
+
                 // Log other exceptions
                 context.Response.StatusCode = StatusCodes.Status500InternalServerError;
 #if DEBUG
-                Debug.WriteLine($"{ex.Message}{Environment.NewLine}{ex.StackTrace}");
+                Debug.WriteLine(result);
 #endif
             }
+        }
+
+        private string FormatException(
+            string currentError,
+            Exception ex)
+        {
+            if (ex == null)
+            {
+                return string.Empty;
+            }
+
+            if (string.IsNullOrWhiteSpace(currentError))
+            {
+                currentError = FormatSingleError(ex);
+            }
+
+            if (ex.InnerException != null)
+            {
+                var stringPart = FormatException(
+                    currentError,
+                    ex.InnerException);
+
+                if (!string.IsNullOrWhiteSpace(stringPart))
+                {
+                    return string.Format($"{currentError}{ex.InnerException.Message}{Environment.NewLine}{ex.StackTrace}{Environment.NewLine}");
+                }
+            }
+
+            return currentError;
+        }
+
+        private string FormatSingleError(Exception ex)
+        {
+            return $"{ex.Message}{Environment.NewLine}{ex.StackTrace}{Environment.NewLine}";
         }
     }
 }

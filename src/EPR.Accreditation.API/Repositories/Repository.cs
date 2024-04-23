@@ -340,12 +340,17 @@ namespace EPR.Accreditation.API.Repositories
         {
             var accreditationId = await _accreditationContext
                 .Accreditation
-                .Where(a => a.ExternalId == id)
+                .Where(
+                    a =>
+                        a.ExternalId == id &&
+                        a.OperatorTypeId == OperatorType.Exporter) // cannot add an overseas site to a reprocessor
                 .Select(a => (int?)a.Id)
                 .SingleOrDefaultAsync();
 
             if (accreditationId == null)
+            {
                 throw new NotFoundException();
+            }
 
             var entity = _mapper.Map<Data.OverseasReprocessingSite>(site);
             entity.AccreditationId = accreditationId.Value;

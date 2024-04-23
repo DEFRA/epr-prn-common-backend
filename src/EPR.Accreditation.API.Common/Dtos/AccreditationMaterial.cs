@@ -4,6 +4,7 @@ namespace EPR.Accreditation.API.Common.Dtos
 {
     public class AccreditationMaterial
     {
+        public int MaterialId { get; set; }
 
         public decimal AnnualCapacity { get; set; }
 
