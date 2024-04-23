@@ -359,22 +359,21 @@ namespace EPR.Accreditation.API.Repositories
 
         public async Task UpdateOverseasSite(
             Guid id,
-            Guid overseasSiteId,
             DTO.OverseasReprocessingSite site)
         {
-            // get overseas site from the accreditation
+            // get overseas site
             var entity = await _accreditationContext
                 .OverseasReprocessingSite
-                .Where(a => 
-                    a.ExternalId == overseasSiteId && 
-                    a.Accreditation != null &&
-                    a.Accreditation.ExternalId == id)
+                .Include(s => s.OverseasAddress)
+                .Where(os =>
+                    os.ExternalId == site.ExternalId &&
+                    os.Accreditation.OperatorTypeId == OperatorType.Exporter)
                 .SingleOrDefaultAsync()
-                ?? throw new NotFoundException();
+                 ?? throw new NotFoundException();
 
             if (entity == null)
             {
-                throw new NotFoundException($"Overseas site not found for Accreditation External ID: {id}, Overseas External Site Id: {overseasSiteId}");
+                throw new NotFoundException($"Overseas site not found for Accreditation External ID: {id}, Overseas External Site Id: {site.ExternalId}");
             }
 
             _mapper.Map(site, entity);
