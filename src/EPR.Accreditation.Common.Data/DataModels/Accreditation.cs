@@ -19,6 +19,8 @@ namespace EPR.Accreditation.API.Common.Data.DataModels
 
         public bool? Large { get; set; } // Currently this means is it for above 400 tonnes or not
 
+        public decimal? LargeFee { get; set; }
+
         [ForeignKey("AccreditationStatus")]
         public Enums.AccreditationStatus AccreditationStatusId { get; set; }
 
