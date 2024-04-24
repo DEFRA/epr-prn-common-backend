@@ -2,8 +2,8 @@
 {
     public enum CheckAnswersSection
     {
-        Section1,
-        Section2,
+        AboutMaterialReprocessorActuals,
+        AboutMaterialReprocessorEstimates,
         Section3,
         Section4,
         AboutMaterialExporter

@@ -1,7 +1,6 @@
 ﻿namespace EPR.Accreditation.API.Services
 {
     using EPR.Accreditation.API.Common.Dtos;
-    using EPR.Accreditation.API.Common.Enums;
     using EPR.Accreditation.API.Helpers;
     using EPR.Accreditation.API.Helpers.Comparers;
     using EPR.Accreditation.API.Repositories.Interfaces;
@@ -207,52 +206,154 @@
             Guid materialId,
             Guid? siteId,
             Guid? overseasSiteId,
-            CheckAnswersSection section)
+            Common.Enums.CheckAnswersSection section)
         {
             var accreditation = await GetAccreditation(id);
             var checkAnswersDto = new CheckAnswers();
 
-
             switch (section)
             {
-                case CheckAnswersSection.AboutMaterialExporter:
-                    if (accreditation.OperatorTypeId != OperatorType.Exporter)
+                case Common.Enums.CheckAnswersSection.AboutMaterialReprocessorActuals:
+
+                    if (accreditation.OperatorTypeId != Common.Enums.OperatorType.Reprocessor)
                     {
-                        return new CheckAnswers();
+                        throw new ArgumentException("Can only be for a reprocessor");
                     }
                     else
                     {
-                        var accreditationMaterial = await GetMaterial(id, overseasSiteId, materialId);
-                        var sourceOfWaste = accreditationMaterial.WasteSource;
-                        var commodityCodes = accreditationMaterial.WasteCodes;
-                        var peopleWithAuthority = new List<string>
+
+                        var accreditationMaterial = await GetMaterial(id, null, materialId);
+
+                        var wasteSource = accreditationMaterial.WasteSource;
+                        var annualCapacity = accreditationMaterial.AnnualCapacity;
+                        var weeklyCapacity = accreditationMaterial.WeeklyCapacity;
+
+                        var ukPackagingWaste = accreditationMaterial.MaterialReprocessorDetails.UkPackagingWaste;
+                        var nonUkPackagingWaste = accreditationMaterial.MaterialReprocessorDetails.NonUkPackagingWaste;
+                        var nonPackagingWaste = accreditationMaterial.MaterialReprocessorDetails.NonPackagingWaste;
+                        var totalWasteInputsLastCalendarYear = ukPackagingWaste + nonPackagingWaste + nonUkPackagingWaste;
+
+                        var materialsNotProcessedOnSite = accreditationMaterial.MaterialReprocessorDetails.MaterialsNotProcessedOnSite;
+                        var contaminents = accreditationMaterial.MaterialReprocessorDetails.Contaminents;
+                        var processLoss = accreditationMaterial.MaterialReprocessorDetails.ProcessLoss;
+                        var totalWasteOutputsLastCalendarYear = materialsNotProcessedOnSite + contaminents + processLoss;
+
+
+                        var materialRow = new CheckAnswersSectionRow
                         {
-                            "Andrew Shey, Management Accountant",
-                            "Gary Law, Strategic Buyer",
-                            "Scott McAlallister, PRN signatory"
+
                         };
 
-                        var isCompleted = false;
-
-                        if (accreditationMaterial != null && sourceOfWaste != null && commodityCodes.Any() && peopleWithAuthority.Any())
+                        var ukSourceOfWasteRow = new CheckAnswersSectionRow
                         {
-                            isCompleted = true;
-                        }
 
-                        var sectionRows = new List<CheckAnswersRowDto>();
+                        };
 
+                        var annualCapacityRow = new CheckAnswersSectionRow
+                        {
+
+                        };
+
+                        var weeklyCapacityRow = new CheckAnswersSectionRow
+                        {
+
+                        };
+
+                        var detailsSectionRows = new List<CheckAnswersSectionRow>
+                        {
+                            materialRow,
+                            ukSourceOfWasteRow,
+                            annualCapacityRow,
+                            weeklyCapacityRow
+                        };
+
+                        var detailsSection = new Common.Dtos.CheckAnswersSectionDto
+                        {
+                            SectionRows = detailsSectionRows
+                        };
+
+                        var ukPackagingWasteRow = new CheckAnswersSectionRow
+                        {
+
+                        };
+
+                        var nonUkPackagingWasteRow = new CheckAnswersSectionRow
+                        {
+
+                        };
+
+                        var nonPackagingWasteRow = new CheckAnswersSectionRow
+                        {
+
+                        };
+
+                        var totalWasteInputsLastCalendarYearRow = new CheckAnswersSectionRow
+                        {
+
+                        };
+
+                        var wasteInputsforLastYearRows = new List<CheckAnswersSectionRow>
+                        {
+                            ukPackagingWasteRow,
+                            nonUkPackagingWasteRow,
+                            nonPackagingWasteRow,
+                            totalWasteInputsLastCalendarYearRow
+                        };
+
+                        var wasteInputsLastYearSection = new Common.Dtos.CheckAnswersSectionDto
+                        {
+                            SectionRows = wasteInputsforLastYearRows
+                        };
+
+                        var materialsNotProcessedOnSiteRow = new CheckAnswersSectionRow
+                        {
+
+                        };
+
+                        var contaminentsRow = new CheckAnswersSectionRow
+                        {
+
+                        };
+
+                        var processLossRow = new CheckAnswersSectionRow
+                        {
+
+                        };
+
+                        var totalWasteOutputsLastCalendarYearRow = new CheckAnswersSectionRow
+                        {
+
+                        };
+
+                        var wasteOutputsforLastYearRows = new List<CheckAnswersSectionRow>
+                        {
+                            materialsNotProcessedOnSiteRow,
+                            contaminentsRow,
+                            processLossRow,
+                            totalWasteOutputsLastCalendarYearRow
+                        };
+
+                        var wasteOutputsLastYearSection = new Common.Dtos.CheckAnswersSectionDto
+                        {
+                            SectionRows = wasteOutputsforLastYearRows
+                        };
+
+
+                        var listOfSections = new List<CheckAnswersSectionDto>
+                        {
+                            detailsSection,
+                            wasteInputsLastYearSection,
+                            wasteOutputsLastYearSection
+                        };
 
                         return new CheckAnswers
                         {
-                            Id = id,
-                            Completed = isCompleted,
-                            SectionRows = sectionRows
+                            Sections = listOfSections
                         };
                     }
             }
 
             return checkAnswersDto;
-
         }
     }
 }

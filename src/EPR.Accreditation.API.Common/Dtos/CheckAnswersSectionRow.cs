@@ -1,6 +1,6 @@
 ﻿namespace EPR.Accreditation.Facade.Common.Dtos
 {
-    public class CheckAnswersRowDto
+    public class CheckAnswersSectionRow
     {
         public string ListKeyEn { get; set; }
 
