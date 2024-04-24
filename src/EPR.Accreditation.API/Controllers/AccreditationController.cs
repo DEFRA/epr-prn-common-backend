@@ -31,9 +31,19 @@ namespace EPR.Accreditation.API.Controllers
 
         [HttpGet("{id}/CheckAnswers/{section}")]
         [ProducesResponseType(typeof(DTO.CheckAnswers), 200)]
-        public async Task<IActionResult> GetCheckAnswers(Guid id, CheckAnswersSection section)
+        public async Task<IActionResult> GetCheckAnswers(
+            Guid id,
+            Guid materialId,
+            Guid? siteId,
+            Guid? overseasSiteId,
+            CheckAnswersSection section)
         {
-            var checkYourAnswers = await _accreditationService.GetCheckAnswers(id, section);
+            var checkYourAnswers = await _accreditationService.GetCheckAnswers(
+                id,
+                materialId,
+                siteId,
+                overseasSiteId,
+                section);
 
             if (checkYourAnswers == null)
                 return NotFound();

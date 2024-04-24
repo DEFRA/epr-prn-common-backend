@@ -202,13 +202,18 @@
             await _repository.AddSaveAndComeBack(id, saveAndComeBack);
         }
 
-        public async Task<CheckAnswers> GetCheckAnswers(Guid id, CheckAnswersSection section)
+        public async Task<CheckAnswers> GetCheckAnswers(
+            Guid id,
+            Guid materialId,
+            Guid? siteId,
+            Guid? overseasSiteId,
+            CheckAnswersSection section)
         {
             var accreditation = await GetAccreditation(id);
             var checkAnswersDto = new CheckAnswers();
 
 
-            switch (section) //TODO: Commodity codes come from the accreditationMaterial but need to map that in profile somehow
+            switch (section)
             {
                 case CheckAnswersSection.AboutMaterialExporter:
                     if (accreditation.OperatorTypeId != OperatorType.Exporter)
@@ -217,9 +222,9 @@
                     }
                     else
                     {
-                        var accreditationMaterial = accreditation.OverseasSites.FirstOrDefault().AccreditationMaterials.FirstOrDefault();
-                        var sourceOfWaste = accreditation.OverseasSites.FirstOrDefault().AccreditationMaterials.FirstOrDefault().WasteSource;
-                        //var commodityCode = accreditation.OverseasSites.FirstOrDefault().AccreditationMaterials.FirstOrDefault().WasteCodes.FirstOrDefault().Code;
+                        var accreditationMaterial = await GetMaterial(id, overseasSiteId, materialId);
+                        var sourceOfWaste = accreditationMaterial.WasteSource;
+                        var commodityCodes = accreditationMaterial.WasteCodes;
                         var peopleWithAuthority = new List<string>
                         {
                             "Andrew Shey, Management Accountant",
@@ -229,18 +234,18 @@
 
                         var isCompleted = false;
 
-                        if (accreditationMaterial != null && sourceOfWaste != null && peopleWithAuthority.Any())
+                        if (accreditationMaterial != null && sourceOfWaste != null && commodityCodes.Any() && peopleWithAuthority.Any())
                         {
                             isCompleted = true;
                         }
 
                         var sectionRows = new List<CheckAnswersRowDto>();
 
+
                         return new CheckAnswers
                         {
                             Id = id,
                             Completed = isCompleted,
-                            SiteAddress = accreditation.OverseasSites.FirstOrDefault().OverseasAddress.Address,
                             SectionRows = sectionRows
                         };
                     }
