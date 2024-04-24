@@ -314,8 +314,17 @@ namespace EPR.Accreditation.API.Repositories
             if (entity.ExemptionReferences.Any())
                 entity.ExemptionReferences.Clear();
 
-            foreach (var reference in site.ExemptionReferences.Where(x => !string.IsNullOrWhiteSpace(x)))
-                entity.ExemptionReferences.Add(new Data.ExemptionReference { Reference = reference });
+            if (entity.ExemptionReferences != null && entity.ExemptionReferences.Count > 0)
+            {
+                foreach (var reference in site.ExemptionReferences.Where(x => !string.IsNullOrWhiteSpace(x)))
+                    entity.ExemptionReferences.Add(new Data.ExemptionReference { Reference = reference });
+            }
+
+            entity.Address1 = site.Address1;
+            entity.Address2 = site.Address2;
+            entity.Town = site.Town;
+            entity.Postcode = site.Postcode;
+            entity.County = site.County;
 
             await _accreditationContext.SaveChangesAsync();
         }
