@@ -28,5 +28,7 @@ namespace EPR.Accreditation.API.Common.Dtos
         public DateTime? UpdatedOn { get; set; }
 
         public WastePermit WastePermit { get; set; }
+
+        public bool? HasNpwdAccreditationNumber { get; set; }
     }
 }

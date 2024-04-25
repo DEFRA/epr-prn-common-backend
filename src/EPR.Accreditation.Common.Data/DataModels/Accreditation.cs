@@ -23,7 +23,7 @@ namespace EPR.Accreditation.API.Common.Data.DataModels
         public Enums.AccreditationStatus AccreditationStatusId { get; set; }
 
         [ForeignKey("Site")]
-        public int? SiteId { get;set; }
+        public int? SiteId { get; set; }
 
         public Guid CreatedBy { get; set; }
 
@@ -32,6 +32,8 @@ namespace EPR.Accreditation.API.Common.Data.DataModels
         public Guid? UpdatedBy { get; set; }
 
         public DateTime? UpdatedOn { get; set; }
+
+        public bool? HasNpwdAccreditationNumber { get; set; }
 
         #region Navigation properties
         public virtual Site Site { get; set; }
