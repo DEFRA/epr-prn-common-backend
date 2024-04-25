@@ -1,4 +1,6 @@
-﻿using DTO = EPR.Accreditation.API.Common.Dtos;
+﻿using EPR.Accreditation.API.Common.Enums;
+using System.Reflection.Emit;
+using DTO = EPR.Accreditation.API.Common.Dtos;
 
 namespace EPR.Accreditation.API.Repositories.Interfaces
 {
@@ -12,7 +14,7 @@ namespace EPR.Accreditation.API.Repositories.Interfaces
 
         Task<Guid> AddAccreditationMaterial(
             Guid id,
-            Guid? overseasSiteId,
+            OperatorType accreditationOperatorType,
             DTO.AccreditationMaterial accreditationMaterial);
 
         Task AddFile(
@@ -25,9 +27,9 @@ namespace EPR.Accreditation.API.Repositories.Interfaces
 
         Task UpdateMaterial(
             Guid id,
-            Guid? overseasSiteId,
             Guid materialid,
-            DTO.AccreditationMaterial material);
+            DTO.AccreditationMaterial material,
+            Guid? overseasSiteId = null);
 
         Task<IEnumerable<DTO.FileUpload>> GetFileRecords(Guid id);
 
@@ -39,13 +41,13 @@ namespace EPR.Accreditation.API.Repositories.Interfaces
 
         Task<DTO.AccreditationMaterial> GetMaterial(
             Guid id,
-            Guid? overseasSiteid,
             Guid materialid);
 
         Task<DTO.Site> GetSite(
             Guid id);
 
-        Task<Guid> CreateSite(
+        Task<Guid> CreateSite( // First iteration of Accreditation does not need the external id of the site.
+                               // But at some point, sites will be created first so we will need it then
             Guid id,
             DTO.Site site);
 

@@ -1,12 +1,13 @@
-﻿using EPR.Accreditation.API.Common.Dtos;
-using EPR.Accreditation.API.Helpers;
-using EPR.Accreditation.API.Helpers.Comparers;
-using EPR.Accreditation.API.Repositories.Interfaces;
-using EPR.Accreditation.API.Services.Interfaces;
-using DTO = EPR.Accreditation.API.Common.Dtos;
-
-namespace EPR.Accreditation.API.Services
+﻿namespace EPR.Accreditation.API.Services
 {
+    using EPR.Accreditation.API.Common.Dtos;
+    using EPR.Accreditation.API.Common.Enums;
+    using EPR.Accreditation.API.Helpers;
+    using EPR.Accreditation.API.Helpers.Comparers;
+    using EPR.Accreditation.API.Repositories.Interfaces;
+    using EPR.Accreditation.API.Services.Interfaces;
+    using DTO = EPR.Accreditation.API.Common.Dtos;
+
     public class AccreditationService : IAccreditationService
     {
         protected readonly IRepository _repository;
@@ -23,7 +24,6 @@ namespace EPR.Accreditation.API.Services
                 throw new ArgumentNullException(nameof(accreditation));
 
             // set the external id for the accreditation
-            accreditation.ExternalId = Guid.NewGuid();
             accreditation.AccreditationStatusId = Common.Enums.AccreditationStatus.Started;
 
             return await _repository.AddAccreditation(accreditation);
@@ -31,12 +31,12 @@ namespace EPR.Accreditation.API.Services
 
         public async Task<Guid> CreateMaterial(
             Guid id,
-            Guid? overseasSiteId,
+            OperatorType accreditationOperatorType,
             AccreditationMaterial accreditationMaterial)
         {
             return await _repository.AddAccreditationMaterial(
                 id,
-                overseasSiteId,
+                accreditationOperatorType,
                 accreditationMaterial);
         }
 
@@ -87,9 +87,9 @@ namespace EPR.Accreditation.API.Services
 
         public async Task UpdateMaterail(
             Guid id,
-            Guid? overseasSiteId,
             Guid materialid,
-            AccreditationMaterial accreditationMaterial)
+            AccreditationMaterial accreditationMaterial,
+            Guid? overseasSiteId)
         {
             if (accreditationMaterial.WasteCodes != null &&
                 accreditationMaterial.WasteCodes.Any())
@@ -103,19 +103,17 @@ namespace EPR.Accreditation.API.Services
 
             await _repository.UpdateMaterial(
                 id,
-                overseasSiteId,
                 materialid,
-                accreditationMaterial);
+                accreditationMaterial,
+                overseasSiteId);
         }
 
         public async Task<AccreditationMaterial> GetMaterial(
             Guid id,
-            Guid? overseasSiteid,
             Guid materialid)
         {
             return await _repository.GetMaterial(
                 id,
-                overseasSiteid,
                 materialid);
         }
 
