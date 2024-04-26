@@ -46,7 +46,7 @@ namespace EPR.Accreditation.API.Common.Data.Migrations
                         .HasColumnType("bit");
 
                     b.Property<decimal?>("LargeFee")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("decimal(10,3)");
 
                     b.Property<int>("OperatorTypeId")
                         .HasColumnType("int");
