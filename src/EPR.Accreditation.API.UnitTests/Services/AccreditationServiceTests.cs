@@ -74,20 +74,17 @@ namespace EPR.Accreditation.API.UnitTests.Services
         {
             // Arrange
             var id = Guid.NewGuid();
-            var overseasSiteid = Guid.NewGuid();
             var materialid = Guid.NewGuid();
 
             // Act
             await _accreditationService.GetMaterial(
                 id,
-                overseasSiteid,
                 materialid);
 
             // Assert
             _mockRepository.Verify(r =>
                 r.GetMaterial(
                     id,
-                    overseasSiteid,
                     materialid),
                 Times.Once);
         }
@@ -97,7 +94,6 @@ namespace EPR.Accreditation.API.UnitTests.Services
         {
             // Arrange
             var id = Guid.NewGuid();
-            var overseasSiteId = Guid.NewGuid();
             var materialid = Guid.NewGuid();
             var accreditationMaterial = new Common.Dtos.AccreditationMaterial();
 
@@ -105,7 +101,6 @@ namespace EPR.Accreditation.API.UnitTests.Services
             await _accreditationService
                 .UpdateMaterail(
                 id,
-                overseasSiteId,
                 materialid,
                 accreditationMaterial);
 
@@ -113,7 +108,6 @@ namespace EPR.Accreditation.API.UnitTests.Services
             _mockRepository.Verify(r =>
                 r.UpdateMaterial(
                     id,
-                    overseasSiteId,
                     materialid,
                     accreditationMaterial),
                 Times.Once);
@@ -124,7 +118,6 @@ namespace EPR.Accreditation.API.UnitTests.Services
         {
             // Arrange
             var id = Guid.NewGuid();
-            var overseasSiteId = Guid.NewGuid();
             var materialid = Guid.NewGuid();
             var accreditationMaterial = new Common.Dtos.AccreditationMaterial
             {
@@ -132,10 +125,8 @@ namespace EPR.Accreditation.API.UnitTests.Services
             };
 
             // Act
-            await _accreditationService
-                .UpdateMaterail(
+            await _accreditationService.UpdateMaterail(
                 id,
-                overseasSiteId,
                 materialid,
                 accreditationMaterial);
 
@@ -143,7 +134,6 @@ namespace EPR.Accreditation.API.UnitTests.Services
             _mockRepository.Verify(r =>
                 r.UpdateMaterial(
                     id,
-                    overseasSiteId,
                     materialid,
                     accreditationMaterial),
                 Times.Once);
@@ -169,10 +159,8 @@ namespace EPR.Accreditation.API.UnitTests.Services
             };
 
             // Act
-            await _accreditationService
-                .UpdateMaterail(
+            await _accreditationService.UpdateMaterail(
                 id,
-                overseasSiteId,
                 materialid,
                 accreditationMaterial);
 
@@ -180,7 +168,6 @@ namespace EPR.Accreditation.API.UnitTests.Services
             _mockRepository.Verify(r =>
                 r.UpdateMaterial(
                     id,
-                    overseasSiteId,
                     materialid,
                     It.Is<AccreditationMaterial>(p =>
                         p.WasteCodes != null &&
@@ -217,10 +204,8 @@ namespace EPR.Accreditation.API.UnitTests.Services
             };
 
             // Act
-            await _accreditationService
-                .UpdateMaterail(
+            await _accreditationService.UpdateMaterail(
                 id,
-                overseasSiteId,
                 materialid,
                 accreditationMaterial);
 
@@ -228,7 +213,6 @@ namespace EPR.Accreditation.API.UnitTests.Services
             _mockRepository.Verify(r =>
                 r.UpdateMaterial(
                     id,
-                    overseasSiteId,
                     materialid,
                     It.Is<AccreditationMaterial>(p =>
                         p.WasteCodes != null &&
@@ -328,22 +312,33 @@ namespace EPR.Accreditation.API.UnitTests.Services
                 });
 
             var id = Guid.NewGuid();
+            var materialId = Guid.NewGuid();
             var overseasReprocessingSite = new OverseasReprocessingSite();
             var expectedGuid = Guid.NewGuid();
 
             _mockRepository.Setup(r =>
                 r.CreateOverseasSite(
                     id,
+                    materialId,
                     overseasReprocessingSite))
                 .ReturnsAsync(expectedGuid);
 
             // Act
-            var result = await _accreditationService.CreateOverseasSite(id, overseasReprocessingSite);
+            var result = await _accreditationService.CreateOverseasSite(
+                id,
+                materialId,
+                overseasReprocessingSite);
 
             // Assert
             Assert.AreEqual(expectedGuid, result);
 
-            _mockRepository.Verify(r => r.CreateOverseasSite(id, overseasReprocessingSite), Times.Once);
+            _mockRepository.Verify(
+                r =>
+                    r.CreateOverseasSite(
+                        id,
+                        materialId,
+                        overseasReprocessingSite)
+                    , Times.Once);
         }
 
         [TestMethod]

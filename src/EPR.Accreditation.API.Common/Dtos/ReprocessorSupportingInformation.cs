@@ -4,8 +4,6 @@ namespace EPR.Accreditation.API.Common.Dtos
 {
     public class ReprocessorSupportingInformation
     {
-        public int Id { get; set; }
-
         public Enums.ReprocessorSupportingInformationType ReprocessorSupportingInformationTypeId { get; set; }
 
         [MaxLength(20)]

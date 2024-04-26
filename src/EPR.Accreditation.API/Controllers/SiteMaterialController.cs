@@ -5,7 +5,7 @@ using DTO = EPR.Accreditation.API.Common.Dtos;
 namespace EPR.Accreditation.API.Controllers
 {
     [ApiController]
-    [Route("api/Accreditation/{id}/Site/Material")]
+    [Route("api/Accreditation/{id}/Material")]
     public class SiteMaterialController : ControllerBase
     {
         protected readonly IAccreditationService _accreditationService;
@@ -24,7 +24,6 @@ namespace EPR.Accreditation.API.Controllers
         {
             var material = await _accreditationService.GetMaterial(
                 id,
-                null,
                 materialid);
 
             if (material == null)
@@ -43,7 +42,7 @@ namespace EPR.Accreditation.API.Controllers
 
             var materialId = await _accreditationService.CreateMaterial(
                 id,
-                null,
+                Common.Enums.OperatorType.Reprocessor,
                 accreditationMaterial);
 
             return Ok(materialId);
@@ -57,7 +56,6 @@ namespace EPR.Accreditation.API.Controllers
         {
             await _accreditationService.UpdateMaterail(
                 id,
-                null,
                 materialid,
                 accreditationMaterial);
 

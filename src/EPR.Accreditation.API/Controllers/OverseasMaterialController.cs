@@ -1,16 +1,17 @@
-﻿using EPR.Accreditation.API.Services.Interfaces;
-using Microsoft.AspNetCore.Mvc;
-using DTO = EPR.Accreditation.API.Common.Dtos;
-
-namespace EPR.Accreditation.API.Controllers
+﻿namespace EPR.Accreditation.API.Controllers
 {
+    using EPR.Accreditation.API.Services.Interfaces;
+    using Microsoft.AspNetCore.Mvc;
+    using DTO = EPR.Accreditation.API.Common.Dtos;
+
     [ApiController]
-    [Route("api/Accreditation/{id}/OverseasSite/{overseasSiteId}/Material")]
-    public class OverseasSiteMaterialController : ControllerBase
+    [Route("/api/Accreditation/{id}/OverseasMaterial")]
+    public class OverseasMaterialController : ControllerBase
     {
         protected readonly IAccreditationService _accreditationService;
 
-        public OverseasSiteMaterialController(IAccreditationService accreditationService)
+        public OverseasMaterialController(
+            IAccreditationService accreditationService)
         {
             _accreditationService = accreditationService ?? throw new ArgumentNullException(nameof(accreditationService));
         }
@@ -24,7 +25,6 @@ namespace EPR.Accreditation.API.Controllers
         {
             var material = await _accreditationService.GetMaterial(
                 id,
-                overseasSiteId,
                 materialid);
 
             if (material == null)
@@ -34,17 +34,19 @@ namespace EPR.Accreditation.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateOverseasSiteMaterial(
+        [ProducesResponseType(typeof(Guid), 200)]
+        public async Task<IActionResult> CreateMaterial(
             Guid id,
-            Guid overseasSiteId,
             [FromBody] DTO.AccreditationMaterial accreditationMaterial)
         {
             if (accreditationMaterial == null)
+            {
                 return BadRequest();
+            }
 
             var materialId = await _accreditationService.CreateMaterial(
                 id,
-                overseasSiteId,
+                Common.Enums.OperatorType.Exporter,
                 accreditationMaterial);
 
             return Ok(materialId);
@@ -53,13 +55,11 @@ namespace EPR.Accreditation.API.Controllers
         [HttpPut("{materialid}")]
         public async Task<IActionResult> UpdateOverseasSiteMaterial(
             Guid id,
-            Guid overseasSiteId,
             Guid materialid,
             [FromBody] DTO.AccreditationMaterial accreditationMaterial)
         {
             await _accreditationService.UpdateMaterail(
                 id,
-                overseasSiteId,
                 materialid,
                 accreditationMaterial);
 

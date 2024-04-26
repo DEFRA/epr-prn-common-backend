@@ -4,10 +4,6 @@ namespace EPR.Accreditation.API.Common.Dtos
 {
     public class OverseasReprocessingSite
     {
-        public int AccreditationId { get; set; }
-
-        public int? OverseasAddressId { get; set; } // unique key as this is a one to one relationship
-
         [MaxLength(500)]
         public string UkPorts { get; set; }
 

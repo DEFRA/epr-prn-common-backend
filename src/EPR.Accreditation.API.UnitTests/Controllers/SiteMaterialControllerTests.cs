@@ -1,7 +1,9 @@
-﻿using EPR.Accreditation.API.Controllers;
+﻿using EPR.Accreditation.API.Common.Data.DataModels.Lookups;
+using EPR.Accreditation.API.Controllers;
 using EPR.Accreditation.API.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
+using Enums = EPR.Accreditation.API.Common.Enums;
 
 namespace EPR.Accreditation.API.UnitTests.Controllers
 {
@@ -29,7 +31,6 @@ namespace EPR.Accreditation.API.UnitTests.Controllers
             _mockAccreditationService.Setup(s =>
                 s.GetMaterial(
                     id,
-                    null,
                     materialid))
                 .ReturnsAsync(expectedMaterial);
 
@@ -41,7 +42,12 @@ namespace EPR.Accreditation.API.UnitTests.Controllers
             Assert.AreEqual(200, result.StatusCode);
             Assert.AreSame(expectedMaterial, result.Value);
 
-            _mockAccreditationService.Verify(s => s.GetMaterial(id, null, materialid), Times.Once());
+            _mockAccreditationService.Verify(
+                s =>
+                    s.GetMaterial(
+                        id,
+                        materialid),
+                Times.Once());
         }
 
         [TestMethod]
@@ -54,7 +60,6 @@ namespace EPR.Accreditation.API.UnitTests.Controllers
             _mockAccreditationService.Setup(s =>
                 s.GetMaterial(
                     id,
-                    null,
                     materialid))
                 .ReturnsAsync((Common.Dtos.AccreditationMaterial)null);
 
@@ -65,7 +70,12 @@ namespace EPR.Accreditation.API.UnitTests.Controllers
             Assert.IsNotNull(result);
             Assert.AreEqual(404, result.StatusCode);
 
-            _mockAccreditationService.Verify(s => s.GetMaterial(id, null, materialid), Times.Once());
+            _mockAccreditationService.Verify(
+                s =>
+                    s.GetMaterial(
+                        id,
+                        materialid),
+                Times.Once());
         }
 
         [TestMethod]
@@ -76,11 +86,12 @@ namespace EPR.Accreditation.API.UnitTests.Controllers
             var accreditationMaterial = new Common.Dtos.AccreditationMaterial();
             var expectedMaterialId = Guid.NewGuid();
 
-            _mockAccreditationService.Setup(s =>
-            s.CreateMaterial(
-                id,
-                null,
-                accreditationMaterial))
+            _mockAccreditationService.Setup(
+                s =>
+                    s.CreateMaterial(
+                        id,
+                        Enums.OperatorType.Reprocessor,
+                        accreditationMaterial))
             .ReturnsAsync(expectedMaterialId);
 
             // Act
@@ -91,7 +102,13 @@ namespace EPR.Accreditation.API.UnitTests.Controllers
             Assert.AreEqual(200, result.StatusCode);
             Assert.AreEqual(expectedMaterialId, result.Value);
 
-            _mockAccreditationService.Verify(s => s.CreateMaterial(id, null, accreditationMaterial), Times.Once());
+            _mockAccreditationService.Verify(
+                s =>
+                    s.CreateMaterial(
+                        id, 
+                        Enums.OperatorType.Reprocessor,
+                        accreditationMaterial),
+                Times.Once());
         }
 
         [TestMethod]
@@ -108,7 +125,11 @@ namespace EPR.Accreditation.API.UnitTests.Controllers
             Assert.AreEqual(400, result.StatusCode);
 
             _mockAccreditationService.Verify(s =>
-                s.CreateMaterial(It.IsAny<Guid>(), null, null), Times.Never());
+                s.CreateMaterial(
+                    It.IsAny<Guid>(),
+                    It.IsAny<Enums.OperatorType>(),
+                    null),
+                Times.Never());
         }
 
         [TestMethod]
@@ -130,8 +151,13 @@ namespace EPR.Accreditation.API.UnitTests.Controllers
             Assert.IsNotNull(result);
             Assert.AreEqual(200, result.StatusCode);
 
-            _mockAccreditationService
-                .Verify(s => s.UpdateMaterail(id, null, materialid, accreditationMaterial), Times.Once);
+            _mockAccreditationService.Verify(
+                s =>
+                    s.UpdateMaterail(
+                        id,
+                        materialid,
+                        accreditationMaterial),
+                Times.Once);
         }
     }
 }

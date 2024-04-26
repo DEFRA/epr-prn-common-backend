@@ -36,6 +36,8 @@ namespace EPR.Accreditation.API.Common.Data.DataModels
         #region Navigation properties
         public virtual Site Site { get; set; }
 
+        public virtual ICollection<AccreditationMaterial> AccreditationMaterials { get; set; }
+
         public virtual WastePermit WastePermit { get; set; }
 
         public virtual OperatorType OperatorType { get; set; }
