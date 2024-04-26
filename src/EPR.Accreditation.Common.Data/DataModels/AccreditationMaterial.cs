@@ -31,6 +31,8 @@ namespace EPR.Accreditation.API.Common.Data.DataModels
 
         public bool? WasteLastYear { get; set; }
 
+        public bool? HasNpwdAccreditationNumber { get; set; }
+
         #region Navigation properties
         public virtual Accreditation Accreditation { get; set; }
 

@@ -4,6 +4,7 @@ using EPR.Accreditation.API.Common.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EPR.Accreditation.API.Common.Data.Migrations
 {
     [DbContext(typeof(AccreditationContext))]
-    partial class AccreditationContextModelSnapshot : ModelSnapshot
+    [Migration("20240425112326_relocated-HasNpwdAccreditationNumber-column")]
+    partial class relocatedHasNpwdAccreditationNumbercolumn
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -90,10 +92,7 @@ namespace EPR.Accreditation.API.Common.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<int>("AccreditationId")
-                        .HasColumnType("int");
-
-                    b.Property<decimal?>("AnnualCapacity")
+                    b.Property<decimal>("AnnualCapacity")
                         .HasColumnType("decimal(10,3)");
 
                     b.Property<Guid>("ExternalId")
@@ -118,12 +117,10 @@ namespace EPR.Accreditation.API.Common.Data.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
-                    b.Property<decimal?>("WeeklyCapacity")
+                    b.Property<decimal>("WeeklyCapacity")
                         .HasColumnType("decimal(10,3)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("AccreditationId");
 
                     b.HasIndex("ExternalId")
                         .IsUnique();
@@ -2526,12 +2523,6 @@ namespace EPR.Accreditation.API.Common.Data.Migrations
 
             modelBuilder.Entity("EPR.Accreditation.API.Common.Data.DataModels.AccreditationMaterial", b =>
                 {
-                    b.HasOne("EPR.Accreditation.API.Common.Data.DataModels.Accreditation", "Accreditation")
-                        .WithMany("AccreditationMaterials")
-                        .HasForeignKey("AccreditationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("EPR.Accreditation.API.Common.Data.DataModels.Material", "Material")
                         .WithMany("AccreditationMaterials")
                         .HasForeignKey("MaterialId")
@@ -2545,8 +2536,6 @@ namespace EPR.Accreditation.API.Common.Data.Migrations
                     b.HasOne("EPR.Accreditation.API.Common.Data.DataModels.Site", "Site")
                         .WithMany("AccreditationMaterials")
                         .HasForeignKey("SiteId");
-
-                    b.Navigation("Accreditation");
 
                     b.Navigation("Material");
 
@@ -2780,8 +2769,6 @@ namespace EPR.Accreditation.API.Common.Data.Migrations
 
             modelBuilder.Entity("EPR.Accreditation.API.Common.Data.DataModels.Accreditation", b =>
                 {
-                    b.Navigation("AccreditationMaterials");
-
                     b.Navigation("FileUploads");
 
                     b.Navigation("OverseasReprocessingSites");
