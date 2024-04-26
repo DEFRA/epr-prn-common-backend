@@ -12,13 +12,16 @@ namespace EPR.Accreditation.API.Common.Data.DataModels
         public int MaterialId { get; set; }
 
         [Column(TypeName = "decimal(10,3)")]
-        public decimal AnnualCapacity { get; set; }
+        public decimal? AnnualCapacity { get; set; }
 
         [Column(TypeName = "decimal(10,3)")]
-        public decimal WeeklyCapacity { get;set; }
+        public decimal? WeeklyCapacity { get;set; }
 
         [MaxLength(200)]
         public string WasteSource { get; set; }
+
+        [ForeignKey("Accreditation")]
+        public int AccreditationId { get; set; }
 
         [ForeignKey("Site")]
         public int? SiteId { get; set; } // has a site if the material is for a Reprocessor
@@ -28,7 +31,11 @@ namespace EPR.Accreditation.API.Common.Data.DataModels
 
         public bool? WasteLastYear { get; set; }
 
+        public bool? HasNpwdAccreditationNumber { get; set; }
+
         #region Navigation properties
+        public virtual Accreditation Accreditation { get; set; }
+
         public virtual Site Site { get; set; }
 
         public virtual OverseasReprocessingSite OverseasReprocessingSite { get; set; }

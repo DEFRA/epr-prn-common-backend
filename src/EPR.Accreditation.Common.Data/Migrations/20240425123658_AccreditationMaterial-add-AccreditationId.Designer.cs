@@ -4,6 +4,7 @@ using EPR.Accreditation.API.Common.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EPR.Accreditation.API.Common.Data.Migrations
 {
     [DbContext(typeof(AccreditationContext))]
-    partial class AccreditationContextModelSnapshot : ModelSnapshot
+    [Migration("20240425123658_AccreditationMaterial-add-AccreditationId")]
+    partial class AccreditationMaterialaddAccreditationId
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -44,9 +46,6 @@ namespace EPR.Accreditation.API.Common.Data.Migrations
 
                     b.Property<bool?>("Large")
                         .HasColumnType("bit");
-
-                    b.Property<decimal?>("LargeFee")
-                        .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("OperatorTypeId")
                         .HasColumnType("int");
@@ -101,9 +100,6 @@ namespace EPR.Accreditation.API.Common.Data.Migrations
 
                     b.Property<Guid>("ExternalId")
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<bool?>("HasNpwdAccreditationNumber")
-                        .HasColumnType("bit");
 
                     b.Property<int>("MaterialId")
                         .HasColumnType("int");

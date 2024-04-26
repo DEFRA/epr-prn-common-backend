@@ -26,7 +26,7 @@ namespace EPR.Accreditation.API.Common.Data.DataModels
         public Enums.AccreditationStatus AccreditationStatusId { get; set; }
 
         [ForeignKey("Site")]
-        public int? SiteId { get;set; }
+        public int? SiteId { get; set; }
 
         public Guid CreatedBy { get; set; }
 
@@ -38,6 +38,8 @@ namespace EPR.Accreditation.API.Common.Data.DataModels
 
         #region Navigation properties
         public virtual Site Site { get; set; }
+
+        public virtual ICollection<AccreditationMaterial> AccreditationMaterials { get; set; }
 
         public virtual WastePermit WastePermit { get; set; }
 

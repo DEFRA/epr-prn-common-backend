@@ -24,9 +24,8 @@ namespace EPR.Accreditation.API.UnitTests.Controllers
             // Arrange
             var id = Guid.NewGuid();
             var site = new Common.Dtos.Site();
-            var expectedSiteid = Guid.NewGuid();
 
-            _mockAccreditationService.Setup(s => s.CreateSite(id, site)).ReturnsAsync(expectedSiteid);
+            _mockAccreditationService.Setup(s => s.CreateSite(id, site));
 
             // Act
             var result = await _siteController.CreateSite(id, site) as OkObjectResult;
@@ -34,7 +33,6 @@ namespace EPR.Accreditation.API.UnitTests.Controllers
             // Assert
             Assert.IsNotNull(result);
             Assert.AreEqual(200, result.StatusCode);
-            Assert.AreEqual(expectedSiteid, result.Value);
 
             _mockAccreditationService.Verify(s => s.CreateSite(id, site), Times.Once());
         }

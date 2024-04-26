@@ -1,14 +1,15 @@
-﻿using DTO = EPR.Accreditation.API.Common.Dtos;
-
-namespace EPR.Accreditation.API.Services.Interfaces
+﻿namespace EPR.Accreditation.API.Services.Interfaces
 {
+    using EPR.Accreditation.API.Common.Enums;
+    using DTO = EPR.Accreditation.API.Common.Dtos;
+
     public interface IAccreditationService
     {
         Task<Guid> CreateAccreditation(DTO.Accreditation accreditation);
 
         Task<Guid> CreateMaterial(
             Guid id,
-            Guid? overseasSiteId,
+            OperatorType accreditationOperatorType,
             DTO.AccreditationMaterial accreditationMaterial);
 
         Task AddFile(
@@ -21,7 +22,6 @@ namespace EPR.Accreditation.API.Services.Interfaces
 
         Task UpdateMaterail(
             Guid id,
-            Guid? overseasSiteId,
             Guid materialid,
             DTO.AccreditationMaterial accreditationMaterial);
 
@@ -37,7 +37,6 @@ namespace EPR.Accreditation.API.Services.Interfaces
 
         Task<DTO.AccreditationMaterial> GetMaterial(
             Guid id,
-            Guid? overseasSiteid,
             Guid materialid);
 
         Task<DTO.Site> GetSite(
@@ -57,6 +56,7 @@ namespace EPR.Accreditation.API.Services.Interfaces
 
         Task<Guid> CreateOverseasSite(
             Guid id,
+            Guid materialId,
             DTO.OverseasReprocessingSite site);
 
         public Task UpdateOverseasSite(
