@@ -23,7 +23,7 @@ namespace EPR.Accreditation.API.Common.Data.DataModels
         public Enums.AccreditationStatus AccreditationStatusId { get; set; }
 
         [ForeignKey("Site")]
-        public int? SiteId { get;set; }
+        public int? SiteId { get; set; }
 
         public Guid CreatedBy { get; set; }
 
