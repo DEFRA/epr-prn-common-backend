@@ -217,8 +217,7 @@ namespace EPR.Accreditation.API.Repositories
         public async Task UpdateMaterial(
             Guid id,
             Guid materialid,
-            DTO.AccreditationMaterial material,
-            Guid? overseasSiteId)
+            DTO.AccreditationMaterial material)
         {
             var entity = await GetAccreditationSiteMaterial(
                 id,
@@ -243,22 +242,6 @@ namespace EPR.Accreditation.API.Repositories
                     if (wasteCode.Id == default)
                         _accreditationContext.WasteCodes.Add(wasteCode);
                 }
-            }
-
-            if (entity.Accreditation.OperatorTypeId == OperatorType.Exporter &&
-                overseasSiteId.HasValue)
-            {
-                var overseasSiteEntityId = await _accreditationContext.OverseasReprocessingSite
-                    .Where(os => os.ExternalId == overseasSiteId.Value)
-                    .Select(os => (int?)os.Id)
-                    .FirstOrDefaultAsync();
-
-                if (overseasSiteEntityId == null)
-                {
-                    throw new NotFoundException($"No overseas reprocessing site found for external id: {overseasSiteId}");
-                }
-
-                entity.OverseasReprocessingSiteId = overseasSiteEntityId.Value;
             }
 
             // save the changes
@@ -354,25 +337,33 @@ namespace EPR.Accreditation.API.Repositories
 
         public async Task<Guid> CreateOverseasSite(
             Guid id,
+            Guid materialId,
             DTO.OverseasReprocessingSite site)
         {
-            var accreditationId = await _accreditationContext
-                .Accreditation
+            var accreditationMaterial = await _accreditationContext
+                .AccreditationMaterial
                 .Where(
-                    a =>
-                        a.ExternalId == id &&
-                        a.OperatorTypeId == OperatorType.Exporter) // cannot add an overseas site to a reprocessor
-                .Select(a => (int?)a.Id)
+                    m =>
+                        m.Accreditation.ExternalId == id &&
+                        m.Accreditation.OperatorTypeId == OperatorType.Exporter &&
+                        m.ExternalId == materialId) // cannot add an overseas site to a reprocessor
                 .SingleOrDefaultAsync();
 
-            if (accreditationId == null)
+            if (accreditationMaterial == null)
             {
                 throw new NotFoundException();
             }
 
             var entity = _mapper.Map<Data.OverseasReprocessingSite>(site);
-            entity.AccreditationId = accreditationId.Value;
+            entity.AccreditationId = accreditationMaterial.AccreditationId;
             entity.ExternalId = Guid.NewGuid();
+
+            if (accreditationMaterial.OverseasReprocessingSiteId != null)
+            {
+                throw new InvalidOperationException($"Cannot add site to Accreditation material {materialId} due to it already having an existing overseas reprocessing site");
+            }
+
+            accreditationMaterial.OverseasReprocessingSite = entity;
 
             await _accreditationContext.OverseasReprocessingSite.AddAsync(entity);
             await _accreditationContext.SaveChangesAsync();

@@ -32,14 +32,16 @@ namespace EPR.Accreditation.API.Controllers
             return Ok(site);
         }
 
-        [HttpPost]
+        [HttpPost("Material/{materialId}")]
         [ProducesResponseType(typeof(Guid), 200)]
         public async Task<IActionResult> CreateSite(
             Guid id,
+            Guid materialId,
             DTO.OverseasReprocessingSite overseasSite)
         {
             var siteid = await _accreditationService.CreateOverseasSite(
                 id,
+                materialId,
                 overseasSite);
 
             return Ok(siteid);

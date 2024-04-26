@@ -31,6 +31,8 @@ namespace EPR.Accreditation.API.Middleware
 
                 // Log other exceptions
                 context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+                context.Response.ContentType = "text/plain"; // Set the content type as needed
+                await context.Response.WriteAsync(ex.Message); // Include the exception message in the response body
 #if DEBUG
                 Debug.WriteLine(result);
 #endif

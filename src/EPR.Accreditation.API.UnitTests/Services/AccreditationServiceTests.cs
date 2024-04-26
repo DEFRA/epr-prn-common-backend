@@ -312,22 +312,33 @@ namespace EPR.Accreditation.API.UnitTests.Services
                 });
 
             var id = Guid.NewGuid();
+            var materialId = Guid.NewGuid();
             var overseasReprocessingSite = new OverseasReprocessingSite();
             var expectedGuid = Guid.NewGuid();
 
             _mockRepository.Setup(r =>
                 r.CreateOverseasSite(
                     id,
+                    materialId,
                     overseasReprocessingSite))
                 .ReturnsAsync(expectedGuid);
 
             // Act
-            var result = await _accreditationService.CreateOverseasSite(id, overseasReprocessingSite);
+            var result = await _accreditationService.CreateOverseasSite(
+                id,
+                materialId,
+                overseasReprocessingSite);
 
             // Assert
             Assert.AreEqual(expectedGuid, result);
 
-            _mockRepository.Verify(r => r.CreateOverseasSite(id, overseasReprocessingSite), Times.Once);
+            _mockRepository.Verify(
+                r =>
+                    r.CreateOverseasSite(
+                        id,
+                        materialId,
+                        overseasReprocessingSite)
+                    , Times.Once);
         }
 
         [TestMethod]

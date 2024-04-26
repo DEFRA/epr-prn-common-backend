@@ -28,8 +28,7 @@ namespace EPR.Accreditation.API.Repositories.Interfaces
         Task UpdateMaterial(
             Guid id,
             Guid materialid,
-            DTO.AccreditationMaterial material,
-            Guid? overseasSiteId = null);
+            DTO.AccreditationMaterial material);
 
         Task<IEnumerable<DTO.FileUpload>> GetFileRecords(Guid id);
 
@@ -61,6 +60,7 @@ namespace EPR.Accreditation.API.Repositories.Interfaces
 
         Task<Guid> CreateOverseasSite(
             Guid id,
+            Guid materialId,
             DTO.OverseasReprocessingSite site);
 
         Task UpdateOverseasSite(

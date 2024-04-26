@@ -88,8 +88,7 @@
         public async Task UpdateMaterail(
             Guid id,
             Guid materialid,
-            AccreditationMaterial accreditationMaterial,
-            Guid? overseasSiteId)
+            AccreditationMaterial accreditationMaterial)
         {
             if (accreditationMaterial.WasteCodes != null &&
                 accreditationMaterial.WasteCodes.Any())
@@ -104,8 +103,7 @@
             await _repository.UpdateMaterial(
                 id,
                 materialid,
-                accreditationMaterial,
-                overseasSiteId);
+                accreditationMaterial);
         }
 
         public async Task<AccreditationMaterial> GetMaterial(
@@ -163,10 +161,12 @@
 
         public async Task<Guid> CreateOverseasSite(
             Guid id,
+            Guid materialId,
             OverseasReprocessingSite overseasReprocessingSite)
         {
             return await _repository.CreateOverseasSite(
                 id,
+                materialId,
                 overseasReprocessingSite);
         }
 

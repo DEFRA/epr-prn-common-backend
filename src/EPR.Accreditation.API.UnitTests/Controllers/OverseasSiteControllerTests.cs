@@ -24,24 +24,26 @@
         {
             // Arrange
             var id = Guid.NewGuid();
+            var materialId = Guid.NewGuid();
             var overseasSite = new OverseasReprocessingSite();
             var expectedSiteid = Guid.NewGuid();
 
             _mockAcreditationService.Setup(s =>
                 s.CreateOverseasSite(
                     id,
+                    materialId,
                     overseasSite))
                 .ReturnsAsync(expectedSiteid);
 
             // Act
-            var result = await _overseasSiteController.CreateSite(id, overseasSite) as OkObjectResult;
+            var result = await _overseasSiteController.CreateSite(id, materialId, overseasSite) as OkObjectResult;
 
             // Assert
             Assert.IsNotNull(result);
             Assert.AreEqual(200, result.StatusCode);
             Assert.AreEqual(expectedSiteid, result.Value);
 
-            _mockAcreditationService.Verify(s => s.CreateOverseasSite(id, overseasSite), Times.Once());
+            _mockAcreditationService.Verify(s => s.CreateOverseasSite(id, materialId, overseasSite), Times.Once());
         }
 
         [TestMethod]

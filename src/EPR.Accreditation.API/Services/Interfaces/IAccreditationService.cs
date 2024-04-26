@@ -23,8 +23,7 @@
         Task UpdateMaterail(
             Guid id,
             Guid materialid,
-            DTO.AccreditationMaterial accreditationMaterial,
-            Guid? oversieasSiteId = null);
+            DTO.AccreditationMaterial accreditationMaterial);
 
         Task<DTO.Accreditation> GetAccreditation(Guid id);
 
@@ -57,6 +56,7 @@
 
         Task<Guid> CreateOverseasSite(
             Guid id,
+            Guid materialId,
             DTO.OverseasReprocessingSite site);
 
         public Task UpdateOverseasSite(

@@ -65,21 +65,5 @@
 
             return Ok();
         }
-
-        [HttpPut("{materialid}/Site/{overseasSiteId}")]
-        public async Task<IActionResult> UpdateOverseasSiteMaterial(
-            Guid id,
-            Guid materialid,
-            Guid overseasSiteId,
-            [FromBody] DTO.AccreditationMaterial accreditationMaterial)
-        {
-            await _accreditationService.UpdateMaterail(
-                id,
-                materialid,
-                accreditationMaterial,
-                overseasSiteId);
-
-            return Ok();
-        }
     }
 }
