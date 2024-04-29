@@ -12,13 +12,13 @@ namespace EPR.Accreditation.API.Common.Dtos
         /// <summary>
         /// Gets or sets the date and time of when the PRN was created.
         /// </summary>
-        public DateTime CreatedDate { get; set; }
+        public DateTime CreatedDate { get; init; }
 
 
 
         /// <summary>
         /// Gets or sets the date and time when the PRN was last updated.
         /// </summary>
-        public DateTime LastUpdatedDate { get; set; }
+        public DateTime LastUpdatedDate { get; init; }
     }
 }

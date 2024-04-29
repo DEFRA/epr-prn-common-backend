@@ -16,6 +16,6 @@ namespace EPR.Accreditation.API.Common.Dtos
         /// <summary>
         /// Gets or sets the date the status was changed.
         /// </summary>
-        public DateTime CreatedOn { get; set; }
+        public DateTime CreatedOn { get; init; }
     }
 }

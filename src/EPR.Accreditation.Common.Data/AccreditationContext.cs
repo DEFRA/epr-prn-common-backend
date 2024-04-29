@@ -67,6 +67,10 @@ namespace EPR.Accreditation.API.Common.Data
                 .HasIndex(s => s.AccreditationId)
                 .IsUnique();
 
+            modelBuilder.Entity<PackageRecyclingNote>()
+                .HasIndex(prn => prn.ExternalId)
+                .IsUnique();
+
             // seed the lookup tables
             InitialDataSeed.Seed(modelBuilder);
 

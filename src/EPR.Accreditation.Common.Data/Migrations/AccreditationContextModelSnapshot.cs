@@ -2351,6 +2351,9 @@ namespace EPR.Accreditation.API.Common.Data.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("ExternalId")
+                        .IsUnique();
+
                     b.HasIndex("PrnStatusId");
 
                     b.HasIndex("PrnTypeId");

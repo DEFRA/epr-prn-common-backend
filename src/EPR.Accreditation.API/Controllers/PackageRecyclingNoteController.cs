@@ -1,7 +1,10 @@
-﻿using EPR.Accreditation.API.Services;
+﻿using EPR.Accreditation.API.Helpers;
+using EPR.Accreditation.API.Services;
 using EPR.Accreditation.API.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using System.Net;
 using DTO = EPR.Accreditation.API.Common.Dtos;
+using System;
 
 namespace EPR.Accreditation.API.Controllers
 {
@@ -9,11 +12,12 @@ namespace EPR.Accreditation.API.Controllers
     [Route("/api/prn")]
     public class PackageRecyclingNoteController : ControllerBase
     {
-        protected readonly IPackageRecyclingNoteService _prnService;
+        protected IPackageRecyclingNoteService PrnService { get; }
 
         public PackageRecyclingNoteController(IPackageRecyclingNoteService prnService)
         {
-            _prnService = prnService ?? throw new ArgumentNullException(nameof(prnService));
+            ArgumentNullException.ThrowIfNull(prnService);
+            PrnService = prnService;
         }
 
         #region Get methods
@@ -22,24 +26,41 @@ namespace EPR.Accreditation.API.Controllers
         [ProducesResponseType(typeof(DTO.PackageRecyclingNoteResponse), 200)]
         public async Task<IActionResult> GetPackageRecyclingNote(Guid id)
         {
-            var prn = await _prnService.GetPackageRecyclingNote(id);
-
-            if (prn == null)
-                return NotFound();
-
-            return Ok(prn);
+            ArgumentNullException.ThrowIfNull(id);
+            try
+            {
+                var prn = await PrnService.GetPackageRecyclingNote(id);
+                if(prn == null)
+                {
+                    return NotFound();
+                }
+                return Ok(prn);
+            }
+            catch
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError);
+            }  
         }
 
         [HttpGet("organisation/{id}")]
         [ProducesResponseType(typeof(IEnumerable<Guid>), 200)]
-        public async Task<IActionResult> GetOrganisationPrns(Guid id)
+        public async Task<IActionResult> GetPrnsForOrganisation(Guid id)
         {
-            var prn = await _prnService.GetPrnsForOrganisation(id);
+            ArgumentNullException.ThrowIfNull(id);
+            try
+            {
+                var prns = await PrnService.GetPrnsForOrganisation(id);
 
-            if (prn == null)
-                return NotFound();
-
-            return Ok(prn);
+                if ( prns == null || !prns.Any())
+                {
+                    return NotFound();
+                }
+                return Ok(prns);
+            }
+            catch
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError);
+            }
         }
 
         #endregion
@@ -47,34 +68,37 @@ namespace EPR.Accreditation.API.Controllers
         #region Post methods
         [HttpPost()]
         [ProducesResponseType(typeof(Guid), 200)]
-        public async Task<IActionResult> CreatePackageRecyclingNote([FromBody] DTO.PackageRecyclingNoteResponse prn)
+        public async Task<IActionResult> CreatePackageRecyclingNote([FromBody] DTO.PackageRecyclingNoteRequest prn)
         {
-            if (prn == null)
-                return BadRequest("Package Recycling Note data not suppleid");
-
+            ArgumentNullException.ThrowIfNull(prn);
             try
             {
-                var id = await _prnService.CreatePackageRecyclingNote(prn);
+                var id = await PrnService.CreatePackageRecyclingNote(prn);
                 return Ok(id);
             }
             catch
             {
-
-                return BadRequest();
+                return StatusCode((int)HttpStatusCode.InternalServerError);
             }
         }
 
         [HttpPost("status{id}")]
         public async Task<IActionResult> UpdatePrnStatus(Guid id, DTO.PrnStatusHistoryRequest status)
         {
+            ArgumentNullException.ThrowIfNull(id);
+            ArgumentNullException.ThrowIfNull(status);
             try
             {
-                await _prnService.UpdatePrnStatus(id, status);
+                await PrnService.UpdatePrnStatus(id, status);
                 return Ok();
+            }
+            catch (NotFoundException)
+            {
+                return NotFound();
             }
             catch
             {
-                return BadRequest();
+                return StatusCode((int)HttpStatusCode.InternalServerError);
             }
         }
 
@@ -83,20 +107,21 @@ namespace EPR.Accreditation.API.Controllers
         #region Put methods
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdatePackageRecyclingNote(Guid id, DTO.PrnUpdateRequest prn)
+        public async Task<IActionResult> UpdatePrn(Guid id, DTO.PrnUpdateRequest prn)
         {
-            if (prn == null)
-                return BadRequest("Package Recycling Note data not supplied");
-
+            ArgumentNullException.ThrowIfNull(prn);
             try
             {
-                await _prnService.UpdatePrn(id, prn);
+                await PrnService.UpdatePrn(id, prn);
                 return Ok();
+            }
+            catch(NotFoundException)
+            {
+                return NotFound();
             }
             catch
             {
-
-                return BadRequest();
+                return StatusCode((int)HttpStatusCode.InternalServerError);
             }
         }
 
@@ -105,16 +130,21 @@ namespace EPR.Accreditation.API.Controllers
         #region Delete methods
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeletePackagingRecyclingNote(Guid id)
+        public async Task<IActionResult> DeletePrn(Guid id)
         {
+            ArgumentNullException.ThrowIfNull(id);
             try
             {
-                await _prnService.DeletePrn(id);
+                await PrnService.DeletePrn(id);
                 return Ok();
+            }
+            catch(NotFoundException)
+            {
+                return StatusCode((int)HttpStatusCode.PreconditionFailed);
             }
             catch
             {
-                return BadRequest($"Unable to delete {id}");
+                return StatusCode((int)HttpStatusCode.InternalServerError);
             }
         }
 
