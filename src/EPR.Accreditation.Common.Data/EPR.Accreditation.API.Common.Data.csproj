@@ -5,7 +5,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>EPR.Accreditation.API.Common.Data</RootNamespace>
   </PropertyGroup>
-    <Target Name="GenerateSqlScript" AfterTargets="AfterBuild" Condition="$(AzureBuild) != true">
+    <Target Name="GenerateSqlScript" AfterTargets="AfterBuild">
         <Exec Condition="$(Configuration) == Release" Command="dotnet-ef migrations script --configuration Release --verbose --no-build --context EPR.Accreditation.API.Common.Data.AccreditationContext --idempotent --output Scripts/migrations.sql" />
     </Target>
     <ItemGroup>
