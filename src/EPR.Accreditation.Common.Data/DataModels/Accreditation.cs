@@ -28,6 +28,9 @@ namespace EPR.Accreditation.API.Common.Data.DataModels
         [ForeignKey("Site")]
         public int? SiteId { get; set; }
 
+        [ForeignKey("Address")]
+        public int? LegalAddressId { get; set; }
+
         public Guid CreatedBy { get; set; }
 
         public DateTime CreatedOn { get; set; }

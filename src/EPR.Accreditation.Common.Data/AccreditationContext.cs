@@ -31,13 +31,13 @@ namespace EPR.Accreditation.API.Common.Data
                 .HasIndex(a => a.ReferenceNumber)
                 .IsUnique();
 
-            modelBuilder.Entity<Site>()
-                .HasIndex(s => s.ExternalId)
-                .IsUnique();
+            //modelBuilder.Entity<Site>()
+            //    .HasIndex(s => s.ExternalId)
+            //    .IsUnique();
 
-            modelBuilder.Entity<Site>()
-                .HasIndex(s => new { s.Postcode, s.OrganisationId })
-                .IsUnique();
+            //modelBuilder.Entity<Site>()
+            //    .HasIndex(s => new { s.Postcode, s.OrganisationId })
+            //    .IsUnique();
 
             modelBuilder.Entity<WastePermit>()
                 .HasIndex(w => w.AccreditationId)
