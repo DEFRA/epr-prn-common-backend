@@ -5,6 +5,12 @@ ARG PORT=8080
 ENV ASPNETCORE_URLS=http://*:${PORT}
 EXPOSE ${PORT}
 
+# Install dotnet-ef tool
+RUN dotnet tool install --global dotnet-ef --version 6.* --tool-path /tools
+
+# Add the tools folder to PATH
+ENV PATH="${PATH}:/tools"
+
 RUN apk update && apk --no-cache add icu-libs
 ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=0
 
