@@ -11,6 +11,13 @@ ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=0
 FROM defradigital/dotnetcore-development:dotnet6.0 AS build
 USER root
 
+# Install dotnet-ef tool
+RUN dotnet tool install dotnet-ef --version 6.* --tool-path "/root/.dotnet/tools"
+
+# Add the tools folder to PATH
+ENV PATH="${PATH}:/root/.dotnet/tools"
+
+
 WORKDIR /src
 COPY ["EPR.Accreditation.API/EPR.Accreditation.API.csproj", "EPR.Accreditation.API/"]
 COPY ["EPR.Accreditation.API.Common/EPR.Accreditation.API.Common.csproj", "EPR.Accreditation.API.Common/"]
@@ -25,7 +32,7 @@ WORKDIR "/src/EPR.Accreditation.API"
 RUN dotnet build "EPR.Accreditation.API.csproj" -c Release /p:AzureBuild=true -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "EPR.Accreditation.API.csproj" -c Release /p:AzureBuild=true -o /app/publish
+RUN dotnet publish "EPR.Accreditation.API.csproj" -c Release /p:AzureBuild=false -o /app/publish
 
 FROM base AS final
 
