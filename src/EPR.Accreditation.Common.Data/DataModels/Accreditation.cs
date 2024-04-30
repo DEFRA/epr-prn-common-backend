@@ -12,7 +12,7 @@ namespace EPR.Accreditation.API.Common.Data.DataModels
         [ForeignKey("OperatorType")]
         public Enums.OperatorType OperatorTypeId { get; set; }
 
-        [MaxLength(12)]
+        [MaxLength(15)]
         public string ReferenceNumber { get; set; }
 
         public Guid OrganisationId { get; set; }
