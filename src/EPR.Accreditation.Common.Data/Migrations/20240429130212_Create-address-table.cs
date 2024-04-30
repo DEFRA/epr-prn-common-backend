@@ -72,17 +72,11 @@ namespace EPR.Accreditation.API.Common.Data.Migrations
                     Town = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     County = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Postcode = table.Column<string>(type: "nvarchar(8)", maxLength: 8, nullable: false),
-                    OrganisationId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    AccreditationId = table.Column<int>(type: "int", nullable: true)
+                    OrganisationId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Address", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Address_Accreditation_AccreditationId",
-                        column: x => x.AccreditationId,
-                        principalTable: "Accreditation",
-                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateIndex(
@@ -91,11 +85,6 @@ namespace EPR.Accreditation.API.Common.Data.Migrations
                 column: "AddressId",
                 unique: true);
 
-            migrationBuilder.CreateIndex(
-                name: "IX_Address_AccreditationId",
-                table: "Address",
-                column: "AccreditationId");
-
             migrationBuilder.AddForeignKey(
                 name: "FK_Site_Address_AddressId",
                 table: "Site",
@@ -103,12 +92,6 @@ namespace EPR.Accreditation.API.Common.Data.Migrations
                 principalTable: "Address",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Cascade);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Address_Postcode_OrganisationId",
-                table: "Address",
-                columns: new[] { "Postcode", "OrganisationId" },
-                unique: true);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
