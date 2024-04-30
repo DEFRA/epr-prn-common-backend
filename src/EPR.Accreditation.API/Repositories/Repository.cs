@@ -306,7 +306,7 @@ namespace EPR.Accreditation.API.Repositories
 
             var entity = _mapper.Map<Data.Site>(site);
 
-            //entity.ExternalId = Guid.NewGuid();
+            entity.ExternalId = Guid.NewGuid();
             await _accreditationContext.Site.AddAsync(entity);
 
             // perform a save so that we have the id of the site
