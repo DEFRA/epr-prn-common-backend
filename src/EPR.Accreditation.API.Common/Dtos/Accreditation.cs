@@ -19,6 +19,8 @@ namespace EPR.Accreditation.API.Common.Dtos
 
         public int? SiteId { get; set; }
 
+        public int? LegalAddressId { get; set; }
+
         public Guid CreatedBy { get; set; }
 
         public DateTime CreatedOn { get; set; }
@@ -28,5 +30,7 @@ namespace EPR.Accreditation.API.Common.Dtos
         public DateTime? UpdatedOn { get; set; }
 
         public WastePermit WastePermit { get; set; }
+
+        public Address LegalAddress { get; set; }
     }
 }

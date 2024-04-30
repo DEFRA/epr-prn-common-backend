@@ -24,9 +24,7 @@ namespace EPR.Accreditation.API.Controllers
             var site = await _accreditationService.GetSite(
                 id);
 
-            if (site == null)
-                return NotFound();
-
+            // it is valid to not have a site
             return Ok(site);
         }
 

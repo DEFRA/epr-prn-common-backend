@@ -30,6 +30,7 @@ namespace EPR.Accreditation.API.Repositories
                     .Include(a => a.Site)
                     .Include(a => a.OverseasReprocessingSites)
                     .Include(a => a.WastePermit)
+                    .Include(a => a.LegalAddress)
                 .Where(a => a.ExternalId == id)
                 .Select(a =>
                     _mapper.Map<DTO.Accreditation>(a)
@@ -100,7 +101,9 @@ namespace EPR.Accreditation.API.Repositories
                 .FirstOrDefaultAsync();
 
             if (entity == null)
+            {
                 throw new NotFoundException($"Accreditation record not found for External ID: {id}");
+            }
 
             // map updates on top of existing database entity
             entity = _mapper.Map(accreditation, entity);
@@ -124,6 +127,12 @@ namespace EPR.Accreditation.API.Repositories
                 }
             }
 
+            if (entity.LegalAddress != null &&
+                entity.LegalAddress.Id == default)
+            {
+                await _accreditationContext.Address.AddAsync(entity.LegalAddress);
+            }
+
             if (entity.Site != null &&
                 entity.Site.Id == default)
             {
@@ -133,7 +142,9 @@ namespace EPR.Accreditation.API.Repositories
 
             if (entity.WastePermit == null &&
                 entity.WastePermit.Id == default)
+            {
                 await _accreditationContext.WastePermit.AddAsync(entity.WastePermit);
+            }
 
             await _accreditationContext.SaveChangesAsync();
         }
@@ -260,13 +271,20 @@ namespace EPR.Accreditation.API.Repositories
         public async Task<DTO.Site> GetSite(
             Guid id)
         {
-            return await _accreditationContext
+            var accreditationEntity = await _accreditationContext
                 .Accreditation
                 .Include(a => a.Site)
-                    .ThenInclude(s => s.ExemptionReferences)
-                .Where(a => a.ExternalId == id && a.SiteId.HasValue)
-                .Select(a => _mapper.Map<DTO.Site>(a.Site))
+                    .ThenInclude(s => s.Address)
+                .Where(a => a.ExternalId == id)
+                .Select(a => a)
                 .SingleOrDefaultAsync();
+
+            if (accreditationEntity == null)
+            {
+                throw new NotFoundException();
+            }
+
+            return _mapper.Map<DTO.Site>(accreditationEntity.Site);
         }
 
         public async Task<Guid> CreateSite(
@@ -276,11 +294,15 @@ namespace EPR.Accreditation.API.Repositories
             // add the site id to the accreditation record
             var accreditionEntity = await _accreditationContext
                 .Accreditation
-                .Where(a => a.ExternalId == id)
+                .Where(a => 
+                    a.ExternalId == id &&
+                    a.OperatorTypeId == OperatorType.Reprocessor)
                 .SingleOrDefaultAsync();
 
             if (accreditionEntity == null)
+            {
                 throw new NotFoundException("Accreditation entity not found");
+            }
 
             var entity = _mapper.Map<Data.Site>(site);
 
@@ -305,9 +327,12 @@ namespace EPR.Accreditation.API.Repositories
             var entity = await _accreditationContext
                 .Accreditation
                 .Include(a => a.Site)
-                    .ThenInclude(s => s.ExemptionReferences)
-                .Where(a => a.ExternalId == id
-                    && a.SiteId.HasValue)
+                    .ThenInclude(s => s.Address)
+                .Include(a => a.Site)
+                    .ThenInclude(a => a.ExemptionReferences)
+                .Where(a => 
+                    a.ExternalId == id &&
+                    a.SiteId.HasValue)
                 .Select(a => a.Site)
                 .SingleOrDefaultAsync()
                 ?? throw new NotFoundException();
@@ -318,14 +343,12 @@ namespace EPR.Accreditation.API.Repositories
             if (entity.ExemptionReferences != null && entity.ExemptionReferences.Count > 0)
             {
                 foreach (var reference in site.ExemptionReferences.Where(x => !string.IsNullOrWhiteSpace(x)))
+                {
                     entity.ExemptionReferences.Add(new Data.ExemptionReference { Reference = reference });
+                }
             }
 
-            entity.Address1 = site.Address1;
-            entity.Address2 = site.Address2;
-            entity.Town = site.Town;
-            entity.Postcode = site.Postcode;
-            entity.County = site.County;
+            _mapper.Map(site, entity);
 
             await _accreditationContext.SaveChangesAsync();
         }

@@ -35,10 +35,6 @@ namespace EPR.Accreditation.API.Common.Data
                 .HasIndex(s => s.ExternalId)
                 .IsUnique();
 
-            modelBuilder.Entity<Site>()
-                .HasIndex(s => new { s.Postcode, s.OrganisationId })
-                .IsUnique();
-
             modelBuilder.Entity<WastePermit>()
                 .HasIndex(w => w.AccreditationId)
                 .IsUnique();
@@ -106,6 +102,8 @@ namespace EPR.Accreditation.API.Common.Data
         public virtual DbSet<SaveAndComeBack> SaveAndComeBack { get; set; }
 
         public virtual DbSet<Material> Material { get; set; }
+
+        public virtual DbSet<Address> Address { get; set; }
 
         #region Lookups
         public virtual DbSet<AccreditationStatus> AccreditationStatus { get; set; }

@@ -230,6 +230,11 @@ namespace EPR.Accreditation.API.Profiles
 
             CreateMap<Data.ExemptionReference, DTO.ExemptionReference>()
                 .ReverseMap();
+
+            CreateMap<Data.Address, DTO.Address>()
+                .MapOnlyNonDefault()
+                .ReverseMap()
+                .MapOnlyNonDefault();
         }
     }
 }

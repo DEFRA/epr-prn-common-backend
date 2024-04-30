@@ -58,24 +58,6 @@ namespace EPR.Accreditation.API.UnitTests.Controllers
         }
 
         [TestMethod]
-        public async Task GetSite_WithInvalidId_ReturnsNotFound()
-        {
-            // Arrange
-            var id = Guid.NewGuid();
-
-            _mockAccreditationService.Setup(s => s.GetSite(id)).ReturnsAsync((Common.Dtos.Site)null);
-
-            // Act
-            var result = await _siteController.GetSite(id) as NotFoundResult;
-
-            // Assert
-            Assert.IsNotNull(result);
-            Assert.AreEqual(404, result.StatusCode);
-
-            _mockAccreditationService.Verify(s => s.GetSite(id), Times.Once());
-        }
-
-        [TestMethod]
         public async Task UpdateSite_CallsServiceWithCorrectParametersAndReturnsOk()
         {
             // Arrange
