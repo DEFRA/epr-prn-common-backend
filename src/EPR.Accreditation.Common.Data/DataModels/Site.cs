@@ -9,26 +9,6 @@
         // so this field will be required
         public Guid ExternalId { get; set; } // unique key created in DbContext
 
-        //[Required]
-        //[MaxLength(100)]
-        //public string Address1 { get; set; }
-
-        //[MaxLength(100)]
-        //public string Address2 { get; set; }
-
-        //[Required]
-        //[MaxLength(100)]
-        //public string Town { get; set; }
-
-        //[MaxLength(100)]
-        //public string County { get; set; }
-
-        //[Required]
-        //[MaxLength(10)]
-        //public string Postcode { get; set; } // along with OrganisationId this is part of a compound unique key
-
-        //public Guid OrganisationId { get; set; } // along with Postcode this is part of a compound unique key
-
         [ForeignKey("Address")]
         public int AddressId { get; set; }
 
