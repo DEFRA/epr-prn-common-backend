@@ -71,8 +71,7 @@ namespace EPR.Accreditation.API.Common.Data.Migrations
                     Address2 = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Town = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     County = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Postcode = table.Column<string>(type: "nvarchar(8)", maxLength: 8, nullable: false),
-                    OrganisationId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    Postcode = table.Column<string>(type: "nvarchar(8)", maxLength: 8, nullable: false)
                 },
                 constraints: table =>
                 {

@@ -32,11 +32,5 @@
         [Required]
         [MaxLength(8)]
         public string Postcode { get; set; }
-
-        /// <summary>
-        /// Gets or sets the organisation key that the accreditation, and therefore address
-        /// is for
-        /// </summary>
-        public Guid OrganisationId { get; set; }
     }
 }

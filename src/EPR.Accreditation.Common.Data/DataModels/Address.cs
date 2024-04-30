@@ -37,12 +37,6 @@
         [MaxLength(8)]
         public string Postcode { get; set; } // need to make a unique key
 
-        /// <summary>
-        /// Gets or sets the organisation key that the accreditation, and therefore address
-        /// is for
-        /// </summary>
-        public Guid OrganisationId { get; set; } // along with Postcode this is part of a compound unique key
-
         #region NavigationProperties
         public virtual Site Site { get; set; }
 
