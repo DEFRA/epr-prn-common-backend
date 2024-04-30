@@ -1434,3 +1434,207 @@ GO
 COMMIT;
 GO
 
+BEGIN TRANSACTION;
+GO
+
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20240418092230_Making-countryId-nullable')
+BEGIN
+    ALTER TABLE [OverseasAddress] DROP CONSTRAINT [FK_OverseasAddress_Country_CountryId];
+END;
+GO
+
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20240418092230_Making-countryId-nullable')
+BEGIN
+    DECLARE @var3 sysname;
+    SELECT @var3 = [d].[name]
+    FROM [sys].[default_constraints] [d]
+    INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+    WHERE ([d].[parent_object_id] = OBJECT_ID(N'[OverseasAddress]') AND [c].[name] = N'CountryId');
+    IF @var3 IS NOT NULL EXEC(N'ALTER TABLE [OverseasAddress] DROP CONSTRAINT [' + @var3 + '];');
+    ALTER TABLE [OverseasAddress] ALTER COLUMN [CountryId] int NULL;
+END;
+GO
+
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20240418092230_Making-countryId-nullable')
+BEGIN
+    ALTER TABLE [OverseasAddress] ADD CONSTRAINT [FK_OverseasAddress_Country_CountryId] FOREIGN KEY ([CountryId]) REFERENCES [Lookup].[Country] ([CountryId]);
+END;
+GO
+
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20240418092230_Making-countryId-nullable')
+BEGIN
+    INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+    VALUES (N'20240418092230_Making-countryId-nullable', N'6.0.28');
+END;
+GO
+
+COMMIT;
+GO
+
+BEGIN TRANSACTION;
+GO
+
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20240424114109_Add-Large-Fee-To-Accreditation')
+BEGIN
+    ALTER TABLE [Accreditation] ADD [LargeFee] decimal(10,3) NULL;
+END;
+GO
+
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20240424114109_Add-Large-Fee-To-Accreditation')
+BEGIN
+    INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+    VALUES (N'20240424114109_Add-Large-Fee-To-Accreditation', N'6.0.28');
+END;
+GO
+
+COMMIT;
+GO
+
+BEGIN TRANSACTION;
+GO
+
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20240425091719_Added-HasNpwdAccreditationNumber-column')
+BEGIN
+    ALTER TABLE [Accreditation] ADD [HasNpwdAccreditationNumber] bit NULL;
+END;
+GO
+
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20240425091719_Added-HasNpwdAccreditationNumber-column')
+BEGIN
+    INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+    VALUES (N'20240425091719_Added-HasNpwdAccreditationNumber-column', N'6.0.28');
+END;
+GO
+
+COMMIT;
+GO
+
+BEGIN TRANSACTION;
+GO
+
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20240425112326_relocated-HasNpwdAccreditationNumber-column')
+BEGIN
+    DECLARE @var4 sysname;
+    SELECT @var4 = [d].[name]
+    FROM [sys].[default_constraints] [d]
+    INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+    WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Accreditation]') AND [c].[name] = N'HasNpwdAccreditationNumber');
+    IF @var4 IS NOT NULL EXEC(N'ALTER TABLE [Accreditation] DROP CONSTRAINT [' + @var4 + '];');
+    ALTER TABLE [Accreditation] DROP COLUMN [HasNpwdAccreditationNumber];
+END;
+GO
+
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20240425112326_relocated-HasNpwdAccreditationNumber-column')
+BEGIN
+    ALTER TABLE [AccreditationMaterial] ADD [HasNpwdAccreditationNumber] bit NULL;
+END;
+GO
+
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20240425112326_relocated-HasNpwdAccreditationNumber-column')
+BEGIN
+    INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+    VALUES (N'20240425112326_relocated-HasNpwdAccreditationNumber-column', N'6.0.28');
+END;
+GO
+
+COMMIT;
+GO
+
+BEGIN TRANSACTION;
+GO
+
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20240425123535_AccreditationMaterial-default-columns-to-null')
+BEGIN
+    DECLARE @var5 sysname;
+    SELECT @var5 = [d].[name]
+    FROM [sys].[default_constraints] [d]
+    INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+    WHERE ([d].[parent_object_id] = OBJECT_ID(N'[AccreditationMaterial]') AND [c].[name] = N'WeeklyCapacity');
+    IF @var5 IS NOT NULL EXEC(N'ALTER TABLE [AccreditationMaterial] DROP CONSTRAINT [' + @var5 + '];');
+    ALTER TABLE [AccreditationMaterial] ALTER COLUMN [WeeklyCapacity] decimal(10,3) NULL;
+END;
+GO
+
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20240425123535_AccreditationMaterial-default-columns-to-null')
+BEGIN
+    DECLARE @var6 sysname;
+    SELECT @var6 = [d].[name]
+    FROM [sys].[default_constraints] [d]
+    INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+    WHERE ([d].[parent_object_id] = OBJECT_ID(N'[AccreditationMaterial]') AND [c].[name] = N'AnnualCapacity');
+    IF @var6 IS NOT NULL EXEC(N'ALTER TABLE [AccreditationMaterial] DROP CONSTRAINT [' + @var6 + '];');
+    ALTER TABLE [AccreditationMaterial] ALTER COLUMN [AnnualCapacity] decimal(10,3) NULL;
+END;
+GO
+
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20240425123535_AccreditationMaterial-default-columns-to-null')
+BEGIN
+    INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+    VALUES (N'20240425123535_AccreditationMaterial-default-columns-to-null', N'6.0.28');
+END;
+GO
+
+COMMIT;
+GO
+
+BEGIN TRANSACTION;
+GO
+
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20240425123658_AccreditationMaterial-add-AccreditationId')
+BEGIN
+    DELETE FROM [Accreditation].[dbo].[AccreditationMaterial]
+END;
+GO
+
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20240425123658_AccreditationMaterial-add-AccreditationId')
+BEGIN
+    ALTER TABLE [AccreditationMaterial] ADD [AccreditationId] int NOT NULL DEFAULT 0;
+END;
+GO
+
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20240425123658_AccreditationMaterial-add-AccreditationId')
+BEGIN
+    CREATE INDEX [IX_AccreditationMaterial_AccreditationId] ON [AccreditationMaterial] ([AccreditationId]);
+END;
+GO
+
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20240425123658_AccreditationMaterial-add-AccreditationId')
+BEGIN
+    ALTER TABLE [AccreditationMaterial] DROP CONSTRAINT [FK_AccreditationMaterial_OverseasReprocessingSite_OverseasReprocessingSiteId];
+END;
+GO
+
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20240425123658_AccreditationMaterial-add-AccreditationId')
+BEGIN
+    ALTER TABLE [AccreditationMaterial] DROP CONSTRAINT [FK_AccreditationMaterial_Site_SiteId];
+END;
+GO
+
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20240425123658_AccreditationMaterial-add-AccreditationId')
+BEGIN
+    ALTER TABLE [AccreditationMaterial] ADD CONSTRAINT [FK_AccreditationMaterial_Accreditation_AccreditationId] FOREIGN KEY ([AccreditationId]) REFERENCES [Accreditation] ([Id]);
+END;
+GO
+
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20240425123658_AccreditationMaterial-add-AccreditationId')
+BEGIN
+    ALTER TABLE [AccreditationMaterial] ADD CONSTRAINT [FK_AccreditationMaterial_OverseasReprocessingSite_OverseasReprocessingSiteId] FOREIGN KEY ([OverseasReprocessingSiteId]) REFERENCES [OverseasReprocessingSite] ([Id]);
+END;
+GO
+
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20240425123658_AccreditationMaterial-add-AccreditationId')
+BEGIN
+    ALTER TABLE [AccreditationMaterial] ADD CONSTRAINT [FK_AccreditationMaterial_Site_SiteId] FOREIGN KEY ([SiteId]) REFERENCES [Site] ([Id]);
+END;
+GO
+
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20240425123658_AccreditationMaterial-add-AccreditationId')
+BEGIN
+    INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+    VALUES (N'20240425123658_AccreditationMaterial-add-AccreditationId', N'6.0.28');
+END;
+GO
+
+COMMIT;
+GO
+
