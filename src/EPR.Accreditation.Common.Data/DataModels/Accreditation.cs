@@ -28,6 +28,9 @@ namespace EPR.Accreditation.API.Common.Data.DataModels
         [ForeignKey("Site")]
         public int? SiteId { get; set; }
 
+        [ForeignKey("Address")]
+        public int? LegalAddressId { get; set; }
+
         public Guid CreatedBy { get; set; }
 
         public DateTime CreatedOn { get; set; }
@@ -52,6 +55,8 @@ namespace EPR.Accreditation.API.Common.Data.DataModels
         public virtual ICollection<OverseasReprocessingSite> OverseasReprocessingSites { get; set; }
 
         public virtual ICollection<FileUpload> FileUploads { get; set; }
+
+        public virtual Address LegalAddress { get; set; }
         #endregion
     }
 }
