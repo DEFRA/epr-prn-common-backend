@@ -1,4 +1,5 @@
-﻿using EPR.Accreditation.API.Services.Interfaces;
+﻿using EPR.Accreditation.API.Common.Enums;
+using EPR.Accreditation.API.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using DTO = EPR.Accreditation.API.Common.Dtos;
 
@@ -51,6 +52,28 @@ namespace EPR.Accreditation.API.Controllers
                 return NotFound();
 
             return Ok(fileUploadRecords);
+        }
+
+        [HttpGet("{id}/CheckAnswers/{section}")]
+        [ProducesResponseType(typeof(DTO.CheckAnswers), 200)]
+        public async Task<IActionResult> GetCheckAnswers(
+            Guid id,
+            Guid materialId,
+            Guid? siteId,
+            Guid? overseasSiteId,
+            CheckAnswersSection section)
+        {
+            var checkYourAnswers = await _accreditationService.GetCheckAnswers(
+                id,
+                materialId,
+                siteId,
+                overseasSiteId,
+                section);
+
+            if (checkYourAnswers == null)
+                return NotFound();
+
+            return Ok(checkYourAnswers);
         }
         #endregion
 
