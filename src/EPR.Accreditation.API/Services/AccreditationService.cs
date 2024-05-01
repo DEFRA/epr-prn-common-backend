@@ -208,6 +208,7 @@
 
                         var accreditationMaterial = await GetMaterial(id, materialId);
 
+                        var materialNameEn = accreditationMaterial.Material.English;
                         var wasteSource = accreditationMaterial.WasteSource;
                         var annualCapacity = accreditationMaterial.AnnualCapacity;
                         var weeklyCapacity = accreditationMaterial.WeeklyCapacity;
@@ -225,22 +226,30 @@
 
                         var materialRow = new CheckAnswersSectionRow
                         {
-
+                            TitleKey = "Material",
+                            Value = materialNameEn,
+                            ChangeLink = "/"
                         };
 
                         var ukSourceOfWasteRow = new CheckAnswersSectionRow
                         {
-
+                            TitleKey = "Uk source of the waste",
+                            Value = wasteSource,
+                            ChangeLink = "/"
                         };
 
                         var annualCapacityRow = new CheckAnswersSectionRow
                         {
-
+                            TitleKey = "Annual total processing capacity",
+                            Value = annualCapacity,
+                            ChangeLink = "/"
                         };
 
                         var weeklyCapacityRow = new CheckAnswersSectionRow
                         {
-
+                            TitleKey = "Average weekly processing capacity",
+                            Value = weeklyCapacity,
+                            ChangeLink = "/"
                         };
 
                         var detailsSectionRows = new List<CheckAnswersSectionRow>
@@ -251,29 +260,51 @@
                             weeklyCapacityRow
                         };
 
+                        var isCompletedDetailsSection = false;
+
+                        foreach (var row in detailsSectionRows)
+                        {
+                            if (row.Value != null)
+                            {
+                                isCompletedDetailsSection = true;
+                            }
+                            else
+                            {
+                                isCompletedDetailsSection = false;
+                            }
+                        }
+
                         var detailsSection = new Common.Dtos.CheckAnswersSectionDto
                         {
+                            Completed = isCompletedDetailsSection,
                             SectionRows = detailsSectionRows
                         };
 
                         var ukPackagingWasteRow = new CheckAnswersSectionRow
                         {
-
+                            TitleKey = "Uk packaging waste",
+                            Value = ukPackagingWaste,
+                            ChangeLink = "/"
                         };
 
                         var nonUkPackagingWasteRow = new CheckAnswersSectionRow
                         {
-
+                            TitleKey = "Non-UK packaging waste",
+                            Value = nonUkPackagingWaste,
+                            ChangeLink = "/"
                         };
 
                         var nonPackagingWasteRow = new CheckAnswersSectionRow
                         {
-
+                            TitleKey = "Non-packaging waste",
+                            Value = nonPackagingWaste,
+                            ChangeLink = "/"
                         };
 
                         var totalWasteInputsLastCalendarYearRow = new CheckAnswersSectionRow
                         {
-
+                            TitleKey = "Total",
+                            Value = totalWasteInputsLastCalendarYear,
                         };
 
                         var wasteInputsforLastYearRows = new List<CheckAnswersSectionRow>
@@ -284,8 +315,23 @@
                             totalWasteInputsLastCalendarYearRow
                         };
 
+                        var isCompletedWasteInputsLastYearSection = false;
+
+                        foreach (var row in wasteInputsforLastYearRows)
+                        {
+                            if (row.Value != null)
+                            {
+                                isCompletedWasteInputsLastYearSection = true;
+                            }
+                            else
+                            {
+                                isCompletedWasteInputsLastYearSection = false;
+                            }
+                        }
+
                         var wasteInputsLastYearSection = new Common.Dtos.CheckAnswersSectionDto
                         {
+                            Completed = isCompletedWasteInputsLastYearSection,
                             SectionRows = wasteInputsforLastYearRows
                         };
 

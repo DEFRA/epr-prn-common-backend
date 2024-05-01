@@ -4,6 +4,6 @@
     {
         public string SiteAddress { get; set; }
 
-        public ICollection<CheckAnswersSectionDto> Sections { get; set; }
+        public List<CheckAnswersSectionDto> Sections { get; set; }
     }
 }

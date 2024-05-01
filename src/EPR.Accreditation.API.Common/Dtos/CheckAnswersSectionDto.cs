@@ -4,12 +4,12 @@
 
     public class CheckAnswersSectionDto
     {
-        public Guid Id { get; set; }
+        //public Guid Id { get; set; }
 
         public bool Completed { get; set; }
 
-        public List<CheckAnswersSectionRow> SectionRows { get; set; } = new();
+        public List<CheckAnswersSectionRow> SectionRows { get; set; }
 
-        public Dictionary<string, string> QueryStringRouteData { get; set; } = new();
+        //public Dictionary<string, string> QueryStringRouteData { get; set; } = new();
     }
 }
