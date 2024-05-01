@@ -17,6 +17,8 @@ namespace EPR.Accreditation.API.Common.Dtos
 
         public bool? HasNpwdAccreditationNumber { get; set; }
 
+        public string NpwdAccreditationNumber { get; set; }
+
         public MaterialReprocessorDetails MaterialReprocessorDetails { get; set; }
 
         public IEnumerable<WasteCode> WasteCodes { get; set; }
