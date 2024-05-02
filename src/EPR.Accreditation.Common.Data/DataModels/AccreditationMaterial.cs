@@ -15,7 +15,7 @@ namespace EPR.Accreditation.API.Common.Data.DataModels
         public decimal? AnnualCapacity { get; set; }
 
         [Column(TypeName = "decimal(10,3)")]
-        public decimal? WeeklyCapacity { get;set; }
+        public decimal? WeeklyCapacity { get; set; }
 
         [MaxLength(200)]
         public string WasteSource { get; set; }
@@ -32,6 +32,9 @@ namespace EPR.Accreditation.API.Common.Data.DataModels
         public bool? WasteLastYear { get; set; }
 
         public bool? HasNpwdAccreditationNumber { get; set; }
+
+        [MaxLength(12)]
+        public string NpwdAccreditationNumber { get; set; }
 
         #region Navigation properties
         public virtual Accreditation Accreditation { get; set; }
