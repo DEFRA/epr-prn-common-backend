@@ -17,7 +17,7 @@ namespace EPR.Accreditation.API.Common.Data.DataModels
         public string Type {  get; set; }
 
         [Column(TypeName = "decimal(10,3)")]
-        public decimal? Tonnes { get; set; }
+        public decimal Tonnes { get; set; }
 
         #region Navigation properties
         public virtual ReprocessorSupportingInformationType ReprocessorSupportingInformationType { get; set; }
