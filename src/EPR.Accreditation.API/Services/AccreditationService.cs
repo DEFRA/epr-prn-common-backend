@@ -235,7 +235,9 @@
                             annualCapacityRow,
                             weeklyCapacityRow
                         };
-                        var detailsSection = BuildSection(detailsSectionRows);
+                        var detailsSection = BuildSection(
+                            "Details",
+                            detailsSectionRows);
 
                         var ukPackagingWasteRow = BuildRow("Uk packaging waste", ukPackagingWaste, "/");
                         var nonUkPackagingWasteRow = BuildRow("Non-UK packaging waste", nonUkPackagingWaste, "/");
@@ -248,7 +250,9 @@
                             nonPackagingWasteRow,
                             totalWasteInputsLastCalendarYearRow
                         };
-                        var wasteInputsLastYearSection = BuildSection(wasteInputsforLastYearRows);
+                        var wasteInputsLastYearSection = BuildSection(
+                            "Waste inputs for last calendar year",
+                            wasteInputsforLastYearRows);
 
                         var materialsNotProcessedOnSiteRow = BuildRow("Material not processed on site", materialsNotProcessedOnSite, "/");
                         var contaminentsRow = BuildRow("Contaminants", contaminents, "/");
@@ -261,7 +265,9 @@
                             processLossRow,
                             totalWasteOutputsLastCalendarYearRow
                         };
-                        var wasteOutputsLastYearSection = BuildSection(wasteOutputsforLastYearRows);
+                        var wasteOutputsLastYearSection = BuildSection(
+                            "Non-waste inputs for last calendar year",
+                            wasteOutputsforLastYearRows);
 
                         var listOfSections = new List<CheckAnswersSectionDto>
                         {
@@ -272,6 +278,7 @@
 
                         return new CheckAnswers
                         {
+                            Completed = IsComplete(listOfSections),
                             SiteAddress = siteAddress,
                             Sections = listOfSections
                         };
@@ -291,12 +298,15 @@
             };
         }
 
-        private static CheckAnswersSectionDto BuildSection(List<CheckAnswersSectionRow> rows)
+        private static CheckAnswersSectionDto BuildSection(
+            string sectionTitle,
+            List<CheckAnswersSectionRow> rows)
         {
             var isCompletedSection = IsComplete(rows);
 
             return new CheckAnswersSectionDto
             {
+                Title = sectionTitle,
                 Completed = isCompletedSection,
                 SectionRows = rows
             };
@@ -307,6 +317,22 @@
             foreach (var row in rows)
             {
                 if (row.Value != null)
+                {
+                    continue;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        private static bool IsComplete(List<CheckAnswersSectionDto> sections)
+        {
+            foreach (var section in sections)
+            {
+                if (section.Completed)
                 {
                     continue;
                 }

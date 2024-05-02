@@ -54,7 +54,7 @@ namespace EPR.Accreditation.API.Controllers
             return Ok(fileUploadRecords);
         }
 
-        [HttpGet("{id}/CheckAnswers/{section}")]
+        [HttpGet("{id}/Material/{materialId}/CheckAnswers/{section}")]
         [ProducesResponseType(typeof(DTO.CheckAnswers), 200)]
         public async Task<IActionResult> GetCheckAnswers(
             Guid id,
