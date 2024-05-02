@@ -2,7 +2,7 @@
 {
     public class CheckAnswers
     {
-        public string SiteAddress { get; set; }
+        public Address SiteAddress { get; set; }
 
         public List<CheckAnswersSectionDto> Sections { get; set; }
     }

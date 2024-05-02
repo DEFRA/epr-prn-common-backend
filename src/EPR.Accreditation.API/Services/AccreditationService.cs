@@ -193,6 +193,7 @@
             Common.Enums.CheckAnswersSection section)
         {
             var accreditation = await GetAccreditation(id);
+            var site = await GetSite(id);
             var checkAnswersDto = new CheckAnswers();
 
             switch (section)
@@ -205,10 +206,10 @@
                     }
                     else
                     {
-
+                        var siteAddress = site.Address;
                         var accreditationMaterial = await GetMaterial(id, materialId);
 
-                        var materialNameEn = accreditationMaterial.Material.English;
+                        var materialName = accreditationMaterial.Material.English;
                         var wasteSource = accreditationMaterial.WasteSource;
                         var annualCapacity = accreditationMaterial.AnnualCapacity;
                         var weeklyCapacity = accreditationMaterial.WeeklyCapacity;
@@ -223,35 +224,10 @@
                         var processLoss = accreditationMaterial.MaterialReprocessorDetails.ProcessLoss;
                         var totalWasteOutputsLastCalendarYear = materialsNotProcessedOnSite + contaminents + processLoss;
 
-
-                        var materialRow = new CheckAnswersSectionRow
-                        {
-                            TitleKey = "Material",
-                            Value = materialNameEn,
-                            ChangeLink = "/"
-                        };
-
-                        var ukSourceOfWasteRow = new CheckAnswersSectionRow
-                        {
-                            TitleKey = "Uk source of the waste",
-                            Value = wasteSource,
-                            ChangeLink = "/"
-                        };
-
-                        var annualCapacityRow = new CheckAnswersSectionRow
-                        {
-                            TitleKey = "Annual total processing capacity",
-                            Value = annualCapacity,
-                            ChangeLink = "/"
-                        };
-
-                        var weeklyCapacityRow = new CheckAnswersSectionRow
-                        {
-                            TitleKey = "Average weekly processing capacity",
-                            Value = weeklyCapacity,
-                            ChangeLink = "/"
-                        };
-
+                        var materialRow = BuildRow("Material", materialName, "/");
+                        var ukSourceOfWasteRow = BuildRow("Uk source of the waste", wasteSource, "/");
+                        var annualCapacityRow = BuildRow("Annual total processing capacity", annualCapacity, "/");
+                        var weeklyCapacityRow = BuildRow("Average weekly processing capacity", weeklyCapacity, "/");
                         var detailsSectionRows = new List<CheckAnswersSectionRow>
                         {
                             materialRow,
@@ -259,54 +235,12 @@
                             annualCapacityRow,
                             weeklyCapacityRow
                         };
+                        var detailsSection = BuildSection(detailsSectionRows);
 
-                        var isCompletedDetailsSection = false;
-
-                        foreach (var row in detailsSectionRows)
-                        {
-                            if (row.Value != null)
-                            {
-                                isCompletedDetailsSection = true;
-                            }
-                            else
-                            {
-                                isCompletedDetailsSection = false;
-                            }
-                        }
-
-                        var detailsSection = new Common.Dtos.CheckAnswersSectionDto
-                        {
-                            Completed = isCompletedDetailsSection,
-                            SectionRows = detailsSectionRows
-                        };
-
-                        var ukPackagingWasteRow = new CheckAnswersSectionRow
-                        {
-                            TitleKey = "Uk packaging waste",
-                            Value = ukPackagingWaste,
-                            ChangeLink = "/"
-                        };
-
-                        var nonUkPackagingWasteRow = new CheckAnswersSectionRow
-                        {
-                            TitleKey = "Non-UK packaging waste",
-                            Value = nonUkPackagingWaste,
-                            ChangeLink = "/"
-                        };
-
-                        var nonPackagingWasteRow = new CheckAnswersSectionRow
-                        {
-                            TitleKey = "Non-packaging waste",
-                            Value = nonPackagingWaste,
-                            ChangeLink = "/"
-                        };
-
-                        var totalWasteInputsLastCalendarYearRow = new CheckAnswersSectionRow
-                        {
-                            TitleKey = "Total",
-                            Value = totalWasteInputsLastCalendarYear,
-                        };
-
+                        var ukPackagingWasteRow = BuildRow("Uk packaging waste", ukPackagingWaste, "/");
+                        var nonUkPackagingWasteRow = BuildRow("Non-UK packaging waste", nonUkPackagingWaste, "/");
+                        var nonPackagingWasteRow = BuildRow("Non-packaging waste", nonPackagingWaste, "/");
+                        var totalWasteInputsLastCalendarYearRow = BuildRow("Total", totalWasteInputsLastCalendarYear, string.Empty);
                         var wasteInputsforLastYearRows = new List<CheckAnswersSectionRow>
                         {
                             ukPackagingWasteRow,
@@ -314,47 +248,12 @@
                             nonPackagingWasteRow,
                             totalWasteInputsLastCalendarYearRow
                         };
+                        var wasteInputsLastYearSection = BuildSection(wasteInputsforLastYearRows);
 
-                        var isCompletedWasteInputsLastYearSection = false;
-
-                        foreach (var row in wasteInputsforLastYearRows)
-                        {
-                            if (row.Value != null)
-                            {
-                                isCompletedWasteInputsLastYearSection = true;
-                            }
-                            else
-                            {
-                                isCompletedWasteInputsLastYearSection = false;
-                            }
-                        }
-
-                        var wasteInputsLastYearSection = new Common.Dtos.CheckAnswersSectionDto
-                        {
-                            Completed = isCompletedWasteInputsLastYearSection,
-                            SectionRows = wasteInputsforLastYearRows
-                        };
-
-                        var materialsNotProcessedOnSiteRow = new CheckAnswersSectionRow
-                        {
-
-                        };
-
-                        var contaminentsRow = new CheckAnswersSectionRow
-                        {
-
-                        };
-
-                        var processLossRow = new CheckAnswersSectionRow
-                        {
-
-                        };
-
-                        var totalWasteOutputsLastCalendarYearRow = new CheckAnswersSectionRow
-                        {
-
-                        };
-
+                        var materialsNotProcessedOnSiteRow = BuildRow("Material not processed on site", materialsNotProcessedOnSite, "/");
+                        var contaminentsRow = BuildRow("Contaminants", contaminents, "/");
+                        var processLossRow = BuildRow("Process loss", processLoss, "/");
+                        var totalWasteOutputsLastCalendarYearRow = BuildRow("Total", totalWasteOutputsLastCalendarYear, string.Empty);
                         var wasteOutputsforLastYearRows = new List<CheckAnswersSectionRow>
                         {
                             materialsNotProcessedOnSiteRow,
@@ -362,12 +261,7 @@
                             processLossRow,
                             totalWasteOutputsLastCalendarYearRow
                         };
-
-                        var wasteOutputsLastYearSection = new Common.Dtos.CheckAnswersSectionDto
-                        {
-                            SectionRows = wasteOutputsforLastYearRows
-                        };
-
+                        var wasteOutputsLastYearSection = BuildSection(wasteOutputsforLastYearRows);
 
                         var listOfSections = new List<CheckAnswersSectionDto>
                         {
@@ -378,12 +272,50 @@
 
                         return new CheckAnswers
                         {
+                            SiteAddress = siteAddress,
                             Sections = listOfSections
                         };
                     }
             }
 
             return checkAnswersDto;
+        }
+
+        private static CheckAnswersSectionRow BuildRow(string titleKey, object value, string changeLink)
+        {
+            return new CheckAnswersSectionRow
+            {
+                TitleKey = titleKey,
+                Value = value,
+                ChangeLink = changeLink
+            };
+        }
+
+        private static CheckAnswersSectionDto BuildSection(List<CheckAnswersSectionRow> rows)
+        {
+            var isCompletedSection = IsComplete(rows);
+
+            return new CheckAnswersSectionDto
+            {
+                Completed = isCompletedSection,
+                SectionRows = rows
+            };
+        }
+
+        private static bool IsComplete(List<CheckAnswersSectionRow> rows)
+        {
+            foreach (var row in rows)
+            {
+                if (row.Value != null)
+                {
+                    continue;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            return true;
         }
     }
 }
