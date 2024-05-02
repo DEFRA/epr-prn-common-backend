@@ -1,4 +1,4 @@
-FROM defradigital/dotnetcore:dotnet6.0 AS base
+FROM defradigital/dotnetcore-development:dotnet6.0 AS base
 
 USER root
 ARG PORT=8080

@@ -1810,3 +1810,106 @@ GO
 COMMIT;
 GO
 
+BEGIN TRANSACTION;
+GO
+
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20240502094220_null-tonnes-field')
+BEGIN
+    ALTER TABLE [Address] ADD [AccreditationId] int NULL;
+END;
+GO
+
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20240502094220_null-tonnes-field')
+BEGIN
+    ALTER TABLE [Address] ADD [OrganisationId] uniqueidentifier NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000';
+END;
+GO
+
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20240502094220_null-tonnes-field')
+BEGIN
+    CREATE INDEX [IX_Address_AccreditationId] ON [Address] ([AccreditationId]);
+END;
+GO
+
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20240502094220_null-tonnes-field')
+BEGIN
+    ALTER TABLE [Address] ADD CONSTRAINT [FK_Address_Accreditation_AccreditationId] FOREIGN KEY ([AccreditationId]) REFERENCES [Accreditation] ([Id]);
+END;
+GO
+
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20240502094220_null-tonnes-field')
+BEGIN
+    ALTER TABLE [Address] DROP CONSTRAINT [FK_Address_Accreditation_AccreditationId];
+END;
+GO
+
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20240502094220_null-tonnes-field')
+BEGIN
+    DROP INDEX [IX_Address_AccreditationId] ON [Address];
+END;
+GO
+
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20240502094220_null-tonnes-field')
+BEGIN
+    DECLARE @var13 sysname;
+    SELECT @var13 = [d].[name]
+    FROM [sys].[default_constraints] [d]
+    INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+    WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Address]') AND [c].[name] = N'AccreditationId');
+    IF @var13 IS NOT NULL EXEC(N'ALTER TABLE [Address] DROP CONSTRAINT [' + @var13 + '];');
+    ALTER TABLE [Address] DROP COLUMN [AccreditationId];
+END;
+GO
+
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20240502094220_null-tonnes-field')
+BEGIN
+    DECLARE @var14 sysname;
+    SELECT @var14 = [d].[name]
+    FROM [sys].[default_constraints] [d]
+    INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+    WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Address]') AND [c].[name] = N'OrganisationId');
+    IF @var14 IS NOT NULL EXEC(N'ALTER TABLE [Address] DROP CONSTRAINT [' + @var14 + '];');
+    ALTER TABLE [Address] DROP COLUMN [OrganisationId];
+END;
+GO
+
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20240502094220_null-tonnes-field')
+BEGIN
+    DECLARE @var15 sysname;
+    SELECT @var15 = [d].[name]
+    FROM [sys].[default_constraints] [d]
+    INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+    WHERE ([d].[parent_object_id] = OBJECT_ID(N'[ReprocessorSupportingInformation]') AND [c].[name] = N'Tonnes');
+    IF @var15 IS NOT NULL EXEC(N'ALTER TABLE [ReprocessorSupportingInformation] DROP CONSTRAINT [' + @var15 + '];');
+    ALTER TABLE [ReprocessorSupportingInformation] ALTER COLUMN [Tonnes] decimal(10,3) NULL;
+END;
+GO
+
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20240502094220_null-tonnes-field')
+BEGIN
+    CREATE UNIQUE INDEX [IX_Site_ExternalId] ON [Site] ([ExternalId]);
+END;
+GO
+
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20240502094220_null-tonnes-field')
+BEGIN
+    EXEC(N'CREATE UNIQUE INDEX [IX_Accreditation_LegalAddressId] ON [Accreditation] ([LegalAddressId]) WHERE [LegalAddressId] IS NOT NULL');
+END;
+GO
+
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20240502094220_null-tonnes-field')
+BEGIN
+    ALTER TABLE [Accreditation] ADD CONSTRAINT [FK_Accreditation_Address_LegalAddressId] FOREIGN KEY ([LegalAddressId]) REFERENCES [Address] ([Id]);
+END;
+GO
+
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20240502094220_null-tonnes-field')
+BEGIN
+    INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+    VALUES (N'20240502094220_null-tonnes-field', N'6.0.28');
+END;
+GO
+
+COMMIT;
+GO
+
