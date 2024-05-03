@@ -250,7 +250,7 @@ namespace EPR.Accreditation.API.UnitTests.Controllers
             var id = Guid.NewGuid();
             var request = new PrnUpdateRequest
             {
-                Note = "Test Status Update",
+                //Note = "Test Status Update",
             };
 
             // Act
@@ -268,7 +268,7 @@ namespace EPR.Accreditation.API.UnitTests.Controllers
             var id = Guid.NewGuid();
             var request = new PrnUpdateRequest
             {
-                Note = "Test Status Update",
+                //Note = "Test Status Update",
             };
             this.MockPrnService
                 .Setup(service => service.UpdatePrn(id, request))
@@ -288,7 +288,7 @@ namespace EPR.Accreditation.API.UnitTests.Controllers
             var id = Guid.NewGuid();
             var request = new PrnUpdateRequest
             {
-                Note = "Test Status Update",
+                //Note = "Test Status Update",
             };
             this.MockPrnService
                 .Setup(service => service.UpdatePrn(id, request))

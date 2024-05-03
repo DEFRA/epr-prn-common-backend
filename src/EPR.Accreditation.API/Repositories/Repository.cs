@@ -479,55 +479,66 @@ namespace EPR.Accreditation.API.Repositories
         /// <inheritdoc/>
         public async Task<Guid> AddPackageRecyclingNote(DTO.PackageRecyclingNoteRequest prn)
         {
-            var newPrn = _mapper.Map<Data.PackageRecyclingNote>(prn);
+            ArgumentNullException.ThrowIfNull(prn);
+            var newPrn = this._mapper.Map<Data.PackageRecyclingNote>(prn);
             newPrn.ExternalId = Guid.NewGuid();
             newPrn.CreatedDate = DateTime.UtcNow;
             newPrn.LastUpdatedDate = newPrn.CreatedDate;
             newPrn.PrnStatusId = (int)Common.Enums.PrnStatus.Draft;
-            _accreditationContext.PackageRecyclingNote.Add(newPrn);
-            await _accreditationContext.SaveChangesAsync();
+
+            this._accreditationContext.PackageRecyclingNote.Add(newPrn);
+            await this._accreditationContext.SaveChangesAsync();
+
             return newPrn.ExternalId;
         }
 
         // TODO - doesn't yet work correctly.
         /// <inheritdoc/>
-        public async Task UpdatePrn(Guid prnId, DTO.PrnUpdateRequest updatedData)
+        public async Task UpdatePrn(Guid prnId, DTO.PrnUpdateRequest update)
         {
-                // If the update includes a change in status, add a new PRN status history record.
-
-                // Update the PRN record to the new status.
-
-                var updatedPrn = _mapper.Map<PackageRecyclingNote>(updatedData.Prn);
-            var currentPrn = await _accreditationContext
+            ArgumentNullException.ThrowIfNull(update);
+            var updatedPrn = this._mapper.Map<PackageRecyclingNote>(update.Prn);
+            var currentPrn = await this._accreditationContext
                .PackageRecyclingNote
                    .Include(a => a.Site)
                .Where(a => a.ExternalId == prnId)
                .FirstOrDefaultAsync();
-            updatedPrn.Id = currentPrn.Id;
-            updatedPrn.CreatedDate = currentPrn.CreatedDate;
-            updatedPrn.ExternalId = prnId;
-            updatedPrn.LastUpdatedDate = DateTime.UtcNow;
-            
-            _accreditationContext.PackageRecyclingNote.Update(updatedPrn);
 
-            await DoUpdatePrnStatus(prnId, updatedData.Status);
+            var propertiesNotToUpdate = new[]
+            {
+                nameof(PackageRecyclingNote.Id),
+                nameof(PackageRecyclingNote.ExternalId),
+                nameof(PackageRecyclingNote.CreatedDate),
+            };
 
-            _accreditationContext.SaveChanges();
+            foreach (var property in typeof(PackageRecyclingNote).GetProperties())
+            {
+                if (property.GetValue(updatedPrn) != null && !propertiesNotToUpdate.Contains(property.Name))
+                {
+                    property.SetValue(currentPrn, property.GetValue(updatedPrn));
+                }
+            }
+
+            currentPrn.LastUpdatedDate = DateTime.UtcNow;
+
+            this._accreditationContext.PackageRecyclingNote.Update(currentPrn);
+
+            await this.DoUpdatePrnStatus(prnId, update.Status);
+            this._accreditationContext.SaveChanges();
         }
 
         /// <inheritdoc>
-        public async Task<DTO.PackageRecyclingNoteResponse> GetPackageRecyclingNote(Guid id)
+        public async Task<PackageRecyclingNoteResponse> GetPackageRecyclingNote(Guid id)
         {
-            var prn = await _accreditationContext
+            var prn = await this._accreditationContext
                .PackageRecyclingNote
-                   .Include(a => a.Site)
+                   //.Include(a => a.Site)
                .Where(a => a.ExternalId == id)
-               .Select(a =>
-                   _mapper.Map<DTO.PackageRecyclingNoteResponse>(a)
-               )
+               //.Select(a => this._mapper.Map<DTO.PackageRecyclingNoteResponse>(a))
                .FirstOrDefaultAsync();
+            var mapped = this._mapper.Map<PackageRecyclingNoteResponse>(prn);
 
-            return prn;
+            return mapped;
         }
 
         private async Task<Data.PackageRecyclingNote> GetPackageRecyclingNote(int id)
@@ -567,38 +578,43 @@ namespace EPR.Accreditation.API.Repositories
         /// </summary>
         /// <param name="status"></param>
         /// <exception cref="InvalidOperationException"></exception>
-        private async Task DoUpdatePrnStatus(Guid prnId, DTO.PrnStatusHistoryRequest status)
+        private async Task DoUpdatePrnStatus(Guid prnId, PrnStatusHistoryRequest status)
         {
+            ArgumentNullException.ThrowIfNull(status);
+
             // Update the PRN record to the new status.
-            var prn = await _accreditationContext
+            var prn = await this._accreditationContext
                .PackageRecyclingNote
                    .Include(a => a.Site)
                .Where(a => a.ExternalId == prnId)
                .FirstOrDefaultAsync();
 
-            prn.PrnStatusId = status.PrnStatusId;
-            _accreditationContext.Update(prn);
-
-            // Add a new PRN status history record if needed.
-            if (status.PrnStatusId != prn.PrnStatusId)
-            {   
-                var newStatusHistory = _mapper.Map<Data.PrnStatusHistory>(status);
-                newStatusHistory.CreatedOn = DateTime.UtcNow;
-                _accreditationContext.PrnStatusHistories.Add(newStatusHistory);
+            if (prn == null)
+            {
+                throw new NotFoundException("Unknown GUID.");
             }
+
+            prn.PrnStatusId = status.PrnStatusId;
+            this._accreditationContext.Update(prn);
+
+            // Add a new status history record.
+            var newStatusHistory = this._mapper.Map<PrnStatusHistory>(status);
+            newStatusHistory.CreatedOn = DateTime.UtcNow;
+            newStatusHistory.PrnId = prn.Id;
+            this._accreditationContext.PrnStatusHistories.Add(newStatusHistory);
         }
 
         /// <inheritdoc>
         public async Task DeletePrn(Guid id)
         {
-            var prn = await _accreditationContext
+            var prn = await this._accreditationContext
             .PackageRecyclingNote
                 .Include(a => a.Site)
             .Where(a => a.ExternalId == id)
             .FirstOrDefaultAsync();
 
-            _accreditationContext.PackageRecyclingNote.Remove(prn);
-            await _accreditationContext.SaveChangesAsync();
+            this._accreditationContext.PackageRecyclingNote.Remove(prn);
+            await this._accreditationContext.SaveChangesAsync();
         }
     }
 }

@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EPR.Accreditation.API.Common.Dtos
 {
-    public class PackageRecyclingNoteResponse : PackageRecyclingNoteRequest
+    public record PackageRecyclingNoteResponse : PackageRecyclingNoteRequest
     {
         public int Id { get; init; }
 

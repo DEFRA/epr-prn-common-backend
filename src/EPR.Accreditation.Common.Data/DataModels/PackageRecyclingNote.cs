@@ -13,8 +13,12 @@ namespace EPR.Accreditation.API.Common.Data.DataModels
     /// which causes Git to be unable to see files with that name properly.
     /// </remarks>
     [Table("Prn")]
-    public class PackageRecyclingNote : IdBaseEntity
+    public record PackageRecyclingNote //: IdBaseEntity
     {
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int Id { get; set; }
+
         /// <summary>
         /// Gets or sets the external ID of the PRN.
         /// </summary>

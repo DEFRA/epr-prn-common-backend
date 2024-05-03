@@ -124,7 +124,7 @@ namespace EPR.Accreditation.API.Common.Data
         /// <summary>
         /// Gets or sets the PrnStatusHistory table.
         /// </summary>
-        public DbSet<PrnStatusHistory> PrnStatusHistories { get; set; }
+        public virtual DbSet<PrnStatusHistory> PrnStatusHistories { get; set; }
 
         #region Lookups
         public virtual DbSet<AccreditationStatus> AccreditationStatus { get; set; }

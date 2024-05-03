@@ -10,7 +10,7 @@ namespace EPR.Accreditation.API.Common.Dtos
     /// <summary>
     /// Used for updating a PRN.  Combines PRN details with status update details.
     /// </summary>
-    public class PrnUpdateRequest
+    public record PrnUpdateRequest
     {
         public PackageRecyclingNoteRequest Prn { get; init; }
         public PrnStatusHistoryRequest Status { get; init; }

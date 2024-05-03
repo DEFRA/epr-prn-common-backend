@@ -15,7 +15,7 @@ namespace EPR.Accreditation.API.Common.Dtos
     /// Use this when creating new status updates, 
     /// but use <see cref="PrnStatusHistoryResponse"/> for reading data, as it includes the creation date of the record. 
     /// </remarks>
-    public class PrnStatusHistoryRequest
+    public record PrnStatusHistoryRequest
     {
         /// <summary>
         /// Gets or sets the ID of the user who changed the PRN's status.

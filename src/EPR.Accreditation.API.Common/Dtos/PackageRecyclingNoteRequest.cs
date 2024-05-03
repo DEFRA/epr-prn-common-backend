@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EPR.Accreditation.API.Common.Dtos
 {
-    public class PackageRecyclingNoteRequest
+    public record PackageRecyclingNoteRequest
     {
         /// <summary>
         /// Gets or sets the type of the PRN.

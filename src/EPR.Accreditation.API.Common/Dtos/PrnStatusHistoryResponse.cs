@@ -11,7 +11,7 @@ namespace EPR.Accreditation.API.Common.Dtos
     /// <summary>
     /// Used for records retrieved from the PrnStatusHistory database table.
     /// </summary>
-    public class PrnStatusHistoryResponse :PrnStatusHistoryRequest
+    public record PrnStatusHistoryResponse : PrnStatusHistoryRequest
     {
         /// <summary>
         /// Gets or sets the date the status was changed.

@@ -1,10 +1,8 @@
-﻿using EPR.Accreditation.API.Helpers;
-using EPR.Accreditation.API.Services;
+﻿using System.Net;
+using EPR.Accreditation.API.Helpers;
 using EPR.Accreditation.API.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using System.Net;
 using DTO = EPR.Accreditation.API.Common.Dtos;
-using System;
 
 namespace EPR.Accreditation.API.Controllers
 {
@@ -14,10 +12,14 @@ namespace EPR.Accreditation.API.Controllers
     {
         protected IPackageRecyclingNoteService PrnService { get; }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PackageRecyclingNoteController"/> class.
+        /// </summary>
+        /// <param name="prnService"></param>
         public PackageRecyclingNoteController(IPackageRecyclingNoteService prnService)
         {
             ArgumentNullException.ThrowIfNull(prnService);
-            PrnService = prnService;
+            this.PrnService = prnService;
         }
 
         #region Get methods
@@ -29,17 +31,18 @@ namespace EPR.Accreditation.API.Controllers
             ArgumentNullException.ThrowIfNull(id);
             try
             {
-                var prn = await PrnService.GetPackageRecyclingNote(id);
-                if(prn == null)
+                var prn = await this.PrnService.GetPackageRecyclingNote(id);
+                if (prn == null)
                 {
-                    return NotFound();
+                    return this.NotFound();
                 }
-                return Ok(prn);
+
+                return this.Ok(prn);
             }
             catch
             {
-                return StatusCode((int)HttpStatusCode.InternalServerError);
-            }  
+                return this.StatusCode((int)HttpStatusCode.InternalServerError);
+            }
         }
 
         [HttpGet("organisation/{id}")]
@@ -49,17 +52,18 @@ namespace EPR.Accreditation.API.Controllers
             ArgumentNullException.ThrowIfNull(id);
             try
             {
-                var prns = await PrnService.GetPrnsForOrganisation(id);
+                var prns = await this.PrnService.GetPrnsForOrganisation(id);
 
-                if ( prns == null || !prns.Any())
+                if (prns == null || !prns.Any())
                 {
-                    return NotFound();
+                    return this.NotFound();
                 }
-                return Ok(prns);
+
+                return this.Ok(prns);
             }
             catch
             {
-                return StatusCode((int)HttpStatusCode.InternalServerError);
+                return this.StatusCode((int)HttpStatusCode.InternalServerError);
             }
         }
 
@@ -73,12 +77,12 @@ namespace EPR.Accreditation.API.Controllers
             ArgumentNullException.ThrowIfNull(prn);
             try
             {
-                var id = await PrnService.CreatePackageRecyclingNote(prn);
-                return Ok(id);
+                var id = await this.PrnService.CreatePackageRecyclingNote(prn);
+                return this.Ok(id);
             }
             catch
             {
-                return StatusCode((int)HttpStatusCode.InternalServerError);
+                return this.StatusCode((int)HttpStatusCode.InternalServerError);
             }
         }
 
@@ -94,7 +98,7 @@ namespace EPR.Accreditation.API.Controllers
             }
             catch (NotFoundException)
             {
-                return NotFound();
+                return this.NotFound();
             }
             catch
             {

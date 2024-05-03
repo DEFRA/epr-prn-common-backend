@@ -7,37 +7,42 @@ namespace EPR.Accreditation.API.Services
 {
     public class PackageRecyclingNoteService : IPackageRecyclingNoteService
     {
-        protected readonly IRepository _repository;
+        protected IRepository Repository { get; set; }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PackageRecyclingNoteService"/> class.
+        /// </summary>
+        /// <param name="repository"></param>
         public PackageRecyclingNoteService(IRepository repository)
         {
-            _repository = repository ?? throw new ArgumentNullException(nameof(repository));
+            ArgumentNullException.ThrowIfNull(repository);
+            this.Repository = repository;
         }
 
+        /// <inheritdoc/>
         public async Task<Guid> CreatePackageRecyclingNote(DTO.PackageRecyclingNoteRequest prn)
-        {
-            // perform checks against the prn
-            if (prn == null)
-            {
-                throw new ArgumentNullException(nameof(prn));
-            }
+            => await this.Repository.AddPackageRecyclingNote(prn);
 
-            return await _repository.AddPackageRecyclingNote(prn);
+        /// <inheritdoc/>
+        public async Task UpdatePrn(Guid prnId, DTO.PrnUpdateRequest newData)
+        {
+            await this.Repository.UpdatePrn(prnId, newData);
         }
 
-        public async Task UpdatePrn(Guid prnId, DTO.PrnUpdateRequest updatedData)
-            => await _repository.UpdatePrn(prnId, updatedData);
-
+        /// <inheritdoc/>
         public async Task<PackageRecyclingNoteResponse> GetPackageRecyclingNote(Guid externalId)
-            => await _repository.GetPackageRecyclingNote(externalId);
+            => await this.Repository.GetPackageRecyclingNote(externalId);
 
+        /// <inheritdoc/>
         public async Task<IEnumerable<Guid>> GetPrnsForOrganisation(Guid organisationId)
-            => await _repository.GetPrnsForOrganisation(organisationId);
+            => await this.Repository.GetPrnsForOrganisation(organisationId);
 
+        /// <inheritdoc/>
         public async Task UpdatePrnStatus(Guid prnId, DTO.PrnStatusHistoryRequest status)
-            => await _repository.UpdatePrnStatus(prnId, status);
+            => await this.Repository.UpdatePrnStatus(prnId, status);
 
+        /// <inheritdoc/>
         public async Task DeletePrn(Guid prnId)
-            => await _repository.DeletePrn(prnId);
+            => await this.Repository.DeletePrn(prnId);
     }
 }
