@@ -223,10 +223,10 @@
                         var processLoss = accreditationMaterial.MaterialReprocessorDetails.ProcessLoss;
                         var totalWasteOutputsLastCalendarYear = materialsNotProcessedOnSite + contaminents + processLoss;
 
-                        var materialRow = BuildRow("Material", materialName, "/");
-                        var ukSourceOfWasteRow = BuildRow("Uk source of the waste", wasteSource, "/");
-                        var annualCapacityRow = BuildRow("Annual total processing capacity", annualCapacity, "/");
-                        var weeklyCapacityRow = BuildRow("Average weekly processing capacity", weeklyCapacity, "/");
+                        var materialRow = BuildRow(id, materialId, "Material", materialName, "Material");
+                        var ukSourceOfWasteRow = BuildRow(id, materialId, "Uk source of the waste", wasteSource, "WasteSource");
+                        var annualCapacityRow = BuildRow(id, materialId, "Annual total processing capacity", annualCapacity, "ProcessingCapacity");
+                        var weeklyCapacityRow = BuildRow(id, materialId, "Average weekly processing capacity", weeklyCapacity, "ProcessingCapacity");
                         var detailsSectionRows = new List<CheckAnswersSectionRow>
                         {
                             materialRow,
@@ -238,10 +238,10 @@
                             "Details",
                             detailsSectionRows);
 
-                        var ukPackagingWasteRow = BuildRow("Uk packaging waste", ukPackagingWaste, "/");
-                        var nonUkPackagingWasteRow = BuildRow("Non-UK packaging waste", nonUkPackagingWaste, "/");
-                        var nonPackagingWasteRow = BuildRow("Non-packaging waste", nonPackagingWaste, "/");
-                        var totalWasteInputsLastCalendarYearRow = BuildRow("Total", totalWasteInputsLastCalendarYear, string.Empty);
+                        var ukPackagingWasteRow = BuildRow(id, materialId, "Uk packaging waste", ukPackagingWaste, "MaterialWasteInputs");
+                        var nonUkPackagingWasteRow = BuildRow(id, materialId, "Non-UK packaging waste", nonUkPackagingWaste, "MaterialWasteInputs");
+                        var nonPackagingWasteRow = BuildRow(id, materialId, "Non-packaging waste", nonPackagingWaste, "MaterialWasteInputs");
+                        var totalWasteInputsLastCalendarYearRow = BuildRow(id, materialId, "Total", totalWasteInputsLastCalendarYear, string.Empty);
                         var wasteInputsforLastYearRows = new List<CheckAnswersSectionRow>
                         {
                             ukPackagingWasteRow,
@@ -253,10 +253,10 @@
                             "Waste inputs for last calendar year",
                             wasteInputsforLastYearRows);
 
-                        var materialsNotProcessedOnSiteRow = BuildRow("Material not processed on site", materialsNotProcessedOnSite, "/");
-                        var contaminentsRow = BuildRow("Contaminants", contaminents, "/");
-                        var processLossRow = BuildRow("Process loss", processLoss, "/");
-                        var totalWasteOutputsLastCalendarYearRow = BuildRow("Total", totalWasteOutputsLastCalendarYear, string.Empty);
+                        var materialsNotProcessedOnSiteRow = BuildRow(id, materialId, "Material not processed on site", materialsNotProcessedOnSite, "MaterialOutputs");
+                        var contaminentsRow = BuildRow(id, materialId, "Contaminants", contaminents, "MaterialOutputs");
+                        var processLossRow = BuildRow(id, materialId, "Process loss", processLoss, "MaterialOutputs");
+                        var totalWasteOutputsLastCalendarYearRow = BuildRow(id, materialId, "Total", totalWasteOutputsLastCalendarYear, string.Empty);
                         var wasteOutputsforLastYearRows = new List<CheckAnswersSectionRow>
                         {
                             materialsNotProcessedOnSiteRow,
@@ -287,8 +287,15 @@
             return checkAnswersDto;
         }
 
-        private static CheckAnswersSectionRow BuildRow(string titleKey, object value, string changeLink)
+        private static CheckAnswersSectionRow BuildRow(
+            Guid id,
+            Guid? materialId,
+            string titleKey,
+            object value,
+            string actionName)
         {
+            var changeLink = $"/Accreditation/{id}/Site/Material/{materialId}/{actionName}?rtap=y";
+
             return new CheckAnswersSectionRow
             {
                 TitleKey = titleKey,
