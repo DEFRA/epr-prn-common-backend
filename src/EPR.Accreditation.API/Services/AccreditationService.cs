@@ -189,7 +189,7 @@
             Guid materialId,
             Guid? siteId,
             Guid? overseasSiteId,
-            Common.Enums.CheckAnswersSection section)
+            CheckAnswersSection section)
         {
             var accreditation = await GetAccreditation(id);
             var site = await GetSite(id);
@@ -197,9 +197,9 @@
 
             switch (section)
             {
-                case Common.Enums.CheckAnswersSection.AboutMaterialReprocessorActuals:
+                case CheckAnswersSection.AboutMaterialReprocessorActuals:
 
-                    if (accreditation.OperatorTypeId != Common.Enums.OperatorType.Reprocessor)
+                    if (accreditation.OperatorTypeId != OperatorType.Reprocessor)
                     {
                         throw new ArgumentException("Can only be for a reprocessor");
                     }
@@ -279,6 +279,54 @@
                         {
                             Completed = IsComplete(listOfSections),
                             SiteAddress = siteAddress,
+                            Sections = listOfSections
+                        };
+                    }
+
+                case CheckAnswersSection.AboutMaterialExporter:
+                    if (accreditation.OperatorTypeId != Common.Enums.OperatorType.Exporter)
+                    {
+                        throw new ArgumentException("Can only be for a exporter");
+                    }
+                    else
+                    {
+                        var accreditationMaterial = await GetMaterial(id, materialId);
+
+                        var materialName = accreditationMaterial.Material.English;
+                        var wasteSource = accreditationMaterial.WasteSource;
+                        var commodityCodes = accreditationMaterial.WasteCodes;
+                        var peopleWhoHaveAuthorityToIssuePerns = new List<string>
+                        {
+                            "Andrew Shey, Management Accountant",
+                            "Gary Law, Strategic Buyer",
+                            "Scott McAllister, PRN signatory",
+                            "Shehzad Ismail, Software Developer"
+                        };
+
+                        var materialRow = BuildRow(id, materialId, "Material", materialName, "Material");
+                        var ukSourceOfWasteRow = BuildRow(id, materialId, "Uk source of the waste", wasteSource, "WasteSource");
+                        var commodityCodesRow = BuildRow(id, materialId, "Commodity codes", commodityCodes, "CommodityCodes");
+                        var peopleAuthorityRow = BuildRow(id, materialId, "People who have authority to issue PERNs", peopleWhoHaveAuthorityToIssuePerns, "Authority");
+                        var detailsSectionRows = new List<CheckAnswersSectionRow>
+                        {
+                            materialRow,
+                            ukSourceOfWasteRow,
+                            commodityCodesRow,
+                            peopleAuthorityRow
+                        };
+                        var detailsSection = BuildSection(
+                            "Details",
+                            detailsSectionRows);
+
+                        var listOfSections = new List<CheckAnswersSectionDto>
+                        {
+                            detailsSection
+                        };
+
+                        return new CheckAnswers
+                        {
+                            Completed = IsComplete(listOfSections),
+                            SiteAddress = new Address(),
                             Sections = listOfSections
                         };
                     }
