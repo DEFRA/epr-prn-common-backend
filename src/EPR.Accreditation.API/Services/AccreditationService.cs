@@ -5,7 +5,6 @@
     using EPR.Accreditation.API.Helpers.Comparers;
     using EPR.Accreditation.API.Repositories.Interfaces;
     using EPR.Accreditation.API.Services.Interfaces;
-    using EPR.Accreditation.Facade.Common.Dtos;
     using DTO = EPR.Accreditation.API.Common.Dtos;
 
     public class AccreditationService : IAccreditationService

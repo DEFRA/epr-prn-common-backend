@@ -1,4 +1,4 @@
-﻿namespace EPR.Accreditation.Facade.Common.Dtos
+﻿namespace EPR.Accreditation.API.Common.Dtos
 {
     public class CheckAnswersSectionRow
     {
