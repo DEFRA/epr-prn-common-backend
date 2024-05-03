@@ -32,5 +32,7 @@ namespace EPR.Accreditation.API.Common.Dtos
         public WastePermit WastePermit { get; set; }
 
         public Address LegalAddress { get; set; }
+
+        public decimal? AccreditationFee { get; set; }
     }
 }
