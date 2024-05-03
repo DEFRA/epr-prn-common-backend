@@ -92,7 +92,7 @@ namespace EPR.Accreditation.API.Common.Data.Migrations
 
                     b.HasIndex("SiteId");
 
-                    b.ToTable("Accreditation");
+                    b.ToTable("Accreditation", (string)null);
                 });
 
             modelBuilder.Entity("EPR.Accreditation.API.Common.Data.DataModels.AccreditationMaterial", b =>
@@ -151,7 +151,7 @@ namespace EPR.Accreditation.API.Common.Data.Migrations
 
                     b.HasIndex("SiteId");
 
-                    b.ToTable("AccreditationMaterial");
+                    b.ToTable("AccreditationMaterial", (string)null);
                 });
 
             modelBuilder.Entity("EPR.Accreditation.API.Common.Data.DataModels.AccreditationTaskProgress", b =>
@@ -179,7 +179,7 @@ namespace EPR.Accreditation.API.Common.Data.Migrations
 
                     b.HasIndex("TaskStatusId");
 
-                    b.ToTable("AccreditationTaskProgress");
+                    b.ToTable("AccreditationTaskProgress", (string)null);
                 });
 
             modelBuilder.Entity("EPR.Accreditation.API.Common.Data.DataModels.AccreditationTaskProgressMaterial", b =>
@@ -205,7 +205,7 @@ namespace EPR.Accreditation.API.Common.Data.Migrations
 
                     b.HasIndex("AccreditationTaskProgressId");
 
-                    b.ToTable("AccreditationTaskProgressMaterial");
+                    b.ToTable("AccreditationTaskProgressMaterial", (string)null);
                 });
 
             modelBuilder.Entity("EPR.Accreditation.API.Common.Data.DataModels.Address", b =>
@@ -237,7 +237,7 @@ namespace EPR.Accreditation.API.Common.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Address");
+                    b.ToTable("Address", (string)null);
                 });
 
             modelBuilder.Entity("EPR.Accreditation.API.Common.Data.DataModels.ExemptionReference", b =>
@@ -258,7 +258,7 @@ namespace EPR.Accreditation.API.Common.Data.Migrations
 
                     b.HasIndex("SiteId");
 
-                    b.ToTable("ExemptionReference");
+                    b.ToTable("ExemptionReference", (string)null);
                 });
 
             modelBuilder.Entity("EPR.Accreditation.API.Common.Data.DataModels.FileUpload", b =>
@@ -302,7 +302,7 @@ namespace EPR.Accreditation.API.Common.Data.Migrations
 
                     b.HasIndex("Status");
 
-                    b.ToTable("FileUpload");
+                    b.ToTable("FileUpload", (string)null);
                 });
 
             modelBuilder.Entity("EPR.Accreditation.API.Common.Data.DataModels.Lookups.AccreditationStatus", b =>
@@ -2187,7 +2187,7 @@ namespace EPR.Accreditation.API.Common.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Material");
+                    b.ToTable("Material", (string)null);
                 });
 
             modelBuilder.Entity("EPR.Accreditation.API.Common.Data.DataModels.MaterialReprocessorDetails", b =>
@@ -2224,7 +2224,7 @@ namespace EPR.Accreditation.API.Common.Data.Migrations
                     b.HasIndex("AccreditationMaterialId")
                         .IsUnique();
 
-                    b.ToTable("MaterialReprocessorDetails");
+                    b.ToTable("MaterialReprocessorDetails", (string)null);
                 });
 
             modelBuilder.Entity("EPR.Accreditation.API.Common.Data.DataModels.OverseasAddress", b =>
@@ -2250,7 +2250,7 @@ namespace EPR.Accreditation.API.Common.Data.Migrations
 
                     b.HasIndex("CountryId");
 
-                    b.ToTable("OverseasAddress");
+                    b.ToTable("OverseasAddress", (string)null);
                 });
 
             modelBuilder.Entity("EPR.Accreditation.API.Common.Data.DataModels.OverseasContactPerson", b =>
@@ -2296,7 +2296,7 @@ namespace EPR.Accreditation.API.Common.Data.Migrations
                     b.HasIndex("OverseasReprocessingSiteId")
                         .IsUnique();
 
-                    b.ToTable("OverseasContactPerson");
+                    b.ToTable("OverseasContactPerson", (string)null);
                 });
 
             modelBuilder.Entity("EPR.Accreditation.API.Common.Data.DataModels.OverseasReprocessingSite", b =>
@@ -2336,7 +2336,7 @@ namespace EPR.Accreditation.API.Common.Data.Migrations
                         .IsUnique()
                         .HasFilter("[OverseasAddressId] IS NOT NULL");
 
-                    b.ToTable("OverseasReprocessingSite");
+                    b.ToTable("OverseasReprocessingSite", (string)null);
                 });
 
             modelBuilder.Entity("EPR.Accreditation.API.Common.Data.DataModels.ReprocessorSupportingInformation", b =>
@@ -2353,7 +2353,7 @@ namespace EPR.Accreditation.API.Common.Data.Migrations
                     b.Property<int>("ReprocessorSupportingInformationTypeId")
                         .HasColumnType("int");
 
-                    b.Property<decimal?>("Tonnes")
+                    b.Property<decimal>("Tonnes")
                         .HasColumnType("decimal(10,3)");
 
                     b.Property<string>("Type")
@@ -2366,7 +2366,7 @@ namespace EPR.Accreditation.API.Common.Data.Migrations
 
                     b.HasIndex("ReprocessorSupportingInformationTypeId");
 
-                    b.ToTable("ReprocessorSupportingInformation");
+                    b.ToTable("ReprocessorSupportingInformation", (string)null);
                 });
 
             modelBuilder.Entity("EPR.Accreditation.API.Common.Data.DataModels.SaveAndComeBack", b =>
@@ -2400,7 +2400,7 @@ namespace EPR.Accreditation.API.Common.Data.Migrations
                     b.HasIndex("AccreditationId")
                         .IsUnique();
 
-                    b.ToTable("SaveAndComeBack");
+                    b.ToTable("SaveAndComeBack", (string)null);
                 });
 
             modelBuilder.Entity("EPR.Accreditation.API.Common.Data.DataModels.Site", b =>
@@ -2425,7 +2425,7 @@ namespace EPR.Accreditation.API.Common.Data.Migrations
                     b.HasIndex("ExternalId")
                         .IsUnique();
 
-                    b.ToTable("Site");
+                    b.ToTable("Site", (string)null);
                 });
 
             modelBuilder.Entity("EPR.Accreditation.API.Common.Data.DataModels.SiteAuthority", b =>
@@ -2446,7 +2446,7 @@ namespace EPR.Accreditation.API.Common.Data.Migrations
 
                     b.HasIndex("SiteId");
 
-                    b.ToTable("SiteAuthority");
+                    b.ToTable("SiteAuthority", (string)null);
                 });
 
             modelBuilder.Entity("EPR.Accreditation.API.Common.Data.DataModels.WasteCode", b =>
@@ -2473,7 +2473,7 @@ namespace EPR.Accreditation.API.Common.Data.Migrations
 
                     b.HasIndex("WasteCodeTypeId");
 
-                    b.ToTable("WasteCodes");
+                    b.ToTable("WasteCodes", (string)null);
                 });
 
             modelBuilder.Entity("EPR.Accreditation.API.Common.Data.DataModels.WastePermit", b =>
@@ -2522,7 +2522,7 @@ namespace EPR.Accreditation.API.Common.Data.Migrations
                         .IsUnique()
                         .HasFilter("[OverseasReprocessingSiteId] IS NOT NULL");
 
-                    b.ToTable("WastePermit");
+                    b.ToTable("WastePermit", (string)null);
                 });
 
             modelBuilder.Entity("EPR.Accreditation.API.Common.Data.DataModels.Accreditation", b =>
