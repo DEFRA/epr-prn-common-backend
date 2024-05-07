@@ -71,5 +71,7 @@
         Task AddSaveAndComeBack(
             Guid id,
             DTO.SaveAndComeBack saveAndContinue);
+
+        Task<string> RandomString();
     }
 }
