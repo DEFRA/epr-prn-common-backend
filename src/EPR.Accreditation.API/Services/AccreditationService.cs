@@ -6,10 +6,12 @@
     using EPR.Accreditation.API.Helpers.Comparers;
     using EPR.Accreditation.API.Repositories.Interfaces;
     using EPR.Accreditation.API.Services.Interfaces;
+    using System;
     using DTO = EPR.Accreditation.API.Common.Dtos;
 
     public class AccreditationService : IAccreditationService
     {
+        private static Random random = new Random();
         protected readonly IRepository _repository;
 
         public AccreditationService(IRepository repository)
@@ -183,6 +185,18 @@
             DTO.SaveAndComeBack saveAndComeBack)
         {
             await _repository.AddSaveAndComeBack(id, saveAndComeBack);
+        }
+
+        /// <summary>
+        /// Builds a random string.
+        /// </summary>
+        /// <param name="length">Lenght of desired string.</param>
+        /// <returns>The random string.</returns>
+        public string GetRandomString(int length)
+        {
+            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            return new string(Enumerable.Repeat(chars, length)
+                .Select(s => s[random.Next(s.Length)]).ToArray());
         }
     }
 }
