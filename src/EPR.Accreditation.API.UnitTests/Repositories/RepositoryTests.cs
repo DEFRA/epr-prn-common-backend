@@ -83,28 +83,10 @@ namespace EPR.Accreditation.API.UnitTests.Repositories
         public async Task AddPackageRecyclingNote_Success()
         {
             // Arrange
-            var newPrn = new PackageRecyclingNoteRequest // This is the data transfer object before it's transformed.
-            {
-                OperatorTypeId = OperatorType.Exporter,
-                ReferenceNumber = "TestValue989942279",
-                OrganisationId = new Guid("d604b0d6-86f7-495c-80a6-eac8ba85b6f3"),
-                PrnStatusId = 1444485968,
-                SiteId = 875588938,
-                CreatedBy = new Guid("a956a8b0-da6d-46a3-8ba2-4d013a8e6896"),
-                LastUpdatedBy = new Guid("90bd9c0d-2c07-4e0d-ad00-5c6a70781e71"),
-                Note = "TestValue1951590367",
-                MaterialId = 1539139257,
-                IsDecember = true,
-                TonnageValue = 411103807,
-                ProducerId = 692875024,
-                ProducerName = "TestValue1634019195",
-                AccreditationId = 246647813,
-                AccreditationReference = "TestValue707966518",
-                IsActive = true,
-            };
-
-            // This is what the data transfer object should be transformed into before being passed to the DB.
-            var mappedPrn = this.TestPrnData[0];
+            var newPrn = new Fixture()
+                .Build<PackageRecyclingNoteRequest>()
+                .With(f => f.OperatorTypeId, OperatorType.Exporter)
+                .Create();
 
             // Act
             var result = await this.TestRepository.AddPackageRecyclingNote(newPrn);
@@ -113,6 +95,7 @@ namespace EPR.Accreditation.API.UnitTests.Repositories
             this.MockAccreditationContext.Verify(
                 mock => mock.PackageRecyclingNote.Add(
                 It.Is<PackageRecyclingNote>(record =>
+                    (int)record.OperatorTypeId == (int)newPrn.OperatorTypeId &&
                     record.AccreditationId == newPrn.AccreditationId &&
                     record.AccreditationReference == newPrn.AccreditationReference &&
                     record.Note == newPrn.Note)),

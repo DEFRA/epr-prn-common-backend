@@ -27,8 +27,9 @@ namespace EPR.Accreditation.API.Common.Data.DataModels
         /// <summary>
         /// Gets or sets the type of the PRN.
         /// </summary>
+        [Column("PrnTypeId")]
         [ForeignKey(nameof(OperatorType))]
-        public Enums.OperatorType PrnTypeId { get; set; }
+        public Enums.OperatorType OperatorTypeId { get; set; }
 
         /// <summary>
         /// Gets or sets the PRN's reference number.
