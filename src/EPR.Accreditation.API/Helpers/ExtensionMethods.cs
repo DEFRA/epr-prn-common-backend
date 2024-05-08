@@ -1,7 +1,7 @@
-﻿using AutoMapper;
-
-namespace EPR.Accreditation.API.Helpers
+﻿namespace EPR.Accreditation.API.Helpers
 {
+    using AutoMapper;
+
     public static class ExtensionMethods
     {
         public static IMappingExpression<TSource, TDestination> MapOnlyNonDefault<TSource, TDestination>(this IMappingExpression<TSource, TDestination> mappingExpression)
@@ -30,16 +30,31 @@ namespace EPR.Accreditation.API.Helpers
             return value.Equals(defaultValue);
         }
 
+        /// <summary>
+        /// Creates a list of strings with one element
+        /// </summary>
+        /// <param name="value">String value to be added to a list</param>
+        /// <returns>List with on element for the row answer</returns>
         public static List<string> ToListSingle(this string value)
         {
             return new List<string> { value };
         }
 
+        /// <summary>
+        /// Creates a list of strings with one element
+        /// </summary>
+        /// <param name="value">Decimal value to be converted and added to a list of strings</param>
+        /// <returns>List with on element for the row answer</returns>
         public static List<string> ToListSingle(this decimal value)
         {
             return new List<string> { value.ToString() };
         }
 
+        /// <summary>
+        /// Creates a list of strings with one element
+        /// </summary>
+        /// <param name="value">Nullable decimal value to be converted and added to a list of strings</param>
+        /// <returns>List with on element for the row answer</returns>
         public static List<string> ToListSingle(this decimal? value)
         {
             return new List<string> { value.ToString() };

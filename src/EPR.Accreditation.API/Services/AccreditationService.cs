@@ -185,6 +185,16 @@
             await _repository.AddSaveAndComeBack(id, saveAndComeBack);
         }
 
+        /// <summary>
+        /// Gets the data for the relevant CYA page
+        /// </summary>
+        /// <param name="id">Accreditation ID</param>
+        /// <param name="materialId">Site material ID</param>
+        /// <param name="siteId">Reprocessor site ID</param>
+        /// <param name="overseasSiteId">Exporter site ID</param>
+        /// <param name="section">Required CYA section</param>
+        /// <returns>Completed Task with the CheckAnswers DTO</returns>
+        /// <exception cref="ArgumentException">Returns exception if operatorType ID condition isn't met</exception>
         public async Task<CheckAnswers> GetCheckAnswers(
             Guid id,
             Guid materialId,
@@ -231,6 +241,14 @@
             return checkAnswersDto;
         }
 
+        /// <summary>
+        /// Retrieves the data for the AboutMaterialReprocessorActuals enum
+        /// </summary>
+        /// <param name="id">Accreditation ID</param>
+        /// <param name="materialId">Site Material ID</param>
+        /// <param name="site">The reprocessor site object</param>
+        /// <param name="accreditationMaterial">The material for the reprocessing site</param>
+        /// <returns>CheckAnswers DTO with the data</returns>
         private CheckAnswers BuildCyaAboutMaterialReprocessorActuals(
             Guid id,
             Guid materialId,
@@ -314,6 +332,13 @@
             };
         }
 
+        /// <summary>
+        /// Retrieves the data for the AboutMaterialExporter enum
+        /// </summary>
+        /// <param name="id">Accreditation ID</param>
+        /// <param name="materialId">Overseas site material ID</param>
+        /// <param name="accreditationMaterial">The overseas site material</param>
+        /// <returns>CheckAnswers DTO with the data</returns>
         private CheckAnswers BuildCyaAboutMaterialExporter(
             Guid id,
             Guid materialId,
@@ -357,6 +382,15 @@
             };
         }
 
+        /// <summary>
+        /// Builds a row for the CYA page within a section
+        /// </summary>
+        /// <param name="id">Accreditation ID</param>
+        /// <param name="materialId">Site material ID</param>
+        /// <param name="titleKey">Key of the row title e.g Commodity codes</param>
+        /// <param name="value">The value of the answer</param>
+        /// <param name="actionName">The name of the action that the link needs to point to</param>
+        /// <returns>CheckAnswersSectionRow DTO</returns>
         private static CheckAnswersSectionRow BuildRow(
             Guid id,
             Guid? materialId,
@@ -374,6 +408,12 @@
             };
         }
 
+        /// <summary>
+        /// Builds a section within a CYA page
+        /// </summary>
+        /// <param name="sectionTitle">The title of the section e.g. Waste inputs for last calendar year</param>
+        /// <param name="rows">The row DTOs for the section</param>
+        /// <returns>CheckAnswersSectionDto</returns>
         private static CheckAnswersSectionDto BuildSection(
             string sectionTitle,
             List<CheckAnswersSectionRow> rows)
@@ -388,6 +428,11 @@
             };
         }
 
+        /// <summary>
+        /// Checks if each question has been answered
+        /// </summary>
+        /// <param name="rows">The list of rows for a given section</param>
+        /// <returns>True or False</returns>
         private static bool IsComplete(List<CheckAnswersSectionRow> rows)
         {
             foreach (var row in rows)
@@ -404,6 +449,11 @@
             return true;
         }
 
+        /// <summary>
+        /// Checks if each section has been completed
+        /// </summary>
+        /// <param name="sections">The list of sections for the CYA page</param>
+        /// <returns>True or False</returns>
         private static bool IsComplete(List<CheckAnswersSectionDto> sections)
         {
             foreach (var section in sections)

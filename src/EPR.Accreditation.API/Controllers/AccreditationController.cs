@@ -1,10 +1,10 @@
-﻿using EPR.Accreditation.API.Common.Enums;
-using EPR.Accreditation.API.Services.Interfaces;
-using Microsoft.AspNetCore.Mvc;
-using DTO = EPR.Accreditation.API.Common.Dtos;
-
-namespace EPR.Accreditation.API.Controllers
+﻿namespace EPR.Accreditation.API.Controllers
 {
+    using EPR.Accreditation.API.Common.Enums;
+    using EPR.Accreditation.API.Services.Interfaces;
+    using Microsoft.AspNetCore.Mvc;
+    using DTO = EPR.Accreditation.API.Common.Dtos;
+
     [ApiController]
     [Route("/api/[controller]")]
     public class AccreditationController : ControllerBase
@@ -54,6 +54,15 @@ namespace EPR.Accreditation.API.Controllers
             return Ok(fileUploadRecords);
         }
 
+        /// <summary>
+        /// Endpoint to get the data for the relevant CYA page
+        /// </summary>
+        /// <param name="id">Accreditation ID</param>
+        /// <param name="materialId">Site material ID</param>
+        /// <param name="siteId">Reprocessor site ID</param>
+        /// <param name="overseasSiteId">Exporter site ID</param>
+        /// <param name="section">Required CYA section</param>
+        /// <returns>DTO for relevant CYA page</returns>
         [HttpGet("{id}/Material/{materialId}/CheckAnswers/{section}")]
         [ProducesResponseType(typeof(DTO.CheckAnswers), 200)]
         public async Task<IActionResult> GetCheckAnswers(
