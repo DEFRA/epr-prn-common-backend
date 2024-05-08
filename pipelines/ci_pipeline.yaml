@@ -45,7 +45,7 @@ resources:
     - repository: CommonTemplates
       name: RWD-CPR-EPR4P-ADO/epr-webapps-code-deploy-templates
       type: git
-      ref: feature/342348-update-sql-migration-pipeline
+      ref: main
 
 extends:
   template: epr-build-pipeline.yaml@CommonTemplates
