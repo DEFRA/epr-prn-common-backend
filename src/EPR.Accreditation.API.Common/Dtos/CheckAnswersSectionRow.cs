@@ -4,7 +4,7 @@
     {
         public string TitleKey { get; set; }
 
-        public object Value { get; set; }
+        public List<string> Value { get; set; }
 
         public string ChangeLink { get; set; }
 

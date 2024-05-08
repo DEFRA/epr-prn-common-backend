@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using AutoMapper.Internal;
 
 namespace EPR.Accreditation.API.Helpers
 {
@@ -29,6 +28,21 @@ namespace EPR.Accreditation.API.Helpers
 
             object defaultValue = type.IsValueType ? Activator.CreateInstance(type) : null;
             return value.Equals(defaultValue);
+        }
+
+        public static List<string> ToListSingle(this string value)
+        {
+            return new List<string> { value };
+        }
+
+        public static List<string> ToListSingle(this decimal value)
+        {
+            return new List<string> { value.ToString() };
+        }
+
+        public static List<string> ToListSingle(this decimal? value)
+        {
+            return new List<string> { value.ToString() };
         }
     }
 }

@@ -2,6 +2,7 @@
 {
     using EPR.Accreditation.API.Common.Dtos;
     using EPR.Accreditation.API.Common.Enums;
+    using EPR.Accreditation.API.Helpers;
     using EPR.Accreditation.API.Helpers.Comparers;
     using EPR.Accreditation.API.Repositories.Interfaces;
     using EPR.Accreditation.API.Services.Interfaces;
@@ -223,10 +224,10 @@
                         var processLoss = accreditationMaterial.MaterialReprocessorDetails.ProcessLoss;
                         var totalWasteOutputsLastCalendarYear = materialsNotProcessedOnSite + contaminents + processLoss;
 
-                        var materialRow = BuildRow(id, materialId, "Material", materialName, "Material");
-                        var ukSourceOfWasteRow = BuildRow(id, materialId, "Uk source of the waste", wasteSource, "WasteSource");
-                        var annualCapacityRow = BuildRow(id, materialId, "Annual total processing capacity", annualCapacity, "ProcessingCapacity");
-                        var weeklyCapacityRow = BuildRow(id, materialId, "Average weekly processing capacity", weeklyCapacity, "ProcessingCapacity");
+                        var materialRow = BuildRow(id, materialId, "Material", materialName.ToListSingle(), "Material");
+                        var ukSourceOfWasteRow = BuildRow(id, materialId, "Uk source of the waste", wasteSource.ToListSingle(), "WasteSource");
+                        var annualCapacityRow = BuildRow(id, materialId, "Annual total processing capacity", annualCapacity.ToListSingle(), "ProcessingCapacity");
+                        var weeklyCapacityRow = BuildRow(id, materialId, "Average weekly processing capacity", weeklyCapacity.ToListSingle(), "ProcessingCapacity");
                         var detailsSectionRows = new List<CheckAnswersSectionRow>
                         {
                             materialRow,
@@ -238,10 +239,10 @@
                             "Details",
                             detailsSectionRows);
 
-                        var ukPackagingWasteRow = BuildRow(id, materialId, "Uk packaging waste", ukPackagingWaste, "MaterialWasteInputs");
-                        var nonUkPackagingWasteRow = BuildRow(id, materialId, "Non-UK packaging waste", nonUkPackagingWaste, "MaterialWasteInputs");
-                        var nonPackagingWasteRow = BuildRow(id, materialId, "Non-packaging waste", nonPackagingWaste, "MaterialWasteInputs");
-                        var totalWasteInputsLastCalendarYearRow = BuildRow(id, materialId, "Total", totalWasteInputsLastCalendarYear, string.Empty);
+                        var ukPackagingWasteRow = BuildRow(id, materialId, "Uk packaging waste", ukPackagingWaste.ToListSingle(), "MaterialWasteInputs");
+                        var nonUkPackagingWasteRow = BuildRow(id, materialId, "Non-UK packaging waste", nonUkPackagingWaste.ToListSingle(), "MaterialWasteInputs");
+                        var nonPackagingWasteRow = BuildRow(id, materialId, "Non-packaging waste", nonPackagingWaste.ToListSingle(), "MaterialWasteInputs");
+                        var totalWasteInputsLastCalendarYearRow = BuildRow(id, materialId, "Total", totalWasteInputsLastCalendarYear.ToListSingle(), string.Empty);
                         var wasteInputsforLastYearRows = new List<CheckAnswersSectionRow>
                         {
                             ukPackagingWasteRow,
@@ -253,10 +254,10 @@
                             "Waste inputs for last calendar year",
                             wasteInputsforLastYearRows);
 
-                        var materialsNotProcessedOnSiteRow = BuildRow(id, materialId, "Material not processed on site", materialsNotProcessedOnSite, "MaterialOutputs");
-                        var contaminentsRow = BuildRow(id, materialId, "Contaminants", contaminents, "MaterialOutputs");
-                        var processLossRow = BuildRow(id, materialId, "Process loss", processLoss, "MaterialOutputs");
-                        var totalWasteOutputsLastCalendarYearRow = BuildRow(id, materialId, "Total", totalWasteOutputsLastCalendarYear, string.Empty);
+                        var materialsNotProcessedOnSiteRow = BuildRow(id, materialId, "Material not processed on site", materialsNotProcessedOnSite.ToListSingle(), "MaterialOutputs");
+                        var contaminentsRow = BuildRow(id, materialId, "Contaminants", contaminents.ToListSingle(), "MaterialOutputs");
+                        var processLossRow = BuildRow(id, materialId, "Process loss", processLoss.ToListSingle(), "MaterialOutputs");
+                        var totalWasteOutputsLastCalendarYearRow = BuildRow(id, materialId, "Total", totalWasteOutputsLastCalendarYear.ToListSingle(), string.Empty);
                         var wasteOutputsforLastYearRows = new List<CheckAnswersSectionRow>
                         {
                             materialsNotProcessedOnSiteRow,
@@ -294,8 +295,8 @@
 
                         var materialName = accreditationMaterial.Material.English;
                         var wasteSource = accreditationMaterial.WasteSource;
-                        var commodityCodes = accreditationMaterial.WasteCodes;
-                        var peopleWhoHaveAuthorityToIssuePerns = new List<string>
+                        var listOfCommodityCodes = accreditationMaterial.WasteCodes.Select(x => x.Code).ToList();
+                        var listOfSignatories = new List<string>
                         {
                             "Andrew Shey, Management Accountant",
                             "Gary Law, Strategic Buyer",
@@ -303,10 +304,10 @@
                             "Shehzad Ismail, Software Developer"
                         };
 
-                        var materialRow = BuildRow(id, materialId, "Material", materialName, "Material");
-                        var ukSourceOfWasteRow = BuildRow(id, materialId, "Uk source of the waste", wasteSource, "WasteSource");
-                        var commodityCodesRow = BuildRow(id, materialId, "Commodity codes", commodityCodes, "CommodityCodes");
-                        var peopleAuthorityRow = BuildRow(id, materialId, "People who have authority to issue PERNs", peopleWhoHaveAuthorityToIssuePerns, "Authority");
+                        var materialRow = BuildRow(id, materialId, "Material", new List<string> { materialName }, "Material");
+                        var ukSourceOfWasteRow = BuildRow(id, materialId, "Uk source of the waste", new List<string> { wasteSource }, "WasteSource");
+                        var commodityCodesRow = BuildRow(id, materialId, "Commodity codes", listOfCommodityCodes, "CommodityCodes");
+                        var peopleAuthorityRow = BuildRow(id, materialId, "People who have authority to issue PERNs", listOfSignatories, "Authority");
                         var detailsSectionRows = new List<CheckAnswersSectionRow>
                         {
                             materialRow,
@@ -339,7 +340,7 @@
             Guid id,
             Guid? materialId,
             string titleKey,
-            object value,
+            List<string> value,
             string actionName)
         {
             var changeLink = $"/Accreditation/{id}/Site/Material/{materialId}/{actionName}?rtap=y";
