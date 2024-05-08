@@ -10,6 +10,7 @@ namespace EPR.Accreditation.API.UnitTests.Repositories
     using EPR.Accreditation.API.Common.Data.DataModels;
     using EPR.Accreditation.API.Common.Dtos;
     using EPR.Accreditation.API.Common.Enums;
+    using EPR.Accreditation.API.Helpers;
     using EPR.Accreditation.API.Repositories;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Moq;
@@ -159,6 +160,7 @@ namespace EPR.Accreditation.API.UnitTests.Repositories
         {
             // Arrange
             var id = this.TestPrnData[0].ExternalId;
+            this.TestPrnData[0].IsActive = true;
             var expectedResult = this.Mapper.Map<PackageRecyclingNoteResponse>(this.TestPrnData[0]);
 
             // Act
@@ -169,6 +171,47 @@ namespace EPR.Accreditation.API.UnitTests.Repositories
             Assert.AreEqual(expectedResult, result);
         }
 
+        /// <summary>
+        /// Tests that an exception is thrown when no PRN record is found that corresponds to the given ID.
+        /// </summary>
+        /// <returns>A <see cref="Task"./></returns>
+        [TestMethod]
+        public async Task GetPackageRecyclingNote_NoRecord()
+        {
+            // Arrange
+            var id = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa");
+
+            // Act
+            var result = await this.TestRepository.GetPackageRecyclingNote(id);
+
+            // Assert
+            Assert.IsNull(result);
+        }
+
+        /// <summary>
+        /// Checks that an exception is thrown when attempting to retrieve a PRN record that exists,
+        /// but is inactive.
+        /// </summary>
+        /// <returns>A <see cref="Task"/>.</returns>
+        [TestMethod]
+        public async Task GetPackageRecyclingNote_InactiveRecord()
+        {
+            // Arrange
+            var id = this.TestPrnData[0].ExternalId;
+            this.TestPrnData[0].IsActive = false;
+
+            // Act
+            var result = await this.TestRepository.GetPackageRecyclingNote(id);
+
+            // Assert
+            Assert.IsNull(result);
+        }
+
+        /// <summary>
+        /// Checks that GetPrnsForOrganisation returns a list of PRNs for the given organisation,
+        /// and that inactive PRNs are excluded.
+        /// </summary>
+        /// <returns></returns>
         [TestMethod]
         public async Task GetPrnsForOrganisation_Success()
         {
@@ -182,18 +225,19 @@ namespace EPR.Accreditation.API.UnitTests.Repositories
                 .Without(f => f.PrnType)
                 .With(f => f.OrganisationId, organisationId);
             this.TestPrnData.AddMany(() => matchingRecordsFixture.Create(), expectedNoOfMatchingRecords);
+            var inactiveRecords = TestPrnData.Where(record => !record.IsActive).Select(record => record.ExternalId);
 
             // Act
-            var results = this.TestRepository.GetPrnsForOrganisation(organisationId).Result.ToList();
-            var expectedResults = this.TestPrnData.Skip(this.TestPrnData.Count - expectedNoOfMatchingRecords)
+            var results = (await this.TestRepository.GetPrnsForOrganisation(organisationId)).ToList();
+            var expectedResults = this.TestPrnData
+                .Where(f => f.IsActive)
+                .Skip(this.TestPrnData.Count - expectedNoOfMatchingRecords)
                 .Select(record => record.ExternalId).ToList();
 
             // Assert
             CollectionAssert.AreEqual(expectedResults, results);
+            Assert.AreEqual(0, results.Intersect(inactiveRecords).Count());
         }
-
-        private Mock<IMapper> _mapper;
-        private AccreditationContext _accreditationContext;
 
         [TestMethod]
         public async Task UpdatePrnStatus_Success()
@@ -239,21 +283,113 @@ namespace EPR.Accreditation.API.UnitTests.Repositories
         }
 
         /// <summary>
-        /// Check that the CanCallDeletePrn method 
+        /// Check that deleting a PRN removes its record from the database.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>A <see cref="Task"./></returns>
         [TestMethod]
         public async Task DeletePrn_Success()
         {
             // Arrange
+            var fix = new Fixture()
+               .Build<PackageRecyclingNote>()
+               .Without(f => f.Site)
+               .Without(f => f.PrnStatus)
+               .Without(f => f.PrnType)
+               .With(f => f.PrnStatusId, (int)Common.Enums.PrnStatus.Draft)
+               .Create();
+            this.TestPrnData.Add(fix);
+
 
             // Act
-            await this.TestRepository.DeletePrn(this.TestPrnData[0].ExternalId);
+            await this.TestRepository.DeletePrn(fix.ExternalId);
 
             // Assert
             this.MockAccreditationContext.Verify(
-                mock => mock.PackageRecyclingNote.Remove(this.TestPrnData[0]),
+                mock => mock.PackageRecyclingNote.Remove(fix),
                 Times.Once());
+        }
+
+        /// <summary>
+        /// Check that deleting a PRN with a status other than "draft" sets the PRN to inactive. 
+        /// </summary>
+        /// <returns>A <see cref="Task"/>.</returns>
+        [TestMethod]
+        public async Task DeletePrn_PrnIsNotDraft()
+        {
+            // Arrange
+            var fix = new Fixture()
+                .Build<PackageRecyclingNote>()
+                .Without(f => f.Site)
+                .Without(f => f.PrnStatus)
+                .Without(f => f.PrnType)
+                .With(f => f.PrnStatusId, (int)Common.Enums.PrnStatus.Accepted)
+                .With(f => f.IsActive, true)
+                .Create();
+            this.TestPrnData.Add(fix);
+
+            // Act
+            await this.TestRepository.DeletePrn(fix.ExternalId);
+
+            // Assert
+            Assert.IsFalse(fix.IsActive);
+        }
+
+        /// <summary>
+        /// Check that an exception is raised when trying to delete a PRN that does not exist. 
+        /// </summary>
+        /// <returns>A <see cref="Task"/>.</returns>
+        [TestMethod]
+        public async Task DeletePrn_NoRecord()
+        {
+            // Arrange
+            var id = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa");
+            Exception result = null;
+
+            // Act
+            try
+            {
+                await this.TestRepository.DeletePrn(id);
+            }
+            catch (Exception ex)
+            {
+                result = ex;
+            }
+
+            // Assert
+            Assert.IsInstanceOfType(result, typeof(NotFoundException));
+        }
+
+        /// <summary>
+        /// Check an exception is raised when trying to delete a PRN that has already been set to inactive. 
+        /// </summary>
+        /// <returns>A <see cref="Task"/>.</returns>
+        [TestMethod]
+        public async Task DeletePrn_InactiveRecord()
+        {
+            // Arrange
+            var fix = new Fixture()
+                .Build<PackageRecyclingNote>()
+                .Without(f => f.Site)
+                .Without(f => f.PrnStatus)
+                .Without(f => f.PrnType)
+                .With(f => f.PrnStatusId, (int)Common.Enums.PrnStatus.Accepted)
+                .With(f => f.IsActive, false)
+                .Create();
+            this.TestPrnData.Add(fix);
+            Exception result = null;
+
+            // Act
+            try
+            {
+                await this.TestRepository.DeletePrn(fix.ExternalId);
+            }
+            catch (Exception ex)
+            {
+                result = ex;
+            }
+
+            // Assert
+            Assert.IsInstanceOfType(result, typeof(InvalidOperationException));
         }
     }
 }

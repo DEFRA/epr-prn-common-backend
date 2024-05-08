@@ -142,7 +142,9 @@ namespace EPR.Accreditation.API.Controllers
                 await PrnService.DeletePrn(id);
                 return Ok();
             }
-            catch(NotFoundException)
+            catch(Exception ex) when(
+                ex is NotFoundException ||
+                ex is InvalidOperationException)
             {
                 return StatusCode((int)HttpStatusCode.PreconditionFailed);
             }

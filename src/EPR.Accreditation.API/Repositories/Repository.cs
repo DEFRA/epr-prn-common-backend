@@ -8,6 +8,7 @@ using EPR.Accreditation.API.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Data = EPR.Accreditation.API.Common.Data.DataModels;
 using DTO = EPR.Accreditation.API.Common.Dtos;
+using CommonEnums = EPR.Accreditation.API.Common.Enums ;
 
 namespace EPR.Accreditation.API.Repositories
 {
@@ -492,7 +493,6 @@ namespace EPR.Accreditation.API.Repositories
             return newPrn.ExternalId;
         }
 
-        // TODO - doesn't yet work correctly.
         /// <inheritdoc/>
         public async Task UpdatePrn(Guid prnId, DTO.PrnUpdateRequest update)
         {
@@ -532,24 +532,12 @@ namespace EPR.Accreditation.API.Repositories
         {
             var prn = await this._accreditationContext
                .PackageRecyclingNote
-                   //.Include(a => a.Site)
-               .Where(a => a.ExternalId == id)
-               //.Select(a => this._mapper.Map<DTO.PackageRecyclingNoteResponse>(a))
+               .Where(a => a.IsActive && a.ExternalId == id)
                .FirstOrDefaultAsync();
+
             var mapped = this._mapper.Map<PackageRecyclingNoteResponse>(prn);
 
             return mapped;
-        }
-
-        private async Task<Data.PackageRecyclingNote> GetPackageRecyclingNote(int id)
-        {
-            var prn = await _accreditationContext
-               .PackageRecyclingNote
-                   .Include(a => a.Site)
-               .Where(a => a.Id == id)
-               .FirstOrDefaultAsync();
-
-            return prn;
         }
 
         /// <inheritdoc>
@@ -558,7 +546,7 @@ namespace EPR.Accreditation.API.Repositories
             var prn = await _accreditationContext
                .PackageRecyclingNote
                    .Include(a => a.Site)
-               .Where(a => a.OrganisationId == organisationId)
+               .Where(a => a.IsActive && a.OrganisationId == organisationId)
                .Select(prn => prn.ExternalId)
                .ToListAsync();
 
@@ -612,8 +600,26 @@ namespace EPR.Accreditation.API.Repositories
                 .Include(a => a.Site)
             .Where(a => a.ExternalId == id)
             .FirstOrDefaultAsync();
+            
+            if(prn == null) 
+            {
+                throw new NotFoundException("No matching PRN record found.");
+            }
+            if(!prn.IsActive)
+            {
+                throw new InvalidOperationException("PRN has already been deleted.");
+            }
 
-            this._accreditationContext.PackageRecyclingNote.Remove(prn);
+            if (prn.PrnStatusId == (int)CommonEnums.PrnStatus.Draft)
+            {
+                this._accreditationContext.PackageRecyclingNote.Remove(prn);
+            }
+            else
+            {
+                prn.IsActive = false;
+                this._accreditationContext.PackageRecyclingNote.Update(prn);
+            }
+
             await this._accreditationContext.SaveChangesAsync();
         }
     }
