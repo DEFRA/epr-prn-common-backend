@@ -193,6 +193,7 @@
             CheckAnswersSection section)
         {
             var accreditation = await GetAccreditation(id);
+            var accreditationMaterial = await GetMaterial(id, materialId);
             var site = await GetSite(id);
             var checkAnswersDto = new CheckAnswers();
 
@@ -206,82 +207,11 @@
                     }
                     else
                     {
-                        var siteAddress = site.Address;
-                        var accreditationMaterial = await GetMaterial(id, materialId);
-
-                        var materialName = accreditationMaterial.Material.English;
-                        var wasteSource = accreditationMaterial.WasteSource;
-                        var annualCapacity = accreditationMaterial.AnnualCapacity;
-                        var weeklyCapacity = accreditationMaterial.WeeklyCapacity;
-
-                        var ukPackagingWaste = accreditationMaterial.MaterialReprocessorDetails.UkPackagingWaste;
-                        var nonUkPackagingWaste = accreditationMaterial.MaterialReprocessorDetails.NonUkPackagingWaste;
-                        var nonPackagingWaste = accreditationMaterial.MaterialReprocessorDetails.NonPackagingWaste;
-                        var totalWasteInputsLastCalendarYear = ukPackagingWaste + nonPackagingWaste + nonUkPackagingWaste;
-
-                        var materialsNotProcessedOnSite = accreditationMaterial.MaterialReprocessorDetails.MaterialsNotProcessedOnSite;
-                        var contaminents = accreditationMaterial.MaterialReprocessorDetails.Contaminents;
-                        var processLoss = accreditationMaterial.MaterialReprocessorDetails.ProcessLoss;
-                        var totalWasteOutputsLastCalendarYear = materialsNotProcessedOnSite + contaminents + processLoss;
-
-                        var materialRow = BuildRow(id, materialId, "Material", materialName.ToListSingle(), "Material");
-                        var ukSourceOfWasteRow = BuildRow(id, materialId, "Uk source of the waste", wasteSource.ToListSingle(), "WasteSource");
-                        var annualCapacityRow = BuildRow(id, materialId, "Annual total processing capacity", annualCapacity.ToListSingle(), "ProcessingCapacity");
-                        var weeklyCapacityRow = BuildRow(id, materialId, "Average weekly processing capacity", weeklyCapacity.ToListSingle(), "ProcessingCapacity");
-                        var detailsSectionRows = new List<CheckAnswersSectionRow>
-                        {
-                            materialRow,
-                            ukSourceOfWasteRow,
-                            annualCapacityRow,
-                            weeklyCapacityRow
-                        };
-                        var detailsSection = BuildSection(
-                            "Details",
-                            detailsSectionRows);
-
-                        var ukPackagingWasteRow = BuildRow(id, materialId, "Uk packaging waste", ukPackagingWaste.ToListSingle(), "MaterialWasteInputs");
-                        var nonUkPackagingWasteRow = BuildRow(id, materialId, "Non-UK packaging waste", nonUkPackagingWaste.ToListSingle(), "MaterialWasteInputs");
-                        var nonPackagingWasteRow = BuildRow(id, materialId, "Non-packaging waste", nonPackagingWaste.ToListSingle(), "MaterialWasteInputs");
-                        var totalWasteInputsLastCalendarYearRow = BuildRow(id, materialId, "Total", totalWasteInputsLastCalendarYear.ToListSingle(), string.Empty);
-                        var wasteInputsforLastYearRows = new List<CheckAnswersSectionRow>
-                        {
-                            ukPackagingWasteRow,
-                            nonUkPackagingWasteRow,
-                            nonPackagingWasteRow,
-                            totalWasteInputsLastCalendarYearRow
-                        };
-                        var wasteInputsLastYearSection = BuildSection(
-                            "Waste inputs for last calendar year",
-                            wasteInputsforLastYearRows);
-
-                        var materialsNotProcessedOnSiteRow = BuildRow(id, materialId, "Material not processed on site", materialsNotProcessedOnSite.ToListSingle(), "MaterialOutputs");
-                        var contaminentsRow = BuildRow(id, materialId, "Contaminants", contaminents.ToListSingle(), "MaterialOutputs");
-                        var processLossRow = BuildRow(id, materialId, "Process loss", processLoss.ToListSingle(), "MaterialOutputs");
-                        var totalWasteOutputsLastCalendarYearRow = BuildRow(id, materialId, "Total", totalWasteOutputsLastCalendarYear.ToListSingle(), string.Empty);
-                        var wasteOutputsforLastYearRows = new List<CheckAnswersSectionRow>
-                        {
-                            materialsNotProcessedOnSiteRow,
-                            contaminentsRow,
-                            processLossRow,
-                            totalWasteOutputsLastCalendarYearRow
-                        };
-                        var wasteOutputsLastYearSection = BuildSection(
-                            "Non-waste inputs for last calendar year",
-                            wasteOutputsforLastYearRows);
-
-                        var listOfSections = new List<CheckAnswersSectionDto>
-                        {
-                            detailsSection,
-                            wasteInputsLastYearSection,
-                            wasteOutputsLastYearSection
-                        };
-
-                        return new CheckAnswers
-                        {
-                            Completed = IsComplete(listOfSections),
-                            SiteAddress = siteAddress,
-                            Sections = listOfSections
-                        };
+                        return BuildCyaAboutMaterialReprocessorActuals(
+                            id,
+                            materialId,
+                            site,
+                            accreditationMaterial);
                     }
 
                 case CheckAnswersSection.AboutMaterialExporter:
@@ -291,49 +221,140 @@
                     }
                     else
                     {
-                        var accreditationMaterial = await GetMaterial(id, materialId);
-
-                        var materialName = accreditationMaterial.Material.English;
-                        var wasteSource = accreditationMaterial.WasteSource;
-                        var listOfCommodityCodes = accreditationMaterial.WasteCodes.Select(x => x.Code).ToList();
-                        var listOfSignatories = new List<string>
-                        {
-                            "Andrew Shey, Management Accountant",
-                            "Gary Law, Strategic Buyer",
-                            "Scott McAllister, PRN signatory",
-                            "Shehzad Ismail, Software Developer"
-                        };
-
-                        var materialRow = BuildRow(id, materialId, "Material", new List<string> { materialName }, "Material");
-                        var ukSourceOfWasteRow = BuildRow(id, materialId, "Uk source of the waste", new List<string> { wasteSource }, "WasteSource");
-                        var commodityCodesRow = BuildRow(id, materialId, "Commodity codes", listOfCommodityCodes, "CommodityCodes");
-                        var peopleAuthorityRow = BuildRow(id, materialId, "People who have authority to issue PERNs", listOfSignatories, "Authority");
-                        var detailsSectionRows = new List<CheckAnswersSectionRow>
-                        {
-                            materialRow,
-                            ukSourceOfWasteRow,
-                            commodityCodesRow,
-                            peopleAuthorityRow
-                        };
-                        var detailsSection = BuildSection(
-                            "Details",
-                            detailsSectionRows);
-
-                        var listOfSections = new List<CheckAnswersSectionDto>
-                        {
-                            detailsSection
-                        };
-
-                        return new CheckAnswers
-                        {
-                            Completed = IsComplete(listOfSections),
-                            SiteAddress = new Address(),
-                            Sections = listOfSections
-                        };
+                        return BuildCyaAboutMaterialExporter(
+                            id,
+                            materialId,
+                            accreditationMaterial);
                     }
             }
 
             return checkAnswersDto;
+        }
+
+        private CheckAnswers BuildCyaAboutMaterialReprocessorActuals(
+            Guid id,
+            Guid materialId,
+            Site site,
+            AccreditationMaterial accreditationMaterial)
+        {
+            var siteAddress = site.Address;
+
+            var materialName = accreditationMaterial.Material.English;
+            var wasteSource = accreditationMaterial.WasteSource;
+            var annualCapacity = accreditationMaterial.AnnualCapacity;
+            var weeklyCapacity = accreditationMaterial.WeeklyCapacity;
+
+            var ukPackagingWaste = accreditationMaterial.MaterialReprocessorDetails.UkPackagingWaste;
+            var nonUkPackagingWaste = accreditationMaterial.MaterialReprocessorDetails.NonUkPackagingWaste;
+            var nonPackagingWaste = accreditationMaterial.MaterialReprocessorDetails.NonPackagingWaste;
+            var totalWasteInputsLastCalendarYear = ukPackagingWaste + nonPackagingWaste + nonUkPackagingWaste;
+
+            var materialsNotProcessedOnSite = accreditationMaterial.MaterialReprocessorDetails.MaterialsNotProcessedOnSite;
+            var contaminents = accreditationMaterial.MaterialReprocessorDetails.Contaminents;
+            var processLoss = accreditationMaterial.MaterialReprocessorDetails.ProcessLoss;
+            var totalWasteOutputsLastCalendarYear = materialsNotProcessedOnSite + contaminents + processLoss;
+
+            var materialRow = BuildRow(id, materialId, "Material", materialName.ToListSingle(), "Material");
+            var ukSourceOfWasteRow = BuildRow(id, materialId, "Uk source of the waste", wasteSource.ToListSingle(), "WasteSource");
+            var annualCapacityRow = BuildRow(id, materialId, "Annual total processing capacity", annualCapacity.ToListSingle(), "ProcessingCapacity");
+            var weeklyCapacityRow = BuildRow(id, materialId, "Average weekly processing capacity", weeklyCapacity.ToListSingle(), "ProcessingCapacity");
+            var detailsSectionRows = new List<CheckAnswersSectionRow>
+            {
+                materialRow,
+                ukSourceOfWasteRow,
+                annualCapacityRow,
+                weeklyCapacityRow
+            };
+            var detailsSection = BuildSection(
+                "Details",
+                detailsSectionRows);
+
+            var ukPackagingWasteRow = BuildRow(id, materialId, "Uk packaging waste", ukPackagingWaste.ToListSingle(), "MaterialWasteInputs");
+            var nonUkPackagingWasteRow = BuildRow(id, materialId, "Non-UK packaging waste", nonUkPackagingWaste.ToListSingle(), "MaterialWasteInputs");
+            var nonPackagingWasteRow = BuildRow(id, materialId, "Non-packaging waste", nonPackagingWaste.ToListSingle(), "MaterialWasteInputs");
+            var totalWasteInputsLastCalendarYearRow = BuildRow(id, materialId, "Total", totalWasteInputsLastCalendarYear.ToListSingle(), string.Empty);
+            var wasteInputsforLastYearRows = new List<CheckAnswersSectionRow>
+            {
+                ukPackagingWasteRow,
+                nonUkPackagingWasteRow,
+                nonPackagingWasteRow,
+                totalWasteInputsLastCalendarYearRow
+            };
+            var wasteInputsLastYearSection = BuildSection(
+                "Waste inputs for last calendar year",
+                wasteInputsforLastYearRows);
+
+            var materialsNotProcessedOnSiteRow = BuildRow(id, materialId, "Material not processed on site", materialsNotProcessedOnSite.ToListSingle(), "MaterialOutputs");
+            var contaminentsRow = BuildRow(id, materialId, "Contaminants", contaminents.ToListSingle(), "MaterialOutputs");
+            var processLossRow = BuildRow(id, materialId, "Process loss", processLoss.ToListSingle(), "MaterialOutputs");
+            var totalWasteOutputsLastCalendarYearRow = BuildRow(id, materialId, "Total", totalWasteOutputsLastCalendarYear.ToListSingle(), string.Empty);
+            var wasteOutputsforLastYearRows = new List<CheckAnswersSectionRow>
+            {
+                materialsNotProcessedOnSiteRow,
+                contaminentsRow,
+                processLossRow,
+                totalWasteOutputsLastCalendarYearRow
+            };
+            var wasteOutputsLastYearSection = BuildSection(
+                "Non-waste inputs for last calendar year",
+                wasteOutputsforLastYearRows);
+
+            var listOfSections = new List<CheckAnswersSectionDto>
+            {
+                detailsSection,
+                wasteInputsLastYearSection,
+                wasteOutputsLastYearSection
+            };
+
+            return new CheckAnswers
+            {
+                Completed = IsComplete(listOfSections),
+                SiteAddress = siteAddress,
+                Sections = listOfSections
+            };
+        }
+
+        private CheckAnswers BuildCyaAboutMaterialExporter(
+            Guid id,
+            Guid materialId,
+            AccreditationMaterial accreditationMaterial)
+        {
+            var materialName = accreditationMaterial.Material.English;
+            var wasteSource = accreditationMaterial.WasteSource;
+            var listOfCommodityCodes = accreditationMaterial.WasteCodes.Select(x => x.Code).ToList();
+            var listOfSignatories = new List<string>
+            {
+                "Andrew Shey, Management Accountant",
+                "Gary Law, Strategic Buyer",
+                "Scott McAllister, PRN signatory",
+                "Shehzad Ismail, Software Developer"
+            };
+
+            var materialRow = BuildRow(id, materialId, "Material", new List<string> { materialName }, "Material");
+            var ukSourceOfWasteRow = BuildRow(id, materialId, "Uk source of the waste", new List<string> { wasteSource }, "WasteSource");
+            var commodityCodesRow = BuildRow(id, materialId, "Commodity codes", listOfCommodityCodes, "CommodityCodes");
+            var peopleAuthorityRow = BuildRow(id, materialId, "People who have authority to issue PERNs", listOfSignatories, "Authority");
+            var detailsSectionRows = new List<CheckAnswersSectionRow>
+            {
+                materialRow,
+                ukSourceOfWasteRow,
+                commodityCodesRow,
+                peopleAuthorityRow
+            };
+
+            var detailsSection = BuildSection("Details", detailsSectionRows);
+
+            var listOfSections = new List<CheckAnswersSectionDto>
+            {
+                detailsSection
+            };
+
+            return new CheckAnswers
+            {
+                Completed = IsComplete(listOfSections),
+                SiteAddress = new Address(),
+                Sections = listOfSections
+            };
         }
 
         private static CheckAnswersSectionRow BuildRow(
