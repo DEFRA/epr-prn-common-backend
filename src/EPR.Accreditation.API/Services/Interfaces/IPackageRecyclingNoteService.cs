@@ -18,7 +18,7 @@ namespace EPR.Accreditation.API.Services.Interfaces
         /// <returns></returns>
         Task<Guid> CreatePackageRecyclingNote(DTO.PackageRecyclingNoteRequest prn);
 
-        Task UpdatePrn(Guid prnId, DTO.PrnUpdateRequest newData);
+        Task UpdatePrn(Guid prnId, DTO.PackageRecyclingNoteRequest newData);
 
         /// <summary>
         /// Retrieve a list of PRNs for the specified organisation.

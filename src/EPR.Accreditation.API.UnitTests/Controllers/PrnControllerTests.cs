@@ -242,13 +242,12 @@ namespace EPR.Accreditation.API.UnitTests.Controllers
             Assert.AreEqual(HttpStatusCode.InternalServerError, (HttpStatusCode)statusCode.StatusCode);
         }
 
-        // TODO: Test a variety of requests.
         [TestMethod]
         public async Task UpdatePrnData_Success()
         {
             // Arrange
             var id = Guid.NewGuid();
-            var request = new PrnUpdateRequest
+            var request = new PackageRecyclingNoteRequest
             {
                 //Note = "Test Status Update",
             };
@@ -266,7 +265,7 @@ namespace EPR.Accreditation.API.UnitTests.Controllers
         {
             // Arrange
             var id = Guid.NewGuid();
-            var request = new PrnUpdateRequest
+            var request = new PackageRecyclingNoteRequest
             {
                 //Note = "Test Status Update",
             };
@@ -286,7 +285,7 @@ namespace EPR.Accreditation.API.UnitTests.Controllers
         {
             // Arrange
             var id = Guid.NewGuid();
-            var request = new PrnUpdateRequest
+            var request = new PackageRecyclingNoteRequest
             {
                 //Note = "Test Status Update",
             };

@@ -24,7 +24,7 @@ namespace EPR.Accreditation.API.Services
             => await this.Repository.AddPackageRecyclingNote(prn);
 
         /// <inheritdoc/>
-        public async Task UpdatePrn(Guid prnId, DTO.PrnUpdateRequest newData)
+        public async Task UpdatePrn(Guid prnId, DTO.PackageRecyclingNoteRequest newData)
         {
             await this.Repository.UpdatePrn(prnId, newData);
         }

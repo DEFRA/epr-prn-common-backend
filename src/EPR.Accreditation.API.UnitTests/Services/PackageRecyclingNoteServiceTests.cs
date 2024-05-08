@@ -1,3 +1,5 @@
+using AutoFixture;
+using EPR.Accreditation.API.Common.Data.DataModels;
 using EPR.Accreditation.API.Common.Dtos;
 using EPR.Accreditation.API.Common.Enums;
 using EPR.Accreditation.API.Repositories.Interfaces;
@@ -69,7 +71,6 @@ namespace EPR.Accreditation.API.UnitTests.Services
                 ProducerName = "TestValue368209418",
                 AccreditationId = 2064331101,
                 AccreditationReference = "TestValue916535714",
-                IsActive = true,
             };
 
             var expectedGuid = new Guid("6f634faf-50b2-48e8-a653-39a1745acea3");
@@ -94,36 +95,39 @@ namespace EPR.Accreditation.API.UnitTests.Services
         {
             // Arrange
             var prnId = new Guid("e920150a-51cd-4365-809b-948aaeceef6c");
-            var newData = new PrnUpdateRequest
-            {
-                Prn = new PackageRecyclingNoteRequest
-                {
-                    OperatorTypeId = OperatorType.Reprocessor,
-                    ReferenceNumber = "TestValue1439557443",
-                    OrganisationId = new Guid("59c8c140-bd3d-4894-9790-2a3349596b14"),
-                    PrnStatusId = 2140533017,
-                    SiteId = 1793023827,
-                    CreatedBy = new Guid("2b778841-7da1-4feb-8144-fba0c7a158f1"),
-                    LastUpdatedBy = new Guid("d461028b-4f00-439e-8c41-eed72423518c"),
-                    Note = "TestValue1554863258",
-                    MaterialId = 1141517379,
-                    IsDecember = true,
-                    TonnageValue = 392059562,
-                    ProducerId = 1626085919,
-                    ProducerName = "TestValue1755210105",
-                    AccreditationId = 1135070727,
-                    AccreditationReference = "TestValue867867394",
-                    IsActive = true,
-                },
-                Status = new PrnStatusHistoryRequest
-                {
-                    CreatedByUser = new Guid("4f9553e1-bc60-45e2-ab6a-dc529915b582"),
-                    CreatedByOrganisationId = new Guid("b559378d-130c-480d-9a61-2bd386df9d47"),
-                    OrganisationName = "TestValue1271900432",
-                    PrnStatusId = 1559603764,
-                    Comment = "TestValue1493940704",
-                },
-            };
+            var newData = new Fixture()
+                .Build<PackageRecyclingNoteRequest>().Create();
+
+            //var newData = new PackageRecyclingNoteRequest
+            //{
+            //    Prn = new PackageRecyclingNoteRequest
+            //    {
+            //        OperatorTypeId = OperatorType.Reprocessor,
+            //        ReferenceNumber = "TestValue1439557443",
+            //        OrganisationId = new Guid("59c8c140-bd3d-4894-9790-2a3349596b14"),
+            //        PrnStatusId = 2140533017,
+            //        SiteId = 1793023827,
+            //        CreatedBy = new Guid("2b778841-7da1-4feb-8144-fba0c7a158f1"),
+            //        LastUpdatedBy = new Guid("d461028b-4f00-439e-8c41-eed72423518c"),
+            //        Note = "TestValue1554863258",
+            //        MaterialId = 1141517379,
+            //        IsDecember = true,
+            //        TonnageValue = 392059562,
+            //        ProducerId = 1626085919,
+            //        ProducerName = "TestValue1755210105",
+            //        AccreditationId = 1135070727,
+            //        AccreditationReference = "TestValue867867394",
+            //        IsActive = true,
+            //    },
+            //    Status = new PrnStatusHistoryRequest
+            //    {
+            //        CreatedByUser = new Guid("4f9553e1-bc60-45e2-ab6a-dc529915b582"),
+            //        CreatedByOrganisationId = new Guid("b559378d-130c-480d-9a61-2bd386df9d47"),
+            //        OrganisationName = "TestValue1271900432",
+            //        PrnStatusId = 1559603764,
+            //        Comment = "TestValue1493940704",
+            //    },
+            //};
 
             // Act
             await this.PrnService.UpdatePrn(prnId, newData);

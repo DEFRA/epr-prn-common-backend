@@ -88,7 +88,7 @@ namespace EPR.Accreditation.API.Repositories.Interfaces
         /// <param name="prnId"></param>
         /// <param name="update">The new data to update the record with.</param>
         /// <returns></returns>
-        Task UpdatePrn(Guid prnId, DTO.PrnUpdateRequest update);
+        Task UpdatePrn(Guid prnId, DTO.PackageRecyclingNoteRequest update);
 
         /// <summary>
         /// Retrieves details of a PRN from the database.

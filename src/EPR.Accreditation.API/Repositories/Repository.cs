@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Data = EPR.Accreditation.API.Common.Data.DataModels;
 using DTO = EPR.Accreditation.API.Common.Dtos;
 using CommonEnums = EPR.Accreditation.API.Common.Enums ;
+using System.Reflection;
 
 namespace EPR.Accreditation.API.Repositories
 {
@@ -486,6 +487,7 @@ namespace EPR.Accreditation.API.Repositories
             newPrn.CreatedDate = DateTime.UtcNow;
             newPrn.LastUpdatedDate = newPrn.CreatedDate;
             newPrn.PrnStatusId = (int)Common.Enums.PrnStatus.Draft;
+            newPrn.IsActive = true;
 
             this._accreditationContext.PackageRecyclingNote.Add(newPrn);
             await this._accreditationContext.SaveChangesAsync();
@@ -494,36 +496,48 @@ namespace EPR.Accreditation.API.Repositories
         }
 
         /// <inheritdoc/>
-        public async Task UpdatePrn(Guid prnId, DTO.PrnUpdateRequest update)
+        public async Task UpdatePrn(Guid prnId, DTO.PackageRecyclingNoteRequest update)
         {
+            // Retrieve the object for the current state of the PRN's record.
             ArgumentNullException.ThrowIfNull(update);
-            var updatedPrn = this._mapper.Map<PackageRecyclingNote>(update.Prn);
             var currentPrn = await this._accreditationContext
                .PackageRecyclingNote
                    .Include(a => a.Site)
                .Where(a => a.ExternalId == prnId)
                .FirstOrDefaultAsync();
-
-            var propertiesNotToUpdate = new[]
+        
+            var navigationProperties = new[]
             {
                 nameof(PackageRecyclingNote.Id),
                 nameof(PackageRecyclingNote.ExternalId),
                 nameof(PackageRecyclingNote.CreatedDate),
             };
 
-            foreach (var property in typeof(PackageRecyclingNote).GetProperties())
+            // Copy only the populated values from the DTO to the database object
+            // Some values also need to be passed through the mapper to convert them to the correct type.
+            foreach (var sourceProperty in typeof(PackageRecyclingNoteRequest).GetProperties())
             {
-                if (property.GetValue(updatedPrn) != null && !propertiesNotToUpdate.Contains(property.Name))
+                if (sourceProperty.GetValue(update) != null && !navigationProperties.Contains(sourceProperty.Name))
                 {
-                    property.SetValue(currentPrn, property.GetValue(updatedPrn));
+                    var destinationProperty = currentPrn.GetType().GetProperty(sourceProperty.Name);
+                    if(sourceProperty.PropertyType == destinationProperty.PropertyType) 
+                    {
+                        destinationProperty.SetValue(currentPrn, sourceProperty.GetValue(update));
+                    }
+                    else
+                    {
+                        var mappedValue = this._mapper.Map(
+                            sourceProperty.GetValue(update),
+                            sourceProperty.PropertyType,
+                            destinationProperty.PropertyType);
+                        destinationProperty.SetValue(currentPrn, mappedValue);
+                    }
                 }
             }
 
             currentPrn.LastUpdatedDate = DateTime.UtcNow;
 
             this._accreditationContext.PackageRecyclingNote.Update(currentPrn);
-
-            await this.DoUpdatePrnStatus(prnId, update.Status);
             this._accreditationContext.SaveChanges();
         }
 

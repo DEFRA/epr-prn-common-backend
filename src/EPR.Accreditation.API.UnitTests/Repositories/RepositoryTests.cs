@@ -115,14 +115,18 @@ namespace EPR.Accreditation.API.UnitTests.Repositories
                 => this.TestRepository.AddPackageRecyclingNote(default));
         }
 
+        /// <summary>
+        /// Check that updating PRNs changes values.
+        /// </summary>
+        /// <returns></returns>
         [TestMethod]
         public async Task UpdatePrn_Success()
         {
             // Arrange
             var prnId = this.TestPrnData[0].ExternalId;
-
             var updatedData = new Fixture()
-                .Build<PrnUpdateRequest>()
+                .Build<PackageRecyclingNoteRequest>()
+                .With(u => u.Note, "Changed")
                 .Create();
 
             // Act
@@ -132,14 +136,12 @@ namespace EPR.Accreditation.API.UnitTests.Repositories
             this.MockAccreditationContext.Verify(
                mock => mock.PackageRecyclingNote.Update(
                It.Is<PackageRecyclingNote>(record =>
+                   record.Note == "Changed" &&
                    record.ExternalId == prnId &&
-                   record.AccreditationId == updatedData.Prn.AccreditationId &&
-                   record.AccreditationReference == updatedData.Prn.AccreditationReference &&
-                   record.Note == updatedData.Prn.Note)),
+                   record.AccreditationId == updatedData.AccreditationId &&
+                   record.AccreditationReference == updatedData.AccreditationReference &&
+                   record.Note == updatedData.Note)),
                Times.Once());
-
-            this.MockAccreditationContext.Verify(
-               mock => mock.PrnStatusHistories.Add(It.IsAny<PrnStatusHistory>()));
         }
 
         /// <summary>
@@ -296,6 +298,7 @@ namespace EPR.Accreditation.API.UnitTests.Repositories
                .Without(f => f.PrnStatus)
                .Without(f => f.PrnType)
                .With(f => f.PrnStatusId, (int)Common.Enums.PrnStatus.Draft)
+               .With(f => f.IsActive, true)
                .Create();
             this.TestPrnData.Add(fix);
 

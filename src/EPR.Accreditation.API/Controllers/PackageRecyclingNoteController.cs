@@ -111,7 +111,7 @@ namespace EPR.Accreditation.API.Controllers
         #region Put methods
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdatePrn(Guid id, DTO.PrnUpdateRequest prn)
+        public async Task<IActionResult> UpdatePrn(Guid id, DTO.PackageRecyclingNoteRequest prn)
         {
             ArgumentNullException.ThrowIfNull(prn);
             try
