@@ -57,7 +57,7 @@ namespace EPR.Accreditation.API.Controllers
         [ProducesResponseType(typeof(string), 200)]
         public async Task<IActionResult> GetRandomString()
         {
-            var randomString = await _accreditationService.RandomString();
+            var randomString = await _accreditationService.RandomString(12);
 
             if (randomString == null)
                 return NotFound();

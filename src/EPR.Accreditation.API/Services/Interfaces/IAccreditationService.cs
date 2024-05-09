@@ -72,6 +72,6 @@
             Guid id,
             DTO.SaveAndComeBack saveAndContinue);
 
-        Task<string> RandomString();
+        Task<string> RandomString(int length);
     }
 }
