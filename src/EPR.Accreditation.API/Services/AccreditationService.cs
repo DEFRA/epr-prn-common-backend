@@ -25,6 +25,7 @@
 
             // set the external id for the accreditation
             accreditation.AccreditationStatusId = Common.Enums.AccreditationStatus.Started;
+            accreditation.CreatedOn = DateTime.UtcNow;
 
             return await _repository.AddAccreditation(accreditation);
         }
@@ -44,6 +45,8 @@
             Guid id,
             DTO.Accreditation accreditation)
         {
+            accreditation.UpdatedOn = DateTime.UtcNow;
+
             await _repository.UpdateAccreditation(
                 id,
                 accreditation);

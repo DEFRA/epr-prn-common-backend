@@ -1935,6 +1935,25 @@ GO
 BEGIN TRANSACTION;
 GO
 
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20240503124041_AccreditionFee')
+BEGIN
+    ALTER TABLE [Accreditation] ADD [AccreditationFee] decimal(18,2) NULL;
+END;
+GO
+
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20240503124041_AccreditionFee')
+BEGIN
+    INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+    VALUES (N'20240503124041_AccreditionFee', N'6.0.28');
+END;
+GO
+
+COMMIT;
+GO
+
+BEGIN TRANSACTION;
+GO
+
 IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20240507124737_Address-remove-required-fields')
 BEGIN
     DECLARE @var16 sysname;
