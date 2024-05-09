@@ -39,6 +39,7 @@ namespace EPR.Accreditation.API.Common.Data.DataModels
 
         public DateTime? UpdatedOn { get; set; }
 
+        [Column(TypeName = "decimal(19, 2)")]
         public decimal? AccreditationFee { get; set; }
 
         #region Navigation properties

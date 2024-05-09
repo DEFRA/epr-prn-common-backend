@@ -61,7 +61,7 @@ namespace EPR.Accreditation.API.Repositories
             // materials for overseas sites are added before the site
             // therefore if the accreditation is a reprocessor, we should use
             // that site id
-            var accreditationEntity = await _accreditationContext
+            var accreditationEntityTask = _accreditationContext
                 .Accreditation
                 .Where(a =>
                     a.ExternalId == id &&
@@ -73,9 +73,25 @@ namespace EPR.Accreditation.API.Repositories
                 })
                 .SingleOrDefaultAsync();
 
+            var materialIdTask = _accreditationContext
+                .Material
+                .Where(m => m.ExternalId == material.MaterialExternalId)
+                .Select(m => (int?)m.Id)
+                .SingleOrDefaultAsync();
+
+            await Task.WhenAll(accreditationEntityTask, materialIdTask);
+
+            var accreditationEntity = accreditationEntityTask.Result;
+            var materialId = materialIdTask.Result;
+
             if (accreditationEntity == null)
             {
                 throw new NotFoundException($"No accreditation record found with id: {id}");
+            }
+
+            if (materialId == null)
+            {
+                throw new NotFoundException($"No material record found with External ID: {material.MaterialExternalId}");
             }
 
             if (accreditationOperatorType == Enums.OperatorType.Reprocessor)
@@ -84,6 +100,7 @@ namespace EPR.Accreditation.API.Repositories
             }
 
             entity.AccreditationId = accreditationEntity.Id;
+            entity.MaterialId = materialId.Value;
 
             await _accreditationContext.AccreditationMaterial.AddAsync(entity);
             await _accreditationContext.SaveChangesAsync();
