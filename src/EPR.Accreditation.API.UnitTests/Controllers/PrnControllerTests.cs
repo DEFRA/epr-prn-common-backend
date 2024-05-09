@@ -54,7 +54,7 @@ namespace EPR.Accreditation.API.UnitTests.Controllers
 
             this.MockPrnService
                 .Setup(service => service.CreatePackageRecyclingNote(request))
-                .Throws<InvalidOperationException>();
+                .Throws<Exception>();
 
             // Act
             var result = (StatusCodeResult)await this.PrnController.CreatePackageRecyclingNote(request);
@@ -109,7 +109,7 @@ namespace EPR.Accreditation.API.UnitTests.Controllers
             var id = Guid.NewGuid();
             this.MockPrnService
                 .Setup(service => service.GetPackageRecyclingNote(id))
-                .Throws<InvalidOperationException>();
+                .Throws<Exception>();
 
             // Act
             var result = await this.PrnController.GetPackageRecyclingNote(id);
@@ -168,7 +168,7 @@ namespace EPR.Accreditation.API.UnitTests.Controllers
             var id = Guid.NewGuid();
             this.MockPrnService
                 .Setup(service => service.GetPrnsForOrganisation(id))
-                .Throws<InvalidOperationException>();
+                .Throws<Exception>();
 
             // Act
             var result = await this.PrnController.GetPrnsForOrganisation(id);
@@ -231,7 +231,7 @@ namespace EPR.Accreditation.API.UnitTests.Controllers
             };
             this.MockPrnService
                 .Setup(service => service.UpdatePrnStatus(id, statusUpdate))
-                .Throws<InvalidOperationException>();
+                .Throws<Exception>();
 
             // Act
             var result = await this.PrnController.UpdatePrnStatus(id, statusUpdate);
@@ -291,7 +291,7 @@ namespace EPR.Accreditation.API.UnitTests.Controllers
             };
             this.MockPrnService
                 .Setup(service => service.UpdatePrn(id, request))
-                .Throws<InvalidOperationException>();
+                .Throws<Exception>();
 
             // Act
             var result = await this.PrnController.UpdatePrn(id, request);
@@ -331,7 +331,7 @@ namespace EPR.Accreditation.API.UnitTests.Controllers
             // Assert
             Assert.IsInstanceOfType(result, typeof(StatusCodeResult));
             var statusCode = (StatusCodeResult)result;
-            Assert.AreEqual(HttpStatusCode.PreconditionFailed, (HttpStatusCode)statusCode.StatusCode);
+            Assert.AreEqual(HttpStatusCode.NotFound, (HttpStatusCode)statusCode.StatusCode);
         }
 
         [TestMethod]
@@ -341,7 +341,7 @@ namespace EPR.Accreditation.API.UnitTests.Controllers
             var prnId = Guid.NewGuid();
             this.MockPrnService
                 .Setup(service => service.DeletePrn(prnId))
-                .Throws<InvalidOperationException>();
+                .Throws<Exception>();
 
             // Act
             var result = await this.PrnController.DeletePrn(prnId);
