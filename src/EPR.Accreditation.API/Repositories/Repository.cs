@@ -342,7 +342,7 @@ namespace EPR.Accreditation.API.Repositories
             if (entity.ExemptionReferences.Any())
                 entity.ExemptionReferences.Clear();
 
-            if (site.ExemptionReferences != null && site.ExemptionReferences.Count() > 0)
+            if (site.ExemptionReferences != null && site.ExemptionReferences.Any())
             {
                 foreach (var reference in site.ExemptionReferences.Where(x => !string.IsNullOrWhiteSpace(x)))
                 {
