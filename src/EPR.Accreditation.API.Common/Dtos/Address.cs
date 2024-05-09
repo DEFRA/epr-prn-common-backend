@@ -7,8 +7,7 @@
         /// <summary>
         /// Gets or sets the address1 value
         /// </summary>
-        [Required]
-        public string Address1 { get; set; }
+        public string Address1 { get; set; } // this is a required field, but we don't store it as such becuae save and come back can have incomplete pages
 
         /// <summary>
         /// Gets or sets address2.
@@ -18,8 +17,7 @@
         /// <summary>
         /// Gets or sets town.
         /// </summary>
-        [Required]
-        public string Town { get; set; }
+        public string Town { get; set; } // this is a required field, but we don't store it as such becuae save and come back can have incomplete pages
 
         /// <summary>
         /// Gets or sets county.
@@ -29,8 +27,7 @@
         /// <summary>
         /// Gets or sets postcode.
         /// </summary>
-        [Required]
         [MaxLength(8)]
-        public string Postcode { get; set; }
+        public string Postcode { get; set; } // this is a required field, but we don't store it as such becuae save and come back can have incomplete pages
     }
 }
