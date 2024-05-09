@@ -4,6 +4,7 @@ using EPR.Accreditation.API.Common.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EPR.Accreditation.API.Common.Data.Migrations
 {
     [DbContext(typeof(AccreditationContext))]
-    partial class AccreditationContextModelSnapshot : ModelSnapshot
+    [Migration("20240429130212_Create-address-table")]
+    partial class Createaddresstable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -29,9 +31,6 @@ namespace EPR.Accreditation.API.Common.Data.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<decimal?>("AccreditationFee")
-                        .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("AccreditationStatusId")
                         .HasColumnType("int");
@@ -80,10 +79,6 @@ namespace EPR.Accreditation.API.Common.Data.Migrations
                     b.HasIndex("ExternalId")
                         .IsUnique();
 
-                    b.HasIndex("LegalAddressId")
-                        .IsUnique()
-                        .HasFilter("[LegalAddressId] IS NOT NULL");
-
                     b.HasIndex("OperatorTypeId");
 
                     b.HasIndex("ReferenceNumber")
@@ -117,10 +112,6 @@ namespace EPR.Accreditation.API.Common.Data.Migrations
 
                     b.Property<int>("MaterialId")
                         .HasColumnType("int");
-
-                    b.Property<string>("NpwdAccreditationNumber")
-                        .HasMaxLength(12)
-                        .HasColumnType("nvarchar(12)");
 
                     b.Property<int?>("OverseasReprocessingSiteId")
                         .HasColumnType("int");
@@ -216,7 +207,11 @@ namespace EPR.Accreditation.API.Common.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
+                    b.Property<int?>("AccreditationId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Address1")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Address2")
@@ -225,14 +220,21 @@ namespace EPR.Accreditation.API.Common.Data.Migrations
                     b.Property<string>("County")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<Guid>("OrganisationId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("Postcode")
+                        .IsRequired()
                         .HasMaxLength(8)
                         .HasColumnType("nvarchar(8)");
 
                     b.Property<string>("Town")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("AccreditationId");
 
                     b.ToTable("Address");
                 });
@@ -2350,7 +2352,7 @@ namespace EPR.Accreditation.API.Common.Data.Migrations
                     b.Property<int>("ReprocessorSupportingInformationTypeId")
                         .HasColumnType("int");
 
-                    b.Property<decimal?>("Tonnes")
+                    b.Property<decimal>("Tonnes")
                         .HasColumnType("decimal(10,3)");
 
                     b.Property<string>("Type")
@@ -2417,9 +2419,6 @@ namespace EPR.Accreditation.API.Common.Data.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("AddressId")
-                        .IsUnique();
-
-                    b.HasIndex("ExternalId")
                         .IsUnique();
 
                     b.ToTable("Site");
@@ -2530,10 +2529,6 @@ namespace EPR.Accreditation.API.Common.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("EPR.Accreditation.API.Common.Data.DataModels.Address", "LegalAddress")
-                        .WithOne("Accreditation")
-                        .HasForeignKey("EPR.Accreditation.API.Common.Data.DataModels.Accreditation", "LegalAddressId");
-
                     b.HasOne("EPR.Accreditation.API.Common.Data.DataModels.Lookups.OperatorType", "OperatorType")
                         .WithMany("Accreditations")
                         .HasForeignKey("OperatorTypeId")
@@ -2545,8 +2540,6 @@ namespace EPR.Accreditation.API.Common.Data.Migrations
                         .HasForeignKey("SiteId");
 
                     b.Navigation("AccreditationStatus");
-
-                    b.Navigation("LegalAddress");
 
                     b.Navigation("OperatorType");
 
@@ -2628,6 +2621,15 @@ namespace EPR.Accreditation.API.Common.Data.Migrations
                     b.Navigation("AccreditationMaterial");
 
                     b.Navigation("AccreditationTaskProgress");
+                });
+
+            modelBuilder.Entity("EPR.Accreditation.API.Common.Data.DataModels.Address", b =>
+                {
+                    b.HasOne("EPR.Accreditation.API.Common.Data.DataModels.Accreditation", "Accreditation")
+                        .WithMany()
+                        .HasForeignKey("AccreditationId");
+
+                    b.Navigation("Accreditation");
                 });
 
             modelBuilder.Entity("EPR.Accreditation.API.Common.Data.DataModels.ExemptionReference", b =>
@@ -2847,8 +2849,6 @@ namespace EPR.Accreditation.API.Common.Data.Migrations
 
             modelBuilder.Entity("EPR.Accreditation.API.Common.Data.DataModels.Address", b =>
                 {
-                    b.Navigation("Accreditation");
-
                     b.Navigation("Site");
                 });
 

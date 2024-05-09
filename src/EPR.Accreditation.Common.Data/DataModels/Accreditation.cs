@@ -19,11 +19,17 @@ namespace EPR.Accreditation.API.Common.Data.DataModels
 
         public bool? Large { get; set; } // Currently this means is it for above 400 tonnes or not
 
+        [Column(TypeName = "decimal(10,3)")]
+        public decimal? LargeFee { get; set; }
+
         [ForeignKey("AccreditationStatus")]
         public Enums.AccreditationStatus AccreditationStatusId { get; set; }
 
         [ForeignKey("Site")]
         public int? SiteId { get; set; }
+
+        [ForeignKey("Address")]
+        public int? LegalAddressId { get; set; }
 
         public Guid CreatedBy { get; set; }
 
@@ -32,6 +38,8 @@ namespace EPR.Accreditation.API.Common.Data.DataModels
         public Guid? UpdatedBy { get; set; }
 
         public DateTime? UpdatedOn { get; set; }
+
+        public decimal? AccreditationFee { get; set; }
 
         #region Navigation properties
         public virtual Site Site { get; set; }
@@ -49,6 +57,8 @@ namespace EPR.Accreditation.API.Common.Data.DataModels
         public virtual ICollection<OverseasReprocessingSite> OverseasReprocessingSites { get; set; }
 
         public virtual ICollection<FileUpload> FileUploads { get; set; }
+
+        public virtual Address LegalAddress { get; set; }
         #endregion
     }
 }

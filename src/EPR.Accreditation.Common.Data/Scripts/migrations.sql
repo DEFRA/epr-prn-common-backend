@@ -1434,3 +1434,550 @@ GO
 COMMIT;
 GO
 
+BEGIN TRANSACTION;
+GO
+
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20240418092230_Making-countryId-nullable')
+BEGIN
+    ALTER TABLE [OverseasAddress] DROP CONSTRAINT [FK_OverseasAddress_Country_CountryId];
+END;
+GO
+
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20240418092230_Making-countryId-nullable')
+BEGIN
+    DECLARE @var3 sysname;
+    SELECT @var3 = [d].[name]
+    FROM [sys].[default_constraints] [d]
+    INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+    WHERE ([d].[parent_object_id] = OBJECT_ID(N'[OverseasAddress]') AND [c].[name] = N'CountryId');
+    IF @var3 IS NOT NULL EXEC(N'ALTER TABLE [OverseasAddress] DROP CONSTRAINT [' + @var3 + '];');
+    ALTER TABLE [OverseasAddress] ALTER COLUMN [CountryId] int NULL;
+END;
+GO
+
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20240418092230_Making-countryId-nullable')
+BEGIN
+    ALTER TABLE [OverseasAddress] ADD CONSTRAINT [FK_OverseasAddress_Country_CountryId] FOREIGN KEY ([CountryId]) REFERENCES [Lookup].[Country] ([CountryId]);
+END;
+GO
+
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20240418092230_Making-countryId-nullable')
+BEGIN
+    INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+    VALUES (N'20240418092230_Making-countryId-nullable', N'6.0.28');
+END;
+GO
+
+COMMIT;
+GO
+
+BEGIN TRANSACTION;
+GO
+
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20240424114109_Add-Large-Fee-To-Accreditation')
+BEGIN
+    ALTER TABLE [Accreditation] ADD [LargeFee] decimal(10,3) NULL;
+END;
+GO
+
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20240424114109_Add-Large-Fee-To-Accreditation')
+BEGIN
+    INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+    VALUES (N'20240424114109_Add-Large-Fee-To-Accreditation', N'6.0.28');
+END;
+GO
+
+COMMIT;
+GO
+
+BEGIN TRANSACTION;
+GO
+
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20240425091719_Added-HasNpwdAccreditationNumber-column')
+BEGIN
+    ALTER TABLE [Accreditation] ADD [HasNpwdAccreditationNumber] bit NULL;
+END;
+GO
+
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20240425091719_Added-HasNpwdAccreditationNumber-column')
+BEGIN
+    INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+    VALUES (N'20240425091719_Added-HasNpwdAccreditationNumber-column', N'6.0.28');
+END;
+GO
+
+COMMIT;
+GO
+
+BEGIN TRANSACTION;
+GO
+
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20240425112326_relocated-HasNpwdAccreditationNumber-column')
+BEGIN
+    DECLARE @var4 sysname;
+    SELECT @var4 = [d].[name]
+    FROM [sys].[default_constraints] [d]
+    INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+    WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Accreditation]') AND [c].[name] = N'HasNpwdAccreditationNumber');
+    IF @var4 IS NOT NULL EXEC(N'ALTER TABLE [Accreditation] DROP CONSTRAINT [' + @var4 + '];');
+    ALTER TABLE [Accreditation] DROP COLUMN [HasNpwdAccreditationNumber];
+END;
+GO
+
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20240425112326_relocated-HasNpwdAccreditationNumber-column')
+BEGIN
+    ALTER TABLE [AccreditationMaterial] ADD [HasNpwdAccreditationNumber] bit NULL;
+END;
+GO
+
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20240425112326_relocated-HasNpwdAccreditationNumber-column')
+BEGIN
+    INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+    VALUES (N'20240425112326_relocated-HasNpwdAccreditationNumber-column', N'6.0.28');
+END;
+GO
+
+COMMIT;
+GO
+
+BEGIN TRANSACTION;
+GO
+
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20240425123535_AccreditationMaterial-default-columns-to-null')
+BEGIN
+    DECLARE @var5 sysname;
+    SELECT @var5 = [d].[name]
+    FROM [sys].[default_constraints] [d]
+    INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+    WHERE ([d].[parent_object_id] = OBJECT_ID(N'[AccreditationMaterial]') AND [c].[name] = N'WeeklyCapacity');
+    IF @var5 IS NOT NULL EXEC(N'ALTER TABLE [AccreditationMaterial] DROP CONSTRAINT [' + @var5 + '];');
+    ALTER TABLE [AccreditationMaterial] ALTER COLUMN [WeeklyCapacity] decimal(10,3) NULL;
+END;
+GO
+
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20240425123535_AccreditationMaterial-default-columns-to-null')
+BEGIN
+    DECLARE @var6 sysname;
+    SELECT @var6 = [d].[name]
+    FROM [sys].[default_constraints] [d]
+    INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+    WHERE ([d].[parent_object_id] = OBJECT_ID(N'[AccreditationMaterial]') AND [c].[name] = N'AnnualCapacity');
+    IF @var6 IS NOT NULL EXEC(N'ALTER TABLE [AccreditationMaterial] DROP CONSTRAINT [' + @var6 + '];');
+    ALTER TABLE [AccreditationMaterial] ALTER COLUMN [AnnualCapacity] decimal(10,3) NULL;
+END;
+GO
+
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20240425123535_AccreditationMaterial-default-columns-to-null')
+BEGIN
+    INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+    VALUES (N'20240425123535_AccreditationMaterial-default-columns-to-null', N'6.0.28');
+END;
+GO
+
+COMMIT;
+GO
+
+BEGIN TRANSACTION;
+GO
+
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20240425123658_AccreditationMaterial-add-AccreditationId')
+BEGIN
+    DELETE FROM [Accreditation].[dbo].[AccreditationMaterial]
+END;
+GO
+
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20240425123658_AccreditationMaterial-add-AccreditationId')
+BEGIN
+    ALTER TABLE [AccreditationMaterial] ADD [AccreditationId] int NOT NULL DEFAULT 0;
+END;
+GO
+
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20240425123658_AccreditationMaterial-add-AccreditationId')
+BEGIN
+    CREATE INDEX [IX_AccreditationMaterial_AccreditationId] ON [AccreditationMaterial] ([AccreditationId]);
+END;
+GO
+
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20240425123658_AccreditationMaterial-add-AccreditationId')
+BEGIN
+    ALTER TABLE [AccreditationMaterial] DROP CONSTRAINT [FK_AccreditationMaterial_OverseasReprocessingSite_OverseasReprocessingSiteId];
+END;
+GO
+
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20240425123658_AccreditationMaterial-add-AccreditationId')
+BEGIN
+    ALTER TABLE [AccreditationMaterial] DROP CONSTRAINT [FK_AccreditationMaterial_Site_SiteId];
+END;
+GO
+
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20240425123658_AccreditationMaterial-add-AccreditationId')
+BEGIN
+    ALTER TABLE [AccreditationMaterial] ADD CONSTRAINT [FK_AccreditationMaterial_Accreditation_AccreditationId] FOREIGN KEY ([AccreditationId]) REFERENCES [Accreditation] ([Id]);
+END;
+GO
+
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20240425123658_AccreditationMaterial-add-AccreditationId')
+BEGIN
+    ALTER TABLE [AccreditationMaterial] ADD CONSTRAINT [FK_AccreditationMaterial_OverseasReprocessingSite_OverseasReprocessingSiteId] FOREIGN KEY ([OverseasReprocessingSiteId]) REFERENCES [OverseasReprocessingSite] ([Id]);
+END;
+GO
+
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20240425123658_AccreditationMaterial-add-AccreditationId')
+BEGIN
+    ALTER TABLE [AccreditationMaterial] ADD CONSTRAINT [FK_AccreditationMaterial_Site_SiteId] FOREIGN KEY ([SiteId]) REFERENCES [Site] ([Id]);
+END;
+GO
+
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20240425123658_AccreditationMaterial-add-AccreditationId')
+BEGIN
+    INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+    VALUES (N'20240425123658_AccreditationMaterial-add-AccreditationId', N'6.0.28');
+END;
+GO
+
+COMMIT;
+GO
+
+BEGIN TRANSACTION;
+GO
+
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20240429103222_Added-NpwdAccreditationNumber-column')
+BEGIN
+    ALTER TABLE [AccreditationMaterial] ADD [NpwdAccreditationNumber] nvarchar(12) NULL;
+END;
+GO
+
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20240429103222_Added-NpwdAccreditationNumber-column')
+BEGIN
+    INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+    VALUES (N'20240429103222_Added-NpwdAccreditationNumber-column', N'6.0.28');
+END;
+GO
+
+COMMIT;
+GO
+
+BEGIN TRANSACTION;
+GO
+
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20240429130212_Create-address-table')
+BEGIN
+    UPDATE [Accreditation].[dbo].[Accreditation] Set SiteId = null
+END;
+GO
+
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20240429130212_Create-address-table')
+BEGIN
+    DELETE FROM [Accreditation].[dbo].[AccreditationMaterial]
+END;
+GO
+
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20240429130212_Create-address-table')
+BEGIN
+    DELETE FROM [Accreditation].[dbo].[Site]
+END;
+GO
+
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20240429130212_Create-address-table')
+BEGIN
+    DROP INDEX [IX_Site_ExternalId] ON [Site];
+END;
+GO
+
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20240429130212_Create-address-table')
+BEGIN
+    DROP INDEX [IX_Site_Postcode_OrganisationId] ON [Site];
+END;
+GO
+
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20240429130212_Create-address-table')
+BEGIN
+    DECLARE @var7 sysname;
+    SELECT @var7 = [d].[name]
+    FROM [sys].[default_constraints] [d]
+    INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+    WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Site]') AND [c].[name] = N'Address1');
+    IF @var7 IS NOT NULL EXEC(N'ALTER TABLE [Site] DROP CONSTRAINT [' + @var7 + '];');
+    ALTER TABLE [Site] DROP COLUMN [Address1];
+END;
+GO
+
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20240429130212_Create-address-table')
+BEGIN
+    DECLARE @var8 sysname;
+    SELECT @var8 = [d].[name]
+    FROM [sys].[default_constraints] [d]
+    INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+    WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Site]') AND [c].[name] = N'Address2');
+    IF @var8 IS NOT NULL EXEC(N'ALTER TABLE [Site] DROP CONSTRAINT [' + @var8 + '];');
+    ALTER TABLE [Site] DROP COLUMN [Address2];
+END;
+GO
+
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20240429130212_Create-address-table')
+BEGIN
+    DECLARE @var9 sysname;
+    SELECT @var9 = [d].[name]
+    FROM [sys].[default_constraints] [d]
+    INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+    WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Site]') AND [c].[name] = N'County');
+    IF @var9 IS NOT NULL EXEC(N'ALTER TABLE [Site] DROP CONSTRAINT [' + @var9 + '];');
+    ALTER TABLE [Site] DROP COLUMN [County];
+END;
+GO
+
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20240429130212_Create-address-table')
+BEGIN
+    DECLARE @var10 sysname;
+    SELECT @var10 = [d].[name]
+    FROM [sys].[default_constraints] [d]
+    INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+    WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Site]') AND [c].[name] = N'OrganisationId');
+    IF @var10 IS NOT NULL EXEC(N'ALTER TABLE [Site] DROP CONSTRAINT [' + @var10 + '];');
+    ALTER TABLE [Site] DROP COLUMN [OrganisationId];
+END;
+GO
+
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20240429130212_Create-address-table')
+BEGIN
+    DECLARE @var11 sysname;
+    SELECT @var11 = [d].[name]
+    FROM [sys].[default_constraints] [d]
+    INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+    WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Site]') AND [c].[name] = N'Postcode');
+    IF @var11 IS NOT NULL EXEC(N'ALTER TABLE [Site] DROP CONSTRAINT [' + @var11 + '];');
+    ALTER TABLE [Site] DROP COLUMN [Postcode];
+END;
+GO
+
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20240429130212_Create-address-table')
+BEGIN
+    DECLARE @var12 sysname;
+    SELECT @var12 = [d].[name]
+    FROM [sys].[default_constraints] [d]
+    INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+    WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Site]') AND [c].[name] = N'Town');
+    IF @var12 IS NOT NULL EXEC(N'ALTER TABLE [Site] DROP CONSTRAINT [' + @var12 + '];');
+    ALTER TABLE [Site] DROP COLUMN [Town];
+END;
+GO
+
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20240429130212_Create-address-table')
+BEGIN
+    ALTER TABLE [Site] ADD [AddressId] int NOT NULL DEFAULT 0;
+END;
+GO
+
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20240429130212_Create-address-table')
+BEGIN
+    ALTER TABLE [Accreditation] ADD [LegalAddressId] int NULL;
+END;
+GO
+
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20240429130212_Create-address-table')
+BEGIN
+    CREATE TABLE [Address] (
+        [Id] int NOT NULL IDENTITY,
+        [Address1] nvarchar(max) NOT NULL,
+        [Address2] nvarchar(max) NULL,
+        [Town] nvarchar(max) NOT NULL,
+        [County] nvarchar(max) NULL,
+        [Postcode] nvarchar(8) NOT NULL,
+        CONSTRAINT [PK_Address] PRIMARY KEY ([Id])
+    );
+END;
+GO
+
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20240429130212_Create-address-table')
+BEGIN
+    CREATE UNIQUE INDEX [IX_Site_AddressId] ON [Site] ([AddressId]);
+END;
+GO
+
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20240429130212_Create-address-table')
+BEGIN
+    ALTER TABLE [Site] ADD CONSTRAINT [FK_Site_Address_AddressId] FOREIGN KEY ([AddressId]) REFERENCES [Address] ([Id]) ON DELETE CASCADE;
+END;
+GO
+
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20240429130212_Create-address-table')
+BEGIN
+    INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+    VALUES (N'20240429130212_Create-address-table', N'6.0.28');
+END;
+GO
+
+COMMIT;
+GO
+
+BEGIN TRANSACTION;
+GO
+
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20240502094220_null-tonnes-field')
+BEGIN
+    ALTER TABLE [Address] ADD [AccreditationId] int NULL;
+END;
+GO
+
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20240502094220_null-tonnes-field')
+BEGIN
+    ALTER TABLE [Address] ADD [OrganisationId] uniqueidentifier NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000';
+END;
+GO
+
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20240502094220_null-tonnes-field')
+BEGIN
+    CREATE INDEX [IX_Address_AccreditationId] ON [Address] ([AccreditationId]);
+END;
+GO
+
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20240502094220_null-tonnes-field')
+BEGIN
+    ALTER TABLE [Address] ADD CONSTRAINT [FK_Address_Accreditation_AccreditationId] FOREIGN KEY ([AccreditationId]) REFERENCES [Accreditation] ([Id]);
+END;
+GO
+
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20240502094220_null-tonnes-field')
+BEGIN
+    ALTER TABLE [Address] DROP CONSTRAINT [FK_Address_Accreditation_AccreditationId];
+END;
+GO
+
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20240502094220_null-tonnes-field')
+BEGIN
+    DROP INDEX [IX_Address_AccreditationId] ON [Address];
+END;
+GO
+
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20240502094220_null-tonnes-field')
+BEGIN
+    DECLARE @var13 sysname;
+    SELECT @var13 = [d].[name]
+    FROM [sys].[default_constraints] [d]
+    INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+    WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Address]') AND [c].[name] = N'AccreditationId');
+    IF @var13 IS NOT NULL EXEC(N'ALTER TABLE [Address] DROP CONSTRAINT [' + @var13 + '];');
+    ALTER TABLE [Address] DROP COLUMN [AccreditationId];
+END;
+GO
+
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20240502094220_null-tonnes-field')
+BEGIN
+    DECLARE @var14 sysname;
+    SELECT @var14 = [d].[name]
+    FROM [sys].[default_constraints] [d]
+    INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+    WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Address]') AND [c].[name] = N'OrganisationId');
+    IF @var14 IS NOT NULL EXEC(N'ALTER TABLE [Address] DROP CONSTRAINT [' + @var14 + '];');
+    ALTER TABLE [Address] DROP COLUMN [OrganisationId];
+END;
+GO
+
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20240502094220_null-tonnes-field')
+BEGIN
+    DECLARE @var15 sysname;
+    SELECT @var15 = [d].[name]
+    FROM [sys].[default_constraints] [d]
+    INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+    WHERE ([d].[parent_object_id] = OBJECT_ID(N'[ReprocessorSupportingInformation]') AND [c].[name] = N'Tonnes');
+    IF @var15 IS NOT NULL EXEC(N'ALTER TABLE [ReprocessorSupportingInformation] DROP CONSTRAINT [' + @var15 + '];');
+    ALTER TABLE [ReprocessorSupportingInformation] ALTER COLUMN [Tonnes] decimal(10,3) NULL;
+END;
+GO
+
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20240502094220_null-tonnes-field')
+BEGIN
+    CREATE UNIQUE INDEX [IX_Site_ExternalId] ON [Site] ([ExternalId]);
+END;
+GO
+
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20240502094220_null-tonnes-field')
+BEGIN
+    EXEC(N'CREATE UNIQUE INDEX [IX_Accreditation_LegalAddressId] ON [Accreditation] ([LegalAddressId]) WHERE [LegalAddressId] IS NOT NULL');
+END;
+GO
+
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20240502094220_null-tonnes-field')
+BEGIN
+    ALTER TABLE [Accreditation] ADD CONSTRAINT [FK_Accreditation_Address_LegalAddressId] FOREIGN KEY ([LegalAddressId]) REFERENCES [Address] ([Id]);
+END;
+GO
+
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20240502094220_null-tonnes-field')
+BEGIN
+    INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+    VALUES (N'20240502094220_null-tonnes-field', N'6.0.28');
+END;
+GO
+
+COMMIT;
+GO
+
+BEGIN TRANSACTION;
+GO
+
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20240503102508_Modify-Material-Names')
+BEGIN
+    update [Accreditation].[dbo].[Material] set English = 'paper/board', Welsh = '[Welsh]paper/board' where english = 'Paper/Board'update [Accreditation].[dbo].[Material] set English = 'paper composting', Welsh = '[Welsh]paper composting' where english = 'Paper Composting'update [Accreditation].[dbo].[Material] set English = 'glass remelt', Welsh = '[Welsh]glass remelt' where english = 'Glass Remelt'update [Accreditation].[dbo].[Material] set English = 'glass other', Welsh = '[Welsh]glass other' where english = 'Glass Other'update [Accreditation].[dbo].[Material] set English = 'aluminium', Welsh = '[Welsh]aluminium' where english = 'Aluminium'update [Accreditation].[dbo].[Material] set English = 'steel', Welsh = '[Welsh]steel' where english = 'Steel'update [Accreditation].[dbo].[Material] set English = 'plastic', Welsh = '[Welsh]plastic' where english = 'Plastic'update [Accreditation].[dbo].[Material] set English = 'wood', Welsh = '[Welsh]wood' where english = 'Wood'update [Accreditation].[dbo].[Material] set English = 'wood composting', Welsh = '[Welsh]wood composting' where english = 'Wood Composting'
+END;
+GO
+
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20240503102508_Modify-Material-Names')
+BEGIN
+    INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+    VALUES (N'20240503102508_Modify-Material-Names', N'6.0.28');
+END;
+GO
+
+COMMIT;
+GO
+
+BEGIN TRANSACTION;
+GO
+
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20240507124737_Address-remove-required-fields')
+BEGIN
+    DECLARE @var16 sysname;
+    SELECT @var16 = [d].[name]
+    FROM [sys].[default_constraints] [d]
+    INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+    WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Address]') AND [c].[name] = N'Town');
+    IF @var16 IS NOT NULL EXEC(N'ALTER TABLE [Address] DROP CONSTRAINT [' + @var16 + '];');
+    ALTER TABLE [Address] ALTER COLUMN [Town] nvarchar(max) NULL;
+END;
+GO
+
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20240507124737_Address-remove-required-fields')
+BEGIN
+    DECLARE @var17 sysname;
+    SELECT @var17 = [d].[name]
+    FROM [sys].[default_constraints] [d]
+    INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+    WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Address]') AND [c].[name] = N'Postcode');
+    IF @var17 IS NOT NULL EXEC(N'ALTER TABLE [Address] DROP CONSTRAINT [' + @var17 + '];');
+    ALTER TABLE [Address] ALTER COLUMN [Postcode] nvarchar(8) NULL;
+END;
+GO
+
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20240507124737_Address-remove-required-fields')
+BEGIN
+    DECLARE @var18 sysname;
+    SELECT @var18 = [d].[name]
+    FROM [sys].[default_constraints] [d]
+    INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+    WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Address]') AND [c].[name] = N'Address1');
+    IF @var18 IS NOT NULL EXEC(N'ALTER TABLE [Address] DROP CONSTRAINT [' + @var18 + '];');
+    ALTER TABLE [Address] ALTER COLUMN [Address1] nvarchar(max) NULL;
+END;
+GO
+
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20240507124737_Address-remove-required-fields')
+BEGIN
+    INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+    VALUES (N'20240507124737_Address-remove-required-fields', N'6.0.28');
+END;
+GO
+
+COMMIT;
+GO
+

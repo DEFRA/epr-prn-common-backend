@@ -13,9 +13,13 @@ namespace EPR.Accreditation.API.Common.Dtos
 
         public bool? Large { get; set; } // Currently this means is it for above 400 tonnes or not
 
+        public decimal? LargeFee { get; set; }
+
         public Enums.AccreditationStatus? AccreditationStatusId { get; set; }
 
         public int? SiteId { get; set; }
+
+        public int? LegalAddressId { get; set; }
 
         public Guid CreatedBy { get; set; }
 
@@ -26,5 +30,9 @@ namespace EPR.Accreditation.API.Common.Dtos
         public DateTime? UpdatedOn { get; set; }
 
         public WastePermit WastePermit { get; set; }
+
+        public Address LegalAddress { get; set; }
+
+        public decimal? AccreditationFee { get; set; }
     }
 }
