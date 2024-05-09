@@ -10,8 +10,6 @@
 
     public class AccreditationService : IAccreditationService
     {
-        private const string Chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-        private static readonly Random Random = new Random();
         protected readonly IRepository _repository;
 
         public AccreditationService(IRepository repository)
@@ -193,6 +191,8 @@
         /// <returns>The random string.</returns>
         public async Task<string> RandomString(int length = 12)
         {
+            string Chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            Random Random = new Random();
             return new string(Enumerable.Range(0, length)
                 .Select(_ => Chars[Random.Next(Chars.Length)]).ToArray());
         }
