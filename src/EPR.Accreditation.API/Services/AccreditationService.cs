@@ -198,7 +198,6 @@
         public async Task<CheckAnswers> GetCheckAnswers(
             Guid id,
             Guid materialId,
-            Guid? siteId,
             Guid? overseasSiteId,
             CheckAnswersSection section)
         {
@@ -233,6 +232,7 @@
                     {
                         return BuildCyaAboutMaterialExporter(
                             id,
+                            overseasSiteId.Value,
                             materialId,
                             accreditationMaterial);
                     }
@@ -272,10 +272,10 @@
             var processLoss = accreditationMaterial.MaterialReprocessorDetails.ProcessLoss;
             var totalWasteOutputsLastCalendarYear = materialsNotProcessedOnSite + contaminents + processLoss;
 
-            var materialRow = BuildRow(id, materialId, "Material", materialName.ToListSingle(), "Material");
-            var ukSourceOfWasteRow = BuildRow(id, materialId, "Uk source of the waste", wasteSource.ToListSingle(), "WasteSource");
-            var annualCapacityRow = BuildRow(id, materialId, "Annual total processing capacity", annualCapacity.ToListSingle(), "ProcessingCapacity");
-            var weeklyCapacityRow = BuildRow(id, materialId, "Average weekly processing capacity", weeklyCapacity.ToListSingle(), "ProcessingCapacity");
+            var materialRow = BuildRowAboutMaterialReprocessorActuals(id, materialId, "Material", materialName.ToListSingle(), "Material");
+            var ukSourceOfWasteRow = BuildRowAboutMaterialReprocessorActuals(id, materialId, "Uk source of the waste", wasteSource.ToListSingle(), "WasteSource");
+            var annualCapacityRow = BuildRowAboutMaterialReprocessorActuals(id, materialId, "Annual total processing capacity", annualCapacity.ToListSingle(), "ProcessingCapacity");
+            var weeklyCapacityRow = BuildRowAboutMaterialReprocessorActuals(id, materialId, "Average weekly processing capacity", weeklyCapacity.ToListSingle(), "ProcessingCapacity");
             var detailsSectionRows = new List<CheckAnswersSectionRow>
             {
                 materialRow,
@@ -287,10 +287,10 @@
                 "Details",
                 detailsSectionRows);
 
-            var ukPackagingWasteRow = BuildRow(id, materialId, "Uk packaging waste", ukPackagingWaste.ToListSingle(), "MaterialWasteInputs");
-            var nonUkPackagingWasteRow = BuildRow(id, materialId, "Non-UK packaging waste", nonUkPackagingWaste.ToListSingle(), "MaterialWasteInputs");
-            var nonPackagingWasteRow = BuildRow(id, materialId, "Non-packaging waste", nonPackagingWaste.ToListSingle(), "MaterialWasteInputs");
-            var totalWasteInputsLastCalendarYearRow = BuildRow(id, materialId, "Total", totalWasteInputsLastCalendarYear.ToListSingle(), string.Empty);
+            var ukPackagingWasteRow = BuildRowAboutMaterialReprocessorActuals(id, materialId, "Uk packaging waste", ukPackagingWaste.ToListSingle(), "MaterialWasteInputs");
+            var nonUkPackagingWasteRow = BuildRowAboutMaterialReprocessorActuals(id, materialId, "Non-UK packaging waste", nonUkPackagingWaste.ToListSingle(), "MaterialWasteInputs");
+            var nonPackagingWasteRow = BuildRowAboutMaterialReprocessorActuals(id, materialId, "Non-packaging waste", nonPackagingWaste.ToListSingle(), "MaterialWasteInputs");
+            var totalWasteInputsLastCalendarYearRow = BuildRowAboutMaterialReprocessorActuals(id, materialId, "Total", totalWasteInputsLastCalendarYear.ToListSingle(), string.Empty);
             var wasteInputsforLastYearRows = new List<CheckAnswersSectionRow>
             {
                 ukPackagingWasteRow,
@@ -302,10 +302,10 @@
                 "Waste inputs for last calendar year",
                 wasteInputsforLastYearRows);
 
-            var materialsNotProcessedOnSiteRow = BuildRow(id, materialId, "Material not processed on site", materialsNotProcessedOnSite.ToListSingle(), "MaterialOutputs");
-            var contaminentsRow = BuildRow(id, materialId, "Contaminants", contaminents.ToListSingle(), "MaterialOutputs");
-            var processLossRow = BuildRow(id, materialId, "Process loss", processLoss.ToListSingle(), "MaterialOutputs");
-            var totalWasteOutputsLastCalendarYearRow = BuildRow(id, materialId, "Total", totalWasteOutputsLastCalendarYear.ToListSingle(), string.Empty);
+            var materialsNotProcessedOnSiteRow = BuildRowAboutMaterialReprocessorActuals(id, materialId, "Material not processed on site", materialsNotProcessedOnSite.ToListSingle(), "MaterialOutputs");
+            var contaminentsRow = BuildRowAboutMaterialReprocessorActuals(id, materialId, "Contaminants", contaminents.ToListSingle(), "MaterialOutputs");
+            var processLossRow = BuildRowAboutMaterialReprocessorActuals(id, materialId, "Process loss", processLoss.ToListSingle(), "MaterialOutputs");
+            var totalWasteOutputsLastCalendarYearRow = BuildRowAboutMaterialReprocessorActuals(id, materialId, "Total", totalWasteOutputsLastCalendarYear.ToListSingle(), string.Empty);
             var wasteOutputsforLastYearRows = new List<CheckAnswersSectionRow>
             {
                 materialsNotProcessedOnSiteRow,
@@ -326,6 +326,7 @@
 
             return new CheckAnswers
             {
+                Id = id,
                 Completed = IsComplete(listOfSections),
                 SiteAddress = siteAddress,
                 Sections = listOfSections
@@ -341,6 +342,7 @@
         /// <returns>CheckAnswers DTO with the data</returns>
         private CheckAnswers BuildCyaAboutMaterialExporter(
             Guid id,
+            Guid overseasSiteId,
             Guid materialId,
             AccreditationMaterial accreditationMaterial)
         {
@@ -355,10 +357,10 @@
                 "Shehzad Ismail, Software Developer"
             };
 
-            var materialRow = BuildRow(id, materialId, "Material", new List<string> { materialName }, "Material");
-            var ukSourceOfWasteRow = BuildRow(id, materialId, "Uk source of the waste", new List<string> { wasteSource }, "WasteSource");
-            var commodityCodesRow = BuildRow(id, materialId, "Commodity codes", listOfCommodityCodes, "CommodityCodes");
-            var peopleAuthorityRow = BuildRow(id, materialId, "People who have authority to issue PERNs", listOfSignatories, "Authority");
+            var materialRow = BuildRowAboutMaterialExporter(id, overseasSiteId, materialId, "Material", new List<string> { materialName }, "Material");
+            var ukSourceOfWasteRow = BuildRowAboutMaterialExporter(id, overseasSiteId, materialId, "Uk source of the waste", new List<string> { wasteSource }, "WasteSource");
+            var commodityCodesRow = BuildRowAboutMaterialExporter(id, overseasSiteId, materialId, "Commodity codes", listOfCommodityCodes, "CommodityCodes");
+            var peopleAuthorityRow = BuildRowAboutMaterialExporter(id, overseasSiteId, materialId, "People who have authority to issue PERNs", listOfSignatories, "Authority");
             var detailsSectionRows = new List<CheckAnswersSectionRow>
             {
                 materialRow,
@@ -376,6 +378,7 @@
 
             return new CheckAnswers
             {
+                Id = id,
                 Completed = IsComplete(listOfSections),
                 SiteAddress = new Address(),
                 Sections = listOfSections
@@ -391,7 +394,7 @@
         /// <param name="value">The value of the answer</param>
         /// <param name="actionName">The name of the action that the link needs to point to</param>
         /// <returns>CheckAnswersSectionRow DTO</returns>
-        private static CheckAnswersSectionRow BuildRow(
+        private static CheckAnswersSectionRow BuildRowAboutMaterialReprocessorActuals(
             Guid id,
             Guid? materialId,
             string titleKey,
@@ -399,6 +402,33 @@
             string actionName)
         {
             var changeLink = $"/Accreditation/{id}/Site/Material/{materialId}/{actionName}?rtap=y";
+
+            return new CheckAnswersSectionRow
+            {
+                TitleKey = titleKey,
+                Value = value,
+                ChangeLink = changeLink
+            };
+        }
+
+        /// <summary>
+        /// Builds a row for the CYA page within a section
+        /// </summary>
+        /// <param name="id">Accreditation ID</param>
+        /// <param name="materialId">Site material ID</param>
+        /// <param name="titleKey">Key of the row title e.g Commodity codes</param>
+        /// <param name="value">The value of the answer</param>
+        /// <param name="actionName">The name of the action that the link needs to point to</param>
+        /// <returns>CheckAnswersSectionRow DTO</returns>
+        private static CheckAnswersSectionRow BuildRowAboutMaterialExporter(
+            Guid id,
+            Guid overseasSiteId,
+            Guid materialId,
+            string titleKey,
+            List<string> value,
+            string actionName)
+        {
+            var changeLink = $"/Accreditation/{id}/OverseasSite/{overseasSiteId}/Material/{materialId}/{actionName}?rtap=y";
 
             return new CheckAnswersSectionRow
             {

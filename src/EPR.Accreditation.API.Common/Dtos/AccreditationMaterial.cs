@@ -22,5 +22,7 @@ namespace EPR.Accreditation.API.Common.Dtos
         public MaterialReprocessorDetails MaterialReprocessorDetails { get; set; }
 
         public IEnumerable<WasteCode> WasteCodes { get; set; }
+
+        public Material Material { get; set; }
     }
 }

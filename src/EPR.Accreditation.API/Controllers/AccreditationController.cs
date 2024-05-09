@@ -68,14 +68,12 @@
         public async Task<IActionResult> GetCheckAnswers(
             Guid id,
             Guid materialId,
-            Guid? siteId,
             Guid? overseasSiteId,
             CheckAnswersSection section)
         {
             var checkYourAnswers = await _accreditationService.GetCheckAnswers(
                 id,
                 materialId,
-                siteId,
                 overseasSiteId,
                 section);
 
