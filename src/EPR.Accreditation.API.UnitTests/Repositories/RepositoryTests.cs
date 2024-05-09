@@ -61,6 +61,7 @@ namespace EPR.Accreditation.API.UnitTests.Repositories
         {
             var fix = new Fixture()
                 .Build<PackageRecyclingNote>()
+                .With(f => f.IsActive, true)
                 .Without(f => f.Site)
                 .Without(f => f.PrnStatus)
                 .Without(f => f.PrnType);

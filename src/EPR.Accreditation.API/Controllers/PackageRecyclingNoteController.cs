@@ -39,9 +39,9 @@ namespace EPR.Accreditation.API.Controllers
 
                 return this.Ok(prn);
             }
-            catch
+            catch (Exception ex)
             {
-                return this.StatusCode((int)HttpStatusCode.InternalServerError);
+                return HandleError(ex);
             }
         }
 
@@ -61,9 +61,9 @@ namespace EPR.Accreditation.API.Controllers
 
                 return this.Ok(prns);
             }
-            catch
+            catch(Exception ex)
             {
-                return this.StatusCode((int)HttpStatusCode.InternalServerError);
+                return HandleError(ex);
             }
         }
 
@@ -80,9 +80,9 @@ namespace EPR.Accreditation.API.Controllers
                 var id = await this.PrnService.CreatePackageRecyclingNote(prn);
                 return this.Ok(id);
             }
-            catch
+            catch(Exception ex)
             {
-                return this.StatusCode((int)HttpStatusCode.InternalServerError);
+                return HandleError(ex);
             }
         }
 
@@ -96,13 +96,9 @@ namespace EPR.Accreditation.API.Controllers
                 await PrnService.UpdatePrnStatus(id, status);
                 return Ok();
             }
-            catch (NotFoundException)
+            catch (Exception ex)
             {
-                return this.NotFound();
-            }
-            catch
-            {
-                return StatusCode((int)HttpStatusCode.InternalServerError);
+                return HandleError(ex);
             }
         }
 
@@ -119,13 +115,9 @@ namespace EPR.Accreditation.API.Controllers
                 await PrnService.UpdatePrn(id, prn);
                 return Ok();
             }
-            catch(NotFoundException)
+            catch(Exception ex)
             {
-                return NotFound();
-            }
-            catch
-            {
-                return StatusCode((int)HttpStatusCode.InternalServerError);
+                return HandleError(ex);
             }
         }
 
@@ -142,15 +134,22 @@ namespace EPR.Accreditation.API.Controllers
                 await PrnService.DeletePrn(id);
                 return Ok();
             }
-            catch(Exception ex) when(
-                ex is NotFoundException ||
-                ex is InvalidOperationException)
+            catch(Exception ex)
             {
-                return StatusCode((int)HttpStatusCode.PreconditionFailed);
+                return HandleError(ex);
             }
-            catch
+        }
+
+        private StatusCodeResult HandleError(Exception ex)
+        {
+            switch(ex)
             {
-                return StatusCode((int)HttpStatusCode.InternalServerError);
+                case NotFoundException:
+                    return NotFound();
+                case InvalidOperationException:
+                    return StatusCode((int)HttpStatusCode.PreconditionFailed);
+                default:
+                    return StatusCode((int)HttpStatusCode.InternalServerError);
             }
         }
 

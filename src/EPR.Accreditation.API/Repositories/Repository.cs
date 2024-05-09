@@ -505,7 +505,12 @@ namespace EPR.Accreditation.API.Repositories
                    .Include(a => a.Site)
                .Where(a => a.ExternalId == prnId)
                .FirstOrDefaultAsync();
-        
+            
+            if (!currentPrn.IsActive)
+            {
+                throw new InvalidOperationException("PRN has already been deleted.");
+            }
+
             var navigationProperties = new[]
             {
                 nameof(PackageRecyclingNote.Id),
@@ -571,17 +576,6 @@ namespace EPR.Accreditation.API.Repositories
         public async Task UpdatePrnStatus(Guid prnId, DTO.PrnStatusHistoryRequest status)
         {
 
-            await DoUpdatePrnStatus(prnId, status);
-            await _accreditationContext.SaveChangesAsync();
-        }
-
-        /// <summary>
-        /// Performs a PRN status update, but doesn't immideately save the changes.
-        /// </summary>
-        /// <param name="status"></param>
-        /// <exception cref="InvalidOperationException"></exception>
-        private async Task DoUpdatePrnStatus(Guid prnId, PrnStatusHistoryRequest status)
-        {
             ArgumentNullException.ThrowIfNull(status);
 
             // Update the PRN record to the new status.
@@ -595,6 +589,10 @@ namespace EPR.Accreditation.API.Repositories
             {
                 throw new NotFoundException("Unknown GUID.");
             }
+            if (!prn.IsActive)
+            {
+                throw new InvalidOperationException("PRN has already been deleted.");
+            }
 
             prn.PrnStatusId = status.PrnStatusId;
             this._accreditationContext.Update(prn);
@@ -604,6 +602,7 @@ namespace EPR.Accreditation.API.Repositories
             newStatusHistory.CreatedOn = DateTime.UtcNow;
             newStatusHistory.PrnId = prn.Id;
             this._accreditationContext.PrnStatusHistories.Add(newStatusHistory);
+            await _accreditationContext.SaveChangesAsync();
         }
 
         /// <inheritdoc>
