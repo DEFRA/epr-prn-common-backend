@@ -438,8 +438,7 @@
                     os.Accreditation.ExternalId == id &&
                     os.Accreditation.OperatorTypeId == OperatorType.Exporter &&
                     os.ExternalId == overseasSiteId)
-                .SingleOrDefaultAsync()
-                 ?? throw new NotFoundException();
+                .SingleOrDefaultAsync();
 
             if (entity == null)
             {
