@@ -16,10 +16,10 @@ namespace EPR.Accreditation.API.Common.Dtos
         [MaxLength(100)]
         public string EnvironmentalPermitNumber { get; set; }
 
-        [MaxLength(10)]
+        [MaxLength(20)]
         public string PartAActivityReferenceNumber { get; set; }
 
-        [MaxLength(10)]
+        [MaxLength(20)]
         public string PartBActivityReferenceNumber { get; set; }
 
         [MaxLength(50)]
