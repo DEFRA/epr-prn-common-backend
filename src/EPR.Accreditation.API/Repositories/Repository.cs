@@ -140,7 +140,7 @@ namespace EPR.Accreditation.API.Repositories
                 await _accreditationContext.Site.AddAsync(entity.Site);
             }
 
-            if (entity.WastePermit == null &&
+            if (entity.WastePermit != null &&
                 entity.WastePermit.Id == default)
             {
                 await _accreditationContext.WastePermit.AddAsync(entity.WastePermit);
