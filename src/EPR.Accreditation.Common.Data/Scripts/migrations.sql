@@ -2000,3 +2000,53 @@ GO
 COMMIT;
 GO
 
+BEGIN TRANSACTION;
+GO
+
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20240509104644_Add-externalid-to-material')
+BEGIN
+    ALTER TABLE [Material] ADD [ExternalId] uniqueidentifier NULL;
+END;
+GO
+
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20240509104644_Add-externalid-to-material')
+BEGIN
+    UPDATE Material SET ExternalId = NEWID();
+END;
+GO
+
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20240509104644_Add-externalid-to-material')
+BEGIN
+    DECLARE @var19 sysname;
+    SELECT @var19 = [d].[name]
+    FROM [sys].[default_constraints] [d]
+    INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+    WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Material]') AND [c].[name] = N'ExternalId');
+    IF @var19 IS NOT NULL EXEC(N'ALTER TABLE [Material] DROP CONSTRAINT [' + @var19 + '];');
+    ALTER TABLE [Material] ALTER COLUMN [ExternalId] uniqueidentifier NOT NULL;
+    ALTER TABLE [Material] ADD DEFAULT '5d672446-0e80-4086-a0ce-f8a0bd143972' FOR [ExternalId];
+END;
+GO
+
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20240509104644_Add-externalid-to-material')
+BEGIN
+    DECLARE @var20 sysname;
+    SELECT @var20 = [d].[name]
+    FROM [sys].[default_constraints] [d]
+    INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+    WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Accreditation]') AND [c].[name] = N'AccreditationFee');
+    IF @var20 IS NOT NULL EXEC(N'ALTER TABLE [Accreditation] DROP CONSTRAINT [' + @var20 + '];');
+    ALTER TABLE [Accreditation] ALTER COLUMN [AccreditationFee] decimal(19,2) NULL;
+END;
+GO
+
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20240509104644_Add-externalid-to-material')
+BEGIN
+    INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+    VALUES (N'20240509104644_Add-externalid-to-material', N'6.0.28');
+END;
+GO
+
+COMMIT;
+GO
+

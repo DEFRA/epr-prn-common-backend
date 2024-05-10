@@ -4,12 +4,6 @@ namespace EPR.Accreditation.API.Common.Dtos
 {
     public class WastePermit
     {
-        public int Id { get; set; }
-
-        public int AccreditationId { get; set; }
-
-        public int? OverseasReprocessingSiteId { get; set; }
-
         [MaxLength(100)]
         public string DealerRegistrationNumber { get; set; }
 

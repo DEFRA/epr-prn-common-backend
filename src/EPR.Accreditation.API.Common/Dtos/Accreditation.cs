@@ -17,10 +17,6 @@ namespace EPR.Accreditation.API.Common.Dtos
 
         public Enums.AccreditationStatus? AccreditationStatusId { get; set; }
 
-        public int? SiteId { get; set; }
-
-        public int? LegalAddressId { get; set; }
-
         public Guid CreatedBy { get; set; }
 
         public DateTime CreatedOn { get; set; }

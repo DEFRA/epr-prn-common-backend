@@ -1,12 +1,11 @@
-﻿using AutoMapper;
-using EPR.Accreditation.API.Helpers;
-using EPR.Accreditation.API.Helpers.Comparers;
-using Data = EPR.Accreditation.API.Common.Data.DataModels;
-using DTO = EPR.Accreditation.API.Common.Dtos;
-using Enums = EPR.Accreditation.API.Common.Data.Enums;
-
-namespace EPR.Accreditation.API.Profiles
+﻿namespace EPR.Accreditation.API.Profiles
 {
+    using AutoMapper;
+    using EPR.Accreditation.API.Helpers.Comparers;
+    using Data = EPR.Accreditation.API.Common.Data.DataModels;
+    using DTO = EPR.Accreditation.API.Common.Dtos;
+    using Enums = EPR.Accreditation.API.Common.Data.Enums;
+
     public class AccreditationProfile : Profile
     {
         private readonly ReprocessorSupportingInformationDtoComparer _reprocessorSupportingInformationDtoComparer = new ReprocessorSupportingInformationDtoComparer();
@@ -18,30 +17,30 @@ namespace EPR.Accreditation.API.Profiles
         public AccreditationProfile()
         {
             CreateMap<Data.Accreditation, DTO.Accreditation>()
-                .MapOnlyNonDefault()
-                .ReverseMap()
-                .MapOnlyNonDefault();
+                .ReverseMap();
 
             CreateMap<Data.OverseasReprocessingSite, DTO.OverseasReprocessingSite>()
-                .MapOnlyNonDefault()
-                .ReverseMap()
-                .MapOnlyNonDefault();
+                .ReverseMap();
 
             CreateMap<Data.OverseasContactPerson, DTO.OverseasContactPerson>()
-                .MapOnlyNonDefault()
-                .ReverseMap()
-                .MapOnlyNonDefault();
+                .ReverseMap();
 
             CreateMap<Data.OverseasAddress, DTO.OverseasAddress>()
-                .MapOnlyNonDefault()
-                .ReverseMap()
-                .MapOnlyNonDefault();
+                .ReverseMap();
 
             CreateMap<Data.Site, DTO.Site>()
-                .MapOnlyNonDefault()
-                .ForMember(d => d.ExemptionReferences, opt => opt.MapFrom(src => src.ExemptionReferences.Select(er => er.Reference)));
+                .ForMember(d =>
+                    d.ExemptionReferences,
+                    opt =>
+                        opt.MapFrom(src =>
+                            src.ExemptionReferences.Select(er => er.Reference)));
 
             CreateMap<DTO.Site, Data.Site>()
+                .ForMember(d => d.Id, o => o.Ignore())
+                .ForMember(d => d.ExternalId, o => o.Ignore())
+                .ForMember(d => d.AddressId, o => o.Ignore())
+                .ForMember(d => d.Accreditations, o => o.Ignore())
+                .ForMember(d => d.AccreditationMaterials, o => o.Ignore())
                 .ForMember(d =>
                     d.ExemptionReferences,
                     opt => opt.MapFrom(src =>
@@ -52,18 +51,23 @@ namespace EPR.Accreditation.API.Profiles
                             })));
 
             CreateMap<Data.SiteAuthority, DTO.SiteAuthority>()
-                .MapOnlyNonDefault()
-                .ReverseMap()
-                .MapOnlyNonDefault();
+                .ReverseMap();
 
             CreateMap<Data.FileUpload, DTO.FileUpload>()
-                .MapOnlyNonDefault()
-                .ReverseMap()
-                .MapOnlyNonDefault();
+                .ReverseMap();
 
-            CreateMap<Data.AccreditationMaterial, DTO.AccreditationMaterial>()
-                .MapOnlyNonDefault()
-                .ReverseMap()
+            CreateMap<Data.AccreditationMaterial, DTO.Response.AccreditationMaterial>();
+
+            CreateMap<DTO.Request.AccreditationMaterial, Data.AccreditationMaterial>()
+                .ForMember(d => d.Id, o => o.Ignore())
+                .ForMember(d => d.ExternalId, o => o.Ignore())
+                .ForMember(d => d.AccreditationId, o => o.Ignore())
+                .ForMember(d => d.Accreditation, o => o.Ignore())
+                .ForMember(d => d.SiteId, o => o.Ignore())
+                .ForMember(d => d.Site, o => o.Ignore())
+                .ForMember(d => d.OverseasReprocessingSiteId, o => o.Ignore())
+                .ForMember(d => d.OverseasReprocessingSite, o => o.Ignore())
+                .ForMember(d => d.AccreditationTaskProgressMaterials, o => o.Ignore())
                 .ForMember(d => d.Material, o => o.Ignore()) // do not want to map incoming materials
                 .ForMember(d => d.MaterialId, o => o.Ignore()) // material id does not exist on DTOs, so don't map
                 .ForMember(d =>
@@ -73,7 +77,6 @@ namespace EPR.Accreditation.API.Profiles
                     // the destination list
                     d.WasteCodes, 
                     o =>
-
                         o.MapFrom((s, d, m, context) =>
                         {
                             // if incoming list is null, return original list
@@ -94,8 +97,11 @@ namespace EPR.Accreditation.API.Profiles
                             var sourceType = context.Mapper.Map<Enums.WasteCodeType>(s.WasteCodes.First().WasteCodeTypeId);
 
                             // loop through to see if any entries need removing
-                            foreach (var item in d.WasteCodes)
+                            var destList = d.WasteCodes.ToList();
+
+                            for (int i = d.WasteCodes.Count - 1; i >= 0; i--)
                             {
+                                var item = destList[i];
                                 if (item.WasteCodeTypeId != sourceType)
                                     continue;
 
@@ -106,9 +112,11 @@ namespace EPR.Accreditation.API.Profiles
                                     },
                                     _wasteCodeDtoComparer))
                                 {
-                                    d.WasteCodes.Remove(item);
+                                    destList.RemoveAt(i);
                                 }
                             }
+
+                            d.WasteCodes = destList;
 
                             // loop through to see if any entries need adding
                             foreach (var item in s.WasteCodes)
@@ -129,23 +137,16 @@ namespace EPR.Accreditation.API.Profiles
 
                             return context.Mapper.Map<IList<Data.WasteCode>>(d.WasteCodes);
                         }
-                ))
-                .MapOnlyNonDefault();
+                ));
 
             CreateMap<Data.WasteCode, DTO.WasteCode>()
-                .MapOnlyNonDefault()
-                .ReverseMap()
-                .MapOnlyNonDefault();
+                .ReverseMap();
 
             CreateMap<Data.AccreditationTaskProgress, DTO.AccreditationTaskProgress>()
-                .MapOnlyNonDefault()
-                .ReverseMap()
-                .MapOnlyNonDefault();
+                .ReverseMap();
 
             CreateMap<Data.MaterialReprocessorDetails, DTO.MaterialReprocessorDetails>()
-                .MapOnlyNonDefault()
                 .ReverseMap()
-                .MapOnlyNonDefault()
                 .ForMember(d =>
                     // Mapping of ReprocessorSupportingInformation is complicated as it needs to represent two versions of data,
                     // and an update may just include one set of data. So we need to carefully manage the merging of the data
@@ -212,14 +213,10 @@ namespace EPR.Accreditation.API.Profiles
                         }));
 
             CreateMap<Data.ReprocessorSupportingInformation, DTO.ReprocessorSupportingInformation>()
-                .MapOnlyNonDefault()
-                .ReverseMap()
-                .MapOnlyNonDefault();
+                .ReverseMap();
 
             CreateMap<Data.WastePermit, DTO.WastePermit>()
-                .MapOnlyNonDefault()
-                .ReverseMap()
-                .MapOnlyNonDefault();
+                .ReverseMap();
 
             CreateMap<Data.SaveAndComeBack, DTO.SaveAndComeBack>()
                 .ReverseMap();
@@ -230,13 +227,8 @@ namespace EPR.Accreditation.API.Profiles
             CreateMap<Data.Material, DTO.Material>()
                 .ReverseMap();
 
-            CreateMap<Data.ExemptionReference, DTO.ExemptionReference>()
-                .ReverseMap();
-
             CreateMap<Data.Address, DTO.Address>()
-                .MapOnlyNonDefault()
-                .ReverseMap()
-                .MapOnlyNonDefault();
+                .ReverseMap();
         }
     }
 }

@@ -1,11 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace EPR.Accreditation.API.Common.Dtos
+namespace EPR.Accreditation.API.Common.Dtos.Response
 {
     public class AccreditationMaterial
     {
-        public Guid MaterialExternalId { get; set; }
-
         public decimal AnnualCapacity { get; set; }
 
         public decimal WeeklyCapacity { get; set; }

@@ -1,4 +1,5 @@
 ﻿using EPR.Accreditation.API.Common.Dtos;
+using EPR.Accreditation.API.Common.Dtos.Request;
 using EPR.Accreditation.API.Helpers;
 using EPR.Accreditation.API.Repositories.Interfaces;
 using EPR.Accreditation.API.Services;
@@ -95,7 +96,7 @@ namespace EPR.Accreditation.API.UnitTests.Services
             // Arrange
             var id = Guid.NewGuid();
             var materialid = Guid.NewGuid();
-            var accreditationMaterial = new Common.Dtos.AccreditationMaterial();
+            var accreditationMaterial = new Common.Dtos.Request.AccreditationMaterial();
 
             // Act
             await _accreditationService
@@ -119,7 +120,7 @@ namespace EPR.Accreditation.API.UnitTests.Services
             // Arrange
             var id = Guid.NewGuid();
             var materialid = Guid.NewGuid();
-            var accreditationMaterial = new Common.Dtos.AccreditationMaterial
+            var accreditationMaterial = new Common.Dtos.Request.AccreditationMaterial
             {
                 WasteCodes = new List<WasteCode>()
             };
@@ -147,7 +148,7 @@ namespace EPR.Accreditation.API.UnitTests.Services
             var overseasSiteId = Guid.NewGuid();
             var materialid = Guid.NewGuid();
             var wasteCodeValue = "VALUE";
-            var accreditationMaterial = new Common.Dtos.AccreditationMaterial
+            var accreditationMaterial = new Common.Dtos.Request.AccreditationMaterial
             {
                 WasteCodes = new List<WasteCode>
                 {
@@ -184,7 +185,7 @@ namespace EPR.Accreditation.API.UnitTests.Services
             var materialid = Guid.NewGuid();
             var wasteCodeValue = "VALUE";
             var wasteCodeValue2 = "VALUE2";
-            var accreditationMaterial = new Common.Dtos.AccreditationMaterial
+            var accreditationMaterial = new Common.Dtos.Request.AccreditationMaterial
             {
                 WasteCodes = new List<WasteCode>
                 {
