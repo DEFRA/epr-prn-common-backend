@@ -109,6 +109,7 @@
         public virtual ICollection<FileUpload> FileUploads { get; set; }
 
         public virtual Address LegalAddress { get; set; }
+
         #endregion
     }
 }

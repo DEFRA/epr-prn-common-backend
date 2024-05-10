@@ -34,5 +34,7 @@ namespace EPR.Accreditation.API.Common.Dtos
         public Address LegalAddress { get; set; }
 
         public decimal? AccreditationFee { get; set; }
+
+        public string CountryCode { get; set; }
     }
 }
