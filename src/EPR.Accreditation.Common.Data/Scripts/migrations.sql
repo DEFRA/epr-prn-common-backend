@@ -2000,3 +2000,22 @@ GO
 COMMIT;
 GO
 
+BEGIN TRANSACTION;
+GO
+
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20240510113820_Country-Code')
+BEGIN
+    ALTER TABLE [Accreditation] ADD [CountryCode] nvarchar(max) NULL;
+END;
+GO
+
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20240510113820_Country-Code')
+BEGIN
+    INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+    VALUES (N'20240510113820_Country-Code', N'6.0.28');
+END;
+GO
+
+COMMIT;
+GO
+

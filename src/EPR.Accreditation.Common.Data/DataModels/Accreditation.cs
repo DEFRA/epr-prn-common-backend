@@ -41,6 +41,8 @@ namespace EPR.Accreditation.API.Common.Data.DataModels
 
         public decimal? AccreditationFee { get; set; }
 
+        public string CountryCode { get; set; }
+
         #region Navigation properties
         public virtual Site Site { get; set; }
 
