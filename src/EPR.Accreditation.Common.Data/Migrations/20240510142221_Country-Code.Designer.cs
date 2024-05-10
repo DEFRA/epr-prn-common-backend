@@ -38,7 +38,7 @@ namespace EPR.Accreditation.API.Common.Data.Migrations
                     b.Property<int>("AccreditationStatusId")
                         .HasColumnType("int");
 
-                    b.Property<string>("CountryCode1")
+                    b.Property<string>("CountryCode")
                         .HasMaxLength(3)
                         .HasColumnType("nvarchar(3)");
 
