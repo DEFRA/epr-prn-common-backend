@@ -2011,7 +2011,7 @@ GO
 
 IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20240509104644_Add-externalid-to-material')
 BEGIN
-    UPDATE Material SET ExternalId = NEWID();
+    UPDATE Material SET ExternalId = NEWID() WHERE ExternalId is NULL;
 END;
 GO
 
@@ -2024,7 +2024,7 @@ BEGIN
     WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Material]') AND [c].[name] = N'ExternalId');
     IF @var19 IS NOT NULL EXEC(N'ALTER TABLE [Material] DROP CONSTRAINT [' + @var19 + '];');
     ALTER TABLE [Material] ALTER COLUMN [ExternalId] uniqueidentifier NOT NULL;
-    ALTER TABLE [Material] ADD DEFAULT 'dc1ee971-5870-4366-a912-38d88a5d9dab' FOR [ExternalId];
+    ALTER TABLE [Material] ADD DEFAULT '6446591e-8213-452d-a422-a38f7c6c9336' FOR [ExternalId];
 END;
 GO
 

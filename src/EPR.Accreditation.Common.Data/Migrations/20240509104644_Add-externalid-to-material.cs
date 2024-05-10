@@ -16,7 +16,7 @@ namespace EPR.Accreditation.API.Common.Data.Migrations
                 nullable: true);
 
             // add external ids to material, then re-modify so that it is nullable
-            migrationBuilder.Sql("UPDATE Material SET ExternalId = NEWID();");
+            migrationBuilder.Sql("UPDATE Material SET ExternalId = NEWID() WHERE ExternalId is NULL;");
 
             migrationBuilder.AlterColumn<Guid>(
                 name: "ExternalId",
