@@ -294,6 +294,8 @@
             var accreditationEntity = await _accreditationContext
                 .Accreditation
                 .Include(a => a.Site)
+                    .ThenInclude(s => s.ExemptionReferences)
+                .Include(a => a.Site)
                     .ThenInclude(s => s.Address)
                 .Where(a => a.ExternalId == id)
                 .Select(a => a)
@@ -314,7 +316,7 @@
             // add the site id to the accreditation record
             var accreditionEntity = await _accreditationContext
                 .Accreditation
-                .Where(a => 
+                .Where(a =>
                     a.ExternalId == id &&
                     a.OperatorTypeId == OperatorType.Reprocessor)
                 .SingleOrDefaultAsync();
@@ -350,7 +352,7 @@
                     .ThenInclude(s => s.Address)
                 .Include(a => a.Site)
                     .ThenInclude(a => a.ExemptionReferences)
-                .Where(a => 
+                .Where(a =>
                     a.ExternalId == id &&
                     a.SiteId.HasValue)
                 .Select(a => a.Site)
@@ -360,7 +362,7 @@
             if (entity.ExemptionReferences.Any())
                 entity.ExemptionReferences.Clear();
 
-            if (entity.ExemptionReferences != null && entity.ExemptionReferences.Any())
+            if (site.ExemptionReferences != null && site.ExemptionReferences.Any())
             {
                 foreach (var reference in site.ExemptionReferences.Where(x => !string.IsNullOrWhiteSpace(x)))
                 {
