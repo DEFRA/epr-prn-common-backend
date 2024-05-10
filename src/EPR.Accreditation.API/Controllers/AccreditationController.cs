@@ -52,6 +52,18 @@ namespace EPR.Accreditation.API.Controllers
 
             return Ok(fileUploadRecords);
         }
+
+        [HttpGet("RandomString")]
+        [ProducesResponseType(typeof(string), 200)]
+        public async Task<IActionResult> GetRandomString()
+        {
+            var randomString = await _accreditationService.RandomString(12);
+
+            if (randomString == null)
+                return NotFound();
+
+            return Ok(randomString);
+        }
         #endregion
 
         #region Post methods

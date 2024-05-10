@@ -2,10 +2,10 @@
 {
     using EPR.Accreditation.API.Common.Dtos;
     using EPR.Accreditation.API.Common.Enums;
-    using EPR.Accreditation.API.Helpers;
     using EPR.Accreditation.API.Helpers.Comparers;
     using EPR.Accreditation.API.Repositories.Interfaces;
     using EPR.Accreditation.API.Services.Interfaces;
+    using System;
     using DTO = EPR.Accreditation.API.Common.Dtos;
 
     public class AccreditationService : IAccreditationService
@@ -186,6 +186,18 @@
             DTO.SaveAndComeBack saveAndComeBack)
         {
             await _repository.AddSaveAndComeBack(id, saveAndComeBack);
+        }
+
+        /// <summary>
+        /// Builds a random string.
+        /// </summary>
+        /// <returns>The random string.</returns>
+        public async Task<string> RandomString(int length = 12)
+        {
+            string Chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            Random Random = new Random();
+            return new string(Enumerable.Range(0, length)
+                .Select(_ => Chars[Random.Next(Chars.Length)]).ToArray());
         }
     }
 }
