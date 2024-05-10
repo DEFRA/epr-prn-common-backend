@@ -191,13 +191,14 @@
         /// <summary>
         /// Builds a random string.
         /// </summary>
+        /// <param name="length">The length of the string.</param>
         /// <returns>The random string.</returns>
         public async Task<string> RandomString(int length = 12)
         {
-            string Chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-            Random Random = new Random();
+            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            Random random = new Random();
             return new string(Enumerable.Range(0, length)
-                .Select(_ => Chars[Random.Next(Chars.Length)]).ToArray());
+                .Select(_ => chars[random.Next(chars.Length)]).ToArray());
         }
     }
 }
