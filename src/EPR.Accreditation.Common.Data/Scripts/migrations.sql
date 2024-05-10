@@ -2000,3 +2000,41 @@ GO
 COMMIT;
 GO
 
+BEGIN TRANSACTION;
+GO
+
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20240503102508_Modify-Material-Names')
+BEGIN
+    update [Accreditation].[dbo].[Material] set English = 'paper/board', Welsh = '[Welsh]paper/board' where english = 'Paper/Board'update [Accreditation].[dbo].[Material] set English = 'paper composting', Welsh = '[Welsh]paper composting' where english = 'Paper Composting'update [Accreditation].[dbo].[Material] set English = 'glass remelt', Welsh = '[Welsh]glass remelt' where english = 'Glass Remelt'update [Accreditation].[dbo].[Material] set English = 'glass other', Welsh = '[Welsh]glass other' where english = 'Glass Other'update [Accreditation].[dbo].[Material] set English = 'aluminium', Welsh = '[Welsh]aluminium' where english = 'Aluminium'update [Accreditation].[dbo].[Material] set English = 'steel', Welsh = '[Welsh]steel' where english = 'Steel'update [Accreditation].[dbo].[Material] set English = 'plastic', Welsh = '[Welsh]plastic' where english = 'Plastic'update [Accreditation].[dbo].[Material] set English = 'wood', Welsh = '[Welsh]wood' where english = 'Wood'update [Accreditation].[dbo].[Material] set English = 'wood composting', Welsh = '[Welsh]wood composting' where english = 'Wood Composting'
+END;
+GO
+
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20240503102508_Modify-Material-Names')
+BEGIN
+    INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+    VALUES (N'20240503102508_Modify-Material-Names', N'6.0.28');
+END;
+GO
+
+COMMIT;
+GO
+
+BEGIN TRANSACTION;
+GO
+
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20240503124041_AccreditionFee')
+BEGIN
+    ALTER TABLE [Accreditation] ADD [AccreditationFee] decimal(18,2) NULL;
+END;
+GO
+
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20240503124041_AccreditionFee')
+BEGIN
+    INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+    VALUES (N'20240503124041_AccreditionFee', N'6.0.28');
+END;
+GO
+
+COMMIT;
+GO
+
