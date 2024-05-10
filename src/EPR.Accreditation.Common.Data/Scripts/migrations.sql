@@ -2003,16 +2003,16 @@ GO
 BEGIN TRANSACTION;
 GO
 
-IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20240510113820_Country-Code')
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20240510142221_Country-Code')
 BEGIN
-    ALTER TABLE [Accreditation] ADD [CountryCode] nvarchar(max) NULL;
+    ALTER TABLE [Accreditation] ADD [CountryCode] nvarchar(3) NULL;
 END;
 GO
 
-IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20240510113820_Country-Code')
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20240510142221_Country-Code')
 BEGIN
     INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
-    VALUES (N'20240510113820_Country-Code', N'6.0.28');
+    VALUES (N'20240510142221_Country-Code', N'6.0.28');
 END;
 GO
 

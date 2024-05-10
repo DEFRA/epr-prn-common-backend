@@ -89,7 +89,8 @@
         /// <summary>
         /// Gets or sets CountryCode.
         /// </summary>
-        public string CountryCode { get; set; }
+        [MaxLength(3)]
+        public string CountryCode1 { get; set; }
 
         #region Navigation properties
         public virtual Site Site { get; set; }

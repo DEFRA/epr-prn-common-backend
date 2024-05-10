@@ -8,10 +8,10 @@ namespace EPR.Accreditation.API.Common.Data.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<string>(
+            migrationBuilder.AddColumn<decimal>(
                 name: "CountryCode",
                 table: "Accreditation",
-                type: "nvarchar(max)",
+                type: "nvarchar(3)",
                 nullable: true);
         }
 

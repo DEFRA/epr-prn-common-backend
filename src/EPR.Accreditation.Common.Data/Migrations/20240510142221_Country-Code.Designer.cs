@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EPR.Accreditation.API.Common.Data.Migrations
 {
     [DbContext(typeof(AccreditationContext))]
-    [Migration("20240510113820_Country-Code")]
+    [Migration("20240510142221_Country-Code")]
     partial class CountryCode
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -38,8 +38,9 @@ namespace EPR.Accreditation.API.Common.Data.Migrations
                     b.Property<int>("AccreditationStatusId")
                         .HasColumnType("int");
 
-                    b.Property<string>("CountryCode")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<string>("CountryCode1")
+                        .HasMaxLength(3)
+                        .HasColumnType("nvarchar(3)");
 
                     b.Property<Guid>("CreatedBy")
                         .HasColumnType("uniqueidentifier");
