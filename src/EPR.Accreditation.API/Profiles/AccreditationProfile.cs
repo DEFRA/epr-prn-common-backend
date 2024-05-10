@@ -64,6 +64,7 @@ namespace EPR.Accreditation.API.Profiles
             CreateMap<Data.AccreditationMaterial, DTO.AccreditationMaterial>()
                 .MapOnlyNonDefault()
                 .ReverseMap()
+                .ForMember(d => d.Material, o => o.Ignore()) // do not want to map incoming materials
                 .ForMember(d =>
                     // Mapping of WasteCodes is complicated as it needs to represent two versions of data,
                     // and an update may just include one set of data. So we need to carefully manage the merging of the data
