@@ -2024,7 +2024,7 @@ BEGIN
     WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Material]') AND [c].[name] = N'ExternalId');
     IF @var19 IS NOT NULL EXEC(N'ALTER TABLE [Material] DROP CONSTRAINT [' + @var19 + '];');
     ALTER TABLE [Material] ALTER COLUMN [ExternalId] uniqueidentifier NOT NULL;
-    ALTER TABLE [Material] ADD DEFAULT '5d672446-0e80-4086-a0ce-f8a0bd143972' FOR [ExternalId];
+    ALTER TABLE [Material] ADD DEFAULT 'dc1ee971-5870-4366-a912-38d88a5d9dab' FOR [ExternalId];
 END;
 GO
 
