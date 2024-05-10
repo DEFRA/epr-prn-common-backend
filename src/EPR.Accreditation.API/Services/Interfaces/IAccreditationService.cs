@@ -72,11 +72,6 @@
             Guid id,
             DTO.SaveAndComeBack saveAndContinue);
 
-        Task<DTO.CheckAnswers> GetCheckAnswers(
-            Guid id,
-            Guid materialId,
-            Guid? siteId,
-            Guid? overseasSiteId,
-            CheckAnswersSection section);
+        Task<string> RandomString(int length);
     }
 }

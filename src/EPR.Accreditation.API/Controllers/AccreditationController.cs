@@ -54,35 +54,16 @@
             return Ok(fileUploadRecords);
         }
 
-        /// <summary>
-        /// Endpoint to get the data for the relevant CYA page
-        /// </summary>
-        /// <param name="id">Accreditation ID</param>
-        /// <param name="materialId">Site material ID</param>
-        /// <param name="siteId">Reprocessor site ID</param>
-        /// <param name="overseasSiteId">Exporter site ID</param>
-        /// <param name="section">Required CYA section</param>
-        /// <returns>DTO for relevant CYA page</returns>
-        [HttpGet("{id}/Material/{materialId}/CheckAnswers/{section}")]
-        [ProducesResponseType(typeof(DTO.CheckAnswers), 200)]
-        public async Task<IActionResult> GetCheckAnswers(
-            Guid id,
-            Guid materialId,
-            Guid? siteId,
-            Guid? overseasSiteId,
-            CheckAnswersSection section)
+        [HttpGet("RandomString")]
+        [ProducesResponseType(typeof(string), 200)]
+        public async Task<IActionResult> GetRandomString()
         {
-            var checkYourAnswers = await _accreditationService.GetCheckAnswers(
-                id,
-                materialId,
-                siteId,
-                overseasSiteId,
-                section);
+            var randomString = await _accreditationService.RandomString(12);
 
-            if (checkYourAnswers == null)
+            if (randomString == null)
                 return NotFound();
 
-            return Ok(checkYourAnswers);
+            return Ok(randomString);
         }
         #endregion
 

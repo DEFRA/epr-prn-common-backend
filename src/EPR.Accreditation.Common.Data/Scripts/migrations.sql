@@ -1913,3 +1913,90 @@ GO
 COMMIT;
 GO
 
+BEGIN TRANSACTION;
+GO
+
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20240503102508_Modify-Material-Names')
+BEGIN
+    update [Accreditation].[dbo].[Material] set English = 'paper/board', Welsh = '[Welsh]paper/board' where english = 'Paper/Board'update [Accreditation].[dbo].[Material] set English = 'paper composting', Welsh = '[Welsh]paper composting' where english = 'Paper Composting'update [Accreditation].[dbo].[Material] set English = 'glass remelt', Welsh = '[Welsh]glass remelt' where english = 'Glass Remelt'update [Accreditation].[dbo].[Material] set English = 'glass other', Welsh = '[Welsh]glass other' where english = 'Glass Other'update [Accreditation].[dbo].[Material] set English = 'aluminium', Welsh = '[Welsh]aluminium' where english = 'Aluminium'update [Accreditation].[dbo].[Material] set English = 'steel', Welsh = '[Welsh]steel' where english = 'Steel'update [Accreditation].[dbo].[Material] set English = 'plastic', Welsh = '[Welsh]plastic' where english = 'Plastic'update [Accreditation].[dbo].[Material] set English = 'wood', Welsh = '[Welsh]wood' where english = 'Wood'update [Accreditation].[dbo].[Material] set English = 'wood composting', Welsh = '[Welsh]wood composting' where english = 'Wood Composting'
+END;
+GO
+
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20240503102508_Modify-Material-Names')
+BEGIN
+    INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+    VALUES (N'20240503102508_Modify-Material-Names', N'6.0.28');
+END;
+GO
+
+COMMIT;
+GO
+
+BEGIN TRANSACTION;
+GO
+
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20240503124041_AccreditionFee')
+BEGIN
+    ALTER TABLE [Accreditation] ADD [AccreditationFee] decimal(18,2) NULL;
+END;
+GO
+
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20240503124041_AccreditionFee')
+BEGIN
+    INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+    VALUES (N'20240503124041_AccreditionFee', N'6.0.28');
+END;
+GO
+
+COMMIT;
+GO
+
+BEGIN TRANSACTION;
+GO
+
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20240507124737_Address-remove-required-fields')
+BEGIN
+    DECLARE @var16 sysname;
+    SELECT @var16 = [d].[name]
+    FROM [sys].[default_constraints] [d]
+    INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+    WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Address]') AND [c].[name] = N'Town');
+    IF @var16 IS NOT NULL EXEC(N'ALTER TABLE [Address] DROP CONSTRAINT [' + @var16 + '];');
+    ALTER TABLE [Address] ALTER COLUMN [Town] nvarchar(max) NULL;
+END;
+GO
+
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20240507124737_Address-remove-required-fields')
+BEGIN
+    DECLARE @var17 sysname;
+    SELECT @var17 = [d].[name]
+    FROM [sys].[default_constraints] [d]
+    INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+    WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Address]') AND [c].[name] = N'Postcode');
+    IF @var17 IS NOT NULL EXEC(N'ALTER TABLE [Address] DROP CONSTRAINT [' + @var17 + '];');
+    ALTER TABLE [Address] ALTER COLUMN [Postcode] nvarchar(8) NULL;
+END;
+GO
+
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20240507124737_Address-remove-required-fields')
+BEGIN
+    DECLARE @var18 sysname;
+    SELECT @var18 = [d].[name]
+    FROM [sys].[default_constraints] [d]
+    INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+    WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Address]') AND [c].[name] = N'Address1');
+    IF @var18 IS NOT NULL EXEC(N'ALTER TABLE [Address] DROP CONSTRAINT [' + @var18 + '];');
+    ALTER TABLE [Address] ALTER COLUMN [Address1] nvarchar(max) NULL;
+END;
+GO
+
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20240507124737_Address-remove-required-fields')
+BEGIN
+    INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+    VALUES (N'20240507124737_Address-remove-required-fields', N'6.0.28');
+END;
+GO
+
+COMMIT;
+GO
+
