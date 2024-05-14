@@ -1,15 +1,17 @@
-﻿using AutoMapper;
-using EPR.Accreditation.API.Common.Data;
-using EPR.Accreditation.API.Common.Data.Enums;
-using EPR.Accreditation.API.Helpers;
-using EPR.Accreditation.API.Repositories.Interfaces;
-using Microsoft.EntityFrameworkCore;
-using Data = EPR.Accreditation.API.Common.Data.DataModels;
-using DTO = EPR.Accreditation.API.Common.Dtos;
-using Enums = EPR.Accreditation.API.Common.Enums;
-
-namespace EPR.Accreditation.API.Repositories
+﻿namespace EPR.Accreditation.API.Repositories
 {
+    using AutoMapper;
+    using EPR.Accreditation.API.Common.Data;
+    using EPR.Accreditation.API.Common.Data.Enums;
+    using EPR.Accreditation.API.Helpers;
+    using EPR.Accreditation.API.Repositories.Interfaces;
+    using Microsoft.EntityFrameworkCore;
+    using System.Diagnostics.CodeAnalysis;
+    using Data = EPR.Accreditation.API.Common.Data.DataModels;
+    using DTO = EPR.Accreditation.API.Common.Dtos;
+    using Enums = EPR.Accreditation.API.Common.Enums;
+
+    [ExcludeFromCodeCoverage]
     public class Repository : IRepository
     {
         protected IMapper _mapper;
@@ -52,8 +54,9 @@ namespace EPR.Accreditation.API.Repositories
 
         public async Task<Guid> AddAccreditationMaterial(
             Guid id,
+            Guid materialId,
             Enums.OperatorType accreditationOperatorType,
-            DTO.AccreditationMaterial material)
+            DTO.Request.AccreditationMaterial material)
         {
             var entity = _mapper.Map<Data.AccreditationMaterial>(material);
             entity.ExternalId = Guid.NewGuid();
@@ -61,7 +64,7 @@ namespace EPR.Accreditation.API.Repositories
             // materials for overseas sites are added before the site
             // therefore if the accreditation is a reprocessor, we should use
             // that site id
-            var accreditationEntity = await _accreditationContext
+            var accreditationEntityTask = _accreditationContext
                 .Accreditation
                 .Where(a =>
                     a.ExternalId == id &&
@@ -73,9 +76,25 @@ namespace EPR.Accreditation.API.Repositories
                 })
                 .SingleOrDefaultAsync();
 
+            var materialIdTask = _accreditationContext
+                .Material
+                .Where(m => m.ExternalId == materialId)
+                .Select(m => (int?)m.Id)
+                .SingleOrDefaultAsync();
+
+            await Task.WhenAll(accreditationEntityTask, materialIdTask);
+
+            var accreditationEntity = accreditationEntityTask.Result;
+            var localMaterialId = materialIdTask.Result;
+
             if (accreditationEntity == null)
             {
                 throw new NotFoundException($"No accreditation record found with id: {id}");
+            }
+
+            if (localMaterialId == null)
+            {
+                throw new NotFoundException($"No material record found with External ID: {materialId}");
             }
 
             if (accreditationOperatorType == Enums.OperatorType.Reprocessor)
@@ -84,6 +103,7 @@ namespace EPR.Accreditation.API.Repositories
             }
 
             entity.AccreditationId = accreditationEntity.Id;
+            entity.MaterialId = localMaterialId.Value;
 
             await _accreditationContext.AccreditationMaterial.AddAsync(entity);
             await _accreditationContext.SaveChangesAsync();
@@ -214,7 +234,7 @@ namespace EPR.Accreditation.API.Repositories
             await _accreditationContext.SaveChangesAsync();
         }
 
-        public async Task<DTO.AccreditationMaterial> GetMaterial(
+        public async Task<DTO.Response.AccreditationMaterial> GetMaterial(
             Guid id,
             Guid materialid)
         {
@@ -222,13 +242,13 @@ namespace EPR.Accreditation.API.Repositories
                 id,
                 materialid);
 
-            return _mapper.Map<DTO.AccreditationMaterial>(entity);
+            return _mapper.Map<DTO.Response.AccreditationMaterial>(entity);
         }
 
         public async Task UpdateMaterial(
             Guid id,
             Guid materialid,
-            DTO.AccreditationMaterial material)
+            DTO.Request.AccreditationMaterial material)
         {
             var entity = await GetAccreditationSiteMaterial(
                 id,
@@ -418,8 +438,7 @@ namespace EPR.Accreditation.API.Repositories
                     os.Accreditation.ExternalId == id &&
                     os.Accreditation.OperatorTypeId == OperatorType.Exporter &&
                     os.ExternalId == overseasSiteId)
-                .SingleOrDefaultAsync()
-                 ?? throw new NotFoundException();
+                .SingleOrDefaultAsync();
 
             if (entity == null)
             {
@@ -508,9 +527,9 @@ namespace EPR.Accreditation.API.Repositories
                 .AccreditationMaterial
                 .Include(am => am.Accreditation)
                 .Include(am => am.Material)
-                    .Include(am => am.WasteCodes)
-                    .Include(am => am.MaterialReprocessorDetails)
-                        .ThenInclude(mrp => mrp.ReprocessorSupportingInformation)
+                .Include(am => am.WasteCodes)
+                .Include(am => am.MaterialReprocessorDetails)
+                    .ThenInclude(mrp => mrp.ReprocessorSupportingInformation)
                 .Where(
                     am =>
                         am.Accreditation.ExternalId == id &&

@@ -1,9 +1,8 @@
-﻿using EPR.Accreditation.API.Common.Enums;
-using System.Reflection.Emit;
-using DTO = EPR.Accreditation.API.Common.Dtos;
-
-namespace EPR.Accreditation.API.Repositories.Interfaces
+﻿namespace EPR.Accreditation.API.Repositories.Interfaces
 {
+    using EPR.Accreditation.API.Common.Enums;
+    using DTO = EPR.Accreditation.API.Common.Dtos;
+
     public interface IRepository
     {
         Task<IEnumerable<DTO.Country>> GetCountries();
@@ -14,8 +13,9 @@ namespace EPR.Accreditation.API.Repositories.Interfaces
 
         Task<Guid> AddAccreditationMaterial(
             Guid id,
+            Guid materialId,
             OperatorType accreditationOperatorType,
-            DTO.AccreditationMaterial accreditationMaterial);
+            DTO.Request.AccreditationMaterial accreditationMaterial);
 
         Task AddFile(
             Guid id,
@@ -28,7 +28,7 @@ namespace EPR.Accreditation.API.Repositories.Interfaces
         Task UpdateMaterial(
             Guid id,
             Guid materialid,
-            DTO.AccreditationMaterial material);
+            DTO.Request.AccreditationMaterial material);
 
         Task<IEnumerable<DTO.FileUpload>> GetFileRecords(Guid id);
 
@@ -38,7 +38,7 @@ namespace EPR.Accreditation.API.Repositories.Interfaces
             Guid id,
             Guid fileId);
 
-        Task<DTO.AccreditationMaterial> GetMaterial(
+        Task<DTO.Response.AccreditationMaterial> GetMaterial(
             Guid id,
             Guid materialid);
 

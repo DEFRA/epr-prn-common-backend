@@ -16,51 +16,60 @@
             _accreditationService = accreditationService ?? throw new ArgumentNullException(nameof(accreditationService));
         }
 
-        [HttpGet("{materialid}")]
-        [ProducesResponseType(typeof(DTO.AccreditationMaterial), 200)]
+        [HttpGet("{accreditationMaterialid}")]
+        [ProducesResponseType(typeof(DTO.Response.AccreditationMaterial), 200)]
         public async Task<IActionResult> GetOverseasSiteMaterial(
             Guid id,
             Guid overseasSiteId,
-            Guid materialid)
+            Guid accreditationMaterialid)
         {
             var material = await _accreditationService.GetMaterial(
                 id,
-                materialid);
+                accreditationMaterialid);
 
             if (material == null)
+            {
                 return NotFound();
+            }
 
             return Ok(material);
         }
 
-        [HttpPost]
+        [HttpPost("{materialId}")]
         [ProducesResponseType(typeof(Guid), 200)]
         public async Task<IActionResult> CreateMaterial(
             Guid id,
-            [FromBody] DTO.AccreditationMaterial accreditationMaterial)
+            Guid materialId,
+            [FromBody] DTO.Request.AccreditationMaterial accreditationMaterial)
         {
             if (accreditationMaterial == null)
             {
                 return BadRequest();
             }
 
-            var materialId = await _accreditationService.CreateMaterial(
+            var accreditationMaterialId = await _accreditationService.CreateMaterial(
                 id,
+                materialId,
                 Common.Enums.OperatorType.Exporter,
                 accreditationMaterial);
 
-            return Ok(materialId);
+            return Ok(accreditationMaterialId);
         }
 
-        [HttpPut("{materialid}")]
+        [HttpPut("{accreditationMaterialId}")]
         public async Task<IActionResult> UpdateOverseasSiteMaterial(
             Guid id,
-            Guid materialid,
-            [FromBody] DTO.AccreditationMaterial accreditationMaterial)
+            Guid accreditationMaterialid,
+            [FromBody] DTO.Request.AccreditationMaterial accreditationMaterial)
         {
+            if (accreditationMaterial == null)
+            {
+                return BadRequest();
+            }
+
             await _accreditationService.UpdateMaterail(
                 id,
-                materialid,
+                accreditationMaterialid,
                 accreditationMaterial);
 
             return Ok();

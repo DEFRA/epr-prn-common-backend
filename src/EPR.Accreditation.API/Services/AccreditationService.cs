@@ -32,11 +32,13 @@
 
         public async Task<Guid> CreateMaterial(
             Guid id,
+            Guid materialId,
             OperatorType accreditationOperatorType,
-            AccreditationMaterial accreditationMaterial)
+            DTO.Request.AccreditationMaterial accreditationMaterial)
         {
             return await _repository.AddAccreditationMaterial(
                 id,
+                materialId,
                 accreditationOperatorType,
                 accreditationMaterial);
         }
@@ -91,7 +93,7 @@
         public async Task UpdateMaterail(
             Guid id,
             Guid materialid,
-            AccreditationMaterial accreditationMaterial)
+            DTO.Request.AccreditationMaterial accreditationMaterial)
         {
             if (accreditationMaterial.WasteCodes != null &&
                 accreditationMaterial.WasteCodes.Any())
@@ -109,7 +111,7 @@
                 accreditationMaterial);
         }
 
-        public async Task<AccreditationMaterial> GetMaterial(
+        public async Task<DTO.Response.AccreditationMaterial> GetMaterial(
             Guid id,
             Guid materialid)
         {

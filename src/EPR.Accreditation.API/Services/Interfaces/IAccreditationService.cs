@@ -9,8 +9,9 @@
 
         Task<Guid> CreateMaterial(
             Guid id,
+            Guid materialId,
             OperatorType accreditationOperatorType,
-            DTO.AccreditationMaterial accreditationMaterial);
+            DTO.Request.AccreditationMaterial accreditationMaterial);
 
         Task AddFile(
             Guid id,
@@ -23,7 +24,7 @@
         Task UpdateMaterail(
             Guid id,
             Guid materialid,
-            DTO.AccreditationMaterial accreditationMaterial);
+            DTO.Request.AccreditationMaterial accreditationMaterial);
 
         Task<DTO.Accreditation> GetAccreditation(Guid id);
 
@@ -35,7 +36,7 @@
 
         Task<IEnumerable<DTO.FileUpload>> GetFileRecords(Guid id);
 
-        Task<DTO.AccreditationMaterial> GetMaterial(
+        Task<DTO.Response.AccreditationMaterial> GetMaterial(
             Guid id,
             Guid materialid);
 

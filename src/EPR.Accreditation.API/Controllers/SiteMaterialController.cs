@@ -1,9 +1,9 @@
-﻿using EPR.Accreditation.API.Services.Interfaces;
-using Microsoft.AspNetCore.Mvc;
-using DTO = EPR.Accreditation.API.Common.Dtos;
-
-namespace EPR.Accreditation.API.Controllers
+﻿namespace EPR.Accreditation.API.Controllers
 {
+    using EPR.Accreditation.API.Services.Interfaces;
+    using Microsoft.AspNetCore.Mvc;
+    using DTO = EPR.Accreditation.API.Common.Dtos;
+
     [ApiController]
     [Route("api/Accreditation/{id}/Material")]
     public class SiteMaterialController : ControllerBase
@@ -16,15 +16,15 @@ namespace EPR.Accreditation.API.Controllers
             _accreditationService = accreditationService ?? throw new ArgumentNullException(nameof(accreditationService));
         }
 
-        [HttpGet("{materialid}")]
-        [ProducesResponseType(typeof(DTO.AccreditationMaterial), 200)]
+        [HttpGet("{accreditationMaterialId}")]
+        [ProducesResponseType(typeof(DTO.Response.AccreditationMaterial), 200)]
         public async Task<IActionResult> GetSiteMaterial(
             Guid id,
-            Guid materialid)
+            Guid accreditationMaterialId)
         {
             var material = await _accreditationService.GetMaterial(
                 id,
-                materialid);
+                accreditationMaterialId);
 
             if (material == null)
                 return NotFound();
@@ -32,31 +32,33 @@ namespace EPR.Accreditation.API.Controllers
             return Ok(material);
         }
 
-        [HttpPost]
+        [HttpPost("{materialid}")]
         public async Task<IActionResult> CreateSiteMaterial(
             Guid id,
-            [FromBody] DTO.AccreditationMaterial accreditationMaterial)
+            Guid materialId,
+            [FromBody] DTO.Request.AccreditationMaterial accreditationMaterial)
         {
             if (accreditationMaterial == null)
                 return BadRequest();
 
-            var materialId = await _accreditationService.CreateMaterial(
+            var accreditationMaterialId = await _accreditationService.CreateMaterial(
                 id,
+                materialId,
                 Common.Enums.OperatorType.Reprocessor,
                 accreditationMaterial);
 
-            return Ok(materialId);
+            return Ok(accreditationMaterialId);
         }
 
-        [HttpPut("{materialid}")]
+        [HttpPut("{accreditationMaterialId}")]
         public async Task<IActionResult> UpdateSiteMaterial(
             Guid id,
-            Guid materialid,
-            [FromBody] DTO.AccreditationMaterial accreditationMaterial)
+            Guid accreditationMaterialId,
+            [FromBody] DTO.Request.AccreditationMaterial accreditationMaterial)
         {
             await _accreditationService.UpdateMaterail(
                 id,
-                materialid,
+                accreditationMaterialId,
                 accreditationMaterial);
 
             return Ok();

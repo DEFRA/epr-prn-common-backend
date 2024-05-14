@@ -4,7 +4,7 @@
     {
         public Address Address { get; set; }
 
-        public IEnumerable<SiteAuthority> SiteAuthorties { get; set; }
+        public IEnumerable<SiteAuthority> SiteAuthorities { get; set; }
 
         public IEnumerable<string> ExemptionReferences { get; set; }
     }

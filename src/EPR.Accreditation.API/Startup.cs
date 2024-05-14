@@ -1,12 +1,14 @@
-﻿using AutoMapper;
-using EPR.Accreditation.API.Profiles;
-using EPR.Accreditation.API.Common.Data;
-using Microsoft.EntityFrameworkCore;
-using EPR.Accreditation.API.Helpers;
-using EPR.Accreditation.API.Middleware;
-
-namespace EPR.Accreditation.API
+﻿namespace EPR.Accreditation.API
 {
+    using AutoMapper;
+    using EPR.Accreditation.API.Profiles;
+    using EPR.Accreditation.API.Common.Data;
+    using Microsoft.EntityFrameworkCore;
+    using EPR.Accreditation.API.Helpers;
+    using EPR.Accreditation.API.Middleware;
+    using System.Diagnostics.CodeAnalysis;
+
+    [ExcludeFromCodeCoverage]
     public class Startup
     {
         private readonly IConfiguration _config;
@@ -21,7 +23,10 @@ namespace EPR.Accreditation.API
             services.AddAutoMapper(typeof(Program));
             services.AddControllers();
             services.AddEndpointsApiExplorer();
-            services.AddSwaggerGen();
+            services.AddSwaggerGen(config =>
+            {
+                config.CustomSchemaIds(s => s.FullName);
+            });
             
             services.AddDbContext<AccreditationContext>(options =>
                 options.UseSqlServer(_config.GetConnectionString("AccreditationConnnectionString"))

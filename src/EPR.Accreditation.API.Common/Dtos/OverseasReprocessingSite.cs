@@ -15,7 +15,7 @@ namespace EPR.Accreditation.API.Common.Dtos
 
         public WastePermit WastePermit { get; set; }
 
-        public OverseasAgent OverseasAgent { get; set; }
+        public virtual OverseasContactPerson OverseasContactPerson { get; set; }
 
         public OverseasAddress OverseasAddress { get; set; }
     }

@@ -1,12 +1,12 @@
-﻿using EPR.Accreditation.API.Common.Data.DataModels.Lookups;
-using EPR.Accreditation.API.Controllers;
-using EPR.Accreditation.API.Services.Interfaces;
-using Microsoft.AspNetCore.Mvc;
-using Moq;
-using Enums = EPR.Accreditation.API.Common.Enums;
-
-namespace EPR.Accreditation.API.UnitTests.Controllers
+﻿namespace EPR.Accreditation.API.UnitTests.Controllers
 {
+    using DTO = EPR.Accreditation.API.Common.Dtos;
+    using EPR.Accreditation.API.Controllers;
+    using EPR.Accreditation.API.Services.Interfaces;
+    using Microsoft.AspNetCore.Mvc;
+    using Moq;
+    using Enums = EPR.Accreditation.API.Common.Enums;
+
     [TestClass]
     public class SiteMaterialControllerTests
     {
@@ -26,7 +26,7 @@ namespace EPR.Accreditation.API.UnitTests.Controllers
             // Arrange
             var id = Guid.NewGuid();
             var materialid = Guid.NewGuid();
-            var expectedMaterial = new Common.Dtos.AccreditationMaterial();
+            var expectedMaterial = new Common.Dtos.Response.AccreditationMaterial();
 
             _mockAccreditationService.Setup(s =>
                 s.GetMaterial(
@@ -61,7 +61,7 @@ namespace EPR.Accreditation.API.UnitTests.Controllers
                 s.GetMaterial(
                     id,
                     materialid))
-                .ReturnsAsync((Common.Dtos.AccreditationMaterial)null);
+                .ReturnsAsync((DTO.Response.AccreditationMaterial)null);
 
             // Act
             var result = await _siteMaterialController.GetSiteMaterial(id, materialid) as NotFoundResult;
@@ -83,19 +83,24 @@ namespace EPR.Accreditation.API.UnitTests.Controllers
         {
             // Arrange
             var id = Guid.NewGuid();
-            var accreditationMaterial = new Common.Dtos.AccreditationMaterial();
+            var materialid = Guid.NewGuid();
+            var accreditationMaterial = new Common.Dtos.Request.AccreditationMaterial();
             var expectedMaterialId = Guid.NewGuid();
 
             _mockAccreditationService.Setup(
                 s =>
                     s.CreateMaterial(
                         id,
+                        materialid,
                         Enums.OperatorType.Reprocessor,
                         accreditationMaterial))
             .ReturnsAsync(expectedMaterialId);
 
             // Act
-            var result = await _siteMaterialController.CreateSiteMaterial(id, accreditationMaterial) as OkObjectResult;
+            var result = await _siteMaterialController.CreateSiteMaterial(
+                id,
+                materialid,
+                accreditationMaterial) as OkObjectResult;
 
             // Assert
             Assert.IsNotNull(result);
@@ -105,7 +110,8 @@ namespace EPR.Accreditation.API.UnitTests.Controllers
             _mockAccreditationService.Verify(
                 s =>
                     s.CreateMaterial(
-                        id, 
+                        id,
+                        materialid,
                         Enums.OperatorType.Reprocessor,
                         accreditationMaterial),
                 Times.Once());
@@ -116,9 +122,13 @@ namespace EPR.Accreditation.API.UnitTests.Controllers
         {
             // Arrange
             var id = Guid.NewGuid();
+            var materialid = Guid.NewGuid();
 
             // Act
-            var result = await _siteMaterialController.CreateSiteMaterial(id, null) as BadRequestResult;
+            var result = await _siteMaterialController.CreateSiteMaterial(
+                id,
+                materialid,
+                null) as BadRequestResult;
 
             // Assert
             Assert.IsNotNull(result);
@@ -126,6 +136,7 @@ namespace EPR.Accreditation.API.UnitTests.Controllers
 
             _mockAccreditationService.Verify(s =>
                 s.CreateMaterial(
+                    It.IsAny<Guid>(),
                     It.IsAny<Guid>(),
                     It.IsAny<Enums.OperatorType>(),
                     null),
@@ -138,7 +149,7 @@ namespace EPR.Accreditation.API.UnitTests.Controllers
             // Arrange
             var id = Guid.NewGuid();
             var materialid = Guid.NewGuid();
-            var accreditationMaterial = new Common.Dtos.AccreditationMaterial();
+            var accreditationMaterial = new Common.Dtos.Request.AccreditationMaterial();
 
             // Act
             var result = await _siteMaterialController

@@ -1,10 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
-  <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <RootNamespace>EPR.Accreditation.API.Common.Data</RootNamespace>
-  </PropertyGroup>
+	<ItemGroup>
+		<AssemblyAttribute Include="System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverageAttribute" />
+	</ItemGroup>
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <RootNamespace>EPR.Accreditation.API.Common.Data</RootNamespace>
+    </PropertyGroup>
     <Target Name="GenerateSqlScript" AfterTargets="AfterBuild" Condition="$(AzureBuild) != true">
         <Exec Condition="$(Configuration) == Release" Command="dotnet-ef migrations script --configuration Release --verbose --no-build --context EPR.Accreditation.API.Common.Data.AccreditationContext --idempotent --output Scripts/migrations.sql" />
     </Target>
