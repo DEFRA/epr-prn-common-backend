@@ -4,23 +4,13 @@ pool: DEFRA-COMMON-ubuntu2004-SSV3
 
 parameters:
 - name: teamName
-  displayName: 'Select Team Name:    (works only with "development" as target env)'
-  default: 'Team-1_Pi'
+  displayName: 'Select Environment Name:    (works only with "development" as target env)'
+  default: 'DEV10'
   type: string
   values:
-    - Team-1_Pi
-    - Team-2_Wastebusters
-    - Team-3_Recyclers
-    - Team-4_QA
-    - Team-5_Phoenix
-    - Team-6_Stig
-    - Team-7_Oscar
-    - Team-8_Pre-TST
-    - Team-9_Ops
-    - Team-10
-    - Team 11
+    - DEV10
 - name: envToDeploy
-  displayName: 'Target Environment to deploy:    (select "development" for Team 10-11)'
+  displayName: 'Target Environment to deploy:'
   default: development
   type: string
   values:
@@ -58,9 +48,8 @@ variables:
 resources:
   repositories:
     - repository: CommonTemplates
-      name: defra/epr-webapps-code-deploy-templates
-      type: github
-      endpoint: defra
+      name: RWD-CPR-EPR4P-ADO/epr-webapps-code-deploy-templates
+      type: git
       ref: main
 
     # The repo will be reference the repo by a release tag (if the imageTag parameter contains 'release') otherwise it will pull down the main branch.
@@ -70,10 +59,10 @@ resources:
       ref: ${{ replace(replace(contains(parameters.imageTag, 'RELEASE'),'True',replace('refs/tags/RELEASETAG','RELEASETAG', parameters.imageTag)),'False','main') }}
 
 extends:
-  template: epr-funcs-deployment-pipeline.yaml@CommonTemplates
+  template: epr-deployment-pipeline.yaml@CommonTemplates
   parameters:
     ${{ if contains(parameters.imageTag, 'RELEASE') }}:
-      imageTag: $(DEVRWDWEBFAx405)
+      imageTag: $(DEVRWDWEBWAx410)
     ${{ else }}:
       imageTag: ${{ parameters.imageTag }}
     azureSubscription: $(azureSubscription)

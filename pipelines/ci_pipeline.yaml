@@ -4,13 +4,18 @@ trigger:
       - '*'
   paths:
     include:
-      - 'PRN.Src/*'
+      - 'src/*'
 
 parameters:
 - name: runTests
   displayName: Run tests
   type: boolean
   default: true
+- name: runOWASPScan
+  displayName: Run OWASPScan
+  type: boolean
+  default: false
+
 - name: sonarqubeInstance
   displayName: 'Select SonarQube for v9.9 or SonarQubeLatest for 10.4'
   type: string
@@ -22,26 +27,25 @@ parameters:
 pool: DEFRA-COMMON-ubuntu2004-SSV3
 
 variables:
-  - template: vars/Team-4_QA-development.yaml
+  - template: vars/DEV10-development.yaml
   - name: solutionFolder
-    value: PRN.Src
+    value: src
   - name: projectFolder
-    value: EPR.Antivirus.Function
+    value: EPR.Accreditation.Portal/EPR.Accreditation.Portal
   - name: testProjectFolder
-    value: 'EPR.Antivirus.Function.UnitTests'
+    value: EPR.Accreditation.Portal/EPR.Accreditation.UnitTests
   - name: sonarQubeProjectKey
-    value: epr-anti-virus-function-app
+    value: epr-prn-common-backend
   - name: sonarQubeProjectName
-    value: epr-anti-virus-function-app
+    value: epr-prn-common-backend
   - name: runNugetTasks
     value: true
 
 resources:
   repositories:
     - repository: CommonTemplates
-      name: defra/epr-prn-accreditation-back-end
-      type: github
-      endpoint: defra
+      name: RWD-CPR-EPR4P-ADO/epr-webapps-code-deploy-templates
+      type: git
       ref: main
 
 extends:
@@ -53,6 +57,7 @@ extends:
     sonarQubeProjectKey: ${{ variables.sonarQubeProjectKey }}
     sonarQubeProjectName: ${{ variables.sonarQubeProjectName }}
     runTests: ${{ parameters.runTests }}
+    runOWASPScan: ${{ parameters.runOWASPScan }}
     azureSubscription: $(azureSubscription)
     acrAzureContainerRegistryName: $(acr.azureContainerRegistryName)
     acrRepositoryName: $(acr.repositoryName)
