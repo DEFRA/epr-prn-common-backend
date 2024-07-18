@@ -6,25 +6,17 @@ namespace EPR.PRN.Backend.Data
 {
 	public class EprContext : DbContext
 	{
-		private readonly IConfiguration _configuration;
-
 		public EprContext()
-			: this(new DbContextOptionsBuilder<EprContext>().Options, new ConfigurationBuilder().Build())
 		{
 		}
 
-
-		public EprContext(DbContextOptions<EprContext> options, IConfiguration configuration) : base(options)
+		public EprContext(DbContextOptions options) : base(options)
 		{
-			_configuration = configuration;
 		}
-		
+
 		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 		{
-			if (!optionsBuilder.IsConfigured)
-			{
-				optionsBuilder.UseSqlServer(_configuration.GetConnectionString("EprnConnectionString"));
-			}
+			optionsBuilder.UseSqlServer();
 		}
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
