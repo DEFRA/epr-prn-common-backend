@@ -1,21 +1,30 @@
 ﻿using EPR.PRN.Backend.Data.DataModels;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 namespace EPR.PRN.Backend.Data
 {
 	public class EprContext : DbContext
 	{
+		private readonly IConfiguration _configuration;
+
 		public EprContext()
+			: this(new DbContextOptionsBuilder<EprContext>().Options, new ConfigurationBuilder().Build())
 		{
 		}
 
-		public EprContext(DbContextOptions options) : base(options)
-		{
-		}
 
+		public EprContext(DbContextOptions<EprContext> options, IConfiguration configuration) : base(options)
+		{
+			_configuration = configuration;
+		}
+		
 		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 		{
-			optionsBuilder.UseSqlServer();
+			if (!optionsBuilder.IsConfigured)
+			{
+				optionsBuilder.UseSqlServer(_configuration.GetConnectionString("EprnConnectionString"));
+			}
 		}
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
