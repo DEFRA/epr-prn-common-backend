@@ -40,8 +40,6 @@ variables:
     value: epr-prn-common-backend
   - name: runNugetTasks
     value: false
-  - name: dotnetVersion
-    value: dotnetVersion8
 
 resources:
   repositories:
@@ -68,5 +66,4 @@ extends:
     buildMigrationScript: true
     serviceName: $(serviceName)
     sonarqubeInstance: ${{ parameters.sonarqubeInstance }}
-    dotnetVersion: ${{ variables.dotnetVersion }}
 
