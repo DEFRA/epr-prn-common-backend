@@ -46,7 +46,7 @@ resources:
     - repository: CommonTemplates
       name: RWD-CPR-EPR4P-ADO/epr-webapps-code-deploy-templates
       type: git
-      ref: feature/upgrade-net-8
+      ref: upgrade-net-8
 
 extends:
   template: epr-build-pipeline.yaml@CommonTemplates
