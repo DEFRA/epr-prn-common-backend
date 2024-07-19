@@ -15,6 +15,8 @@ parameters:
   displayName: Run OWASPScan
   type: boolean
   default: false
+- name: dotnetVersion
+  value: dotnetVersion8
 
 - name: sonarqubeInstance
   displayName: 'Select SonarQube for v9.9 or SonarQubeLatest for 10.4'
@@ -66,4 +68,5 @@ extends:
     buildMigrationScript: true
     serviceName: $(serviceName)
     sonarqubeInstance: ${{ parameters.sonarqubeInstance }}
+    dotnetVersion: ${{ variables.dotnetVersion }}
 
