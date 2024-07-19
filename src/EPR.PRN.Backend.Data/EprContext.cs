@@ -7,17 +7,17 @@ namespace EPR.PRN.Backend.Data
 	public class EprContext : DbContext
 	{
 		private readonly IConfiguration _configuration;
-		
-		public EprContext(IConfiguration configuration)
+
+		public EprContext()
 		{
-			_configuration = configuration;
+
 		}
-		
-		public EprContext(DbContextOptions options, IConfiguration configuration) : base(options)
+
+		public EprContext(DbContextOptions options) : base(options)
 		{
-			_configuration = configuration;
+
 		}
-		
+
 		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 		{
 			if (!optionsBuilder.IsConfigured)
