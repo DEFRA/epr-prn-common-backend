@@ -1,0 +1,61 @@
+﻿@model ObligationCalculation
+
+@{
+    ViewData["Title"] = "Demo Obligation Calculator";
+
+    var materials = Enum.GetValues(typeof(ObligationCalculationMaterial))
+                     .Cast<ObligationCalculationMaterial>()
+                     .Select(f => new SelectListItem
+                             {
+                                 Value = f.ToString(),
+                                 Text = f.ToString()
+                             }).ToList();
+
+    var years = Enumerable.Range(2025, 6) // Creates a range from 2025 to 2030
+                          .Select(y => new SelectListItem
+                                  {
+                                      Value = y.ToString(),
+                                      Text = y.ToString()
+                                  }).ToList();
+
+}
+
+<div class="container">
+    <div class="jumbotron mt-3">
+        <h1>Demo Obligation Calculator</h1>
+        <br />
+        @if (TempData["Answer"] != null)
+        {
+            <h4 class="text-primary">The material selected: <br /><h3>@Model.Material</h3> </h4>
+            <h4 class="text-primary">The tonnage selected: <br /><h3>@Model.Tonnage</h3></h4>
+            <h4 class="text-primary">The year selected: <br /><h3>@Model.SelectedYear</h3></h4>
+            <h4 class="text-primary">
+                Your obligation result in tonnage is: <br /><h3>@TempData["Answer"]</h3>
+            </h4>
+        }
+
+    </div>
+</div>
+<br />
+<div class="card-body">
+    <form method="post" asp-action="Calculate">
+
+        <div class="form-control">
+            <label>Tonnage</label>
+            <input class="form-control" width="200px" asp-for="Tonnage">
+            <div>
+                @Html.LabelFor(m => m.SelectedYear)<br />
+                @Html.DropDownListFor(m => m.SelectedYear, years, "Select a year")
+            </div>
+
+            <div>
+                @Html.LabelFor(m => m.Material)<br />
+                @Html.DropDownListFor(m => m.Material, materials, "Select a Material")
+            </div>
+        </div>
+        <br />
+        <button class="btn btn-lg btn-success">
+            Calculate Obligation
+        </button>
+    </form>
+</div>

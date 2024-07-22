@@ -16,6 +16,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EPR.PRN.Backend.Obligation.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EPR.PRN.Backend.API.Common", "EPR.PRN.Backend.API.Common\EPR.PRN.Backend.API.Common.csproj", "{2F6883CC-97E8-4690-A30B-3221F78990DB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ObligationCalculationDemoUI", "ObligationCalculationDemoUI\ObligationCalculationDemoUI.csproj", "{D0BBDA4B-92F4-4CCB-AAF9-D546B4C2BB1A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -46,6 +48,10 @@ Global
 		{3F6A5E10-91EB-445E-86FB-0F0C6000726C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3F6A5E10-91EB-445E-86FB-0F0C6000726C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3F6A5E10-91EB-445E-86FB-0F0C6000726C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D0BBDA4B-92F4-4CCB-AAF9-D546B4C2BB1A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D0BBDA4B-92F4-4CCB-AAF9-D546B4C2BB1A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D0BBDA4B-92F4-4CCB-AAF9-D546B4C2BB1A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D0BBDA4B-92F4-4CCB-AAF9-D546B4C2BB1A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
