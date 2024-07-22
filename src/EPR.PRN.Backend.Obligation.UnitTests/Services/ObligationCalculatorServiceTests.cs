@@ -20,9 +20,10 @@ namespace EPR.PRN.Backend.Obligation.UnitTests.Services
         }
 
         [TestMethod]
-        [DataRow(0.75, 0.75, 100, 56, 19)]
+        [DataRow(0.75, 0.75, 100, 57, 18)]
         [DataRow(0.6, 0.75, 128, 58, 19)]
-        [DataRow(0.7, 0.7, 123, 60, 26)]
+        [DataRow(0.7, 0.7, 123, 61, 25)]
+        [DataRow(0.78, 0.77, 170, 103, 30)]
         public void CalculateObligation_WhenGlassRemelt_ThenObligationIsReturned(double target, double remeltTarget, int tonnage, int expectedRemelt, int expectedRemainder)
         {
             var obligationCalculator = new ObligationCalculatorService();
