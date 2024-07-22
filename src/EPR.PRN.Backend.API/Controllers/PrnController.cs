@@ -31,15 +31,27 @@ namespace EPR.PRN.Backend.API.Controllers
             return Ok(prn);
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetSK(int id)
+        [HttpGet("/organisation")]
+        [ProducesResponseType(typeof(List<DTO.PrnDTo>), 200)]
+        public async Task<IActionResult> GetAllPrnByOrganisationId(Guid orgId)
         {
-            var prn = await _prnService.GetPrnById(id);
+            var prn = await _prnService.GetAllPrnByOrganisationId(orgId);
 
             if (prn == null)
                 return NotFound();
 
             return Ok(prn);
+        }
+        #endregion
+
+        #region Post Methods
+        [HttpPost("{id}")]
+        public async Task<IActionResult> AcceptPrn(int id)
+        {
+
+
+
+            return Ok();
         }
         #endregion
     }

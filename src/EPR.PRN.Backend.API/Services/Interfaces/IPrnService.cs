@@ -5,5 +5,7 @@
     public interface IPrnService
     {
         Task<DTO.PrnDTo> GetPrnById(int Id);
+
+        Task<List<DTO.PrnDTo>> GetAllPrnByOrganisationId(Guid OrganisationId);
     }
 }

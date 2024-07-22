@@ -15,9 +15,12 @@
 
         public async Task<DTO.PrnDTo> GetPrnById(int Id)
         {
-            var response = await _repository.GetPrnById(Id);
-            response.AccreditationNumber = "99999";
-            return response;
+            return await _repository.GetPrnById(Id);
+        }
+
+        public async Task<List<DTO.PrnDTo>> GetAllPrnByOrganisationId(Guid organisationId)
+        {
+            return await _repository.GetAllPrnByOrganisationId(organisationId);
         }
     }
 }

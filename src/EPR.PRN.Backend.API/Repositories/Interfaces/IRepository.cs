@@ -6,5 +6,7 @@ namespace EPR.PRN.Backend.API.Repositories.Interfaces
     public interface IRepository
     {
         Task<DTO.PrnDTo> GetPrnById(int id);
+
+        Task<List<DTO.PrnDTo>> GetAllPrnByOrganisationId(Guid id);
     }
 }

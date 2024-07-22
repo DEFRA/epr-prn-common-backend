@@ -1,5 +1,6 @@
 ﻿namespace EPR.PRN.Backend.API.Repositories
 {
+    using EPR.PRN.Backend.API.Common.DTO;
     using EPR.PRN.Backend.API.Repositories.Interfaces;
     using EPR.PRN.Backend.Data;
     using Microsoft.EntityFrameworkCore;
@@ -24,5 +25,16 @@
                 .FirstOrDefaultAsync();
             return prn;
         }
+
+        public async Task<List<DTO.PrnDTo>> GetAllPrnByOrganisationId(Guid id)
+        {
+            var prns = _eprContext.Prn.Where(x => x.OrganisationId == id).ToList();
+
+            List<DTO.PrnDTo> listOfPrns = new List<DTO.PrnDTo>(prns.Select(x => (PrnDTo)x));
+
+            return listOfPrns;
+        }
+
+        
     }
 }
