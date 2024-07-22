@@ -24,14 +24,35 @@
     <div class="jumbotron mt-3">
         <h1>Demo Obligation Calculator</h1>
         <br />
-        @if (TempData["Answer"] != null)
+        @if (Model.CalculatedObligation != 0 || Model.GlassRemainder != 0)
         {
-            <h4 class="text-primary">The material selected: <br /><h3>@Model.Material</h3> </h4>
-            <h4 class="text-primary">The tonnage selected: <br /><h3>@Model.Tonnage</h3></h4>
-            <h4 class="text-primary">The year selected: <br /><h3>@Model.SelectedYear</h3></h4>
-            <h4 class="text-primary">
-                Your obligation result in tonnage is: <br /><h3>@TempData["Answer"]</h3>
-            </h4>
+
+            <h4 class="text-primary">The material selected: </h4>
+
+            <h3>@Model.Material</h3>
+            <h4 class="text-primary">The tonnage selected: </h4>
+
+            <h3>@Model.Tonnage</h3>
+            <h4 class="text-primary">The year selected: </h4>
+
+            <h3>@Model.SelectedYear</h3>
+
+            @if (Model.Material == ObligationCalculationMaterial.Glass)
+            {
+                <br />
+                <h4 class="text-primary">Glass Remelt Split</h4>
+
+                <h4>@Model.GlassRemelt tonne(s) minimum Glass Re-melt Recycling PRNs/PERNs</h4>
+
+                <h4>@Model.GlassRemainder tonne(s) Remaining Glass PRNs/PERNs</h4>
+
+            }
+            else
+            {
+                <h4 class="text-primary">Your obligation result in tonnage is: </h4>
+
+                <h3>@Model.CalculatedObligation</h3>
+            }
         }
 
     </div>
@@ -42,15 +63,16 @@
 
         <div class="form-control">
             <label>Tonnage</label>
+
             <input class="form-control" width="200px" asp-for="Tonnage">
             <div>
                 @Html.LabelFor(m => m.SelectedYear)<br />
-                @Html.DropDownListFor(m => m.SelectedYear, years, "Select a year")
+                @Html.DropDownListFor(m => m.SelectedYear, years, "Select a year", new { @class = "form-control" })
             </div>
 
             <div>
                 @Html.LabelFor(m => m.Material)<br />
-                @Html.DropDownListFor(m => m.Material, materials, "Select a Material")
+                @Html.DropDownListFor(m => m.Material, materials, "Select a Material", new {@class="form-control"})
             </div>
         </div>
         <br />

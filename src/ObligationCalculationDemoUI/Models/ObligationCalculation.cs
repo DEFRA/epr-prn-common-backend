@@ -5,6 +5,9 @@
         public int Tonnage { get; set; }
         public ObligationCalculationMaterial Material { get; set; }
         public int SelectedYear { get; set; }
+        public int CalculatedObligation { get; set; }
+        public int GlassRemelt { get; set; }
+        public int GlassRemainder { get; set; }
     }
 
     public enum ObligationCalculationMaterial
@@ -22,6 +25,7 @@
         public int Year { get; set; }
         public ObligationCalculationMaterial Material { get; set; }
         public double Number { get; set; }
+        public double GlassRemelt { get; set; }
     }
 
     public class RecyclingTargets
