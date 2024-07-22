@@ -1,12 +1,15 @@
-﻿Microsoft Visual Studio Solution File, Format Version 12.00
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.10.35013.160
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EPR.PRN.Backend.API", "EPR.PRN.Backend.API\EPR.PRN.Backend.API.csproj", "{3F6F910F-4F62-4004-8A86-5A1CF8AEA698}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EPR.PRN.Backend.API.UnitTests", "EPR.PRN.Backend.API.UnitTests\EPR.PRN.Backend.API.UnitTests.csproj", "{4EE4E46A-2437-468E-BEFE-12C8DE172B3E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EPR.PRN.Backend.API.UnitTests", "EPR.PRN.Backend.API.UnitTests\EPR.PRN.Backend.API.UnitTests.csproj", "{4EE4E46A-2437-468E-BEFE-12C8DE172B3E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EPR.PRN.Backend.Data", "EPR.PRN.Backend.Data\EPR.PRN.Backend.Data.csproj", "{8CB92F1B-4065-49E9-859C-027185CBF38A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EPR.PRN.Backend.Data", "EPR.PRN.Backend.Data\EPR.PRN.Backend.Data.csproj", "{8CB92F1B-4065-49E9-859C-027185CBF38A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EPR.PRN.Backend.API.Common", "EPR.PRN.Backend.API.Common\EPR.PRN.Backend.API.Common.csproj", "{2F6883CC-97E8-4690-A30B-3221F78990DB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -26,6 +29,10 @@ Global
 		{8CB92F1B-4065-49E9-859C-027185CBF38A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8CB92F1B-4065-49E9-859C-027185CBF38A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8CB92F1B-4065-49E9-859C-027185CBF38A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2F6883CC-97E8-4690-A30B-3221F78990DB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2F6883CC-97E8-4690-A30B-3221F78990DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2F6883CC-97E8-4690-A30B-3221F78990DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2F6883CC-97E8-4690-A30B-3221F78990DB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

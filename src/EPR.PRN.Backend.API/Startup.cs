@@ -1,6 +1,10 @@
 ﻿using EPR.PRN.Backend.Data;
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
+using EPR.PRN.Backend.API.Repositories.Interfaces;
+using EPR.PRN.Backend.API.Repositories;
+using EPR.PRN.Backend.API.Services;
+using EPR.PRN.Backend.API.Services.Interfaces;
 
 namespace EPR.PRN.Backend.API
 {
@@ -17,7 +21,10 @@ namespace EPR.PRN.Backend.API
 		public void ConfigureServices(IServiceCollection services)
 		{
 			services.AddControllers();
-			services.AddEndpointsApiExplorer();
+			//services
+			//		.AddScoped<IRepository, Repository>()
+			//		.AddScoped<IPrnService, PrnService>();
+            services.AddEndpointsApiExplorer();
 			services.AddSwaggerGen(config =>
 			{
 				config.CustomSchemaIds(s => s.FullName);

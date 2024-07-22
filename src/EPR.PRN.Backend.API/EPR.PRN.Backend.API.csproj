@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
@@ -18,10 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\" />
-  </ItemGroup>
-
-  <ItemGroup>
+    <ProjectReference Include="..\EPR.PRN.Backend.API.Common\EPR.PRN.Backend.API.Common.csproj" />
     <ProjectReference Include="..\EPR.PRN.Backend.Data\EPR.PRN.Backend.Data.csproj" />
   </ItemGroup>
 
