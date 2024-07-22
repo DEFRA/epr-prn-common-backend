@@ -20,14 +20,17 @@ namespace EPR.PRN.Backend.Obligation.UnitTests.Services
         }
 
         [TestMethod]
-        [DataRow(0.75, 100, 61)]
-        public void CalculateObligation_WhenGlassRemelt_ThenObligationIsReturned(double target, int tonnage, int expected)
+        [DataRow(0.75, 0.75, 100, 56, 19)]
+        [DataRow(0.6, 0.75, 128, 58, 19)]
+        [DataRow(0.7, 0.7, 123, 60, 26)]
+        public void CalculateObligation_WhenGlassRemelt_ThenObligationIsReturned(double target, double remeltTarget, int tonnage, int expectedRemelt, int expectedRemainder)
         {
             var obligationCalculator = new ObligationCalculatorService();
 
-            var result = obligationCalculator.Calculate(target, tonnage);
+            var (remeltResult, remainderResult) = obligationCalculator.CalculateGlass(target, remeltTarget, tonnage);
 
-            result.Should().Be(expected, "the expected target should match the calculated obligation");
+            expectedRemelt.Should().Be(remeltResult, "the expected remelt target should match the calculated obligation");
+            expectedRemainder.Should().Be(remainderResult, "the expected remainder should match the calculated remainder");
         }
     }
 }
