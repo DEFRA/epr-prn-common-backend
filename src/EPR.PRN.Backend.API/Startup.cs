@@ -25,7 +25,7 @@ namespace EPR.PRN.Backend.API
             });
 
             services.AddDbContext<EprContext>(options =>
-                options.UseSqlServer(_config.GetConnectionString("EprConnnectionString"))
+                options.UseSqlServer(_config.GetConnectionString("EprConnectionString"))
             );
 
             services.AddDependencies();
