@@ -22,7 +22,6 @@
                 .Where(a => a.Id == id)
                 .Select(a => (a))
                 .FirstOrDefaultAsync();
-
             return prn;
         }
     }

@@ -30,6 +30,17 @@ namespace EPR.PRN.Backend.API.Controllers
 
             return Ok(prn);
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetSK(int id)
+        {
+            var prn = await _prnService.GetPrnById(id);
+
+            if (prn == null)
+                return NotFound();
+
+            return Ok(prn);
+        }
         #endregion
     }
 }
