@@ -44,12 +44,16 @@ namespace EPR.PRN.Backend.API.Controllers
         }
         #endregion
 
-        #region Post Methods
-        [HttpPost("{id}")]
+        #region Patch Methods
+        [HttpPatch("{id}")]
         public async Task<IActionResult> AcceptPrn(int id)
         {
+            var prn = await _prnService.GetPrnById(id);
 
+            if (prn == null)
+                return NotFound();
 
+            await _prnService.AcceptPrn(id);
 
             return Ok();
         }

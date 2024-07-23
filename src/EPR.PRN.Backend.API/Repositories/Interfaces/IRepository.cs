@@ -8,5 +8,7 @@ namespace EPR.PRN.Backend.API.Repositories.Interfaces
         Task<DTO.PrnDTo> GetPrnById(int id);
 
         Task<List<DTO.PrnDTo>> GetAllPrnByOrganisationId(Guid id);
+
+        Task UpdatePrn(int id, DTO.PrnDTo prn);
     }
 }

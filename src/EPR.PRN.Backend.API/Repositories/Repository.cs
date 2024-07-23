@@ -1,9 +1,11 @@
 ﻿namespace EPR.PRN.Backend.API.Repositories
 {
     using EPR.PRN.Backend.API.Common.DTO;
+    using EPR.PRN.Backend.API.Helpers;
     using EPR.PRN.Backend.API.Repositories.Interfaces;
     using EPR.PRN.Backend.Data;
     using Microsoft.EntityFrameworkCore;
+    using System.Collections.Generic;
     using DTO = EPR.PRN.Backend.API.Common.DTO;
 
     public class Repository : IRepository
@@ -35,6 +37,20 @@
             return listOfPrns;
         }
 
-        
+        public async Task UpdatePrn(int id, DTO.PrnDTo prn)
+        {
+            var entity = await _eprContext
+                                    .Prn
+                                    .Where(a => a.Id == id)
+                                    .FirstOrDefaultAsync();
+
+            if (entity == null)
+            {
+                throw new NotFoundException($"Prn record not found for ID: {id}");
+            }
+
+            entity.PrnStatusId = prn.PrnStatusId;
+            await _eprContext.SaveChangesAsync();
+        }
     }
 }
