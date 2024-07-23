@@ -4,6 +4,8 @@ using DTO = EPR.PRN.Backend.API.Common.DTO;
 
 namespace EPR.PRN.Backend.API.Controllers
 {
+    [ApiController]
+    [Route("/prn")]
     public class PrnController : Controller
     {
         protected readonly IPrnService _prnService;
@@ -13,15 +15,10 @@ namespace EPR.PRN.Backend.API.Controllers
             _prnService = prnService ?? throw new ArgumentNullException(nameof(prnService));
         }
 
-        public IActionResult Index()
-        {
-            return View();
-        }
-
         #region Get methods
         [HttpGet("{id}")]
         [ProducesResponseType(typeof(DTO.PrnDTo), 200)]
-        public async Task<IActionResult> GetPrn(int id)
+        public async Task<IActionResult> GetPrn(Guid id)
         {
             var prn = await _prnService.GetPrnById(id);
 
@@ -31,7 +28,7 @@ namespace EPR.PRN.Backend.API.Controllers
             return Ok(prn);
         }
 
-        [HttpGet("/organisation")]
+        [HttpGet("organisation")]
         [ProducesResponseType(typeof(List<DTO.PrnDTo>), 200)]
         public async Task<IActionResult> GetAllPrnByOrganisationId(Guid orgId)
         {
@@ -45,8 +42,8 @@ namespace EPR.PRN.Backend.API.Controllers
         #endregion
 
         #region Patch Methods
-        [HttpPatch("{id}")]
-        public async Task<IActionResult> AcceptPrn(int id)
+        [HttpPatch("status/{id}")]
+        public async Task<IActionResult> AcceptPrn(Guid id)
         {
             var prn = await _prnService.GetPrnById(id);
 

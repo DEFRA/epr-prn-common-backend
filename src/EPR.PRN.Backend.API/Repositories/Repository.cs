@@ -28,6 +28,16 @@
             return prn;
         }
 
+        public async Task<DTO.PrnDTo> GetPrnById(Guid id)
+        {
+            Data.DataModels.EPRN? prn = await _eprContext
+                .Prn
+                .Where(a => a.ExternalId == id)
+                .Select(a => (a))
+                .FirstOrDefaultAsync();
+            return prn;
+        }
+
         public async Task<List<DTO.PrnDTo>> GetAllPrnByOrganisationId(Guid id)
         {
             var prns = _eprContext.Prn.Where(x => x.OrganisationId == id).ToList();
@@ -37,11 +47,11 @@
             return listOfPrns;
         }
 
-        public async Task UpdatePrn(int id, DTO.PrnDTo prn)
+        public async Task UpdatePrn(Guid id, DTO.PrnDTo prn)
         {
             var entity = await _eprContext
                                     .Prn
-                                    .Where(a => a.Id == id)
+                                    .Where(a => a.ExternalId == id)
                                     .FirstOrDefaultAsync();
 
             if (entity == null)

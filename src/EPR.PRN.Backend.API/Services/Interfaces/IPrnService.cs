@@ -4,10 +4,10 @@
 
     public interface IPrnService
     {
-        Task<DTO.PrnDTo> GetPrnById(int Id);
+        Task<DTO.PrnDTo> GetPrnById(Guid Id);
 
         Task<List<DTO.PrnDTo>> GetAllPrnByOrganisationId(Guid OrganisationId);
 
-        Task AcceptPrn(int id);
+        Task AcceptPrn(Guid id);
     }
 }

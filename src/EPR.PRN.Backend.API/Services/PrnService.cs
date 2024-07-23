@@ -13,7 +13,7 @@
             _repository = repository ?? throw new ArgumentNullException(nameof(repository));
         }
 
-        public async Task<DTO.PrnDTo> GetPrnById(int id)
+        public async Task<DTO.PrnDTo> GetPrnById(Guid id)
         {
             return await _repository.GetPrnById(id);
         }
@@ -23,7 +23,7 @@
             return await _repository.GetAllPrnByOrganisationId(organisationId);
         }
 
-        public async Task AcceptPrn(int id)
+        public async Task AcceptPrn(Guid id)
         {
             var existingPrn = this.GetPrnById(id);
             if (existingPrn != null) 
