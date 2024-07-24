@@ -1,15 +1,15 @@
-﻿using System;
-using EPR.PRN.Backend.Data.DataModels;
-
-namespace EPR.PRN.Backend.API.Common.DTO
+﻿namespace EPR.PRN.Backend.API.Common.DTO
 {
+    using EPR.PRN.Backend.Data.DataModels;
+    using System;
+
     public class PrnDTo
     {
         public int Id { get; set; }
 
         public Guid ExternalId { get; set; }
 
-        public required string PrnNumber { get; set; }
+        public string PrnNumber { get; set; }
 
         public Guid OrganisationId { get; set; }
 
@@ -23,7 +23,7 @@ namespace EPR.PRN.Backend.API.Common.DTO
 
         public int TonnageValue { get; set; }
 
-        public required string MaterialName { get; set; }
+        public string MaterialName { get; set; }
 
         public string? IssuerNotes { get; set; }
 
@@ -65,9 +65,19 @@ namespace EPR.PRN.Backend.API.Common.DTO
 
         public bool IsExport { get; set; }
 
+        public PrnDTo (string prnNumber, string materialName )
+        {
+            this.PrnNumber = prnNumber;
+            this.MaterialName = materialName;
+        }
+
+        public PrnDTo()
+        {
+        }
+
         public static implicit operator PrnDTo(EPRN prn)
         {
-            return new PrnDTo
+            return new PrnDTo(prn.PrnNumber, prn.MaterialName)
             {
                 Id = prn.Id,
                 AccreditationNumber = prn.AccreditationNumber,

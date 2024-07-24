@@ -1,9 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using EPR.PRN.Backend.API.Services.Interfaces;
-using DTO = EPR.PRN.Backend.API.Common.DTO;
-
-namespace EPR.PRN.Backend.API.Controllers
+﻿namespace EPR.PRN.Backend.API.Controllers
 {
+    using Microsoft.AspNetCore.Mvc;
+    using EPR.PRN.Backend.API.Services.Interfaces;
+    using DTO = EPR.PRN.Backend.API.Common.DTO;
+
     [ApiController]
     [Route("/prn")]
     public class PrnController : Controller
@@ -43,7 +43,7 @@ namespace EPR.PRN.Backend.API.Controllers
 
         #region Patch Methods
         [HttpPatch("status/{id}")]
-        public async Task<IActionResult> AcceptPrn(Guid id)
+        public async Task<IActionResult> UpdatePrnStatus(Guid id)
         {
             var prn = await _prnService.GetPrnById(id);
 
