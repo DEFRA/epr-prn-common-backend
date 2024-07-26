@@ -32,19 +32,33 @@ namespace EPR.PRN.Backend.Data
 				.HasIndex(a => a.ExternalId)
 				.IsUnique();
 
-			modelBuilder.Entity<EPRN>()
-				.HasIndex(a => a.PrnNumber)
-				.IsUnique();
+            modelBuilder.Entity<EPRN>()
+                .HasIndex(a => a.PrnNumber)
+                .IsUnique();
 
-			modelBuilder.Entity<PrnStatus>()
+            modelBuilder.Entity<PrnStatus>()
 				.HasData(DataModels.PrnStatus.Data);
-            base.OnModelCreating(modelBuilder);
-		}
 
-		public virtual DbSet<EPRN> Prn { get; set; }
-		
-		public virtual DbSet<PrnStatus> PrnStatus { get; set; }
+            modelBuilder.Entity<RecyclingTarget>()
+                .HasData(
+                            new RecyclingTarget { Year = 2025, PaperTarget = 0.75, GlassTarget = 0.74, AluminiumTarget = 0.61, SteelTarget = 0.8, PlasticTarget = 0.55, WoodTarget = 0.45, GlassRemeltTarget = 0.75 },
+                            new RecyclingTarget { Year = 2026, PaperTarget = 0.77, GlassTarget = 0.76, AluminiumTarget = 0.62, SteelTarget = 0.81, PlasticTarget = 0.57, WoodTarget = 0.46, GlassRemeltTarget = 0.76 },
+                            new RecyclingTarget { Year = 2027, PaperTarget = 0.79, GlassTarget = 0.78, AluminiumTarget = 0.63, SteelTarget = 0.82, PlasticTarget = 0.59, WoodTarget = 0.47, GlassRemeltTarget = 0.77 },
+                            new RecyclingTarget { Year = 2028, PaperTarget = 0.81, GlassTarget = 0.80, AluminiumTarget = 0.64, SteelTarget = 0.83, PlasticTarget = 0.61, WoodTarget = 0.48, GlassRemeltTarget = 0.78 },
+                            new RecyclingTarget { Year = 2029, PaperTarget = 0.83, GlassTarget = 0.82, AluminiumTarget = 0.65, SteelTarget = 0.84, PlasticTarget = 0.63, WoodTarget = 0.49, GlassRemeltTarget = 0.79 },
+                            new RecyclingTarget { Year = 2030, PaperTarget = 0.85, GlassTarget = 0.85, AluminiumTarget = 0.67, SteelTarget = 0.85, PlasticTarget = 0.65, WoodTarget = 0.50, GlassRemeltTarget = 0.80 }
+                        );
 
-		public virtual DbSet<PrnStatusHistory> PrnStatusHistory { get; set; }
-	}
+                base.OnModelCreating(modelBuilder);
+        }
+
+        public virtual DbSet<EPRN> Prn { get; set; }
+
+        public virtual DbSet<PrnStatus> PrnStatus { get; set; }
+
+        public virtual DbSet<PrnStatusHistory> PrnStatusHistory { get; set; }
+
+        public virtual DbSet<RecyclingTarget> RecyclingTargets { get; set; }
+
+    }
 }

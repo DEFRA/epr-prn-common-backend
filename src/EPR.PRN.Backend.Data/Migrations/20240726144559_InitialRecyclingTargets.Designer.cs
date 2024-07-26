@@ -4,6 +4,7 @@ using EPR.PRN.Backend.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EPR.PRN.Backend.Data.Migrations
 {
     [DbContext(typeof(EprContext))]
-    partial class EprContextModelSnapshot : ModelSnapshot
+    [Migration("20240726144559_InitialRecyclingTargets")]
+    partial class InitialRecyclingTargets
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -177,32 +180,6 @@ namespace EPR.PRN.Backend.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("PrnStatus");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            StatusDescription = "Prn Accepted",
-                            StatusName = "ACCEPTED"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            StatusDescription = "Prn Rejected",
-                            StatusName = "REJECTED"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            StatusDescription = "Prn Cancelled",
-                            StatusName = "CANCELED"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            StatusDescription = "Prn Awaiting Acceptance",
-                            StatusName = "AWAITINGACCEPTANCE"
-                        });
                 });
 
             modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.PrnStatusHistory", b =>
