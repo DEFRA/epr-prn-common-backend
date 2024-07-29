@@ -20,5 +20,22 @@
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
 	</ItemGroup>
+	<ItemGroup>
+		
+		<SonarQubeSetting Include="sonar.coverage.exclusions">
+			<Value>Migrations/*,Scripts/*</Value>
+		</SonarQubeSetting>
+	</ItemGroup>
 
+	<ItemGroup>
+		<SonarQubeSetting Include="sonar.cpd.exclusions">
+			<Value>Migrations/*,Scripts/*</Value>
+		</SonarQubeSetting>
+	</ItemGroup>
+
+	<ItemGroup>
+		<SonarQubeSetting Include="sonar.exclusions">
+			<Value>Scripts/*</Value>
+		</SonarQubeSetting>
+	</ItemGroup>
 </Project>
