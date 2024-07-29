@@ -18,16 +18,13 @@ namespace EPR.PRN.Backend.API.UnitTests.Services
         private PrnController _systemUnderTest;
         private Mock<IPrnService> _mockPrnService;
         private Mock<ILogger<PrnController>> _mockLogger;
-        private Mock<IUrlHelper> _mockUrlHelper;
 
         [TestInitialize]
         public void TestInitialize()
         {
-            _mockUrlHelper = new Mock<IUrlHelper>();
             _mockPrnService = new Mock<IPrnService>();
             _mockLogger = new Mock<ILogger<PrnController>>();
-            _mockUrlHelper = new Mock<IUrlHelper>();
-            _systemUnderTest = new PrnController(_mockPrnService.Object, _mockLogger.Object, _mockUrlHelper.Object);
+            _systemUnderTest = new PrnController(_mockPrnService.Object, _mockLogger.Object);
         }
 
         [TestMethod]
@@ -92,7 +89,6 @@ namespace EPR.PRN.Backend.API.UnitTests.Services
         [AutoData]
         public async Task UpdatePrnStatus_ReturnsConflict_WhenServiceThrowsConflictException(Guid orgId, List<PrnUpdateStatusDto> prnUpdates)
         {
-            _mockUrlHelper.Setup(x => x.Content(It.IsAny<string>())).Returns<string>(x => "prn/status");
             _mockPrnService.Setup(s => s.UpdateStatus(orgId, prnUpdates)).Throws<ConflictException>();
 
             var result = await _systemUnderTest.UpdatePrnStatus(orgId, prnUpdates) as ObjectResult;
@@ -104,8 +100,7 @@ namespace EPR.PRN.Backend.API.UnitTests.Services
         [TestMethod]
         [AutoData]
         public async Task UpdatePrnStatus_ReturnsNotFound_WhenServiceThrowsNotFoundException(Guid orgId, List<PrnUpdateStatusDto> prnUpdates)
-        {
-            _mockUrlHelper.Setup(x => x.Content(It.IsAny<string>())).Returns<string>(x => "prn/status");
+        { 
             _mockPrnService.Setup(s => s.UpdateStatus(orgId, prnUpdates)).Throws<NotFoundException>();
 
             var result = await _systemUnderTest.UpdatePrnStatus(orgId, prnUpdates) as ObjectResult;
@@ -118,7 +113,6 @@ namespace EPR.PRN.Backend.API.UnitTests.Services
         [AutoData]
         public async Task UpdatePrnStatus_ReturnsInternalServer_WhenServiceThrowsUnexpectedException(Guid orgId, List<PrnUpdateStatusDto> prnUpdates)
         {
-            _mockUrlHelper.Setup(x => x.Content(It.IsAny<string>())).Returns<string>(x => "prn/status");
             _mockPrnService.Setup(s => s.UpdateStatus(orgId, prnUpdates)).Throws<ArgumentNullException>();
 
             var result = await _systemUnderTest.UpdatePrnStatus(orgId, prnUpdates) as ObjectResult;

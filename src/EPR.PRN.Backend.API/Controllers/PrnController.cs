@@ -13,13 +13,11 @@
         private readonly IPrnService _prnService;
 
         private readonly ILogger<PrnController> _logger;
-        private readonly IUrlHelper _urlHelper;
 
-        public PrnController(IPrnService prnService, ILogger<PrnController> logger, IUrlHelper urlHelper)
+        public PrnController(IPrnService prnService, ILogger<PrnController> logger)
         {
             _prnService = prnService ?? throw new ArgumentNullException(nameof(prnService));
             _logger = logger;
-            _urlHelper = urlHelper;
         }
 
         #region Get methods
@@ -61,17 +59,17 @@
             catch (NotFoundException ex)
             {
                 _logger.LogInformation(ex, "Recieved not found exception");
-                return Problem(ex.Message, _urlHelper.Action(nameof(UpdatePrnStatus)), (int)HttpStatusCode.NotFound);
+                return Problem(ex.Message, null, (int)HttpStatusCode.NotFound);
             }
             catch (ConflictException ex)
             {
                 _logger.LogInformation(ex, "Recieved conflict exception");
-                return Problem(ex.Message, _urlHelper.Action(nameof(UpdatePrnStatus)), (int)HttpStatusCode.Conflict);
+                return Problem(ex.Message, null, (int)HttpStatusCode.Conflict);
             }
             catch (Exception ex)
             {
                 _logger.LogInformation(ex, "Recieved Unhandled exception");
-                return Problem("Internal Server Error", _urlHelper.Action(nameof(UpdatePrnStatus)),(int)HttpStatusCode.InternalServerError);
+                return Problem("Internal Server Error", null,(int)HttpStatusCode.InternalServerError);
             }
         }
         #endregion
