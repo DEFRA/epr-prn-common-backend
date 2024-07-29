@@ -35,6 +35,8 @@ variables:
     value: EPR.PRN.Backend.API
   - name: testProjectFolder
     value: EPR.PRN.Backend.API.UnitTests
+  - name: DataFolder
+    value: EPR.PRN.Backend.Data
   - name: sonarQubeProjectKey
     value: epr-prn-common-backend
   - name: sonarQubeProjectName
