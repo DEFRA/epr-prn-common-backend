@@ -7,9 +7,14 @@
     using EPR.PRN.Backend.Data.DataModels;
     using System.Collections.Generic;
 
-    public class PrnService(IRepository repository) : IPrnService
+    public class PrnService : IPrnService
     {
-        protected readonly IRepository _repository = repository;
+        protected readonly IRepository _repository;
+
+        public PrnService(IRepository repository)
+        {
+            _repository = repository;
+        }
 
         public async Task<PrnDto?> GetPrnForOrganisationById(Guid orgId, Guid prnId)
         {

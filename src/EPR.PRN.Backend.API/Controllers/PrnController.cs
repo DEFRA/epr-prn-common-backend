@@ -8,11 +8,17 @@
 
     [ApiController]
     [Route("/prn")]
-    public class PrnController(IPrnService prnService, ILogger<PrnController> logger) : Controller
+    public class PrnController : Controller
     {
-        private readonly IPrnService _prnService = prnService;
+        private readonly IPrnService _prnService;
 
-        private readonly ILogger<PrnController> _logger = logger;
+        private readonly ILogger<PrnController> _logger;
+
+        public PrnController(IPrnService prnService, ILogger<PrnController> logger)
+        {
+            _prnService = prnService;
+            _logger = logger;
+        }
 
         #region Get methods
         [HttpGet("{prnId}")]

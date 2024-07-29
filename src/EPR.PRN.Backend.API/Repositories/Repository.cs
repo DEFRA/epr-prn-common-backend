@@ -7,9 +7,14 @@
     using Microsoft.EntityFrameworkCore.Storage;
     using System.Collections.Generic;
 
-    public class Repository(EprContext eprContext) : IRepository
+    public class Repository : IRepository
     {
-        protected readonly EprContext _eprContext = eprContext;
+        protected readonly EprContext _eprContext;
+
+        public Repository(EprContext eprContext)
+        {
+            _eprContext = eprContext;
+        }
 
         private IQueryable<EPRN> GetAllPrnsForOrganisation(Guid orgId)
         {
