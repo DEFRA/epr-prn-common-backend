@@ -1,76 +1,68 @@
-﻿using EPR.PRN.Backend.API.Common.DTO;
+﻿using AutoFixture.MSTest;
+using EPR.PRN.Backend.API.Common.DTO;
 using EPR.PRN.Backend.API.Repositories.Interfaces;
 using EPR.PRN.Backend.API.Services;
+using EPR.PRN.Backend.Data.DataModels;
+using FluentAssertions;
 using Moq;
-using static Azure.Core.HttpHeader;
 
 namespace EPR.PRN.Backend.API.UnitTests.Services
 {
     [TestClass]
     public class PrnServiceTests
     {
-        private PrnService _prnService;
+        private PrnService _systemUnderTest;
         private Mock<IRepository> _mockRepository;
 
         [TestInitialize]
         public void Init()
         {
             _mockRepository = new Mock<IRepository>();
-            _prnService = new PrnService(_mockRepository.Object);
+            _systemUnderTest = new PrnService(_mockRepository.Object);
         }
 
         [TestMethod]
-        public async Task GetPrn_WithValidId_ReturnsExpectedDTO()
+        [AutoData]
+        public async Task GetPrnForOrganisationById_WithValidId_ReturnsExpectedDto(Guid prnId, Guid orgId, EPRN expectedPrn)
         {
-            // Arrange
-            var id = Guid.NewGuid();
-            PrnDTo expectedDTO = new PrnDTo();
+            _mockRepository.Setup(r => r.GetPrnForOrganisationById(orgId, prnId)).ReturnsAsync(expectedPrn);
 
-            _mockRepository.Setup(r => r.GetPrnById(id)).ReturnsAsync(expectedDTO);
+            var result = await _systemUnderTest.GetPrnForOrganisationById(orgId, prnId);
 
-            //// Act
-            var result = await _prnService.GetPrnById(id);
-
-            //// Assert
-            Assert.IsNotNull(result);
-            Assert.AreEqual(expectedDTO, result);
-
-            _mockRepository.Verify(r => r.GetPrnById(id), Times.Once());
+            result.Should().BeEquivalentTo((PrnDTo)expectedPrn);
         }
 
         [TestMethod]
-        public async Task GetPrn_WithInvalidId_ReturnsNull()
+        [AutoData]
+        public async Task GetPrnForOrganisationById_WithInValidId_ReturnsNull(Guid prnId, Guid orgId, EPRN expectedPrn)
         {
-            // Arrange
-            var id = Guid.NewGuid();
+            _mockRepository.Setup(r => r.GetPrnForOrganisationById(orgId, prnId)).ReturnsAsync((EPRN?)null);
 
-            _mockRepository.Setup(r => r.GetPrnById(id)).ReturnsAsync((PrnDTo)null);
+            var result = await _systemUnderTest.GetPrnForOrganisationById(orgId, prnId);
 
-            // Act
-            var result = await _prnService.GetPrnById(id);
-
-            // Assert
-            Assert.IsNull(result);
-
-            _mockRepository.Verify(r => r.GetPrnById(id), Times.Once);
+            result.Should().BeNull();
         }
 
         [TestMethod]
-        public async Task AcceptPrn_CallsRepositoryWithCorrectParameters()
+        [AutoData]
+        public async Task GetAllPrnByOrganisationId_WithInValidId_ReturnsNull(Guid orgId, List<EPRN> expectedPrns)
         {
-            // Arrange
-            PrnDTo expectedDTO = new PrnDTo();
-            var id = Guid.NewGuid();
-            expectedDTO.ExternalId = id;
+            _mockRepository.Setup(r => r.GetAllPrnByOrganisationId(orgId)).ReturnsAsync(expectedPrns);
 
-            _mockRepository.Setup(r => r.GetPrnById(id)).ReturnsAsync(expectedDTO);
+            var result = await _systemUnderTest.GetAllPrnByOrganisationId(orgId);
 
-            // Act
-            await _prnService.AcceptPrn(id);
+            result.Should().BeEquivalentTo(expectedPrns);
+        }
 
-            // Assert
-            _mockRepository.Verify(r => r.GetPrnById(id), Times.Once());
-            _mockRepository.Verify(r => r.UpdatePrn(id, expectedDTO), Times.Once);
+        [TestMethod]
+        [AutoData]
+        public async Task UpdateStatus_Return_ReturnsNull(Guid orgId, List<EPRN> expectedPrns)
+        {
+            _mockRepository.Setup(r => r.GetAllPrnByOrganisationId(orgId)).ReturnsAsync(expectedPrns);
+
+            var result = await _systemUnderTest.GetAllPrnByOrganisationId(orgId);
+
+            result.Should().BeEquivalentTo(expectedPrns);
         }
     }
 }

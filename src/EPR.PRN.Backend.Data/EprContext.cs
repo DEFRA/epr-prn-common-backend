@@ -6,27 +6,27 @@ namespace EPR.PRN.Backend.Data
 {
 	public class EprContext : DbContext
 	{
-		private readonly IConfiguration _configuration;
-		
-		public EprContext()
-		{
-			
-		}
-		
-		public EprContext(DbContextOptions options) : base(options)
-		{
-		
-		}
-		
-		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-		{
-			if (!optionsBuilder.IsConfigured)
-			{
-				optionsBuilder.UseSqlServer(_configuration.GetConnectionString("EprnConnectionString"));
-			}
-		}
+        private readonly IConfiguration _configuration;
 
-		protected override void OnModelCreating(ModelBuilder modelBuilder)
+        public EprContext()
+        {
+
+        }
+
+        public EprContext(DbContextOptions options) : base(options)
+        {
+
+        }
+
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            if (!optionsBuilder.IsConfigured)
+            {
+                optionsBuilder.UseSqlServer(_configuration.GetConnectionString("EprnConnectionString"));
+            }
+        }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
 			modelBuilder.Entity<EPRN>()
 				.HasIndex(a => a.ExternalId)
@@ -35,8 +35,10 @@ namespace EPR.PRN.Backend.Data
 			modelBuilder.Entity<EPRN>()
 				.HasIndex(a => a.PrnNumber)
 				.IsUnique();
-			
-			base.OnModelCreating(modelBuilder);
+
+			modelBuilder.Entity<PrnStatus>()
+				.HasData(DataModels.PrnStatus.Data);
+            base.OnModelCreating(modelBuilder);
 		}
 
 		public virtual DbSet<EPRN> Prn { get; set; }

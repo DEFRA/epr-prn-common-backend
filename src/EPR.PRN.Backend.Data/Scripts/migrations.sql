@@ -115,3 +115,36 @@ GO
 COMMIT;
 GO
 
+BEGIN TRANSACTION;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20240728110950_AddedEnumForStatus'
+)
+BEGIN
+    IF EXISTS (SELECT * FROM [sys].[identity_columns] WHERE [name] IN (N'Id', N'StatusDescription', N'StatusName') AND [object_id] = OBJECT_ID(N'[PrnStatus]'))
+        SET IDENTITY_INSERT [PrnStatus] ON;
+    EXEC(N'INSERT INTO [PrnStatus] ([Id], [StatusDescription], [StatusName])
+    VALUES (1, N''Prn Accepted'', N''ACCEPTED''),
+    (2, N''Prn Rejected'', N''REJECTED''),
+    (3, N''Prn Cancelled'', N''CANCELED''),
+    (4, N''Prn Awaiting Acceptance'', N''AWAITINGACCEPTANCE'')');
+    IF EXISTS (SELECT * FROM [sys].[identity_columns] WHERE [name] IN (N'Id', N'StatusDescription', N'StatusName') AND [object_id] = OBJECT_ID(N'[PrnStatus]'))
+        SET IDENTITY_INSERT [PrnStatus] OFF;
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20240728110950_AddedEnumForStatus'
+)
+BEGIN
+    INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+    VALUES (N'20240728110950_AddedEnumForStatus', N'8.0.7');
+END;
+GO
+
+COMMIT;
+GO
+

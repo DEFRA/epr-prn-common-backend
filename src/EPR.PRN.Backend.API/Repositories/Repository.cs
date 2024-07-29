@@ -1,12 +1,11 @@
 ﻿namespace EPR.PRN.Backend.API.Repositories
 {
-    using EPR.PRN.Backend.API.Common.DTO;
-    using EPR.PRN.Backend.API.Helpers;
     using EPR.PRN.Backend.API.Repositories.Interfaces;
     using EPR.PRN.Backend.Data;
+    using EPR.PRN.Backend.Data.DataModels;
     using Microsoft.EntityFrameworkCore;
+    using Microsoft.EntityFrameworkCore.Storage;
     using System.Collections.Generic;
-    using DTO = EPR.PRN.Backend.API.Common.DTO;
 
     public class Repository : IRepository
     {
@@ -17,50 +16,44 @@
         {
             _eprContext = eprContext ?? throw new ArgumentNullException(nameof(EprContext));
         }
-
-        public async Task<DTO.PrnDTo> GetPrnById(int id)
+        private IQueryable<EPRN> GetAllPrnsForOrganisation(Guid orgId)
         {
-            Data.DataModels.EPRN? prn = await _eprContext
-                .Prn
-                .Where(a => a.Id == id)
-                .Select(a => (a))
-                .FirstOrDefaultAsync();
-            return prn;
+            return _eprContext.Prn.Where(x => x.OrganisationId == orgId);
+        }
+        public async Task<List<EPRN>> GetAllPrnByOrganisationId(Guid orgId)
+        {
+            return await GetAllPrnsForOrganisation(orgId)
+                        .ToListAsync();
         }
 
-        public async Task<DTO.PrnDTo> GetPrnById(Guid id)
+        public async Task<EPRN?> GetPrnForOrganisationById(Guid orgId, Guid prnId)
         {
-            Data.DataModels.EPRN? prn = await _eprContext
-                .Prn
-                .Where(a => a.ExternalId == id)
-                .Select(a => (a))
-                .FirstOrDefaultAsync();
-            return prn;
+            return await GetAllPrnsForOrganisation(orgId)
+                        .FirstOrDefaultAsync(p => p.ExternalId == prnId);
         }
 
-        public async Task<List<DTO.PrnDTo>> GetAllPrnByOrganisationId(Guid id)
+        //public async Task UpdateStatus(Guid orgId, List<PrnUpdateStatusDto> prnUpdates)
+        //{
+        //    using var transaction = BeginTransaction();
+        //    var prns = await GetAllPrnByOrganisationId(orgId);
+
+        //    foreach (var prnUpdate in prnUpdates)
+        //    {
+        //        var prn = prns.Find(x => x.ExternalId == prnUpdate.PrnId);
+        //        prn!.PrnStatusId = (int)prnUpdate.Status;
+        //    }
+        //    await SaveTransaction(transaction);
+        //}
+
+        public async Task SaveTransaction(IDbContextTransaction transaction)
         {
-            var prns = _eprContext.Prn.Where(x => x.OrganisationId == id).ToList();
-
-            List<DTO.PrnDTo> listOfPrns = new List<DTO.PrnDTo>(prns.Select(x => (PrnDTo)x));
-
-            return listOfPrns;
-        }
-
-        public async Task UpdatePrn(Guid id, DTO.PrnDTo prn)
-        {
-            var entity = await _eprContext
-                                    .Prn
-                                    .Where(a => a.ExternalId == id)
-                                    .FirstOrDefaultAsync();
-
-            if (entity == null)
-            {
-                throw new NotFoundException($"Prn record not found for ID: {id}");
-            }
-
-            entity.PrnStatusId = prn.PrnStatusId;
             await _eprContext.SaveChangesAsync();
+            transaction.Commit();
+        }
+
+        public IDbContextTransaction BeginTransaction()
+        {
+            return _eprContext.Database.BeginTransaction();
         }
     }
 }

@@ -7,7 +7,7 @@ namespace EPR.PRN.Backend
     public class Program
     {
         public static void Main(string[] args)
-        {
+       {
             CreateHostBuilder(args).Build().Run();
         }
 

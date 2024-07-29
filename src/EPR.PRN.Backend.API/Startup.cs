@@ -2,6 +2,7 @@
 using EPR.PRN.Backend.Data;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics.CodeAnalysis;
+using System.Text.Json.Serialization;
 
 namespace EPR.PRN.Backend.API
 {
@@ -17,7 +18,8 @@ namespace EPR.PRN.Backend.API
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
+            services.AddControllers()
+                .AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen(config =>
             {

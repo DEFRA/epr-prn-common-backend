@@ -19,8 +19,9 @@
 
         public string ReprocessorExporterAgency { get; set; }
 
-        public int PrnStatusId { get; set; }
+        private int PrnStatusId { get; set; }
 
+        public PrnStatusEnum PrnStatus => (PrnStatusEnum)PrnStatusId;
         public int TonnageValue { get; set; }
 
         public string MaterialName { get; set; }
