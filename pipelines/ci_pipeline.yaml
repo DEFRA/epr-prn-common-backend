@@ -59,6 +59,7 @@ extends:
     solutionFolder: ${{ variables.solutionFolder }}
     projectFolder: ${{ variables.projectFolder }}
     testProjectFolder: ${{ variables.testProjectFolder }}
+    DataFolder: ${{ variables.DataFolder }}
     sonarQubeProjectKey: ${{ variables.sonarQubeProjectKey }}
     sonarQubeProjectName: ${{ variables.sonarQubeProjectName }}
     runTests: ${{ parameters.runTests }}
