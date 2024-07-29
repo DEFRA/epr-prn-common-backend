@@ -16,6 +16,9 @@ ENV PATH="${PATH}:/root/.dotnet/tools"
 
 WORKDIR /src
 COPY ["EPR.PRN.Backend.API/EPR.PRN.Backend.API.csproj", "EPR.PRN.Backend.API/"]
+COPY ["EPR.PRN.Backend.Data/EPR.PRN.Backend.Data.csproj", "EPR.PRN.Backend.Data/"]
+COPY ["EPR.PRN.Backend.API.Common/EPR.PRN.Backend.API.Common.csproj", "EPR.PRN.Backend.API/"]
+
 RUN dotnet restore "./EPR.PRN.Backend.API/EPR.PRN.Backend.API.csproj"
 COPY . .
 WORKDIR "/src/EPR.PRN.Backend.API"
