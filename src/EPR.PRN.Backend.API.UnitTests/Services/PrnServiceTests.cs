@@ -87,7 +87,7 @@ namespace EPR.PRN.Backend.API.UnitTests.Services
             availablePrns[0].ExternalId = prnUpdates[0].PrnId;
             availablePrns[1].ExternalId = prnUpdates[1].PrnId;
             availablePrns[2].ExternalId = prnUpdates[2].PrnId;
-            availablePrns[0].PrnStatusId = (int)PrnStatusEnum.ACCEPTED;
+            availablePrns[0].PrnStatusId = (int)EprnStatus.ACCEPTED;
 
             _mockRepository.Setup(r => r.GetAllPrnByOrganisationId(orgId)).ReturnsAsync(availablePrns);
 
@@ -106,16 +106,16 @@ namespace EPR.PRN.Backend.API.UnitTests.Services
             availablePrns[2].ExternalId = prnUpdates[2].PrnId;
             
             availablePrns[0].PrnStatusId = availablePrns[1].PrnStatusId =
-                availablePrns[2].PrnStatusId = (int)PrnStatusEnum.AWAITINGACCEPTANCE;
+                availablePrns[2].PrnStatusId = (int)EprnStatus.AWAITINGACCEPTANCE;
 
             prnUpdates[0].Status = prnUpdates[1].Status =
-                prnUpdates[2].Status =  PrnStatusEnum.ACCEPTED;
+                prnUpdates[2].Status =  EprnStatus.ACCEPTED;
 
             _mockRepository.Setup(r => r.GetAllPrnByOrganisationId(orgId)).ReturnsAsync(availablePrns);
 
             await _systemUnderTest.UpdateStatus(orgId, prnUpdates);
 
-            availablePrns.Should().AllSatisfy(x => x.PrnStatusId.Should().Be((int)PrnStatusEnum.ACCEPTED));
+            availablePrns.Should().AllSatisfy(x => x.PrnStatusId.Should().Be((int)EprnStatus.ACCEPTED));
             _mockRepository.Verify(x => x.SaveTransaction(It.IsAny<IDbContextTransaction>()), Times.Once());
             _mockRepository.Verify(x => x.SaveTransaction(It.IsAny<IDbContextTransaction>()), Times.Once());
         }

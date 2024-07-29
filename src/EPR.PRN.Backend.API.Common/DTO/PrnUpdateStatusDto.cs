@@ -8,6 +8,6 @@ namespace EPR.PRN.Backend.API.Common.DTO
     {
         public Guid PrnId { get; set; }
 
-        public required PrnStatusEnum Status { get; set; }
+        public required EprnStatus Status { get; set; }
     }
 }

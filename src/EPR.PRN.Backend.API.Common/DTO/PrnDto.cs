@@ -23,7 +23,7 @@
 
         private int PrnStatusId { get; set; }
 
-        public PrnStatusEnum PrnStatus => (PrnStatusEnum)PrnStatusId;
+        public EprnStatus PrnStatus => (EprnStatus)PrnStatusId;
         public int TonnageValue { get; set; }
 
         public string MaterialName { get; set; } = null!;

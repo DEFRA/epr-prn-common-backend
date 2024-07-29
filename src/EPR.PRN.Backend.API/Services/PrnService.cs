@@ -47,7 +47,7 @@
             {
                 var prn = prns.Find(x => x.ExternalId == prnUpdate.PrnId);
 
-                if (prn!.PrnStatusId != (int)PrnStatusEnum.AWAITINGACCEPTANCE)
+                if (prn!.PrnStatusId != (int)EprnStatus.AWAITINGACCEPTANCE)
                     throw new ConflictException($"{prnUpdate.PrnId} cannot be accepted or rejected please refresh and try again");
 
                 prn.PrnStatusId = (int)prnUpdate.Status;
