@@ -22,7 +22,7 @@ namespace EPR.PRN.Backend.Data
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseSqlServer(_configuration.GetConnectionString("EprnConnectionString"));
+                optionsBuilder.UseSqlServer(_configuration.GetConnectionString("EprConnectionString"));
             }
         }
 

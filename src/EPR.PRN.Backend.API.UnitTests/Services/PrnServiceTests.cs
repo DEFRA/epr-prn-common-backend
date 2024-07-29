@@ -1,9 +1,11 @@
 ﻿using AutoFixture.MSTest;
 using EPR.PRN.Backend.API.Common.DTO;
+using EPR.PRN.Backend.API.Helpers;
 using EPR.PRN.Backend.API.Repositories.Interfaces;
 using EPR.PRN.Backend.API.Services;
 using EPR.PRN.Backend.Data.DataModels;
 using FluentAssertions;
+using Microsoft.EntityFrameworkCore.Storage;
 using Moq;
 
 namespace EPR.PRN.Backend.API.UnitTests.Services
@@ -29,14 +31,14 @@ namespace EPR.PRN.Backend.API.UnitTests.Services
 
             var result = await _systemUnderTest.GetPrnForOrganisationById(orgId, prnId);
 
-            result.Should().BeEquivalentTo((PrnDTo)expectedPrn);
+            result.Should().BeEquivalentTo((PrnDto)expectedPrn);
         }
 
         [TestMethod]
         [AutoData]
-        public async Task GetPrnForOrganisationById_WithInValidId_ReturnsNull(Guid prnId, Guid orgId, EPRN expectedPrn)
+        public async Task GetPrnForOrganisationById_WithInValidId_ReturnsNull(Guid prnId, Guid orgId)
         {
-            _mockRepository.Setup(r => r.GetPrnForOrganisationById(orgId, prnId)).ReturnsAsync((EPRN?)null);
+            _mockRepository.Setup(r => r.GetPrnForOrganisationById(orgId, prnId)).ReturnsAsync((EPRN)null);
 
             var result = await _systemUnderTest.GetPrnForOrganisationById(orgId, prnId);
 
@@ -56,13 +58,66 @@ namespace EPR.PRN.Backend.API.UnitTests.Services
 
         [TestMethod]
         [AutoData]
-        public async Task UpdateStatus_Return_ReturnsNull(Guid orgId, List<EPRN> expectedPrns)
+        public async Task UpdateStatus_throwsNotFoundIfNoPrnRecordsForOrg(Guid orgId, List<PrnUpdateStatusDto> prnUpdates)
         {
-            _mockRepository.Setup(r => r.GetAllPrnByOrganisationId(orgId)).ReturnsAsync(expectedPrns);
+            _mockRepository.Setup(r => r.GetAllPrnByOrganisationId(orgId)).ReturnsAsync([]);
 
-            var result = await _systemUnderTest.GetAllPrnByOrganisationId(orgId);
+            await _systemUnderTest
+                .Invoking(x => x.UpdateStatus(orgId, prnUpdates))
+                .Should()
+                .ThrowAsync<NotFoundException>();
+        }
 
-            result.Should().BeEquivalentTo(expectedPrns);
+        [TestMethod]
+        [AutoData]
+        public async Task UpdateStatus_throwsNotFoundIfPrnInUpdateDoesntExists(Guid orgId, List<EPRN> availablePrns,List<PrnUpdateStatusDto> prnUpdates)
+        {
+            _mockRepository.Setup(r => r.GetAllPrnByOrganisationId(orgId)).ReturnsAsync(availablePrns);
+
+            await _systemUnderTest
+                .Invoking(x => x.UpdateStatus(orgId, prnUpdates))
+                .Should()
+                .ThrowAsync<NotFoundException>();
+        }
+
+        [TestMethod]
+        [AutoData]
+        public async Task UpdateStatus_throwsConflictExceptionIfStatusNotInAwaitingAcceptance(Guid orgId, List<EPRN> availablePrns, List<PrnUpdateStatusDto> prnUpdates)
+        {
+            availablePrns[0].ExternalId = prnUpdates[0].PrnId;
+            availablePrns[1].ExternalId = prnUpdates[1].PrnId;
+            availablePrns[2].ExternalId = prnUpdates[2].PrnId;
+            availablePrns[0].PrnStatusId = (int)PrnStatusEnum.ACCEPTED;
+
+            _mockRepository.Setup(r => r.GetAllPrnByOrganisationId(orgId)).ReturnsAsync(availablePrns);
+
+            await _systemUnderTest
+                .Invoking(x => x.UpdateStatus(orgId, prnUpdates))
+                .Should()
+                .ThrowAsync<ConflictException>();
+        }
+
+        [TestMethod]
+        [AutoData]
+        public async Task UpdateStatus_CallsUpdateToDB(Guid orgId, List<EPRN> availablePrns, List<PrnUpdateStatusDto> prnUpdates)
+        {
+            availablePrns[0].ExternalId = prnUpdates[0].PrnId;
+            availablePrns[1].ExternalId = prnUpdates[1].PrnId;
+            availablePrns[2].ExternalId = prnUpdates[2].PrnId;
+            
+            availablePrns[0].PrnStatusId = availablePrns[1].PrnStatusId =
+                availablePrns[2].PrnStatusId = (int)PrnStatusEnum.AWAITINGACCEPTANCE;
+
+            prnUpdates[0].Status = prnUpdates[1].Status =
+                prnUpdates[2].Status =  PrnStatusEnum.ACCEPTED;
+
+            _mockRepository.Setup(r => r.GetAllPrnByOrganisationId(orgId)).ReturnsAsync(availablePrns);
+
+            await _systemUnderTest.UpdateStatus(orgId, prnUpdates);
+
+            availablePrns.Should().AllSatisfy(x => x.PrnStatusId.Should().Be((int)PrnStatusEnum.ACCEPTED));
+            _mockRepository.Verify(x => x.SaveTransaction(It.IsAny<IDbContextTransaction>()), Times.Once());
+            _mockRepository.Verify(x => x.SaveTransaction(It.IsAny<IDbContextTransaction>()), Times.Once());
         }
     }
 }

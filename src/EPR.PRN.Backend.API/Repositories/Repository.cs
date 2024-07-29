@@ -7,15 +7,10 @@
     using Microsoft.EntityFrameworkCore.Storage;
     using System.Collections.Generic;
 
-    public class Repository : IRepository
+    public class Repository(EprContext eprContext) : IRepository
     {
-        protected readonly EprContext _eprContext;
+        protected readonly EprContext _eprContext = eprContext ?? throw new ArgumentNullException(nameof(EprContext));
 
-        public Repository(
-            EprContext eprContext)
-        {
-            _eprContext = eprContext ?? throw new ArgumentNullException(nameof(EprContext));
-        }
         private IQueryable<EPRN> GetAllPrnsForOrganisation(Guid orgId)
         {
             return _eprContext.Prn.Where(x => x.OrganisationId == orgId);
@@ -31,19 +26,6 @@
             return await GetAllPrnsForOrganisation(orgId)
                         .FirstOrDefaultAsync(p => p.ExternalId == prnId);
         }
-
-        //public async Task UpdateStatus(Guid orgId, List<PrnUpdateStatusDto> prnUpdates)
-        //{
-        //    using var transaction = BeginTransaction();
-        //    var prns = await GetAllPrnByOrganisationId(orgId);
-
-        //    foreach (var prnUpdate in prnUpdates)
-        //    {
-        //        var prn = prns.Find(x => x.ExternalId == prnUpdate.PrnId);
-        //        prn!.PrnStatusId = (int)prnUpdate.Status;
-        //    }
-        //    await SaveTransaction(transaction);
-        //}
 
         public async Task SaveTransaction(IDbContextTransaction transaction)
         {

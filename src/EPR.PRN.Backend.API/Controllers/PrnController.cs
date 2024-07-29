@@ -8,21 +8,15 @@
 
     [ApiController]
     [Route("/prn")]
-    public class PrnController : Controller
+    public class PrnController(IPrnService prnService, ILogger<PrnController> logger) : Controller
     {
-        private readonly IPrnService _prnService;
+        private readonly IPrnService _prnService = prnService ?? throw new ArgumentNullException(nameof(prnService));
 
-        private readonly ILogger<PrnController> _logger;
-
-        public PrnController(IPrnService prnService, ILogger<PrnController> logger)
-        {
-            _prnService = prnService ?? throw new ArgumentNullException(nameof(prnService));
-            _logger = logger;
-        }
+        private readonly ILogger<PrnController> _logger = logger;
 
         #region Get methods
         [HttpGet("{prnId}")]
-        [ProducesResponseType(typeof(PrnDTo), 200)]
+        [ProducesResponseType(typeof(PrnDto), 200)]
         public async Task<IActionResult> GetPrn([FromHeader] Guid organisationId, [FromRoute]Guid prnId)
         {
             var prn = await _prnService.GetPrnForOrganisationById(organisationId, prnId);
@@ -34,7 +28,7 @@
         }
 
         [HttpGet("organisation")]
-        [ProducesResponseType(typeof(List<PrnDTo>), 200)]
+        [ProducesResponseType(typeof(List<PrnDto>), 200)]
         public async Task<IActionResult> GetAllPrnByOrganisationId([FromHeader] Guid organisationId)
         {
             var prn = await _prnService.GetAllPrnByOrganisationId(organisationId);

@@ -2,33 +2,35 @@
 {
     using EPR.PRN.Backend.Data.DataModels;
     using System;
+    using System.Diagnostics.CodeAnalysis;
 
-    public class PrnDTo
+    [ExcludeFromCodeCoverage]
+    public class PrnDto
     {
         public int Id { get; set; }
 
         public Guid ExternalId { get; set; }
 
-        public string PrnNumber { get; set; }
+        public string PrnNumber { get; set; } = null!;
 
         public Guid OrganisationId { get; set; }
 
-        public string OrganisationName { get; set; }
+        public string OrganisationName { get; set; } = null!;
 
-        public string ProducerAgency { get; set; }
+        public string ProducerAgency { get; set; } = null!;
 
-        public string ReprocessorExporterAgency { get; set; }
+        public string ReprocessorExporterAgency { get; set; } = null!;
 
         private int PrnStatusId { get; set; }
 
         public PrnStatusEnum PrnStatus => (PrnStatusEnum)PrnStatusId;
         public int TonnageValue { get; set; }
 
-        public string MaterialName { get; set; }
+        public string MaterialName { get; set; } = null!;
 
         public string? IssuerNotes { get; set; }
 
-        public string IssuerReference { get; set; }
+        public string IssuerReference { get; set; } = null!;
 
         public string? PrnSignatory { get; set; }
 
@@ -44,17 +46,17 @@
 
         public DateTime? CancelledDate { get; set; }
 
-        public string IssuedByOrg { get; set; }
+        public string IssuedByOrg { get; set; } = null!;
 
-        public string AccreditationNumber { get; set; }
+        public string AccreditationNumber { get; set; } = null!;
 
         public string? ReprocessingSite { get; set; }
 
-        public string AccreditationYear { get; set; }
+        public string AccreditationYear { get; set; } = null!;
 
-        public string ObligationYear { get; set; }
+        public string ObligationYear { get; set; } = null!;
 
-        public string PackagingProducer { get; set; }
+        public string PackagingProducer { get; set; } = null!;
 
         public string? CreatedBy { get; set; }
 
@@ -66,19 +68,9 @@
 
         public bool IsExport { get; set; }
 
-        public PrnDTo (string prnNumber, string materialName )
+        public static implicit operator PrnDto(EPRN prn)
         {
-            this.PrnNumber = prnNumber;
-            this.MaterialName = materialName;
-        }
-
-        public PrnDTo()
-        {
-        }
-
-        public static implicit operator PrnDTo(EPRN prn)
-        {
-            return new PrnDTo(prn.PrnNumber, prn.MaterialName)
+            return new PrnDto()
             {
                 Id = prn.Id,
                 AccreditationNumber = prn.AccreditationNumber,

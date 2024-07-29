@@ -5,7 +5,6 @@ using EPR.PRN.Backend.API.Helpers;
 using EPR.PRN.Backend.API.Services.Interfaces;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.Extensions.Logging;
 using Moq;
 using System.Net;
@@ -29,7 +28,7 @@ namespace EPR.PRN.Backend.API.UnitTests.Services
 
         [TestMethod]
         [AutoData]
-        public async Task GetPrn_ReturnsOkWithPrn_WhenValidPrnId(Guid orgId, Guid prnId, PrnDTo expectedPrn)
+        public async Task GetPrn_ReturnsOkWithPrn_WhenValidPrnId(Guid orgId, Guid prnId, PrnDto expectedPrn)
         {
             _mockPrnService.Setup(s => s.GetPrnForOrganisationById(orgId, prnId)).ReturnsAsync(expectedPrn);
 
@@ -42,7 +41,7 @@ namespace EPR.PRN.Backend.API.UnitTests.Services
         [AutoData]
         public async Task GetPrn_ReturnsNotFound_WhenPrnIdDoesntExists(Guid orgId, Guid prnId)
         {
-            _mockPrnService.Setup(s => s.GetPrnForOrganisationById(orgId, prnId)).ReturnsAsync((PrnDTo?)null);
+            _mockPrnService.Setup(s => s.GetPrnForOrganisationById(orgId, prnId)).ReturnsAsync((PrnDto)null);
 
             var result = await _systemUnderTest.GetPrn(orgId, prnId) as NotFoundResult;
 
@@ -52,7 +51,7 @@ namespace EPR.PRN.Backend.API.UnitTests.Services
 
         [TestMethod]
         [AutoData]
-        public async Task GetAllPrnByOrganisationId_ReturnsOkWithPrns_WhenValidOrgId(Guid orgId, List<PrnDTo> expectedPrns)
+        public async Task GetAllPrnByOrganisationId_ReturnsOkWithPrns_WhenValidOrgId(Guid orgId, List<PrnDto> expectedPrns)
         {
             _mockPrnService.Setup(s => s.GetAllPrnByOrganisationId(orgId)).ReturnsAsync(expectedPrns);
 

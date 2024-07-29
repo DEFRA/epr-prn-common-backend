@@ -7,25 +7,20 @@
     using EPR.PRN.Backend.Data.DataModels;
     using System.Collections.Generic;
 
-    public class PrnService : IPrnService
+    public class PrnService(IRepository repository) : IPrnService
     {
-        protected readonly IRepository _repository;
+        protected readonly IRepository _repository = repository ?? throw new ArgumentNullException(nameof(repository));
 
-        public PrnService(IRepository repository)
-        {
-            _repository = repository ?? throw new ArgumentNullException(nameof(repository));
-        }
-
-        public async Task<PrnDTo?> GetPrnForOrganisationById(Guid organisationId, Guid prnId)
+        public async Task<PrnDto?> GetPrnForOrganisationById(Guid organisationId, Guid prnId)
         {
             var prn = await _repository.GetPrnForOrganisationById(organisationId, prnId);
 
-            return prn == null ? null : (PrnDTo)prn;
+            return prn == null ? null : (PrnDto)prn;
         }
 
-        public async Task<List<PrnDTo>> GetAllPrnByOrganisationId(Guid organisationId)
+        public async Task<List<PrnDto>> GetAllPrnByOrganisationId(Guid organisationId)
         {
-            return (await _repository.GetAllPrnByOrganisationId(organisationId)).Select(x => (PrnDTo)x).ToList();
+            return (await _repository.GetAllPrnByOrganisationId(organisationId)).Select(x => (PrnDto)x).ToList();
         }
 
         public async Task UpdateStatus(Guid orgId, List<PrnUpdateStatusDto> prnUpdates)

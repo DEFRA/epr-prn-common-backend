@@ -13,7 +13,7 @@ namespace EPR.PRN.Backend.Data.DataModels
 		[MaxLength(50)]
 		public string? StatusDescription { get; set; }
 
-		internal static List<PrnStatus> Data =
+		public static readonly List<PrnStatus> Data =
         [
             new() { Id = 1, StatusName = PrnStatusEnum.ACCEPTED.ToString(), StatusDescription = "Prn Accepted"},
             new() { Id = 2, StatusName = PrnStatusEnum.REJECTED.ToString(), StatusDescription = "Prn Rejected"},
