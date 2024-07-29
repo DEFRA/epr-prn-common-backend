@@ -7,6 +7,13 @@ EXPOSE 8080
 
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
+
+# Install dotnet-ef tool
+RUN dotnet tool install dotnet-ef --version 8.* --tool-path "/root/.dotnet/tools"
+ 
+# Add the tools folder to PATH
+ENV PATH="${PATH}:/root/.dotnet/tools"
+
 WORKDIR /src
 COPY ["EPR.PRN.Backend.API/EPR.PRN.Backend.API.csproj", "EPR.PRN.Backend.API/"]
 RUN dotnet restore "./EPR.PRN.Backend.API/EPR.PRN.Backend.API.csproj"
