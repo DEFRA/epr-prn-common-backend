@@ -9,7 +9,7 @@
 
     public class Repository(EprContext eprContext) : IRepository
     {
-        protected readonly EprContext _eprContext = eprContext ?? throw new ArgumentNullException(nameof(EprContext));
+        protected readonly EprContext _eprContext = eprContext;
 
         private IQueryable<EPRN> GetAllPrnsForOrganisation(Guid orgId)
         {

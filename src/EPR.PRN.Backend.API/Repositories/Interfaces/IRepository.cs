@@ -12,6 +12,5 @@ namespace EPR.PRN.Backend.API.Repositories.Interfaces
         Task<EPRN?> GetPrnForOrganisationById(Guid orgId, Guid prnId);
         public IDbContextTransaction BeginTransaction();
         public Task SaveTransaction(IDbContextTransaction transaction);
-        //Task UpdateStatus(Guid organisationId, List<PrnUpdateStatusDto> prnUpdates);
     }
 }

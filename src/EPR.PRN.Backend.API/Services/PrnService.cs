@@ -9,18 +9,18 @@
 
     public class PrnService(IRepository repository) : IPrnService
     {
-        protected readonly IRepository _repository = repository ?? throw new ArgumentNullException(nameof(repository));
+        protected readonly IRepository _repository = repository;
 
-        public async Task<PrnDto?> GetPrnForOrganisationById(Guid organisationId, Guid prnId)
+        public async Task<PrnDto?> GetPrnForOrganisationById(Guid orgId, Guid prnId)
         {
-            var prn = await _repository.GetPrnForOrganisationById(organisationId, prnId);
+            var prn = await _repository.GetPrnForOrganisationById(orgId, prnId);
 
             return prn == null ? null : (PrnDto)prn;
         }
 
-        public async Task<List<PrnDto>> GetAllPrnByOrganisationId(Guid organisationId)
+        public async Task<List<PrnDto>> GetAllPrnByOrganisationId(Guid orgId)
         {
-            return (await _repository.GetAllPrnByOrganisationId(organisationId)).Select(x => (PrnDto)x).ToList();
+            return (await _repository.GetAllPrnByOrganisationId(orgId)).Select(x => (PrnDto)x).ToList();
         }
 
         public async Task UpdateStatus(Guid orgId, List<PrnUpdateStatusDto> prnUpdates)

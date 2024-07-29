@@ -10,7 +10,7 @@
     [Route("/prn")]
     public class PrnController(IPrnService prnService, ILogger<PrnController> logger) : Controller
     {
-        private readonly IPrnService _prnService = prnService ?? throw new ArgumentNullException(nameof(prnService));
+        private readonly IPrnService _prnService = prnService;
 
         private readonly ILogger<PrnController> _logger = logger;
 
