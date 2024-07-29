@@ -12,7 +12,7 @@ FROM defradigital/dotnetcore-development:dotnet8.0 AS build
 USER root
  
 # Install dotnet-ef tool
-RUN dotnet tool install dotnet-ef --version 6.* --tool-path "/root/.dotnet/tools"
+RUN dotnet tool install dotnet-ef --version 8.* --tool-path "/root/.dotnet/tools"
  
 # Add the tools folder to PATH
 ENV PATH="${PATH}:/root/.dotnet/tools"
@@ -29,11 +29,11 @@ COPY --chown=dotnet:dotnet EPR.PRN.Backend.Data/. ./EPR.PRN.Backend.Data/.
 COPY --chown=dotnet:dotnet EPR.PRN.Backend.API.Common/. ./EPR.PRN.Backend.API.Common/.
 
 WORKDIR "/src/EPR.PRN.Backend.API"
-RUN dotnet build "./EPR.PRN.Backend.API.csproj" -c $BUILD_CONFIGURATION -o /app/build
+RUN dotnet build "./EPR.PRN.Backend.API.csproj" -c Release /p:AzureBuild=true -o /app/build
 
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "./EPR.PRN.Backend.API.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "./EPR.PRN.Backend.API.csproj" -c Release /p:AzureBuild=false -o /app/publish
 
 FROM base AS final
 USER dotnet
