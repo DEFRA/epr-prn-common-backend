@@ -49,7 +49,7 @@ namespace EPR.PRN.Backend.Data
                             new RecyclingTarget { Year = 2030, PaperTarget = 0.85, GlassTarget = 0.85, AluminiumTarget = 0.67, SteelTarget = 0.85, PlasticTarget = 0.65, WoodTarget = 0.50, GlassRemeltTarget = 0.80 }
                         );
 
-                base.OnModelCreating(modelBuilder);
+            base.OnModelCreating(modelBuilder);
         }
 
         public virtual DbSet<EPRN> Prn { get; set; }
