@@ -23,9 +23,9 @@
         #region Get methods
         [HttpGet("{prnId}")]
         [ProducesResponseType(typeof(PrnDto), 200)]
-        public async Task<IActionResult> GetPrn([FromHeader] Guid organisationId, [FromRoute]Guid prnId)
+        public async Task<IActionResult> GetPrn([FromHeader(Name = "X-EPR-ORGANISATION")] Guid orgId, [FromRoute]Guid prnId)
         {
-            var prn = await _prnService.GetPrnForOrganisationById(organisationId, prnId);
+            var prn = await _prnService.GetPrnForOrganisationById(orgId, prnId);
 
             if (prn == null)
                 return NotFound();
@@ -35,9 +35,9 @@
 
         [HttpGet("organisation")]
         [ProducesResponseType(typeof(List<PrnDto>), 200)]
-        public async Task<IActionResult> GetAllPrnByOrganisationId([FromHeader] Guid organisationId)
+        public async Task<IActionResult> GetAllPrnByOrganisationId([FromHeader(Name = "X-EPR-ORGANISATION")] Guid orgId)
         {
-            var prn = await _prnService.GetAllPrnByOrganisationId(organisationId);
+            var prn = await _prnService.GetAllPrnByOrganisationId(orgId);
 
             if (prn.Count == 0)
                 return NotFound();
@@ -48,11 +48,11 @@
 
         #region Post Methods
         [HttpPost("status")]
-        public async Task<IActionResult> UpdatePrnStatus([FromHeader] Guid organisationId, [FromBody] List<PrnUpdateStatusDto> prnUpdates)
+        public async Task<IActionResult> UpdatePrnStatus([FromHeader(Name = "X-EPR-ORGANISATION")] Guid orgId, [FromBody] List<PrnUpdateStatusDto> prnUpdates)
         {
             try
             {
-                await _prnService.UpdateStatus(organisationId, prnUpdates);
+                await _prnService.UpdateStatus(orgId, prnUpdates);
 
                 return Ok();
             }
