@@ -12,6 +12,22 @@ namespace EPR.PRN.Backend.Data.DataModels
 		
 		[MaxLength(50)]
 		public string? StatusDescription { get; set; }
+
+		public static readonly List<PrnStatus> Data =
+        [
+            new() { Id = 1, StatusName = EprnStatus.ACCEPTED.ToString(), StatusDescription = "Prn Accepted"},
+            new() { Id = 2, StatusName = EprnStatus.REJECTED.ToString(), StatusDescription = "Prn Rejected"},
+            new() { Id = 3, StatusName = EprnStatus.CANCELED.ToString(), StatusDescription = "Prn Cancelled"},
+            new() { Id = 4, StatusName = EprnStatus.AWAITINGACCEPTANCE.ToString(), StatusDescription = "Prn Awaiting Acceptance"}
+        ];
+
 	}
+    public enum EprnStatus
+    {
+        ACCEPTED  = 1,
+        REJECTED,
+        CANCELED,
+		AWAITINGACCEPTANCE
+    }
 }
 

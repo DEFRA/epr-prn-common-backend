@@ -15,7 +15,6 @@ parameters:
   displayName: Run OWASPScan
   type: boolean
   default: false
-
 - name: sonarqubeInstance
   displayName: 'Select SonarQube for v9.9 or SonarQubeLatest for 10.4'
   type: string
@@ -23,6 +22,8 @@ parameters:
   values:
   - 'SonarQube'
   - 'SonarQubeLatest'
+
+  
 
 pool: DEFRA-COMMON-ubuntu2004-SSV3
 
@@ -34,6 +35,8 @@ variables:
     value: EPR.PRN.Backend.API
   - name: testProjectFolder
     value: EPR.PRN.Backend.API.UnitTests
+  - name: DataFolder
+    value: EPR.PRN.Backend.Data
   - name: sonarQubeProjectKey
     value: epr-prn-common-backend
   - name: sonarQubeProjectName
@@ -56,6 +59,7 @@ extends:
     solutionFolder: ${{ variables.solutionFolder }}
     projectFolder: ${{ variables.projectFolder }}
     testProjectFolder: ${{ variables.testProjectFolder }}
+    DataFolder: ${{ variables.DataFolder }}
     sonarQubeProjectKey: ${{ variables.sonarQubeProjectKey }}
     sonarQubeProjectName: ${{ variables.sonarQubeProjectName }}
     runTests: ${{ parameters.runTests }}
@@ -69,4 +73,3 @@ extends:
     serviceName: $(serviceName)
     sonarqubeInstance: ${{ parameters.sonarqubeInstance }}
     dotnetVersion: ${{ variables.dotnetVersion }}
-

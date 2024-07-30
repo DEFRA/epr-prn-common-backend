@@ -1,9 +1,21 @@
-using EPR.PRN.Backend.API;
+namespace EPR.PRN.Backend
+{
+    using EPR.PRN.Backend.API;
+    using System.Diagnostics.CodeAnalysis;
 
-var builder = WebApplication.CreateBuilder(args);
-var app = builder.Build();
-var startup = new Startup(builder.Environment, builder.Configuration);
-startup.ConfigureServices(builder.Services);
-startup.Configure(app, builder.Environment);
+    [ExcludeFromCodeCoverage]
+    public class Program
+    {
+        public static void Main(string[] args)
+       {
+            CreateHostBuilder(args).Build().Run();
+        }
 
-app.Run();
+        public static IHostBuilder CreateHostBuilder(string[] args) =>
+            Host.CreateDefaultBuilder(args)
+                .ConfigureWebHostDefaults(webBuilder =>
+                {
+                    webBuilder.UseStartup<Startup>();
+                });
+    }
+}

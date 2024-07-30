@@ -17,13 +17,13 @@ namespace EPR.PRN.Backend.Data.DataModels
 		public Guid OrganisationId { get; set; }
 		
 		[Required, MaxLength(50)]
-		public string OrganisationName { get; set; }
+		public required string OrganisationName { get; set; }
 		
 		[MaxLength(50)]
-		public string ProducerAgency { get; set; }
+		public required string ProducerAgency { get; set; }
 		
 		[MaxLength(50)]
-		public string ReprocessorExporterAgency { get; set; }
+		public required string ReprocessorExporterAgency { get; set; }
 		
 		public int PrnStatusId { get; set; }
 		
@@ -36,7 +36,7 @@ namespace EPR.PRN.Backend.Data.DataModels
 		public string? IssuerNotes { get; set; }
 		
 		[MaxLength(200)]
-		public string IssuerReference { get; set; }
+		public required string IssuerReference { get; set; }
 		
 		[MaxLength(50)]
 		public string? PrnSignatory { get; set; }
@@ -57,22 +57,22 @@ namespace EPR.PRN.Backend.Data.DataModels
 		public DateTime? CancelledDate { get; set; }
 		
 		[MaxLength(50)]
-		public string IssuedByOrg { get; set; }
+		public required string IssuedByOrg { get; set; }
 		
 		[MaxLength(20)]
-		public string AccreditationNumber { get; set; }
+		public required string AccreditationNumber { get; set; }
 		
 		[MaxLength(100)]
-		public string? ReprocessingSite { get; set; }
+		public required string? ReprocessingSite { get; set; }
 		
 		[MaxLength(10)]
-		public string AccreditationYear { get; set; }
+		public required string AccreditationYear { get; set; }
 		
 		[MaxLength(10)]
-		public string ObligationYear { get; set; }
+		public required string ObligationYear { get; set; }
 		
 		[MaxLength(100)]
-		public string PackagingProducer { get; set; }
+		public required string PackagingProducer { get; set; }
 		
 		[MaxLength(20)]
 		public string? CreatedBy { get; set; }
