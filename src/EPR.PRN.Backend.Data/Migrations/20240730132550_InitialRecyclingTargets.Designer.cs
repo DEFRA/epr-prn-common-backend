@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EPR.PRN.Backend.Data.Migrations
 {
     [DbContext(typeof(EprContext))]
-    [Migration("20240726144559_InitialRecyclingTargets")]
+    [Migration("20240730132550_InitialRecyclingTargets")]
     partial class InitialRecyclingTargets
     {
         /// <inheritdoc />
@@ -180,6 +180,32 @@ namespace EPR.PRN.Backend.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("PrnStatus");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            StatusDescription = "Prn Accepted",
+                            StatusName = "ACCEPTED"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            StatusDescription = "Prn Rejected",
+                            StatusName = "REJECTED"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            StatusDescription = "Prn Cancelled",
+                            StatusName = "CANCELED"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            StatusDescription = "Prn Awaiting Acceptance",
+                            StatusName = "AWAITINGACCEPTANCE"
+                        });
                 });
 
             modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.PrnStatusHistory", b =>

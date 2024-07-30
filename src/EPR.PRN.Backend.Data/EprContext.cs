@@ -4,8 +4,8 @@ using Microsoft.Extensions.Configuration;
 
 namespace EPR.PRN.Backend.Data
 {
-	public class EprContext : DbContext
-	{
+    public class EprContext : DbContext
+    {
         private readonly IConfiguration _configuration;
 
         public EprContext()
@@ -27,17 +27,17 @@ namespace EPR.PRN.Backend.Data
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
-		{
-			modelBuilder.Entity<EPRN>()
-				.HasIndex(a => a.ExternalId)
-				.IsUnique();
+        {
+            modelBuilder.Entity<EPRN>()
+                .HasIndex(a => a.ExternalId)
+                .IsUnique();
 
             modelBuilder.Entity<EPRN>()
                 .HasIndex(a => a.PrnNumber)
                 .IsUnique();
 
             modelBuilder.Entity<PrnStatus>()
-				.HasData(DataModels.PrnStatus.Data);
+                .HasData(DataModels.PrnStatus.Data);
 
             modelBuilder.Entity<RecyclingTarget>()
                 .HasData(
@@ -59,6 +59,5 @@ namespace EPR.PRN.Backend.Data
         public virtual DbSet<PrnStatusHistory> PrnStatusHistory { get; set; }
 
         public virtual DbSet<RecyclingTarget> RecyclingTargets { get; set; }
-
     }
 }
