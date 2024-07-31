@@ -97,5 +97,30 @@ namespace EPR.PRN.Backend.API.UnitTests.Repositories
             //Asset
             prn.PrnStatusId.Should().Be(3);
         }
+
+        [TestMethod]
+        [AutoData]
+        public async Task AddPrnHistory(List<EPRN> data, PrnStatusHistory statusHistory)
+        {
+            //Arrange
+            data[0].PrnStatusId = data[1].PrnStatusId = data[2].PrnStatusId = 2;
+            statusHistory.PrnIdFk = data[0].Id;
+            statusHistory.PrnStatusIdFk = data[0].PrnStatusId;
+            using var context = new EprContext(_contextOptions);
+            if (context.Database.EnsureCreated())
+            {
+                context.AddRange(data);
+                context.SaveChanges();
+            }
+            //Act
+            var repo = new Repository(context);
+
+            var transaction = repo.BeginTransaction();
+            repo.AddPrnStatusHistory(statusHistory);
+            await repo.SaveTransaction(transaction);
+
+            var history = context.PrnStatusHistory.Where(p => p.CreatedByUser == statusHistory.CreatedByUser).ToList();
+            history.Should().HaveCount(1);
+        }
     }
 }

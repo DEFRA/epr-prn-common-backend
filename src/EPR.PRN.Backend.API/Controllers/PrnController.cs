@@ -48,11 +48,14 @@
 
         #region Post Methods
         [HttpPost("status")]
-        public async Task<IActionResult> UpdatePrnStatus([FromHeader(Name = "X-EPR-ORGANISATION")] Guid orgId, [FromBody] List<PrnUpdateStatusDto> prnUpdates)
+        public async Task<IActionResult> UpdatePrnStatus(
+            [FromHeader(Name = "X-EPR-ORGANISATION")] Guid orgId,
+            [FromHeader(Name = "X-EPR-USER")] Guid userId,
+            [FromBody] List<PrnUpdateStatusDto> prnUpdates)
         {
             try
             {
-                await _prnService.UpdateStatus(orgId, prnUpdates);
+                await _prnService.UpdateStatus(orgId, userId, prnUpdates);
 
                 return Ok();
             }
