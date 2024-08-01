@@ -1,9 +1,9 @@
-﻿using EPR.PRN.Backend.Obligation.Models;
+﻿using EPR.PRN.Backend.Obligation.Enums;
 
 namespace EPR.PRN.Backend.Obligation.Interfaces
 {
     public interface IRecyclingTargetDataService
     {
-        Task<AnnualRecyclingTargets[]> GetRecyclingTargetsAsync();
+        Task<Dictionary<int, Dictionary<MaterialType, double>>> GetRecyclingTargetsAsync();
     }
 }

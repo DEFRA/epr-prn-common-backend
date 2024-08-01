@@ -1,6 +1,5 @@
 ﻿using EPR.PRN.Backend.Data.Interfaces;
 using EPR.PRN.Backend.Obligation.Enums;
-using EPR.PRN.Backend.Obligation.Models;
 using EPR.PRN.Backend.Obligation.Services;
 using FluentAssertions;
 using Moq;
@@ -21,7 +20,7 @@ namespace EPR.PRN.Backend.Obligation.UnitTests.Services
             var annualRecyclingTargets = await recyclingTargetDataService.GetRecyclingTargetsAsync();
 
             annualRecyclingTargets.Should().NotBeNullOrEmpty("we should have a non empty array of transformed recycling targets");
-            annualRecyclingTargets.Should().BeEquivalentTo(new AnnualRecyclingTargets[] { new() { Year = 1, Targets = new Dictionary<MaterialType, double> { { MaterialType.Aluminium, 0.1 }, { MaterialType.Glass, 0.3 }, { MaterialType.GlassRemelt, 0.2 }, { MaterialType.Paper, 0.4 }, { MaterialType.Plastic, 0.5 }, { MaterialType.Steel, 0.6 }, { MaterialType.Wood, 0.7 } } } }, "the transformed data should match the data from the repository");
+            annualRecyclingTargets.Should().BeEquivalentTo(new Dictionary<int, Dictionary<MaterialType, double>> { { 1, new Dictionary<MaterialType, double> { { MaterialType.Aluminium, 0.1 }, { MaterialType.Glass, 0.3 }, { MaterialType.GlassRemelt, 0.2 }, { MaterialType.Paper, 0.4 }, { MaterialType.Plastic, 0.5 }, { MaterialType.Steel, 0.6 }, { MaterialType.Wood, 0.7 } } } }, "the transformed data should match the data from the repository");
         }
 
         [TestMethod]
@@ -34,13 +33,13 @@ namespace EPR.PRN.Backend.Obligation.UnitTests.Services
 
             var annualRecyclingTargets = await recyclingTargetDataService.GetRecyclingTargetsAsync();
             annualRecyclingTargets.Should().NotBeNullOrEmpty("we should have a non empty array of transformed recycling targets");
-            annualRecyclingTargets.Should().BeEquivalentTo(new AnnualRecyclingTargets[] { new() { Year = 1, Targets = new Dictionary<MaterialType, double> { { MaterialType.Aluminium, 0.1 }, { MaterialType.Glass, 0.3 }, { MaterialType.GlassRemelt, 0.2 }, { MaterialType.Paper, 0.4 }, { MaterialType.Plastic, 0.5 }, { MaterialType.Steel, 0.6 }, { MaterialType.Wood, 0.7 } } } }, "the transformed data should match the data from the repository");
+            annualRecyclingTargets.Should().BeEquivalentTo(new Dictionary<int, Dictionary<MaterialType, double>> { { 1, new Dictionary<MaterialType, double> { { MaterialType.Aluminium, 0.1 }, { MaterialType.Glass, 0.3 }, { MaterialType.GlassRemelt, 0.2 }, { MaterialType.Paper, 0.4 }, { MaterialType.Plastic, 0.5 }, { MaterialType.Steel, 0.6 }, { MaterialType.Wood, 0.7 } } } }, "the transformed data should match the data from the repository");
 
             recyclingTargetRepositoryMock.Verify(x => x.GetAllAsync(), Times.Once);
 
             annualRecyclingTargets = await recyclingTargetDataService.GetRecyclingTargetsAsync();
             annualRecyclingTargets.Should().NotBeNullOrEmpty("we should have a non empty array of transformed recycling targets");
-            annualRecyclingTargets.Should().BeEquivalentTo(new AnnualRecyclingTargets[] { new() { Year = 1, Targets = new Dictionary<MaterialType, double> { { MaterialType.Aluminium, 0.1 }, { MaterialType.Glass, 0.3 }, { MaterialType.GlassRemelt, 0.2 }, { MaterialType.Paper, 0.4 }, { MaterialType.Plastic, 0.5 }, { MaterialType.Steel, 0.6 }, { MaterialType.Wood, 0.7 } } } }, "the transformed data should match the data from the repository");
+            annualRecyclingTargets.Should().BeEquivalentTo(new Dictionary<int, Dictionary<MaterialType, double>> { { 1, new Dictionary<MaterialType, double> { { MaterialType.Aluminium, 0.1 }, { MaterialType.Glass, 0.3 }, { MaterialType.GlassRemelt, 0.2 }, { MaterialType.Paper, 0.4 }, { MaterialType.Plastic, 0.5 }, { MaterialType.Steel, 0.6 }, { MaterialType.Wood, 0.7 } } } }, "the transformed data should match the data from the repository");
 
             recyclingTargetRepositoryMock.VerifyNoOtherCalls();
         }

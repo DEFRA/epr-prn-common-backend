@@ -2,13 +2,12 @@
 using EPR.PRN.Backend.Data.Interfaces;
 using EPR.PRN.Backend.Obligation.Enums;
 using EPR.PRN.Backend.Obligation.Interfaces;
-using EPR.PRN.Backend.Obligation.Models;
 
 namespace EPR.PRN.Backend.Obligation.Services
 {
     public class RecyclingTargetDataService : IRecyclingTargetDataService
     {
-        private AnnualRecyclingTargets[] _recyclingTargets;
+        private Dictionary<int, Dictionary<MaterialType, double>> _recyclingTargets;
         private readonly IRecyclingTargetRepository _recyclingTargetRepository;
 
         public RecyclingTargetDataService(IRecyclingTargetRepository recyclingTargetRepository)
@@ -17,12 +16,12 @@ namespace EPR.PRN.Backend.Obligation.Services
             _recyclingTargets = [];
         }
 
-        public async Task<AnnualRecyclingTargets[]> GetRecyclingTargetsAsync()
+        public async Task<Dictionary<int, Dictionary<MaterialType, double>>> GetRecyclingTargetsAsync()
         {
-            if (_recyclingTargets.Length == 0)
+            if (_recyclingTargets.Count == 0)
             {
                 var recyclingTargets = (await _recyclingTargetRepository.GetAllAsync()).ToList();
-                _recyclingTargets = recyclingTargets.Select(x => new AnnualRecyclingTargets() { Year = x.Year, Targets = TransformTargets(x) }).ToArray();
+                _recyclingTargets = recyclingTargets.Select(x => new KeyValuePair<int, Dictionary<MaterialType, double>>(x.Year, TransformTargets(x))).ToDictionary();
             }
 
             return _recyclingTargets;

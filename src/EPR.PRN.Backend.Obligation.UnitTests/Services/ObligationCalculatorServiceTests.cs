@@ -1,5 +1,7 @@
-﻿using EPR.PRN.Backend.Obligation.Services;
+﻿using EPR.PRN.Backend.Obligation.Interfaces;
+using EPR.PRN.Backend.Obligation.Services;
 using FluentAssertions;
+using Moq;
 
 namespace EPR.PRN.Backend.Obligation.UnitTests.Services
 {
@@ -12,7 +14,8 @@ namespace EPR.PRN.Backend.Obligation.UnitTests.Services
         [DataRow(0.6, 128, 77)]
         public void CalculateObligation_WhenAluminium_ThenObligationIsReturned(double target, int tonnage, int expected)
         {
-            var obligationCalculator = new ObligationCalculatorService();
+            var recyclingTargetDataServiceMock = new Mock<IRecyclingTargetDataService>();
+            var obligationCalculator = new ObligationCalculatorService(recyclingTargetDataServiceMock.Object);
 
             var result = obligationCalculator.Calculate(target, tonnage);
 
@@ -26,7 +29,8 @@ namespace EPR.PRN.Backend.Obligation.UnitTests.Services
         [DataRow(0.78, 0.77, 170, 103, 30)]
         public void CalculateObligation_WhenGlassRemelt_ThenObligationIsReturned(double target, double remeltTarget, int tonnage, int expectedRemelt, int expectedRemainder)
         {
-            var obligationCalculator = new ObligationCalculatorService();
+            var recyclingTargetDataServiceMock = new Mock<IRecyclingTargetDataService>();
+            var obligationCalculator = new ObligationCalculatorService(recyclingTargetDataServiceMock.Object);
 
             var (remeltResult, remainderResult) = obligationCalculator.CalculateGlass(target, remeltTarget, tonnage);
 
