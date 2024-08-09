@@ -28,7 +28,7 @@
             return (await _repository.GetAllPrnByOrganisationId(orgId)).Select(x => (PrnDto)x).ToList();
         }
 
-        public async Task UpdateStatus(Guid orgId, List<PrnUpdateStatusDto> prnUpdates)
+        public async Task UpdateStatus(Guid orgId, Guid userId, List<PrnUpdateStatusDto> prnUpdates)
         {
             using var transaction = _repository.BeginTransaction();
             
@@ -50,9 +50,26 @@
                 if (prn!.PrnStatusId != (int)EprnStatus.AWAITINGACCEPTANCE)
                     throw new ConflictException($"{prnUpdate.PrnId} cannot be accepted or rejected please refresh and try again");
 
-                prn.PrnStatusId = (int)prnUpdate.Status;
+                UpdatePrn(userId, prnUpdate, prn);
             }
             await _repository.SaveTransaction(transaction);
+        }
+
+        private void UpdatePrn(Guid userId, PrnUpdateStatusDto prnUpdate, EPRN prn)
+        {
+            var prnStatusHistory = new PrnStatusHistory()
+            {
+                PrnIdFk = prn.Id,
+                PrnStatusIdFk = (int)prnUpdate.Status,
+                CreatedOn = DateTime.UtcNow,
+                CreatedByUser = userId,
+            };
+
+            _repository.AddPrnStatusHistory(prnStatusHistory);
+
+            prn.PrnStatusId = (int)prnUpdate.Status;
+            prn.LastUpdatedBy = userId;
+            prn.LastUpdatedDate = DateTime.UtcNow;
         }
     }
 }

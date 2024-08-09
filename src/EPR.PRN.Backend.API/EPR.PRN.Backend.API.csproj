@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
@@ -6,6 +6,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     <StartupObject>EPR.PRN.Backend.Program</StartupObject>
+    <UserSecretsId>85e4b71e-86ad-4147-890d-1f90e01b40e8</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>

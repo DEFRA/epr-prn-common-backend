@@ -7,6 +7,6 @@
         Task<PrnDto?> GetPrnForOrganisationById(Guid orgId, Guid prnId);
 
         Task<List<PrnDto>> GetAllPrnByOrganisationId(Guid orgId);
-        Task UpdateStatus(Guid orgId, List<PrnUpdateStatusDto> prnUpdates);
+        Task UpdateStatus(Guid orgId, Guid userId, List<PrnUpdateStatusDto> prnUpdates);
     }
 }

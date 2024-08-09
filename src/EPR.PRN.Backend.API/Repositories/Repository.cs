@@ -42,5 +42,10 @@
         {
             return _eprContext.Database.BeginTransaction();
         }
+
+        public void AddPrnStatusHistory(PrnStatusHistory prnStatusHistory)
+        {
+            _eprContext.PrnStatusHistory.Add(prnStatusHistory);
+        }
     }
 }
