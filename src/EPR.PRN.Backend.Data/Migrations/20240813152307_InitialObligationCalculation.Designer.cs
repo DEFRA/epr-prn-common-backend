@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EPR.PRN.Backend.Data.Migrations
 {
     [DbContext(typeof(EprContext))]
-    [Migration("20240806090330_InitialObligationCalculation")]
+    [Migration("20240813152307_InitialObligationCalculation")]
     partial class InitialObligationCalculation
     {
         /// <inheritdoc />
@@ -180,6 +180,9 @@ namespace EPR.PRN.Backend.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<int>("OrganisationId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Year")
                         .HasColumnType("int");
 
                     b.HasKey("Id");

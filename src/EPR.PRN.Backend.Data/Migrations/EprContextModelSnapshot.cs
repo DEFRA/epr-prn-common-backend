@@ -179,6 +179,9 @@ namespace EPR.PRN.Backend.Data.Migrations
                     b.Property<int>("OrganisationId")
                         .HasColumnType("int");
 
+                    b.Property<int>("Year")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.ToTable("ObligationCalculations");
