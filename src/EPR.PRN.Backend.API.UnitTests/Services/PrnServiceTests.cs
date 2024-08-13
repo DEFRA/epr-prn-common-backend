@@ -82,12 +82,13 @@ namespace EPR.PRN.Backend.API.UnitTests.Services
 
         [TestMethod]
         [AutoData]
-        public async Task UpdateStatus_throwsConflictExceptionIfStatusNotInAwaitingAcceptance(Guid orgId, List<EPRN> availablePrns, List<PrnUpdateStatusDto> prnUpdates)
+        public async Task UpdateStatus_throwsConflictExceptionIfStatusNotInAwaitingAcceptanceOrNotSame(Guid orgId, List<EPRN> availablePrns, List<PrnUpdateStatusDto> prnUpdates)
         {
             availablePrns[0].ExternalId = prnUpdates[0].PrnId;
             availablePrns[1].ExternalId = prnUpdates[1].PrnId;
             availablePrns[2].ExternalId = prnUpdates[2].PrnId;
             availablePrns[0].PrnStatusId = (int)EprnStatus.ACCEPTED;
+            prnUpdates[0].Status = EprnStatus.REJECTED;
 
             _mockRepository.Setup(r => r.GetAllPrnByOrganisationId(orgId)).ReturnsAsync(availablePrns);
 
@@ -95,6 +96,26 @@ namespace EPR.PRN.Backend.API.UnitTests.Services
                 .Invoking(x => x.UpdateStatus(orgId, Guid.NewGuid(), prnUpdates))
                 .Should()
                 .ThrowAsync<ConflictException>();
+        }
+
+        [TestMethod]
+        [AutoData]
+        public async Task UpdateStatus_ShouldNotThrowsConflictExceptionIfStatusInAwaitingAcceptanceOrSame(Guid orgId, List<EPRN> availablePrns, List<PrnUpdateStatusDto> prnUpdates)
+        {
+            availablePrns[0].ExternalId = prnUpdates[0].PrnId;
+            availablePrns[1].ExternalId = prnUpdates[1].PrnId;
+            availablePrns[2].ExternalId = prnUpdates[2].PrnId;
+            availablePrns[0].PrnStatusId = availablePrns[1].PrnStatusId = (int)EprnStatus.ACCEPTED;
+            availablePrns[2].PrnStatusId = (int)EprnStatus.AWAITINGACCEPTANCE;
+
+            prnUpdates[0].Status = prnUpdates[1].Status = prnUpdates[2].Status = EprnStatus.ACCEPTED;
+
+            _mockRepository.Setup(r => r.GetAllPrnByOrganisationId(orgId)).ReturnsAsync(availablePrns);
+
+            await _systemUnderTest
+                .Invoking(x => x.UpdateStatus(orgId, Guid.NewGuid(), prnUpdates))
+                .Should()
+                .NotThrowAsync<ConflictException>();
         }
 
         [TestMethod]

@@ -47,10 +47,14 @@
             {
                 var prn = prns.Find(x => x.ExternalId == prnUpdate.PrnId);
 
-                if (prn!.PrnStatusId != (int)EprnStatus.AWAITINGACCEPTANCE)
+                if (prn!.PrnStatusId == (int)EprnStatus.AWAITINGACCEPTANCE || prn!.PrnStatusId == (int)prnUpdate.Status)
+                {
+                    UpdatePrn(userId, prnUpdate, prn);
+                }
+                else
+                {
                     throw new ConflictException($"{prnUpdate.PrnId} cannot be accepted or rejected please refresh and try again");
-
-                UpdatePrn(userId, prnUpdate, prn);
+                }
             }
             await _repository.SaveTransaction(transaction);
         }
