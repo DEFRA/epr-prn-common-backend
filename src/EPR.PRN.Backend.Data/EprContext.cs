@@ -60,6 +60,6 @@ namespace EPR.PRN.Backend.Data
 
         public virtual DbSet<RecyclingTarget> RecyclingTargets { get; set; }
 
-        public virtual DbSet<ObligationCalculation> ObligationCalculation { get; set; }
+        public virtual DbSet<ObligationCalculation> ObligationCalculations { get; set; }
     }
 }
