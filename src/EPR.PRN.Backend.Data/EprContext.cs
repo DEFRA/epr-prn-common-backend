@@ -59,5 +59,7 @@ namespace EPR.PRN.Backend.Data
         public virtual DbSet<PrnStatusHistory> PrnStatusHistory { get; set; }
 
         public virtual DbSet<RecyclingTarget> RecyclingTargets { get; set; }
+
+        public virtual DbSet<ObligationCalculation> ObligationCalculation { get; set; }
     }
 }

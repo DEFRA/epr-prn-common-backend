@@ -1,16 +1,19 @@
-﻿
+﻿using EPR.PRN.Backend.Data.Interfaces;
+using EPR.PRN.Backend.Obligation.DTO;
 using EPR.PRN.Backend.Obligation.Enums;
 using EPR.PRN.Backend.Obligation.Interfaces;
 
 namespace EPR.PRN.Backend.Obligation.Services
 {
-    public class ObligationCalculatorService
+    public class ObligationCalculatorService : IObligationCalculatorService
     {
         private readonly IRecyclingTargetDataService _recyclingTargetDataService;
+        private readonly IObligationCalculationRepository _obligationCalculationRepository;
 
-        public ObligationCalculatorService(IRecyclingTargetDataService recyclingTargetDataService)
+        public ObligationCalculatorService(IRecyclingTargetDataService recyclingTargetDataService, IObligationCalculationRepository obligationCalculationRepository)
         {
             _recyclingTargetDataService = recyclingTargetDataService;
+            _obligationCalculationRepository = obligationCalculationRepository;
         }
 
         public async Task ProcessApprovedPomData(int year, MaterialType materialType, int tonnage)
@@ -43,6 +46,19 @@ namespace EPR.PRN.Backend.Obligation.Services
             var remelt = (int)Math.Round(remeltTarget * initialTarget, 0, MidpointRounding.ToPositiveInfinity);
 
             return (remelt, initialTarget - remelt);
+        }
+
+        public async Task<List<ObligationCalculationDto>?> GetObligationCalculationById(int id)
+        {
+            var result = await _obligationCalculationRepository.GetObligationCalculationById(id);
+
+            return result?.Select(item => new ObligationCalculationDto
+            {
+                MaterialName = item.MaterialName,
+                MaterialObligationValue = item.MaterialObligationValue,
+                OrganisationId = item.OrganisationId,
+                Year = item.Year
+            }).ToList();
         }
     }
 }
