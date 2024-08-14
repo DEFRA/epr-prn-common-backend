@@ -18,6 +18,9 @@ namespace EPR.PRN.Backend.Data.DataModels
         public int MaterialObligationValue { get; set; }
 
         [Required]
+        public int Year { get; set; }
+
+        [Required]
         public DateTime CalculatedOn { get; set; }
     }
 }
