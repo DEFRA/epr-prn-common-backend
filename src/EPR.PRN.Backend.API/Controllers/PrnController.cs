@@ -1,9 +1,11 @@
 ﻿namespace EPR.PRN.Backend.API.Controllers
 {
-    using Microsoft.AspNetCore.Mvc;
-    using EPR.PRN.Backend.API.Services.Interfaces;
     using EPR.PRN.Backend.API.Common.DTO;
     using EPR.PRN.Backend.API.Helpers;
+    using EPR.PRN.Backend.API.Services.Interfaces;
+    using EPR.PRN.Backend.Obligation.DTO;
+    using EPR.PRN.Backend.Obligation.Interfaces;
+    using Microsoft.AspNetCore.Mvc;
     using System.Net;
 
     [ApiController]
@@ -11,19 +13,20 @@
     public class PrnController : Controller
     {
         private readonly IPrnService _prnService;
-
         private readonly ILogger<PrnController> _logger;
+        private readonly IObligationCalculatorService _obligationCalculatorService;
 
-        public PrnController(IPrnService prnService, ILogger<PrnController> logger)
+        public PrnController(IPrnService prnService, ILogger<PrnController> logger, IObligationCalculatorService obligationCalculatorService)
         {
             _prnService = prnService;
             _logger = logger;
+            _obligationCalculatorService = obligationCalculatorService;
         }
 
         #region Get methods
         [HttpGet("{prnId}")]
         [ProducesResponseType(typeof(PrnDto), 200)]
-        public async Task<IActionResult> GetPrn([FromHeader(Name = "X-EPR-ORGANISATION")] Guid orgId, [FromRoute]Guid prnId)
+        public async Task<IActionResult> GetPrn([FromHeader(Name = "X-EPR-ORGANISATION")] Guid orgId, [FromRoute] Guid prnId)
         {
             var prn = await _prnService.GetPrnForOrganisationById(orgId, prnId);
 
@@ -43,6 +46,27 @@
                 return NotFound();
 
             return Ok(prn);
+        }
+
+        [HttpGet("obligationcalculation/{organisationId}")]
+        [ProducesResponseType(typeof(List<ObligationCalculationDto>), 200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> GetObligationCalculation([FromRoute] int organisationId)
+        {
+            if (organisationId <= 0)
+            {
+                return BadRequest($"Invalid Organisation Id : {organisationId}. Organisation Id must be a positive integer.");
+            }
+
+            var obligationCalculation = await _obligationCalculatorService.GetObligationCalculationByOrganisationId(organisationId);
+
+            if (obligationCalculation == null)
+            {
+                return NotFound($"Obligation calculation not found for Organisation Id : {organisationId}");
+            }
+
+            return Ok(obligationCalculation);
         }
         #endregion
 
@@ -69,7 +93,7 @@
             catch (Exception ex)
             {
                 _logger.LogInformation(ex, "Recieved Unhandled exception");
-                return Problem("Internal Server Error", null,(int)HttpStatusCode.InternalServerError);
+                return Problem("Internal Server Error", null, (int)HttpStatusCode.InternalServerError);
             }
         }
         #endregion

@@ -29,6 +29,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\EPR.PRN.Backend.Data\EPR.PRN.Backend.Data.csproj" />
+    <ProjectReference Include="..\EPR.PRN.Backend.Obligation\EPR.PRN.Backend.Obligation.csproj" />
   </ItemGroup>
 
 </Project>
