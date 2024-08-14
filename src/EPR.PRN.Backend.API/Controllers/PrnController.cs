@@ -48,22 +48,22 @@
             return Ok(prn);
         }
 
-        [HttpGet("obligation/{id}")]
+        [HttpGet("obligationcalculation/{organisationId}")]
         [ProducesResponseType(typeof(List<ObligationCalculationDto>), 200)]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
-        public async Task<IActionResult> GetObligationCalculation([FromRoute] int id)
+        public async Task<IActionResult> GetObligationCalculation([FromRoute] int organisationId)
         {
-            if (id <= 0)
+            if (organisationId <= 0)
             {
-                return BadRequest($"Invalid obligation ID : {id}. ID must be a positive integer.");
+                return BadRequest($"Invalid Organisation Id : {organisationId}. Organisation Id must be a positive integer.");
             }
 
-            var obligationCalculation = await _obligationCalculatorService.GetObligationCalculationById(id);
+            var obligationCalculation = await _obligationCalculatorService.GetObligationCalculationByOrganisationId(organisationId);
 
             if (obligationCalculation == null)
             {
-                return NotFound($"Obligation calculation not found for Id : {id}");
+                return NotFound($"Obligation calculation not found for Organisation Id : {organisationId}");
             }
 
             return Ok(obligationCalculation);

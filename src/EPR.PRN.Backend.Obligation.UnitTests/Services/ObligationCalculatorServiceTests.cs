@@ -51,10 +51,10 @@ namespace EPR.PRN.Backend.Obligation.UnitTests.Services
         [AutoData]
         public async Task GetObligationCalculationById_ReturnsExpectedDtoList(List<ObligationCalculation> obligationCalculations)
         {
-            var id = 1;
-            _mockObligationCalculationRepository.Setup(repo => repo.GetObligationCalculationById(id)).ReturnsAsync(obligationCalculations);
+            var organisationId = 1;
+            _mockObligationCalculationRepository.Setup(repo => repo.GetObligationCalculationByOrganisationId(organisationId)).ReturnsAsync(obligationCalculations);
 
-            var result = await _service.GetObligationCalculationById(id);
+            var result = await _service.GetObligationCalculationByOrganisationId(organisationId);
 
             result.Should().NotBeNull();
             result.Should().HaveCount(obligationCalculations.Count(), "the expected count of calculations should match the actual count of calculations");
@@ -72,10 +72,10 @@ namespace EPR.PRN.Backend.Obligation.UnitTests.Services
         [TestMethod]
         public async Task GetObligationCalculationById_ReturnsNull_WhenNoDataFound()
         {
-            var id = 2;
-            _mockObligationCalculationRepository.Setup(repo => repo.GetObligationCalculationById(id)).ReturnsAsync((List<ObligationCalculation>?)null);
+            var organisationId = 2;
+            _mockObligationCalculationRepository.Setup(repo => repo.GetObligationCalculationByOrganisationId(organisationId)).ReturnsAsync((List<ObligationCalculation>?)null);
 
-            var result = await _service.GetObligationCalculationById(id);
+            var result = await _service.GetObligationCalculationByOrganisationId(organisationId);
 
             result.Should().BeNull();
         }

@@ -133,20 +133,20 @@ namespace EPR.PRN.Backend.API.UnitTests.Services
 
             result.Should().NotBeNull();
             result.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
-            result.Value.Should().Be($"Invalid obligation ID : {invalidId}. ID must be a positive integer.");
+            result.Value.Should().Be($"Invalid Organisation Id : {invalidId}. Organisation Id must be a positive integer.");
         }
 
         [TestMethod]
         public async Task GetObligationCalculation_ReturnsNotFound_WhenObligationCalculationNotFound()
         {
             int validId = 1;
-            _mockObligationCalculatorService.Setup(s => s.GetObligationCalculationById(validId)).ReturnsAsync((List<ObligationCalculationDto>)null);
+            _mockObligationCalculatorService.Setup(s => s.GetObligationCalculationByOrganisationId(validId)).ReturnsAsync((List<ObligationCalculationDto>)null);
 
             var result = await _systemUnderTest.GetObligationCalculation(validId) as NotFoundObjectResult;
 
             result.Should().NotBeNull();
             result.StatusCode.Should().Be((int)HttpStatusCode.NotFound);
-            result.Value.Should().Be($"Obligation calculation not found for Id : {validId}");
+            result.Value.Should().Be($"Obligation calculation not found for Organisation Id : {validId}");
         }
 
         [TestMethod]
@@ -154,7 +154,7 @@ namespace EPR.PRN.Backend.API.UnitTests.Services
         public async Task GetObligationCalculation_ReturnsOk_WhenObligationCalculationIsFound(List<ObligationCalculationDto> obligationCalculation)
         {
             int validId = 1;
-            _mockObligationCalculatorService.Setup(s => s.GetObligationCalculationById(validId)).ReturnsAsync(obligationCalculation);
+            _mockObligationCalculatorService.Setup(s => s.GetObligationCalculationByOrganisationId(validId)).ReturnsAsync(obligationCalculation);
 
             var result = await _systemUnderTest.GetObligationCalculation(validId) as OkObjectResult;
 

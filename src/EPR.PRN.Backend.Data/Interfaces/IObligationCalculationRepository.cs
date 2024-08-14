@@ -4,6 +4,6 @@ namespace EPR.PRN.Backend.Data.Interfaces
 {
     public interface IObligationCalculationRepository
     {
-        Task<List<ObligationCalculation>?> GetObligationCalculationById(int id);
+        Task<List<ObligationCalculation>?> GetObligationCalculationByOrganisationId(int id);
     }
 }

@@ -48,9 +48,9 @@ namespace EPR.PRN.Backend.Obligation.Services
             return (remelt, initialTarget - remelt);
         }
 
-        public async Task<List<ObligationCalculationDto>?> GetObligationCalculationById(int id)
+        public async Task<List<ObligationCalculationDto>?> GetObligationCalculationByOrganisationId(int organisationId)
         {
-            var result = await _obligationCalculationRepository.GetObligationCalculationById(id);
+            var result = await _obligationCalculationRepository.GetObligationCalculationByOrganisationId(organisationId);
 
             return result?.Select(item => new ObligationCalculationDto
             {
