@@ -120,6 +120,28 @@ namespace EPR.PRN.Backend.API.UnitTests.Services
 
         [TestMethod]
         [AutoData]
+        public async Task UpdateStatus_ShouldThrowsConflictExceptionIfSamePrnIsTriedToUpdateMultiple(Guid orgId, List<EPRN> availablePrns, List<PrnUpdateStatusDto> prnUpdates)
+        {
+            availablePrns[0].ExternalId = prnUpdates[0].PrnId = prnUpdates[1].PrnId;
+            availablePrns[2].ExternalId = prnUpdates[2].PrnId;
+            
+            availablePrns[0].PrnStatusId = availablePrns[1].PrnStatusId =
+            availablePrns[2].PrnStatusId = (int)EprnStatus.AWAITINGACCEPTANCE;
+
+            prnUpdates[0].Status = EprnStatus.ACCEPTED; 
+            prnUpdates[1].Status = EprnStatus.AWAITINGACCEPTANCE;
+            prnUpdates[2].Status = EprnStatus.ACCEPTED;
+
+            _mockRepository.Setup(r => r.GetAllPrnByOrganisationId(orgId)).ReturnsAsync(availablePrns);
+
+            await _systemUnderTest
+                .Invoking(x => x.UpdateStatus(orgId, Guid.NewGuid(), prnUpdates))
+                .Should()
+                .ThrowAsync<ConflictException>();
+        }
+
+        [TestMethod]
+        [AutoData]
         public async Task UpdateStatus_CallsUpdateToDB(Guid orgId, Guid userId, List<EPRN> availablePrns, List<PrnUpdateStatusDto> prnUpdates)
         {
             availablePrns[0].ExternalId = prnUpdates[0].PrnId;
