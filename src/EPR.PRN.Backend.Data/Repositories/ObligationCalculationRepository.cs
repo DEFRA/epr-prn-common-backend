@@ -15,7 +15,7 @@ namespace EPR.PRN.Backend.Data.Repositories
 
         public async Task<List<ObligationCalculation>?> GetObligationCalculationById(int id)
         {
-            return await _context.ObligationCalculation.Where(x => x.Id == id).ToListAsync();
+            return await _context.ObligationCalculations.Where(x => x.Id == id).ToListAsync();
         }
     }
 }
