@@ -1,0 +1,26 @@
+version: '3.4'
+name: epr-prn-common-backend-service
+services:
+  epr.prn.backend.api:
+    build:
+      context: .
+      dockerfile: EPR.PRN.Backend.API/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__EprConnectionString=Server=commonprnbackend_sql,1433;Initial Catalog=prndb;User Id=sa;Password=Password1!;TrustServerCertificate=True;
+      - RunMigration=true
+    ports:
+      - "5575:8080"
+    depends_on:
+      - commonprnbackend_sql
+
+  commonprnbackend_sql:
+    image: mcr.microsoft.com/azure-sql-edge
+    restart: always
+    cap_add:
+      - SYS_PTRACE
+    ports:
+      - "1432:1433"
+    environment:
+      - ACCEPT_EULA=1
+      - MSSQL_SA_PASSWORD=Password1!

@@ -2,6 +2,8 @@
 using EPR.PRN.Backend.API.Repositories.Interfaces;
 using EPR.PRN.Backend.API.Services;
 using EPR.PRN.Backend.API.Services.Interfaces;
+using EPR.PRN.Backend.Data.Interfaces;
+using EPR.PRN.Backend.Data.Repositories;
 using EPR.PRN.Backend.Obligation.Interfaces;
 using EPR.PRN.Backend.Obligation.Services;
 using System.Diagnostics.CodeAnalysis;
@@ -16,6 +18,8 @@ namespace EPR.PRN.Backend.API.Helpers
             services
                 .AddScoped<IRepository, Repository>()
                 .AddScoped<IPrnService, PrnService>()
+                .AddScoped<IRecyclingTargetRepository, RecyclingTargetRepository>()
+                .AddScoped<IObligationCalculationRepository, ObligationCalculationRepository>()
                 .AddScoped<IObligationCalculatorService, ObligationCalculatorService>()
                 .AddScoped<IRecyclingTargetDataService, RecyclingTargetDataService>();
             return services;
