@@ -24,3 +24,8 @@ services:
     environment:
       - ACCEPT_EULA=1
       - MSSQL_SA_PASSWORD=Password1!
+    volumes:
+      - prn-db-data:/var/opt/mssql
+
+volumes:
+  prn-db-data:
