@@ -1,51 +1,72 @@
-﻿using EPR.PRN.Backend.Data.Interfaces;
+﻿using EPR.PRN.Backend.Data.DataModels;
+using EPR.PRN.Backend.Data.Interfaces;
 using EPR.PRN.Backend.Obligation.DTO;
 using EPR.PRN.Backend.Obligation.Enums;
 using EPR.PRN.Backend.Obligation.Interfaces;
+using Microsoft.Extensions.Logging;
+using System.Net.Http.Json;
 
 namespace EPR.PRN.Backend.Obligation.Services
 {
     public class ObligationCalculatorService : IObligationCalculatorService
     {
+        private readonly ILogger<ObligationCalculatorService> _logger;
         private readonly IRecyclingTargetDataService _recyclingTargetDataService;
         private readonly IObligationCalculationRepository _obligationCalculationRepository;
+        private readonly IPomSubmissionData _pomSubmissionData;
+        private readonly IMaterialCalculationStrategyResolver _strategyResolver;
 
-        public ObligationCalculatorService(IRecyclingTargetDataService recyclingTargetDataService, IObligationCalculationRepository obligationCalculationRepository)
+        public ObligationCalculatorService(
+            ILogger<ObligationCalculatorService> logger,
+            IRecyclingTargetDataService recyclingTargetDataService,
+            IObligationCalculationRepository obligationCalculationRepository,
+            IPomSubmissionData pomSubmissionData,
+            IMaterialCalculationStrategyResolver strategyResolver)
         {
+            _logger = logger;
             _recyclingTargetDataService = recyclingTargetDataService;
             _obligationCalculationRepository = obligationCalculationRepository;
+            _pomSubmissionData = pomSubmissionData;
+            _strategyResolver = strategyResolver;
         }
 
-        public async Task ProcessApprovedPomData(int year, MaterialType materialType, int tonnage)
+        public async Task ProcessApprovedPomData(string submissionIdString)
         {
-            // last check date (where is this coming from?)
-            // POM data(TBC)
-            var recyclingTargets = await _recyclingTargetDataService.GetRecyclingTargetsAsync();
+            //Worker Service will call this method peridoically 
+            var response = await _pomSubmissionData.GetAggregatedPomData(submissionIdString);
 
-            switch (materialType)
+            if (!response.IsSuccessStatusCode)
             {
-                case MaterialType.Glass:
-                    var (remelt, remainder) = CalculateGlass(recyclingTargets[year][materialType], recyclingTargets[year][MaterialType.GlassRemelt], tonnage);
-                    break;
-                default:
-                    var calculation = Calculate(recyclingTargets[year][materialType], tonnage);
-                    break;
+                _logger.LogError("Could not retrieve POM data for Submission Id: {0}.", submissionIdString);
+                return;
             }
 
-            // store the calculations
-        }
+            var pomData = response.Content.ReadFromJsonAsync<List<PomObligtionDto>>().Result;
 
-        public int Calculate(double target, int tonnage)
-        {
-            return (int)Math.Round(target * tonnage, 0, MidpointRounding.AwayFromZero);
-        }
+            if (pomData == null || pomData.Count == 0)
+            {
+                _logger.LogError("No POM data returned for Submission Id: {0}.", submissionIdString);
+                return;
+            }
 
-        public (int remelt, int remainder) CalculateGlass(double target, double remeltTarget, int tonnage)
-        {
-            var initialTarget = (int)Math.Round(target * tonnage, 0, MidpointRounding.AwayFromZero);
-            var remelt = (int)Math.Round(remeltTarget * initialTarget, 0, MidpointRounding.ToPositiveInfinity);
+            var recyclingTargets = await _recyclingTargetDataService.GetRecyclingTargetsAsync();
 
-            return (remelt, initialTarget - remelt);
+            var calculations = new List<ObligationCalculation>();
+
+            foreach (var material in pomData)
+            {
+                Enum.TryParse<MaterialType>(material.PackagingMaterial, out var materialType);
+                var strategy = _strategyResolver.Resolve(materialType);
+
+                if (strategy == null)
+                {
+                    _logger.LogError("Skipping material with unknown type: {MaterialType} for SubmissionId: {submissionIdString}.", materialType, submissionIdString);
+                    continue;
+                }
+                calculations.AddRange(strategy.Calculate(material, materialType, recyclingTargets));
+            }
+
+            await _obligationCalculationRepository.AddObligationCalculation(calculations);
         }
 
         public async Task<List<ObligationCalculationDto>?> GetObligationCalculationByOrganisationId(int organisationId)
