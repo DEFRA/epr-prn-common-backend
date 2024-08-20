@@ -1,10 +1,10 @@
-﻿using EPR.PRN.Backend.Data.DataModels;
+﻿using System.Net.Http.Json;
+using EPR.PRN.Backend.Data.DataModels;
 using EPR.PRN.Backend.Data.Interfaces;
 using EPR.PRN.Backend.Obligation.DTO;
 using EPR.PRN.Backend.Obligation.Enums;
 using EPR.PRN.Backend.Obligation.Interfaces;
 using Microsoft.Extensions.Logging;
-using System.Net.Http.Json;
 
 namespace EPR.PRN.Backend.Obligation.Services
 {
@@ -64,6 +64,12 @@ namespace EPR.PRN.Backend.Obligation.Services
                     continue;
                 }
                 calculations.AddRange(strategy.Calculate(material, materialType, recyclingTargets));
+            }
+
+            if (calculations == null || !calculations.Any())
+            {
+                _logger.LogError("No calculations were saved for SubmissionId: {submissionIdString}.", submissionIdString);
+                return;
             }
 
             await _obligationCalculationRepository.AddObligationCalculation(calculations);
