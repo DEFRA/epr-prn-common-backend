@@ -1,11 +1,10 @@
 ﻿using EPR.PRN.Backend.Data.DataModels;
-using EPR.PRN.Backend.Data.Interfaces;
 using Moq;
 using Moq.EntityFrameworkCore;
 
 namespace EPR.PRN.Backend.Data.Repositories.Tests
 {
-    [TestClass()]
+    [TestClass]
     public class RecyclingTargetRepositoryTests
     {
         private Mock<EprContext> _mockEprContext;
@@ -26,14 +25,14 @@ namespace EPR.PRN.Backend.Data.Repositories.Tests
             _mockEprContext.Setup(context => context.RecyclingTargets).ReturnsDbSet(recyclingTarget);
         }
 
-        [TestMethod()]
-        public void GetAllAsyncTest_WithMockContext()
+        [TestMethod]
+        public async Task GetAllAsync_WhenCalled_ShouldReturnAllRecyclingTargets()
         {
             // Arrange
             var recyclingTargetRepository = new RecyclingTargetRepository(_mockEprContext.Object);
 
             // Act
-            var result = recyclingTargetRepository.GetAllAsync().Result;
+            var result = await recyclingTargetRepository.GetAllAsync();
 
             // Assert
             Assert.IsNotNull(result);

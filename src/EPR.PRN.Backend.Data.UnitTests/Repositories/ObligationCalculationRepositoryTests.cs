@@ -1,12 +1,11 @@
 ﻿using EPR.PRN.Backend.Data.DataModels;
-using EPR.PRN.Backend.Data.Interfaces;
 using FluentAssertions;
 using Moq;
 using Moq.EntityFrameworkCore;
 
 namespace EPR.PRN.Backend.Data.Repositories.Tests
 {
-    [TestClass()]
+    [TestClass]
     public class ObligationCalculationRepositoryTests
     {
         private Mock<EprContext> _mockEprContext;
@@ -28,14 +27,28 @@ namespace EPR.PRN.Backend.Data.Repositories.Tests
             _mockEprContext.Setup(x => x.SaveChangesAsync(It.IsAny<CancellationToken>())).ReturnsAsync(1);
         }
 
-        [TestMethod()]
-        public void GetObligationCalculationByOrganisationIdTest()
+        [TestMethod]
+        public async Task GetObligationCalculationByOrganisationId_WhenCalledWithInvalidId_ReturnsEmpty()
+        {
+            // Arrange
+            var obligationCalculationRepository = new ObligationCalculationRepository(_mockEprContext.Object);
+            int invalidOrganisationId = 2;
+
+            // Act
+            var result = await obligationCalculationRepository.GetObligationCalculationByOrganisationId(invalidOrganisationId);
+
+            // Assert
+            result.Should().BeEmpty();
+        }
+
+        [TestMethod]
+        public async Task GetObligationCalculationByOrganisationId_ReturnsObligationCalculation()
         {
             // Arrange
             var obligationCalculationRepository = new ObligationCalculationRepository(_mockEprContext.Object);
 
             // Act
-            var result = obligationCalculationRepository.GetObligationCalculationByOrganisationId(organisationId).Result;
+            var result = await obligationCalculationRepository.GetObligationCalculationByOrganisationId(organisationId);
 
             // Assert
             result.Should().NotBeNull();
@@ -47,8 +60,8 @@ namespace EPR.PRN.Backend.Data.Repositories.Tests
             result.Should().Contain(x => x.MaterialName == "Plastic");
         }
 
-        [TestMethod()]
-        public void AddObligationCalculationTest()
+        [TestMethod]
+        public async Task AddObligationCalculation_WhenCalledWithObligationCalculations_ShouldSaveObligationCalculation()
         {
             // Arrange
             var obligationCalculationRepository = new ObligationCalculationRepository(_mockEprContext.Object);
@@ -60,7 +73,7 @@ namespace EPR.PRN.Backend.Data.Repositories.Tests
             };
 
             // Act
-            obligationCalculationRepository.AddObligationCalculation(obligationCalculationAdd).Wait();
+            await obligationCalculationRepository.AddObligationCalculation(obligationCalculationAdd);
 
             // Assert
             _mockEprContext.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
