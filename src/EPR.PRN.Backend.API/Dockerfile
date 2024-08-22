@@ -25,10 +25,10 @@ COPY ["EPR.PRN.Backend.Obligation/EPR.PRN.Backend.Obligation.csproj", "EPR.PRN.B
 
 RUN dotnet restore "./EPR.PRN.Backend.API/EPR.PRN.Backend.API.csproj"
 
-COPY --chown=dotnet:dotnet EPR.PRN.Backend.API/. ./EPR.PRN.Backend.API/.
-COPY --chown=dotnet:dotnet EPR.PRN.Backend.Data/. ./EPR.PRN.Backend.Data/.
-COPY --chown=dotnet:dotnet EPR.PRN.Backend.API.Common/. ./EPR.PRN.Backend.API.Common/.
-COPY --chown=dotnet:dotnet EPR.PRN.Backend.Obligation/. ./EPR.PRN.Backend.Obligation/.
+COPY EPR.PRN.Backend.API/. ./EPR.PRN.Backend.API/.
+COPY EPR.PRN.Backend.Data/. ./EPR.PRN.Backend.Data/.
+COPY EPR.PRN.Backend.API.Common/. ./EPR.PRN.Backend.API.Common/.
+COPY EPR.PRN.Backend.Obligation/. ./EPR.PRN.Backend.Obligation/.
 
 
 WORKDIR "/src/EPR.PRN.Backend.API"
