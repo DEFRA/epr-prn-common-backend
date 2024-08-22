@@ -1,26 +1,27 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿#nullable disable
 
-namespace EPR.PRN.Backend.Data.DataModels
+using System.ComponentModel.DataAnnotations;
+
+namespace EPR.PRN.Backend.Data.DataModels;
+
+public class ObligationCalculation
 {
-    public class ObligationCalculation
-    {
-        [Key]
-        public int Id { get; set; }
+    [Key]
+    public int Id { get; set; }
 
-        [Required]
-        public int OrganisationId { get; set; }
+    [Required]
+    public int OrganisationId { get; set; }
 
-        [MaxLength(20)]
-        [Required]
-        public string MaterialName { get; set; }
+    [MaxLength(20)]
+    [Required]
+    public string MaterialName { get; set; }
 
-        [Required]
-        public int MaterialObligationValue { get; set; }
+    [Required]
+    public int MaterialObligationValue { get; set; }
 
-        [Required]
-        public int Year { get; set; }
+    [Required]
+    public int Year { get; set; }
 
-        [Required]
-        public DateTime CalculatedOn { get; set; }
-    }
+    [Required]
+    public DateTime CalculatedOn { get; set; }
 }
