@@ -20,6 +20,7 @@ namespace EPR.PRN.Backend.Data.Migrations
                     OrganisationId = table.Column<int>(type: "int", nullable: false),
                     MaterialName = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
                     MaterialObligationValue = table.Column<int>(type: "int", nullable: false),
+                    Year = table.Column<int>(type: "int", nullable: false),
                     CalculatedOn = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>

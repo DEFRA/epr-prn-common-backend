@@ -3,6 +3,8 @@ using EPR.PRN.Backend.API.Common.DTO;
 using EPR.PRN.Backend.API.Controllers;
 using EPR.PRN.Backend.API.Helpers;
 using EPR.PRN.Backend.API.Services.Interfaces;
+using EPR.PRN.Backend.Obligation.DTO;
+using EPR.PRN.Backend.Obligation.Interfaces;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -17,13 +19,15 @@ namespace EPR.PRN.Backend.API.UnitTests.Services
         private PrnController _systemUnderTest;
         private Mock<IPrnService> _mockPrnService;
         private Mock<ILogger<PrnController>> _mockLogger;
+        private Mock<IObligationCalculatorService> _mockObligationCalculatorService;
 
         [TestInitialize]
         public void TestInitialize()
         {
             _mockPrnService = new Mock<IPrnService>();
             _mockLogger = new Mock<ILogger<PrnController>>();
-            _systemUnderTest = new PrnController(_mockPrnService.Object, _mockLogger.Object);
+            _mockObligationCalculatorService = new Mock<IObligationCalculatorService>();
+            _systemUnderTest = new PrnController(_mockPrnService.Object, _mockLogger.Object, _mockObligationCalculatorService.Object);
         }
 
         [TestMethod]
@@ -118,6 +122,45 @@ namespace EPR.PRN.Backend.API.UnitTests.Services
 
             result.Should().NotBeNull();
             result.StatusCode.Should().Be((int)HttpStatusCode.InternalServerError);
+        }
+
+        [TestMethod]
+        public async Task GetObligationCalculation_ReturnsBadRequest_WhenIdIsInvalid()
+        {
+            int invalidId = -1;
+
+            var result = await _systemUnderTest.GetObligationCalculation(invalidId) as BadRequestObjectResult;
+
+            result.Should().NotBeNull();
+            result.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
+            result.Value.Should().Be($"Invalid Organisation Id : {invalidId}. Organisation Id must be a positive integer.");
+        }
+
+        [TestMethod]
+        public async Task GetObligationCalculation_ReturnsNotFound_WhenObligationCalculationNotFound()
+        {
+            int validId = 1;
+            _mockObligationCalculatorService.Setup(s => s.GetObligationCalculationByOrganisationId(validId)).ReturnsAsync((List<ObligationCalculationDto>)null);
+
+            var result = await _systemUnderTest.GetObligationCalculation(validId) as NotFoundObjectResult;
+
+            result.Should().NotBeNull();
+            result.StatusCode.Should().Be((int)HttpStatusCode.NotFound);
+            result.Value.Should().Be($"Obligation calculation not found for Organisation Id : {validId}");
+        }
+
+        [TestMethod]
+        [AutoData]
+        public async Task GetObligationCalculation_ReturnsOk_WhenObligationCalculationIsFound(List<ObligationCalculationDto> obligationCalculation)
+        {
+            int validId = 1;
+            _mockObligationCalculatorService.Setup(s => s.GetObligationCalculationByOrganisationId(validId)).ReturnsAsync(obligationCalculation);
+
+            var result = await _systemUnderTest.GetObligationCalculation(validId) as OkObjectResult;
+
+            result.Should().NotBeNull();
+            result.StatusCode.Should().Be((int)HttpStatusCode.OK);
+            result.Value.Should().BeEquivalentTo(obligationCalculation);
         }
     }
 }

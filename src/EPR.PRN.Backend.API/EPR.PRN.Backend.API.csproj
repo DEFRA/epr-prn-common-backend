@@ -15,6 +15,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.7" />
+    <PackageReference Include="Microsoft.Extensions.Http.Polly" Version="8.0.8" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.20.1" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
   </ItemGroup>
@@ -30,6 +31,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\EPR.PRN.Backend.Data\EPR.PRN.Backend.Data.csproj" />
+    <ProjectReference Include="..\EPR.PRN.Backend.Obligation\EPR.PRN.Backend.Obligation.csproj" />
   </ItemGroup>
 
 </Project>
