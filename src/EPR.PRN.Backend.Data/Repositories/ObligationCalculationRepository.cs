@@ -17,5 +17,11 @@ namespace EPR.PRN.Backend.Data.Repositories
         {
             return await _context.ObligationCalculations.Where(x => x.OrganisationId == organisationId).ToListAsync();
         }
+
+        public async Task AddObligationCalculation(List<ObligationCalculation> calculation)
+        {
+            await _context.ObligationCalculations.AddRangeAsync(calculation);
+            await _context.SaveChangesAsync();
+        }
     }
 }
