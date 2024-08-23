@@ -1,16 +1,17 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿#nullable disable
 
-namespace EPR.PRN.Backend.Obligation.DTO
+using System.Diagnostics.CodeAnalysis;
+
+namespace EPR.PRN.Backend.Obligation.DTO;
+
+[ExcludeFromCodeCoverage]
+public class ObligationCalculationDto
 {
-    [ExcludeFromCodeCoverage]
-    public class ObligationCalculationDto
-    {
-        public int OrganisationId { get; set; }
+    public int OrganisationId { get; set; }
 
-        public string MaterialName { get; set; }
+    public string MaterialName { get; set; }
 
-        public int MaterialObligationValue { get; set; }
+    public int MaterialObligationValue { get; set; }
 
-        public int Year { get; set; }
-    }
+    public int Year { get; set; }
 }
