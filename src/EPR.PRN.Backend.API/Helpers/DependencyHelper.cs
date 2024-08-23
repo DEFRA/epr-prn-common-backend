@@ -8,6 +8,7 @@ using EPR.PRN.Backend.Obligation.Services;
 using Microsoft.Extensions.Options;
 using Polly;
 using Polly.Extensions.Http;
+using Polly.Retry;
 using System.Diagnostics.CodeAnalysis;
 
 namespace EPR.PRN.Backend.API.Helpers
@@ -25,7 +26,6 @@ namespace EPR.PRN.Backend.API.Helpers
                 .AddScoped<IObligationCalculatorService, ObligationCalculatorService>()
                 .AddScoped<IRecyclingTargetDataService, RecyclingTargetDataService>();
 
-
             services.AddHttpClient<IPomSubmissionData, PomSubmissionData>((sp, client) =>
             {
                 client.BaseAddress = new Uri(settings.BaseUrl);
@@ -36,7 +36,7 @@ namespace EPR.PRN.Backend.API.Helpers
             return services;
         }
 
-        private static IAsyncPolicy<HttpResponseMessage> GetRetryPolicy(int retryCount)
+        private static AsyncRetryPolicy<HttpResponseMessage> GetRetryPolicy(int retryCount)
         {
             return HttpPolicyExtensions
                 .HandleTransientHttpError()

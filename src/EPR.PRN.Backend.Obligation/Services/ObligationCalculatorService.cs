@@ -55,29 +55,35 @@ namespace EPR.PRN.Backend.Obligation.Services
 
             foreach (var material in pomData)
             {
-                Enum.TryParse<MaterialType>(material.PackagingMaterial, out var materialType);
-                var strategy = _strategyResolver.Resolve(materialType);
-
-                if (strategy == null)
+                if (Enum.TryParse<MaterialType>(material.PackagingMaterial, out var materialType))
                 {
-                    _logger.LogError("Skipping material with unknown type: {MaterialType} for SubmissionId: {submissionIdString}.", materialType, submissionIdString);
-                    continue;
+                    var strategy = _strategyResolver.Resolve(materialType);
+
+                    if (strategy == null)
+                    {
+                        _logger.LogError("Skipping material with unknown type: {0} for SubmissionId: {1}.", materialType, submissionIdString);
+                        continue;
+                    }
+                    calculations.AddRange(strategy.Calculate(material, materialType, recyclingTargets));
                 }
-                calculations.AddRange(strategy.Calculate(material, materialType, recyclingTargets));
+                else
+                {
+                    _logger.LogError("Unable to parse packing material type : {0}.", material.PackagingMaterial);
+                }
             }
 
-            if (calculations == null || !calculations.Any())
+            if (calculations.Count <= 0)
             {
-                _logger.LogError("No calculations were saved for SubmissionId: {submissionIdString}.", submissionIdString);
+                _logger.LogError("No calculations were saved for SubmissionId: {0}.", submissionIdString);
                 return;
             }
 
             await _obligationCalculationRepository.AddObligationCalculation(calculations);
         }
 
-        public async Task<List<ObligationCalculationDto>?> GetObligationCalculationByOrganisationId(int organisationId)
+        public async Task<List<ObligationCalculationDto>?> GetObligationCalculationByOrganisationId(int id)
         {
-            var result = await _obligationCalculationRepository.GetObligationCalculationByOrganisationId(organisationId);
+            var result = await _obligationCalculationRepository.GetObligationCalculationByOrganisationId(id);
 
             return result?.Select(item => new ObligationCalculationDto
             {
