@@ -7,6 +7,7 @@
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     <StartupObject>EPR.PRN.Backend.Program</StartupObject>
     <UserSecretsId>85e4b71e-86ad-4147-890d-1f90e01b40e8</UserSecretsId>
+    <DockerComposeProjectPath>..\docker-compose.dcproj</DockerComposeProjectPath>
   </PropertyGroup>
 
   <ItemGroup>
