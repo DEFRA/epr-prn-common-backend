@@ -6,8 +6,6 @@ using EPR.PRN.Backend.API.Services.Interfaces;
 using EPR.PRN.Backend.Data.Interfaces;
 using EPR.PRN.Backend.Data.Repositories;
 using EPR.PRN.Backend.Obligation.Config;
-using EPR.PRN.Backend.Data.Interfaces;
-using EPR.PRN.Backend.Data.Repositories;
 using EPR.PRN.Backend.Obligation.Interfaces;
 using EPR.PRN.Backend.Obligation.Services;
 using EPR.PRN.Backend.Obligation.Strategies;
@@ -26,8 +24,6 @@ namespace EPR.PRN.Backend.API.Helpers
 
             services.AddScoped<IRepository, Repository>()
                 .AddScoped<IPrnService, PrnService>()
-                .AddScoped<IRecyclingTargetRepository, RecyclingTargetRepository>()
-                .AddScoped<IObligationCalculationRepository, ObligationCalculationRepository>()
                 .AddScoped<IObligationCalculatorService, ObligationCalculatorService>()
                 .AddScoped<IObligationCalculationRepository, ObligationCalculationRepository>()
                 .AddScoped<IRecyclingTargetDataService, RecyclingTargetDataService>()
