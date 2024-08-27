@@ -8,7 +8,7 @@ namespace EPR.PRN.Backend.Data.Repositories.Tests
     public class RecyclingTargetRepositoryTests
     {
         private Mock<EprContext> _mockEprContext;
-        private IEnumerable<RecyclingTarget> recyclingTarget = new List<RecyclingTarget>
+        private readonly IEnumerable<RecyclingTarget> recyclingTarget = new List<RecyclingTarget>
             {
                 new RecyclingTarget { Year = 2025, PaperTarget = 0.75, GlassTarget = 0.74, AluminiumTarget = 0.61, SteelTarget = 0.8, PlasticTarget = 0.55, WoodTarget = 0.45, GlassRemeltTarget = 0.75 },
                 new RecyclingTarget { Year = 2026, PaperTarget = 0.77, GlassTarget = 0.76, AluminiumTarget = 0.62, SteelTarget = 0.81, PlasticTarget = 0.57, WoodTarget = 0.46, GlassRemeltTarget = 0.76 },
