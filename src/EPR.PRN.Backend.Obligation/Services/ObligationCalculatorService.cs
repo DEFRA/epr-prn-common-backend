@@ -55,21 +55,15 @@ namespace EPR.PRN.Backend.Obligation.Services
 
             foreach (var material in pomData)
             {
-                if (Enum.TryParse<MaterialType>(material.PackagingMaterial, out var materialType))
-                {
-                    var strategy = _strategyResolver.Resolve(materialType);
+                Enum.TryParse<MaterialType>(material.PackagingMaterial, out var materialType);
+                var strategy = _strategyResolver.Resolve(materialType);
 
-                    if (strategy == null)
-                    {
-                        _logger.LogError("Skipping material with unknown type: {0} for SubmissionId: {1}.", materialType, submissionIdString);
-                        continue;
-                    }
-                    calculations.AddRange(strategy.Calculate(material, materialType, recyclingTargets));
-                }
-                else
+                if (strategy == null)
                 {
-                    _logger.LogError("Unable to parse packing material type : {0}.", material.PackagingMaterial);
+                    _logger.LogError("Skipping material with unknown type: {0} for SubmissionId: {1}.", materialType, submissionIdString);
+                    continue;
                 }
+                calculations.AddRange(strategy.Calculate(material, materialType, recyclingTargets));
             }
 
             if (calculations.Count <= 0)

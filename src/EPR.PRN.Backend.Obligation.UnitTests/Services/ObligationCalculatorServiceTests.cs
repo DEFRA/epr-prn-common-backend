@@ -123,7 +123,7 @@ public class ObligationCalculatorServiceTests
         var submissionId = "123";
         var pomData = new List<PomObligtionDto>
         {
-            new PomObligtionDto { PackagingMaterial = "UnknownMaterial", PackagingMaterialWeight = 100, OrganisationId = 1 }
+            new() { PackagingMaterial = "UnknownMaterial", PackagingMaterialWeight = 100, OrganisationId = 1 }
         };
         var response = new HttpResponseMessage(HttpStatusCode.OK)
         {
@@ -158,7 +158,7 @@ public class ObligationCalculatorServiceTests
         var submissionId = "123";
         var pomData = new List<PomObligtionDto>
         {
-            new PomObligtionDto { PackagingMaterial = "Plastic", PackagingMaterialWeight = 100, OrganisationId = 1 }
+            new() { PackagingMaterial = "Plastic", PackagingMaterialWeight = 100, OrganisationId = 1 }
         };
         var response = new HttpResponseMessage(HttpStatusCode.OK)
         {
