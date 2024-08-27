@@ -78,11 +78,11 @@ namespace EPR.PRN.Backend.API.UnitTests.Services
 
         [TestMethod]
         [AutoData]
-        public async Task UpdatePrnStatus_ReturnsOk_WhenUpdateSuccessfully(Guid orgId, List<PrnUpdateStatusDto> prnUpdates)
+        public async Task UpdatePrnStatus_ReturnsOk_WhenUpdateSuccessfully(Guid orgId, Guid userId, List<PrnUpdateStatusDto> prnUpdates)
         {
-            _mockPrnService.Setup(s => s.UpdateStatus(orgId, prnUpdates)).Returns(Task.CompletedTask);
+            _mockPrnService.Setup(s => s.UpdateStatus(orgId, userId, prnUpdates)).Returns(Task.CompletedTask);
 
-            var result = await _systemUnderTest.UpdatePrnStatus(orgId, prnUpdates) as OkResult;
+            var result = await _systemUnderTest.UpdatePrnStatus(orgId, userId, prnUpdates) as OkResult;
 
             result.Should().NotBeNull();
             result.StatusCode.Should().Be((int)HttpStatusCode.OK);
@@ -90,11 +90,11 @@ namespace EPR.PRN.Backend.API.UnitTests.Services
 
         [TestMethod]
         [AutoData]
-        public async Task UpdatePrnStatus_ReturnsConflict_WhenServiceThrowsConflictException(Guid orgId, List<PrnUpdateStatusDto> prnUpdates)
+        public async Task UpdatePrnStatus_ReturnsConflict_WhenServiceThrowsConflictException(Guid orgId, Guid userId, List<PrnUpdateStatusDto> prnUpdates)
         {
-            _mockPrnService.Setup(s => s.UpdateStatus(orgId, prnUpdates)).Throws<ConflictException>();
+            _mockPrnService.Setup(s => s.UpdateStatus(orgId, userId, prnUpdates)).Throws<ConflictException>();
 
-            var result = await _systemUnderTest.UpdatePrnStatus(orgId, prnUpdates) as ObjectResult;
+            var result = await _systemUnderTest.UpdatePrnStatus(orgId, userId, prnUpdates) as ObjectResult;
 
             result.Should().NotBeNull();
             result.StatusCode.Should().Be((int)HttpStatusCode.Conflict);
@@ -102,11 +102,11 @@ namespace EPR.PRN.Backend.API.UnitTests.Services
 
         [TestMethod]
         [AutoData]
-        public async Task UpdatePrnStatus_ReturnsNotFound_WhenServiceThrowsNotFoundException(Guid orgId, List<PrnUpdateStatusDto> prnUpdates)
-        {
-            _mockPrnService.Setup(s => s.UpdateStatus(orgId, prnUpdates)).Throws<NotFoundException>();
+        public async Task UpdatePrnStatus_ReturnsNotFound_WhenServiceThrowsNotFoundException(Guid orgId, Guid userId, List<PrnUpdateStatusDto> prnUpdates)
+        { 
+            _mockPrnService.Setup(s => s.UpdateStatus(orgId, userId, prnUpdates)).Throws<NotFoundException>();
 
-            var result = await _systemUnderTest.UpdatePrnStatus(orgId, prnUpdates) as ObjectResult;
+            var result = await _systemUnderTest.UpdatePrnStatus(orgId, userId, prnUpdates) as ObjectResult;
 
             result.Should().NotBeNull();
             result.StatusCode.Should().Be((int)HttpStatusCode.NotFound);
@@ -114,11 +114,11 @@ namespace EPR.PRN.Backend.API.UnitTests.Services
 
         [TestMethod]
         [AutoData]
-        public async Task UpdatePrnStatus_ReturnsInternalServer_WhenServiceThrowsUnexpectedException(Guid orgId, List<PrnUpdateStatusDto> prnUpdates)
+        public async Task UpdatePrnStatus_ReturnsInternalServer_WhenServiceThrowsUnexpectedException(Guid orgId, Guid userId, List<PrnUpdateStatusDto> prnUpdates)
         {
-            _mockPrnService.Setup(s => s.UpdateStatus(orgId, prnUpdates)).Throws<ArgumentNullException>();
+            _mockPrnService.Setup(s => s.UpdateStatus(orgId, userId, prnUpdates)).Throws<ArgumentNullException>();
 
-            var result = await _systemUnderTest.UpdatePrnStatus(orgId, prnUpdates) as ObjectResult;
+            var result = await _systemUnderTest.UpdatePrnStatus(orgId, userId, prnUpdates) as ObjectResult;
 
             result.Should().NotBeNull();
             result.StatusCode.Should().Be((int)HttpStatusCode.InternalServerError);

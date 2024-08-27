@@ -1,15 +1,17 @@
-﻿using EPR.PRN.Backend.API.Repositories;
+﻿using System.Diagnostics.CodeAnalysis;
+using EPR.PRN.Backend.API.Repositories;
 using EPR.PRN.Backend.API.Repositories.Interfaces;
 using EPR.PRN.Backend.API.Services;
 using EPR.PRN.Backend.API.Services.Interfaces;
+using EPR.PRN.Backend.Data.Interfaces;
+using EPR.PRN.Backend.Data.Repositories;
 using EPR.PRN.Backend.Obligation.Config;
 using EPR.PRN.Backend.Obligation.Interfaces;
 using EPR.PRN.Backend.Obligation.Services;
+using EPR.PRN.Backend.Obligation.Strategies;
 using Microsoft.Extensions.Options;
 using Polly;
 using Polly.Extensions.Http;
-using Polly.Retry;
-using System.Diagnostics.CodeAnalysis;
 
 namespace EPR.PRN.Backend.API.Helpers
 {
@@ -20,11 +22,16 @@ namespace EPR.PRN.Backend.API.Helpers
         {
             var settings = services.BuildServiceProvider().GetRequiredService<IOptions<CommonDataApiConfig>>().Value;
 
-            services
-                .AddScoped<IRepository, Repository>()
+            services.AddScoped<IRepository, Repository>()
                 .AddScoped<IPrnService, PrnService>()
                 .AddScoped<IObligationCalculatorService, ObligationCalculatorService>()
-                .AddScoped<IRecyclingTargetDataService, RecyclingTargetDataService>();
+                .AddScoped<IObligationCalculationRepository, ObligationCalculationRepository>()
+                .AddScoped<IRecyclingTargetDataService, RecyclingTargetDataService>()
+                .AddScoped<IRecyclingTargetRepository, RecyclingTargetRepository>()
+                .AddScoped<IMaterialCalculationStrategyResolver, MaterialCalculationStrategyResolver>()
+                .AddScoped<IMaterialCalculationStrategy, GlassCalculationStrategy>()
+                .AddScoped<IMaterialCalculationStrategy, GeneralCalculationStrategy>()
+                .AddScoped<IMaterialCalculationService, MaterialCalculationService>();
 
             services.AddHttpClient<IPomSubmissionData, PomSubmissionData>((sp, client) =>
             {
@@ -36,7 +43,7 @@ namespace EPR.PRN.Backend.API.Helpers
             return services;
         }
 
-        private static AsyncRetryPolicy<HttpResponseMessage> GetRetryPolicy(int retryCount)
+        private static IAsyncPolicy<HttpResponseMessage> GetRetryPolicy(int retryCount)
         {
             return HttpPolicyExtensions
                 .HandleTransientHttpError()

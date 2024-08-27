@@ -39,6 +39,7 @@ namespace EPR.PRN.Backend.API
             {
                 app.UseSwagger();
                 app.UseSwaggerUI();
+                RunMigration(app);
             }
 
             //app.UseMiddleware<ExceptionHandlingMiddleware>();
@@ -50,6 +51,30 @@ namespace EPR.PRN.Backend.API
             {
                 endpoints.MapControllers();
             });
+        }
+        private void RunMigration(IApplicationBuilder app)
+        {
+            if (_config.GetValue<bool>("RunMigration"))
+            {
+                using var scope = app.ApplicationServices.CreateScope();
+
+                var services = scope.ServiceProvider;
+                var logger = services.GetRequiredService<ILogger<EprContext>>();
+                var context = services.GetService<EprContext>();
+
+                try
+                {
+                    logger.LogInformation("Migrating database associated with context {DbContextName}", typeof(EprContext).Name);
+
+                    context?.Database.Migrate();
+
+                    logger.LogInformation("Migrated database associated with context {DbContextName}", typeof(EprContext).Name);
+                }
+                catch (Exception ex)
+                {
+                    logger.LogError(ex, "An error occurred while migrating the database used on context {DbContextName}", typeof(EprContext).Name);
+                }
+            }
         }
     }
 }
