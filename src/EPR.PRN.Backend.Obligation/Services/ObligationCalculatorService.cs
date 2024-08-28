@@ -37,7 +37,7 @@ namespace EPR.PRN.Backend.Obligation.Services
 
             if (!response.IsSuccessStatusCode)
             {
-                _logger.LogError("Could not retrieve POM data for Submission Id: {0}.", submissionIdString);
+                _logger.LogError("Could not retrieve POM data for Submission Id: {SubmissionIdString}.", submissionIdString);
                 return;
             }
 
@@ -45,7 +45,7 @@ namespace EPR.PRN.Backend.Obligation.Services
 
             if (pomData == null || pomData.Count == 0)
             {
-                _logger.LogError("No POM data returned for Submission Id: {0}.", submissionIdString);
+                _logger.LogError("No POM data returned for Submission Id: {SubmissionIdString}.", submissionIdString);
                 return;
             }
 
@@ -55,12 +55,16 @@ namespace EPR.PRN.Backend.Obligation.Services
 
             foreach (var material in pomData)
             {
-                Enum.TryParse<MaterialType>(material.PackagingMaterial, out var materialType);
+                if (!Enum.TryParse<MaterialType>(material.PackagingMaterial, out var materialType))
+                {
+                    _logger.LogError("Unable to parse packing material type: {PackagingMaterial}.", material.PackagingMaterial);
+                    continue;
+                }
                 var strategy = _strategyResolver.Resolve(materialType);
 
                 if (strategy == null)
                 {
-                    _logger.LogError("Skipping material with unknown type: {0} for SubmissionId: {1}.", materialType, submissionIdString);
+                    _logger.LogError("Skipping material with unknown type: {MaterialType} for SubmissionId: {SubmissionIdString}.", materialType, submissionIdString);
                     continue;
                 }
                 calculations.AddRange(strategy.Calculate(material, materialType, recyclingTargets));
@@ -68,7 +72,7 @@ namespace EPR.PRN.Backend.Obligation.Services
 
             if (calculations.Count <= 0)
             {
-                _logger.LogError("No calculations were saved for SubmissionId: {0}.", submissionIdString);
+                _logger.LogError("No calculations were saved for SubmissionId: {SubmissionIdString}.", submissionIdString);
                 return;
             }
 

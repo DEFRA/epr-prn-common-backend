@@ -12,6 +12,7 @@ using EPR.PRN.Backend.Obligation.Strategies;
 using Microsoft.Extensions.Options;
 using Polly;
 using Polly.Extensions.Http;
+using Polly.Retry;
 
 namespace EPR.PRN.Backend.API.Helpers
 {
@@ -43,7 +44,7 @@ namespace EPR.PRN.Backend.API.Helpers
             return services;
         }
 
-        private static IAsyncPolicy<HttpResponseMessage> GetRetryPolicy(int retryCount)
+        private static AsyncRetryPolicy<HttpResponseMessage> GetRetryPolicy(int retryCount)
         {
             return HttpPolicyExtensions
                 .HandleTransientHttpError()

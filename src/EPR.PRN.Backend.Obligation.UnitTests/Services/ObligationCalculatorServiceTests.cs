@@ -117,13 +117,48 @@ public class ObligationCalculatorServiceTests
     }
 
     [TestMethod]
-    public async Task ProcessApprovedPomData_ShouldLogError_WhenStrategyResolverReturnsNull()
+    public async Task ProcessApprovedPomData_ShouldLogError_WhenPackingMaterialIsNotResolved()
     {
         // Arrange
         var submissionId = "123";
         var pomData = new List<PomObligtionDto>
         {
             new PomObligtionDto { PackagingMaterial = "UnknownMaterial", PackagingMaterialWeight = 100, OrganisationId = 1 }
+        };
+        var response = new HttpResponseMessage(HttpStatusCode.OK)
+        {
+            Content = JsonContent.Create(pomData)
+        };
+        _pomSubmissionData.Setup(x => x.GetAggregatedPomData(submissionId)).ReturnsAsync(response);
+
+        var recyclingTargets = new Dictionary<int, Dictionary<MaterialType, double>>();
+        _mockRecyclingTargetDataService.Setup(x => x.GetRecyclingTargetsAsync()).ReturnsAsync(recyclingTargets);
+
+        _strategyResolver.Setup(x => x.Resolve(It.IsAny<MaterialType>())).Returns((IMaterialCalculationStrategy)null);
+
+        // Act
+        await _service.ProcessApprovedPomData(submissionId);
+
+        // Assert
+        _logger.Verify(
+            x => x.Log(
+                It.Is<LogLevel>(logLevel => logLevel == LogLevel.Error),
+                It.IsAny<EventId>(),
+                It.Is<It.IsAnyType>((v, t) => v.ToString().Contains($"Unable to parse packing material type")),
+                It.IsAny<Exception>(),
+                It.IsAny<Func<It.IsAnyType, Exception, string>>()),
+            Times.Once);
+        _mockObligationCalculationRepository.Verify(x => x.AddObligationCalculation(It.IsAny<List<ObligationCalculation>>()), Times.Never);
+    }
+
+    [TestMethod]
+    public async Task ProcessApprovedPomData_ShouldLogError_WhenStrategyResolverReturnsNull()
+    {
+        // Arrange
+        var submissionId = "123";
+        var pomData = new List<PomObligtionDto>
+        {
+            new PomObligtionDto { PackagingMaterial = "Wood", PackagingMaterialWeight = 100, OrganisationId = 1 }
         };
         var response = new HttpResponseMessage(HttpStatusCode.OK)
         {

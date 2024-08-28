@@ -22,7 +22,7 @@ namespace EPR.PRN.Backend.Obligation.Strategies
 
             if (strategy == null)
             {
-                _logger.LogError("No strategy found for material type: {0}.", materialType);
+                _logger.LogError("No strategy found for material type: {MaterialType}.", materialType);
                 return null;
             }
 
