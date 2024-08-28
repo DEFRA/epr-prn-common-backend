@@ -7,13 +7,12 @@ namespace EPR.PRN.Backend.Obligation.Strategies
 {
     public class GeneralCalculationStrategy : IMaterialCalculationStrategy
     {
-        private List<MaterialType> _generalMaterials;
+        private readonly List<MaterialType> _generalMaterials;
         private readonly IMaterialCalculationService _calculationService;
 
         public GeneralCalculationStrategy(IMaterialCalculationService calculationService)
         {
-            _generalMaterials = Enum.GetValues(typeof(MaterialType))
-               .Cast<MaterialType>().Where(m => m != MaterialType.Glass && m != MaterialType.GlassRemelt).ToList();
+            _generalMaterials = Enum.GetValues(typeof(MaterialType)).Cast<MaterialType>().Where(m => m != MaterialType.Glass && m != MaterialType.GlassRemelt).ToList();
             _calculationService = calculationService;
         }
         public bool CanHandle(MaterialType materialType) => _generalMaterials.Contains(materialType);
