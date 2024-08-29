@@ -1,5 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using EPR.PRN.Backend.API.Repositories;
+﻿using EPR.PRN.Backend.API.Repositories;
 using EPR.PRN.Backend.API.Repositories.Interfaces;
 using EPR.PRN.Backend.API.Services;
 using EPR.PRN.Backend.API.Services.Interfaces;
@@ -12,6 +11,7 @@ using EPR.PRN.Backend.Obligation.Strategies;
 using Microsoft.Extensions.Options;
 using Polly;
 using Polly.Extensions.Http;
+using System.Diagnostics.CodeAnalysis;
 
 namespace EPR.PRN.Backend.API.Helpers
 {
@@ -32,13 +32,6 @@ namespace EPR.PRN.Backend.API.Helpers
                 .AddScoped<IMaterialCalculationStrategy, GlassCalculationStrategy>()
                 .AddScoped<IMaterialCalculationStrategy, GeneralCalculationStrategy>()
                 .AddScoped<IMaterialCalculationService, MaterialCalculationService>();
-
-            services.AddHttpClient<IPomSubmissionData, PomSubmissionData>((sp, client) =>
-            {
-                client.BaseAddress = new Uri(settings.BaseUrl);
-                client.Timeout = TimeSpan.FromSeconds(settings.Timeout);
-            })
-                .AddPolicyHandler(GetRetryPolicy(settings.ServiceRetryCount));
 
             return services;
         }
