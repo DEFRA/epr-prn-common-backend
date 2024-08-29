@@ -35,8 +35,8 @@ namespace EPR.PRN.Backend.API.Helpers
 
             services.AddHttpClient<IPomSubmissionData, PomSubmissionData>((sp, client) =>
             {
-                // client.BaseAddress = new Uri(settings.BaseUrl);
-                // client.Timeout = TimeSpan.FromSeconds(settings.Timeout);
+                client.BaseAddress = new Uri(settings.BaseUrl);
+                client.Timeout = TimeSpan.FromSeconds(settings.Timeout);
             })
                 .AddPolicyHandler(GetRetryPolicy(settings.ServiceRetryCount));
 
