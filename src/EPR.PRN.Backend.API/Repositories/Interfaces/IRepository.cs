@@ -8,8 +8,8 @@ namespace EPR.PRN.Backend.API.Repositories.Interfaces
 
     public interface IRepository
     {
-        Task<List<EPRN>> GetAllPrnByOrganisationId(Guid orgId);
-        Task<EPRN?> GetPrnForOrganisationById(Guid orgId, Guid prnId);
+        Task<List<Eprn>> GetAllPrnByOrganisationId(Guid orgId);
+        Task<Eprn?> GetPrnForOrganisationById(Guid orgId, Guid prnId);
         public IDbContextTransaction BeginTransaction();
         public Task SaveTransaction(IDbContextTransaction transaction);
         void AddPrnStatusHistory(PrnStatusHistory prnStatusHistory);

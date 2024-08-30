@@ -8,14 +8,14 @@ namespace EPR.PRN.Backend.Data
     {
         private readonly IConfiguration _configuration;
 
-        public EprContext()
+        public EprContext(IConfiguration configuration)
         {
-
+            _configuration = configuration;
         }
 
-        public EprContext(DbContextOptions options) : base(options)
+        public EprContext(DbContextOptions options, IConfiguration configuration) : base(options)
         {
-
+            _configuration = configuration;
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -28,11 +28,11 @@ namespace EPR.PRN.Backend.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<EPRN>()
+            modelBuilder.Entity<Eprn>()
                 .HasIndex(a => a.ExternalId)
                 .IsUnique();
 
-            modelBuilder.Entity<EPRN>()
+            modelBuilder.Entity<Eprn>()
                 .HasIndex(a => a.PrnNumber)
                 .IsUnique();
 
@@ -52,7 +52,7 @@ namespace EPR.PRN.Backend.Data
             base.OnModelCreating(modelBuilder);
         }
 
-        public virtual DbSet<EPRN> Prn { get; set; }
+        public virtual DbSet<Eprn> Prn { get; set; }
 
         public virtual DbSet<PrnStatus> PrnStatus { get; set; }
 

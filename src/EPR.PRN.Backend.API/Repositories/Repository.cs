@@ -16,17 +16,17 @@
             _eprContext = eprContext;
         }
 
-        private IQueryable<EPRN> GetAllPrnsForOrganisation(Guid orgId)
+        private IQueryable<Eprn> GetAllPrnsForOrganisation(Guid orgId)
         {
             return _eprContext.Prn.Where(x => x.OrganisationId == orgId);
         }
-        public async Task<List<EPRN>> GetAllPrnByOrganisationId(Guid orgId)
+        public async Task<List<Eprn>> GetAllPrnByOrganisationId(Guid orgId)
         {
             return await GetAllPrnsForOrganisation(orgId)
                         .ToListAsync();
         }
 
-        public async Task<EPRN?> GetPrnForOrganisationById(Guid orgId, Guid prnId)
+        public async Task<Eprn?> GetPrnForOrganisationById(Guid orgId, Guid prnId)
         {
             return await GetAllPrnsForOrganisation(orgId)
                         .FirstOrDefaultAsync(p => p.ExternalId == prnId);

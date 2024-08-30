@@ -14,7 +14,7 @@ namespace EPR.PRN.Backend.Data.Migrations
         {
             migrationBuilder.InsertData(
                 table: "PrnStatus",
-                columns: new[] { "Id", "StatusDescription", "StatusName" },
+                columns: ["Id", "StatusDescription", "StatusName"],
                 values: new object[,]
                 {
                     { 1, "Prn Accepted", "ACCEPTED" },

@@ -1,37 +1,27 @@
 ﻿using AutoFixture.MSTest;
 using EPR.PRN.Backend.Data.DataModels;
 using EPR.PRN.Backend.Data.Interfaces;
-using EPR.PRN.Backend.Obligation.DTO;
-using EPR.PRN.Backend.Obligation.Enums;
 using EPR.PRN.Backend.Obligation.Interfaces;
 using EPR.PRN.Backend.Obligation.Services;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Moq;
-using System.Net;
-using System.Net.Http.Json;
+using System.Diagnostics.CodeAnalysis;
 
 namespace EPR.PRN.Backend.Obligation.UnitTests.Services;
 
+[ExcludeFromCodeCoverage]
 [TestClass]
 public class ObligationCalculatorServiceTests
 {
-    private Mock<ILogger<ObligationCalculatorService>> _logger;
-    private Mock<IRecyclingTargetDataService> _mockRecyclingTargetDataService;
     private Mock<IObligationCalculationRepository> _mockObligationCalculationRepository;
-    private Mock<IPomSubmissionData> _pomSubmissionData;
-    private Mock<IMaterialCalculationStrategyResolver> _strategyResolver;
     private ObligationCalculatorService _service;
 
     [TestInitialize]
     public void TestInitialize()
     {
-        _logger = new Mock<ILogger<ObligationCalculatorService>>();
-        _mockRecyclingTargetDataService = new Mock<IRecyclingTargetDataService>();
         _mockObligationCalculationRepository = new Mock<IObligationCalculationRepository>();
-        _pomSubmissionData = new Mock<IPomSubmissionData>();
-        _strategyResolver = new Mock<IMaterialCalculationStrategyResolver>();
-        _service = new ObligationCalculatorService(_logger.Object, _mockRecyclingTargetDataService.Object, _mockObligationCalculationRepository.Object, _pomSubmissionData.Object, _strategyResolver.Object);
+        _service = new ObligationCalculatorService(_mockObligationCalculationRepository.Object);
     }
 
     [TestMethod]
@@ -68,150 +58,12 @@ public class ObligationCalculatorServiceTests
     }
 
     [TestMethod]
-    public async Task ProcessApprovedPomData_ShouldLogError_WhenHttpResponseIsUnsuccessful()
+    public async Task ProcessApprovedPomData_ShouldBeCalled()
     {
-        // Arrange
-        var submissionId = "123";
-        var response = new HttpResponseMessage(HttpStatusCode.BadRequest);
-        _pomSubmissionData.Setup(x => x.GetAggregatedPomData(submissionId)).ReturnsAsync(response);
+        string submissionIdString = string.Empty;
 
-        // Act
-        await _service.ProcessApprovedPomData(submissionId);
+        await _service.ProcessApprovedPomData(submissionIdString);
 
-        // Assert
-        _logger.Verify(
-            x => x.Log(
-                It.Is<LogLevel>(logLevel => logLevel == LogLevel.Error),
-                It.IsAny<EventId>(),
-                It.Is<It.IsAnyType>((v, t) => v.ToString().Contains($"Could not retrieve POM data for Submission Id: {submissionId}")),
-                It.IsAny<Exception>(),
-                It.IsAny<Func<It.IsAnyType, Exception, string>>()),
-            Times.Once);
-        _mockObligationCalculationRepository.Verify(x => x.AddObligationCalculation(It.IsAny<List<ObligationCalculation>>()), Times.Never);
-    }
-
-    [TestMethod]
-    public async Task ProcessApprovedPomData_ShouldLogError_WhenNoPomDataIsReturned()
-    {
-        // Arrange
-        var submissionId = "123";
-        var response = new HttpResponseMessage(HttpStatusCode.OK)
-        {
-            Content = JsonContent.Create(new List<PomObligtionDto>())
-        };
-        _pomSubmissionData.Setup(x => x.GetAggregatedPomData(submissionId)).ReturnsAsync(response);
-
-        // Act
-        await _service.ProcessApprovedPomData(submissionId);
-
-        // Assert
-        _logger.Verify(
-            x => x.Log(
-                It.Is<LogLevel>(logLevel => logLevel == LogLevel.Error),
-                It.IsAny<EventId>(),
-                It.Is<It.IsAnyType>((v, t) => v.ToString().Contains($"No POM data returned for Submission Id: {submissionId}")),
-                It.IsAny<Exception>(),
-                It.IsAny<Func<It.IsAnyType, Exception, string>>()),
-            Times.Once);
-        _mockObligationCalculationRepository.Verify(x => x.AddObligationCalculation(It.IsAny<List<ObligationCalculation>>()), Times.Never);
-    }
-
-    [TestMethod]
-    public async Task ProcessApprovedPomData_ShouldLogError_WhenPackingMaterialIsNotResolved()
-    {
-        // Arrange
-        var submissionId = "123";
-        var pomData = new List<PomObligtionDto>
-        {
-            new PomObligtionDto { PackagingMaterial = "UnknownMaterial", PackagingMaterialWeight = 100, OrganisationId = 1 }
-        };
-        var response = new HttpResponseMessage(HttpStatusCode.OK)
-        {
-            Content = JsonContent.Create(pomData)
-        };
-        _pomSubmissionData.Setup(x => x.GetAggregatedPomData(submissionId)).ReturnsAsync(response);
-
-        var recyclingTargets = new Dictionary<int, Dictionary<MaterialType, double>>();
-        _mockRecyclingTargetDataService.Setup(x => x.GetRecyclingTargetsAsync()).ReturnsAsync(recyclingTargets);
-
-        _strategyResolver.Setup(x => x.Resolve(It.IsAny<MaterialType>())).Returns((IMaterialCalculationStrategy)null);
-
-        // Act
-        await _service.ProcessApprovedPomData(submissionId);
-
-        // Assert
-        _logger.Verify(
-            x => x.Log(
-                It.Is<LogLevel>(logLevel => logLevel == LogLevel.Error),
-                It.IsAny<EventId>(),
-                It.Is<It.IsAnyType>((v, t) => v.ToString().Contains($"Unable to parse packing material type")),
-                It.IsAny<Exception>(),
-                It.IsAny<Func<It.IsAnyType, Exception, string>>()),
-            Times.Once);
-        _mockObligationCalculationRepository.Verify(x => x.AddObligationCalculation(It.IsAny<List<ObligationCalculation>>()), Times.Never);
-    }
-
-    [TestMethod]
-    public async Task ProcessApprovedPomData_ShouldLogError_WhenStrategyResolverReturnsNull()
-    {
-        // Arrange
-        var submissionId = "123";
-        var pomData = new List<PomObligtionDto>
-        {
-            new PomObligtionDto { PackagingMaterial = "Wood", PackagingMaterialWeight = 100, OrganisationId = 1 }
-        };
-        var response = new HttpResponseMessage(HttpStatusCode.OK)
-        {
-            Content = JsonContent.Create(pomData)
-        };
-        _pomSubmissionData.Setup(x => x.GetAggregatedPomData(submissionId)).ReturnsAsync(response);
-
-        var recyclingTargets = new Dictionary<int, Dictionary<MaterialType, double>>();
-        _mockRecyclingTargetDataService.Setup(x => x.GetRecyclingTargetsAsync()).ReturnsAsync(recyclingTargets);
-
-        _strategyResolver.Setup(x => x.Resolve(It.IsAny<MaterialType>())).Returns((IMaterialCalculationStrategy)null);
-
-        // Act
-        await _service.ProcessApprovedPomData(submissionId);
-
-        // Assert
-        _logger.Verify(
-            x => x.Log(
-                It.Is<LogLevel>(logLevel => logLevel == LogLevel.Error),
-                It.IsAny<EventId>(),
-                It.Is<It.IsAnyType>((v, t) => v.ToString().Contains($"Skipping material with unknown type")),
-                It.IsAny<Exception>(),
-                It.IsAny<Func<It.IsAnyType, Exception, string>>()),
-            Times.Once);
-        _mockObligationCalculationRepository.Verify(x => x.AddObligationCalculation(It.IsAny<List<ObligationCalculation>>()), Times.Never);
-    }
-
-    [TestMethod]
-    public async Task ProcessApprovedPomData_ShouldAddCalculations_WhenEverythingIsValid()
-    {
-        // Arrange
-        var submissionId = "123";
-        var pomData = new List<PomObligtionDto>
-        {
-            new PomObligtionDto { PackagingMaterial = "Plastic", PackagingMaterialWeight = 100, OrganisationId = 1 }
-        };
-        var response = new HttpResponseMessage(HttpStatusCode.OK)
-        {
-            Content = JsonContent.Create(pomData)
-        };
-        _pomSubmissionData.Setup(x => x.GetAggregatedPomData(submissionId)).ReturnsAsync(response);
-        var recyclingTargets = new Dictionary<int, Dictionary<MaterialType, double>>();
-        _mockRecyclingTargetDataService.Setup(x => x.GetRecyclingTargetsAsync()).ReturnsAsync(recyclingTargets);
-
-        var mockStrategy = new Mock<IMaterialCalculationStrategy>();
-        mockStrategy.Setup(x => x.Calculate(It.IsAny<PomObligtionDto>(), It.IsAny<MaterialType>(), recyclingTargets))
-                    .Returns(new List<ObligationCalculation> { new ObligationCalculation { MaterialName = "Plastic", MaterialObligationValue = 100, OrganisationId = 1, Year = 2024 } });
-        _strategyResolver.Setup(x => x.Resolve(It.IsAny<MaterialType>())).Returns(mockStrategy.Object);
-
-        // Act
-        await _service.ProcessApprovedPomData(submissionId);
-
-        // Assert
-        _mockObligationCalculationRepository.Verify(x => x.AddObligationCalculation(It.Is<List<ObligationCalculation>>(list => list.Count == 1 && list[0].MaterialName == "Plastic")), Times.Once);
+        _mockObligationCalculationRepository.Verify(x => x.AddObligationCalculation(new List<ObligationCalculation>()), Times.Once);
     }
 }
