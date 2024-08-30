@@ -58,7 +58,7 @@ public class ObligationCalculatorServiceTests
     }
 
     [TestMethod]
-    public async Task ProcessApprovedPomData_ShouldBeCalled()
+    public async Task ProcessApprovedPomData_ShouldCallAddObligationCalculation()
     {
         string submissionIdString = string.Empty;
 
