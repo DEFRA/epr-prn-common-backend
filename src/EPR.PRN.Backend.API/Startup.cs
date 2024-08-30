@@ -71,6 +71,7 @@ namespace EPR.PRN.Backend.API
                 failureStatus: HealthStatus.Unhealthy,
                 tags: ["Database"]);
         }
+
         private void RunMigration(IApplicationBuilder app)
         {
             if (_config.GetValue<bool>("RunMigration"))
