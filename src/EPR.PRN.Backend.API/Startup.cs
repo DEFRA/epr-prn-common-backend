@@ -38,15 +38,6 @@ namespace EPR.PRN.Backend.API
             AddHealthChecks(services);
         }
 
-        private void AddHealthChecks(IServiceCollection services)
-        {
-            services.AddHealthChecks()
-            .AddSqlServer(
-                _config.GetConnectionString("EprConnectionString")!,
-                failureStatus: HealthStatus.Unhealthy,
-                tags: ["Database"]);
-        }
-
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
@@ -70,6 +61,15 @@ namespace EPR.PRN.Backend.API
                     ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
                 }).AllowAnonymous();
             }); 
+        }
+
+        private void AddHealthChecks(IServiceCollection services)
+        {
+            services.AddHealthChecks()
+            .AddSqlServer(
+                _config.GetConnectionString("EprConnectionString")!,
+                failureStatus: HealthStatus.Unhealthy,
+                tags: ["Database"]);
         }
         private void RunMigration(IApplicationBuilder app)
         {
