@@ -68,7 +68,7 @@
 
         public bool IsExport { get; set; }
 
-        public static implicit operator PrnDto(EPRN prn)
+        public static implicit operator PrnDto(Eprn prn)
         {
             return new PrnDto()
             {

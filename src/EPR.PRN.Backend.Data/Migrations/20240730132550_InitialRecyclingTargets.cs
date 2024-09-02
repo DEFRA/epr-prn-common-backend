@@ -33,7 +33,7 @@ namespace EPR.PRN.Backend.Data.Migrations
 
             migrationBuilder.InsertData(
                 table: "RecyclingTargets",
-                columns: new[] { "Year", "AluminiumTarget", "GlassRemeltTarget", "GlassTarget", "PaperTarget", "PlasticTarget", "SteelTarget", "WoodTarget" },
+                columns: ["Year", "AluminiumTarget", "GlassRemeltTarget", "GlassTarget", "PaperTarget", "PlasticTarget", "SteelTarget", "WoodTarget"],
                 values: new object[,]
                 {
                     { 2025, 0.61m, 0.75m, 0.74m, 0.75m, 0.55m, 0.8m, 0.45m },

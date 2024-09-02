@@ -59,7 +59,7 @@
             await _repository.SaveTransaction(transaction);
         }
 
-        private void UpdatePrn(Guid userId, PrnUpdateStatusDto prnUpdate, EPRN prn)
+        private void UpdatePrn(Guid userId, PrnUpdateStatusDto prnUpdate, Eprn prn)
         {
             var prnStatusHistory = new PrnStatusHistory()
             {

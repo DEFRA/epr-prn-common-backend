@@ -4,7 +4,7 @@ namespace EPR.PRN.Backend
     using System.Diagnostics.CodeAnalysis;
 
     [ExcludeFromCodeCoverage]
-    public class Program
+    public static class Program
     {
         public static void Main(string[] args)
        {
