@@ -1,6 +1,9 @@
 ﻿using EPR.PRN.Backend.API.Helpers;
 using EPR.PRN.Backend.Data;
+using HealthChecks.UI.Client;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Serialization;
 
@@ -31,6 +34,8 @@ namespace EPR.PRN.Backend.API
             );
 
             services.AddDependencies();
+
+            AddHealthChecks(services);
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -47,8 +52,23 @@ namespace EPR.PRN.Backend.API
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
-            });
+                endpoints.MapHealthChecks("/admin/health", new HealthCheckOptions()
+                {
+                    Predicate = _ => true,
+                    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+                }).AllowAnonymous();
+            }); 
         }
+
+        private void AddHealthChecks(IServiceCollection services)
+        {
+            services.AddHealthChecks()
+            .AddSqlServer(
+                _config.GetConnectionString("EprConnectionString")!,
+                failureStatus: HealthStatus.Unhealthy,
+                tags: ["Database"]);
+        }
+
         private void RunMigration(IApplicationBuilder app)
         {
             if (_config.GetValue<bool>("RunMigration"))
