@@ -111,7 +111,7 @@
                 return BadRequest(ModelState);
             }
 
-            await Task.Run(() => _obligationCalculatorService.ProcessApprovedPomData(id, request));
+            await _obligationCalculatorService.ProcessApprovedPomData(id, request);
 
             return Accepted();
         }

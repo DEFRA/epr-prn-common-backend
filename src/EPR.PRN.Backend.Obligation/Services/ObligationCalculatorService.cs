@@ -3,7 +3,6 @@ using EPR.PRN.Backend.Data.Interfaces;
 using EPR.PRN.Backend.Obligation.DTO;
 using EPR.PRN.Backend.Obligation.Interfaces;
 using EPR.PRN.Backend.Obligation.Models;
-using Microsoft.Extensions.Logging;
 
 namespace EPR.PRN.Backend.Obligation.Services
 {
