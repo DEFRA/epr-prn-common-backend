@@ -47,9 +47,6 @@ namespace EPR.PRN.Backend.API
                 RunMigration(app);
             }
 
-            //app.UseMiddleware<ExceptionHandlingMiddleware>();
-            // Temporarily disable to troubleshoot deployment issues
-            // app.UseHttpsRedirection();
             app.UseRouting();
             app.UseAuthorization();
             app.UseEndpoints(endpoints =>

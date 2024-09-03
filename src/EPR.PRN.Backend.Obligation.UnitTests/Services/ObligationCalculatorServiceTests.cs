@@ -6,26 +6,22 @@ using EPR.PRN.Backend.Obligation.Services;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Moq;
+using System.Diagnostics.CodeAnalysis;
 
 namespace EPR.PRN.Backend.Obligation.UnitTests.Services;
 
+[ExcludeFromCodeCoverage]
 [TestClass]
 public class ObligationCalculatorServiceTests
 {
-    private Mock<ILogger<ObligationCalculatorService>> _logger;
-    private Mock<IRecyclingTargetDataService> _mockRecyclingTargetDataService;
     private Mock<IObligationCalculationRepository> _mockObligationCalculationRepository;
-    private Mock<IMaterialCalculationStrategyResolver> _strategyResolver;
     private ObligationCalculatorService _service;
 
     [TestInitialize]
     public void TestInitialize()
     {
-        _logger = new Mock<ILogger<ObligationCalculatorService>>();
-        _mockRecyclingTargetDataService = new Mock<IRecyclingTargetDataService>();
         _mockObligationCalculationRepository = new Mock<IObligationCalculationRepository>();
-        _strategyResolver = new Mock<IMaterialCalculationStrategyResolver>();
-        _service = new ObligationCalculatorService(_logger.Object, _mockRecyclingTargetDataService.Object, _mockObligationCalculationRepository.Object, _strategyResolver.Object);
+        _service = new ObligationCalculatorService(_mockObligationCalculationRepository.Object);
     }
 
     [TestMethod]
@@ -59,5 +55,15 @@ public class ObligationCalculatorServiceTests
         var result = await _service.GetObligationCalculationByOrganisationId(organisationId);
 
         result.Should().BeNull();
+    }
+
+    [TestMethod]
+    public async Task ProcessApprovedPomData_ShouldCallAddObligationCalculation()
+    {
+        string submissionIdString = string.Empty;
+
+        await _service.ProcessApprovedPomData(submissionIdString);
+
+        _mockObligationCalculationRepository.Verify(x => x.AddObligationCalculation(new List<ObligationCalculation>()), Times.Once);
     }
 }

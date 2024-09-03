@@ -25,7 +25,7 @@ namespace EPR.PRN.Backend.Data.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.EPRN", b =>
+            modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Eprn", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()

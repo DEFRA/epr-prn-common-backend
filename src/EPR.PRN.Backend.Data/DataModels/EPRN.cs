@@ -2,7 +2,7 @@
 
 namespace EPR.PRN.Backend.Data.DataModels
 {
-	public class EPRN
+	public class Eprn
 	{
 		[Key]
 		public int Id { get; set; }
