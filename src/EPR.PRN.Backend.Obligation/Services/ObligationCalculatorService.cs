@@ -3,6 +3,7 @@ using EPR.PRN.Backend.Data.Interfaces;
 using EPR.PRN.Backend.Obligation.DTO;
 using EPR.PRN.Backend.Obligation.Interfaces;
 using EPR.PRN.Backend.Obligation.Models;
+using System.Diagnostics.CodeAnalysis;
 
 namespace EPR.PRN.Backend.Obligation.Services
 {
@@ -15,6 +16,7 @@ namespace EPR.PRN.Backend.Obligation.Services
             _obligationCalculationRepository = obligationCalculationRepository;
         }
 
+        [ExcludeFromCodeCoverage]
         public async Task ProcessApprovedPomData(Guid id, SubmissionCalculationRequest request)
         {
             // Pom Data will be provided by the function app request - still work in progress
