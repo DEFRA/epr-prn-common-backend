@@ -5,6 +5,7 @@
     using EPR.PRN.Backend.API.Services.Interfaces;
     using EPR.PRN.Backend.Obligation.DTO;
     using EPR.PRN.Backend.Obligation.Interfaces;
+    using EPR.PRN.Backend.Obligation.Models;
     using Microsoft.AspNetCore.Mvc;
     using System.Net;
 
@@ -99,6 +100,22 @@
                 return Problem("Internal Server Error", null, (int)HttpStatusCode.InternalServerError);
             }
         }
+
+        [HttpPost("submissions/{id}/calculate")]
+        [ProducesResponseType(202)]
+        [ProducesResponseType(400)]
+        public async Task<IActionResult> CalculateAsync(Guid id, [FromBody] SubmissionCalculationRequest request)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            await Task.Run(() => _obligationCalculatorService.ProcessApprovedPomData(id, request));
+
+            return Accepted();
+        }
+
         #endregion
     }
 }

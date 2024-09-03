@@ -2,6 +2,7 @@
 using EPR.PRN.Backend.Data.Interfaces;
 using EPR.PRN.Backend.Obligation.DTO;
 using EPR.PRN.Backend.Obligation.Interfaces;
+using EPR.PRN.Backend.Obligation.Models;
 using Microsoft.Extensions.Logging;
 
 namespace EPR.PRN.Backend.Obligation.Services
@@ -25,7 +26,7 @@ namespace EPR.PRN.Backend.Obligation.Services
             _strategyResolver = strategyResolver;
         }
 
-        public async Task ProcessApprovedPomData(string submissionIdString)
+        public async Task ProcessApprovedPomData(Guid id, SubmissionCalculationRequest request)
         {
             //Pom Data will be provided by the function app request - still work in progress
 

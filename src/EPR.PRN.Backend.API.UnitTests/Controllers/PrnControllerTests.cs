@@ -5,6 +5,7 @@ using EPR.PRN.Backend.API.Helpers;
 using EPR.PRN.Backend.API.Services.Interfaces;
 using EPR.PRN.Backend.Obligation.DTO;
 using EPR.PRN.Backend.Obligation.Interfaces;
+using EPR.PRN.Backend.Obligation.Models;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -103,7 +104,7 @@ namespace EPR.PRN.Backend.API.UnitTests.Services
         [TestMethod]
         [AutoData]
         public async Task UpdatePrnStatus_ReturnsNotFound_WhenServiceThrowsNotFoundException(Guid orgId, Guid userId, List<PrnUpdateStatusDto> prnUpdates)
-        { 
+        {
             _mockPrnService.Setup(s => s.UpdateStatus(orgId, userId, prnUpdates)).Throws<NotFoundException>();
 
             var result = await _systemUnderTest.UpdatePrnStatus(orgId, userId, prnUpdates) as ObjectResult;
@@ -162,5 +163,33 @@ namespace EPR.PRN.Backend.API.UnitTests.Services
             result.StatusCode.Should().Be((int)HttpStatusCode.OK);
             result.Value.Should().BeEquivalentTo(obligationCalculation);
         }
+
+        [TestMethod]
+        [AutoData]
+        public async Task CalculateAsync_ReturnsAccepted_WhenRequestIsValid(Guid id, SubmissionCalculationRequest request)
+        {
+            _mockObligationCalculatorService.Setup(s => s.ProcessApprovedPomData(id, request)).Returns(Task.CompletedTask);
+
+            var result = await _systemUnderTest.CalculateAsync(id, request) as AcceptedResult;
+
+            result.Should().NotBeNull();
+            result.StatusCode.Should().Be((int)HttpStatusCode.Accepted);
+            _mockObligationCalculatorService.Verify(s => s.ProcessApprovedPomData(id, request), Times.Once);
+        }
+
+        [TestMethod]
+        [AutoData]
+        public async Task CalculateAsync_ReturnsBadRequest_WhenModelStateIsInvalid(Guid id, SubmissionCalculationRequest request)
+        {
+            _systemUnderTest.ModelState.AddModelError("error", "Invalid request");
+
+            var result = await _systemUnderTest.CalculateAsync(id, request) as BadRequestObjectResult;
+
+            result.Should().NotBeNull();
+            result.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
+            result.Value.Should().BeOfType<SerializableError>(); // Check if ModelState is returned
+            _mockObligationCalculatorService.Verify(s => s.ProcessApprovedPomData(It.IsAny<Guid>(), It.IsAny<SubmissionCalculationRequest>()), Times.Never);
+        }
+
     }
 }
