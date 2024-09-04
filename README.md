@@ -1,4 +1,4 @@
-# epr-prn-accreditation-back-end
+# epr-prn-common-backend
 The README should include the following (if they apply):
 
 - **Description of the product** – what the service or product is, and what role this repo performs within it
