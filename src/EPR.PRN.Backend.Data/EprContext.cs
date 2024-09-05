@@ -8,11 +8,6 @@ namespace EPR.PRN.Backend.Data
     {
         private readonly IConfiguration _configuration;
 
-        public EprContext(IConfiguration configuration)
-        {
-            _configuration = configuration;
-        }
-
         public EprContext(DbContextOptions options, IConfiguration configuration) : base(options)
         {
             _configuration = configuration;

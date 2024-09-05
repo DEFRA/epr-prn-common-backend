@@ -1,6 +1,7 @@
-﻿using Microsoft.Extensions.Configuration;
-using EPR.PRN.Backend.Data.DataModels;
+﻿using EPR.PRN.Backend.Data.DataModels;
 using EPR.PRN.Backend.Data.Repositories;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Moq;
 using Moq.EntityFrameworkCore;
 using System.Diagnostics.CodeAnalysis;
@@ -25,7 +26,8 @@ public class RecyclingTargetRepositoryTests
     [TestInitialize]
     public void TestInitialize()
     {
-        _mockEprContext = new Mock<EprContext>(new Mock<IConfiguration>().Object);
+        var dbContextOptions = new DbContextOptionsBuilder<EprContext>().Options;
+        _mockEprContext = new Mock<EprContext>(dbContextOptions, new Mock<IConfiguration>().Object);
         _mockEprContext.Setup(context => context.RecyclingTargets).ReturnsDbSet(recyclingTarget);
     }
 

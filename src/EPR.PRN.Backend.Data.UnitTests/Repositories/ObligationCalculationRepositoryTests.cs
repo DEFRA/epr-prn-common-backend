@@ -1,9 +1,10 @@
 ﻿using EPR.PRN.Backend.Data.DataModels;
 using EPR.PRN.Backend.Data.Repositories;
 using FluentAssertions;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Moq;
 using Moq.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using System.Diagnostics.CodeAnalysis;
 
 namespace EPR.PRN.Backend.Data.UnitTests.Repositories;
@@ -26,7 +27,8 @@ public class ObligationCalculationRepositoryTests
     [TestInitialize]
     public void TestInitialize()
     {
-        _mockEprContext = new Mock<EprContext>(new Mock<IConfiguration>().Object);
+        var dbContextOptions = new DbContextOptionsBuilder<EprContext>().Options;
+        _mockEprContext = new Mock<EprContext>(dbContextOptions, new Mock<IConfiguration>().Object);
         _mockEprContext.Setup(context => context.ObligationCalculations).ReturnsDbSet(obligationCalculation);
         _mockEprContext.Setup(x => x.SaveChangesAsync(It.IsAny<CancellationToken>())).ReturnsAsync(1);
     }

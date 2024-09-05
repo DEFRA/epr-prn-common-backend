@@ -101,7 +101,7 @@
             }
         }
 
-        [HttpPost("submissions/{id}/calculate")]
+        [HttpPost("v1/submissions/{id}/calculate")]
         [ProducesResponseType(202)]
         [ProducesResponseType(400)]
         public async Task<IActionResult> CalculateAsync(Guid id, [FromBody] SubmissionCalculationRequest request)
