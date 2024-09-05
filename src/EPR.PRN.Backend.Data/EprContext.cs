@@ -8,8 +8,14 @@ namespace EPR.PRN.Backend.Data
     {
         private readonly IConfiguration _configuration;
 
+        public EprContext()
+        {
+
+        }
+
         public EprContext(DbContextOptions options) : base(options)
         {
+
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
