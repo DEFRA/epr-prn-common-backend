@@ -5,8 +5,6 @@ using EPR.PRN.Backend.Data.DataModels;
 using FluentAssertions;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Moq;
 using System.Diagnostics.CodeAnalysis;
 
 namespace EPR.PRN.Backend.API.UnitTests.Repositories;
@@ -17,13 +15,10 @@ public class RepositoryTests
 {
     private SqliteConnection _connection;
     private DbContextOptions<EprContext> _contextOptions;
-    private Mock<IConfiguration> _configuration;
 
     [TestInitialize]
     public void TestInitialize()
     {
-        _configuration = new Mock<IConfiguration>();
-
         _connection = new SqliteConnection("Filename=:memory:");
         _connection.Open();
 
@@ -40,7 +35,7 @@ public class RepositoryTests
         //Arrange
         data[0].PrnStatusId = data[1].PrnStatusId = data[2].PrnStatusId = 1;
 
-        using var context = new EprContext(_contextOptions, _configuration.Object);
+        using var context = new EprContext(_contextOptions);
         if (await context.Database.EnsureCreatedAsync())
         {
             context.AddRange(data);
@@ -63,7 +58,7 @@ public class RepositoryTests
         //Arrange
         data[0].PrnStatusId = data[1].PrnStatusId = data[2].PrnStatusId = 1;
 
-        using var context = new EprContext(_contextOptions, _configuration.Object);
+        using var context = new EprContext(_contextOptions);
         if (await context.Database.EnsureCreatedAsync())
         {
             context.AddRange(data);
@@ -84,7 +79,7 @@ public class RepositoryTests
         //Arrange
         data[0].PrnStatusId = data[1].PrnStatusId = data[2].PrnStatusId = 2;
 
-        using var context = new EprContext(_contextOptions, _configuration.Object);
+        using var context = new EprContext(_contextOptions);
         if (await context.Database.EnsureCreatedAsync())
         {
             context.AddRange(data);
@@ -112,7 +107,7 @@ public class RepositoryTests
         data[0].PrnStatusId = data[1].PrnStatusId = data[2].PrnStatusId = 2;
         statusHistory.PrnIdFk = data[0].Id;
         statusHistory.PrnStatusIdFk = data[0].PrnStatusId;
-        using var context = new EprContext(_contextOptions, _configuration.Object);
+        using var context = new EprContext(_contextOptions);
         if (await context.Database.EnsureCreatedAsync())
         {
             context.AddRange(data);
