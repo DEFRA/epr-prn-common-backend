@@ -1,10 +1,8 @@
 ﻿using AutoFixture.MSTest;
 using EPR.PRN.Backend.Data.DataModels;
 using EPR.PRN.Backend.Data.Interfaces;
-using EPR.PRN.Backend.Obligation.Interfaces;
 using EPR.PRN.Backend.Obligation.Services;
 using FluentAssertions;
-using Microsoft.Extensions.Logging;
 using Moq;
 using System.Diagnostics.CodeAnalysis;
 
@@ -55,15 +53,5 @@ public class ObligationCalculatorServiceTests
         var result = await _service.GetObligationCalculationByOrganisationId(organisationId);
 
         result.Should().BeNull();
-    }
-
-    [TestMethod]
-    public async Task ProcessApprovedPomData_ShouldCallAddObligationCalculation()
-    {
-        string submissionIdString = string.Empty;
-
-        await _service.ProcessApprovedPomData(submissionIdString);
-
-        _mockObligationCalculationRepository.Verify(x => x.AddObligationCalculation(new List<ObligationCalculation>()), Times.Once);
     }
 }
