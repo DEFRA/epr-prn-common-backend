@@ -49,7 +49,7 @@
             return Ok(prn);
         }
 
-        [HttpGet("obligationcalculation/{organisationId}")]
+        [HttpGet("v1/obligationcalculation/{organisationId}")]
         [ProducesResponseType(typeof(List<ObligationCalculationDto>), 200)]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
