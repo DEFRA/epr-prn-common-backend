@@ -21,7 +21,7 @@
 
         public string ReprocessorExporterAgency { get; set; } = null!;
 
-        private int PrnStatusId { get; set; }
+        public int PrnStatusId { get; set; }
 
         public EprnStatus PrnStatus => (EprnStatus)PrnStatusId;
         public int TonnageValue { get; set; }

@@ -5,8 +5,8 @@
     public interface IPrnService
     {
         Task<PrnDto?> GetPrnForOrganisationById(Guid orgId, Guid prnId);
-
         Task<List<PrnDto>> GetAllPrnByOrganisationId(Guid orgId);
         Task UpdateStatus(Guid orgId, Guid userId, List<PrnUpdateStatusDto> prnUpdates);
+        Task<PaginatedResponseDto<PrnDto>> GetSearchPrns(PaginatedRequestDto request);
     }
 }

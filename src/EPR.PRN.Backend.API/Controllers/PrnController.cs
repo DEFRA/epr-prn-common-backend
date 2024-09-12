@@ -37,8 +37,19 @@
             return Ok(prn);
         }
 
-        [HttpGet("organisation")]
+		[HttpGet("v1/search/{page?}/{search?}/{filterBy?}/{sortBy?}")]
+		[ProducesResponseType(typeof(PaginatedResponseDto<PrnDto>), 200)]
+		[ProducesResponseType(400)]
+		[ProducesResponseType(404)]
+		public async Task<IActionResult> GetSearchPrns([FromQuery] PaginatedRequestDto request)
+		{
+			var result = await _prnService.GetSearchPrns(request);
+			return Ok(result);
+		}
+
+		[HttpGet("organisation")]
         [ProducesResponseType(typeof(List<PrnDto>), 200)]
+        
         public async Task<IActionResult> GetAllPrnByOrganisationId([FromHeader(Name = "X-EPR-ORGANISATION")] Guid orgId)
         {
             var prn = await _prnService.GetAllPrnByOrganisationId(orgId);
