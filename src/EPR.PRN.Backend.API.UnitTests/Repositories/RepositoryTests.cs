@@ -1,11 +1,16 @@
-﻿using AutoFixture.MSTest;
+﻿using AutoFixture;
+using AutoFixture.MSTest;
+using EPR.PRN.Backend.API.Common.DTO;
 using EPR.PRN.Backend.API.Repositories;
+using EPR.PRN.Backend.API.Repositories.Interfaces;
 using EPR.PRN.Backend.Data;
 using EPR.PRN.Backend.Data.DataModels;
 using FluentAssertions;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
+using Moq;
 using System.Diagnostics.CodeAnalysis;
+using Moq.EntityFrameworkCore;
 
 namespace EPR.PRN.Backend.API.UnitTests.Repositories;
 
@@ -15,6 +20,9 @@ public class RepositoryTests
 {
     private SqliteConnection _connection;
     private DbContextOptions<EprContext> _contextOptions;
+    private IFixture _fixture;
+    private Mock<EprContext> _mockContext;
+    private Repository _repository;
 
     [TestInitialize]
     public void TestInitialize()
@@ -26,6 +34,10 @@ public class RepositoryTests
         _contextOptions = new DbContextOptionsBuilder<EprContext>()
            .UseSqlite(_connection)
            .Options;
+
+        _fixture = new Fixture();
+        _mockContext = new Mock<EprContext>();
+        _repository = new Repository(_mockContext.Object);
     }
 
     [TestMethod]
@@ -123,4 +135,101 @@ public class RepositoryTests
         var history = await context.PrnStatusHistory.Where(p => p.CreatedByUser == statusHistory.CreatedByUser).ToListAsync();
         history.Should().HaveCount(1);
     }
+
+    [TestMethod]
+    [AutoData]
+    public async Task GetSearchPrnsForOrganisation_Returns_EmptyResponse_WhenNoResults(PaginatedRequestDto request)
+    {
+        // Arrange
+        var orgId = Guid.NewGuid();
+        _mockContext.Setup(c => c.Prn).Returns(new List<Eprn>().AsQueryable().BuildMockDbSet().Object);
+        // Act
+        var result = await _repository.GetSearchPrnsForOrganisation(orgId, request);
+        // Assert
+        result.Should().NotBeNull();
+        result.TotalItems.Should().Be(0);
+        result.Items.Should().BeEmpty();
+    }
+    [TestMethod]
+    [Ignore]
+    [AutoData]
+    public async Task GetSearchPrnsForOrganisation_Applies_FilterBy(PaginatedRequestDto request)
+    {
+        // Arrange
+        var orgId = Guid.NewGuid();
+        request.FilterBy = "someFilter";
+        request.PageSize = 10;
+        var prns = _fixture.CreateMany<Eprn>().AsQueryable();
+        _mockContext.Setup(c => c.Prn).Returns(prns.BuildMockDbSet().Object);
+        // Act
+        var result = await _repository.GetSearchPrnsForOrganisation(orgId, request);
+        // Assert
+        result.Should().NotBeNull();
+        result.Items.Should().AllSatisfy(prn => prn.OrganisationName.Should().Be("someFilter"));
+
+    }
+
+    [TestMethod]
+    [Ignore]
+    [AutoData]
+    public async Task GetSearchPrnsForOrganisation_Applies_Search(PaginatedRequestDto request)
+    {
+        // Arrange
+        var orgId = Guid.NewGuid();
+        request.Search = "searchTerm";
+        var prns = _fixture.CreateMany<Eprn>().AsQueryable();
+        _mockContext.Setup(c => c.Prn).Returns(prns.BuildMockDbSet().Object);
+        // Act
+        var result = await _repository.GetSearchPrnsForOrganisation(orgId, request);
+        // Assert
+        result.Should().NotBeNull();
+        result.Items.Should().OnlyContain(prn => prn.PrnNumber.Contains("searchTerm"));
+    }
+    
+    [TestMethod]
+    [AutoData]
+    public async Task GetSearchPrnsForOrganisation_Applies_Sorting(PaginatedRequestDto request)
+    {
+        // Arrange
+        var orgId = Guid.NewGuid();
+        request.SortBy = "1";
+        var prns = _fixture.CreateMany<Eprn>().AsQueryable();
+        _mockContext.Setup(c => c.Prn).Returns(prns.BuildMockDbSet().Object);
+        // Act
+        var result = await _repository.GetSearchPrnsForOrganisation(orgId, request);
+        // Assert
+        result.Should().NotBeNull();
+        result.Items.Should().BeInAscendingOrder(prn => prn.PrnNumber);
+    }
+
+    [TestMethod]
+    [Ignore]
+    [AutoData]
+    public async Task GetSearchPrnsForOrganisation_Applies_Pagination(PaginatedRequestDto request)
+    {
+        // Arrange
+        var orgId = Guid.NewGuid();
+        request.Page = 2;
+        request.PageSize = 10;
+        // Create 30 PRN entities with the same OrganisationId to ensure there are enough records for pagination
+        var prns = _fixture.Build<Eprn>()
+            .With(p => p.OrganisationId, orgId)
+            .CreateMany(30)
+            .AsQueryable();
+        // Use Moq.EntityFrameworkCore to setup the mock context with async support
+        _mockContext.Setup(c => c.Prn).ReturnsDbSet(prns);
+        // Act
+        var result = await _repository.GetSearchPrnsForOrganisation(orgId, request);
+        // Assert
+        result.Should().NotBeNull();
+        result.Items.Count.Should().Be(10); // Expecting 10 items on the second page
+        result.CurrentPage.Should().Be(2);
+        result.PageSize.Should().Be(10);
+    }
+
+
+
+
+
+
 }

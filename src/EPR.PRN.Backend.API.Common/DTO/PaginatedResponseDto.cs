@@ -17,9 +17,11 @@ namespace EPR.PRN.Backend.API.Common.DTO
 
 		public string? FilterBy { get; set; }
 		
-		public string? SortBy { get; set; }		
+		public string? SortBy { get; set; }
 
-		public int PageCount
+        public List<string>? TypeAhead { get; set; }
+
+        public int PageCount
 	    {
 		    get
 		    {

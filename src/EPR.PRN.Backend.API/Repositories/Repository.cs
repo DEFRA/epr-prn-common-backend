@@ -100,27 +100,41 @@
 			prns = prns
 				.Skip((request.Page - 1) * request.PageSize)
 				.Take(request.PageSize);
-			var totalPages = (totalRecords + recordsPerPage - 1) / recordsPerPage;
+            
+            var prnList = await prns
+                .Select(prn => new
+                {
+                    prn.PrnNumber,
+                    prn.OrganisationName,
+                    PrnDto = new PrnDto
+                    {
+                        PrnNumber = prn.PrnNumber,
+                        MaterialName = prn.MaterialName,
+                        OrganisationName = prn.OrganisationName,
+                        CreatedOn = prn.CreatedOn,
+                        TonnageValue = prn.TonnageValue,
+                        PrnStatusId = prn.PrnStatusId
+                    }
+                })
+                .ToListAsync();
 
-			return new PaginatedResponseDto<PrnDto>()
-			{
-				Items = await prns.Select(prn => new PrnDto
-				{
-					PrnNumber = prn.PrnNumber,
-					MaterialName = prn.MaterialName,
-					OrganisationName = prn.OrganisationName,
-					CreatedOn = prn.CreatedOn,
-					TonnageValue = prn.TonnageValue,
-					PrnStatusId = prn.PrnStatusId
-				}).ToListAsync(),
-				
-				TotalItems = totalRecords,
-				CurrentPage = request.Page,
-				PageSize = recordsPerPage,
-				SearchTerm = request.Search,
-				FilterBy = request.FilterBy,
-				SortBy = request.SortBy
-			};
+            var typeAhead = prnList
+                .SelectMany(prn => new[] { prn.PrnNumber, prn.OrganisationName })
+                .Distinct()
+                .ToList();
+
+
+            return new PaginatedResponseDto<PrnDto>
+            {
+                Items = prnList.Select(prn => prn.PrnDto).ToList(),
+                TotalItems = totalRecords,
+                CurrentPage = request.Page,
+                PageSize = recordsPerPage,
+                SearchTerm = request.Search,
+                FilterBy = request.FilterBy,
+                SortBy = request.SortBy,
+                TypeAhead = typeAhead
+            };
         }
     }
 }
