@@ -28,9 +28,9 @@
             return (await _repository.GetAllPrnByOrganisationId(orgId)).Select(x => (PrnDto)x).ToList();
         }
 
-		public async Task<PaginatedResponseDto<PrnDto>> GetSearchPrns(PaginatedRequestDto request)
+		public async Task<PaginatedResponseDto<PrnDto>> GetSearchPrnsForOrganisation(Guid orgId, PaginatedRequestDto request)
 		{
-			return await _repository.GetSearchPrns(request);
+			return await _repository.GetSearchPrnsForOrganisation( orgId,request);
 		}
 
 		public async Task UpdateStatus(Guid orgId, Guid userId, List<PrnUpdateStatusDto> prnUpdates)

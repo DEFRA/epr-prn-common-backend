@@ -49,14 +49,29 @@
             _eprContext.PrnStatusHistory.Add(prnStatusHistory);
         }
 
-        public async Task<PaginatedResponseDto<PrnDto>> GetSearchPrns(PaginatedRequestDto request)
+        public async Task<PaginatedResponseDto<PrnDto>> GetSearchPrnsForOrganisation(Guid orgId, PaginatedRequestDto request)
         {
 			var recordsPerPage = request.PageSize;
-			var prns = _eprContext.Prn.AsQueryable();
+            var prns = _eprContext.Prn.Where(p => p.OrganisationId == orgId).AsQueryable();
+            
+            // Return empty response if no results
+            if (!prns.Any())
+            {
+                return new PaginatedResponseDto<PrnDto>
+                {
+                    Items = [],
+                    TotalItems = 0,
+                    CurrentPage = request.Page,
+                    PageSize = request.PageSize,
+                    SearchTerm = request.Search,
+                    FilterBy = request.FilterBy,
+                    SortBy = request.SortBy
+                };
+            }
 
-			if (!string.IsNullOrWhiteSpace(request.FilterBy))
+            if (!string.IsNullOrWhiteSpace(request.FilterBy))
 			{
-				// -- TODO implement in string search
+				// -- TODO implement filtering
 				//prns = prns.Where(e =>
 				//	e.PrnHistory != null &&
 				//	e.PrnHistory.Any() &&
