@@ -54,7 +54,7 @@ namespace EPR.PRN.Backend.Data.DataModels
 		
 		public bool DecemberWaste { get; set; }
 		
-		public DateTime? CancelledDate { get; set; }
+		public DateTime? StatusUpdatedOn { get; set; }
 		
 		[MaxLength(50)]
 		public required string IssuedByOrg { get; set; }

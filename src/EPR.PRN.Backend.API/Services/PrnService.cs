@@ -74,6 +74,7 @@
             prn.PrnStatusId = (int)prnUpdate.Status;
             prn.LastUpdatedBy = userId;
             prn.LastUpdatedDate = DateTime.UtcNow;
+            prn.StatusUpdatedOn = DateTime.UtcNow;
         }
     }
 }
