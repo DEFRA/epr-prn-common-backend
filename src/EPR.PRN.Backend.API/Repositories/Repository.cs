@@ -108,6 +108,7 @@
                     prn.OrganisationName,
                     PrnDto = new PrnDto
                     {
+                        ExternalId = prn.ExternalId,
                         PrnNumber = prn.PrnNumber,
                         MaterialName = prn.MaterialName,
                         OrganisationName = prn.OrganisationName,
@@ -115,6 +116,7 @@
                         TonnageValue = prn.TonnageValue,
                         PrnStatusId = prn.PrnStatusId,
                         IssuedByOrg = prn.IssuedByOrg,
+                        IssueDate = prn.IssueDate
                     }
                 })
                 .ToListAsync();
@@ -123,7 +125,6 @@
                 .SelectMany(prn => new[] { prn.PrnNumber, prn.OrganisationName })
                 .Distinct()
                 .ToList();
-
 
             return new PaginatedResponseDto<PrnDto>
             {
