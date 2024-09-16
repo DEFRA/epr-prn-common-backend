@@ -16,7 +16,7 @@ namespace EPR.PRN.Backend.Obligation.UnitTests.Helpers
             int result = DateHelper.ExtractYear(dateString);
 
             // Assert
-            result.Should().Be(2024);
+            result.Should().Be(2025);
         }
 
         [TestMethod]
@@ -85,7 +85,7 @@ namespace EPR.PRN.Backend.Obligation.UnitTests.Helpers
             int result = DateHelper.ExtractYear(dateString);
 
             // Assert
-            result.Should().Be(2020);
+            result.Should().Be(2021);
         }
     }
 }
