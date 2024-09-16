@@ -1,13 +1,14 @@
-﻿using EPR.PRN.Backend.Obligation.DTO;
+﻿using AutoFixture.MSTest;
+using EPR.PRN.Backend.Obligation.DTO;
 using EPR.PRN.Backend.Obligation.Enums;
+using EPR.PRN.Backend.Obligation.Helpers;
 using EPR.PRN.Backend.Obligation.Interfaces;
+using EPR.PRN.Backend.Obligation.Models;
 using EPR.PRN.Backend.Obligation.Strategies;
 using Moq;
-using System.Diagnostics.CodeAnalysis;
 
 namespace EPR.PRN.Backend.Obligation.UnitTests.Strategies;
 
-[ExcludeFromCodeCoverage]
 [TestClass]
 public class GlassCalculationStrategyTests
 {
@@ -46,20 +47,11 @@ public class GlassCalculationStrategyTests
     }
 
     [TestMethod]
-    public void Calculate_ShouldReturnCorrectObligationCalculations()
+    [AutoData]
+    public void Calculate_ShouldReturnCorrectObligationCalculations(CalculationRequestDto calculationRequest)
     {
         // Arrange
-        var pomObligation = new PomObligtionDto
-        {
-            SubmissionPeriod = string.Empty,
-            PackagingMaterial = "Glass",
-            PackagingMaterialWeight = 200,
-            OrganisationId = 1
-        };
-
-        var materialType = MaterialType.Glass;
-
-        var recyclingTargets = new Dictionary<int, Dictionary<MaterialType, double>>
+        calculationRequest.RecyclingTargets = new Dictionary<int, Dictionary<MaterialType, double>>
         {
             {
                 DateTime.UtcNow.Year,
@@ -71,11 +63,16 @@ public class GlassCalculationStrategyTests
             }
         };
 
-        _mockCalculationService.Setup(x => x.CalculateGlass(0.6, 0.4, 200))
+        calculationRequest.SubmissionCalculationRequest.SubmissionPeriod = "2024-P4";
+        var targetYear = DateHelper.ExtractYear(calculationRequest.SubmissionCalculationRequest.SubmissionPeriod);
+
+        _mockCalculationService.Setup(x => x.CalculateGlass(
+            calculationRequest.RecyclingTargets[DateTime.Now.Year][MaterialType.Glass], calculationRequest.RecyclingTargets[targetYear][MaterialType.GlassRemelt],
+            calculationRequest.SubmissionCalculationRequest.PackagingMaterialWeight))
             .Returns((80, 120));  // remelt = 80, remainder = 120
 
         // Act
-        var result = _strategy.Calculate(pomObligation, materialType, recyclingTargets);
+        var result = _strategy.Calculate(calculationRequest);
 
         // Assert
         Assert.IsNotNull(result);
@@ -89,8 +86,8 @@ public class GlassCalculationStrategyTests
 
         Assert.AreEqual(120, glassCalculation.MaterialObligationValue);
         Assert.AreEqual(80, remeltCalculation.MaterialObligationValue);
-        Assert.AreEqual(pomObligation.OrganisationId, glassCalculation.OrganisationId);
-        Assert.AreEqual(pomObligation.OrganisationId, remeltCalculation.OrganisationId);
+        Assert.AreEqual(calculationRequest.OrganisationId, glassCalculation.OrganisationId);
+        Assert.AreEqual(calculationRequest.OrganisationId, remeltCalculation.OrganisationId);
         Assert.AreEqual(DateTime.UtcNow.Year, glassCalculation.Year);
         Assert.AreEqual(DateTime.UtcNow.Year, remeltCalculation.Year);
         Assert.IsTrue((DateTime.UtcNow - glassCalculation.CalculatedOn).TotalSeconds < 1, "CalculatedOn should be very close to the current time");
@@ -102,12 +99,12 @@ public class GlassCalculationStrategyTests
     public void Calculate_ShouldThrowKeyNotFoundException_WhenRecyclingTargetYearNotFound()
     {
         // Arrange
-        var pomObligation = new PomObligtionDto
+        var calculationRequest = new SubmissionCalculationRequest
         {
-            SubmissionPeriod = string.Empty,
+            SubmissionPeriod = "2024-P4",
             PackagingMaterial = "Glass",
             PackagingMaterialWeight = 200,
-            OrganisationId = 1
+            SubmissionId = Guid.NewGuid()
         };
 
         var materialType = MaterialType.Glass;
@@ -124,8 +121,10 @@ public class GlassCalculationStrategyTests
             }
         };
 
+        var request = new CalculationRequestDto { MaterialType = materialType, RecyclingTargets = recyclingTargets, SubmissionCalculationRequest = calculationRequest };
+
         // Act
-        _strategy.Calculate(pomObligation, materialType, recyclingTargets);
+        _strategy.Calculate(request);
 
         // Assert is handled by ExpectedException
     }

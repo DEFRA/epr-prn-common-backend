@@ -7,6 +7,6 @@ namespace EPR.PRN.Backend.Obligation.Interfaces
     public interface IMaterialCalculationStrategy
     {
         bool CanHandle(MaterialType materialType);
-        List<ObligationCalculation> Calculate(PomObligtionDto pomObligation, MaterialType materialType, Dictionary<int, Dictionary<MaterialType, double>> recyclingTargets);
+        List<ObligationCalculation> Calculate(CalculationRequestDto calculationRequest);
     }
 }

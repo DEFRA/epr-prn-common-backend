@@ -101,19 +101,49 @@
             }
         }
 
-        [HttpPost("v1/submissions/{id}/calculate")]
-        [ProducesResponseType(202)]
-        [ProducesResponseType(400)]
-        public async Task<IActionResult> CalculateAsync(Guid id, [FromBody] SubmissionCalculationRequest request)
+        [HttpPost("v1/organisation/{id}/calculate")]
+        [ProducesResponseType(StatusCodes.Status202Accepted)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status504GatewayTimeout)]
+        public async Task<IActionResult> CalculateAsync(int id, [FromBody] List<SubmissionCalculationRequest> request)
         {
+            if (id <= 0)
+            {
+                return BadRequest(new { message = "Invalid Organisation ID." });
+            }
+
+            if (request == null || !request.Any())
+            {
+                return BadRequest(new { message = "Submission calculation request cannot be null or empty." });
+            }
+
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            await _obligationCalculatorService.ProcessApprovedPomData(id, request);
+            try
+            {
+                var calculationResult = await _obligationCalculatorService.CalculatePomDataAsync(id, request);
 
-            return Accepted();
+                if (!calculationResult.Success)
+                {
+                    return StatusCode(StatusCodes.Status500InternalServerError, new { message = "Calculation failed due to internal errors." });
+                }
+
+                await _obligationCalculatorService.SaveCalculatedPomDataAsync(calculationResult.Calculations);
+
+                return Accepted(new { message = "Calculation successful.", data = calculationResult.Calculations });
+            }
+            catch (TimeoutException ex)
+            {
+                return StatusCode(StatusCodes.Status504GatewayTimeout, new { message = "Calculation timed out.", details = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new { message = "An error occurred during calculation.", details = ex.Message });
+            }
         }
 
         #endregion

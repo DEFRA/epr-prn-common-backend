@@ -25,8 +25,8 @@ namespace EPR.PRN.Backend.API.Helpers
                 .AddScoped<IMaterialCalculationStrategyResolver, MaterialCalculationStrategyResolver>()
                 .AddScoped<IMaterialCalculationStrategy, GlassCalculationStrategy>()
                 .AddScoped<IMaterialCalculationStrategy, GeneralCalculationStrategy>()
-                .AddScoped<IMaterialCalculationService, MaterialCalculationService>();
-
+                .AddScoped<IMaterialCalculationService, MaterialCalculationService>()
+                .AddScoped<IMaterialService, MaterialService>();
             return services;
         }
     }
