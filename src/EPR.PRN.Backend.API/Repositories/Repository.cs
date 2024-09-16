@@ -82,7 +82,7 @@
 			{
 				prns =  prns.Where(repo =>
 					EF.Functions.Like(repo.PrnNumber, $"%{request.Search}%") ||
-					EF.Functions.Like(repo.OrganisationName, $"%{request.Search}%"));
+					EF.Functions.Like(repo.IssuedByOrg, $"%{request.Search}%"));
 			}
 
 			// get the count BEFORE paging and sorting
@@ -113,7 +113,8 @@
                         OrganisationName = prn.OrganisationName,
                         CreatedOn = prn.CreatedOn,
                         TonnageValue = prn.TonnageValue,
-                        PrnStatusId = prn.PrnStatusId
+                        PrnStatusId = prn.PrnStatusId,
+                        IssuedByOrg = prn.IssuedByOrg,
                     }
                 })
                 .ToListAsync();
