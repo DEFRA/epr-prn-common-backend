@@ -122,7 +122,7 @@
                 .ToListAsync();
 
             var typeAhead = prnList
-                .SelectMany(prn => new[] { prn.PrnNumber, prn.OrganisationName })
+                .SelectMany(prn => new[] { prn.PrnDto.PrnNumber, prn.PrnDto.IssuedByOrg })
                 .Distinct()
                 .ToList();
 
