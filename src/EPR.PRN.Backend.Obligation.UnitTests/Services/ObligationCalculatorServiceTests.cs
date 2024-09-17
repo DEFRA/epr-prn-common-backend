@@ -103,7 +103,7 @@ public class ObligationCalculatorServiceTests
             }
         });
 
-        var result = await _service.CalculatePomDataAsync(organisationId, submissions);
+        var result = await _service.CalculateAsync(organisationId, submissions);
 
         result.Success.Should().BeFalse();
         loggedMessages.Should().Contain($"Material was null or empty for SubmissionId: {submissionId} and OrganisationId: {organisationId}.");
@@ -141,7 +141,7 @@ public class ObligationCalculatorServiceTests
             }
         });
 
-        var result = await _service.CalculatePomDataAsync(organisationId, submissions);
+        var result = await _service.CalculateAsync(organisationId, submissions);
 
         result.Success.Should().BeFalse();
         loggedMessages.Should().Contain($"Material provided was not valid: {packagingMaterial} for SubmissionId: {submissionId} and OrganisationId: {organisationId}.");
@@ -180,7 +180,7 @@ public class ObligationCalculatorServiceTests
             }
         });
 
-        var result = await _service.CalculatePomDataAsync(organisationId, submissions);
+        var result = await _service.CalculateAsync(organisationId, submissions);
 
         result.Success.Should().BeFalse();
         loggedMessages.Should().Contain($"Could not find handler for Material Type: {packagingMaterial} for SubmissionId: {submissionId} and OrganisationId: {organisationId}.");
@@ -223,7 +223,7 @@ public class ObligationCalculatorServiceTests
             }
         });
 
-        var result = await _service.CalculatePomDataAsync(organisationId, submissions);
+        var result = await _service.CalculateAsync(organisationId, submissions);
 
         result.Success.Should().BeFalse();
         loggedMessages.Should().Contain($"No calculations for OrganisationId: {organisationId}.");
@@ -248,7 +248,7 @@ public class ObligationCalculatorServiceTests
         });
         _mockStrategyResolver.Setup(x => x.Resolve(MaterialType.Plastic)).Returns(mockStrategy.Object);
 
-        var result = await _service.CalculatePomDataAsync(organisationId, submissions);
+        var result = await _service.CalculateAsync(organisationId, submissions);
 
         result.Success.Should().BeTrue();
         result.Calculations.Should().NotBeNullOrEmpty();

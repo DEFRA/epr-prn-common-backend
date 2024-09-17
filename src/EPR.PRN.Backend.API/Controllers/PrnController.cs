@@ -125,7 +125,7 @@
 
             try
             {
-                var calculationResult = await _obligationCalculatorService.CalculatePomDataAsync(id, request);
+                var calculationResult = await _obligationCalculatorService.CalculateAsync(id, request);
 
                 if (!calculationResult.Success)
                 {

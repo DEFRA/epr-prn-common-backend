@@ -28,7 +28,7 @@ namespace EPR.PRN.Backend.Obligation.Services
             _logger = logger;
         }
 
-        public async Task<CalculationResult> CalculatePomDataAsync(int id, List<SubmissionCalculationRequest> submissions)
+        public async Task<CalculationResult> CalculateAsync(int organisationId, List<SubmissionCalculationRequest> submissions)
         {
             var recyclingTargets = await _recyclingTargetDataService.GetRecyclingTargetsAsync();
             var result = new CalculationResult();
@@ -38,7 +38,7 @@ namespace EPR.PRN.Backend.Obligation.Services
             {
                 if (string.IsNullOrEmpty(submission.PackagingMaterial))
                 {
-                    var error = $"Material was null or empty for SubmissionId: {submission.SubmissionId} and OrganisationId: {id}.";
+                    var error = $"Material was null or empty for SubmissionId: {submission.SubmissionId} and OrganisationId: {organisationId}.";
                     _logger.LogError(error);
                     result.Success = false;
                     continue;
@@ -47,7 +47,7 @@ namespace EPR.PRN.Backend.Obligation.Services
                 var material = _materialService.GetMaterialByCode(submission.PackagingMaterial);
                 if (!material.HasValue)
                 {
-                    var error = $"Material provided was not valid: {submission.PackagingMaterial} for SubmissionId: {submission.SubmissionId} and OrganisationId: {id}.";
+                    var error = $"Material provided was not valid: {submission.PackagingMaterial} for SubmissionId: {submission.SubmissionId} and OrganisationId: {organisationId}.";
                     _logger.LogError(error);
                     result.Success = false;
                     continue;
@@ -56,7 +56,7 @@ namespace EPR.PRN.Backend.Obligation.Services
                 var strategy = _strategyResolver.Resolve(material!.Value);
                 if (strategy == null)
                 {
-                    var error = $"Could not find handler for Material Type: {submission.PackagingMaterial} for SubmissionId: {submission.SubmissionId} and OrganisationId: {id}.";
+                    var error = $"Could not find handler for Material Type: {submission.PackagingMaterial} for SubmissionId: {submission.SubmissionId} and OrganisationId: {organisationId}.";
                     _logger.LogError(error);
                     result.Success = false;
                     continue;
@@ -64,7 +64,7 @@ namespace EPR.PRN.Backend.Obligation.Services
 
                 var calculationRequest = new CalculationRequestDto
                 {
-                    OrganisationId = id,
+                    OrganisationId = organisationId,
                     SubmissionCalculationRequest = submission,
                     MaterialType = material.Value,
                     RecyclingTargets = recyclingTargets
@@ -75,7 +75,7 @@ namespace EPR.PRN.Backend.Obligation.Services
 
             if (!calculations.Any())
             {
-                var error = $"No calculations for OrganisationId: {id}.";
+                var error = $"No calculations for OrganisationId: {organisationId}.";
                 _logger.LogError(error);
                 result.Success = false;
             }

@@ -174,7 +174,7 @@ public class PrnControllerTests
     {
         var calculationResult = new CalculationResult { Success = false };
         _mockObligationCalculatorService
-            .Setup(x => x.CalculatePomDataAsync(It.IsAny<int>(), It.IsAny<List<SubmissionCalculationRequest>>()))
+            .Setup(x => x.CalculateAsync(It.IsAny<int>(), It.IsAny<List<SubmissionCalculationRequest>>()))
             .ReturnsAsync(calculationResult);
 
         var result = await _systemUnderTest.CalculateAsync(1, new List<SubmissionCalculationRequest> { new SubmissionCalculationRequest() });
@@ -193,7 +193,7 @@ public class PrnControllerTests
         };
 
         _mockObligationCalculatorService
-            .Setup(x => x.CalculatePomDataAsync(It.IsAny<int>(), It.IsAny<List<SubmissionCalculationRequest>>()))
+            .Setup(x => x.CalculateAsync(It.IsAny<int>(), It.IsAny<List<SubmissionCalculationRequest>>()))
             .ReturnsAsync(calculationResult);
 
         var result = await _systemUnderTest.CalculateAsync(1, new List<SubmissionCalculationRequest> { new SubmissionCalculationRequest() });
@@ -209,7 +209,7 @@ public class PrnControllerTests
     public async Task CalculateAsync_WhenTimeoutOccurs_ReturnsGatewayTimeout()
     {
         _mockObligationCalculatorService
-            .Setup(x => x.CalculatePomDataAsync(It.IsAny<int>(), It.IsAny<List<SubmissionCalculationRequest>>()))
+            .Setup(x => x.CalculateAsync(It.IsAny<int>(), It.IsAny<List<SubmissionCalculationRequest>>()))
             .ThrowsAsync(new TimeoutException("Request timed out"));
 
         var result = await _systemUnderTest.CalculateAsync(1, new List<SubmissionCalculationRequest> { new SubmissionCalculationRequest() });
@@ -225,7 +225,7 @@ public class PrnControllerTests
     public async Task CalculateAsync_WhenUnexpectedErrorOccurs_ReturnsInternalServerError()
     {
         _mockObligationCalculatorService
-            .Setup(x => x.CalculatePomDataAsync(It.IsAny<int>(), It.IsAny<List<SubmissionCalculationRequest>>()))
+            .Setup(x => x.CalculateAsync(It.IsAny<int>(), It.IsAny<List<SubmissionCalculationRequest>>()))
             .ThrowsAsync(new Exception("Unexpected error"));
 
         var result = await _systemUnderTest.CalculateAsync(1, new List<SubmissionCalculationRequest> { new SubmissionCalculationRequest() });
