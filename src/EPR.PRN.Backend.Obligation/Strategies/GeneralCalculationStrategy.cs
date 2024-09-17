@@ -1,6 +1,7 @@
 ﻿using EPR.PRN.Backend.Data.DataModels;
 using EPR.PRN.Backend.Obligation.DTO;
 using EPR.PRN.Backend.Obligation.Enums;
+using EPR.PRN.Backend.Obligation.Helpers;
 using EPR.PRN.Backend.Obligation.Interfaces;
 
 namespace EPR.PRN.Backend.Obligation.Strategies
@@ -17,14 +18,16 @@ namespace EPR.PRN.Backend.Obligation.Strategies
         }
         public bool CanHandle(MaterialType materialType) => _generalMaterials.Contains(materialType);
 
-        public List<ObligationCalculation> Calculate(PomObligtionDto pomObligation, MaterialType materialType, Dictionary<int, Dictionary<MaterialType, double>> recyclingTargets)
+        public List<ObligationCalculation> Calculate(CalculationRequestDto calculationRequest)
         {
+            var targetYear = DateHelper.ExtractYear(calculationRequest.SubmissionCalculationRequest.SubmissionPeriod);
             var calculation = new ObligationCalculation
             {
-                MaterialName = materialType.ToString(),
+                MaterialName = calculationRequest.MaterialType.ToString(),
                 CalculatedOn = DateTime.UtcNow,
-                OrganisationId = pomObligation.OrganisationId,
-                MaterialObligationValue = _calculationService.Calculate(recyclingTargets[DateTime.Now.Year][materialType], pomObligation.PackagingMaterialWeight),
+                OrganisationId = calculationRequest.OrganisationId,
+                MaterialObligationValue = _calculationService.Calculate(calculationRequest.RecyclingTargets[targetYear][calculationRequest.MaterialType],
+                calculationRequest.SubmissionCalculationRequest.PackagingMaterialWeight),
                 Year = DateTime.UtcNow.Year
             };
 
