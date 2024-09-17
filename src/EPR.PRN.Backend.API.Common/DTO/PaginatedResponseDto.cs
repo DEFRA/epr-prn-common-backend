@@ -29,9 +29,11 @@ namespace EPR.PRN.Backend.API.Common.DTO
 			    {
 				    return 0;
 			    }
+				
+				var pageCount = (TotalItems + (PageSize - 1)) / PageSize;
 
-			    return (TotalItems + (PageSize - 1)) / PageSize;
-		    }
+                return pageCount < CurrentPage ? pageCount : CurrentPage;
+            }
 	    }
     }
 }
