@@ -1,5 +1,4 @@
 ﻿using AutoFixture;
-using AutoFixture.MSTest;
 using EPR.PRN.Backend.API.Common.DTO;
 using EPR.PRN.Backend.API.Repositories;
 using EPR.PRN.Backend.API.Repositories.Interfaces;
@@ -41,10 +40,10 @@ public class RepositoryTests
     }
 
     [TestMethod]
-    [AutoData]
-    public async Task GetAllPrnByOrganisationId_Returns_Prns(List<Eprn> data)
+    public async Task GetAllPrnByOrganisationId_Returns_Prns()
     {
         //Arrange
+        var data = _fixture.CreateMany<Eprn>().ToArray();
         data[0].PrnStatusId = data[1].PrnStatusId = data[2].PrnStatusId = 1;
 
         using var context = new EprContext(_contextOptions);
@@ -64,10 +63,10 @@ public class RepositoryTests
     }
 
     [TestMethod]
-    [AutoData]
-    public async Task GetPrnForOrganisationById_Returns_Prn(List<Eprn> data)
+    public async Task GetPrnForOrganisationById_Returns_Prn()
     {
         //Arrange
+        var data = _fixture.CreateMany<Eprn>().ToArray();
         data[0].PrnStatusId = data[1].PrnStatusId = data[2].PrnStatusId = 1;
 
         using var context = new EprContext(_contextOptions);
@@ -85,10 +84,10 @@ public class RepositoryTests
     }
 
     [TestMethod]
-    [AutoData]
-    public async Task SaveTransaction_SavesDataInDB(List<Eprn> data)
+    public async Task SaveTransaction_SavesDataInDB()
     {
         //Arrange
+        var data = _fixture.CreateMany<Eprn>().ToArray();
         data[0].PrnStatusId = data[1].PrnStatusId = data[2].PrnStatusId = 2;
 
         using var context = new EprContext(_contextOptions);
@@ -112,10 +111,11 @@ public class RepositoryTests
     }
 
     [TestMethod]
-    [AutoData]
-    public async Task AddPrnHistory(List<Eprn> data, PrnStatusHistory statusHistory)
+    public async Task AddPrnHistory()
     {
         //Arrange
+        var data = _fixture.CreateMany<Eprn>().ToArray();
+        var statusHistory = _fixture.Create<PrnStatusHistory>();
         data[0].PrnStatusId = data[1].PrnStatusId = data[2].PrnStatusId = 2;
         statusHistory.PrnIdFk = data[0].Id;
         statusHistory.PrnStatusIdFk = data[0].PrnStatusId;
@@ -137,10 +137,10 @@ public class RepositoryTests
     }
 
     [TestMethod]
-    [AutoData]
-    public async Task GetSearchPrnsForOrganisation_Returns_EmptyResponse_WhenNoResults(PaginatedRequestDto request)
+    public async Task GetSearchPrnsForOrganisation_Returns_EmptyResponse_WhenNoResults()
     {
         // Arrange
+        var request = _fixture.Create<PaginatedRequestDto>();
         var orgId = Guid.NewGuid();
         _mockContext.Setup(c => c.Prn).Returns(new List<Eprn>().AsQueryable().BuildMockDbSet().Object);
         // Act
@@ -152,10 +152,10 @@ public class RepositoryTests
     }
     [TestMethod]
     [Ignore]
-    [AutoData]
-    public async Task GetSearchPrnsForOrganisation_Applies_FilterBy(PaginatedRequestDto request)
+    public async Task GetSearchPrnsForOrganisation_Applies_FilterBy()
     {
         // Arrange
+        var request = _fixture.Create<PaginatedRequestDto>();
         var orgId = Guid.NewGuid();
         request.FilterBy = "someFilter";
         request.PageSize = 10;
@@ -171,10 +171,10 @@ public class RepositoryTests
 
     [TestMethod]
     [Ignore]
-    [AutoData]
-    public async Task GetSearchPrnsForOrganisation_Applies_Search(PaginatedRequestDto request)
+    public async Task GetSearchPrnsForOrganisation_Applies_Search()
     {
         // Arrange
+        var request = _fixture.Create<PaginatedRequestDto>();
         var orgId = Guid.NewGuid();
         request.Search = "searchTerm";
         var prns = _fixture.CreateMany<Eprn>().AsQueryable();
@@ -187,10 +187,10 @@ public class RepositoryTests
     }
     
     [TestMethod]
-    [AutoData]
-    public async Task GetSearchPrnsForOrganisation_Applies_Sorting(PaginatedRequestDto request)
+    public async Task GetSearchPrnsForOrganisation_Applies_Sorting()
     {
         // Arrange
+        var request = _fixture.Create<PaginatedRequestDto>();
         var orgId = Guid.NewGuid();
         request.SortBy = "1";
         var prns = _fixture.CreateMany<Eprn>().AsQueryable();
@@ -204,10 +204,10 @@ public class RepositoryTests
 
     [TestMethod]
     [Ignore]
-    [AutoData]
-    public async Task GetSearchPrnsForOrganisation_Applies_Pagination(PaginatedRequestDto request)
+    public async Task GetSearchPrnsForOrganisation_Applies_Pagination()
     {
         // Arrange
+        var request = _fixture.Create<PaginatedRequestDto>();
         var orgId = Guid.NewGuid();
         request.Page = 2;
         request.PageSize = 10;
@@ -226,10 +226,4 @@ public class RepositoryTests
         result.CurrentPage.Should().Be(2);
         result.PageSize.Should().Be(10);
     }
-
-
-
-
-
-
 }
