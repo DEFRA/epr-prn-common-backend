@@ -1,4 +1,4 @@
-﻿using AutoFixture.MSTest;
+﻿using AutoFixture;
 using EPR.PRN.Backend.API.Common.DTO;
 using EPR.PRN.Backend.API.Controllers;
 using EPR.PRN.Backend.API.Helpers;
@@ -23,6 +23,7 @@ public class PrnControllerTests
     private Mock<IPrnService> _mockPrnService;
     private Mock<ILogger<PrnController>> _mockLogger;
     private Mock<IObligationCalculatorService> _mockObligationCalculatorService;
+    private static readonly IFixture _fixture = new Fixture();
 
     [TestInitialize]
     public void TestInitialize()
@@ -34,9 +35,12 @@ public class PrnControllerTests
     }
 
     [TestMethod]
-    [AutoData]
-    public async Task GetPrn_ReturnsOkWithPrn_WhenValidPrnId(Guid orgId, Guid prnId, PrnDto expectedPrn)
+    public async Task GetPrn_ReturnsOkWithPrn_WhenValidPrnId()
     {
+        var orgId = Guid.NewGuid();
+        var prnId = Guid.NewGuid();
+        var expectedPrn = _fixture.Create<PrnDto>();
+
         _mockPrnService.Setup(s => s.GetPrnForOrganisationById(orgId, prnId)).ReturnsAsync(expectedPrn);
 
         var result = await _systemUnderTest.GetPrn(orgId, prnId) as OkObjectResult;
@@ -45,9 +49,11 @@ public class PrnControllerTests
     }
 
     [TestMethod]
-    [AutoData]
-    public async Task GetPrn_ReturnsNotFound_WhenPrnIdDoesntExists(Guid orgId, Guid prnId)
+    public async Task GetPrn_ReturnsNotFound_WhenPrnIdDoesntExists()
     {
+        var orgId = Guid.NewGuid();
+        var prnId = Guid.NewGuid();
+
         _mockPrnService.Setup(s => s.GetPrnForOrganisationById(orgId, prnId)).ReturnsAsync((PrnDto)null);
 
         var result = await _systemUnderTest.GetPrn(orgId, prnId) as NotFoundResult;
@@ -57,9 +63,11 @@ public class PrnControllerTests
     }
 
     [TestMethod]
-    [AutoData]
-    public async Task GetAllPrnByOrganisationId_ReturnsOkWithPrns_WhenValidOrgId(Guid orgId, List<PrnDto> expectedPrns)
+    public async Task GetAllPrnByOrganisationId_ReturnsOkWithPrns_WhenValidOrgId()
     {
+        var orgId = Guid.NewGuid();
+        var expectedPrns = _fixture.CreateMany<PrnDto>().ToList();
+
         _mockPrnService.Setup(s => s.GetAllPrnByOrganisationId(orgId)).ReturnsAsync(expectedPrns);
 
         var result = await _systemUnderTest.GetAllPrnByOrganisationId(orgId) as OkObjectResult;
@@ -68,9 +76,9 @@ public class PrnControllerTests
     }
 
     [TestMethod]
-    [AutoData]
-    public async Task GetAllPrnByOrganisationId_ReturnsNotFound_WhenPrnIdDoesntExists(Guid orgId)
+    public async Task GetAllPrnByOrganisationId_ReturnsNotFound_WhenPrnIdDoesntExists()
     {
+        var orgId = Guid.NewGuid();
         _mockPrnService.Setup(s => s.GetAllPrnByOrganisationId(orgId)).ReturnsAsync([]);
 
         var result = await _systemUnderTest.GetAllPrnByOrganisationId(orgId) as NotFoundResult;
@@ -80,9 +88,12 @@ public class PrnControllerTests
     }
 
     [TestMethod]
-    [AutoData]
-    public async Task UpdatePrnStatus_ReturnsOk_WhenUpdateSuccessfully(Guid orgId, Guid userId, List<PrnUpdateStatusDto> prnUpdates)
+    public async Task UpdatePrnStatus_ReturnsOk_WhenUpdateSuccessfully()
     {
+        var orgId = Guid.NewGuid();
+        var userId = Guid.NewGuid();
+        var prnUpdates = _fixture.CreateMany<PrnUpdateStatusDto>().ToList();
+
         _mockPrnService.Setup(s => s.UpdateStatus(orgId, userId, prnUpdates)).Returns(Task.CompletedTask);
 
         var result = await _systemUnderTest.UpdatePrnStatus(orgId, userId, prnUpdates) as OkResult;
@@ -92,9 +103,12 @@ public class PrnControllerTests
     }
 
     [TestMethod]
-    [AutoData]
-    public async Task UpdatePrnStatus_ReturnsConflict_WhenServiceThrowsConflictException(Guid orgId, Guid userId, List<PrnUpdateStatusDto> prnUpdates)
+    public async Task UpdatePrnStatus_ReturnsConflict_WhenServiceThrowsConflictException()
     {
+        var orgId = Guid.NewGuid();
+        var userId = Guid.NewGuid();
+        var prnUpdates = _fixture.CreateMany<PrnUpdateStatusDto>().ToList();
+
         _mockPrnService.Setup(s => s.UpdateStatus(orgId, userId, prnUpdates)).Throws<ConflictException>();
 
         var result = await _systemUnderTest.UpdatePrnStatus(orgId, userId, prnUpdates) as ObjectResult;
@@ -104,9 +118,12 @@ public class PrnControllerTests
     }
 
     [TestMethod]
-    [AutoData]
-    public async Task UpdatePrnStatus_ReturnsNotFound_WhenServiceThrowsNotFoundException(Guid orgId, Guid userId, List<PrnUpdateStatusDto> prnUpdates)
+    public async Task UpdatePrnStatus_ReturnsNotFound_WhenServiceThrowsNotFoundException()
     {
+        var orgId = Guid.NewGuid();
+        var userId = Guid.NewGuid();
+        var prnUpdates = _fixture.CreateMany<PrnUpdateStatusDto>().ToList();
+
         _mockPrnService.Setup(s => s.UpdateStatus(orgId, userId, prnUpdates)).Throws<NotFoundException>();
 
         var result = await _systemUnderTest.UpdatePrnStatus(orgId, userId, prnUpdates) as ObjectResult;
@@ -116,9 +133,12 @@ public class PrnControllerTests
     }
 
     [TestMethod]
-    [AutoData]
-    public async Task UpdatePrnStatus_ReturnsInternalServer_WhenServiceThrowsUnexpectedException(Guid orgId, Guid userId, List<PrnUpdateStatusDto> prnUpdates)
+    public async Task UpdatePrnStatus_ReturnsInternalServer_WhenServiceThrowsUnexpectedException()
     {
+        var orgId = Guid.NewGuid();
+        var userId = Guid.NewGuid();
+        var prnUpdates = _fixture.CreateMany<PrnUpdateStatusDto>().ToList();
+
         _mockPrnService.Setup(s => s.UpdateStatus(orgId, userId, prnUpdates)).Throws<ArgumentNullException>();
 
         var result = await _systemUnderTest.UpdatePrnStatus(orgId, userId, prnUpdates) as ObjectResult;
@@ -153,9 +173,9 @@ public class PrnControllerTests
     }
 
     [TestMethod]
-    [AutoData]
-    public async Task GetObligationCalculation_ReturnsOk_WhenObligationCalculationIsFound(List<ObligationCalculationDto> obligationCalculation)
+    public async Task GetObligationCalculation_ReturnsOk_WhenObligationCalculationIsFound()
     {
+        var obligationCalculation = _fixture.CreateMany<ObligationCalculationDto>().ToList();
         int validId = 1;
         _mockObligationCalculatorService.Setup(s => s.GetObligationCalculationByOrganisationId(validId)).ReturnsAsync(obligationCalculation);
 
@@ -167,9 +187,10 @@ public class PrnControllerTests
     }
 
     [TestMethod]
-    [AutoData]
-    public async Task CalculateAsync_ReturnsAccepted_WhenRequestIsValid(Guid id, SubmissionCalculationRequest request)
+    public async Task CalculateAsync_ReturnsAccepted_WhenRequestIsValid()
     {
+        var id = Guid.NewGuid();
+        var request = _fixture.Create<SubmissionCalculationRequest>();
         _mockObligationCalculatorService.Setup(s => s.ProcessApprovedPomData(id, request)).Returns(Task.CompletedTask);
 
         var result = await _systemUnderTest.CalculateAsync(id, request) as AcceptedResult;
@@ -180,9 +201,10 @@ public class PrnControllerTests
     }
 
     [TestMethod]
-    [AutoData]
-    public async Task CalculateAsync_ReturnsBadRequest_WhenModelStateIsInvalid(Guid id, SubmissionCalculationRequest request)
+    public async Task CalculateAsync_ReturnsBadRequest_WhenModelStateIsInvalid()
     {
+        var id = Guid.NewGuid();
+        var request = _fixture.Create<SubmissionCalculationRequest>();
         _systemUnderTest.ModelState.AddModelError("error", "Invalid request");
 
         var result = await _systemUnderTest.CalculateAsync(id, request) as BadRequestObjectResult;
