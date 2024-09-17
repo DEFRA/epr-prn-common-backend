@@ -53,7 +53,19 @@
         {
 			var recordsPerPage = request.PageSize;
             var prns = _eprContext.Prn.Where(p => p.OrganisationId == orgId).AsQueryable();
-            
+
+            var prnNumbers = prns
+                .Select(prn => prn.PrnNumber)
+                .OrderBy(prnNumber => prnNumber)
+                .Distinct();
+            var issuedByOrgs = prns
+                .Select(prn => prn.IssuedByOrg)
+                .OrderBy(issuedByOrg => issuedByOrg)
+                .Distinct();
+            var typeAhead = prnNumbers
+                .Concat(issuedByOrgs)
+                .ToList();
+
             // Return empty response if no results
             if (!prns.Any())
             {
@@ -120,11 +132,6 @@
                     }
                 })
                 .ToListAsync();
-
-            var typeAhead = prnList
-                .SelectMany(prn => new[] { prn.PrnDto.PrnNumber, prn.PrnDto.IssuedByOrg })
-                .Distinct()
-                .ToList();
 
             return new PaginatedResponseDto<PrnDto>
             {
