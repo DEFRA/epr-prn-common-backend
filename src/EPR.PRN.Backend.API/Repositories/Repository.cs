@@ -52,7 +52,12 @@
         public async Task<PaginatedResponseDto<PrnDto>> GetSearchPrnsForOrganisation(Guid orgId, PaginatedRequestDto request)
         {
 			var recordsPerPage = request.PageSize;
-            var prns = _eprContext.Prn.Where(p => p.OrganisationId == orgId).AsQueryable();
+            
+            var prns = _eprContext.Prn
+                .Where(p => p.OrganisationId == orgId)
+                .OrderByDescending(p => p.IssueDate)
+                .ThenBy(p => p.PrnNumber)
+                .AsQueryable();
 
             var prnNumbers = prns
                 .Select(prn => prn.PrnNumber)
@@ -101,12 +106,12 @@
 			var totalRecords = await prns.CountAsync();
 
 			// Apply sorting after all filters
-			if (request.SortBy == "1")
-				prns = prns.OrderBy(e => e.PrnStatusId);
-			else if (request.SortBy == "2")
-				prns = prns.OrderBy(e => e.PrnNumber);
-			else
-				prns = prns.OrderByDescending(repo => repo.CreatedOn);
+			//if (request.SortBy == "1")
+			//	prns = prns.OrderBy(e => e.PrnStatusId);
+			//else if (request.SortBy == "2")
+			//	prns = prns.OrderBy(e => e.PrnNumber);
+			//else
+			//	prns = prns.OrderByDescending(repo => repo.CreatedOn);
 
 			// Apply pagination after sorting
 			prns = prns
