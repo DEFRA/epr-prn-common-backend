@@ -19,7 +19,7 @@ public class RepositoryTests
 {
     private SqliteConnection _connection;
     private DbContextOptions<EprContext> _contextOptions;
-    private IFixture _fixture;
+    private Fixture _fixture;
     private Mock<EprContext> _mockContext;
     private Repository _repository;
 

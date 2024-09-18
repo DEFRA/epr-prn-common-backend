@@ -214,4 +214,26 @@ public class PrnControllerTests
         result.Value.Should().BeOfType<SerializableError>(); // Check if ModelState is returned
         _mockObligationCalculatorService.Verify(s => s.ProcessApprovedPomData(It.IsAny<Guid>(), It.IsAny<SubmissionCalculationRequest>()), Times.Never);
     }
+
+    [TestMethod]
+    public async Task GetSearchPrns_ReturnsUnauthorizedWhenOrgIdNotPresent()
+    {
+        var request = _fixture.Create<PaginatedRequestDto>();
+        
+        var result = await _systemUnderTest.GetSearchPrns(Guid.Empty, request);
+        result.Should().BeOfType<UnauthorizedResult>();
+    }
+
+    [TestMethod]
+    public async Task GetSearchPrns_ReturnsResponse()
+    {
+        var orgId = Guid.NewGuid();
+        var request = _fixture.Create<PaginatedRequestDto>();
+        var response = _fixture.Create<PaginatedResponseDto<PrnDto>>();
+
+        _mockPrnService.Setup(s => s.GetSearchPrnsForOrganisation(orgId, request)).ReturnsAsync(response);
+
+        var result = await _systemUnderTest.GetSearchPrns(orgId, request);
+        result.Should().BeOfType<OkObjectResult>().Which.Value.Should().Be(response);
+    }
 }

@@ -190,4 +190,17 @@ public class PrnServiceTests
         _mockRepository.Verify(x => x.SaveTransaction(It.IsAny<IDbContextTransaction>()), Times.Once());
         _mockRepository.Verify(x => x.AddPrnStatusHistory(It.IsAny<PrnStatusHistory>()), Times.Exactly(3));
     }
+
+    [TestMethod]
+    public async Task GetSearchPrnsForOrganisation_ReturnsRepsoneGotFromRepo()
+    {
+        var orgId = Guid.NewGuid();
+        var request = _fixture.Create<PaginatedRequestDto>();
+        var repoResponse = _fixture.Create<PaginatedResponseDto<PrnDto>>();
+
+        _mockRepository.Setup(s => s.GetSearchPrnsForOrganisation(orgId, request)).ReturnsAsync(repoResponse);
+
+        var result = await _systemUnderTest.GetSearchPrnsForOrganisation(orgId, request);
+        result.Should().Be(repoResponse);
+    }
 }
