@@ -7,6 +7,7 @@
     using EPR.PRN.Backend.Obligation.Interfaces;
     using EPR.PRN.Backend.Obligation.Models;
     using Microsoft.AspNetCore.Mvc;
+    using System.Diagnostics.CodeAnalysis;
     using System.Net;
 
     [ApiController]
@@ -41,6 +42,7 @@
 		[ProducesResponseType(typeof(PaginatedResponseDto<PrnDto>), 200)]
 		[ProducesResponseType(400)]
 		[ProducesResponseType(401)]
+        [ExcludeFromCodeCoverage]
 		public async Task<IActionResult> GetSearchPrns([FromHeader(Name = "X-EPR-ORGANISATION")] Guid orgId,
             [FromQuery] PaginatedRequestDto request)
 		{

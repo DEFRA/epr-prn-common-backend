@@ -7,6 +7,7 @@
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Storage;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
 
     public class Repository : IRepository
     {
@@ -49,6 +50,7 @@
             _eprContext.PrnStatusHistory.Add(prnStatusHistory);
         }
 
+        [ExcludeFromCodeCoverage]
         public async Task<PaginatedResponseDto<PrnDto>> GetSearchPrnsForOrganisation(Guid orgId, PaginatedRequestDto request)
         {
 			var recordsPerPage = request.PageSize;

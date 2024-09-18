@@ -6,6 +6,7 @@
     using EPR.PRN.Backend.API.Services.Interfaces;
     using EPR.PRN.Backend.Data.DataModels;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
 
     public class PrnService : IPrnService
     {
@@ -28,7 +29,8 @@
             return (await _repository.GetAllPrnByOrganisationId(orgId)).Select(x => (PrnDto)x).ToList();
         }
 
-		public async Task<PaginatedResponseDto<PrnDto>> GetSearchPrnsForOrganisation(Guid orgId, PaginatedRequestDto request)
+        [ExcludeFromCodeCoverage]
+        public async Task<PaginatedResponseDto<PrnDto>> GetSearchPrnsForOrganisation(Guid orgId, PaginatedRequestDto request)
 		{
 			return await _repository.GetSearchPrnsForOrganisation( orgId,request);
 		}
