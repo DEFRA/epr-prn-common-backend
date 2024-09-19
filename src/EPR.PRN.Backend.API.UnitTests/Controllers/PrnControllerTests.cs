@@ -4,6 +4,7 @@ using EPR.PRN.Backend.API.Controllers;
 using EPR.PRN.Backend.API.Helpers;
 using EPR.PRN.Backend.API.Services.Interfaces;
 using EPR.PRN.Backend.Data.DataModels;
+using EPR.PRN.Backend.Obligation.DTO;
 using EPR.PRN.Backend.Obligation.Interfaces;
 using EPR.PRN.Backend.Obligation.Models;
 using FluentAssertions;
@@ -235,4 +236,59 @@ public class PrnControllerTests
         var objectResult = result as ObjectResult;
         objectResult.Value.Should().BeEquivalentTo(new { message = "An error occurred during calculation.", details = "Unexpected error" });
     }
+
+    [TestMethod]
+    public async Task GetObligationCalculation_Should_ReturnBadRequest_WhenOrganisationIdIsInvalid()
+    {
+        // Arrange
+        int invalidOrganisationId = -1;
+
+        // Act
+        var result = await _systemUnderTest.GetObligationCalculation(invalidOrganisationId);
+
+        // Assert
+        var badRequestResult = result.Should().BeOfType<BadRequestObjectResult>().Subject;
+        badRequestResult.StatusCode.Should().Be(400);
+        badRequestResult.Value.Should().Be($"Invalid Organisation Id : {invalidOrganisationId}. Organisation Id must be a positive integer.");
+    }
+
+    [TestMethod]
+    public async Task GetObligationCalculation_Should_ReturnNotFound_WhenObligationCalculationDoesNotExist()
+    {
+        // Arrange
+        int organisationId = 1;
+        _mockObligationCalculatorService.Setup(x => x.GetObligationCalculationByOrganisationId(organisationId))
+                    .ReturnsAsync((List<ObligationCalculationDto>)null); // Simulating null response
+
+        // Act
+        var result = await _systemUnderTest.GetObligationCalculation(organisationId);
+
+        // Assert
+        var notFoundResult = result.Should().BeOfType<NotFoundObjectResult>().Subject;
+        notFoundResult.StatusCode.Should().Be(404);
+        notFoundResult.Value.Should().Be($"Obligation calculation not found for Organisation Id : {organisationId}");
+    }
+
+    [TestMethod]
+    public async Task GetObligationCalculation_Should_ReturnOk_WhenObligationCalculationExists()
+    {
+        // Arrange
+        int organisationId = 1;
+        var obligationCalculationDto = new List<ObligationCalculationDto>
+            {
+                new ObligationCalculationDto { /* Initialize properties if needed */ }
+            };
+        _mockObligationCalculatorService.Setup(x => x.GetObligationCalculationByOrganisationId(organisationId))
+                    .ReturnsAsync(obligationCalculationDto);
+
+        // Act
+        var result = await _systemUnderTest.GetObligationCalculation(organisationId);
+
+        // Assert
+        var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
+        okResult.StatusCode.Should().Be(200);
+        okResult.Value.Should().BeEquivalentTo(obligationCalculationDto);
+    }
+
+
 }

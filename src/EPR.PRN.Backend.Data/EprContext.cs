@@ -1,9 +1,11 @@
 ﻿using EPR.PRN.Backend.Data.DataModels;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using System.Diagnostics.CodeAnalysis;
 
 namespace EPR.PRN.Backend.Data
 {
+    [ExcludeFromCodeCoverage]
     public class EprContext : DbContext
     {
         private readonly IConfiguration _configuration;
