@@ -111,7 +111,7 @@ public class RepositoryTestsInMemory
         Assert.AreEqual("Org2", result.Items.First().IssuedByOrg);
     }
 
-    private Eprn CreateEprn(Guid orgId, string prnNumber, string issuedByOrg, string organisationName, string materialName, string producerAgency, string reprocessorExporterAgency, string issuerReference, string accreditationNumber, string reprocessingSite, int accreditationYear, int obligationYear, string packagingProducer)
+    private static Eprn CreateEprn(Guid orgId, string prnNumber, string issuedByOrg, string organisationName, string materialName, string producerAgency, string reprocessorExporterAgency, string issuerReference, string accreditationNumber, string reprocessingSite, int accreditationYear, int obligationYear, string packagingProducer)
     {
         return new Eprn
         {
