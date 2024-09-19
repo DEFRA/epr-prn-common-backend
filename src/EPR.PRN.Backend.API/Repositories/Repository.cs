@@ -51,8 +51,7 @@
 
         public async Task<PaginatedResponseDto<PrnDto>> GetSearchPrnsForOrganisation(Guid orgId, PaginatedRequestDto request)
         {
-			var recordsPerPage = request.PageSize;
-            
+
             var prns = _eprContext.Prn
                 .Where(p => p.OrganisationId == orgId)
                 .OrderByDescending(p => p.IssueDate)
@@ -86,38 +85,21 @@
                 };
             }
 
-            if (!string.IsNullOrWhiteSpace(request.FilterBy))
-			{
-				// -- TODO implement filtering
-				//prns = prns.Where(e =>
-				//	e.PrnHistory != null &&
-				//	e.PrnHistory.Any() &&
-				//	e.PrnHistory.OrderByDescending(h => h.Created).First().Status == filterByStatus);
-			}
+            if (!string.IsNullOrWhiteSpace(request.Search))
+            {
+                var searchPattern = $"%{request.Search}%";
+                prns = prns.Where(repo =>
+                    EF.Functions.Like(repo.PrnNumber, searchPattern) ||
+                    EF.Functions.Like(repo.IssuedByOrg, searchPattern));
+            }
 
-			if (!string.IsNullOrWhiteSpace(request.Search))
-			{
-				prns =  prns.Where(repo =>
-					EF.Functions.Like(repo.PrnNumber, $"%{request.Search}%") ||
-					EF.Functions.Like(repo.IssuedByOrg, $"%{request.Search}%"));
-			}
+            // get the count BEFORE paging and sorting
+            var totalRecords = await prns.CountAsync();
 
-			// get the count BEFORE paging and sorting
-			var totalRecords = await prns.CountAsync();
+            prns = prns
+                .Skip((request.Page - 1) * request.PageSize)
+                .Take(request.PageSize);
 
-			// Apply sorting after all filters
-			//if (request.SortBy == "1")
-			//	prns = prns.OrderBy(e => e.PrnStatusId);
-			//else if (request.SortBy == "2")
-			//	prns = prns.OrderBy(e => e.PrnNumber);
-			//else
-			//	prns = prns.OrderByDescending(repo => repo.CreatedOn);
-
-			// Apply pagination after sorting
-			prns = prns
-				.Skip((request.Page - 1) * request.PageSize)
-				.Take(request.PageSize);
-            
             var prnList = await prns
                 .Select(prn => new
                 {
@@ -143,7 +125,7 @@
                 Items = prnList.Select(prn => prn.PrnDto).ToList(),
                 TotalItems = totalRecords,
                 CurrentPage = request.Page,
-                PageSize = recordsPerPage,
+                PageSize = request.PageSize,
                 SearchTerm = request.Search,
                 FilterBy = request.FilterBy,
                 SortBy = request.SortBy,
