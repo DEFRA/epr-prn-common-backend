@@ -87,5 +87,33 @@ namespace EPR.PRN.Backend.Obligation.UnitTests.Helpers
             // Assert
             result.Should().Be(2021);
         }
+
+        [TestMethod]
+        public void ExtractYear_StringWithOnlyDash_ShouldThrowFormatException()
+        {
+            // Arrange
+            string dateString = "-";
+
+            // Act
+            Action act = () => DateHelper.ExtractYear(dateString);
+
+            // Assert
+            act.Should().Throw<FormatException>()
+                .WithMessage("The input string is not in the correct format.");
+        }
+
+        [TestMethod]
+        public void ExtractYear_StringWithMultipleDashes_ShouldThrowFormatException()
+        {
+            // Arrange
+            string dateString = "--P4";
+
+            // Act
+            Action act = () => DateHelper.ExtractYear(dateString);
+
+            // Assert
+            act.Should().Throw<FormatException>()
+                .WithMessage("The input string is not in the correct format.");
+        }
     }
 }

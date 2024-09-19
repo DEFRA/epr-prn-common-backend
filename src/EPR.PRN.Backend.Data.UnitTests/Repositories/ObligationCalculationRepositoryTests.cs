@@ -4,11 +4,9 @@ using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Moq;
 using Moq.EntityFrameworkCore;
-using System.Diagnostics.CodeAnalysis;
 
 namespace EPR.PRN.Backend.Data.UnitTests.Repositories;
 
-[ExcludeFromCodeCoverage]
 [TestClass]
 public class ObligationCalculationRepositoryTests
 {

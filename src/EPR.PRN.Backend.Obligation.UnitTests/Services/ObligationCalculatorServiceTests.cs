@@ -253,4 +253,43 @@ public class ObligationCalculatorServiceTests
         result.Success.Should().BeTrue();
         result.Calculations.Should().NotBeNullOrEmpty();
     }
+
+    [TestMethod]
+    public async Task SaveCalculatedPomDataAsync_Should_ThrowArgumentException_WhenCalculationsAreNull()
+    {
+        List<ObligationCalculation> calculations = null;
+
+        Func<Task> act = async () => await _service.SaveCalculatedPomDataAsync(calculations);
+
+        var exception = await act.Should().ThrowAsync<ArgumentException>();
+        exception.WithMessage("The calculations list cannot be null or empty.*");
+
+        _mockObligationCalculationRepository.Verify(x => x.AddObligationCalculation(It.IsAny<List<ObligationCalculation>>()), Times.Never);
+    }
+
+    [TestMethod]
+    public async Task SaveCalculatedPomDataAsync_Should_ThrowArgumentException_WhenCalculationsAreEmpty()
+    {
+        var calculations = new List<ObligationCalculation>();
+
+        Func<Task> act = async () => await _service.SaveCalculatedPomDataAsync(calculations);
+
+        var exception = await act.Should().ThrowAsync<ArgumentException>();
+        exception.WithMessage("The calculations list cannot be null or empty.*");
+
+        _mockObligationCalculationRepository.Verify(x => x.AddObligationCalculation(It.IsAny<List<ObligationCalculation>>()), Times.Never);
+    }
+
+    [TestMethod]
+    public async Task SaveCalculatedPomDataAsync_Should_CallRepository_WhenValidCalculationsAreProvided()
+    {
+        var calculations = new List<ObligationCalculation>
+            {
+                new ObligationCalculation ()
+            };
+
+        await _service.SaveCalculatedPomDataAsync(calculations);
+
+        _mockObligationCalculationRepository.Verify(x => x.AddObligationCalculation(calculations), Times.Once);
+    }
 }
