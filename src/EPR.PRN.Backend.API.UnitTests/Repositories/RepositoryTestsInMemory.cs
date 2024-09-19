@@ -3,15 +3,12 @@ using EPR.PRN.Backend.API.Repositories;
 using EPR.PRN.Backend.Data;
 using EPR.PRN.Backend.Data.DataModels;
 using Microsoft.EntityFrameworkCore;
-
 namespace EPR.PRN.Backend.API.UnitTests.Repositories;
-
 [TestClass]
 public class RepositoryTestsInMemory
 {
     private EprContext _context;
     private Repository _repository;
-    
     [TestInitialize]
     public void Setup()
     {
@@ -29,14 +26,12 @@ public class RepositoryTestsInMemory
         _context.Prn.AddRange(eprns);
         _context.SaveChanges();
     }
-
     [TestCleanup]
     public void Cleanup()
     {
         _context.Database.EnsureDeleted();
         _context.Dispose();
     }
-    
     [TestMethod]
     public async Task GetSearchPrnsForOrganisation_WithSearchTerm_FiltersResults()
     {
@@ -55,7 +50,6 @@ public class RepositoryTestsInMemory
         Assert.AreEqual(2, result.Items.Count);
         Assert.IsTrue(result.Items.Any(i => i.PrnNumber.Contains("searchTerm")));
     }
-
     [TestMethod]
     public async Task GetSearchPrnsForOrganisation_Returns_CorrectResults()
     {
@@ -110,7 +104,31 @@ public class RepositoryTestsInMemory
         Assert.AreEqual(1, result.Items.Count);
         Assert.AreEqual("Org2", result.Items.First().IssuedByOrg);
     }
-
+    [TestMethod]
+    public async Task GetSearchPrnsForOrganisation_ReturnsEmptyResponse_WhenNoResults()
+    {
+        // Arrange
+        var orgId = Guid.NewGuid(); // Use a new GUID to ensure no matching records
+        var request = new PaginatedRequestDto
+        {
+            Page = 1,
+            PageSize = 10,
+            Search = null,
+            FilterBy = null,
+            SortBy = null
+        };
+        // Act
+        var result = await _repository.GetSearchPrnsForOrganisation(orgId, request);
+        // Assert
+        Assert.IsNotNull(result);
+        Assert.AreEqual(0, result.Items.Count);
+        Assert.AreEqual(0, result.TotalItems);
+        Assert.AreEqual(request.Page, result.CurrentPage);
+        Assert.AreEqual(request.PageSize, result.PageSize);
+        Assert.AreEqual(request.Search, result.SearchTerm);
+        Assert.AreEqual(request.FilterBy, result.FilterBy);
+        Assert.AreEqual(request.SortBy, result.SortBy);
+    }
     private static Eprn CreateEprn(Guid orgId, string prnNumber, string issuedByOrg, string organisationName, string materialName, string producerAgency, string reprocessorExporterAgency, string issuerReference, string accreditationNumber, string reprocessingSite, int accreditationYear, int obligationYear, string packagingProducer)
     {
         return new Eprn
