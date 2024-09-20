@@ -3,19 +3,19 @@ using EPR.PRN.Backend.API.Common.DTO;
 using EPR.PRN.Backend.API.Controllers;
 using EPR.PRN.Backend.API.Helpers;
 using EPR.PRN.Backend.API.Services.Interfaces;
+using EPR.PRN.Backend.Data.DataModels;
 using EPR.PRN.Backend.Obligation.DTO;
 using EPR.PRN.Backend.Obligation.Interfaces;
 using EPR.PRN.Backend.Obligation.Models;
 using FluentAssertions;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
-using System.Diagnostics.CodeAnalysis;
 using System.Net;
 
 namespace EPR.PRN.Backend.API.UnitTests.Services;
 
-[ExcludeFromCodeCoverage]
 [TestClass]
 public class PrnControllerTests
 {
@@ -40,7 +40,6 @@ public class PrnControllerTests
         var orgId = Guid.NewGuid();
         var prnId = Guid.NewGuid();
         var expectedPrn = _fixture.Create<PrnDto>();
-
         _mockPrnService.Setup(s => s.GetPrnForOrganisationById(orgId, prnId)).ReturnsAsync(expectedPrn);
 
         var result = await _systemUnderTest.GetPrn(orgId, prnId) as OkObjectResult;
@@ -148,78 +147,173 @@ public class PrnControllerTests
     }
 
     [TestMethod]
-    public async Task GetObligationCalculation_ReturnsBadRequest_WhenIdIsInvalid()
+    public async Task CalculateAsync_WhenOrganisationIdIsInvalid_ReturnsBadRequest()
     {
-        int invalidId = -1;
+        var result = await _systemUnderTest.CalculateAsync(0, new List<SubmissionCalculationRequest>());
 
-        var result = await _systemUnderTest.GetObligationCalculation(invalidId) as BadRequestObjectResult;
+        result.Should().BeOfType<BadRequestObjectResult>();
 
-        result.Should().NotBeNull();
-        result.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
-        result.Value.Should().Be($"Invalid Organisation Id : {invalidId}. Organisation Id must be a positive integer.");
+        var badRequestResult = result as BadRequestObjectResult;
+        badRequestResult.Value.Should().BeEquivalentTo(new { message = "Invalid Organisation ID." });
     }
 
     [TestMethod]
-    public async Task GetObligationCalculation_ReturnsNotFound_WhenObligationCalculationNotFound()
+    public async Task CalculateAsync_WhenRequestIsNull_ReturnsBadRequest()
     {
-        int validId = 1;
-        _mockObligationCalculatorService.Setup(s => s.GetObligationCalculationByOrganisationId(validId)).ReturnsAsync((List<ObligationCalculationDto>)null);
+        var result = await _systemUnderTest.CalculateAsync(1, null);
 
-        var result = await _systemUnderTest.GetObligationCalculation(validId) as NotFoundObjectResult;
+        result.Should().BeOfType<BadRequestObjectResult>();
 
-        result.Should().NotBeNull();
-        result.StatusCode.Should().Be((int)HttpStatusCode.NotFound);
-        result.Value.Should().Be($"Obligation calculation not found for Organisation Id : {validId}");
+        var badRequestResult = result as BadRequestObjectResult;
+        badRequestResult.Value.Should().BeEquivalentTo(new { message = "Submission calculation request cannot be null or empty." });
     }
 
     [TestMethod]
-    public async Task GetObligationCalculation_ReturnsOk_WhenObligationCalculationIsFound()
+    public async Task CalculateAsync_WhenRequestIsEmpty_ReturnsBadRequest()
     {
-        var obligationCalculation = _fixture.CreateMany<ObligationCalculationDto>().ToList();
-        int validId = 1;
-        _mockObligationCalculatorService.Setup(s => s.GetObligationCalculationByOrganisationId(validId)).ReturnsAsync(obligationCalculation);
+        var result = await _systemUnderTest.CalculateAsync(1, new List<SubmissionCalculationRequest>());
 
-        var result = await _systemUnderTest.GetObligationCalculation(validId) as OkObjectResult;
+        result.Should().BeOfType<BadRequestObjectResult>();
 
-        result.Should().NotBeNull();
-        result.StatusCode.Should().Be((int)HttpStatusCode.OK);
-        result.Value.Should().BeEquivalentTo(obligationCalculation);
+        var badRequestResult = result as BadRequestObjectResult;
+        badRequestResult.Value.Should().BeEquivalentTo(new { message = "Submission calculation request cannot be null or empty." });
     }
 
     [TestMethod]
-    public async Task CalculateAsync_ReturnsAccepted_WhenRequestIsValid()
+    public async Task CalculateAsync_WhenModelStateIsInvalid_ReturnsBadRequest()
     {
-        var id = Guid.NewGuid();
-        var request = _fixture.Create<SubmissionCalculationRequest>();
-        _mockObligationCalculatorService.Setup(s => s.ProcessApprovedPomData(id, request)).Returns(Task.CompletedTask);
+        _systemUnderTest.ModelState.AddModelError("Key", "Error message");
 
-        var result = await _systemUnderTest.CalculateAsync(id, request) as AcceptedResult;
+        var result = await _systemUnderTest.CalculateAsync(1, new List<SubmissionCalculationRequest> { new SubmissionCalculationRequest() });
 
-        result.Should().NotBeNull();
-        result.StatusCode.Should().Be((int)HttpStatusCode.Accepted);
-        _mockObligationCalculatorService.Verify(s => s.ProcessApprovedPomData(id, request), Times.Once);
+        result.Should().BeOfType<BadRequestObjectResult>();
     }
 
     [TestMethod]
-    public async Task CalculateAsync_ReturnsBadRequest_WhenModelStateIsInvalid()
+    public async Task CalculateAsync_WhenCalculationFails_ReturnsInternalServerError()
     {
-        var id = Guid.NewGuid();
-        var request = _fixture.Create<SubmissionCalculationRequest>();
-        _systemUnderTest.ModelState.AddModelError("error", "Invalid request");
+        var calculationResult = new CalculationResult { Success = false };
+        _mockObligationCalculatorService
+            .Setup(x => x.CalculateAsync(It.IsAny<int>(), It.IsAny<List<SubmissionCalculationRequest>>()))
+            .ReturnsAsync(calculationResult);
 
-        var result = await _systemUnderTest.CalculateAsync(id, request) as BadRequestObjectResult;
+        var result = await _systemUnderTest.CalculateAsync(1, new List<SubmissionCalculationRequest> { new SubmissionCalculationRequest() });
 
-        result.Should().NotBeNull();
-        result.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
-        result.Value.Should().BeOfType<SerializableError>(); // Check if ModelState is returned
-        _mockObligationCalculatorService.Verify(s => s.ProcessApprovedPomData(It.IsAny<Guid>(), It.IsAny<SubmissionCalculationRequest>()), Times.Never);
+        result.Should().BeOfType<ObjectResult>().Which.StatusCode.Should().Be(StatusCodes.Status500InternalServerError);
+    }
+
+    [TestMethod]
+    public async Task CalculateAsync_WhenCalculationSucceeds_ReturnsAccepted()
+    {
+        var Calculations = _fixture.CreateMany<ObligationCalculation>().ToList();
+        var calculationResult = new CalculationResult
+        {
+            Success = true,
+            Calculations = Calculations
+        };
+
+        _mockObligationCalculatorService
+            .Setup(x => x.CalculateAsync(It.IsAny<int>(), It.IsAny<List<SubmissionCalculationRequest>>()))
+            .ReturnsAsync(calculationResult);
+
+        var result = await _systemUnderTest.CalculateAsync(1, new List<SubmissionCalculationRequest> { new SubmissionCalculationRequest() });
+
+        result.Should().BeOfType<AcceptedResult>().Which.Value.Should().BeEquivalentTo(new
+        {
+            message = "Calculation successful.",
+            data = calculationResult.Calculations
+        });
+    }
+
+    [TestMethod]
+    public async Task CalculateAsync_WhenTimeoutOccurs_ReturnsGatewayTimeout()
+    {
+        _mockObligationCalculatorService
+            .Setup(x => x.CalculateAsync(It.IsAny<int>(), It.IsAny<List<SubmissionCalculationRequest>>()))
+            .ThrowsAsync(new TimeoutException("Request timed out"));
+
+        var result = await _systemUnderTest.CalculateAsync(1, new List<SubmissionCalculationRequest> { new SubmissionCalculationRequest() });
+
+        result.Should().BeOfType<ObjectResult>().Which.StatusCode.Should().Be(StatusCodes.Status504GatewayTimeout);
+
+        var objectResult = result as ObjectResult;
+        objectResult.Value.Should().BeEquivalentTo(new { message = "Calculation timed out.", details = "Request timed out" });
+    }
+
+
+    [TestMethod]
+    public async Task CalculateAsync_WhenUnexpectedErrorOccurs_ReturnsInternalServerError()
+    {
+        _mockObligationCalculatorService
+            .Setup(x => x.CalculateAsync(It.IsAny<int>(), It.IsAny<List<SubmissionCalculationRequest>>()))
+            .ThrowsAsync(new Exception("Unexpected error"));
+
+        var result = await _systemUnderTest.CalculateAsync(1, new List<SubmissionCalculationRequest> { new SubmissionCalculationRequest() });
+
+        result.Should().BeOfType<ObjectResult>().Which.StatusCode.Should().Be(StatusCodes.Status500InternalServerError);
+
+        var objectResult = result as ObjectResult;
+        objectResult.Value.Should().BeEquivalentTo(new { message = "An error occurred during calculation.", details = "Unexpected error" });
+    }
+
+    [TestMethod]
+    public async Task GetObligationCalculation_Should_ReturnBadRequest_WhenOrganisationIdIsInvalid()
+    {
+        // Arrange
+        int invalidOrganisationId = -1;
+
+        // Act
+        var result = await _systemUnderTest.GetObligationCalculation(invalidOrganisationId);
+
+        // Assert
+        var badRequestResult = result.Should().BeOfType<BadRequestObjectResult>().Subject;
+        badRequestResult.StatusCode.Should().Be(400);
+        badRequestResult.Value.Should().Be($"Invalid Organisation Id : {invalidOrganisationId}. Organisation Id must be a positive integer.");
+    }
+
+    [TestMethod]
+    public async Task GetObligationCalculation_Should_ReturnNotFound_WhenObligationCalculationDoesNotExist()
+    {
+        // Arrange
+        int organisationId = 1;
+        _mockObligationCalculatorService.Setup(x => x.GetObligationCalculationByOrganisationId(organisationId))
+                    .ReturnsAsync((List<ObligationCalculationDto>)null); // Simulating null response
+
+        // Act
+        var result = await _systemUnderTest.GetObligationCalculation(organisationId);
+
+        // Assert
+        var notFoundResult = result.Should().BeOfType<NotFoundObjectResult>().Subject;
+        notFoundResult.StatusCode.Should().Be(404);
+        notFoundResult.Value.Should().Be($"Obligation calculation not found for Organisation Id : {organisationId}");
+    }
+
+    [TestMethod]
+    public async Task GetObligationCalculation_Should_ReturnOk_WhenObligationCalculationExists()
+    {
+        // Arrange
+        int organisationId = 1;
+        var obligationCalculationDto = new List<ObligationCalculationDto>
+            {
+                new ObligationCalculationDto { /* Initialize properties if needed */ }
+            };
+        _mockObligationCalculatorService.Setup(x => x.GetObligationCalculationByOrganisationId(organisationId))
+                    .ReturnsAsync(obligationCalculationDto);
+
+        // Act
+        var result = await _systemUnderTest.GetObligationCalculation(organisationId);
+
+        // Assert
+        var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
+        okResult.StatusCode.Should().Be(200);
+        okResult.Value.Should().BeEquivalentTo(obligationCalculationDto);
     }
 
     [TestMethod]
     public async Task GetSearchPrns_ReturnsUnauthorizedWhenOrgIdNotPresent()
     {
         var request = _fixture.Create<PaginatedRequestDto>();
-        
+
         var result = await _systemUnderTest.GetSearchPrns(Guid.Empty, request);
         result.Should().BeOfType<UnauthorizedResult>();
     }

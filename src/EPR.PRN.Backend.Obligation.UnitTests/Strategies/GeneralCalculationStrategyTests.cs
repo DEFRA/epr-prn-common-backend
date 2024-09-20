@@ -1,13 +1,12 @@
 ﻿using EPR.PRN.Backend.Obligation.DTO;
 using EPR.PRN.Backend.Obligation.Enums;
 using EPR.PRN.Backend.Obligation.Interfaces;
+using EPR.PRN.Backend.Obligation.Models;
 using EPR.PRN.Backend.Obligation.Strategies;
 using Moq;
-using System.Diagnostics.CodeAnalysis;
 
 namespace EPR.PRN.Backend.Obligation.UnitTests.Strategies;
 
-[ExcludeFromCodeCoverage]
 [TestClass]
 public class GeneralCalculationStrategyTests
 {
@@ -50,11 +49,13 @@ public class GeneralCalculationStrategyTests
     public void Calculate_ShouldReturnCorrectObligationCalculation()
     {
         // Arrange
-        var pomObligation = new PomObligtionDto
+        var organisationId = 1;
+        var calculationRequest = new SubmissionCalculationRequest
         {
             PackagingMaterial = "Plastic",
             PackagingMaterialWeight = 100,
-            OrganisationId = 1
+            SubmissionId = Guid.NewGuid(),
+            SubmissionPeriod = "2024-P1"
         };
 
         var materialType = MaterialType.Plastic;
@@ -62,7 +63,7 @@ public class GeneralCalculationStrategyTests
         var recyclingTargets = new Dictionary<int, Dictionary<MaterialType, double>>
         {
             {
-                DateTime.UtcNow.Year,
+                2025,
                 new Dictionary<MaterialType, double>
                 {
                     { materialType, 0.7 }
@@ -70,17 +71,19 @@ public class GeneralCalculationStrategyTests
             }
         };
 
+        var request = new CalculationRequestDto { SubmissionCalculationRequest = calculationRequest, RecyclingTargets = recyclingTargets, MaterialType = materialType, OrganisationId = organisationId };
+
         _mockCalculationService.Setup(x => x.Calculate(0.7, 100)).Returns(70);
 
         // Act
-        var result = _strategy.Calculate(pomObligation, materialType, recyclingTargets);
+        var result = _strategy.Calculate(request);
 
         // Assert
         Assert.IsNotNull(result);
         Assert.AreEqual(1, result.Count);
         Assert.AreEqual("Plastic", result[0].MaterialName);
         Assert.AreEqual(70, result[0].MaterialObligationValue);
-        Assert.AreEqual(pomObligation.OrganisationId, result[0].OrganisationId);
+        Assert.AreEqual(organisationId, result[0].OrganisationId);
         Assert.AreEqual(DateTime.UtcNow.Year, result[0].Year);
         Assert.IsTrue((DateTime.UtcNow - result[0].CalculatedOn).TotalSeconds < 1, "CalculatedOn should be very close to the current time");
     }
@@ -90,11 +93,13 @@ public class GeneralCalculationStrategyTests
     public void Calculate_ShouldThrowKeyNotFoundException_WhenRecyclingTargetYearNotFound()
     {
         // Arrange
-        var pomObligation = new PomObligtionDto
+        var organisationId = 1;
+        var calculationRequest = new SubmissionCalculationRequest
         {
             PackagingMaterial = "Plastic",
             PackagingMaterialWeight = 100,
-            OrganisationId = 1
+            SubmissionId = Guid.NewGuid(),
+            SubmissionPeriod = "2024-P1"
         };
 
         var materialType = MaterialType.Plastic;
@@ -109,9 +114,9 @@ public class GeneralCalculationStrategyTests
                 }
             }
         };
-
+        var request = new CalculationRequestDto { SubmissionCalculationRequest = calculationRequest, RecyclingTargets = recyclingTargets, MaterialType = materialType, OrganisationId = organisationId };
         // Act
-        _strategy.Calculate(pomObligation, materialType, recyclingTargets);
+        _strategy.Calculate(request);
 
         // Assert is handled by ExpectedException
     }

@@ -108,7 +108,7 @@ IF NOT EXISTS (
 )
 BEGIN
     INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
-    VALUES (N'20240717145045_InitialCreate', N'8.0.7');
+    VALUES (N'20240717145045_InitialCreate', N'8.0.8');
 END;
 GO
 
@@ -141,7 +141,94 @@ IF NOT EXISTS (
 )
 BEGIN
     INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
-    VALUES (N'20240728110950_AddedEnumForStatus', N'8.0.7');
+    VALUES (N'20240728110950_AddedEnumForStatus', N'8.0.8');
+END;
+GO
+
+COMMIT;
+GO
+
+BEGIN TRANSACTION;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20240730132550_InitialRecyclingTargets'
+)
+BEGIN
+    CREATE TABLE [RecyclingTargets] (
+        [Year] int NOT NULL IDENTITY,
+        [PaperTarget] decimal(5,2) NOT NULL,
+        [GlassTarget] decimal(5,2) NOT NULL,
+        [AluminiumTarget] decimal(5,2) NOT NULL,
+        [SteelTarget] decimal(5,2) NOT NULL,
+        [PlasticTarget] decimal(5,2) NOT NULL,
+        [WoodTarget] decimal(5,2) NOT NULL,
+        [GlassRemeltTarget] decimal(5,2) NOT NULL,
+        CONSTRAINT [PK_RecyclingTargets] PRIMARY KEY ([Year])
+    );
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20240730132550_InitialRecyclingTargets'
+)
+BEGIN
+    IF EXISTS (SELECT * FROM [sys].[identity_columns] WHERE [name] IN (N'Year', N'AluminiumTarget', N'GlassRemeltTarget', N'GlassTarget', N'PaperTarget', N'PlasticTarget', N'SteelTarget', N'WoodTarget') AND [object_id] = OBJECT_ID(N'[RecyclingTargets]'))
+        SET IDENTITY_INSERT [RecyclingTargets] ON;
+    EXEC(N'INSERT INTO [RecyclingTargets] ([Year], [AluminiumTarget], [GlassRemeltTarget], [GlassTarget], [PaperTarget], [PlasticTarget], [SteelTarget], [WoodTarget])
+    VALUES (2025, 0.61, 0.75, 0.74, 0.75, 0.55, 0.8, 0.45),
+    (2026, 0.62, 0.76, 0.76, 0.77, 0.57, 0.81, 0.46),
+    (2027, 0.63, 0.77, 0.78, 0.79, 0.59, 0.82, 0.47),
+    (2028, 0.64, 0.78, 0.8, 0.81, 0.61, 0.83, 0.48),
+    (2029, 0.65, 0.79, 0.82, 0.83, 0.63, 0.84, 0.49),
+    (2030, 0.67, 0.8, 0.85, 0.85, 0.65, 0.85, 0.5)');
+    IF EXISTS (SELECT * FROM [sys].[identity_columns] WHERE [name] IN (N'Year', N'AluminiumTarget', N'GlassRemeltTarget', N'GlassTarget', N'PaperTarget', N'PlasticTarget', N'SteelTarget', N'WoodTarget') AND [object_id] = OBJECT_ID(N'[RecyclingTargets]'))
+        SET IDENTITY_INSERT [RecyclingTargets] OFF;
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20240730132550_InitialRecyclingTargets'
+)
+BEGIN
+    INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+    VALUES (N'20240730132550_InitialRecyclingTargets', N'8.0.8');
+END;
+GO
+
+COMMIT;
+GO
+
+BEGIN TRANSACTION;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20240813152307_InitialObligationCalculation'
+)
+BEGIN
+    CREATE TABLE [ObligationCalculations] (
+        [Id] int NOT NULL IDENTITY,
+        [OrganisationId] int NOT NULL,
+        [MaterialName] nvarchar(20) NOT NULL,
+        [MaterialObligationValue] int NOT NULL,
+        [Year] int NOT NULL,
+        [CalculatedOn] datetime2 NOT NULL,
+        CONSTRAINT [PK_ObligationCalculations] PRIMARY KEY ([Id])
+    );
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20240813152307_InitialObligationCalculation'
+)
+BEGIN
+    INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+    VALUES (N'20240813152307_InitialObligationCalculation', N'8.0.8');
 END;
 GO
 
