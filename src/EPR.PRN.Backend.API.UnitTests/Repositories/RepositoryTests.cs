@@ -1,11 +1,15 @@
-﻿using AutoFixture.MSTest;
+﻿using AutoFixture;
+using EPR.PRN.Backend.API.Common.DTO;
 using EPR.PRN.Backend.API.Repositories;
+using EPR.PRN.Backend.API.Repositories.Interfaces;
 using EPR.PRN.Backend.Data;
 using EPR.PRN.Backend.Data.DataModels;
 using FluentAssertions;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
+using Moq;
 using System.Diagnostics.CodeAnalysis;
+using Moq.EntityFrameworkCore;
 
 namespace EPR.PRN.Backend.API.UnitTests.Repositories;
 
@@ -15,6 +19,9 @@ public class RepositoryTests
 {
     private SqliteConnection _connection;
     private DbContextOptions<EprContext> _contextOptions;
+    private Fixture _fixture;
+    private Mock<EprContext> _mockContext;
+    private Repository _repository;
 
     [TestInitialize]
     public void TestInitialize()
@@ -26,13 +33,17 @@ public class RepositoryTests
         _contextOptions = new DbContextOptionsBuilder<EprContext>()
            .UseSqlite(_connection)
            .Options;
+
+        _fixture = new Fixture();
+        _mockContext = new Mock<EprContext>();
+        _repository = new Repository(_mockContext.Object);
     }
 
     [TestMethod]
-    [AutoData]
-    public async Task GetAllPrnByOrganisationId_Returns_Prns(List<Eprn> data)
+    public async Task GetAllPrnByOrganisationId_Returns_Prns()
     {
         //Arrange
+        var data = _fixture.CreateMany<Eprn>().ToArray();
         data[0].PrnStatusId = data[1].PrnStatusId = data[2].PrnStatusId = 1;
 
         using var context = new EprContext(_contextOptions);
@@ -52,10 +63,10 @@ public class RepositoryTests
     }
 
     [TestMethod]
-    [AutoData]
-    public async Task GetPrnForOrganisationById_Returns_Prn(List<Eprn> data)
+    public async Task GetPrnForOrganisationById_Returns_Prn()
     {
         //Arrange
+        var data = _fixture.CreateMany<Eprn>().ToArray();
         data[0].PrnStatusId = data[1].PrnStatusId = data[2].PrnStatusId = 1;
 
         using var context = new EprContext(_contextOptions);
@@ -73,10 +84,10 @@ public class RepositoryTests
     }
 
     [TestMethod]
-    [AutoData]
-    public async Task SaveTransaction_SavesDataInDB(List<Eprn> data)
+    public async Task SaveTransaction_SavesDataInDB()
     {
         //Arrange
+        var data = _fixture.CreateMany<Eprn>().ToArray();
         data[0].PrnStatusId = data[1].PrnStatusId = data[2].PrnStatusId = 2;
 
         using var context = new EprContext(_contextOptions);
@@ -100,10 +111,11 @@ public class RepositoryTests
     }
 
     [TestMethod]
-    [AutoData]
-    public async Task AddPrnHistory(List<Eprn> data, PrnStatusHistory statusHistory)
+    public async Task AddPrnHistory()
     {
         //Arrange
+        var data = _fixture.CreateMany<Eprn>().ToArray();
+        var statusHistory = _fixture.Create<PrnStatusHistory>();
         data[0].PrnStatusId = data[1].PrnStatusId = data[2].PrnStatusId = 2;
         statusHistory.PrnIdFk = data[0].Id;
         statusHistory.PrnStatusIdFk = data[0].PrnStatusId;
@@ -123,4 +135,11 @@ public class RepositoryTests
         var history = await context.PrnStatusHistory.Where(p => p.CreatedByUser == statusHistory.CreatedByUser).ToListAsync();
         history.Should().HaveCount(1);
     }
+
+
+
+
+
+
+
 }

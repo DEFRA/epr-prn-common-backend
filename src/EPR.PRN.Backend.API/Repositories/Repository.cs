@@ -1,5 +1,6 @@
 ﻿namespace EPR.PRN.Backend.API.Repositories
 {
+    using EPR.PRN.Backend.API.Common.DTO;
     using EPR.PRN.Backend.API.Repositories.Interfaces;
     using EPR.PRN.Backend.Data;
     using EPR.PRN.Backend.Data.DataModels;
@@ -46,6 +47,90 @@
         public void AddPrnStatusHistory(PrnStatusHistory prnStatusHistory)
         {
             _eprContext.PrnStatusHistory.Add(prnStatusHistory);
+        }
+
+        public async Task<PaginatedResponseDto<PrnDto>> GetSearchPrnsForOrganisation(Guid orgId, PaginatedRequestDto request)
+        {
+
+            var prns = _eprContext.Prn
+                .Where(p => p.OrganisationId == orgId)
+                .OrderByDescending(p => p.IssueDate)
+                .ThenBy(p => p.PrnNumber)
+                .AsQueryable();
+
+            var prnNumbers = prns
+                .Select(prn => prn.PrnNumber)
+                .OrderBy(prnNumber => prnNumber)
+                .Distinct();
+            var issuedByOrgs = prns
+                .Select(prn => prn.IssuedByOrg)
+                .OrderBy(issuedByOrg => issuedByOrg)
+                .Distinct();
+            var typeAhead = prnNumbers
+                .Concat(issuedByOrgs)
+                .ToList();
+
+            // Return empty response if no results
+            if (!prns.Any())
+            {
+                return new PaginatedResponseDto<PrnDto>
+                {
+                    Items = [],
+                    TotalItems = 0,
+                    CurrentPage = request.Page,
+                    PageSize = request.PageSize,
+                    SearchTerm = request.Search,
+                    FilterBy = request.FilterBy,
+                    SortBy = request.SortBy
+                };
+            }
+
+            if (!string.IsNullOrWhiteSpace(request.Search))
+            {
+                var searchPattern = $"%{request.Search}%";
+                prns = prns.Where(repo =>
+                    EF.Functions.Like(repo.PrnNumber, searchPattern) ||
+                    EF.Functions.Like(repo.IssuedByOrg, searchPattern));
+            }
+
+            // get the count BEFORE paging and sorting
+            var totalRecords = await prns.CountAsync();
+
+            prns = prns
+                .Skip((request.Page - 1) * request.PageSize)
+                .Take(request.PageSize);
+
+            var prnList = await prns
+                .Select(prn => new
+                {
+                    prn.PrnNumber,
+                    prn.OrganisationName,
+                    PrnDto = new PrnDto
+                    {
+                        ExternalId = prn.ExternalId,
+                        PrnNumber = prn.PrnNumber,
+                        MaterialName = prn.MaterialName,
+                        OrganisationName = prn.OrganisationName,
+                        CreatedOn = prn.CreatedOn,
+                        TonnageValue = prn.TonnageValue,
+                        PrnStatusId = prn.PrnStatusId,
+                        IssuedByOrg = prn.IssuedByOrg,
+                        IssueDate = prn.IssueDate
+                    }
+                })
+                .ToListAsync();
+
+            return new PaginatedResponseDto<PrnDto>
+            {
+                Items = prnList.Select(prn => prn.PrnDto).ToList(),
+                TotalItems = totalRecords,
+                CurrentPage = request.Page,
+                PageSize = request.PageSize,
+                SearchTerm = request.Search,
+                FilterBy = request.FilterBy,
+                SortBy = request.SortBy,
+                TypeAhead = typeAhead
+            };
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿using AutoFixture.MSTest;
+﻿using AutoFixture;
 using EPR.PRN.Backend.API.Common.DTO;
 using EPR.PRN.Backend.API.Helpers;
 using EPR.PRN.Backend.API.Repositories.Interfaces;
@@ -17,6 +17,7 @@ public class PrnServiceTests
 {
     private PrnService _systemUnderTest;
     private Mock<IRepository> _mockRepository;
+    private static readonly IFixture _fixture = new Fixture();
 
     [TestInitialize]
     public void Init()
@@ -26,9 +27,12 @@ public class PrnServiceTests
     }
 
     [TestMethod]
-    [AutoData]
-    public async Task GetPrnForOrganisationById_WithValidId_ReturnsExpectedDto(Guid prnId, Guid orgId, Eprn expectedPrn)
+    public async Task GetPrnForOrganisationById_WithValidId_ReturnsExpectedDto()
     {
+        var prnId = Guid.NewGuid();
+        var orgId = Guid.NewGuid();
+        var expectedPrn = _fixture.Create<Eprn>();
+
         _mockRepository.Setup(r => r.GetPrnForOrganisationById(orgId, prnId)).ReturnsAsync(expectedPrn);
 
         var result = await _systemUnderTest.GetPrnForOrganisationById(orgId, prnId);
@@ -37,9 +41,11 @@ public class PrnServiceTests
     }
 
     [TestMethod]
-    [AutoData]
-    public async Task GetPrnForOrganisationById_WithInValidId_ReturnsNull(Guid prnId, Guid orgId)
+    public async Task GetPrnForOrganisationById_WithInValidId_ReturnsNull()
     {
+        var prnId = Guid.NewGuid();
+        var orgId = Guid.NewGuid();
+
         _mockRepository.Setup(r => r.GetPrnForOrganisationById(orgId, prnId)).ReturnsAsync((Eprn)null);
 
         var result = await _systemUnderTest.GetPrnForOrganisationById(orgId, prnId);
@@ -48,9 +54,10 @@ public class PrnServiceTests
     }
 
     [TestMethod]
-    [AutoData]
-    public async Task GetAllPrnByOrganisationId_WithInValidId_ReturnsNull(Guid orgId, List<Eprn> expectedPrns)
+    public async Task GetAllPrnByOrganisationId_WithInValidId_ReturnsNull()
     {
+        var orgId = Guid.NewGuid();
+        var expectedPrns = _fixture.CreateMany<Eprn>().ToList();
         _mockRepository.Setup(r => r.GetAllPrnByOrganisationId(orgId)).ReturnsAsync(expectedPrns);
 
         var result = await _systemUnderTest.GetAllPrnByOrganisationId(orgId);
@@ -59,9 +66,11 @@ public class PrnServiceTests
     }
 
     [TestMethod]
-    [AutoData]
-    public async Task UpdateStatus_throwsNotFoundIfNoPrnRecordsForOrg(Guid orgId, List<PrnUpdateStatusDto> prnUpdates)
+    public async Task UpdateStatus_throwsNotFoundIfNoPrnRecordsForOrg()
     {
+        var orgId = Guid.NewGuid();
+        var prnUpdates = _fixture.CreateMany<PrnUpdateStatusDto>().ToList();
+
         _mockRepository.Setup(r => r.GetAllPrnByOrganisationId(orgId)).ReturnsAsync([]);
 
         await _systemUnderTest
@@ -71,9 +80,12 @@ public class PrnServiceTests
     }
 
     [TestMethod]
-    [AutoData]
-    public async Task UpdateStatus_throwsNotFoundIfPrnInUpdateDoesntExists(Guid orgId, List<Eprn> availablePrns,List<PrnUpdateStatusDto> prnUpdates)
+    public async Task UpdateStatus_throwsNotFoundIfPrnInUpdateDoesntExists()
     {
+        var orgId = Guid.NewGuid();
+        var availablePrns = _fixture.CreateMany<Eprn>().ToList();
+        var prnUpdates = _fixture.CreateMany<PrnUpdateStatusDto>().ToList();
+
         _mockRepository.Setup(r => r.GetAllPrnByOrganisationId(orgId)).ReturnsAsync(availablePrns);
 
         await _systemUnderTest
@@ -83,9 +95,12 @@ public class PrnServiceTests
     }
 
     [TestMethod]
-    [AutoData]
-    public async Task UpdateStatus_throwsConflictExceptionIfStatusNotInAwaitingAcceptanceOrNotSame(Guid orgId, List<Eprn> availablePrns, List<PrnUpdateStatusDto> prnUpdates)
+    public async Task UpdateStatus_throwsConflictExceptionIfStatusNotInAwaitingAcceptanceOrNotSame()
     {
+        var orgId = Guid.NewGuid();
+        var availablePrns = _fixture.CreateMany<Eprn>().ToList();
+        var prnUpdates = _fixture.CreateMany<PrnUpdateStatusDto>().ToList();
+
         availablePrns[0].ExternalId = prnUpdates[0].PrnId;
         availablePrns[1].ExternalId = prnUpdates[1].PrnId;
         availablePrns[2].ExternalId = prnUpdates[2].PrnId;
@@ -101,9 +116,12 @@ public class PrnServiceTests
     }
 
     [TestMethod]
-    [AutoData]
-    public async Task UpdateStatus_ShouldNotThrowsConflictExceptionIfStatusInAwaitingAcceptanceOrSame(Guid orgId, List<Eprn> availablePrns, List<PrnUpdateStatusDto> prnUpdates)
+    public async Task UpdateStatus_ShouldNotThrowsConflictExceptionIfStatusInAwaitingAcceptanceOrSame()
     {
+        var orgId = Guid.NewGuid();
+        var availablePrns = _fixture.CreateMany<Eprn>().ToList();
+        var prnUpdates = _fixture.CreateMany<PrnUpdateStatusDto>().ToList();
+
         availablePrns[0].ExternalId = prnUpdates[0].PrnId;
         availablePrns[1].ExternalId = prnUpdates[1].PrnId;
         availablePrns[2].ExternalId = prnUpdates[2].PrnId;
@@ -121,9 +139,12 @@ public class PrnServiceTests
     }
 
     [TestMethod]
-    [AutoData]
-    public async Task UpdateStatus_ShouldThrowsConflictExceptionIfSamePrnIsTriedToUpdateMultiple(Guid orgId, List<Eprn> availablePrns, List<PrnUpdateStatusDto> prnUpdates)
+    public async Task UpdateStatus_ShouldThrowsConflictExceptionIfSamePrnIsTriedToUpdateMultiple()
     {
+        var orgId = Guid.NewGuid();
+        var availablePrns = _fixture.CreateMany<Eprn>().ToList();
+        var prnUpdates = _fixture.CreateMany<PrnUpdateStatusDto>().ToList();
+
         availablePrns[0].ExternalId = prnUpdates[0].PrnId = prnUpdates[1].PrnId;
         availablePrns[2].ExternalId = prnUpdates[2].PrnId;
         
@@ -143,9 +164,13 @@ public class PrnServiceTests
     }
 
     [TestMethod]
-    [AutoData]
-    public async Task UpdateStatus_CallsUpdateToDB(Guid orgId, Guid userId, List<Eprn> availablePrns, List<PrnUpdateStatusDto> prnUpdates)
+    public async Task UpdateStatus_CallsUpdateToDB()
     {
+        var orgId = Guid.NewGuid();
+        var userId = Guid.NewGuid();
+        var availablePrns = _fixture.CreateMany<Eprn>().ToList();
+        var prnUpdates = _fixture.CreateMany<PrnUpdateStatusDto>().ToList();
+
         availablePrns[0].ExternalId = prnUpdates[0].PrnId;
         availablePrns[1].ExternalId = prnUpdates[1].PrnId;
         availablePrns[2].ExternalId = prnUpdates[2].PrnId;
@@ -164,5 +189,18 @@ public class PrnServiceTests
         availablePrns.Should().AllSatisfy(x => x.LastUpdatedBy.Should().Be(userId));
         _mockRepository.Verify(x => x.SaveTransaction(It.IsAny<IDbContextTransaction>()), Times.Once());
         _mockRepository.Verify(x => x.AddPrnStatusHistory(It.IsAny<PrnStatusHistory>()), Times.Exactly(3));
+    }
+
+    [TestMethod]
+    public async Task GetSearchPrnsForOrganisation_ReturnsRepsoneGotFromRepo()
+    {
+        var orgId = Guid.NewGuid();
+        var request = _fixture.Create<PaginatedRequestDto>();
+        var repoResponse = _fixture.Create<PaginatedResponseDto<PrnDto>>();
+
+        _mockRepository.Setup(s => s.GetSearchPrnsForOrganisation(orgId, request)).ReturnsAsync(repoResponse);
+
+        var result = await _systemUnderTest.GetSearchPrnsForOrganisation(orgId, request);
+        result.Should().Be(repoResponse);
     }
 }
