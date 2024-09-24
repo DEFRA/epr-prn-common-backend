@@ -7,6 +7,7 @@
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Storage;
     using System.Collections.Generic;
+    using System.Linq.Expressions;
 
     public class Repository : IRepository
     {
@@ -49,14 +50,46 @@
             _eprContext.PrnStatusHistory.Add(prnStatusHistory);
         }
 
+        private static Expression<Func<Eprn, bool>> GetFilterByCondition(string? filterBy)
+        {
+            return filterBy switch
+            {
+                "accepted-all" => p => p.PrnStatusId == (int)EprnStatus.ACCEPTED,
+                "cancelled-all" => p => p.PrnStatusId == (int)EprnStatus.CANCELLED,
+                "rejected-all" => p => p.PrnStatusId == (int)EprnStatus.REJECTED,
+                "awaiting-all" => p => p.PrnStatusId == (int)EprnStatus.AWAITINGACCEPTANCE,
+                "awaiting-aluminium" => p => p.PrnStatusId == (int)EprnStatus.AWAITINGACCEPTANCE && p.MaterialName == "aluminium",
+                "awaiting-glassother" => p => p.PrnStatusId == (int)EprnStatus.AWAITINGACCEPTANCE && p.MaterialName == "glass_other",
+                "awaiting-glassremelt" => p => p.PrnStatusId == (int)EprnStatus.AWAITINGACCEPTANCE && p.MaterialName == "glass_remelt",
+                "awaiting-paperfiber" => p => p.PrnStatusId == (int)EprnStatus.AWAITINGACCEPTANCE && p.MaterialName == "paper_fiber",
+                "awaiting-plastic" => p => p.PrnStatusId == (int)EprnStatus.AWAITINGACCEPTANCE && p.MaterialName == "plastic",
+                "awaiting-steel" => p => p.PrnStatusId == (int)EprnStatus.AWAITINGACCEPTANCE && p.MaterialName == "steel",
+                "awaiting-wood" => p => p.PrnStatusId == (int)EprnStatus.AWAITINGACCEPTANCE && p.MaterialName == "Wood",
+                _ => sm => true
+            };
+
+        }
+
+        private static (string order, Expression<Func<Eprn, dynamic>> expr) GetOrderByCondition(string? sortBy)
+        {
+            return sortBy switch
+            {
+                "date-issued-desc" => ("desc", p => p.IssueDate),
+                "date-issued-asc" => ("asc", p => p.IssueDate),
+                "tonnage-desc" => ("desc", p => p.TonnageValue),
+                "tonnage-asc" => ("asc", p => p.TonnageValue),
+                "issued-by-desc" => ("desc", p => p.IssuedByOrg),
+                "issued-by-asc" => ("asc", p => p.IssuedByOrg),
+                "december-waste-desc" => ("desc", p => p.DecemberWaste),
+                "material-desc" => ("desc", p => p.MaterialName),
+                "material-asc" => ("asc", p => p.MaterialName),
+                _ => ("desc", p => p.IssueDate)
+            };
+        }
         public async Task<PaginatedResponseDto<PrnDto>> GetSearchPrnsForOrganisation(Guid orgId, PaginatedRequestDto request)
         {
 
-            var prns = _eprContext.Prn
-                .Where(p => p.OrganisationId == orgId)
-                .OrderByDescending(p => p.IssueDate)
-                .ThenBy(p => p.PrnNumber)
-                .AsQueryable();
+            var prns = GetAllPrnsForOrganisation(orgId);
 
             var prnNumbers = prns
                 .Select(prn => prn.PrnNumber)
@@ -93,6 +126,15 @@
                     EF.Functions.Like(repo.IssuedByOrg, searchPattern));
             }
 
+            //filter by
+            Expression<Func<Eprn, bool>> filterByWhereCondition = GetFilterByCondition(request.FilterBy);
+            prns = prns.Where(filterByWhereCondition);
+
+            //Sort by
+            var (order, expr) = GetOrderByCondition(request.SortBy);
+            prns = (order == "asc") ? prns.OrderBy(expr).ThenBy(p => p.PrnNumber)
+                : prns.OrderByDescending(expr).ThenBy(p => p.PrnNumber);
+
             // get the count BEFORE paging and sorting
             var totalRecords = await prns.CountAsync();
 
@@ -115,7 +157,9 @@
                         TonnageValue = prn.TonnageValue,
                         PrnStatusId = prn.PrnStatusId,
                         IssuedByOrg = prn.IssuedByOrg,
-                        IssueDate = prn.IssueDate
+                        IssueDate = prn.IssueDate,
+                        IssuerNotes = prn.IssuerNotes,
+                        DecemberWaste = prn.DecemberWaste
                     }
                 })
                 .ToListAsync();

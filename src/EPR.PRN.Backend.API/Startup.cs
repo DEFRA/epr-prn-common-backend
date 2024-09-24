@@ -21,6 +21,7 @@ namespace EPR.PRN.Backend.API
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddApiVersioning();
             services.AddControllers()
                 .AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
             services.AddEndpointsApiExplorer();

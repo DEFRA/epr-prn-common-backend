@@ -10,7 +10,8 @@
     using System.Net;
 
     [ApiController]
-    [Route("/prn")]
+    [ApiVersion("1.0")]
+    [Route("api/v{version:apiVersion}/prn")]
     public class PrnController : Controller
     {
         private readonly IPrnService _prnService;
@@ -37,7 +38,7 @@
             return Ok(prn);
         }
 
-		[HttpGet("v1/search/{page?}/{search?}/{filterBy?}/{sortBy?}")]
+		[HttpGet("search/{page?}/{search?}/{filterBy?}/{sortBy?}")]
 		[ProducesResponseType(typeof(PaginatedResponseDto<PrnDto>), 200)]
 		[ProducesResponseType(400)]
 		[ProducesResponseType(401)]
@@ -64,7 +65,7 @@
             return Ok(prn);
         }
 
-        [HttpGet("v1/obligationcalculation/{organisationId}")]
+        [HttpGet("obligationcalculation/{organisationId}")]
         [ProducesResponseType(typeof(List<ObligationCalculationDto>), 200)]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
@@ -116,7 +117,7 @@
             }
         }
 
-        [HttpPost("v1/organisation/{id}/calculate")]
+        [HttpPost("organisation/{id}/calculate")]
         [ProducesResponseType(StatusCodes.Status202Accepted)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
