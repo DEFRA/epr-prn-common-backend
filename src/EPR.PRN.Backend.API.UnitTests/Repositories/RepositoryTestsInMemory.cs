@@ -1,7 +1,11 @@
-﻿using EPR.PRN.Backend.API.Common.DTO;
+﻿using AutoFixture;
+using Azure.Core;
+using EPR.PRN.Backend.API.Common.Constants;
+using EPR.PRN.Backend.API.Common.DTO;
 using EPR.PRN.Backend.API.Repositories;
 using EPR.PRN.Backend.Data;
 using EPR.PRN.Backend.Data.DataModels;
+using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 namespace EPR.PRN.Backend.API.UnitTests.Repositories;
 [TestClass]
@@ -9,6 +13,8 @@ public class RepositoryTestsInMemory
 {
     private EprContext _context;
     private Repository _repository;
+    private readonly Fixture _fixture = new Fixture();
+
     [TestInitialize]
     public void Setup()
     {
@@ -129,6 +135,291 @@ public class RepositoryTestsInMemory
         Assert.AreEqual(request.FilterBy, result.FilterBy);
         Assert.AreEqual(request.SortBy, result.SortBy);
     }
+
+    [TestMethod]
+    [DataRow(PrnConstants.Filters.AcceptedAll, EprnStatus.ACCEPTED, PrnConstants.Materials.Wood)]
+    [DataRow(PrnConstants.Filters.CancelledAll, EprnStatus.CANCELLED, PrnConstants.Materials.Wood)]
+    [DataRow(PrnConstants.Filters.RejectedAll, EprnStatus.REJECTED, PrnConstants.Materials.Wood)]
+    [DataRow(PrnConstants.Filters.AwaitingAll, EprnStatus.AWAITINGACCEPTANCE, PrnConstants.Materials.Wood)]
+    [DataRow(PrnConstants.Filters.AwaitingAluminium, EprnStatus.AWAITINGACCEPTANCE, PrnConstants.Materials.Aluminium)]
+    [DataRow(PrnConstants.Filters.AwaitingGlassOther, EprnStatus.AWAITINGACCEPTANCE, PrnConstants.Materials.GlassOther)]
+    [DataRow(PrnConstants.Filters.AwaitingGlassMelt, EprnStatus.AWAITINGACCEPTANCE, PrnConstants.Materials.GlassMelt)]
+    [DataRow(PrnConstants.Filters.AwaitngPaperFiber, EprnStatus.AWAITINGACCEPTANCE, PrnConstants.Materials.PaperFiber)]
+    [DataRow(PrnConstants.Filters.AwaitngPlastic, EprnStatus.AWAITINGACCEPTANCE, PrnConstants.Materials.Plastic)]
+    [DataRow(PrnConstants.Filters.AwaitngSteel, EprnStatus.AWAITINGACCEPTANCE, PrnConstants.Materials.Steel)]
+    [DataRow(PrnConstants.Filters.AwaitngWood, EprnStatus.AWAITINGACCEPTANCE, PrnConstants.Materials.Wood)]
+
+    public async Task GetSearchPrnsForOrganisation_Filter_Result_AsPerPassedFilterParameter(string filterBy, EprnStatus status, string material)
+    {
+        var request = new PaginatedRequestDto
+        {
+            Page = 1,
+            PageSize = 10,
+            Search = null,
+            FilterBy = filterBy,
+            SortBy = null
+        };
+
+        var orgId = Guid.NewGuid();
+
+        var data = _fixture.Build<Eprn>()
+                           .With(x => x.OrganisationId, orgId)
+                           .With(x =>x.MaterialName, material)
+                           .With(x => x.PrnStatusId,10)
+                           .CreateMany().ToArray();
+
+        //Assign passed status to first element and only this should present on result
+        data[0].PrnStatusId = (int)status;
+
+        _context.Prn.AddRange(data);
+        _context.SaveChanges();
+
+        var result = await _repository.GetSearchPrnsForOrganisation(orgId, request);
+
+        result.TotalItems.Should().Be(1);
+        result.Items.Should().ContainSingle().Which.Should().Match<PrnDto>(x => 
+        x.ExternalId == data[0].ExternalId
+        && x.PrnNumber == data[0].PrnNumber);
+
+    }
+
+    [TestMethod]
+
+    public async Task GetSearchPrnsForOrganisation_Filter_Result_ReturnAll_IfFilterByISAnthingThanAboveListed()
+    {
+        var request = new PaginatedRequestDto
+        {
+            Page = 1,
+            PageSize = 10,
+            Search = null,
+            FilterBy = "NO filter",
+            SortBy = null
+        };
+
+        var orgId = Guid.NewGuid();
+
+        var data = _fixture.Build<Eprn>()
+                           .With(x => x.OrganisationId, orgId)
+                           .CreateMany().ToArray();
+
+        _context.Prn.AddRange(data);
+        _context.SaveChanges();
+
+        var result = await _repository.GetSearchPrnsForOrganisation(orgId, request);
+
+        result.TotalItems.Should().Be(data.Length);
+
+    }
+
+    [TestMethod]
+    public async Task GetSearchPrnsForOrganisation_Sort_Result_AsPerTonnage()
+    {
+        var request = new PaginatedRequestDto
+        {
+            Page = 1,
+            PageSize = 10,
+            Search = null,
+            FilterBy = "NO filter",
+            SortBy = PrnConstants.Sorts.TonnageAsc,
+        };
+
+        var orgId = Guid.NewGuid();
+
+        var data = _fixture.Build<Eprn>()
+                           .With(x => x.OrganisationId, orgId)
+                           .With(x => x.TonnageValue, 100)
+                           .CreateMany().ToArray();
+
+        data[0].TonnageValue = 200;
+
+        _context.Prn.AddRange(data);
+        _context.SaveChanges();
+
+        var result = await _repository.GetSearchPrnsForOrganisation(orgId, request);
+
+        result.TotalItems.Should().Be(3);
+        result.Items[2].ExternalId.Should().Be(data[0].ExternalId);
+
+        //Asserting desc
+        request.SortBy = PrnConstants.Sorts.TonnageDesc;
+        result = await _repository.GetSearchPrnsForOrganisation(orgId, request);
+
+        result.TotalItems.Should().Be(3);
+        result.Items[0].ExternalId.Should().Be(data[0].ExternalId);
+    }
+
+    [TestMethod]
+    public async Task GetSearchPrnsForOrganisation_Sort_Result_AsPerMaterial()
+    {
+        var request = new PaginatedRequestDto
+        {
+            Page = 1,
+            PageSize = 10,
+            Search = null,
+            FilterBy = "NO filter",
+            SortBy = PrnConstants.Sorts.MaterialAsc,
+        };
+
+        var orgId = Guid.NewGuid();
+
+        var data = _fixture.Build<Eprn>()
+                           .With(x => x.OrganisationId, orgId)
+                           .With(x => x.MaterialName, "Plastic")
+                           .CreateMany().ToArray();
+
+        data[0].MaterialName = PrnConstants.Materials.Aluminium;
+
+        _context.Prn.AddRange(data);
+        _context.SaveChanges();
+
+        var result = await _repository.GetSearchPrnsForOrganisation(orgId, request);
+
+        result.TotalItems.Should().Be(3);
+        result.Items[0].ExternalId.Should().Be(data[0].ExternalId);
+
+        //Asserting desc
+        request.SortBy = PrnConstants.Sorts.MaterialDesc;
+        result = await _repository.GetSearchPrnsForOrganisation(orgId, request);
+
+        result.TotalItems.Should().Be(3);
+        result.Items[2].ExternalId.Should().Be(data[0].ExternalId);
+    }
+
+    [TestMethod]
+    public async Task GetSearchPrnsForOrganisation_Sort_Result_AsIssueDate()
+    {
+        var request = new PaginatedRequestDto
+        {
+            Page = 1,
+            PageSize = 10,
+            Search = null,
+            FilterBy = "NO filter",
+            SortBy = PrnConstants.Sorts.IssueDateDesc,
+        };
+
+        var orgId = Guid.NewGuid();
+
+        var data = _fixture.Build<Eprn>()
+                           .With(x => x.OrganisationId, orgId)
+                           .With(x => x.IssueDate, DateTime.UtcNow.AddHours(-3))
+                           .CreateMany().ToArray();
+
+        data[0].IssueDate = DateTime.UtcNow;
+
+        _context.Prn.AddRange(data);
+        _context.SaveChanges();
+
+        var result = await _repository.GetSearchPrnsForOrganisation(orgId, request);
+
+        result.TotalItems.Should().Be(3);
+        result.Items[0].ExternalId.Should().Be(data[0].ExternalId);
+
+        //Asserting desc
+        request.SortBy = PrnConstants.Sorts.IssueDateAsc;
+        result = await _repository.GetSearchPrnsForOrganisation(orgId, request);
+
+        result.TotalItems.Should().Be(3);
+        result.Items[2].ExternalId.Should().Be(data[0].ExternalId);
+    }
+
+    [TestMethod]
+    public async Task GetSearchPrnsForOrganisation_Sort_Result_AsIssuedBy()
+    {
+        var request = new PaginatedRequestDto
+        {
+            Page = 1,
+            PageSize = 10,
+            Search = null,
+            FilterBy = "NO filter",
+            SortBy = PrnConstants.Sorts.IssuedByDesc,
+        };
+
+        var orgId = Guid.NewGuid();
+
+        var data = _fixture.Build<Eprn>()
+                           .With(x => x.OrganisationId, orgId)
+                           .With(x => x.IssuedByOrg, "Alpa")
+                           .CreateMany().ToArray();
+
+        data[0].IssuedByOrg = "Beta";
+
+        _context.Prn.AddRange(data);
+        _context.SaveChanges();
+
+        var result = await _repository.GetSearchPrnsForOrganisation(orgId, request);
+
+        result.TotalItems.Should().Be(3);
+        result.Items[0].ExternalId.Should().Be(data[0].ExternalId);
+
+        //Asserting desc
+        request.SortBy = PrnConstants.Sorts.IssuedByAsc;
+        result = await _repository.GetSearchPrnsForOrganisation(orgId, request);
+
+        result.TotalItems.Should().Be(3);
+        result.Items[2].ExternalId.Should().Be(data[0].ExternalId);
+    }
+
+
+    [TestMethod]
+    public async Task GetSearchPrnsForOrganisation_Sort_Result_AsDecemberWaste()
+    {
+        var request = new PaginatedRequestDto
+        {
+            Page = 1,
+            PageSize = 10,
+            Search = null,
+            FilterBy = "NO filter",
+            SortBy = PrnConstants.Sorts.IssuedByDesc,
+        };
+
+        var orgId = Guid.NewGuid();
+
+        var data = _fixture.Build<Eprn>()
+                           .With(x => x.OrganisationId, orgId)
+                           .With(x => x.DecemberWaste, false)
+                           .CreateMany().ToArray();
+
+        data[2].DecemberWaste = true;
+
+        _context.Prn.AddRange(data);
+        _context.SaveChanges();
+
+        var result = await _repository.GetSearchPrnsForOrganisation(orgId, request);
+
+        result.TotalItems.Should().Be(3);
+        result.Items[0].ExternalId.Should().Be(data[2].ExternalId);
+    }
+
+    [TestMethod]
+    public async Task GetSearchPrnsForOrganisation_Sort_Result_AsIssueDate_IfNoSortByPassed()
+    {
+        var request = new PaginatedRequestDto
+        {
+            Page = 1,
+            PageSize = 10,
+            Search = null,
+            FilterBy = "NO filter",
+            SortBy = null,
+        };
+
+        var orgId = Guid.NewGuid();
+
+        var data = _fixture.Build<Eprn>()
+                           .With(x => x.OrganisationId, orgId)
+                           .With(x => x.IssueDate, DateTime.UtcNow.AddHours(-3))
+                           .CreateMany().ToArray();
+
+        data[2].IssueDate = DateTime.UtcNow;
+
+        _context.Prn.AddRange(data);
+        _context.SaveChanges();
+
+        var result = await _repository.GetSearchPrnsForOrganisation(orgId, request);
+
+        result.TotalItems.Should().Be(3);
+        result.Items[0].ExternalId.Should().Be(data[2].ExternalId);
+    }
+
     private static Eprn CreateEprn(Guid orgId, string prnNumber, string issuedByOrg, string organisationName, string materialName, string producerAgency, string reprocessorExporterAgency, string issuerReference, string accreditationNumber, string reprocessingSite, int accreditationYear, int obligationYear, string packagingProducer)
     {
         return new Eprn
