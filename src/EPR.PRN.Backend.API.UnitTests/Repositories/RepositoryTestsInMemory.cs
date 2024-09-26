@@ -369,7 +369,7 @@ public class RepositoryTestsInMemory
             PageSize = 10,
             Search = null,
             FilterBy = "NO filter",
-            SortBy = PrnConstants.Sorts.IssuedByDesc,
+            SortBy = PrnConstants.Sorts.DescemberWasteDesc,
         };
 
         var orgId = Guid.NewGuid();
