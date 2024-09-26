@@ -86,6 +86,7 @@
                 _ => ("desc", p => p.IssueDate)
             };
         }
+        
         public async Task<PaginatedResponseDto<PrnDto>> GetSearchPrnsForOrganisation(Guid orgId, PaginatedRequestDto request)
         {
 
@@ -126,18 +127,19 @@
                     EF.Functions.Like(repo.IssuedByOrg, searchPattern));
             }
 
-            //filter by
+            // filter by
             Expression<Func<Eprn, bool>> filterByWhereCondition = GetFilterByCondition(request.FilterBy);
             prns = prns.Where(filterByWhereCondition);
 
-            //Sort by
+	        // get the count BEFORE paging and sorting
+            var totalRecords = await prns.CountAsync();              
+            
+            // Sort by
             var (order, expr) = GetOrderByCondition(request.SortBy);
             prns = (order == "asc") ? prns.OrderBy(expr).ThenBy(p => p.PrnNumber)
                 : prns.OrderByDescending(expr).ThenBy(p => p.PrnNumber);
 
-            // get the count BEFORE paging and sorting
-            var totalRecords = await prns.CountAsync();
-
+            // Pageing
             prns = prns
                 .Skip((request.Page - 1) * request.PageSize)
                 .Take(request.PageSize);
