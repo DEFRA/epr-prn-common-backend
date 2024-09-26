@@ -8,6 +8,7 @@
     using Microsoft.EntityFrameworkCore.Storage;
     using System.Collections.Generic;
     using System.Linq.Expressions;
+    using static EPR.PRN.Backend.API.Common.Constants.PrnConstants;
 
     public class Repository : IRepository
     {
@@ -54,17 +55,46 @@
         {
             return filterBy switch
             {
-                "accepted-all" => p => p.PrnStatusId == (int)EprnStatus.ACCEPTED,
-                "cancelled-all" => p => p.PrnStatusId == (int)EprnStatus.CANCELLED,
-                "rejected-all" => p => p.PrnStatusId == (int)EprnStatus.REJECTED,
-                "awaiting-all" => p => p.PrnStatusId == (int)EprnStatus.AWAITINGACCEPTANCE,
-                "awaiting-aluminium" => p => p.PrnStatusId == (int)EprnStatus.AWAITINGACCEPTANCE && p.MaterialName == "aluminium",
-                "awaiting-glassother" => p => p.PrnStatusId == (int)EprnStatus.AWAITINGACCEPTANCE && p.MaterialName == "glass_other",
-                "awaiting-glassremelt" => p => p.PrnStatusId == (int)EprnStatus.AWAITINGACCEPTANCE && p.MaterialName == "glass_remelt",
-                "awaiting-paperfiber" => p => p.PrnStatusId == (int)EprnStatus.AWAITINGACCEPTANCE && p.MaterialName == "paper_fiber",
-                "awaiting-plastic" => p => p.PrnStatusId == (int)EprnStatus.AWAITINGACCEPTANCE && p.MaterialName == "plastic",
-                "awaiting-steel" => p => p.PrnStatusId == (int)EprnStatus.AWAITINGACCEPTANCE && p.MaterialName == "steel",
-                "awaiting-wood" => p => p.PrnStatusId == (int)EprnStatus.AWAITINGACCEPTANCE && p.MaterialName == "Wood",
+                Filters.AcceptedAll => 
+                    p => p.PrnStatusId == (int)EprnStatus.ACCEPTED,
+
+                Filters.CancelledAll =>
+                    p => p.PrnStatusId == (int)EprnStatus.CANCELLED,
+
+                Filters.RejectedAll =>
+                    p => p.PrnStatusId == (int)EprnStatus.REJECTED,
+
+                Filters.AwaitingAll =>
+                    p => p.PrnStatusId == (int)EprnStatus.AWAITINGACCEPTANCE,
+
+                Filters.AwaitingAluminium => 
+                    p => p.PrnStatusId == (int)EprnStatus.AWAITINGACCEPTANCE
+                    && p.MaterialName == Common.Constants.PrnConstants.Materials.Aluminium,
+
+                Filters.AwaitingGlassOther =>
+                    p => p.PrnStatusId == (int)EprnStatus.AWAITINGACCEPTANCE
+                    && p.MaterialName == Common.Constants.PrnConstants.Materials.GlassOther,
+
+                Filters.AwaitingGlassMelt =>
+                    p => p.PrnStatusId == (int)EprnStatus.AWAITINGACCEPTANCE
+                    && p.MaterialName == Common.Constants.PrnConstants.Materials.GlassMelt,
+
+                Filters.AwaitngPaperFiber =>
+                    p => p.PrnStatusId == (int)EprnStatus.AWAITINGACCEPTANCE
+                    && p.MaterialName == Common.Constants.PrnConstants.Materials.PaperFiber,
+
+                Filters.AwaitngPlastic =>
+                    p => p.PrnStatusId == (int)EprnStatus.AWAITINGACCEPTANCE 
+                    && p.MaterialName == Common.Constants.PrnConstants.Materials.Plastic,
+
+                Filters.AwaitngSteel =>
+                    p => p.PrnStatusId == (int)EprnStatus.AWAITINGACCEPTANCE 
+                    && p.MaterialName == Common.Constants.PrnConstants.Materials.Steel,
+
+                Filters.AwaitngWood =>
+                    p => p.PrnStatusId == (int)EprnStatus.AWAITINGACCEPTANCE 
+                    && p.MaterialName == Common.Constants.PrnConstants.Materials.Wood,
+
                 _ => sm => true
             };
 
@@ -74,16 +104,16 @@
         {
             return sortBy switch
             {
-                "date-issued-desc" => ("desc", p => p.IssueDate),
-                "date-issued-asc" => ("asc", p => p.IssueDate),
-                "tonnage-desc" => ("desc", p => p.TonnageValue),
-                "tonnage-asc" => ("asc", p => p.TonnageValue),
-                "issued-by-desc" => ("desc", p => p.IssuedByOrg),
-                "issued-by-asc" => ("asc", p => p.IssuedByOrg),
-                "december-waste-desc" => ("desc", p => p.DecemberWaste),
-                "material-desc" => ("desc", p => p.MaterialName),
-                "material-asc" => ("asc", p => p.MaterialName),
-                _ => ("desc", p => p.IssueDate)
+                Sorts.IssueDateDesc => (Sorts.Descending, p => p.IssueDate),
+                Sorts.IssueDateAsc => (Sorts.Ascending, p => p.IssueDate),
+                Sorts.TonnageDesc => (Sorts.Descending, p => p.TonnageValue),
+                Sorts.TonnageAsc => (Sorts.Ascending, p => p.TonnageValue),
+                Sorts.IssuedByDesc => (Sorts.Descending, p => p.IssuedByOrg),
+                Sorts.IssuedByAsc => (Sorts.Ascending, p => p.IssuedByOrg),
+                Sorts.DescemberWasteDesc => (Sorts.Descending, p => p.DecemberWaste),
+                Sorts.MaterialDesc => (Sorts.Descending, p => p.MaterialName),
+                Sorts.MaterialAsc => (Sorts.Ascending, p => p.MaterialName),
+                _ => (Sorts.Descending, p => p.IssueDate)
             };
         }
         
@@ -136,7 +166,7 @@
             
             // Sort by
             var (order, expr) = GetOrderByCondition(request.SortBy);
-            prns = (order == "asc") ? prns.OrderBy(expr).ThenBy(p => p.PrnNumber)
+            prns = (order == Sorts.Ascending) ? prns.OrderBy(expr).ThenBy(p => p.PrnNumber)
                 : prns.OrderByDescending(expr).ThenBy(p => p.PrnNumber);
 
             // Pageing
