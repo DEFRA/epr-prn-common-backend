@@ -37,13 +37,13 @@ namespace EPR.PRN.Backend.API.Common.Constants
 
         public static class Materials
         {
-            public const string Aluminium = "aluminium";
-            public const string GlassOther = "glass_other";
-            public const string GlassMelt = "glass_remelt";
-            public const string PaperFiber = "paper_fiber";
-            public const string Plastic = "plastic";
-            public const string Steel = "steel";
-            public const string Wood = "wood";
+            public const string Aluminium = "Aluminium";
+            public const string GlassOther = "Glass Other";
+            public const string GlassMelt = "Glass Re-melt";
+            public const string PaperFiber = "Paper/board";
+            public const string Plastic = "Plastic";
+            public const string Steel = "Steel";
+            public const string Wood = "Wood";
         }
     }
 }
