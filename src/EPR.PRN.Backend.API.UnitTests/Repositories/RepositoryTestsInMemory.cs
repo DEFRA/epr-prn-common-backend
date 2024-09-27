@@ -164,6 +164,7 @@ public class RepositoryTestsInMemory
 
         var data = _fixture.Build<Eprn>()
                            .With(x => x.OrganisationId, orgId)
+                           .Without(x => x.Id)
                            .With(x =>x.MaterialName, material)
                            .With(x => x.PrnStatusId,10)
                            .CreateMany().ToArray();
@@ -200,6 +201,7 @@ public class RepositoryTestsInMemory
 
         var data = _fixture.Build<Eprn>()
                            .With(x => x.OrganisationId, orgId)
+                           .Without(x => x.Id)
                            .CreateMany().ToArray();
 
         _context.Prn.AddRange(data);
@@ -227,6 +229,7 @@ public class RepositoryTestsInMemory
 
         var data = _fixture.Build<Eprn>()
                            .With(x => x.OrganisationId, orgId)
+                           .Without(x => x.Id)
                            .With(x => x.TonnageValue, 100)
                            .CreateMany().ToArray();
 
@@ -264,6 +267,7 @@ public class RepositoryTestsInMemory
 
         var data = _fixture.Build<Eprn>()
                            .With(x => x.OrganisationId, orgId)
+                           .Without(x => x.Id)
                            .With(x => x.MaterialName, "Plastic")
                            .CreateMany().ToArray();
 
@@ -301,6 +305,7 @@ public class RepositoryTestsInMemory
 
         var data = _fixture.Build<Eprn>()
                            .With(x => x.OrganisationId, orgId)
+                           .Without(x => x.Id)
                            .With(x => x.IssueDate, DateTime.UtcNow.AddHours(-3))
                            .CreateMany().ToArray();
 
@@ -338,6 +343,7 @@ public class RepositoryTestsInMemory
 
         var data = _fixture.Build<Eprn>()
                            .With(x => x.OrganisationId, orgId)
+                           .Without(x => x.Id)
                            .With(x => x.IssuedByOrg, "Alpa")
                            .CreateMany().ToArray();
 
@@ -376,6 +382,7 @@ public class RepositoryTestsInMemory
 
         var data = _fixture.Build<Eprn>()
                            .With(x => x.OrganisationId, orgId)
+                           .Without(x => x.Id)
                            .With(x => x.DecemberWaste, false)
                            .CreateMany().ToArray();
 
@@ -406,6 +413,7 @@ public class RepositoryTestsInMemory
 
         var data = _fixture.Build<Eprn>()
                            .With(x => x.OrganisationId, orgId)
+                           .Without(x => x.Id)
                            .With(x => x.IssueDate, DateTime.UtcNow.AddHours(-3))
                            .CreateMany().ToArray();
 
