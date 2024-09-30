@@ -28,7 +28,8 @@ namespace EPR.PRN.Backend.Obligation.Strategies
                 OrganisationId = calculationRequest.OrganisationId,
                 MaterialObligationValue = _calculationService.Calculate(calculationRequest.RecyclingTargets[targetYear][calculationRequest.MaterialType],
                 calculationRequest.SubmissionCalculationRequest.PackagingMaterialWeight),
-                Year = DateTime.UtcNow.Year
+                Year = DateTime.UtcNow.Year,
+                MaterialWeight = calculationRequest.SubmissionCalculationRequest.PackagingMaterialWeight
             };
 
             return new List<ObligationCalculation> { calculation };
