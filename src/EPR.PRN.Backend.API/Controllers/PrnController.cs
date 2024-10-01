@@ -129,7 +129,7 @@
                 return BadRequest(new { message = "Invalid Organisation ID." });
             }
 
-            if (request == null || !request.Any())
+            if (request == null || request.Count == 0)
             {
                 return BadRequest(new { message = "Submission calculation request cannot be null or empty." });
             }

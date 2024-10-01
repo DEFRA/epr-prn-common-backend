@@ -5,7 +5,7 @@ namespace EPR.PRN.Backend.API.Common.DTO
     [ExcludeFromCodeCoverage]
     public class PaginatedResponseDto<T>
     {
-	    public List<T> Items { get; set; }
+	    public List<T>? Items { get; set; }
 
 	    public int CurrentPage { get; set; }
 
@@ -22,18 +22,16 @@ namespace EPR.PRN.Backend.API.Common.DTO
         public List<string>? TypeAhead { get; set; }
 
         public int PageCount
-	    {
-		    get
-		    {
-			    if (PageSize == 0)
-			    {
-				    return 0;
-			    }
-				
-				var pageCount = (TotalItems + (PageSize - 1)) / PageSize;
+        {
+	        get
+	        {
+		        if (PageSize == 0)
+		        {
+			        return 0;
+		        }
 
-                return pageCount < CurrentPage ? pageCount : CurrentPage;
-            }
-	    }
-    }
+		        return (TotalItems + (PageSize - 1)) / PageSize;
+	        }
+        }
+	}
 }
