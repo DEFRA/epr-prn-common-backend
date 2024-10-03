@@ -7,6 +7,8 @@
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Storage;
     using System.Collections.Generic;
+    using System.Linq.Expressions;
+    using static EPR.PRN.Backend.API.Common.Constants.PrnConstants;
 
     public class Repository : IRepository
     {
@@ -49,14 +51,76 @@
             _eprContext.PrnStatusHistory.Add(prnStatusHistory);
         }
 
+        private static Expression<Func<Eprn, bool>> GetFilterByCondition(string? filterBy)
+        {
+            return filterBy switch
+            {
+                Filters.AcceptedAll => 
+                    p => p.PrnStatusId == (int)EprnStatus.ACCEPTED,
+
+                Filters.CancelledAll =>
+                    p => p.PrnStatusId == (int)EprnStatus.CANCELLED,
+
+                Filters.RejectedAll =>
+                    p => p.PrnStatusId == (int)EprnStatus.REJECTED,
+
+                Filters.AwaitingAll =>
+                    p => p.PrnStatusId == (int)EprnStatus.AWAITINGACCEPTANCE,
+
+                Filters.AwaitingAluminium => 
+                    p => p.PrnStatusId == (int)EprnStatus.AWAITINGACCEPTANCE
+                    && p.MaterialName == Common.Constants.PrnConstants.Materials.Aluminium,
+
+                Filters.AwaitingGlassOther =>
+                    p => p.PrnStatusId == (int)EprnStatus.AWAITINGACCEPTANCE
+                    && p.MaterialName == Common.Constants.PrnConstants.Materials.GlassOther,
+
+                Filters.AwaitingGlassMelt =>
+                    p => p.PrnStatusId == (int)EprnStatus.AWAITINGACCEPTANCE
+                    && p.MaterialName == Common.Constants.PrnConstants.Materials.GlassMelt,
+
+                Filters.AwaitngPaperFiber =>
+                    p => p.PrnStatusId == (int)EprnStatus.AWAITINGACCEPTANCE
+                    && p.MaterialName == Common.Constants.PrnConstants.Materials.PaperFiber,
+
+                Filters.AwaitngPlastic =>
+                    p => p.PrnStatusId == (int)EprnStatus.AWAITINGACCEPTANCE 
+                    && p.MaterialName == Common.Constants.PrnConstants.Materials.Plastic,
+
+                Filters.AwaitngSteel =>
+                    p => p.PrnStatusId == (int)EprnStatus.AWAITINGACCEPTANCE 
+                    && p.MaterialName == Common.Constants.PrnConstants.Materials.Steel,
+
+                Filters.AwaitngWood =>
+                    p => p.PrnStatusId == (int)EprnStatus.AWAITINGACCEPTANCE 
+                    && p.MaterialName == Common.Constants.PrnConstants.Materials.Wood,
+
+                _ => sm => true
+            };
+
+        }
+
+        private static (string order, Expression<Func<Eprn, dynamic>> expr) GetOrderByCondition(string? sortBy)
+        {
+            return sortBy switch
+            {
+                Sorts.IssueDateDesc => (Sorts.Descending, p => p.IssueDate),
+                Sorts.IssueDateAsc => (Sorts.Ascending, p => p.IssueDate),
+                Sorts.TonnageDesc => (Sorts.Descending, p => p.TonnageValue),
+                Sorts.TonnageAsc => (Sorts.Ascending, p => p.TonnageValue),
+                Sorts.IssuedByDesc => (Sorts.Descending, p => p.IssuedByOrg),
+                Sorts.IssuedByAsc => (Sorts.Ascending, p => p.IssuedByOrg),
+                Sorts.DescemberWasteDesc => (Sorts.Descending, p => p.DecemberWaste),
+                Sorts.MaterialDesc => (Sorts.Descending, p => p.MaterialName),
+                Sorts.MaterialAsc => (Sorts.Ascending, p => p.MaterialName),
+                _ => (Sorts.Descending, p => p.IssueDate)
+            };
+        }
+        
         public async Task<PaginatedResponseDto<PrnDto>> GetSearchPrnsForOrganisation(Guid orgId, PaginatedRequestDto request)
         {
 
-            var prns = _eprContext.Prn
-                .Where(p => p.OrganisationId == orgId)
-                .OrderByDescending(p => p.IssueDate)
-                .ThenBy(p => p.PrnNumber)
-                .AsQueryable();
+            var prns = GetAllPrnsForOrganisation(orgId);
 
             var prnNumbers = prns
                 .Select(prn => prn.PrnNumber)
@@ -93,9 +157,19 @@
                     EF.Functions.Like(repo.IssuedByOrg, searchPattern));
             }
 
-            // get the count BEFORE paging and sorting
-            var totalRecords = await prns.CountAsync();
+            // filter by
+            Expression<Func<Eprn, bool>> filterByWhereCondition = GetFilterByCondition(request.FilterBy);
+            prns = prns.Where(filterByWhereCondition);
 
+	        // get the count BEFORE paging and sorting
+            var totalRecords = await prns.CountAsync();              
+            
+            // Sort by
+            var (order, expr) = GetOrderByCondition(request.SortBy);
+            prns = (order == Sorts.Ascending) ? prns.OrderBy(expr).ThenBy(p => p.PrnNumber)
+                : prns.OrderByDescending(expr).ThenBy(p => p.PrnNumber);
+
+            // Pageing
             prns = prns
                 .Skip((request.Page - 1) * request.PageSize)
                 .Take(request.PageSize);
@@ -115,7 +189,9 @@
                         TonnageValue = prn.TonnageValue,
                         PrnStatusId = prn.PrnStatusId,
                         IssuedByOrg = prn.IssuedByOrg,
-                        IssueDate = prn.IssueDate
+                        IssueDate = prn.IssueDate,
+                        IssuerNotes = prn.IssuerNotes,
+                        DecemberWaste = prn.DecemberWaste
                     }
                 })
                 .ToListAsync();

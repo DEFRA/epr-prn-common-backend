@@ -11,7 +11,7 @@ namespace EPR.PRN.Backend.Data.Repositories
             return await context.Materials.ToListAsync();
         }
 
-        private IEnumerable<Materials> GetMaterialsFromDatabase()
+        private static List<Materials> GetMaterialsFromDatabase()
         {
             // Replace with database implementation
             return new List<Materials>

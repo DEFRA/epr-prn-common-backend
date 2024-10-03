@@ -10,7 +10,8 @@
     using System.Net;
 
     [ApiController]
-    [Route("/prn")]
+    [ApiVersion("1.0")]
+    [Route("api/v{version:apiVersion}/prn")]
     public class PrnController : Controller
     {
         private readonly IPrnService _prnService;
@@ -37,22 +38,22 @@
             return Ok(prn);
         }
 
-		[HttpGet("v1/search/{page?}/{search?}/{filterBy?}/{sortBy?}")]
+		[HttpGet("search/{page?}/{search?}/{filterBy?}/{sortBy?}")]
 		[ProducesResponseType(typeof(PaginatedResponseDto<PrnDto>), 200)]
 		[ProducesResponseType(400)]
 		[ProducesResponseType(401)]
 		public async Task<IActionResult> GetSearchPrns([FromHeader(Name = "X-EPR-ORGANISATION")] Guid orgId,
             [FromQuery] PaginatedRequestDto request)
-		{
+        {
             if (orgId == Guid.Empty)
                 return Unauthorized();
 
             var result = await _prnService.GetSearchPrnsForOrganisation(orgId, request);
-            
-            return Ok(result);
-		}
 
-		[HttpGet("organisation")]
+            return Ok(result);
+        }
+
+        [HttpGet("organisation")]
         [ProducesResponseType(typeof(List<PrnDto>), 200)]
         public async Task<IActionResult> GetAllPrnByOrganisationId([FromHeader(Name = "X-EPR-ORGANISATION")] Guid orgId)
         {
@@ -116,7 +117,7 @@
             }
         }
 
-        [HttpPost("v1/organisation/{id}/calculate")]
+        [HttpPost("organisation/{id}/calculate")]
         [ProducesResponseType(StatusCodes.Status202Accepted)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -128,7 +129,7 @@
                 return BadRequest(new { message = "Invalid Organisation ID." });
             }
 
-            if (request == null || !request.Any())
+            if (request == null || request.Count == 0)
             {
                 return BadRequest(new { message = "Submission calculation request cannot be null or empty." });
             }

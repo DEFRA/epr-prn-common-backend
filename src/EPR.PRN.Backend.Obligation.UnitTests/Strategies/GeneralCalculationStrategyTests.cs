@@ -85,6 +85,7 @@ public class GeneralCalculationStrategyTests
         Assert.AreEqual(70, result[0].MaterialObligationValue);
         Assert.AreEqual(organisationId, result[0].OrganisationId);
         Assert.AreEqual(DateTime.UtcNow.Year, result[0].Year);
+        Assert.AreEqual(calculationRequest.PackagingMaterialWeight, result[0].MaterialWeight);
         Assert.IsTrue((DateTime.UtcNow - result[0].CalculatedOn).TotalSeconds < 1, "CalculatedOn should be very close to the current time");
     }
 

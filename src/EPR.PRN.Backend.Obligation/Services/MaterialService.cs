@@ -18,14 +18,11 @@ namespace EPR.PRN.Backend.Obligation.Services
         {
             if (code.IsNullOrEmpty()) return null;
             var materials = _materialRepository.GetAllMaterials().ToList();
-            var material = materials.FirstOrDefault(m => m.MaterialCode == code);
+            var material = materials.Find(m => m.MaterialCode == code);
 
-            if (material != null)
+            if (material != null && Enum.TryParse(material.MaterialName, true, out MaterialType materialEnum))
             {
-                if (Enum.TryParse(material.MaterialName, true, out MaterialType materialEnum))
-                {
-                    return materialEnum;
-                }
+                return materialEnum;
             }
             return null;
         }
