@@ -44,16 +44,16 @@
 		[ProducesResponseType(401)]
 		public async Task<IActionResult> GetSearchPrns([FromHeader(Name = "X-EPR-ORGANISATION")] Guid orgId,
             [FromQuery] PaginatedRequestDto request)
-		{
+        {
             if (orgId == Guid.Empty)
                 return Unauthorized();
 
             var result = await _prnService.GetSearchPrnsForOrganisation(orgId, request);
-            
-            return Ok(result);
-		}
 
-		[HttpGet("organisation")]
+            return Ok(result);
+        }
+
+        [HttpGet("organisation")]
         [ProducesResponseType(typeof(List<PrnDto>), 200)]
         public async Task<IActionResult> GetAllPrnByOrganisationId([FromHeader(Name = "X-EPR-ORGANISATION")] Guid orgId)
         {
