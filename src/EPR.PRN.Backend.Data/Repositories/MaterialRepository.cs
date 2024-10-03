@@ -10,7 +10,7 @@ namespace EPR.PRN.Backend.Data.Repositories
             return GetMaterialsFromDatabase();
         }
 
-        private IEnumerable<Materials> GetMaterialsFromDatabase()
+        private static List<Materials> GetMaterialsFromDatabase()
         {
             // Replace with database implementation
             return new List<Materials>

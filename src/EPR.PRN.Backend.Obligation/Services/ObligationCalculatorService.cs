@@ -28,18 +28,17 @@ namespace EPR.PRN.Backend.Obligation.Services
             _logger = logger;
         }
 
-        public async Task<CalculationResult> CalculateAsync(int organisationId, List<SubmissionCalculationRequest> submissions)
+        public async Task<CalculationResult> CalculateAsync(int organisationId, List<SubmissionCalculationRequest> request)
         {
             var recyclingTargets = await _recyclingTargetDataService.GetRecyclingTargetsAsync();
             var result = new CalculationResult();
             var calculations = new List<ObligationCalculation>();
 
-            foreach (var submission in submissions)
+            foreach (var submission in request)
             {
                 if (string.IsNullOrEmpty(submission.PackagingMaterial))
                 {
-                    var error = $"Material was null or empty for SubmissionId: {submission.SubmissionId} and OrganisationId: {organisationId}.";
-                    _logger.LogError(error);
+                    _logger.LogError("Material was null or empty for SubmissionId: {SubmissionId} and OrganisationId: {OrganisationId}.", submission.SubmissionId, organisationId);
                     result.Success = false;
                     continue;
                 }
@@ -47,8 +46,8 @@ namespace EPR.PRN.Backend.Obligation.Services
                 var material = _materialService.GetMaterialByCode(submission.PackagingMaterial);
                 if (!material.HasValue)
                 {
-                    var error = $"Material provided was not valid: {submission.PackagingMaterial} for SubmissionId: {submission.SubmissionId} and OrganisationId: {organisationId}.";
-                    _logger.LogError(error);
+                    _logger.LogError("Material provided was not valid: {PackagingMaterial} for SubmissionId: {SubmissionId} and OrganisationId: {OrganisationId}.",
+                        submission.PackagingMaterial, submission.SubmissionId, organisationId);
                     result.Success = false;
                     continue;
                 }
@@ -57,7 +56,8 @@ namespace EPR.PRN.Backend.Obligation.Services
                 if (strategy == null)
                 {
                     var error = $"Could not find handler for Material Type: {submission.PackagingMaterial} for SubmissionId: {submission.SubmissionId} and OrganisationId: {organisationId}.";
-                    _logger.LogError(error);
+                    _logger.LogError("Could not find handler for Material Type: {PackagingMaterial} for SubmissionId: {SubmissionId} and OrganisationId: {OrganisationId}.",
+                       submission.PackagingMaterial, submission.SubmissionId, organisationId);
                     result.Success = false;
                     continue;
                 }
@@ -73,10 +73,9 @@ namespace EPR.PRN.Backend.Obligation.Services
                 calculations.AddRange(strategy.Calculate(calculationRequest));
             }
 
-            if (!calculations.Any())
+            if (calculations.Count() == 0)
             {
-                var error = $"No calculations for OrganisationId: {organisationId}.";
-                _logger.LogError(error);
+                _logger.LogError("No calculations for OrganisationId: {organisationId}.", organisationId);
                 result.Success = false;
             }
             else
@@ -90,7 +89,7 @@ namespace EPR.PRN.Backend.Obligation.Services
 
         public async Task SaveCalculatedPomDataAsync(List<ObligationCalculation> calculations)
         {
-            if (calculations == null || !calculations.Any())
+            if (calculations == null || calculations.Count() == 0)
             {
                 throw new ArgumentException("The calculations list cannot be null or empty.", nameof(calculations));
             }
