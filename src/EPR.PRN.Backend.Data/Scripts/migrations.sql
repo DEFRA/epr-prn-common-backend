@@ -240,6 +240,33 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20240924172133_UpdateEprnStatusCancelledCorrection'
+)
+BEGIN
+    EXEC(N'UPDATE [PrnStatus] SET [StatusName] = N''CANCELLED''
+    WHERE [Id] = 3;
+    SELECT @@ROWCOUNT');
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20240924172133_UpdateEprnStatusCancelledCorrection'
+)
+BEGIN
+    INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+    VALUES (N'20240924172133_UpdateEprnStatusCancelledCorrection', N'8.0.8');
+END;
+GO
+
+COMMIT;
+GO
+
+BEGIN TRANSACTION;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
     WHERE [MigrationId] = N'20240924171141_AddMaterialWeight'
 )
 BEGIN

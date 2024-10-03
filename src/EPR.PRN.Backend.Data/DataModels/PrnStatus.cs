@@ -17,7 +17,7 @@ namespace EPR.PRN.Backend.Data.DataModels
         [
             new() { Id = 1, StatusName = EprnStatus.ACCEPTED.ToString(), StatusDescription = "Prn Accepted"},
             new() { Id = 2, StatusName = EprnStatus.REJECTED.ToString(), StatusDescription = "Prn Rejected"},
-            new() { Id = 3, StatusName = EprnStatus.CANCELED.ToString(), StatusDescription = "Prn Cancelled"},
+            new() { Id = 3, StatusName = EprnStatus.CANCELLED.ToString(), StatusDescription = "Prn Cancelled"},
             new() { Id = 4, StatusName = EprnStatus.AWAITINGACCEPTANCE.ToString(), StatusDescription = "Prn Awaiting Acceptance"}
         ];
 
@@ -26,7 +26,7 @@ namespace EPR.PRN.Backend.Data.DataModels
     {
         ACCEPTED  = 1,
         REJECTED,
-        CANCELED,
+        CANCELLED,
 		AWAITINGACCEPTANCE
     }
 }
