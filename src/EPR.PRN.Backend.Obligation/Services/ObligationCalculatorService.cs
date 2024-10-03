@@ -98,17 +98,11 @@ namespace EPR.PRN.Backend.Obligation.Services
             await _obligationCalculationRepository.AddObligationCalculation(calculations);
         }
 
-        public async Task<List<ObligationCalculationDto>?> GetObligationCalculationByOrganisationId(int id)
+        public async Task<List<PrnDataDto>?> GetObligationCalculationByOrganisationId(int id)
         {
             var result = await _obligationCalculationRepository.GetObligationCalculationByOrganisationId(id);
 
-            return result?.Select(item => new ObligationCalculationDto
-            {
-                MaterialName = item.MaterialName,
-                MaterialObligationValue = item.MaterialObligationValue,
-                OrganisationId = item.OrganisationId,
-                Year = item.Year
-            }).ToList();
+            return new List<PrnDataDto> { };
         }
     }
 }

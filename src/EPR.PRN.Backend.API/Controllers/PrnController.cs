@@ -65,7 +65,7 @@
         }
 
         [HttpGet("v1/obligationcalculation/{organisationId}")]
-        [ProducesResponseType(typeof(List<ObligationCalculationDto>), 200)]
+        [ProducesResponseType(typeof(List<PrnDataDto>), 200)]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
         public async Task<IActionResult> GetObligationCalculation([FromRoute] int organisationId)

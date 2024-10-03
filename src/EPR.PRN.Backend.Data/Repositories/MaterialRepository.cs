@@ -1,13 +1,14 @@
 ﻿using EPR.PRN.Backend.Data.DataModels;
 using EPR.PRN.Backend.Data.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace EPR.PRN.Backend.Data.Repositories
 {
-    public class MaterialRepository : IMaterialRepository
+    public class MaterialRepository(EprContext context) : IMaterialRepository
     {
-        public IEnumerable<Materials> GetAllMaterials()
+        public async Task<IEnumerable<Materials>> GetAllMaterials()
         {
-            return GetMaterialsFromDatabase();
+            return await context.Materials.ToListAsync();
         }
 
         private IEnumerable<Materials> GetMaterialsFromDatabase()
