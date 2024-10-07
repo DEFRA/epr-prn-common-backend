@@ -4,6 +4,7 @@ namespace EPR.PRN.Backend.Data.DataModels
 {
     public class Materials
     {
+        [Key]
         [MaxLength(20)]
         public required string MaterialName { get; set; }
 

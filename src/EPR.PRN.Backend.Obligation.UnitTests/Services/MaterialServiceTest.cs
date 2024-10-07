@@ -21,7 +21,7 @@ namespace EPR.PRN.Backend.Obligation.UnitTests.Services
         }
 
         [TestMethod]
-        public void GetMaterialByCode_ValidCode_ShouldReturnCorrectMaterialType()
+        public async Task GetMaterialByCode_ValidCode_ShouldReturnCorrectMaterialType()
         {
             // Arrange
             var code = "PL"; // Plastic
@@ -29,56 +29,56 @@ namespace EPR.PRN.Backend.Obligation.UnitTests.Services
             {
                 new Materials { MaterialCode = "PL", MaterialName = MaterialType.Plastic.ToString() }
             };
-            _materialRepository.Setup(repo => repo.GetAllMaterials()).Returns(materials);
+            _materialRepository.Setup(repo => repo.GetAllMaterials()).ReturnsAsync(materials);
 
             // Act
-            var result = _service.GetMaterialByCode(code);
+            var result = await _service.GetMaterialByCode(code);
 
             // Assert
             result.Should().Be(MaterialType.Plastic);
         }
 
         [TestMethod]
-        public void GetMaterialByCode_InvalidCode_ShouldReturnNull()
+        public async Task GetMaterialByCode_InvalidCode_ShouldReturnNull()
         {
             // Arrange
             var code = "INVALID";
 
             // Act
-            var result = _service.GetMaterialByCode(code);
+            var result = await _service.GetMaterialByCode(code);
 
             // Assert
             result.Should().BeNull();
         }
 
         [TestMethod]
-        public void GetMaterialByCode_EmptyCode_ShouldReturnNull()
+        public async Task GetMaterialByCode_EmptyCode_ShouldReturnNull()
         {
             // Arrange
             var code = "";
 
             // Act
-            var result = _service.GetMaterialByCode(code);
+            var result = await _service.GetMaterialByCode(code);
 
             // Assert
             result.Should().BeNull();
         }
 
         [TestMethod]
-        public void GetMaterialByCode_NullCode_ShouldReturnNull()
+        public async Task GetMaterialByCode_NullCode_ShouldReturnNull()
         {
             // Arrange
             string code = null;
 
             // Act
-            var result = _service.GetMaterialByCode(code);
+            var result = await _service.GetMaterialByCode(code);
 
             // Assert
             result.Should().BeNull();
         }
 
         [TestMethod]
-        public void GetMaterialByCode_ValidCodeButInvalidMaterialType_ShouldReturnNull()
+        public async Task GetMaterialByCode_ValidCodeButInvalidMaterialType_ShouldReturnNull()
         {
             // Arrange
             var code = "XX"; // Code that doesn't map to a valid Enum value
@@ -86,10 +86,10 @@ namespace EPR.PRN.Backend.Obligation.UnitTests.Services
             {
                 new Materials { MaterialCode = "XX", MaterialName = "UnknownMaterial" }
             };
-            _materialRepository.Setup(repo => repo.GetAllMaterials()).Returns(materials);
+            _materialRepository.Setup(repo => repo.GetAllMaterials()).ReturnsAsync(materials);
 
             // Act
-            var result = _service.GetMaterialByCode(code);
+            var result = await _service.GetMaterialByCode(code);
 
             // Assert
             result.Should().BeNull();

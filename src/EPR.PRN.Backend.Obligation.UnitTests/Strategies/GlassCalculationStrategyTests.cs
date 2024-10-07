@@ -49,6 +49,7 @@ public class GlassCalculationStrategyTests
     public void Calculate_ShouldReturnCorrectObligationCalculations()
     {
         // Arrange
+        var orgId = Guid.NewGuid();
         var calculationRequest = new SubmissionCalculationRequest
         {
             SubmissionPeriod = "2024-P4",
@@ -75,7 +76,7 @@ public class GlassCalculationStrategyTests
         {
             MaterialType = materialType,
             SubmissionCalculationRequest = calculationRequest,
-            OrganisationId = 1,
+            OrganisationId = orgId,
             RecyclingTargets = recyclingTargets
         };
 

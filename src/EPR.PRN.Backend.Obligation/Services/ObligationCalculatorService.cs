@@ -28,7 +28,7 @@ namespace EPR.PRN.Backend.Obligation.Services
             _logger = logger;
         }
 
-        public async Task<CalculationResult> CalculateAsync(int organisationId, List<SubmissionCalculationRequest> request)
+        public async Task<CalculationResult> CalculateAsync(Guid organisationId, List<SubmissionCalculationRequest> request)
         {
             var recyclingTargets = await _recyclingTargetDataService.GetRecyclingTargetsAsync();
             var result = new CalculationResult();
@@ -43,7 +43,7 @@ namespace EPR.PRN.Backend.Obligation.Services
                     continue;
                 }
 
-                var material = _materialService.GetMaterialByCode(submission.PackagingMaterial);
+                var material = await _materialService.GetMaterialByCode(submission.PackagingMaterial);
                 if (!material.HasValue)
                 {
                     _logger.LogError("Material provided was not valid: {PackagingMaterial} for SubmissionId: {SubmissionId} and OrganisationId: {OrganisationId}.",
@@ -97,11 +97,28 @@ namespace EPR.PRN.Backend.Obligation.Services
             await _obligationCalculationRepository.AddObligationCalculation(calculations);
         }
 
-        public async Task<List<PrnDataDto>?> GetObligationCalculationByOrganisationId(int id)
+        public async Task<List<PrnDataDto>?> GetObligationCalculation(Guid organisationId, int year)
         {
-            var result = await _obligationCalculationRepository.GetObligationCalculationByOrganisationId(id);
+            var result = await _obligationCalculationRepository.GetObligationCalculation(organisationId, year);
 
-            return new List<PrnDataDto> { };
+            var prnDataCollection = new List<PrnDataDto>();
+
+            foreach (var obligationCalculation in result)
+            {
+                var prnData = new PrnDataDto
+                {
+                    MaterialName = obligationCalculation.MaterialName,
+                    ObligationToMeet = obligationCalculation.MaterialObligationValue,
+                    TonnageAccepted = GetTonnageAccepted(obligationCalculation.MaterialName, organisationId)
+                };
+            }
+
+            return prnDataCollection;
+        }
+
+        private int? GetTonnageAccepted(string materialName, Guid organisationId)
+        {
+            throw new NotImplementedException();
         }
     }
 }

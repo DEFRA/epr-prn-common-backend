@@ -240,6 +240,31 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20240924171141_AddMaterialWeight'
+)
+BEGIN
+    ALTER TABLE [ObligationCalculations] ADD [MaterialWeight] float NOT NULL DEFAULT 0.0E0;
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20240924171141_AddMaterialWeight'
+)
+BEGIN
+    INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+    VALUES (N'20240924171141_AddMaterialWeight', N'8.0.8');
+END;
+GO
+
+COMMIT;
+GO
+
+BEGIN TRANSACTION;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
     WHERE [MigrationId] = N'20240924172133_UpdateEprnStatusCancelledCorrection'
 )
 BEGIN
@@ -267,20 +292,58 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20240924171141_AddMaterialWeight'
+    WHERE [MigrationId] = N'20241004090626_ChangeOrganisationIdToGuid'
 )
 BEGIN
-    ALTER TABLE [ObligationCalculations] ADD [MaterialWeight] float NOT NULL DEFAULT 0.0E0;
+    DECLARE @var0 sysname;
+    SELECT @var0 = [d].[name]
+    FROM [sys].[default_constraints] [d]
+    INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+    WHERE ([d].[parent_object_id] = OBJECT_ID(N'[ObligationCalculations]') AND [c].[name] = N'OrganisationId');
+    IF @var0 IS NOT NULL EXEC(N'ALTER TABLE [ObligationCalculations] DROP CONSTRAINT [' + @var0 + '];');
+    ALTER TABLE [ObligationCalculations] ALTER COLUMN [OrganisationId] uniqueidentifier NOT NULL;
 END;
 GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20240924171141_AddMaterialWeight'
+    WHERE [MigrationId] = N'20241004090626_ChangeOrganisationIdToGuid'
+)
+BEGIN
+    CREATE TABLE [Materials] (
+        [MaterialName] nvarchar(20) NOT NULL,
+        [MaterialCode] nvarchar(3) NOT NULL,
+        CONSTRAINT [PK_Materials] PRIMARY KEY ([MaterialName])
+    );
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20241004090626_ChangeOrganisationIdToGuid'
+)
+BEGIN
+    IF EXISTS (SELECT * FROM [sys].[identity_columns] WHERE [name] IN (N'MaterialName', N'MaterialCode') AND [object_id] = OBJECT_ID(N'[Materials]'))
+        SET IDENTITY_INSERT [Materials] ON;
+    EXEC(N'INSERT INTO [Materials] ([MaterialName], [MaterialCode])
+    VALUES (N''Aluminium'', N''AL''),
+    (N''Glass'', N''GL''),
+    (N''Paper'', N''PC''),
+    (N''Plastic'', N''PL''),
+    (N''Steel'', N''ST''),
+    (N''Wood'', N''WD'')');
+    IF EXISTS (SELECT * FROM [sys].[identity_columns] WHERE [name] IN (N'MaterialName', N'MaterialCode') AND [object_id] = OBJECT_ID(N'[Materials]'))
+        SET IDENTITY_INSERT [Materials] OFF;
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20241004090626_ChangeOrganisationIdToGuid'
 )
 BEGIN
     INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
-    VALUES (N'20240924171141_AddMaterialWeight', N'8.0.8');
+    VALUES (N'20241004090626_ChangeOrganisationIdToGuid', N'8.0.8');
 END;
 GO
 

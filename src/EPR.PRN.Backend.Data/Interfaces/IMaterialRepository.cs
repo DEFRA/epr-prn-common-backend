@@ -4,6 +4,6 @@ namespace EPR.PRN.Backend.Data.Interfaces
 {
     public interface IMaterialRepository
     {
-        IEnumerable<Materials> GetAllMaterials();
+        Task<IEnumerable<Materials>> GetAllMaterials();
     }
 }
