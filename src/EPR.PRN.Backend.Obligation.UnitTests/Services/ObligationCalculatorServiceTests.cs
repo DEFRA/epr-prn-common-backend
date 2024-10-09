@@ -369,7 +369,7 @@ public class ObligationCalculatorServiceTests
         }
     }
 
-    private int? GetTonnage(string materialName, List<EprnResultsDto> acceptedTonnageForMaterials)
+    private static int? GetTonnage(string materialName, List<EprnResultsDto> acceptedTonnageForMaterials)
     {
         return acceptedTonnageForMaterials
             .Where(x => x.MaterialName == materialName)
@@ -377,7 +377,7 @@ public class ObligationCalculatorServiceTests
             .FirstOrDefault();
     }
 
-    private List<Materials> GetMaterials()
+    private static List<Materials> GetMaterials()
     {
         return new List<Materials>
             {
@@ -390,7 +390,7 @@ public class ObligationCalculatorServiceTests
             };
     }
 
-    private List<ObligationCalculation> GetObligationCalculation(Guid organisationId, int year)
+    private static List<ObligationCalculation> GetObligationCalculation(Guid organisationId, int year)
     {
         return new List<ObligationCalculation>()
         {
@@ -427,7 +427,7 @@ public class ObligationCalculatorServiceTests
         };
     }
 
-    private List<EprnResultsDto> GetEprnAcceptedResultDto()
+    private static List<EprnResultsDto> GetEprnAcceptedResultDto()
     {
         return new List<EprnResultsDto>()
         {
@@ -452,7 +452,7 @@ public class ObligationCalculatorServiceTests
         };
     }
 
-    private List<EprnResultsDto> GetEprnAwaitingAcceptanceResultDto()
+    private static List<EprnResultsDto> GetEprnAwaitingAcceptanceResultDto()
     {
         return new List<EprnResultsDto>()
         {
@@ -477,7 +477,7 @@ public class ObligationCalculatorServiceTests
         };
     }
 
-    private string GetStatus(int? materialObligationValue, int? tonnageAccepted)
+    private static string GetStatus(int? materialObligationValue, int? tonnageAccepted)
     {
         if (!materialObligationValue.HasValue || !tonnageAccepted.HasValue)
         {
@@ -491,7 +491,7 @@ public class ObligationCalculatorServiceTests
         return ObligationConstants.Statuses.NoMet;
     }
 
-    private int? GetTonnageOutstanding(int? materialObligationValue, int? tonnageAccepted)
+    private static int? GetTonnageOutstanding(int? materialObligationValue, int? tonnageAccepted)
     {
         if (!materialObligationValue.HasValue || !tonnageAccepted.HasValue)
         {

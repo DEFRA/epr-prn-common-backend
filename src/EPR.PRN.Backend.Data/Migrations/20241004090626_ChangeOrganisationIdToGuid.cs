@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -10,6 +9,7 @@ namespace EPR.PRN.Backend.Data.Migrations
     /// <inheritdoc />
     public partial class ChangeOrganisationIdToGuid : Migration
     {
+        private static readonly string[] MaterialColumns = { "MaterialName", "MaterialCode" };
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -35,7 +35,7 @@ namespace EPR.PRN.Backend.Data.Migrations
 
             migrationBuilder.InsertData(
                 table: "Materials",
-                columns: new[] { "MaterialName", "MaterialCode" },
+                columns: MaterialColumns,
                 values: new object[,]
                 {
                     { "Aluminium", "AL" },

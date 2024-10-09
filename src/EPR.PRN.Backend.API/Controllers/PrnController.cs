@@ -79,7 +79,7 @@
 
             var obligationCalculation = await _obligationCalculatorService.GetObligationCalculation(organisationId, year);
 
-            if (obligationCalculation == null || obligationCalculation.Count() == 0)
+            if (obligationCalculation == null || obligationCalculation.Count == 0)
             {
                 return NotFound($"Obligation calculation not found for Organisation Id : {organisationId}");
             }
