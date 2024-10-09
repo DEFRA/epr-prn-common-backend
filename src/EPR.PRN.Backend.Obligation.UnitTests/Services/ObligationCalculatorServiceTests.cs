@@ -331,7 +331,7 @@ public class ObligationCalculatorServiceTests
         _mockMaterialRepository.Setup(repo => repo.GetAllMaterials()).ReturnsAsync(materials);
     }
 
-    private void AssertResults(
+    private static void AssertResults(
         List<Materials> materials,
         List<ObligationCalculation> obligationCalculation,
         List<EprnResultsDto> eprnAcceptedResult,
