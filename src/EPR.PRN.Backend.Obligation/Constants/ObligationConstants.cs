@@ -4,9 +4,9 @@
     {
         public static class Statuses
         {
-            public const string NoDataYet = "NO DATA YET";
+            public const string NoDataYet = "NODATAYET";
             public const string Met = "MET";
-            public const string NoMet = "NO MET";
+            public const string NoMet = "NOMET";
         }
     }
 }
