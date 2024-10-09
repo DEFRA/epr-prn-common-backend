@@ -114,10 +114,11 @@ namespace EPR.PRN.Backend.Obligation.Services
                 _logger.LogError("No Materials found in PRN BAckend Database");
                 return prnDataCollection;
             }
+            var materialsWithRemelt = AddGlassRemelt(materials.ToList());
             var obligationCalculations = await _obligationCalculationRepository.GetObligationCalculation(organisationId, year);
             var acceptedTonnageForPrns = await _prnRepository.GetSumOfTonnageForMaterials(organisationId, EprnStatus.ACCEPTED.ToString());
             var awaitingAcceptanceForPrns = await _prnRepository.GetSumOfTonnageForMaterials(organisationId, EprnStatus.AWAITINGACCEPTANCE.ToString());
-            var materialNames = materials.Select(material => material.MaterialName);
+            var materialNames = materialsWithRemelt.Select(material => material.MaterialName);
             foreach (var materialName in materialNames)
             {
                 var obligationCalculation = obligationCalculations.Find(x => x.MaterialName == materialName);
@@ -136,6 +137,12 @@ namespace EPR.PRN.Backend.Obligation.Services
                 });
             }
             return prnDataCollection;
+        }
+
+        private List<Material> AddGlassRemelt(List<Material> materials)
+        {
+            materials.Add(new Material { MaterialCode = "GR", MaterialName = "GlassRemelt" });
+            return materials;
         }
 
         private static string GetStatus(int? materialObligationValue, int? tonnageAccepted)

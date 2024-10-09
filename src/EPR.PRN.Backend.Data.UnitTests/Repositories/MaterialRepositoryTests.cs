@@ -12,15 +12,15 @@ namespace EPR.PRN.Backend.Data.UnitTests.Repositories
     {
         private MaterialRepository _materialRepository;
         private Mock<EprContext> _mockEprContext;
-        private readonly List<Materials> _materials =
-            new List<Materials>
+        private readonly List<Material> _materials =
+            new List<Material>
             {
-                new Materials { MaterialCode = "PL", MaterialName = "Plastic" },
-                new Materials { MaterialCode = "WD", MaterialName = "Wood" },
-                new Materials { MaterialCode = "AL", MaterialName = "Aluminium" },
-                new Materials { MaterialCode = "ST", MaterialName = "Steel" },
-                new Materials { MaterialCode = "PC", MaterialName = "Paper" },
-                new Materials { MaterialCode = "GL", MaterialName = "Glass" }
+                new Material { MaterialCode = "PL", MaterialName = "Plastic" },
+                new Material { MaterialCode = "WD", MaterialName = "Wood" },
+                new Material { MaterialCode = "AL", MaterialName = "Aluminium" },
+                new Material { MaterialCode = "ST", MaterialName = "Steel" },
+                new Material { MaterialCode = "PC", MaterialName = "Paper" },
+                new Material { MaterialCode = "GL", MaterialName = "Glass" }
             };
 
         [TestInitialize]

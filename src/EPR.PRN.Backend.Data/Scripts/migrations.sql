@@ -310,10 +310,10 @@ IF NOT EXISTS (
     WHERE [MigrationId] = N'20241004090626_ChangeOrganisationIdToGuid'
 )
 BEGIN
-    CREATE TABLE [Materials] (
+    CREATE TABLE [Material] (
         [MaterialName] nvarchar(20) NOT NULL,
         [MaterialCode] nvarchar(3) NOT NULL,
-        CONSTRAINT [PK_Materials] PRIMARY KEY ([MaterialName])
+        CONSTRAINT [PK_Material] PRIMARY KEY ([MaterialName])
     );
 END;
 GO
@@ -323,17 +323,17 @@ IF NOT EXISTS (
     WHERE [MigrationId] = N'20241004090626_ChangeOrganisationIdToGuid'
 )
 BEGIN
-    IF EXISTS (SELECT * FROM [sys].[identity_columns] WHERE [name] IN (N'MaterialName', N'MaterialCode') AND [object_id] = OBJECT_ID(N'[Materials]'))
-        SET IDENTITY_INSERT [Materials] ON;
-    EXEC(N'INSERT INTO [Materials] ([MaterialName], [MaterialCode])
+    IF EXISTS (SELECT * FROM [sys].[identity_columns] WHERE [name] IN (N'MaterialName', N'MaterialCode') AND [object_id] = OBJECT_ID(N'[Material]'))
+        SET IDENTITY_INSERT [Material] ON;
+    EXEC(N'INSERT INTO [Material] ([MaterialName], [MaterialCode])
     VALUES (N''Aluminium'', N''AL''),
     (N''Glass'', N''GL''),
     (N''Paper'', N''PC''),
     (N''Plastic'', N''PL''),
     (N''Steel'', N''ST''),
     (N''Wood'', N''WD'')');
-    IF EXISTS (SELECT * FROM [sys].[identity_columns] WHERE [name] IN (N'MaterialName', N'MaterialCode') AND [object_id] = OBJECT_ID(N'[Materials]'))
-        SET IDENTITY_INSERT [Materials] OFF;
+    IF EXISTS (SELECT * FROM [sys].[identity_columns] WHERE [name] IN (N'MaterialName', N'MaterialCode') AND [object_id] = OBJECT_ID(N'[Material]'))
+        SET IDENTITY_INSERT [Material] OFF;
 END;
 GO
 

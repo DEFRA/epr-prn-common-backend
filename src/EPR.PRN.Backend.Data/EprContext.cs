@@ -51,14 +51,14 @@ namespace EPR.PRN.Backend.Data
                             new RecyclingTarget { Year = 2030, PaperTarget = 0.85, GlassTarget = 0.85, AluminiumTarget = 0.67, SteelTarget = 0.85, PlasticTarget = 0.65, WoodTarget = 0.50, GlassRemeltTarget = 0.80 }
                         );
 
-            modelBuilder.Entity<Materials>()
+            modelBuilder.Entity<Material>()
                 .HasData(
-                            new Materials { MaterialCode = "PL", MaterialName = "Plastic" },
-                            new Materials { MaterialCode = "WD", MaterialName = "Wood" },
-                            new Materials { MaterialCode = "AL", MaterialName = "Aluminium" },
-                            new Materials { MaterialCode = "ST", MaterialName = "Steel" },
-                            new Materials { MaterialCode = "PC", MaterialName = "Paper" },
-                            new Materials { MaterialCode = "GL", MaterialName = "Glass" }
+                            new Material { MaterialCode = "PL", MaterialName = "Plastic" },
+                            new Material { MaterialCode = "WD", MaterialName = "Wood" },
+                            new Material { MaterialCode = "AL", MaterialName = "Aluminium" },
+                            new Material { MaterialCode = "ST", MaterialName = "Steel" },
+                            new Material { MaterialCode = "PC", MaterialName = "Paper" },
+                            new Material { MaterialCode = "GL", MaterialName = "Glass" }
                 );
 
             base.OnModelCreating(modelBuilder);
@@ -74,6 +74,6 @@ namespace EPR.PRN.Backend.Data
 
         public virtual DbSet<ObligationCalculation> ObligationCalculations { get; set; }
 
-        public virtual DbSet<Materials> Materials { get; set; }
+        public virtual DbSet<Material> Materials { get; set; }
     }
 }

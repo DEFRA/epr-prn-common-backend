@@ -2,7 +2,7 @@
 
 namespace EPR.PRN.Backend.Data.DataModels
 {
-    public class Materials
+    public class Material
     {
         [Key]
         [MaxLength(20)]

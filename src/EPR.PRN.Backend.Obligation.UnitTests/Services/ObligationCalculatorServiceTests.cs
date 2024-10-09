@@ -59,6 +59,7 @@ public class ObligationCalculatorServiceTests
 
         var result = await _service.GetObligationCalculation(organisationId, year);
 
+        AddGlassRemelt(materials);
         AssertResults(materials, obligationCalculation, eprnAcceptedResult, eprnAwaitedAcceptanceResult, result);
     }
 
@@ -75,6 +76,7 @@ public class ObligationCalculatorServiceTests
 
         var result = await _service.GetObligationCalculation(organisationId, year);
 
+        AddGlassRemelt(materials);
         AssertResults(materials, obligationCalculation, eprnAcceptedResult, eprnAwaitedAcceptanceResult, result);
     }
 
@@ -91,6 +93,7 @@ public class ObligationCalculatorServiceTests
 
         var result = await _service.GetObligationCalculation(organisationId, year);
 
+        AddGlassRemelt(materials);
         AssertResults(materials, obligationCalculation, eprnAcceptedResult, eprnAwaitedAcceptanceResult, result);
     }
 
@@ -107,6 +110,7 @@ public class ObligationCalculatorServiceTests
 
         var result = await _service.GetObligationCalculation(organisationId, year);
 
+        AddGlassRemelt(materials);
         AssertResults(materials, obligationCalculation, eprnAcceptedResult, eprnAwaitedAcceptanceResult, result);
     }
 
@@ -123,6 +127,7 @@ public class ObligationCalculatorServiceTests
 
         var result = await _service.GetObligationCalculation(organisationId, year);
 
+        AddGlassRemelt(materials);
         AssertResults(materials, obligationCalculation, eprnAcceptedResult, eprnAwaitedAcceptanceResult, result);
     }
 
@@ -320,7 +325,7 @@ public class ObligationCalculatorServiceTests
         List<ObligationCalculation> obligationCalculation,
         List<EprnResultsDto> eprnAcceptedResult,
         List<EprnResultsDto> eprnAwaitedAcceptanceResult,
-        List<Materials> materials)
+        List<Material> materials)
     {
         _mockObligationCalculationRepository.Setup(repo => repo.GetObligationCalculation(organisationId, year))
             .ReturnsAsync(obligationCalculation);
@@ -332,7 +337,7 @@ public class ObligationCalculatorServiceTests
     }
 
     private static void AssertResults(
-        List<Materials> materials,
+        List<Material> materials,
         List<ObligationCalculation> obligationCalculation,
         List<EprnResultsDto> eprnAcceptedResult,
         List<EprnResultsDto> eprnAwaitedAcceptanceResult,
@@ -369,6 +374,11 @@ public class ObligationCalculatorServiceTests
         }
     }
 
+    private void AddGlassRemelt(List<Material> materials)
+    {
+        materials.Add(new Material { MaterialCode = "GR", MaterialName = "GlassRemelt" });
+    }
+
     private static int? GetTonnage(string materialName, List<EprnResultsDto> acceptedTonnageForMaterials)
     {
         return acceptedTonnageForMaterials
@@ -377,16 +387,16 @@ public class ObligationCalculatorServiceTests
             .FirstOrDefault();
     }
 
-    private static List<Materials> GetMaterials()
+    private static List<Material> GetMaterials()
     {
-        return new List<Materials>
+        return new List<Material>
             {
-                new Materials { MaterialCode = "PL", MaterialName = "Plastic" },
-                new Materials { MaterialCode = "WD", MaterialName = "Wood" },
-                new Materials { MaterialCode = "AL", MaterialName = "Aluminium" },
-                new Materials { MaterialCode = "ST", MaterialName = "Steel" },
-                new Materials { MaterialCode = "PC", MaterialName = "Paper" },
-                new Materials { MaterialCode = "GL", MaterialName = "Glass" }
+                new Material { MaterialCode = "PL", MaterialName = "Plastic" },
+                new Material { MaterialCode = "WD", MaterialName = "Wood" },
+                new Material { MaterialCode = "AL", MaterialName = "Aluminium" },
+                new Material { MaterialCode = "ST", MaterialName = "Steel" },
+                new Material { MaterialCode = "PC", MaterialName = "Paper" },
+                new Material { MaterialCode = "GL", MaterialName = "Glass" },
             };
     }
 

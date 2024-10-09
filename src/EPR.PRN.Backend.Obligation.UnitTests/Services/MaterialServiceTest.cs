@@ -25,9 +25,9 @@ namespace EPR.PRN.Backend.Obligation.UnitTests.Services
         {
             // Arrange
             var code = "PL"; // Plastic
-            var materials = new List<Materials>
+            var materials = new List<Material>
             {
-                new Materials { MaterialCode = "PL", MaterialName = MaterialType.Plastic.ToString() }
+                new Material { MaterialCode = "PL", MaterialName = MaterialType.Plastic.ToString() }
             };
             _materialRepository.Setup(repo => repo.GetAllMaterials()).ReturnsAsync(materials);
 
@@ -82,9 +82,9 @@ namespace EPR.PRN.Backend.Obligation.UnitTests.Services
         {
             // Arrange
             var code = "XX"; // Code that doesn't map to a valid Enum value
-            var materials = new List<Materials>
+            var materials = new List<Material>
             {
-                new Materials { MaterialCode = "XX", MaterialName = "UnknownMaterial" }
+                new Material { MaterialCode = "XX", MaterialName = "UnknownMaterial" }
             };
             _materialRepository.Setup(repo => repo.GetAllMaterials()).ReturnsAsync(materials);
 
