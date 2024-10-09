@@ -4,6 +4,7 @@ using EPR.PRN.Backend.API.Controllers;
 using EPR.PRN.Backend.API.Helpers;
 using EPR.PRN.Backend.API.Services.Interfaces;
 using EPR.PRN.Backend.Data.DataModels;
+using EPR.PRN.Backend.Obligation.DTO;
 using EPR.PRN.Backend.Obligation.Interfaces;
 using EPR.PRN.Backend.Obligation.Models;
 using FluentAssertions;
@@ -254,60 +255,6 @@ public class PrnControllerTests
         objectResult.Value.Should().BeEquivalentTo(new { message = "An error occurred during calculation.", details = "Unexpected error" });
     }
 
-    //[TestMethod]
-    //public async Task GetObligationCalculation_Should_ReturnBadRequest_WhenOrganisationIdIsInvalid()
-    //{
-    //    // Arrange
-    //    int invalidOrganisationId = -1;
-    //    int year = 2024;
-
-    //    // Act
-    //    var result = await _systemUnderTest.GetObligationCalculation(invalidOrganisationId, year);
-
-    //    // Assert
-    //    var badRequestResult = result.Should().BeOfType<BadRequestObjectResult>().Subject;
-    //    badRequestResult.StatusCode.Should().Be(400);
-    //    badRequestResult.Value.Should().Be($"Invalid Organisation Id : {invalidOrganisationId}. Organisation Id must be a positive integer.");
-    //}
-
-    //[TestMethod]
-    //public async Task GetObligationCalculation_Should_ReturnNotFound_WhenObligationCalculationDoesNotExist()
-    //{
-    //    // Arrange
-    //    int organisationId = 1;
-    //    _mockObligationCalculatorService.Setup(x => x.GetObligationCalculationByOrganisationId(organisationId))
-    //                .ReturnsAsync((List<ObligationCalculationDto>)null); // Simulating null response
-
-    //    // Act
-    //    var result = await _systemUnderTest.GetObligationCalculation(organisationId);
-
-    //    // Assert
-    //    var notFoundResult = result.Should().BeOfType<NotFoundObjectResult>().Subject;
-    //    notFoundResult.StatusCode.Should().Be(404);
-    //    notFoundResult.Value.Should().Be($"Obligation calculation not found for Organisation Id : {organisationId}");
-    //}
-
-    //[TestMethod]
-    //public async Task GetObligationCalculation_Should_ReturnOk_WhenObligationCalculationExists()
-    //{
-    //    // Arrange
-    //    int organisationId = 1;
-    //    var obligationCalculationDto = new List<ObligationCalculationDto>
-    //        {
-    //            new ObligationCalculationDto { /* Initialize properties if needed */ }
-    //        };
-    //    _mockObligationCalculatorService.Setup(x => x.GetObligationCalculationByOrganisationId(organisationId))
-    //                .ReturnsAsync(obligationCalculationDto);
-
-    //    // Act
-    //    var result = await _systemUnderTest.GetObligationCalculation(organisationId);
-
-    //    // Assert
-    //    var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
-    //    okResult.StatusCode.Should().Be(200);
-    //    okResult.Value.Should().BeEquivalentTo(obligationCalculationDto);
-    //}
-
     [TestMethod]
     public async Task GetSearchPrns_ReturnsUnauthorizedWhenOrgIdNotPresent()
     {
@@ -328,5 +275,102 @@ public class PrnControllerTests
 
         var result = await _systemUnderTest.GetSearchPrns(orgId, request);
         result.Should().BeOfType<OkObjectResult>().Which.Value.Should().Be(response);
+    }
+
+    [TestMethod]
+    [DataRow(2023)] // Invalid year
+    [DataRow(2030)] // Invalid year
+    public async Task GetObligationCalculation_InvalidYear_ReturnsBadRequest(int year)
+    {
+        // Arrange
+        var organisationId = Guid.NewGuid();
+
+        // Act
+        var result = await _systemUnderTest.GetObligationCalculation(organisationId, year);
+
+        // Assert
+        var badRequestResult = result.Result as BadRequestObjectResult;
+        badRequestResult.Should().NotBeNull();
+        badRequestResult.StatusCode.Should().Be(400);
+        badRequestResult.Value.Should().Be($"Invalid year provided: {year}.");
+    }
+
+    [TestMethod]
+    public async Task GetObligationCalculation_ValidYear_NoDataFound_ReturnsNotFound()
+    {
+        // Arrange
+        var organisationId = Guid.NewGuid();
+        var year = 2025;
+
+        // Mock the service to return null (no obligation data)
+        _mockObligationCalculatorService
+            .Setup(service => service.GetObligationCalculation(organisationId, year))
+            .ReturnsAsync((List<PrnDataDto>)null);
+
+        // Act
+        var result = await _systemUnderTest.GetObligationCalculation(organisationId, year);
+
+        // Assert
+        var notFoundResult = result.Result as NotFoundObjectResult;
+        notFoundResult.Should().NotBeNull();
+        notFoundResult.StatusCode.Should().Be(404);
+        notFoundResult.Value.Should().Be($"Obligation calculation not found for Organisation Id : {organisationId}");
+    }
+
+    [TestMethod]
+    public async Task GetObligationCalculation_ValidYear_EmptyData_ReturnsNotFound()
+    {
+        // Arrange
+        var organisationId = Guid.NewGuid();
+        var year = 2025;
+
+        // Mock the service to return an empty list (no obligation data)
+        _mockObligationCalculatorService
+            .Setup(service => service.GetObligationCalculation(organisationId, year))
+            .ReturnsAsync(new List<PrnDataDto>());
+
+        // Act
+        var result = await _systemUnderTest.GetObligationCalculation(organisationId, year);
+
+        // Assert
+        var notFoundResult = result.Result as NotFoundObjectResult;
+        notFoundResult.Should().NotBeNull();
+        notFoundResult.StatusCode.Should().Be(404);
+        notFoundResult.Value.Should().Be($"Obligation calculation not found for Organisation Id : {organisationId}");
+    }
+
+    [TestMethod]
+    public async Task GetObligationCalculation_ValidYear_DataFound_ReturnsOk()
+    {
+        // Arrange
+        var organisationId = Guid.NewGuid();
+        var year = 2025;
+        var fixture = new Fixture();
+        var prns = fixture.CreateMany<PrnDataDto>(10).ToList();
+        for (int i = 0; i < 2; i++)
+        {
+            prns[i].MaterialName = "Plastic";
+            prns[i].OrganisationId = organisationId;
+
+        }
+        for (int i = 2; i < 5; i++)
+        {
+            prns[i].MaterialName = "Wood";
+            prns[i].OrganisationId = organisationId;
+        }
+
+        // Mock the service to return obligation data
+        _mockObligationCalculatorService
+            .Setup(service => service.GetObligationCalculation(organisationId, year))
+            .ReturnsAsync(prns);
+
+        // Act
+        var result = await _systemUnderTest.GetObligationCalculation(organisationId, year);
+
+        // Assert
+        var okResult = result.Result as OkObjectResult;
+        okResult.Should().NotBeNull();
+        okResult.StatusCode.Should().Be(200);
+        okResult.Value.Should().BeEquivalentTo(prns);
     }
 }

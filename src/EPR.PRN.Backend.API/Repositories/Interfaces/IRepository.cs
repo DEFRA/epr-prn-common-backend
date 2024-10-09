@@ -4,7 +4,6 @@ namespace EPR.PRN.Backend.API.Repositories.Interfaces
     using EPR.PRN.Backend.API.Common.DTO;
     using EPR.PRN.Backend.Data.DataModels;
     using Microsoft.EntityFrameworkCore.Storage;
-    using DTO = EPR.PRN.Backend.API.Common.DTO;
 
     public interface IRepository
     {
@@ -13,6 +12,6 @@ namespace EPR.PRN.Backend.API.Repositories.Interfaces
         public IDbContextTransaction BeginTransaction();
         public Task SaveTransaction(IDbContextTransaction transaction);
         void AddPrnStatusHistory(PrnStatusHistory prnStatusHistory);
-		Task<PaginatedResponseDto<PrnDto>> GetSearchPrnsForOrganisation(Guid orgId, PaginatedRequestDto request);
+        Task<PaginatedResponseDto<PrnDto>> GetSearchPrnsForOrganisation(Guid orgId, PaginatedRequestDto request);
     }
 }

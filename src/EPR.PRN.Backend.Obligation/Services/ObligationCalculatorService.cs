@@ -1,5 +1,7 @@
 ﻿using EPR.PRN.Backend.Data.DataModels;
+using EPR.PRN.Backend.Data.DTO;
 using EPR.PRN.Backend.Data.Interfaces;
+using EPR.PRN.Backend.Obligation.Constants;
 using EPR.PRN.Backend.Obligation.DTO;
 using EPR.PRN.Backend.Obligation.Interfaces;
 using EPR.PRN.Backend.Obligation.Models;
@@ -14,18 +16,24 @@ namespace EPR.PRN.Backend.Obligation.Services
         private readonly IMaterialService _materialService;
         private readonly IMaterialCalculationStrategyResolver _strategyResolver;
         private readonly ILogger<ObligationCalculatorService> _logger;
+        private readonly IPrnRepository _prnRepository;
+        private readonly IMaterialRepository _materialRepository;
 
         public ObligationCalculatorService(IObligationCalculationRepository obligationCalculationRepository,
             IRecyclingTargetDataService recyclingTargetDataService,
             IMaterialService materialService,
             IMaterialCalculationStrategyResolver strategyResolver,
-            ILogger<ObligationCalculatorService> logger)
+            ILogger<ObligationCalculatorService> logger,
+            IPrnRepository prnRepository,
+            IMaterialRepository materialRepository)
         {
             _obligationCalculationRepository = obligationCalculationRepository;
             _recyclingTargetDataService = recyclingTargetDataService;
             _materialService = materialService;
             _strategyResolver = strategyResolver;
             _logger = logger;
+            _prnRepository = prnRepository;
+            _materialRepository = materialRepository;
         }
 
         public async Task<CalculationResult> CalculateAsync(Guid organisationId, List<SubmissionCalculationRequest> request)
@@ -99,26 +107,67 @@ namespace EPR.PRN.Backend.Obligation.Services
 
         public async Task<List<PrnDataDto>?> GetObligationCalculation(Guid organisationId, int year)
         {
-            var result = await _obligationCalculationRepository.GetObligationCalculation(organisationId, year);
-
             var prnDataCollection = new List<PrnDataDto>();
-
-            foreach (var obligationCalculation in result)
+            var materials = await _materialRepository.GetAllMaterials();
+            if (materials.Count() == 0)
             {
-                var prnData = new PrnDataDto
-                {
-                    MaterialName = obligationCalculation.MaterialName,
-                    ObligationToMeet = obligationCalculation.MaterialObligationValue,
-                    TonnageAccepted = GetTonnageAccepted(obligationCalculation.MaterialName, organisationId)
-                };
+                _logger.LogError("No Materials found in PRN BAckend Database");
+                return prnDataCollection;
             }
+            var obligationCalculations = await _obligationCalculationRepository.GetObligationCalculation(organisationId, year);
+            var acceptedTonnageForPrns = await _prnRepository.GetSumOfTonnageForMaterials(organisationId, EprnStatus.ACCEPTED.ToString());
+            var awaitingAcceptanceForPrns = await _prnRepository.GetSumOfTonnageForMaterials(organisationId, EprnStatus.AWAITINGACCEPTANCE.ToString());
 
+            foreach (var material in materials)
+            {
+                var obligationCalculation = obligationCalculations.FirstOrDefault(x => x.MaterialName == material.MaterialName);
+                var tonnageAccepted = GetTonnage(material.MaterialName, acceptedTonnageForPrns);
+                var tonnageAwaitingAcceptance = GetTonnage(material.MaterialName, awaitingAcceptanceForPrns);
+                var tonnageOutstanding = GetTonnageOutstanding(obligationCalculation?.MaterialObligationValue, tonnageAccepted);
+                prnDataCollection.Add(new PrnDataDto
+                {
+                    OrganisationId = organisationId,
+                    MaterialName = material.MaterialName,
+                    ObligationToMeet = obligationCalculation?.MaterialObligationValue,
+                    TonnageAccepted = tonnageAccepted,
+                    TonnageAwaitingAcceptance = tonnageAwaitingAcceptance,
+                    TonnageOutstanding = tonnageOutstanding,
+                    Status = GetStatus(obligationCalculation?.MaterialObligationValue, tonnageAccepted)
+                });
+            }
             return prnDataCollection;
         }
 
-        private int? GetTonnageAccepted(string materialName, Guid organisationId)
+        private string GetStatus(int? materialObligationValue, int? tonnageAccepted)
         {
-            throw new NotImplementedException();
+            if (!materialObligationValue.HasValue || !tonnageAccepted.HasValue)
+            {
+                return ObligationConstants.Statuses.NoDataYet;
+            }
+
+            if (tonnageAccepted >= materialObligationValue)
+            {
+                return ObligationConstants.Statuses.Met;
+            }
+            return ObligationConstants.Statuses.NoMet;
+        }
+
+        private int? GetTonnageOutstanding(int? materialObligationValue, int? tonnageAccepted)
+        {
+            if (!materialObligationValue.HasValue || !tonnageAccepted.HasValue)
+            {
+                return null;
+            }
+
+            return materialObligationValue - tonnageAccepted;
+        }
+
+        private int? GetTonnage(string materialName, List<EprnResultsDto> acceptedTonnageForMaterials)
+        {
+            return acceptedTonnageForMaterials
+                .Where(x => x.MaterialName == materialName)
+                .Select(x => x.TotalTonnage)
+                .FirstOrDefault();
         }
     }
 }

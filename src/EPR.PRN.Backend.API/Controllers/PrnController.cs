@@ -65,11 +65,12 @@
             return Ok(prn);
         }
 
-        [HttpGet("v1/obligationcalculation/{organisationId}/year/{year}")]
+        [HttpGet("v1/obligationcalculation/{year}")]
         [ProducesResponseType(typeof(List<PrnDataDto>), 200)]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
-        public async Task<ActionResult<List<PrnDataDto>>> GetObligationCalculation([FromRoute] Guid organisationId, [FromRoute] int year)
+        public async Task<ActionResult<List<PrnDataDto>>> GetObligationCalculation([FromHeader(Name = "X-EPR-ORGANISATION")] Guid organisationId,
+            [FromRoute] int year)
         {
             if (year < 2024 || year > 2029) //will be configurable when setup in solution
             {
@@ -78,7 +79,7 @@
 
             var obligationCalculation = await _obligationCalculatorService.GetObligationCalculation(organisationId, year);
 
-            if (obligationCalculation == null)
+            if (obligationCalculation == null || obligationCalculation.Count() == 0)
             {
                 return NotFound($"Obligation calculation not found for Organisation Id : {organisationId}");
             }
