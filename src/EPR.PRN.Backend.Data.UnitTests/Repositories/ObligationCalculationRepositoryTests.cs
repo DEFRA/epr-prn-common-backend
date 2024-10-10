@@ -11,20 +11,21 @@ namespace EPR.PRN.Backend.Data.UnitTests.Repositories;
 public class ObligationCalculationRepositoryTests
 {
     private Mock<EprContext> _mockEprContext;
-    private readonly int organisationId = 1;
-    private readonly List<ObligationCalculation> obligationCalculation =
-    [
-        new ObligationCalculation { OrganisationId = 1, MaterialName = "Paper", MaterialObligationValue = 75 },
-        new ObligationCalculation { OrganisationId = 1, MaterialName = "Glass", MaterialObligationValue = 75 },
-        new ObligationCalculation { OrganisationId = 1, MaterialName = "Aluminium", MaterialObligationValue = 75 },
-        new ObligationCalculation { OrganisationId = 1, MaterialName = "Steel", MaterialObligationValue = 75 },
-        new ObligationCalculation { OrganisationId = 1, MaterialName = "Plastic", MaterialObligationValue = 75 }
-    ];
+    private Guid organisationId = Guid.NewGuid();
+    private List<ObligationCalculation> obligationCalculation;
 
     [TestInitialize]
     public void TestInitialize()
     {
         var dbContextOptions = new DbContextOptionsBuilder<EprContext>().Options;
+        obligationCalculation =
+        [
+            new ObligationCalculation { OrganisationId = organisationId, MaterialName = "Paper", MaterialObligationValue = 75, Year = 2024 },
+            new ObligationCalculation { OrganisationId = organisationId, MaterialName = "Glass", MaterialObligationValue = 75, Year = 2024 },
+            new ObligationCalculation { OrganisationId = organisationId, MaterialName = "Aluminium", MaterialObligationValue = 75, Year = 2024 },
+            new ObligationCalculation { OrganisationId = organisationId, MaterialName = "Steel", MaterialObligationValue = 75, Year = 2024 },
+            new ObligationCalculation { OrganisationId = organisationId, MaterialName = "Plastic", MaterialObligationValue = 75, Year = 2024 }
+        ];
         _mockEprContext = new Mock<EprContext>(dbContextOptions);
         _mockEprContext.Setup(context => context.ObligationCalculations).ReturnsDbSet(obligationCalculation);
         _mockEprContext.Setup(x => x.SaveChangesAsync(It.IsAny<CancellationToken>())).ReturnsAsync(1);
@@ -34,11 +35,12 @@ public class ObligationCalculationRepositoryTests
     public async Task GetObligationCalculationByOrganisationId_WhenCalledWithInvalidId_ReturnsEmpty()
     {
         // Arrange
+        var invalidOrganisationId = Guid.NewGuid();
         var obligationCalculationRepository = new ObligationCalculationRepository(_mockEprContext.Object);
-        int invalidOrganisationId = 2;
+        var year = 2024;
 
         // Act
-        var result = await obligationCalculationRepository.GetObligationCalculationByOrganisationId(invalidOrganisationId);
+        var result = await obligationCalculationRepository.GetObligationCalculation(invalidOrganisationId, year);
 
         // Assert
         result.Should().BeEmpty();
@@ -48,10 +50,11 @@ public class ObligationCalculationRepositoryTests
     public async Task GetObligationCalculationByOrganisationId_ReturnsObligationCalculation()
     {
         // Arrange
+        var year = 2024;
         var obligationCalculationRepository = new ObligationCalculationRepository(_mockEprContext.Object);
 
         // Act
-        var result = await obligationCalculationRepository.GetObligationCalculationByOrganisationId(organisationId);
+        var result = await obligationCalculationRepository.GetObligationCalculation(organisationId, year);
 
         // Assert
         result.Should().NotBeNull();
@@ -67,12 +70,30 @@ public class ObligationCalculationRepositoryTests
     public async Task AddObligationCalculation_WhenCalledWithObligationCalculations_ShouldSaveObligationCalculation()
     {
         // Arrange
+        var organisationId = Guid.NewGuid();
+        var calculatedOn = DateTime.UtcNow;
         var obligationCalculationRepository = new ObligationCalculationRepository(_mockEprContext.Object);
 
         List<ObligationCalculation> obligationCalculationAdd =
         [
-            new ObligationCalculation { OrganisationId = 1, MaterialName = "Wood", MaterialObligationValue = 75 },
-            new ObligationCalculation { OrganisationId = 1, MaterialName = "GlassRemelt", MaterialObligationValue = 75 }
+            new ObligationCalculation
+            {
+                OrganisationId = organisationId,
+                MaterialName = "Wood",
+                MaterialObligationValue = 75,
+                Year = 2024,
+                MaterialWeight = 2000,
+                CalculatedOn = calculatedOn
+            },
+            new ObligationCalculation
+            {
+                OrganisationId = organisationId,
+                MaterialName = "GlassRemelt",
+                MaterialObligationValue = 75,
+                Year = 2024,
+                MaterialWeight = 20023,
+                CalculatedOn = calculatedOn
+            }
         ];
 
         // Act

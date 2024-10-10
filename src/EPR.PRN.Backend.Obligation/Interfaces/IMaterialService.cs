@@ -4,6 +4,6 @@ namespace EPR.PRN.Backend.Obligation.Interfaces
 {
     public interface IMaterialService
     {
-        MaterialType? GetMaterialByCode(string code);
+        Task<MaterialType?> GetMaterialByCode(string code);
     }
 }

@@ -17,6 +17,8 @@
         private readonly IPrnService _prnService;
         private readonly ILogger<PrnController> _logger;
         private readonly IObligationCalculatorService _obligationCalculatorService;
+        private const int StartYear = 2024;
+        private const int EndYear = 2029;
 
         public PrnController(IPrnService prnService, ILogger<PrnController> logger, IObligationCalculatorService obligationCalculatorService)
         {
@@ -38,11 +40,11 @@
             return Ok(prn);
         }
 
-		[HttpGet("search/{page?}/{search?}/{filterBy?}/{sortBy?}")]
-		[ProducesResponseType(typeof(PaginatedResponseDto<PrnDto>), 200)]
-		[ProducesResponseType(400)]
-		[ProducesResponseType(401)]
-		public async Task<IActionResult> GetSearchPrns([FromHeader(Name = "X-EPR-ORGANISATION")] Guid orgId,
+        [HttpGet("search/{page?}/{search?}/{filterBy?}/{sortBy?}")]
+        [ProducesResponseType(typeof(PaginatedResponseDto<PrnDto>), 200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
+        public async Task<IActionResult> GetSearchPrns([FromHeader(Name = "X-EPR-ORGANISATION")] Guid orgId,
             [FromQuery] PaginatedRequestDto request)
         {
             if (orgId == Guid.Empty)
@@ -65,20 +67,21 @@
             return Ok(prn);
         }
 
-        [HttpGet("obligationcalculation/{organisationId}")]
-        [ProducesResponseType(typeof(List<ObligationCalculationDto>), 200)]
+        [HttpGet("v1/obligationcalculation/{year}")]
+        [ProducesResponseType(typeof(List<PrnDataDto>), 200)]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
-        public async Task<IActionResult> GetObligationCalculation([FromRoute] int organisationId)
+        public async Task<ActionResult<List<PrnDataDto>>> GetObligationCalculation([FromHeader(Name = "X-EPR-ORGANISATION")] Guid organisationId,
+            [FromRoute] int year)
         {
-            if (organisationId <= 0)
+            if (year < StartYear || year > EndYear)
             {
-                return BadRequest($"Invalid Organisation Id : {organisationId}. Organisation Id must be a positive integer.");
+                return BadRequest($"Invalid year provided: {year}.");
             }
 
-            var obligationCalculation = await _obligationCalculatorService.GetObligationCalculationByOrganisationId(organisationId);
+            var obligationCalculation = await _obligationCalculatorService.GetObligationCalculation(organisationId, year);
 
-            if (obligationCalculation == null)
+            if (obligationCalculation == null || obligationCalculation.Count == 0)
             {
                 return NotFound($"Obligation calculation not found for Organisation Id : {organisationId}");
             }
@@ -117,18 +120,13 @@
             }
         }
 
-        [HttpPost("organisation/{id}/calculate")]
+        [HttpPost("organisation/{organisationId}/calculate")]
         [ProducesResponseType(StatusCodes.Status202Accepted)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status504GatewayTimeout)]
-        public async Task<IActionResult> CalculateAsync(int id, [FromBody] List<SubmissionCalculationRequest> request)
+        public async Task<IActionResult> CalculateAsync(Guid organisationId, [FromBody] List<SubmissionCalculationRequest> request)
         {
-            if (id <= 0)
-            {
-                return BadRequest(new { message = "Invalid Organisation ID." });
-            }
-
             if (request == null || request.Count == 0)
             {
                 return BadRequest(new { message = "Submission calculation request cannot be null or empty." });
@@ -141,7 +139,7 @@
 
             try
             {
-                var calculationResult = await _obligationCalculatorService.CalculateAsync(id, request);
+                var calculationResult = await _obligationCalculatorService.CalculateAsync(organisationId, request);
 
                 if (!calculationResult.Success)
                 {

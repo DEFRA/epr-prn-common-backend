@@ -10,7 +10,7 @@ public class ObligationCalculation
     public int Id { get; set; }
 
     [Required]
-    public int OrganisationId { get; set; }
+    public Guid OrganisationId { get; set; }
 
     [MaxLength(20)]
     [Required]

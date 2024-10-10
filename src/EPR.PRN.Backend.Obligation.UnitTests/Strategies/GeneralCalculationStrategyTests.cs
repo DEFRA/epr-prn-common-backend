@@ -49,7 +49,7 @@ public class GeneralCalculationStrategyTests
     public void Calculate_ShouldReturnCorrectObligationCalculation()
     {
         // Arrange
-        var organisationId = 1;
+        var organisationId = Guid.NewGuid();
         var calculationRequest = new SubmissionCalculationRequest
         {
             PackagingMaterial = "Plastic",
@@ -94,7 +94,7 @@ public class GeneralCalculationStrategyTests
     public void Calculate_ShouldThrowKeyNotFoundException_WhenRecyclingTargetYearNotFound()
     {
         // Arrange
-        var organisationId = 1;
+        var organisationId = Guid.NewGuid();
         var calculationRequest = new SubmissionCalculationRequest
         {
             PackagingMaterial = "Plastic",
