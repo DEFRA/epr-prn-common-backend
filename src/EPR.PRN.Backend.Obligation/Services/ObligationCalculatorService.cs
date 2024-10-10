@@ -156,7 +156,7 @@ namespace EPR.PRN.Backend.Obligation.Services
             {
                 return ObligationConstants.Statuses.Met;
             }
-            return ObligationConstants.Statuses.NoMet;
+            return ObligationConstants.Statuses.NotMet;
         }
 
         private static int? GetTonnageOutstanding(int? materialObligationValue, int? tonnageAccepted)

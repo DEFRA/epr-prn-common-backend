@@ -427,7 +427,7 @@ public class ObligationCalculatorServiceTests
             new ObligationCalculation()
             {
                 Id = 3,
-                MaterialName = MaterialType.Wood.ToString(),
+                MaterialName = MaterialType.GlassRemelt.ToString(),
                 OrganisationId = organisationId,
                 Year = year,
                 CalculatedOn = DateTime.UtcNow,
@@ -498,7 +498,7 @@ public class ObligationCalculatorServiceTests
         {
             return ObligationConstants.Statuses.Met;
         }
-        return ObligationConstants.Statuses.NoMet;
+        return ObligationConstants.Statuses.NotMet;
     }
 
     private static int? GetTonnageOutstanding(int? materialObligationValue, int? tonnageAccepted)

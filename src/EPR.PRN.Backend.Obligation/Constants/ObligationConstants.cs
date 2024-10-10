@@ -6,7 +6,7 @@
         {
             public const string NoDataYet = "NODATAYET";
             public const string Met = "MET";
-            public const string NoMet = "NOMET";
+            public const string NotMet = "NOTMET";
         }
     }
 }
