@@ -130,8 +130,8 @@ namespace EPR.PRN.Backend.Obligation.Services
                     OrganisationId = organisationId,
                     MaterialName = materialName,
                     ObligationToMeet = obligationCalculation?.MaterialObligationValue,
-                    TonnageAccepted = tonnageAccepted,
-                    TonnageAwaitingAcceptance = tonnageAwaitingAcceptance,
+                    TonnageAccepted = tonnageAccepted ?? 0,
+                    TonnageAwaitingAcceptance = tonnageAwaitingAcceptance ?? 0,
                     TonnageOutstanding = tonnageOutstanding,
                     Status = GetStatus(obligationCalculation?.MaterialObligationValue, tonnageAccepted)
                 });

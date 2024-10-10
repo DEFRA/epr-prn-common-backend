@@ -17,6 +17,8 @@
         private readonly IPrnService _prnService;
         private readonly ILogger<PrnController> _logger;
         private readonly IObligationCalculatorService _obligationCalculatorService;
+        private const int StartYear = 2024;
+        private const int EndYear = 2029;
 
         public PrnController(IPrnService prnService, ILogger<PrnController> logger, IObligationCalculatorService obligationCalculatorService)
         {
@@ -72,7 +74,7 @@
         public async Task<ActionResult<List<PrnDataDto>>> GetObligationCalculation([FromHeader(Name = "X-EPR-ORGANISATION")] Guid organisationId,
             [FromRoute] int year)
         {
-            if (year < 2024 || year > 2029) //will be configurable when setup in solution
+            if (year < StartYear || year > EndYear)
             {
                 return BadRequest($"Invalid year provided: {year}.");
             }
