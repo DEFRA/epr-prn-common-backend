@@ -139,7 +139,7 @@ namespace EPR.PRN.Backend.Obligation.Services
             return prnDataCollection;
         }
 
-        private List<Material> AddGlassRemelt(List<Material> materials)
+        private static List<Material> AddGlassRemelt(List<Material> materials)
         {
             materials.Add(new Material { MaterialCode = "GR", MaterialName = "GlassRemelt" });
             return materials;

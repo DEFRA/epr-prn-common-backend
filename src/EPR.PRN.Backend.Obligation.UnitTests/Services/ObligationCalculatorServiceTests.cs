@@ -374,7 +374,7 @@ public class ObligationCalculatorServiceTests
         }
     }
 
-    private void AddGlassRemelt(List<Material> materials)
+    private static void AddGlassRemelt(List<Material> materials)
     {
         materials.Add(new Material { MaterialCode = "GR", MaterialName = "GlassRemelt" });
     }
