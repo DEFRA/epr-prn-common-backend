@@ -240,31 +240,6 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20240924171141_AddMaterialWeight'
-)
-BEGIN
-    ALTER TABLE [ObligationCalculations] ADD [MaterialWeight] float NOT NULL DEFAULT 0.0E0;
-END;
-GO
-
-IF NOT EXISTS (
-    SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20240924171141_AddMaterialWeight'
-)
-BEGIN
-    INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
-    VALUES (N'20240924171141_AddMaterialWeight', N'8.0.8');
-END;
-GO
-
-COMMIT;
-GO
-
-BEGIN TRANSACTION;
-GO
-
-IF NOT EXISTS (
-    SELECT * FROM [__EFMigrationsHistory]
     WHERE [MigrationId] = N'20240924172133_UpdateEprnStatusCancelledCorrection'
 )
 BEGIN
