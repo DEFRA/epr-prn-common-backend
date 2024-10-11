@@ -28,7 +28,7 @@ namespace EPR.PRN.Backend.Data.UnitTests.Repositories
         {
             var dbContextOptions = new DbContextOptionsBuilder<EprContext>().Options;
             _mockEprContext = new Mock<EprContext>(dbContextOptions);
-            _mockEprContext.Setup(context => context.Materials).ReturnsDbSet(_materials);
+            _mockEprContext.Setup(context => context.Material).ReturnsDbSet(_materials);
             _materialRepository = new MaterialRepository(_mockEprContext.Object);
         }
 

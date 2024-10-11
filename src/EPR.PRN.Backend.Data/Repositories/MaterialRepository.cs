@@ -8,7 +8,7 @@ namespace EPR.PRN.Backend.Data.Repositories
     {
         public async Task<IEnumerable<Material>> GetAllMaterials()
         {
-            return await context.Materials.ToListAsync();
+            return await context.Material.ToListAsync();
         }
     }
 }

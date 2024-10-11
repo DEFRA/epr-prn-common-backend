@@ -74,6 +74,6 @@ namespace EPR.PRN.Backend.Data
 
         public virtual DbSet<ObligationCalculation> ObligationCalculations { get; set; }
 
-        public virtual DbSet<Material> Materials { get; set; }
+        public virtual DbSet<Material> Material { get; set; }
     }
 }

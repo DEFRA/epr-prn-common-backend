@@ -7,22 +7,15 @@
 namespace EPR.PRN.Backend.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class ChangeOrganisationIdToGuid : Migration
+    public partial class AddMaterialTable : Migration
     {
-        private static readonly string[] MaterialColumns = { "MaterialName", "MaterialCode" };
+        private static readonly string[] _materialColumns = new[] { "MaterialName", "MaterialCode" };
+
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AlterColumn<Guid>(
-                name: "OrganisationId",
-                table: "ObligationCalculations",
-                type: "uniqueidentifier",
-                nullable: false,
-                oldClrType: typeof(int),
-                oldType: "int");
-
             migrationBuilder.CreateTable(
-                name: "Materials",
+                name: "Material",
                 columns: table => new
                 {
                     MaterialName = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
@@ -30,12 +23,12 @@ namespace EPR.PRN.Backend.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Materials", x => x.MaterialName);
+                    table.PrimaryKey("PK_Material", x => x.MaterialName);
                 });
 
             migrationBuilder.InsertData(
-                table: "Materials",
-                columns: MaterialColumns,
+                table: "Material",
+                columns: _materialColumns,
                 values: new object[,]
                 {
                     { "Aluminium", "AL" },
@@ -51,15 +44,7 @@ namespace EPR.PRN.Backend.Data.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Materials");
-
-            migrationBuilder.AlterColumn<int>(
-                name: "OrganisationId",
-                table: "ObligationCalculations",
-                type: "int",
-                nullable: false,
-                oldClrType: typeof(Guid),
-                oldType: "uniqueidentifier");
+                name: "Material");
         }
     }
 }
