@@ -9,6 +9,8 @@ namespace EPR.PRN.Backend.Data.Migrations
     /// <inheritdoc />
     public partial class AddMaterialTable : Migration
     {
+        private static readonly string[] _materialColumns = new[] { "MaterialName", "MaterialCode" };
+
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -26,7 +28,7 @@ namespace EPR.PRN.Backend.Data.Migrations
 
             migrationBuilder.InsertData(
                 table: "Material",
-                columns: new[] { "MaterialName", "MaterialCode" },
+                columns: _materialColumns,
                 values: new object[,]
                 {
                     { "Aluminium", "AL" },
