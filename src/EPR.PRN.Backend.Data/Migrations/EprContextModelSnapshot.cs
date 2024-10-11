@@ -157,7 +157,7 @@ namespace EPR.PRN.Backend.Data.Migrations
                     b.ToTable("Prn");
                 });
 
-            modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Materials", b =>
+            modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Material", b =>
                 {
                     b.Property<string>("MaterialName")
                         .HasMaxLength(20)
@@ -170,7 +170,7 @@ namespace EPR.PRN.Backend.Data.Migrations
 
                     b.HasKey("MaterialName");
 
-                    b.ToTable("Materials");
+                    b.ToTable("Material");
 
                     b.HasData(
                         new

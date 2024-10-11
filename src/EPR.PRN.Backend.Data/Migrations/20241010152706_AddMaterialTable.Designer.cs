@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EPR.PRN.Backend.Data.Migrations
 {
     [DbContext(typeof(EprContext))]
-    [Migration("20241004090626_ChangeOrganisationIdToGuid")]
-    partial class ChangeOrganisationIdToGuid
+    [Migration("20241010152706_AddMaterialTable")]
+    partial class AddMaterialTable
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -160,7 +160,7 @@ namespace EPR.PRN.Backend.Data.Migrations
                     b.ToTable("Prn");
                 });
 
-            modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Materials", b =>
+            modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Material", b =>
                 {
                     b.Property<string>("MaterialName")
                         .HasMaxLength(20)
@@ -173,7 +173,7 @@ namespace EPR.PRN.Backend.Data.Migrations
 
                     b.HasKey("MaterialName");
 
-                    b.ToTable("Materials");
+                    b.ToTable("Material");
 
                     b.HasData(
                         new
