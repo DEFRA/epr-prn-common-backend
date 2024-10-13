@@ -411,7 +411,7 @@ public class ObligationCalculatorServiceTests
                 OrganisationId = organisationId,
                 Year = year,
                 CalculatedOn = DateTime.UtcNow,
-                MaterialObligationValue = 2000,
+                MaterialObligationValue = 60,
                 MaterialWeight = 120
             },
             new ObligationCalculation()
