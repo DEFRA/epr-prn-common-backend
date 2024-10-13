@@ -105,9 +105,9 @@ namespace EPR.PRN.Backend.Obligation.Services
             await _obligationCalculationRepository.AddObligationCalculation(calculations);
         }
 
-        public async Task<List<PrnDataDto>?> GetObligationCalculation(Guid organisationId, int year)
+        public async Task<List<ObligationData>?> GetObligationCalculation(Guid organisationId, int year)
         {
-            var prnDataCollection = new List<PrnDataDto>();
+            var prnDataCollection = new List<ObligationData>();
             var materials = await _materialRepository.GetAllMaterials();
             if (!materials.Any())
             {
@@ -125,7 +125,7 @@ namespace EPR.PRN.Backend.Obligation.Services
                 var tonnageAccepted = GetTonnage(materialName, acceptedTonnageForPrns);
                 var tonnageAwaitingAcceptance = GetTonnage(materialName, awaitingAcceptanceForPrns);
                 var tonnageOutstanding = GetTonnageOutstanding(obligationCalculation?.MaterialObligationValue, tonnageAccepted);
-                prnDataCollection.Add(new PrnDataDto
+                prnDataCollection.Add(new ObligationData
                 {
                     OrganisationId = organisationId,
                     MaterialName = materialName,
