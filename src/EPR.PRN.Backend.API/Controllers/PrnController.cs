@@ -67,7 +67,7 @@
             return Ok(prn);
         }
 
-        [HttpGet("v1/obligationcalculation/{year}")]
+        [HttpGet("obligationcalculation/{year}")]
         [ProducesResponseType(typeof(List<ObligationData>), 200)]
         [ProducesResponseType(400)]
         [ProducesResponseType(424)]
