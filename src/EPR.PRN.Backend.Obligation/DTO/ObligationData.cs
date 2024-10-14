@@ -1,6 +1,6 @@
 ﻿namespace EPR.PRN.Backend.Obligation.DTO
 {
-    public class PrnDataDto
+    public class ObligationData
     {
         public Guid OrganisationId { get; set; }
         public string MaterialName { get; set; } = string.Empty;

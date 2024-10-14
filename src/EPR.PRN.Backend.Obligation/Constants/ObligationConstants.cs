@@ -8,5 +8,11 @@
             public const string Met = "Met";
             public const string NotMet = "NotMet";
         }
+
+        public static class ErrorMessages
+        {
+            public const string NoMaterialsFoundErrorMessage = "No Materials found in PRN BAckend Database";
+            public const string NoObligationDataForOrganisationIdErrorMessage = "Obligation calculation not found for Organisation Id";
+        }
     }
 }

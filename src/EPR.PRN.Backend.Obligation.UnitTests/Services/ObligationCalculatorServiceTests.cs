@@ -341,7 +341,7 @@ public class ObligationCalculatorServiceTests
         List<ObligationCalculation> obligationCalculation,
         List<EprnResultsDto> eprnAcceptedResult,
         List<EprnResultsDto> eprnAwaitedAcceptanceResult,
-        List<PrnDataDto> result)
+        List<ObligationData> result)
     {
         result.Should().NotBeNull();
         result.Should().HaveCount(materials.Count, "the expected count of calculations should match the actual count of calculations");
@@ -411,7 +411,7 @@ public class ObligationCalculatorServiceTests
                 OrganisationId = organisationId,
                 Year = year,
                 CalculatedOn = DateTime.UtcNow,
-                MaterialObligationValue = 2000,
+                MaterialObligationValue = 60,
                 MaterialWeight = 120
             },
             new ObligationCalculation()

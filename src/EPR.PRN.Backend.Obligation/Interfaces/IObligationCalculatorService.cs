@@ -6,7 +6,7 @@ namespace EPR.PRN.Backend.Obligation.Interfaces
 {
     public interface IObligationCalculatorService
     {
-        Task<List<PrnDataDto>?> GetObligationCalculation(Guid organisationId, int year);
+        Task<List<ObligationData>?> GetObligationCalculation(Guid organisationId, int year);
         Task<CalculationResult> CalculateAsync(Guid organisationId, List<SubmissionCalculationRequest> request);
         Task SaveCalculatedPomDataAsync(List<ObligationCalculation> calculations);
     }

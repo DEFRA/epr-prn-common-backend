@@ -305,7 +305,7 @@ public class PrnControllerTests
         // Mock the service to return null (no obligation data)
         _mockObligationCalculatorService
             .Setup(service => service.GetObligationCalculation(organisationId, year))
-            .ReturnsAsync((List<PrnDataDto>)null);
+            .ReturnsAsync((List<ObligationData>)null);
 
         // Act
         var result = await _systemUnderTest.GetObligationCalculation(organisationId, year);
@@ -327,7 +327,7 @@ public class PrnControllerTests
         // Mock the service to return an empty list (no obligation data)
         _mockObligationCalculatorService
             .Setup(service => service.GetObligationCalculation(organisationId, year))
-            .ReturnsAsync(new List<PrnDataDto>());
+            .ReturnsAsync(new List<ObligationData>());
 
         // Act
         var result = await _systemUnderTest.GetObligationCalculation(organisationId, year);
@@ -346,7 +346,7 @@ public class PrnControllerTests
         var organisationId = Guid.NewGuid();
         var year = 2025;
         var fixture = new Fixture();
-        var prns = fixture.CreateMany<PrnDataDto>(10).ToList();
+        var prns = fixture.CreateMany<ObligationData>(10).ToList();
         for (int i = 0; i < 2; i++)
         {
             prns[i].MaterialName = "Plastic";
@@ -371,6 +371,6 @@ public class PrnControllerTests
         var okResult = result.Result as OkObjectResult;
         okResult.Should().NotBeNull();
         okResult.StatusCode.Should().Be(200);
-        okResult.Value.Should().BeEquivalentTo(prns);
+        okResult.Value.Should().BeEquivalentTo(new ObligationModel { ObligationData = prns, NumberOfPrnsAwaitingAcceptance = 0 });
     }
 }

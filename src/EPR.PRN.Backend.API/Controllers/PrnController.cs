@@ -68,10 +68,10 @@
         }
 
         [HttpGet("v1/obligationcalculation/{year}")]
-        [ProducesResponseType(typeof(List<PrnDataDto>), 200)]
+        [ProducesResponseType(typeof(List<ObligationData>), 200)]
         [ProducesResponseType(400)]
-        [ProducesResponseType(404)]
-        public async Task<ActionResult<List<PrnDataDto>>> GetObligationCalculation([FromHeader(Name = "X-EPR-ORGANISATION")] Guid organisationId,
+        [ProducesResponseType(424)]
+        public async Task<ActionResult<ObligationModel>> GetObligationCalculation([FromHeader(Name = "X-EPR-ORGANISATION")] Guid organisationId,
             [FromRoute] int year)
         {
             if (year < StartYear || year > EndYear)
@@ -86,7 +86,7 @@
                 return NotFound($"Obligation calculation not found for Organisation Id : {organisationId}");
             }
 
-            return Ok(obligationCalculation);
+            return Ok(new ObligationModel { ObligationData = obligationCalculation, NumberOfPrnsAwaitingAcceptance = 0 });
         }
         #endregion
 
