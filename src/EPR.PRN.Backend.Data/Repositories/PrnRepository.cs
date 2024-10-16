@@ -15,8 +15,8 @@ namespace EPR.PRN.Backend.Data.Repositories
                     status => status.Id,
                     (eprn, status) => new EprnResultsDto { Eprn = eprn, Status = status }
                     )
-                    .Where(joined => joined.Eprn.OrganisationId == organisationId && joined.Status.StatusName == EprnStatus.ACCEPTED.ToString()
-                    && joined.Status.StatusName == EprnStatus.AWAITINGACCEPTANCE.ToString() && joined.Eprn.ObligationYear == year.ToString())
+                    .Where(joined => joined.Eprn.OrganisationId == organisationId && (joined.Status.StatusName == EprnStatus.ACCEPTED.ToString()
+                    || joined.Status.StatusName == EprnStatus.AWAITINGACCEPTANCE.ToString()) && joined.Eprn.ObligationYear == year.ToString())
                     .ToListAsync();
         }
 

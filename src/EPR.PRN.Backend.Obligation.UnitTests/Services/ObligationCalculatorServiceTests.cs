@@ -148,15 +148,16 @@ public class ObligationCalculatorServiceTests
         var year = 2024;
 
         var materials = _fixture.CreateMany<Material>(5).ToList(); // No GlassRemelt initially
-        var obligationCalculations = _fixture.CreateMany<ObligationCalculation>(5).ToList();
+        var obligationCalculations = _fixture.CreateMany<ObligationCalculation>(6).ToList();
         var prns = _fixture.CreateMany<EprnResultsDto>(5).ToList();
+        prns[1].Eprn.MaterialName = "GlassRemelt";
 
         _mockMaterialRepository.Setup(repo => repo.GetAllMaterials()).ReturnsAsync(materials);
         _mockObligationCalculationRepository.Setup(repo => repo.GetObligationCalculation(organisationId, year)).ReturnsAsync(obligationCalculations);
         _mockPrnRepository.Setup(repo => repo.GetAcceptedAndAwaitingPrnsByYearAsync(organisationId, year)).ReturnsAsync(prns);
 
-        var acceptedTonnage = _fixture.CreateMany<EprnTonnageResultsDto>(5).ToList();
-        var awaitingTonnage = _fixture.CreateMany<EprnTonnageResultsDto>(5).ToList();
+        var acceptedTonnage = _fixture.CreateMany<EprnTonnageResultsDto>(6).ToList();
+        var awaitingTonnage = _fixture.CreateMany<EprnTonnageResultsDto>(6).ToList();
 
         _mockPrnRepository.Setup(repo => repo.GetSumOfTonnageForMaterials(prns, EprnStatus.ACCEPTED.ToString())).Returns(acceptedTonnage);
         _mockPrnRepository.Setup(repo => repo.GetSumOfTonnageForMaterials(prns, EprnStatus.AWAITINGACCEPTANCE.ToString())).Returns(awaitingTonnage);
@@ -173,7 +174,7 @@ public class ObligationCalculatorServiceTests
         glassRemeltData.ObligationToMeet.Should().BeNull();
         glassRemeltData.TonnageAccepted.Should().Be(0);
         glassRemeltData.TonnageAwaitingAcceptance.Should().Be(0);
-        glassRemeltData.Status.Should().Be(ObligationConstants.Statuses.NotMet); // Validate status logic for glass remelt
+        glassRemeltData.Status.Should().Be(ObligationConstants.Statuses.NoDataYet);
     }
 
     [TestMethod]
