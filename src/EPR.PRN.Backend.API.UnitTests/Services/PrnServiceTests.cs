@@ -147,11 +147,11 @@ public class PrnServiceTests
 
         availablePrns[0].ExternalId = prnUpdates[0].PrnId = prnUpdates[1].PrnId;
         availablePrns[2].ExternalId = prnUpdates[2].PrnId;
-        
+
         availablePrns[0].PrnStatusId = availablePrns[1].PrnStatusId =
         availablePrns[2].PrnStatusId = (int)EprnStatus.AWAITINGACCEPTANCE;
 
-        prnUpdates[0].Status = EprnStatus.ACCEPTED; 
+        prnUpdates[0].Status = EprnStatus.ACCEPTED;
         prnUpdates[1].Status = EprnStatus.AWAITINGACCEPTANCE;
         prnUpdates[2].Status = EprnStatus.ACCEPTED;
 
@@ -174,12 +174,12 @@ public class PrnServiceTests
         availablePrns[0].ExternalId = prnUpdates[0].PrnId;
         availablePrns[1].ExternalId = prnUpdates[1].PrnId;
         availablePrns[2].ExternalId = prnUpdates[2].PrnId;
-        
+
         availablePrns[0].PrnStatusId = availablePrns[1].PrnStatusId =
             availablePrns[2].PrnStatusId = (int)EprnStatus.AWAITINGACCEPTANCE;
 
         prnUpdates[0].Status = prnUpdates[1].Status =
-            prnUpdates[2].Status =  EprnStatus.ACCEPTED;
+            prnUpdates[2].Status = EprnStatus.ACCEPTED;
 
         _mockRepository.Setup(r => r.GetAllPrnByOrganisationId(orgId)).ReturnsAsync(availablePrns);
 

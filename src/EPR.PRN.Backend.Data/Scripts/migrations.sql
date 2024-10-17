@@ -267,20 +267,86 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20240924171141_AddMaterialWeight'
+    WHERE [MigrationId] = N'20241010152706_AddMaterialTable'
 )
 BEGIN
-    ALTER TABLE [ObligationCalculations] ADD [MaterialWeight] float NOT NULL DEFAULT 0.0E0;
+    CREATE TABLE [Material] (
+        [MaterialName] nvarchar(20) NOT NULL,
+        [MaterialCode] nvarchar(3) NOT NULL,
+        CONSTRAINT [PK_Material] PRIMARY KEY ([MaterialName])
+    );
 END;
 GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20240924171141_AddMaterialWeight'
+    WHERE [MigrationId] = N'20241010152706_AddMaterialTable'
+)
+BEGIN
+    IF EXISTS (SELECT * FROM [sys].[identity_columns] WHERE [name] IN (N'MaterialName', N'MaterialCode') AND [object_id] = OBJECT_ID(N'[Material]'))
+        SET IDENTITY_INSERT [Material] ON;
+    EXEC(N'INSERT INTO [Material] ([MaterialName], [MaterialCode])
+    VALUES (N''Aluminium'', N''AL''),
+    (N''Glass'', N''GL''),
+    (N''Paper'', N''PC''),
+    (N''Plastic'', N''PL''),
+    (N''Steel'', N''ST''),
+    (N''Wood'', N''WD'')');
+    IF EXISTS (SELECT * FROM [sys].[identity_columns] WHERE [name] IN (N'MaterialName', N'MaterialCode') AND [object_id] = OBJECT_ID(N'[Material]'))
+        SET IDENTITY_INSERT [Material] OFF;
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20241010152706_AddMaterialTable'
 )
 BEGIN
     INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
-    VALUES (N'20240924171141_AddMaterialWeight', N'8.0.8');
+    VALUES (N'20241010152706_AddMaterialTable', N'8.0.8');
+END;
+GO
+
+COMMIT;
+GO
+
+BEGIN TRANSACTION;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20241010153947_DropObligationCalculation'
+)
+BEGIN
+    DROP TABLE [ObligationCalculations];
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20241010153947_DropObligationCalculation'
+)
+BEGIN
+    CREATE TABLE [ObligationCalculations] (
+        [Id] int NOT NULL IDENTITY,
+        [OrganisationId] uniqueidentifier NOT NULL,
+        [MaterialName] nvarchar(20) NOT NULL,
+        [MaterialObligationValue] int NOT NULL,
+        [Year] int NOT NULL,
+        [CalculatedOn] datetime2 NOT NULL,
+        [MaterialWeight] float NOT NULL DEFAULT 0.0E0,
+        CONSTRAINT [PK_ObligationCalculations] PRIMARY KEY ([Id])
+    );
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20241010153947_DropObligationCalculation'
+)
+BEGIN
+    INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+    VALUES (N'20241010153947_DropObligationCalculation', N'8.0.8');
 END;
 GO
 

@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EPR.PRN.Backend.Data.Migrations
 {
     [DbContext(typeof(EprContext))]
-    [Migration("20240924171141_AddMaterialWeight")]
-    partial class AddMaterialWeight
+    [Migration("20241010153947_DropObligationCalculation")]
+    partial class DropObligationCalculation
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -160,6 +160,54 @@ namespace EPR.PRN.Backend.Data.Migrations
                     b.ToTable("Prn");
                 });
 
+            modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Material", b =>
+                {
+                    b.Property<string>("MaterialName")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("MaterialCode")
+                        .IsRequired()
+                        .HasMaxLength(3)
+                        .HasColumnType("nvarchar(3)");
+
+                    b.HasKey("MaterialName");
+
+                    b.ToTable("Material");
+
+                    b.HasData(
+                        new
+                        {
+                            MaterialName = "Plastic",
+                            MaterialCode = "PL"
+                        },
+                        new
+                        {
+                            MaterialName = "Wood",
+                            MaterialCode = "WD"
+                        },
+                        new
+                        {
+                            MaterialName = "Aluminium",
+                            MaterialCode = "AL"
+                        },
+                        new
+                        {
+                            MaterialName = "Steel",
+                            MaterialCode = "ST"
+                        },
+                        new
+                        {
+                            MaterialName = "Paper",
+                            MaterialCode = "PC"
+                        },
+                        new
+                        {
+                            MaterialName = "Glass",
+                            MaterialCode = "GL"
+                        });
+                });
+
             modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.ObligationCalculation", b =>
                 {
                     b.Property<int>("Id")
@@ -182,8 +230,8 @@ namespace EPR.PRN.Backend.Data.Migrations
                     b.Property<double>("MaterialWeight")
                         .HasColumnType("float");
 
-                    b.Property<int>("OrganisationId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("OrganisationId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("Year")
                         .HasColumnType("int");
@@ -231,7 +279,7 @@ namespace EPR.PRN.Backend.Data.Migrations
                         {
                             Id = 3,
                             StatusDescription = "Prn Cancelled",
-                            StatusName = "CANCELED"
+                            StatusName = "CANCELLED"
                         },
                         new
                         {

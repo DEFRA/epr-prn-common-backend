@@ -1,7 +1,5 @@
 ﻿using AutoFixture;
-using EPR.PRN.Backend.API.Common.DTO;
 using EPR.PRN.Backend.API.Repositories;
-using EPR.PRN.Backend.API.Repositories.Interfaces;
 using EPR.PRN.Backend.Data;
 using EPR.PRN.Backend.Data.DataModels;
 using FluentAssertions;
@@ -9,7 +7,6 @@ using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Moq;
 using System.Diagnostics.CodeAnalysis;
-using Moq.EntityFrameworkCore;
 
 namespace EPR.PRN.Backend.API.UnitTests.Repositories;
 
@@ -135,11 +132,4 @@ public class RepositoryTests
         var history = await context.PrnStatusHistory.Where(p => p.CreatedByUser == statusHistory.CreatedByUser).ToListAsync();
         history.Should().HaveCount(1);
     }
-
-
-
-
-
-
-
 }

@@ -1,5 +1,9 @@
-﻿using EPR.PRN.Backend.Data.Repositories;
+﻿using EPR.PRN.Backend.Data.DataModels;
+using EPR.PRN.Backend.Data.Repositories;
 using FluentAssertions;
+using Microsoft.EntityFrameworkCore;
+using Moq;
+using Moq.EntityFrameworkCore;
 
 namespace EPR.PRN.Backend.Data.UnitTests.Repositories
 {
@@ -7,18 +11,32 @@ namespace EPR.PRN.Backend.Data.UnitTests.Repositories
     public class MaterialRepositoryTests
     {
         private MaterialRepository _materialRepository;
+        private Mock<EprContext> _mockEprContext;
+        private readonly List<Material> _materials =
+            new List<Material>
+            {
+                new Material { MaterialCode = "PL", MaterialName = "Plastic" },
+                new Material { MaterialCode = "WD", MaterialName = "Wood" },
+                new Material { MaterialCode = "AL", MaterialName = "Aluminium" },
+                new Material { MaterialCode = "ST", MaterialName = "Steel" },
+                new Material { MaterialCode = "PC", MaterialName = "Paper" },
+                new Material { MaterialCode = "GL", MaterialName = "Glass" }
+            };
 
         [TestInitialize]
         public void Setup()
         {
-            _materialRepository = new MaterialRepository();
+            var dbContextOptions = new DbContextOptionsBuilder<EprContext>().Options;
+            _mockEprContext = new Mock<EprContext>(dbContextOptions);
+            _mockEprContext.Setup(context => context.Material).ReturnsDbSet(_materials);
+            _materialRepository = new MaterialRepository(_mockEprContext.Object);
         }
 
         [TestMethod]
-        public void GetAllMaterials_ShouldReturnAllMaterials()
+        public async Task GetAllMaterials_ShouldReturnAllMaterials()
         {
             // Act
-            var result = _materialRepository.GetAllMaterials();
+            var result = await _materialRepository.GetAllMaterials();
 
             // Assert
             result.Should().NotBeNull(); // Check that result is not null
@@ -26,10 +44,10 @@ namespace EPR.PRN.Backend.Data.UnitTests.Repositories
         }
 
         [TestMethod]
-        public void GetAllMaterials_ShouldContainExpectedMaterialCodesAndNames()
+        public async Task GetAllMaterials_ShouldContainExpectedMaterialCodesAndNames()
         {
             // Act
-            var result = _materialRepository.GetAllMaterials().ToList();
+            var result = await _materialRepository.GetAllMaterials();
 
             // Assert
             result.Should().Contain(material => material.MaterialCode == "PL" && material.MaterialName == "Plastic");
@@ -41,10 +59,10 @@ namespace EPR.PRN.Backend.Data.UnitTests.Repositories
         }
 
         [TestMethod]
-        public void GetAllMaterials_ShouldReturnMaterialsWithNonEmptyCodesAndNames()
+        public async Task GetAllMaterials_ShouldReturnMaterialsWithNonEmptyCodesAndNames()
         {
             // Act
-            var result = _materialRepository.GetAllMaterials();
+            var result = await _materialRepository.GetAllMaterials();
 
             // Assert
             result.Should().OnlyContain(material => !string.IsNullOrWhiteSpace(material.MaterialCode));

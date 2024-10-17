@@ -55,7 +55,7 @@
         {
             return filterBy switch
             {
-                Filters.AcceptedAll => 
+                Filters.AcceptedAll =>
                     p => p.PrnStatusId == (int)EprnStatus.ACCEPTED,
 
                 Filters.CancelledAll =>
@@ -67,7 +67,7 @@
                 Filters.AwaitingAll =>
                     p => p.PrnStatusId == (int)EprnStatus.AWAITINGACCEPTANCE,
 
-                Filters.AwaitingAluminium => 
+                Filters.AwaitingAluminium =>
                     p => p.PrnStatusId == (int)EprnStatus.AWAITINGACCEPTANCE
                     && p.MaterialName == Common.Constants.PrnConstants.Materials.Aluminium,
 
@@ -84,15 +84,15 @@
                     && p.MaterialName == Common.Constants.PrnConstants.Materials.PaperFiber,
 
                 Filters.AwaitngPlastic =>
-                    p => p.PrnStatusId == (int)EprnStatus.AWAITINGACCEPTANCE 
+                    p => p.PrnStatusId == (int)EprnStatus.AWAITINGACCEPTANCE
                     && p.MaterialName == Common.Constants.PrnConstants.Materials.Plastic,
 
                 Filters.AwaitngSteel =>
-                    p => p.PrnStatusId == (int)EprnStatus.AWAITINGACCEPTANCE 
+                    p => p.PrnStatusId == (int)EprnStatus.AWAITINGACCEPTANCE
                     && p.MaterialName == Common.Constants.PrnConstants.Materials.Steel,
 
                 Filters.AwaitngWood =>
-                    p => p.PrnStatusId == (int)EprnStatus.AWAITINGACCEPTANCE 
+                    p => p.PrnStatusId == (int)EprnStatus.AWAITINGACCEPTANCE
                     && p.MaterialName == Common.Constants.PrnConstants.Materials.Wood,
 
                 _ => sm => true
@@ -116,7 +116,7 @@
                 _ => (Sorts.Descending, p => p.IssueDate)
             };
         }
-        
+
         public async Task<PaginatedResponseDto<PrnDto>> GetSearchPrnsForOrganisation(Guid orgId, PaginatedRequestDto request)
         {
 
@@ -161,9 +161,9 @@
             Expression<Func<Eprn, bool>> filterByWhereCondition = GetFilterByCondition(request.FilterBy);
             prns = prns.Where(filterByWhereCondition);
 
-	        // get the count BEFORE paging and sorting
-            var totalRecords = await prns.CountAsync();              
-            
+            // get the count BEFORE paging and sorting
+            var totalRecords = await prns.CountAsync();
+
             // Sort by
             var (order, expr) = GetOrderByCondition(request.SortBy);
             prns = (order == Sorts.Ascending) ? prns.OrderBy(expr).ThenBy(p => p.PrnNumber)
