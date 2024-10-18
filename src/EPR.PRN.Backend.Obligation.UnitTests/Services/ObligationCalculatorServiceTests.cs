@@ -118,7 +118,7 @@ public class ObligationCalculatorServiceTests
 
         _mockPrnRepository.Setup(repo => repo.GetSumOfTonnageForMaterials(prns, EprnStatus.ACCEPTED.ToString())).Returns(acceptedTonnage);
         _mockPrnRepository.Setup(repo => repo.GetSumOfTonnageForMaterials(prns, EprnStatus.AWAITINGACCEPTANCE.ToString())).Returns(awaitingTonnage);
-        _mockPrnRepository.Setup(repo => repo.GetPrnStatusCount(prns, EprnStatus.AWAITINGACCEPTANCE.ToString())).Returns(5);
+        _mockPrnRepository.Setup(repo => repo.GetPrnStatusCount(prns, EprnStatus.AWAITINGACCEPTANCE.ToString())).Returns(awaitingTonnage.Count());
 
         // Act
         var result = await _service.GetObligationCalculation(organisationId, year);
@@ -127,6 +127,9 @@ public class ObligationCalculatorServiceTests
         result.IsSuccess.Should().BeTrue();
         result.ObligationModel.Should().NotBeNull();
         result.ObligationModel.ObligationData.Should().HaveCount(materials.Count + 1); // +1 for GlassRemelt
+        result.ObligationModel.NumberOfPrnsAwaitingAcceptance.Should().Be(awaitingTonnage.Count());
+
+
 
         foreach (var material in materials)
         {
@@ -161,6 +164,7 @@ public class ObligationCalculatorServiceTests
 
         _mockPrnRepository.Setup(repo => repo.GetSumOfTonnageForMaterials(prns, EprnStatus.ACCEPTED.ToString())).Returns(acceptedTonnage);
         _mockPrnRepository.Setup(repo => repo.GetSumOfTonnageForMaterials(prns, EprnStatus.AWAITINGACCEPTANCE.ToString())).Returns(awaitingTonnage);
+        _mockPrnRepository.Setup(repo => repo.GetPrnStatusCount(prns, EprnStatus.AWAITINGACCEPTANCE.ToString())).Returns(awaitingTonnage.Count());
 
         // Act
         var result = await _service.GetObligationCalculation(organisationId, year);
@@ -168,6 +172,7 @@ public class ObligationCalculatorServiceTests
         // Assert
         result.IsSuccess.Should().BeTrue();
         result.ObligationModel.ObligationData.Should().Contain(d => d.MaterialName == "GlassRemelt");
+        result.ObligationModel.NumberOfPrnsAwaitingAcceptance.Should().Be(awaitingTonnage.Count());
 
         var glassRemeltData = result.ObligationModel.ObligationData.FirstOrDefault(d => d.MaterialName == "GlassRemelt");
         glassRemeltData.Should().NotBeNull();

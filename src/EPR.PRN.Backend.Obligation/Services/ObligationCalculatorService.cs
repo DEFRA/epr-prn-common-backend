@@ -151,7 +151,7 @@ namespace EPR.PRN.Backend.Obligation.Services
                     Status = GetStatus(obligationCalculation?.MaterialObligationValue, tonnageAccepted)
                 });
             }
-            var obligationModel = new ObligationModel { ObligationData = obligationData };
+            var obligationModel = new ObligationModel { ObligationData = obligationData, NumberOfPrnsAwaitingAcceptance = awaitingAcceptanceCount };
             return new ObligationCalculationResult { IsSuccess = true, ObligationModel = obligationModel };
         }
 
