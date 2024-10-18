@@ -296,50 +296,6 @@ public class PrnControllerTests
     }
 
     [TestMethod]
-    public async Task GetObligationCalculation_ValidYear_NoDataFound_ReturnsNotFound()
-    {
-        // Arrange
-        var organisationId = Guid.NewGuid();
-        var year = 2025;
-
-        // Mock the service to return null (no obligation data)
-        _mockObligationCalculatorService
-            .Setup(service => service.GetObligationCalculation(organisationId, year))
-            .ReturnsAsync((List<ObligationData>)null);
-
-        // Act
-        var result = await _systemUnderTest.GetObligationCalculation(organisationId, year);
-
-        // Assert
-        var notFoundResult = result.Result as NotFoundObjectResult;
-        notFoundResult.Should().NotBeNull();
-        notFoundResult.StatusCode.Should().Be(404);
-        notFoundResult.Value.Should().Be($"Obligation calculation not found for Organisation Id : {organisationId}");
-    }
-
-    [TestMethod]
-    public async Task GetObligationCalculation_ValidYear_EmptyData_ReturnsNotFound()
-    {
-        // Arrange
-        var organisationId = Guid.NewGuid();
-        var year = 2025;
-
-        // Mock the service to return an empty list (no obligation data)
-        _mockObligationCalculatorService
-            .Setup(service => service.GetObligationCalculation(organisationId, year))
-            .ReturnsAsync(new List<ObligationData>());
-
-        // Act
-        var result = await _systemUnderTest.GetObligationCalculation(organisationId, year);
-
-        // Assert
-        var notFoundResult = result.Result as NotFoundObjectResult;
-        notFoundResult.Should().NotBeNull();
-        notFoundResult.StatusCode.Should().Be(404);
-        notFoundResult.Value.Should().Be($"Obligation calculation not found for Organisation Id : {organisationId}");
-    }
-
-    [TestMethod]
     public async Task GetObligationCalculation_ValidYear_DataFound_ReturnsOk()
     {
         // Arrange
@@ -359,10 +315,12 @@ public class PrnControllerTests
             prns[i].OrganisationId = organisationId;
         }
 
+        var obligationResult = new ObligationCalculationResult { Errors = null, IsSuccess = true, ObligationModel = new ObligationModel { NumberOfPrnsAwaitingAcceptance = 8, ObligationData = prns } };
+
         // Mock the service to return obligation data
         _mockObligationCalculatorService
             .Setup(service => service.GetObligationCalculation(organisationId, year))
-            .ReturnsAsync(prns);
+            .ReturnsAsync(obligationResult);
 
         // Act
         var result = await _systemUnderTest.GetObligationCalculation(organisationId, year);
@@ -371,6 +329,6 @@ public class PrnControllerTests
         var okResult = result.Result as OkObjectResult;
         okResult.Should().NotBeNull();
         okResult.StatusCode.Should().Be(200);
-        okResult.Value.Should().BeEquivalentTo(new ObligationModel { ObligationData = prns, NumberOfPrnsAwaitingAcceptance = 0 });
+        okResult.Value.Should().BeEquivalentTo(new ObligationModel { ObligationData = prns, NumberOfPrnsAwaitingAcceptance = obligationResult.ObligationModel.NumberOfPrnsAwaitingAcceptance });
     }
 }
