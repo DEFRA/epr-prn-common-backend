@@ -105,10 +105,24 @@ public class ObligationCalculatorServiceTests
         var organisationId = Guid.NewGuid();
         var year = 2024;
 
-        var materials = _fixture.CreateMany<Material>(5).ToList();
+        var materials = GetMaterialCodes();
         var obligationCalculations = _fixture.CreateMany<ObligationCalculation>(5).ToList();
+        obligationCalculations[0].MaterialName = MaterialType.Plastic.ToString();
+        obligationCalculations[1].MaterialName = MaterialType.Paper.ToString();
+        obligationCalculations[2].MaterialName = MaterialType.Steel.ToString();
+        obligationCalculations[3].MaterialName = MaterialType.Wood.ToString();
+        obligationCalculations[4].MaterialName = MaterialType.Aluminium.ToString();
         var prns = _fixture.CreateMany<EprnResultsDto>(5).ToList();
-
+        prns[0].Eprn.MaterialName = MaterialType.Plastic.ToString();
+        prns[1].Eprn.MaterialName = MaterialType.Paper.ToString();
+        prns[2].Eprn.MaterialName = MaterialType.Steel.ToString();
+        prns[3].Eprn.MaterialName = MaterialType.Wood.ToString();
+        prns[4].Eprn.MaterialName = MaterialType.Aluminium.ToString();
+        prns[0].Eprn.ObligationYear = year.ToString();
+        prns[1].Eprn.ObligationYear = year.ToString();
+        prns[2].Eprn.ObligationYear = year.ToString();
+        prns[3].Eprn.ObligationYear = year.ToString();
+        prns[4].Eprn.ObligationYear = year.ToString();
         _mockMaterialRepository.Setup(repo => repo.GetAllMaterials()).ReturnsAsync(materials);
         _mockObligationCalculationRepository.Setup(repo => repo.GetObligationCalculation(organisationId, year)).ReturnsAsync(obligationCalculations);
         _mockPrnRepository.Setup(repo => repo.GetAcceptedAndAwaitingPrnsByYearAsync(organisationId, year)).ReturnsAsync(prns);
@@ -119,6 +133,7 @@ public class ObligationCalculatorServiceTests
         _mockPrnRepository.Setup(repo => repo.GetSumOfTonnageForMaterials(prns, EprnStatus.ACCEPTED.ToString())).Returns(acceptedTonnage);
         _mockPrnRepository.Setup(repo => repo.GetSumOfTonnageForMaterials(prns, EprnStatus.AWAITINGACCEPTANCE.ToString())).Returns(awaitingTonnage);
         _mockPrnRepository.Setup(repo => repo.GetPrnStatusCount(prns, EprnStatus.AWAITINGACCEPTANCE.ToString())).Returns(5);
+        _mockRecyclingTargetDataService.Setup(x => x.GetRecyclingTargetsAsync()).ReturnsAsync(GetRecyclingTargets());
 
         // Act
         var result = await _service.GetObligationCalculation(organisationId, year);
@@ -155,6 +170,7 @@ public class ObligationCalculatorServiceTests
         _mockMaterialRepository.Setup(repo => repo.GetAllMaterials()).ReturnsAsync(materials);
         _mockObligationCalculationRepository.Setup(repo => repo.GetObligationCalculation(organisationId, year)).ReturnsAsync(obligationCalculations);
         _mockPrnRepository.Setup(repo => repo.GetAcceptedAndAwaitingPrnsByYearAsync(organisationId, year)).ReturnsAsync(prns);
+        _mockRecyclingTargetDataService.Setup(x => x.GetRecyclingTargetsAsync()).ReturnsAsync(GetRecyclingTargets());
 
         var acceptedTonnage = _fixture.CreateMany<EprnTonnageResultsDto>(6).ToList();
         var awaitingTonnage = _fixture.CreateMany<EprnTonnageResultsDto>(6).ToList();
@@ -351,4 +367,49 @@ public class ObligationCalculatorServiceTests
         });
         return loggedMessages;
     }
+
+    public static Dictionary<int, Dictionary<MaterialType, double>> GetRecyclingTargets()
+    {
+        var targets = new List<RecyclingTarget>()
+        {
+            new RecyclingTarget { Year = 2024, PaperTarget = 0.75, GlassTarget = 0.74, AluminiumTarget = 0.61, SteelTarget = 0.8, PlasticTarget = 0.55, WoodTarget = 0.45, GlassRemeltTarget = 0.75 },
+            new RecyclingTarget { Year = 2025, PaperTarget = 0.77, GlassTarget = 0.76, AluminiumTarget = 0.62, SteelTarget = 0.81, PlasticTarget = 0.57, WoodTarget = 0.46, GlassRemeltTarget = 0.76 },
+            new RecyclingTarget { Year = 2026, PaperTarget = 0.79, GlassTarget = 0.78, AluminiumTarget = 0.63, SteelTarget = 0.82, PlasticTarget = 0.59, WoodTarget = 0.47, GlassRemeltTarget = 0.77 },
+            new RecyclingTarget { Year = 2027, PaperTarget = 0.81, GlassTarget = 0.80, AluminiumTarget = 0.64, SteelTarget = 0.83, PlasticTarget = 0.61, WoodTarget = 0.48, GlassRemeltTarget = 0.78 },
+            new RecyclingTarget { Year = 2028, PaperTarget = 0.83, GlassTarget = 0.82, AluminiumTarget = 0.65, SteelTarget = 0.84, PlasticTarget = 0.63, WoodTarget = 0.49, GlassRemeltTarget = 0.79 },
+            new RecyclingTarget { Year = 2029, PaperTarget = 0.85, GlassTarget = 0.85, AluminiumTarget = 0.67, SteelTarget = 0.85, PlasticTarget = 0.65, WoodTarget = 0.50, GlassRemeltTarget = 0.80 }
+        };
+
+        return targets.Select(x => new KeyValuePair<int, Dictionary<MaterialType, double>>(x.Year, TransformTargets(x))).ToDictionary();
+    }
+
+    private static Dictionary<MaterialType, double> TransformTargets(RecyclingTarget recyclingTarget)
+    {
+        var dictionary = new Dictionary<MaterialType, double>(7)
+            {
+                { MaterialType.Aluminium, recyclingTarget.AluminiumTarget },
+                { MaterialType.Glass, recyclingTarget.GlassTarget },
+                { MaterialType.GlassRemelt, recyclingTarget.GlassRemeltTarget },
+                { MaterialType.Paper, recyclingTarget.PaperTarget },
+                { MaterialType.Plastic, recyclingTarget.PlasticTarget },
+                { MaterialType.Steel, recyclingTarget.SteelTarget },
+                { MaterialType.Wood, recyclingTarget.WoodTarget }
+            };
+
+        return dictionary;
+    }
+
+    private static List<Material> GetMaterialCodes()
+    {
+        return new List<Material>
+        {
+            new Material { MaterialCode = "PL", MaterialName = "Plastic" },
+            new Material { MaterialCode = "WD", MaterialName = "Wood" },
+            new Material { MaterialCode = "AL", MaterialName = "Aluminium" },
+            new Material { MaterialCode = "ST", MaterialName = "Steel" },
+            new Material { MaterialCode = "PC", MaterialName = "Paper" },
+            new Material { MaterialCode = "GL", MaterialName = "Glass" }
+        };
+    }
+
 }

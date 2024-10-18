@@ -3,6 +3,8 @@ using EPR.PRN.Backend.Data.DTO;
 using EPR.PRN.Backend.Data.Interfaces;
 using EPR.PRN.Backend.Obligation.Constants;
 using EPR.PRN.Backend.Obligation.DTO;
+using EPR.PRN.Backend.Obligation.Enums;
+using EPR.PRN.Backend.Obligation.Helpers;
 using EPR.PRN.Backend.Obligation.Interfaces;
 using EPR.PRN.Backend.Obligation.Models;
 using Microsoft.Extensions.Logging;
@@ -148,11 +150,28 @@ namespace EPR.PRN.Backend.Obligation.Services
                     TonnageAccepted = tonnageAccepted ?? 0,
                     TonnageAwaitingAcceptance = tonnageAwaitingAcceptance ?? 0,
                     TonnageOutstanding = tonnageOutstanding,
-                    Status = GetStatus(obligationCalculation?.MaterialObligationValue, tonnageAccepted)
+                    Status = GetStatus(obligationCalculation?.MaterialObligationValue, tonnageAccepted),
+                    MaterialWeight = obligationCalculation?.MaterialWeight ?? 0,
+                    MaterialTarget = await GetRecyclingTargetAsync(year, materialName) ?? 0
                 });
             }
             var obligationModel = new ObligationModel { ObligationData = obligationData };
             return new ObligationCalculationResult { IsSuccess = true, ObligationModel = obligationModel };
+        }
+
+        private async Task<double?> GetRecyclingTargetAsync(int year, string? materialName)
+        {
+            if (string.IsNullOrWhiteSpace(materialName))
+            {
+                return null;
+            }
+            var materialType = EnumHelper.ConvertStringToEnum<MaterialType>(materialName);
+            if (!materialType.HasValue)
+            {
+                return null;
+            }
+            var recyclingTargets = await _recyclingTargetDataService.GetRecyclingTargetsAsync();
+            return recyclingTargets[year][materialType.Value];
         }
 
         private static bool IsOrganisationIdDataInvalid(List<ObligationCalculation> obligationCalculations, List<EprnTonnageResultsDto> acceptedTonnageForPrns, List<EprnTonnageResultsDto> awaitingAcceptanceForPrns)
