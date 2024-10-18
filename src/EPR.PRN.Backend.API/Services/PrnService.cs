@@ -80,5 +80,15 @@
             prn.LastUpdatedBy = userId;
             prn.LastUpdatedDate = DateTime.UtcNow;
         }
+
+        public async Task<DateTime?> GetObligationCalculatorLastSuccessRun()
+        {
+            return await _repository.GetObligationCalculatorLastSuccessRun();
+        }
+
+        public async Task AddObligationCalculatorLastSuccessRun(ObligationCalculatorLastSuccessRun lastSuccessfulRun)
+        {
+            await _repository.AddObligationCalculatorLastSuccessRun(lastSuccessfulRun);
+        }
     }
 }

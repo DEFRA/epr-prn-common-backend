@@ -6,8 +6,10 @@
     using EPR.PRN.Backend.Data.DataModels;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Storage;
+    using Polly;
     using System.Collections.Generic;
     using System.Linq.Expressions;
+    using System.Security.Cryptography;
     using static EPR.PRN.Backend.API.Common.Constants.PrnConstants;
 
     public class Repository : IRepository
@@ -207,6 +209,27 @@
                 SortBy = request.SortBy,
                 TypeAhead = typeAhead
             };
+        }
+
+        public async Task<DateTime?> GetObligationCalculatorLastSuccessRun()
+        {
+            var lastSuccessfulRun = await _eprContext.ObligationCalculatorLastSuccessRun.FirstOrDefaultAsync();
+            return lastSuccessfulRun?.LastSuccessfulRunDate;
+        }
+
+        public async Task AddObligationCalculatorLastSuccessRun(ObligationCalculatorLastSuccessRun lastSuccessfulRun)
+        {
+            var currentDate = await GetObligationCalculatorLastSuccessRun();
+
+            if (currentDate.HasValue)
+            {
+                _eprContext.ObligationCalculatorLastSuccessRun.Update(lastSuccessfulRun);
+            }
+            else
+            {
+                await _eprContext.ObligationCalculatorLastSuccessRun.AddAsync(lastSuccessfulRun);
+            }
+            await _eprContext.SaveChangesAsync();
         }
     }
 }

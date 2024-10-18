@@ -419,6 +419,21 @@ namespace EPR.PRN.Backend.Data.Migrations
                             WoodTarget = 0.5m
                         });
                 });
+
+            modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.ObligationCalculatorLastSuccessRun", b =>
+            {
+                b.Property<int>("Id")
+                    .HasColumnType("int");
+
+                b.Property<DateTime?>("LastSuccessfulRunDate")
+                    .HasColumnType("datetime2");
+
+                b.HasKey("Id");
+                b.ToTable("ObligationCalculatorLastSuccessRun");
+
+                b.HasData(new { Id = 1, LastSuccessfulRunDate = DateTime.Now });
+            });
+
 #pragma warning restore 612, 618
         }
     }

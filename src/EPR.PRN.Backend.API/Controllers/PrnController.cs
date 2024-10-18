@@ -3,6 +3,7 @@
     using EPR.PRN.Backend.API.Common.DTO;
     using EPR.PRN.Backend.API.Helpers;
     using EPR.PRN.Backend.API.Services.Interfaces;
+    using EPR.PRN.Backend.Data.DataModels;
     using EPR.PRN.Backend.Obligation.DTO;
     using EPR.PRN.Backend.Obligation.Interfaces;
     using EPR.PRN.Backend.Obligation.Models;
@@ -28,6 +29,7 @@
         }
 
         #region Get methods
+
         [HttpGet("{prnId}")]
         [ProducesResponseType(typeof(PrnDto), 200)]
         public async Task<IActionResult> GetPrn([FromHeader(Name = "X-EPR-ORGANISATION")] Guid orgId, [FromRoute] Guid prnId)
@@ -88,9 +90,39 @@
 
             return Ok(new ObligationModel { ObligationData = obligationCalculation, NumberOfPrnsAwaitingAcceptance = 0 });
         }
+
+        [HttpGet("ObligationCalculatorLastSuccessRun")]
+        [ProducesResponseType(typeof(DateTime), 200)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status504GatewayTimeout)]
+        public async Task<IActionResult> GetObligationCalculatorLastSuccessRun()
+        {
+            try
+            {
+                var lastSuccessRunDateTime = await _prnService.GetObligationCalculatorLastSuccessRun();
+
+                if (!lastSuccessRunDateTime.HasValue)
+                {
+                    return NotFound();
+                }
+
+                return Ok(lastSuccessRunDateTime);
+            }
+            catch (TimeoutException ex)
+            {
+                return StatusCode(StatusCodes.Status504GatewayTimeout, new { message = "Request timed out.", details = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new { message = "An error occurred while getting LastSuccessRunDateTime.", details = ex.Message });
+            }
+        }
+
         #endregion
 
         #region Post Methods
+
         [HttpPost("status")]
         public async Task<IActionResult> UpdatePrnStatus(
             [FromHeader(Name = "X-EPR-ORGANISATION")] Guid orgId,
@@ -157,6 +189,34 @@
             catch (Exception ex)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, new { message = "An error occurred during calculation.", details = ex.Message });
+            }
+        }
+
+        [HttpPost("ObligationCalculatorLastSuccessRun/{lastSuccessRunDateTime}")]
+        [ProducesResponseType(StatusCodes.Status202Accepted)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status504GatewayTimeout)]
+        public async Task<IActionResult> AddObligationCalculatorLastSuccessRun(DateTime? lastSuccessRunDateTime)
+        {
+            if (!lastSuccessRunDateTime.HasValue)
+            {
+                return BadRequest(new { message = "LastSuccessRunDateTime cannot be null." });
+            }
+
+            try
+            {
+                var lastsuccessfulRun = new ObligationCalculatorLastSuccessRun() { Id = 1, LastSuccessfulRunDate = lastSuccessRunDateTime };
+                await _prnService.AddObligationCalculatorLastSuccessRun(lastsuccessfulRun);
+                return Accepted();
+            }
+            catch (TimeoutException ex)
+            {
+                return StatusCode(StatusCodes.Status504GatewayTimeout, new { message = "Request timed out.", details = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new { message = "An error occurred during adding LastSuccessRunDateTime.", details = ex.Message });
             }
         }
 
