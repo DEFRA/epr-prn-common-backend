@@ -8,7 +8,6 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace EPR.PRN.Backend.Obligation.UnitTests.Services;
 
-[ExcludeFromCodeCoverage]
 [TestClass]
 public class MaterialServiceTests
 {

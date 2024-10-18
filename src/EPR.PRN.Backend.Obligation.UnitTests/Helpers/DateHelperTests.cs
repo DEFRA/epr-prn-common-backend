@@ -4,7 +4,6 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace EPR.PRN.Backend.Obligation.UnitTests.Helpers;
 
-[ExcludeFromCodeCoverage]
 [TestClass]
 public class DateHelperTests
 {

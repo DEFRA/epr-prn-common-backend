@@ -9,7 +9,6 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace EPR.PRN.Backend.Obligation.UnitTests.Strategies;
 
-[ExcludeFromCodeCoverage]
 [TestClass]
 public class GlassCalculationStrategyTests
 {

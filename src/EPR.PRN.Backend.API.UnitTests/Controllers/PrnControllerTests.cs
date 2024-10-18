@@ -19,7 +19,6 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace EPR.PRN.Backend.API.UnitTests.Services;
 
-[ExcludeFromCodeCoverage]
 [TestClass]
 public class PrnControllerTests
 {
