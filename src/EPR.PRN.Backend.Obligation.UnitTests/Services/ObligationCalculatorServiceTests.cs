@@ -1,4 +1,5 @@
-﻿using EPR.PRN.Backend.Data.DataModels;
+﻿using AutoFixture;
+using EPR.PRN.Backend.Data.DataModels;
 using EPR.PRN.Backend.Data.DTO;
 using EPR.PRN.Backend.Data.Interfaces;
 using EPR.PRN.Backend.Obligation.Constants;
@@ -25,10 +26,12 @@ public class ObligationCalculatorServiceTests
     private Mock<IMaterialRepository> _mockMaterialRepository;
     private Mock<ILogger<ObligationCalculatorService>> _mockLogger;
     private ObligationCalculatorService _service;
+    private Fixture _fixture;
 
     [TestInitialize]
     public void TestInitialize()
     {
+        _fixture = new Fixture();
         _mockObligationCalculationRepository = new Mock<IObligationCalculationRepository>();
         _mockRecyclingTargetDataService = new Mock<IRecyclingTargetDataService>();
         _mockMaterialService = new Mock<IMaterialService>();
@@ -47,101 +50,136 @@ public class ObligationCalculatorServiceTests
     }
 
     [TestMethod]
-    public async Task GetObligationCalculationById_ReturnsExpectedDtoList_WhenGetObligationCalculationHasResult()
+    public async Task GetObligationCalculation_ShouldReturnError_WhenNoMaterialsFound()
     {
+        // Arrange
         var organisationId = Guid.NewGuid();
-        int year = 2024;
-        var obligationCalculation = GetObligationCalculation(organisationId, year);
-        var eprnAcceptedResult = GetEprnAcceptedResultDto();
-        var eprnAwaitedAcceptanceResult = GetEprnAwaitingAcceptanceResultDto();
-        var materials = GetMaterials();
-        SetupRepositories(organisationId, year, obligationCalculation, eprnAcceptedResult, eprnAwaitedAcceptanceResult, materials);
+        var year = 2024;
 
-        var result = await _service.GetObligationCalculation(organisationId, year);
-
-        AddGlassRemelt(materials);
-        AssertResults(materials, obligationCalculation, eprnAcceptedResult, eprnAwaitedAcceptanceResult, result);
-    }
-
-    [TestMethod]
-    public async Task GetObligationCalculationById_ReturnsExpectedDtoList_WhenGetObligationCalculationHasNoResult()
-    {
-        var organisationId = Guid.NewGuid();
-        int year = 2024;
-        var obligationCalculation = new List<ObligationCalculation>();
-        var eprnAcceptedResult = GetEprnAcceptedResultDto();
-        var eprnAwaitedAcceptanceResult = GetEprnAwaitingAcceptanceResultDto();
-        var materials = GetMaterials();
-        SetupRepositories(organisationId, year, obligationCalculation, eprnAcceptedResult, eprnAwaitedAcceptanceResult, materials);
-
-        var result = await _service.GetObligationCalculation(organisationId, year);
-
-        AddGlassRemelt(materials);
-        AssertResults(materials, obligationCalculation, eprnAcceptedResult, eprnAwaitedAcceptanceResult, result);
-    }
-
-    [TestMethod]
-    public async Task GetObligationCalculationById_ReturnsExpectedDtoList_WhenGetEprnAcceptedHasNoResult()
-    {
-        var organisationId = Guid.NewGuid();
-        int year = 2024;
-        var obligationCalculation = GetObligationCalculation(organisationId, year);
-        var eprnAcceptedResult = new List<EprnResultsDto>();
-        var eprnAwaitedAcceptanceResult = GetEprnAwaitingAcceptanceResultDto();
-        var materials = GetMaterials();
-        SetupRepositories(organisationId, year, obligationCalculation, eprnAcceptedResult, eprnAwaitedAcceptanceResult, materials);
-
-        var result = await _service.GetObligationCalculation(organisationId, year);
-
-        AddGlassRemelt(materials);
-        AssertResults(materials, obligationCalculation, eprnAcceptedResult, eprnAwaitedAcceptanceResult, result);
-    }
-
-    [TestMethod]
-    public async Task GetObligationCalculationById_ReturnsExpectedDtoList_WhenGetAwaitedAcceptanceHasNoResult()
-    {
-        var organisationId = Guid.NewGuid();
-        int year = 2024;
-        var obligationCalculation = GetObligationCalculation(organisationId, year);
-        var eprnAcceptedResult = GetEprnAcceptedResultDto();
-        var eprnAwaitedAcceptanceResult = new List<EprnResultsDto>();
-        var materials = GetMaterials();
-        SetupRepositories(organisationId, year, obligationCalculation, eprnAcceptedResult, eprnAwaitedAcceptanceResult, materials);
-
-        var result = await _service.GetObligationCalculation(organisationId, year);
-
-        AddGlassRemelt(materials);
-        AssertResults(materials, obligationCalculation, eprnAcceptedResult, eprnAwaitedAcceptanceResult, result);
-    }
-
-    [TestMethod]
-    public async Task GetObligationCalculationById_ReturnsExpectedDtoList_WhenThereIsNoResult()
-    {
-        var organisationId = Guid.NewGuid();
-        int year = 2024;
-        var obligationCalculation = new List<ObligationCalculation>();
-        var eprnAcceptedResult = new List<EprnResultsDto>();
-        var eprnAwaitedAcceptanceResult = new List<EprnResultsDto>();
-        var materials = GetMaterials();
-        SetupRepositories(organisationId, year, obligationCalculation, eprnAcceptedResult, eprnAwaitedAcceptanceResult, materials);
-
-        var result = await _service.GetObligationCalculation(organisationId, year);
-
-        AddGlassRemelt(materials);
-        AssertResults(materials, obligationCalculation, eprnAcceptedResult, eprnAwaitedAcceptanceResult, result);
-    }
-
-    [TestMethod]
-    public async Task GetObligationCalculationById_WhenMaterialsIsNull_ShouldLogError()
-    {
-        var organisationId = Guid.NewGuid();
-        int year = 2024;
+        _mockMaterialRepository
+            .Setup(repo => repo.GetAllMaterials())
+            .ReturnsAsync(Enumerable.Empty<Material>());
         var loggedMessages = MockLogger();
 
+        // Act
         var result = await _service.GetObligationCalculation(organisationId, year);
 
-        result.Should().NotBeNull();
-        loggedMessages.Should().Contain("No Materials found in PRN BAckend Database");
+        // Assert
+        result.IsSuccess.Should().BeFalse();
+        result.Errors.Should().Be(ObligationConstants.ErrorMessages.NoMaterialsFoundErrorMessage);
+        loggedMessages.Should().Contain(ObligationConstants.ErrorMessages.NoMaterialsFoundErrorMessage);
+    }
+
+    [TestMethod]
+    public async Task GetObligationCalculation_ShouldReturnError_WhenInvalidData()
+    {
+        // Arrange
+        var organisationId = Guid.NewGuid();
+        var year = 2024;
+
+        var materials = _fixture.CreateMany<Material>(5).ToList();
+        var obligationCalculations = new List<ObligationCalculation>(); // Empty to simulate invalid data
+        var prns = _fixture.CreateMany<EprnResultsDto>(5).ToList();
+
+        _mockMaterialRepository.Setup(repo => repo.GetAllMaterials()).ReturnsAsync(materials);
+        _mockObligationCalculationRepository.Setup(repo => repo.GetObligationCalculation(organisationId, year)).ReturnsAsync(obligationCalculations);
+        _mockPrnRepository.Setup(repo => repo.GetAcceptedAndAwaitingPrnsByYearAsync(organisationId, year)).ReturnsAsync(prns);
+
+        _mockPrnRepository.Setup(repo => repo.GetSumOfTonnageForMaterials(prns, EprnStatus.ACCEPTED.ToString())).Returns(new List<EprnTonnageResultsDto>());
+        _mockPrnRepository.Setup(repo => repo.GetSumOfTonnageForMaterials(prns, EprnStatus.AWAITINGACCEPTANCE.ToString())).Returns(new List<EprnTonnageResultsDto>());
+        var loggedMessages = MockLogger();
+
+        // Act
+        var result = await _service.GetObligationCalculation(organisationId, year);
+
+        // Assert
+        result.IsSuccess.Should().BeFalse();
+        result.Errors.Should().Contain($"Obligation calculation not found for OrganisationId: {organisationId}.");
+        loggedMessages.Should().Contain($"Obligation calculation not found for OrganisationId: {organisationId}.");
+    }
+
+    [TestMethod]
+    public async Task GetObligationCalculation_ShouldReturnSuccess_WithExpectedData()
+    {
+        // Arrange
+        var organisationId = Guid.NewGuid();
+        var year = 2024;
+
+        var materials = _fixture.CreateMany<Material>(5).ToList();
+        var obligationCalculations = _fixture.CreateMany<ObligationCalculation>(5).ToList();
+        var prns = _fixture.CreateMany<EprnResultsDto>(5).ToList();
+
+        _mockMaterialRepository.Setup(repo => repo.GetAllMaterials()).ReturnsAsync(materials);
+        _mockObligationCalculationRepository.Setup(repo => repo.GetObligationCalculation(organisationId, year)).ReturnsAsync(obligationCalculations);
+        _mockPrnRepository.Setup(repo => repo.GetAcceptedAndAwaitingPrnsByYearAsync(organisationId, year)).ReturnsAsync(prns);
+
+        var acceptedTonnage = _fixture.CreateMany<EprnTonnageResultsDto>(5).ToList();
+        var awaitingTonnage = _fixture.CreateMany<EprnTonnageResultsDto>(5).ToList();
+
+        _mockPrnRepository.Setup(repo => repo.GetSumOfTonnageForMaterials(prns, EprnStatus.ACCEPTED.ToString())).Returns(acceptedTonnage);
+        _mockPrnRepository.Setup(repo => repo.GetSumOfTonnageForMaterials(prns, EprnStatus.AWAITINGACCEPTANCE.ToString())).Returns(awaitingTonnage);
+        _mockPrnRepository.Setup(repo => repo.GetPrnStatusCount(prns, EprnStatus.AWAITINGACCEPTANCE.ToString())).Returns(awaitingTonnage.Count());
+
+        // Act
+        var result = await _service.GetObligationCalculation(organisationId, year);
+
+        // Assert
+        result.IsSuccess.Should().BeTrue();
+        result.ObligationModel.Should().NotBeNull();
+        result.ObligationModel.ObligationData.Should().HaveCount(materials.Count + 1); // +1 for GlassRemelt
+        result.ObligationModel.NumberOfPrnsAwaitingAcceptance.Should().Be(awaitingTonnage.Count());
+
+
+
+        foreach (var material in materials)
+        {
+            var obligationData = result.ObligationModel.ObligationData.FirstOrDefault(d => d.MaterialName == material.MaterialName);
+            obligationData.Should().NotBeNull();
+            obligationData.OrganisationId.Should().Be(organisationId);
+            obligationData.MaterialName.Should().Be(material.MaterialName);
+            obligationData.ObligationToMeet.Should().Be(obligationCalculations.FirstOrDefault(o => o.MaterialName == material.MaterialName)?.MaterialObligationValue);
+            obligationData.TonnageAccepted.Should().Be(acceptedTonnage.FirstOrDefault(t => t.MaterialName == material.MaterialName)?.TotalTonnage ?? 0);
+            obligationData.TonnageAwaitingAcceptance.Should().Be(awaitingTonnage.FirstOrDefault(t => t.MaterialName == material.MaterialName)?.TotalTonnage ?? 0);
+        }
+    }
+
+    [TestMethod]
+    public async Task GetObligationCalculation_ShouldHandleGlassRemeltCorrectly()
+    {
+        // Arrange
+        var organisationId = Guid.NewGuid();
+        var year = 2024;
+
+        var materials = _fixture.CreateMany<Material>(5).ToList(); // No GlassRemelt initially
+        var obligationCalculations = _fixture.CreateMany<ObligationCalculation>(6).ToList();
+        var prns = _fixture.CreateMany<EprnResultsDto>(5).ToList();
+        prns[1].Eprn.MaterialName = "GlassRemelt";
+
+        _mockMaterialRepository.Setup(repo => repo.GetAllMaterials()).ReturnsAsync(materials);
+        _mockObligationCalculationRepository.Setup(repo => repo.GetObligationCalculation(organisationId, year)).ReturnsAsync(obligationCalculations);
+        _mockPrnRepository.Setup(repo => repo.GetAcceptedAndAwaitingPrnsByYearAsync(organisationId, year)).ReturnsAsync(prns);
+
+        var acceptedTonnage = _fixture.CreateMany<EprnTonnageResultsDto>(6).ToList();
+        var awaitingTonnage = _fixture.CreateMany<EprnTonnageResultsDto>(6).ToList();
+
+        _mockPrnRepository.Setup(repo => repo.GetSumOfTonnageForMaterials(prns, EprnStatus.ACCEPTED.ToString())).Returns(acceptedTonnage);
+        _mockPrnRepository.Setup(repo => repo.GetSumOfTonnageForMaterials(prns, EprnStatus.AWAITINGACCEPTANCE.ToString())).Returns(awaitingTonnage);
+        _mockPrnRepository.Setup(repo => repo.GetPrnStatusCount(prns, EprnStatus.AWAITINGACCEPTANCE.ToString())).Returns(awaitingTonnage.Count());
+
+        // Act
+        var result = await _service.GetObligationCalculation(organisationId, year);
+
+        // Assert
+        result.IsSuccess.Should().BeTrue();
+        result.ObligationModel.ObligationData.Should().Contain(d => d.MaterialName == "GlassRemelt");
+        result.ObligationModel.NumberOfPrnsAwaitingAcceptance.Should().Be(awaitingTonnage.Count());
+
+        var glassRemeltData = result.ObligationModel.ObligationData.FirstOrDefault(d => d.MaterialName == "GlassRemelt");
+        glassRemeltData.Should().NotBeNull();
+        glassRemeltData.ObligationToMeet.Should().BeNull();
+        glassRemeltData.TonnageAccepted.Should().Be(0);
+        glassRemeltData.TonnageAwaitingAcceptance.Should().Be(0);
+        glassRemeltData.Status.Should().Be(ObligationConstants.Statuses.NoDataYet);
     }
 
     [TestMethod]
@@ -317,197 +355,5 @@ public class ObligationCalculatorServiceTests
             }
         });
         return loggedMessages;
-    }
-
-    private void SetupRepositories(
-        Guid organisationId,
-        int year,
-        List<ObligationCalculation> obligationCalculation,
-        List<EprnResultsDto> eprnAcceptedResult,
-        List<EprnResultsDto> eprnAwaitedAcceptanceResult,
-        List<Material> materials)
-    {
-        _mockObligationCalculationRepository.Setup(repo => repo.GetObligationCalculation(organisationId, year))
-            .ReturnsAsync(obligationCalculation);
-        _mockPrnRepository.Setup(repo => repo.GetSumOfTonnageForMaterials(organisationId, EprnStatus.ACCEPTED.ToString()))
-            .ReturnsAsync(eprnAcceptedResult);
-        _mockPrnRepository.Setup(repo => repo.GetSumOfTonnageForMaterials(organisationId, EprnStatus.AWAITINGACCEPTANCE.ToString()))
-            .ReturnsAsync(eprnAwaitedAcceptanceResult);
-        _mockMaterialRepository.Setup(repo => repo.GetAllMaterials()).ReturnsAsync(materials);
-    }
-
-    private static void AssertResults(
-        List<Material> materials,
-        List<ObligationCalculation> obligationCalculation,
-        List<EprnResultsDto> eprnAcceptedResult,
-        List<EprnResultsDto> eprnAwaitedAcceptanceResult,
-        List<ObligationData> result)
-    {
-        result.Should().NotBeNull();
-        result.Should().HaveCount(materials.Count, "the expected count of calculations should match the actual count of calculations");
-
-        for (int i = 0; i < result.Count; i++)
-        {
-            var obligation = obligationCalculation.FirstOrDefault(obligationCalculationItem => obligationCalculationItem.MaterialName == result[i].MaterialName);
-
-            result[i].MaterialName.Should().Be(materials[i].MaterialName,
-                $"the expected material name for calculation {i} should match the actual material name");
-
-            result[i].ObligationToMeet.Should().Be(obligation?.MaterialObligationValue,
-                $"the expected obligation value for material {i} should match");
-
-            var expectedAcceptedTonnage = GetTonnage(result[i].MaterialName, eprnAcceptedResult);
-            result[i].TonnageAccepted.Should().Be(expectedAcceptedTonnage,
-                $"the expected tonnage accepted for material {i} should match");
-
-            var expectedAwaitingTonnage = GetTonnage(result[i].MaterialName, eprnAwaitedAcceptanceResult);
-            result[i].TonnageAwaitingAcceptance.Should().Be(expectedAwaitingTonnage,
-                $"the expected tonnage awaiting acceptance for material {i} should match");
-
-            var expectedTonnageOutstanding = GetTonnageOutstanding(obligation?.MaterialObligationValue, expectedAcceptedTonnage);
-            result[i].TonnageOutstanding.Should().Be(expectedTonnageOutstanding,
-                $"the expected tonnage outstanding for material {i} should match");
-
-            var expectedStatus = GetStatus(obligation?.MaterialObligationValue, expectedAcceptedTonnage);
-            result[i].Status.Should().Be(expectedStatus,
-                $"the expected status for material {i} should match");
-        }
-    }
-
-    private static void AddGlassRemelt(List<Material> materials)
-    {
-        materials.Add(new Material { MaterialCode = "GR", MaterialName = "GlassRemelt" });
-    }
-
-    private static int? GetTonnage(string materialName, List<EprnResultsDto> acceptedTonnageForMaterials)
-    {
-        return acceptedTonnageForMaterials
-            .Where(x => x.MaterialName == materialName)
-            .Select(x => x.TotalTonnage)
-            .FirstOrDefault();
-    }
-
-    private static List<Material> GetMaterials()
-    {
-        return new List<Material>
-            {
-                new Material { MaterialCode = "PL", MaterialName = "Plastic" },
-                new Material { MaterialCode = "WD", MaterialName = "Wood" },
-                new Material { MaterialCode = "AL", MaterialName = "Aluminium" },
-                new Material { MaterialCode = "ST", MaterialName = "Steel" },
-                new Material { MaterialCode = "PC", MaterialName = "Paper" },
-                new Material { MaterialCode = "GL", MaterialName = "Glass" },
-            };
-    }
-
-    private static List<ObligationCalculation> GetObligationCalculation(Guid organisationId, int year)
-    {
-        return new List<ObligationCalculation>()
-        {
-            new ObligationCalculation()
-            {
-                Id = 1,
-                MaterialName = MaterialType.Glass.ToString(),
-                OrganisationId = organisationId,
-                Year = year,
-                CalculatedOn = DateTime.UtcNow,
-                MaterialObligationValue = 60,
-                MaterialWeight = 120
-            },
-            new ObligationCalculation()
-            {
-                Id = 2,
-                MaterialName = MaterialType.Steel.ToString(),
-                OrganisationId = organisationId,
-                Year = year,
-                CalculatedOn = DateTime.UtcNow,
-                MaterialObligationValue = 2000,
-                MaterialWeight = 120
-            },
-            new ObligationCalculation()
-            {
-                Id = 3,
-                MaterialName = MaterialType.GlassRemelt.ToString(),
-                OrganisationId = organisationId,
-                Year = year,
-                CalculatedOn = DateTime.UtcNow,
-                MaterialObligationValue = 2000,
-                MaterialWeight = 120
-            }
-        };
-    }
-
-    private static List<EprnResultsDto> GetEprnAcceptedResultDto()
-    {
-        return new List<EprnResultsDto>()
-        {
-            new EprnResultsDto()
-            {
-                MaterialName = MaterialType.Glass.ToString(),
-                StatusName = EprnStatus.AWAITINGACCEPTANCE.ToString(),
-                TotalTonnage = 180
-            },
-            new EprnResultsDto()
-            {
-                MaterialName = MaterialType.Steel.ToString(),
-                StatusName = EprnStatus.AWAITINGACCEPTANCE.ToString(),
-                TotalTonnage = 180
-            },
-            new EprnResultsDto()
-            {
-                MaterialName = MaterialType.Wood.ToString(),
-                StatusName = EprnStatus.AWAITINGACCEPTANCE.ToString(),
-                TotalTonnage = 180
-            }
-        };
-    }
-
-    private static List<EprnResultsDto> GetEprnAwaitingAcceptanceResultDto()
-    {
-        return new List<EprnResultsDto>()
-        {
-            new EprnResultsDto()
-            {
-                MaterialName = MaterialType.Glass.ToString(),
-                StatusName = EprnStatus.ACCEPTED.ToString(),
-                TotalTonnage = 180
-            },
-            new EprnResultsDto()
-            {
-                MaterialName = MaterialType.Steel.ToString(),
-                StatusName = EprnStatus.ACCEPTED.ToString(),
-                TotalTonnage = 180
-            },
-            new EprnResultsDto()
-            {
-                MaterialName = MaterialType.Wood.ToString(),
-                StatusName = EprnStatus.ACCEPTED.ToString(),
-                TotalTonnage = 180
-            }
-        };
-    }
-
-    private static string GetStatus(int? materialObligationValue, int? tonnageAccepted)
-    {
-        if (!materialObligationValue.HasValue || !tonnageAccepted.HasValue)
-        {
-            return ObligationConstants.Statuses.NoDataYet;
-        }
-
-        if (tonnageAccepted >= materialObligationValue)
-        {
-            return ObligationConstants.Statuses.Met;
-        }
-        return ObligationConstants.Statuses.NotMet;
-    }
-
-    private static int? GetTonnageOutstanding(int? materialObligationValue, int? tonnageAccepted)
-    {
-        if (!materialObligationValue.HasValue || !tonnageAccepted.HasValue)
-        {
-            return null;
-        }
-
-        return materialObligationValue - tonnageAccepted;
     }
 }

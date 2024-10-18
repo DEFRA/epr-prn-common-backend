@@ -81,12 +81,12 @@
 
             var obligationCalculation = await _obligationCalculatorService.GetObligationCalculation(organisationId, year);
 
-            if (obligationCalculation == null || obligationCalculation.Count == 0)
+            if (!obligationCalculation.IsSuccess)
             {
-                return NotFound($"Obligation calculation not found for Organisation Id : {organisationId}");
+                return StatusCode(424, "No Materials found in PRN BAckend Database");
             }
 
-            return Ok(new ObligationModel { ObligationData = obligationCalculation, NumberOfPrnsAwaitingAcceptance = 0 });
+            return Ok(obligationCalculation.ObligationModel);
         }
         #endregion
 

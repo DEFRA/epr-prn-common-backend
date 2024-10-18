@@ -1,9 +1,10 @@
-﻿namespace EPR.PRN.Backend.Data.DTO
+﻿using EPR.PRN.Backend.Data.DataModels;
+
+namespace EPR.PRN.Backend.Data.DTO
 {
     public class EprnResultsDto
     {
-        public required string MaterialName { get; set; }
-        public required string StatusName { get; set; }
-        public int TotalTonnage { get; set; }
+        public required Eprn Eprn { get; set; }
+        public required PrnStatus Status { get; set; }
     }
 }
