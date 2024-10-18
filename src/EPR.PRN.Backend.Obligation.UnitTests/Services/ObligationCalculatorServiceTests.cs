@@ -11,9 +11,11 @@ using EPR.PRN.Backend.Obligation.Services;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Moq;
+using System.Diagnostics.CodeAnalysis;
 
 namespace EPR.PRN.Backend.Obligation.UnitTests.Services;
 
+[ExcludeFromCodeCoverage]
 [TestClass]
 public class ObligationCalculatorServiceTests
 {

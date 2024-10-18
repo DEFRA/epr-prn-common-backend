@@ -7,7 +7,11 @@ using EPR.PRN.Backend.Data;
 using EPR.PRN.Backend.Data.DataModels;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
+using System.Diagnostics.CodeAnalysis;
+
 namespace EPR.PRN.Backend.API.UnitTests.Repositories;
+
+[ExcludeFromCodeCoverage]
 [TestClass]
 public class RepositoryTestsInMemory
 {

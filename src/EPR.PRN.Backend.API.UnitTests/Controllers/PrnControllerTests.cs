@@ -13,9 +13,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
 using System.Net;
+using EPR.PRN.Backend.API.Configs;
+using Microsoft.Extensions.Options;
+using System.Diagnostics.CodeAnalysis;
 
 namespace EPR.PRN.Backend.API.UnitTests.Services;
 
+[ExcludeFromCodeCoverage]
 [TestClass]
 public class PrnControllerTests
 {
@@ -23,6 +27,8 @@ public class PrnControllerTests
     private Mock<IPrnService> _mockPrnService;
     private Mock<ILogger<PrnController>> _mockLogger;
     private Mock<IObligationCalculatorService> _mockObligationCalculatorService;
+    private Mock<IOptions<PrnObligationCalculationConfig>> _configMock;
+
     private static readonly IFixture _fixture = new Fixture();
 
     [TestInitialize]
@@ -31,7 +37,12 @@ public class PrnControllerTests
         _mockPrnService = new Mock<IPrnService>();
         _mockLogger = new Mock<ILogger<PrnController>>();
         _mockObligationCalculatorService = new Mock<IObligationCalculatorService>();
-        _systemUnderTest = new PrnController(_mockPrnService.Object, _mockLogger.Object, _mockObligationCalculatorService.Object);
+
+        _configMock = new Mock<IOptions<PrnObligationCalculationConfig>>();
+        var config = new PrnObligationCalculationConfig { StartYear = 2024, EndYear = 2029 };
+        _configMock.Setup(c => c.Value).Returns(config);
+
+        _systemUnderTest = new PrnController(_mockPrnService.Object, _mockLogger.Object, _mockObligationCalculatorService.Object, _configMock.Object);
     }
 
     [TestMethod]

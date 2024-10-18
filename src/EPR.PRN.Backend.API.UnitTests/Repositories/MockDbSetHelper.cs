@@ -2,9 +2,11 @@
 
 using Microsoft.EntityFrameworkCore;
 using Moq;
+using System.Diagnostics.CodeAnalysis;
 
 namespace EPR.PRN.Backend.API.UnitTests.Repositories;
 
+[ExcludeFromCodeCoverage]
 public static class MockDbSetHelper
 {
     public static Mock<DbSet<T>> BuildMockDbSet<T>(this IQueryable<T> source) where T : class
