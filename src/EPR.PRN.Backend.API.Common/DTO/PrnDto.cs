@@ -44,7 +44,7 @@
 
         public bool DecemberWaste { get; set; }
 
-        public DateTime? CancelledDate { get; set; }
+        public DateTime? StatusUpdatedOn { get; set; }
 
         public string IssuedByOrg { get; set; } = null!;
 
@@ -74,7 +74,7 @@
             {
                 Id = prn.Id,
                 AccreditationNumber = prn.AccreditationNumber,
-                CancelledDate = prn.CancelledDate,
+                StatusUpdatedOn = prn.StatusUpdatedOn,
                 CreatedOn = prn.CreatedOn,
                 AccreditationYear = prn.AccreditationYear,
                 MaterialName = prn.MaterialName,
