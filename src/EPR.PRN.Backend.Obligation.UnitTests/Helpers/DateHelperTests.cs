@@ -1,6 +1,5 @@
 ﻿using EPR.PRN.Backend.Obligation.Helpers;
 using FluentAssertions;
-using System.Diagnostics.CodeAnalysis;
 
 namespace EPR.PRN.Backend.Obligation.UnitTests.Helpers;
 

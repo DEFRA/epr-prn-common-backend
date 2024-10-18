@@ -4,7 +4,6 @@ using EPR.PRN.Backend.Obligation.Enums;
 using EPR.PRN.Backend.Obligation.Services;
 using FluentAssertions;
 using Moq;
-using System.Diagnostics.CodeAnalysis;
 
 namespace EPR.PRN.Backend.Obligation.UnitTests.Services;
 

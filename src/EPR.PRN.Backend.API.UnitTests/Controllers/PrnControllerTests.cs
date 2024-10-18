@@ -1,5 +1,6 @@
 ﻿using AutoFixture;
 using EPR.PRN.Backend.API.Common.DTO;
+using EPR.PRN.Backend.API.Configs;
 using EPR.PRN.Backend.API.Controllers;
 using EPR.PRN.Backend.API.Helpers;
 using EPR.PRN.Backend.API.Services.Interfaces;
@@ -11,11 +12,9 @@ using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Moq;
 using System.Net;
-using EPR.PRN.Backend.API.Configs;
-using Microsoft.Extensions.Options;
-using System.Diagnostics.CodeAnalysis;
 
 namespace EPR.PRN.Backend.API.UnitTests.Services;
 
