@@ -66,8 +66,7 @@ namespace EPR.PRN.Backend.Obligation.Services
                 if (strategy == null)
                 {
                     var error = $"Could not find handler for Material Type: {submission.PackagingMaterial} for SubmissionId: {submission.SubmissionId} and OrganisationId: {organisationId}.";
-                    _logger.LogError("Could not find handler for Material Type: {PackagingMaterial} for SubmissionId: {SubmissionId} and OrganisationId: {OrganisationId}.",
-                       submission.PackagingMaterial, submission.SubmissionId, organisationId);
+                    _logger.LogError(error, submission.PackagingMaterial, submission.SubmissionId, organisationId);
                     result.Success = false;
                     continue;
                 }
@@ -83,9 +82,9 @@ namespace EPR.PRN.Backend.Obligation.Services
                 calculations.AddRange(strategy.Calculate(calculationRequest));
             }
 
-            if (calculations.Count() == 0)
+            if (!calculations.Any())
             {
-                _logger.LogError("No calculations for OrganisationId: {organisationId}.", organisationId);
+                _logger.LogError("No calculations for OrganisationId: {OrganisationId}.", organisationId);
                 result.Success = false;
             }
             else
@@ -99,7 +98,7 @@ namespace EPR.PRN.Backend.Obligation.Services
 
         public async Task SaveCalculatedPomDataAsync(List<ObligationCalculation> calculations)
         {
-            if (calculations == null || calculations.Count() == 0)
+            if (calculations == null || calculations.Count == 0)
             {
                 throw new ArgumentException("The calculations list cannot be null or empty.", nameof(calculations));
             }

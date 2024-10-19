@@ -5,20 +5,20 @@ using EPR.PRN.Backend.Obligation.Services;
 using FluentAssertions;
 using Moq;
 
-namespace EPR.PRN.Backend.Obligation.UnitTests.Services
-{
-    [TestClass]
-    public class MaterialServiceTests
-    {
-        private Mock<IMaterialRepository> _materialRepository;
-        private MaterialService _service;
+namespace EPR.PRN.Backend.Obligation.UnitTests.Services;
 
-        [TestInitialize]
-        public void Setup()
-        {
-            _materialRepository = new Mock<IMaterialRepository>();
-            _service = new MaterialService(_materialRepository.Object);
-        }
+[TestClass]
+public class MaterialServiceTests
+{
+    private Mock<IMaterialRepository> _materialRepository;
+    private MaterialService _service;
+
+    [TestInitialize]
+    public void Setup()
+    {
+        _materialRepository = new Mock<IMaterialRepository>();
+        _service = new MaterialService(_materialRepository.Object);
+    }
 
         [TestMethod]
         public async Task GetMaterialByCode_ValidCode_ShouldReturnCorrectMaterialType()
@@ -34,9 +34,9 @@ namespace EPR.PRN.Backend.Obligation.UnitTests.Services
             // Act
             var result = await _service.GetMaterialByCode(code);
 
-            // Assert
-            result.Should().Be(MaterialType.Plastic);
-        }
+        // Assert
+        result.Should().Be(MaterialType.Plastic);
+    }
 
         [TestMethod]
         public async Task GetMaterialByCode_InvalidCode_ShouldReturnNull()
@@ -47,9 +47,9 @@ namespace EPR.PRN.Backend.Obligation.UnitTests.Services
             // Act
             var result = await _service.GetMaterialByCode(code);
 
-            // Assert
-            result.Should().BeNull();
-        }
+        // Assert
+        result.Should().BeNull();
+    }
 
         [TestMethod]
         public async Task GetMaterialByCode_EmptyCode_ShouldReturnNull()
@@ -60,9 +60,9 @@ namespace EPR.PRN.Backend.Obligation.UnitTests.Services
             // Act
             var result = await _service.GetMaterialByCode(code);
 
-            // Assert
-            result.Should().BeNull();
-        }
+        // Assert
+        result.Should().BeNull();
+    }
 
         [TestMethod]
         public async Task GetMaterialByCode_NullCode_ShouldReturnNull()
@@ -73,9 +73,9 @@ namespace EPR.PRN.Backend.Obligation.UnitTests.Services
             // Act
             var result = await _service.GetMaterialByCode(code);
 
-            // Assert
-            result.Should().BeNull();
-        }
+        // Assert
+        result.Should().BeNull();
+    }
 
         [TestMethod]
         public async Task GetMaterialByCode_ValidCodeButInvalidMaterialType_ShouldReturnNull()
@@ -91,8 +91,7 @@ namespace EPR.PRN.Backend.Obligation.UnitTests.Services
             // Act
             var result = await _service.GetMaterialByCode(code);
 
-            // Assert
-            result.Should().BeNull();
-        }
+        // Assert
+        result.Should().BeNull();
     }
 }
