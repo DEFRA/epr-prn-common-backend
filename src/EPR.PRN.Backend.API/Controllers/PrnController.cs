@@ -70,8 +70,8 @@
         [HttpGet("obligationcalculation/{year}")]
         [ProducesResponseType(typeof(List<ObligationData>), 200)]
         [ProducesResponseType(400)]
-        [ProducesResponseType(424)]
-        public async Task<ActionResult<ObligationModel>> GetObligationCalculation([FromHeader(Name = "X-EPR-ORGANISATION")] Guid organisationId,
+        [ProducesResponseType(500)]
+        public async Task<IActionResult> GetObligationCalculation([FromHeader(Name = "X-EPR-ORGANISATION")] Guid organisationId,
             [FromRoute] int year)
         {
             if (year < StartYear || year > EndYear)
@@ -83,7 +83,7 @@
 
             if (!obligationCalculation.IsSuccess)
             {
-                return StatusCode(424, "No Materials found in PRN BAckend Database");
+                return StatusCode(500, "No Materials found in PRN BAckend Database");
             }
 
             return Ok(obligationCalculation.ObligationModel);

@@ -289,10 +289,27 @@ public class PrnControllerTests
         var result = await _systemUnderTest.GetObligationCalculation(organisationId, year);
 
         // Assert
-        var badRequestResult = result.Result as BadRequestObjectResult;
+        var badRequestResult = result as BadRequestObjectResult;
         badRequestResult.Should().NotBeNull();
         badRequestResult.StatusCode.Should().Be(400);
         badRequestResult.Value.Should().Be($"Invalid year provided: {year}.");
+    }
+
+    [TestMethod]
+    public async Task GetObligationCalculation_WhenIsSuccessFalse_Returns500()
+    {
+        // Arrange
+        var organisationId = Guid.NewGuid();
+        var year = 2025;
+        var obligationResult = new ObligationCalculationResult { Errors = null, IsSuccess = false };
+        _mockObligationCalculatorService.Setup(service => service.GetObligationCalculation(organisationId, year)).ReturnsAsync(obligationResult);
+
+        // Act
+        var result = await _systemUnderTest.GetObligationCalculation(organisationId, year);
+
+        var statusCodeResult = result as ObjectResult;
+        statusCodeResult.Should().NotBeNull();
+        statusCodeResult.StatusCode.Should().Be(500);
     }
 
     [TestMethod]
@@ -326,7 +343,7 @@ public class PrnControllerTests
         var result = await _systemUnderTest.GetObligationCalculation(organisationId, year);
 
         // Assert
-        var okResult = result.Result as OkObjectResult;
+        var okResult = result as OkObjectResult;
         okResult.Should().NotBeNull();
         okResult.StatusCode.Should().Be(200);
         okResult.Value.Should().BeEquivalentTo(new ObligationModel { ObligationData = prns, NumberOfPrnsAwaitingAcceptance = obligationResult.ObligationModel.NumberOfPrnsAwaitingAcceptance });
