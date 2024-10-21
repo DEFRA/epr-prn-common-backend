@@ -85,7 +85,7 @@ public class PrnController : Controller
 
         if (!obligationCalculation.IsSuccess)
         {
-            return StatusCode(500, "No Materials found in PRN BAckend Database");
+            return StatusCode(500, obligationCalculation.Errors);
         }
 
         return Ok(obligationCalculation.ObligationModel);

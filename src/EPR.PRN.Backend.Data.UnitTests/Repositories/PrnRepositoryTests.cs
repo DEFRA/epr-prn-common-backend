@@ -47,7 +47,7 @@ namespace EPR.PRN.Backend.Data.UnitTests.Repositories
             await _context.SaveChangesAsync();
 
             // Act
-            var result = _repository.GetAcceptedAndAwaitingPrnsByYear(organisationId, year);
+            var result = _repository.GetAcceptedAndAwaitingPrnsByYear(organisationId);
 
             // Assert
             result.Should().HaveCount(2);
@@ -55,5 +55,4 @@ namespace EPR.PRN.Backend.Data.UnitTests.Repositories
             result.Should().ContainSingle(r => r.Status.StatusName == EprnStatus.AWAITINGACCEPTANCE.ToString());
         }
     }
-
 }

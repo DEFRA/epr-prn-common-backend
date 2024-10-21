@@ -71,31 +71,6 @@ public class ObligationCalculatorServiceTests
     }
 
     [TestMethod]
-    public async Task GetObligationCalculation_ShouldReturnError_WhenInvalidData()
-    {
-        // Arrange
-        var organisationId = Guid.NewGuid();
-        var year = 2024;
-
-        var materials = _fixture.CreateMany<Material>(5).ToList();
-        var obligationCalculations = new List<ObligationCalculation>(); // Empty to simulate invalid data
-        var prns = _fixture.CreateMany<EprnResultsDto>(5).AsQueryable();
-
-        _mockMaterialRepository.Setup(repo => repo.GetAllMaterials()).ReturnsAsync(materials);
-        _mockObligationCalculationRepository.Setup(repo => repo.GetObligationCalculation(organisationId, year)).ReturnsAsync(obligationCalculations);
-        _mockPrnRepository.Setup(repo => repo.GetAcceptedAndAwaitingPrnsByYear(organisationId)).Returns(prns);
-        var loggedMessages = MockLogger();
-
-        // Act
-        var result = await _service.GetObligationCalculation(organisationId, year);
-
-        // Assert
-        result.IsSuccess.Should().BeFalse();
-        result.Errors.Should().Contain($"Obligation calculation not found for OrganisationId: {organisationId}.");
-        loggedMessages.Should().Contain($"Obligation calculation not found for OrganisationId: {organisationId}.");
-    }
-
-    [TestMethod]
     public async Task GetObligationCalculation_ShouldReturnSuccess_WithExpectedData()
     {
         // Arrange

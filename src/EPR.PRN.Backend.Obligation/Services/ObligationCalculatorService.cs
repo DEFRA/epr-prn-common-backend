@@ -120,15 +120,7 @@ namespace EPR.PRN.Backend.Obligation.Services
             }
             var materialsWithRemelt = AddGlassRemelt(materials.ToList());
             var obligationCalculations = await _obligationCalculationRepository.GetObligationCalculation(organisationId, year);
-            if (obligationCalculations == null || obligationCalculations.Count == 0)
-            {
-                _logger.LogError("Obligation calculation not found for OrganisationId: {organisationId}.", organisationId);
-                return new ObligationCalculationResult
-                {
-                    Errors = $"Obligation calculation not found for OrganisationId: {organisationId}.",
-                    IsSuccess = false
-                };
-            }
+
             var prns = _prnRepository.GetAcceptedAndAwaitingPrnsByYear(organisationId);
             var acceptedTonnageForPrns = GetSumOfTonnageForMaterials(prns, EprnStatus.ACCEPTED.ToString());
             var awaitingAcceptanceForPrns = GetSumOfTonnageForMaterials(prns, EprnStatus.AWAITINGACCEPTANCE.ToString());
