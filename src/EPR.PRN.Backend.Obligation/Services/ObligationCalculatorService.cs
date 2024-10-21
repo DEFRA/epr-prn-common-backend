@@ -145,13 +145,6 @@ namespace EPR.PRN.Backend.Obligation.Services
             return new ObligationCalculationResult { IsSuccess = true, ObligationModel = obligationModel };
         }
 
-        private static bool IsOrganisationIdDataInvalid(List<ObligationCalculation> obligationCalculations, List<EprnTonnageResultsDto> acceptedTonnageForPrns, List<EprnTonnageResultsDto> awaitingAcceptanceForPrns)
-        {
-            return obligationCalculations == null || obligationCalculations.Count == 0 &&
-                            acceptedTonnageForPrns == null || acceptedTonnageForPrns.Count == 0 &&
-                            awaitingAcceptanceForPrns == null || awaitingAcceptanceForPrns.Count == 0;
-        }
-
         private static List<Material> AddGlassRemelt(List<Material> materials)
         {
             materials.Add(new Material { MaterialCode = "GR", MaterialName = "GlassRemelt" });
