@@ -79,14 +79,11 @@ public class ObligationCalculatorServiceTests
 
         var materials = _fixture.CreateMany<Material>(5).ToList();
         var obligationCalculations = new List<ObligationCalculation>(); // Empty to simulate invalid data
-        var prns = _fixture.CreateMany<EprnResultsDto>(5).ToList();
+        var prns = _fixture.CreateMany<EprnResultsDto>(5).AsQueryable();
 
         _mockMaterialRepository.Setup(repo => repo.GetAllMaterials()).ReturnsAsync(materials);
         _mockObligationCalculationRepository.Setup(repo => repo.GetObligationCalculation(organisationId, year)).ReturnsAsync(obligationCalculations);
-        _mockPrnRepository.Setup(repo => repo.GetAcceptedAndAwaitingPrnsByYearAsync(organisationId, year)).ReturnsAsync(prns);
-
-        _mockPrnRepository.Setup(repo => repo.GetSumOfTonnageForMaterials(prns, EprnStatus.ACCEPTED.ToString())).Returns(new List<EprnTonnageResultsDto>());
-        _mockPrnRepository.Setup(repo => repo.GetSumOfTonnageForMaterials(prns, EprnStatus.AWAITINGACCEPTANCE.ToString())).Returns(new List<EprnTonnageResultsDto>());
+        _mockPrnRepository.Setup(repo => repo.GetAcceptedAndAwaitingPrnsByYear(organisationId)).Returns(prns);
         var loggedMessages = MockLogger();
 
         // Act
@@ -112,27 +109,23 @@ public class ObligationCalculatorServiceTests
         obligationCalculations[2].MaterialName = MaterialType.Steel.ToString();
         obligationCalculations[3].MaterialName = MaterialType.Wood.ToString();
         obligationCalculations[4].MaterialName = MaterialType.Aluminium.ToString();
-        var prns = _fixture.CreateMany<EprnResultsDto>(5).ToList();
-        prns[0].Eprn.MaterialName = MaterialType.Plastic.ToString();
-        prns[1].Eprn.MaterialName = MaterialType.Paper.ToString();
-        prns[2].Eprn.MaterialName = MaterialType.Steel.ToString();
-        prns[3].Eprn.MaterialName = MaterialType.Wood.ToString();
-        prns[4].Eprn.MaterialName = MaterialType.Aluminium.ToString();
-        prns[0].Eprn.ObligationYear = year.ToString();
-        prns[1].Eprn.ObligationYear = year.ToString();
-        prns[2].Eprn.ObligationYear = year.ToString();
-        prns[3].Eprn.ObligationYear = year.ToString();
-        prns[4].Eprn.ObligationYear = year.ToString();
+        var prnList = _fixture.CreateMany<EprnResultsDto>(5).ToList();
+        prnList[0].Eprn.MaterialName = MaterialType.Plastic.ToString();
+        prnList[1].Eprn.MaterialName = MaterialType.Paper.ToString();
+        prnList[2].Eprn.MaterialName = MaterialType.Steel.ToString();
+        prnList[3].Eprn.MaterialName = MaterialType.Wood.ToString();
+        prnList[4].Eprn.MaterialName = MaterialType.Aluminium.ToString();
+        prnList[0].Eprn.ObligationYear = year.ToString();
+        prnList[1].Eprn.ObligationYear = year.ToString();
+        prnList[2].Eprn.ObligationYear = year.ToString();
+        prnList[3].Eprn.ObligationYear = year.ToString();
+        prnList[4].Eprn.ObligationYear = year.ToString();
+        var prns = prnList.AsQueryable();
         _mockMaterialRepository.Setup(repo => repo.GetAllMaterials()).ReturnsAsync(materials);
         _mockObligationCalculationRepository.Setup(repo => repo.GetObligationCalculation(organisationId, year)).ReturnsAsync(obligationCalculations);
-        _mockPrnRepository.Setup(repo => repo.GetAcceptedAndAwaitingPrnsByYearAsync(organisationId, year)).ReturnsAsync(prns);
-
+        _mockPrnRepository.Setup(repo => repo.GetAcceptedAndAwaitingPrnsByYear(organisationId)).Returns(prns);
         var acceptedTonnage = _fixture.CreateMany<EprnTonnageResultsDto>(5).ToList();
         var awaitingTonnage = _fixture.CreateMany<EprnTonnageResultsDto>(5).ToList();
-
-        _mockPrnRepository.Setup(repo => repo.GetSumOfTonnageForMaterials(prns, EprnStatus.ACCEPTED.ToString())).Returns(acceptedTonnage);
-        _mockPrnRepository.Setup(repo => repo.GetSumOfTonnageForMaterials(prns, EprnStatus.AWAITINGACCEPTANCE.ToString())).Returns(awaitingTonnage);
-        _mockPrnRepository.Setup(repo => repo.GetPrnStatusCount(prns, EprnStatus.AWAITINGACCEPTANCE.ToString())).Returns(5);
         _mockRecyclingTargetDataService.Setup(x => x.GetRecyclingTargetsAsync()).ReturnsAsync(GetRecyclingTargets());
 
         // Act
@@ -164,19 +157,15 @@ public class ObligationCalculatorServiceTests
 
         var materials = _fixture.CreateMany<Material>(5).ToList(); // No GlassRemelt initially
         var obligationCalculations = _fixture.CreateMany<ObligationCalculation>(6).ToList();
-        var prns = _fixture.CreateMany<EprnResultsDto>(5).ToList();
-        prns[1].Eprn.MaterialName = "GlassRemelt";
-
+        var prnList = _fixture.CreateMany<EprnResultsDto>(5).ToList();
+        prnList[1].Eprn.MaterialName = "GlassRemelt";
+        var prns = prnList.AsQueryable();
         _mockMaterialRepository.Setup(repo => repo.GetAllMaterials()).ReturnsAsync(materials);
         _mockObligationCalculationRepository.Setup(repo => repo.GetObligationCalculation(organisationId, year)).ReturnsAsync(obligationCalculations);
-        _mockPrnRepository.Setup(repo => repo.GetAcceptedAndAwaitingPrnsByYearAsync(organisationId, year)).ReturnsAsync(prns);
+        _mockPrnRepository.Setup(repo => repo.GetAcceptedAndAwaitingPrnsByYear(organisationId)).Returns(prns);
         _mockRecyclingTargetDataService.Setup(x => x.GetRecyclingTargetsAsync()).ReturnsAsync(GetRecyclingTargets());
-
         var acceptedTonnage = _fixture.CreateMany<EprnTonnageResultsDto>(6).ToList();
         var awaitingTonnage = _fixture.CreateMany<EprnTonnageResultsDto>(6).ToList();
-
-        _mockPrnRepository.Setup(repo => repo.GetSumOfTonnageForMaterials(prns, EprnStatus.ACCEPTED.ToString())).Returns(acceptedTonnage);
-        _mockPrnRepository.Setup(repo => repo.GetSumOfTonnageForMaterials(prns, EprnStatus.AWAITINGACCEPTANCE.ToString())).Returns(awaitingTonnage);
 
         // Act
         var result = await _service.GetObligationCalculation(organisationId, year);

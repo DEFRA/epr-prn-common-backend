@@ -120,11 +120,7 @@ namespace EPR.PRN.Backend.Obligation.Services
             }
             var materialsWithRemelt = AddGlassRemelt(materials.ToList());
             var obligationCalculations = await _obligationCalculationRepository.GetObligationCalculation(organisationId, year);
-            var prns = await _prnRepository.GetAcceptedAndAwaitingPrnsByYearAsync(organisationId, year);
-            var acceptedTonnageForPrns = _prnRepository.GetSumOfTonnageForMaterials(prns, EprnStatus.ACCEPTED.ToString());
-            var awaitingAcceptanceForPrns = _prnRepository.GetSumOfTonnageForMaterials(prns, EprnStatus.AWAITINGACCEPTANCE.ToString());
-            var awaitingAcceptanceCount = _prnRepository.GetPrnStatusCount(prns, EprnStatus.AWAITINGACCEPTANCE.ToString());
-            if (IsOrganisationIdDataInvalid(obligationCalculations, acceptedTonnageForPrns, awaitingAcceptanceForPrns))
+            if (obligationCalculations == null || obligationCalculations.Count == 0)
             {
                 _logger.LogError("Obligation calculation not found for OrganisationId: {organisationId}.", organisationId);
                 return new ObligationCalculationResult
@@ -133,6 +129,10 @@ namespace EPR.PRN.Backend.Obligation.Services
                     IsSuccess = false
                 };
             }
+            var prns = _prnRepository.GetAcceptedAndAwaitingPrnsByYear(organisationId);
+            var acceptedTonnageForPrns = GetSumOfTonnageForMaterials(prns, EprnStatus.ACCEPTED.ToString());
+            var awaitingAcceptanceForPrns = GetSumOfTonnageForMaterials(prns, EprnStatus.AWAITINGACCEPTANCE.ToString());
+            var awaitingAcceptanceCount = GetPrnStatusCount(prns, EprnStatus.AWAITINGACCEPTANCE.ToString());
             var materialNames = materialsWithRemelt.Select(material => material.MaterialName);
             var obligationData = new List<ObligationData>();
             foreach (var materialName in materialNames)
@@ -158,6 +158,24 @@ namespace EPR.PRN.Backend.Obligation.Services
             return new ObligationCalculationResult { IsSuccess = true, ObligationModel = obligationModel };
         }
 
+        private List<EprnTonnageResultsDto> GetSumOfTonnageForMaterials(IQueryable<EprnResultsDto> prns, string status)
+        {
+            return prns
+                .Where(joined => joined.Status.StatusName == status)
+                .GroupBy(joined => new { joined.Eprn.MaterialName, joined.Status.StatusName })
+                .Select(g => new EprnTonnageResultsDto
+                {
+                    MaterialName = g.Key.MaterialName,
+                    StatusName = g.Key.StatusName,
+                    TotalTonnage = g.Sum(x => x.Eprn.TonnageValue)
+                }).ToList();
+        }
+
+        private int GetPrnStatusCount(IQueryable<EprnResultsDto> prns, string status)
+        {
+            return prns.Where(joined => joined.Status.StatusName == status).Count();
+        }
+
         private async Task<double?> GetRecyclingTargetAsync(int year, string? materialName)
         {
             if (string.IsNullOrWhiteSpace(materialName))
@@ -171,13 +189,6 @@ namespace EPR.PRN.Backend.Obligation.Services
             }
             var recyclingTargets = await _recyclingTargetDataService.GetRecyclingTargetsAsync();
             return recyclingTargets[year][materialType.Value];
-        }
-
-        private static bool IsOrganisationIdDataInvalid(List<ObligationCalculation> obligationCalculations, List<EprnTonnageResultsDto> acceptedTonnageForPrns, List<EprnTonnageResultsDto> awaitingAcceptanceForPrns)
-        {
-            return obligationCalculations == null || obligationCalculations.Count == 0 &&
-                            acceptedTonnageForPrns == null || acceptedTonnageForPrns.Count == 0 &&
-                            awaitingAcceptanceForPrns == null || awaitingAcceptanceForPrns.Count == 0;
         }
 
         private static List<Material> AddGlassRemelt(List<Material> materials)
