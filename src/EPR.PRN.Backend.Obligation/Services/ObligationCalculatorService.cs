@@ -122,15 +122,6 @@ namespace EPR.PRN.Backend.Obligation.Services
             var acceptedTonnageForPrns = _prnRepository.GetSumOfTonnageForMaterials(prns, EprnStatus.ACCEPTED.ToString());
             var awaitingAcceptanceForPrns = _prnRepository.GetSumOfTonnageForMaterials(prns, EprnStatus.AWAITINGACCEPTANCE.ToString());
             var awaitingAcceptanceCount = _prnRepository.GetPrnStatusCount(prns, EprnStatus.AWAITINGACCEPTANCE.ToString());
-            if (IsOrganisationIdDataInvalid(obligationCalculations, acceptedTonnageForPrns, awaitingAcceptanceForPrns))
-            {
-                _logger.LogError("Obligation calculation not found for OrganisationId: {organisationId}.", organisationId);
-                return new ObligationCalculationResult
-                {
-                    Errors = $"Obligation calculation not found for OrganisationId: {organisationId}.",
-                    IsSuccess = false
-                };
-            }
             var materialNames = materialsWithRemelt.Select(material => material.MaterialName);
             var obligationData = new List<ObligationData>();
             foreach (var materialName in materialNames)
