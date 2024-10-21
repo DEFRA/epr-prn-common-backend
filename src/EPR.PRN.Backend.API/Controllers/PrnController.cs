@@ -206,8 +206,7 @@
 
             try
             {
-                var lastsuccessfulRun = new ObligationCalculatorLastSuccessRun() { Id = 1, LastSuccessfulRunDate = lastSuccessRunDateTime };
-                await _prnService.AddObligationCalculatorLastSuccessRun(lastsuccessfulRun);
+                await _prnService.AddObligationCalculatorLastSuccessRun(lastSuccessRunDateTime.Value);
                 return Accepted();
             }
             catch (TimeoutException ex)

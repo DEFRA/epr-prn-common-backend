@@ -15,5 +15,5 @@ public interface IPrnService
 
     Task<DateTime?> GetObligationCalculatorLastSuccessRun();
 
-    Task AddObligationCalculatorLastSuccessRun(ObligationCalculatorLastSuccessRun lastSuccessfulRun);
+    Task AddObligationCalculatorLastSuccessRun(DateTime lastSuccessfulRunDate);
 }

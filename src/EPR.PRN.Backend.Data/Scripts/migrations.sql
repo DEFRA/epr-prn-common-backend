@@ -353,3 +353,32 @@ GO
 COMMIT;
 GO
 
+BEGIN TRANSACTION;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20241018141631_add_ObligationCalculatorLastSuccessRun_table'
+)
+BEGIN
+    CREATE TABLE [ObligationCalculatorLastSuccessRun] (
+        [Id] int NOT NULL IDENTITY,
+        [LastSuccessfulRunDate] datetime2 NULL,
+        CONSTRAINT [PK_ObligationCalculatorLastSuccessRun] PRIMARY KEY ([Id])
+    );
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20241018141631_add_ObligationCalculatorLastSuccessRun_table'
+)
+BEGIN
+    INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+    VALUES (N'20241018141631_add_ObligationCalculatorLastSuccessRun_table', N'8.0.8');
+END;
+GO
+
+COMMIT;
+GO
+

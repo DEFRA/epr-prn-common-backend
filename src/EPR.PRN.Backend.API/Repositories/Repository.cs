@@ -217,17 +217,19 @@
             return lastSuccessfulRun?.LastSuccessfulRunDate;
         }
 
-        public async Task AddObligationCalculatorLastSuccessRun(ObligationCalculatorLastSuccessRun lastSuccessfulRun)
+        public async Task AddObligationCalculatorLastSuccessRun(DateTime lastSuccessfulRunDate)
         {
-            var currentDate = await GetObligationCalculatorLastSuccessRun();
+            var lastSuccessfulRun = await _eprContext.ObligationCalculatorLastSuccessRun.FirstOrDefaultAsync();
 
-            if (currentDate.HasValue)
+            if (lastSuccessfulRun != null)
             {
+                lastSuccessfulRun.LastSuccessfulRunDate = lastSuccessfulRunDate;
                 _eprContext.ObligationCalculatorLastSuccessRun.Update(lastSuccessfulRun);
             }
             else
             {
-                await _eprContext.ObligationCalculatorLastSuccessRun.AddAsync(lastSuccessfulRun);
+
+                await _eprContext.ObligationCalculatorLastSuccessRun.AddAsync(new ObligationCalculatorLastSuccessRun() { LastSuccessfulRunDate = lastSuccessfulRunDate });
             }
             await _eprContext.SaveChangesAsync();
         }

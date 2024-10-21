@@ -86,9 +86,9 @@
             return await _repository.GetObligationCalculatorLastSuccessRun();
         }
 
-        public async Task AddObligationCalculatorLastSuccessRun(ObligationCalculatorLastSuccessRun lastSuccessfulRun)
+        public async Task AddObligationCalculatorLastSuccessRun(DateTime lastSuccessfulRunDate)
         {
-            await _repository.AddObligationCalculatorLastSuccessRun(lastSuccessfulRun);
+            await _repository.AddObligationCalculatorLastSuccessRun(lastSuccessfulRunDate);
         }
     }
 }

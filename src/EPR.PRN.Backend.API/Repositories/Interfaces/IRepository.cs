@@ -20,5 +20,5 @@ public interface IRepository
 
     Task<DateTime?> GetObligationCalculatorLastSuccessRun();
 
-    Task AddObligationCalculatorLastSuccessRun(ObligationCalculatorLastSuccessRun lastSuccessfulRun);
+    Task AddObligationCalculatorLastSuccessRun(DateTime lastSuccessfulRunDate);
 }
