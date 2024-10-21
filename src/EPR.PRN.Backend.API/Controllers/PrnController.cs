@@ -69,27 +69,28 @@ public class PrnController : Controller
         return Ok(prn);
     }
 
-    [HttpGet("obligationcalculation/{year}")]
-    [ProducesResponseType(typeof(List<ObligationData>), 200)]
-    [ProducesResponseType(400)]
-    [ProducesResponseType(424)]
-    public async Task<ActionResult<ObligationModel>> GetObligationCalculation([FromHeader(Name = "X-EPR-ORGANISATION")] Guid organisationId, [FromRoute] int year)
-    {
-        if (year < _config.StartYear || year > _config.EndYear)
+        [HttpGet("obligationcalculation/{year}")]
+        [ProducesResponseType(typeof(List<ObligationData>), 200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(500)]
+        public async Task<IActionResult> GetObligationCalculation([FromHeader(Name = "X-EPR-ORGANISATION")] Guid organisationId,
+            [FromRoute] int year)
         {
-            return BadRequest($"Invalid year provided: {year}.");
-        }
+            if (year < _config.StartYear || year > _config.EndYear)
+            {
+                return BadRequest($"Invalid year provided: {year}.");
+            }
 
         var obligationCalculation = await _obligationCalculatorService.GetObligationCalculation(organisationId, year);
 
-        if (obligationCalculation == null || obligationCalculation.Count == 0)
-        {
-            return NotFound($"Obligation calculation not found for Organisation Id : {organisationId}");
-        }
+            if (!obligationCalculation.IsSuccess)
+            {
+                return StatusCode(500, "No Materials found in PRN BAckend Database");
+            }
 
-        return Ok(new ObligationModel { ObligationData = obligationCalculation, NumberOfPrnsAwaitingAcceptance = 0 });
-    }
-    #endregion
+            return Ok(obligationCalculation.ObligationModel);
+        }
+        #endregion
 
     #region Post Methods
     [HttpPost("status")]
