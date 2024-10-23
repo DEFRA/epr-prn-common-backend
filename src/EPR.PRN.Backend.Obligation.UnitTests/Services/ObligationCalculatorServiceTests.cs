@@ -271,42 +271,17 @@ public class ObligationCalculatorServiceTests
     }
 
     [TestMethod]
-    public async Task SaveCalculatedPomDataAsync_Should_ThrowArgumentException_WhenCalculationsAreNull()
-    {
-        List<ObligationCalculation> calculations = null;
-
-        Func<Task> act = async () => await _service.SaveCalculatedPomDataAsync(calculations);
-
-        var exception = await act.Should().ThrowAsync<ArgumentException>();
-        exception.WithMessage("The calculations list cannot be null or empty.*");
-
-        _mockObligationCalculationRepository.Verify(x => x.AddObligationCalculation(It.IsAny<List<ObligationCalculation>>()), Times.Never);
-    }
-
-    [TestMethod]
-    public async Task SaveCalculatedPomDataAsync_Should_ThrowArgumentException_WhenCalculationsAreEmpty()
-    {
-        var calculations = new List<ObligationCalculation>();
-
-        Func<Task> act = async () => await _service.SaveCalculatedPomDataAsync(calculations);
-
-        var exception = await act.Should().ThrowAsync<ArgumentException>();
-        exception.WithMessage("The calculations list cannot be null or empty.*");
-
-        _mockObligationCalculationRepository.Verify(x => x.AddObligationCalculation(It.IsAny<List<ObligationCalculation>>()), Times.Never);
-    }
-
-    [TestMethod]
-    public async Task SaveCalculatedPomDataAsync_Should_CallRepository_WhenValidCalculationsAreProvided()
+    public async Task UpsertCalculatedPomDataAsync_Should_CallRepository_WhenValidCalculationsAreProvided()
     {
         var calculations = new List<ObligationCalculation>
             {
                 new ObligationCalculation ()
             };
+        var organisationId = Guid.NewGuid();
 
-        await _service.SaveCalculatedPomDataAsync(calculations);
+        await _service.UpsertCalculatedPomDataAsync(organisationId, calculations);
 
-        _mockObligationCalculationRepository.Verify(x => x.AddObligationCalculation(calculations), Times.Once);
+        _mockObligationCalculationRepository.Verify(x => x.UpsertObligationCalculationAsync(organisationId, calculations), Times.Once);
     }
 
     private List<string> MockLogger()

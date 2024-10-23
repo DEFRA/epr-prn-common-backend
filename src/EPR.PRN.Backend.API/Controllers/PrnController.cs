@@ -148,7 +148,7 @@ public class PrnController : Controller
                 return StatusCode(StatusCodes.Status500InternalServerError, new { message = "Calculation failed due to internal errors." });
             }
 
-            await _obligationCalculatorService.SaveCalculatedPomDataAsync(calculationResult.Calculations);
+            await _obligationCalculatorService.UpsertCalculatedPomDataAsync(organisationId, calculationResult.Calculations);
 
             return Accepted(new { message = "Calculation successful.", data = calculationResult.Calculations });
         }

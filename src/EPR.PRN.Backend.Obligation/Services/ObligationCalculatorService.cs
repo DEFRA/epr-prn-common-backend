@@ -96,35 +96,9 @@ namespace EPR.PRN.Backend.Obligation.Services
             return result;
         }
 
-        public async Task SaveCalculatedPomDataAsync(List<ObligationCalculation> calculations)
+        public async Task UpsertCalculatedPomDataAsync(Guid organisationId, List<ObligationCalculation> calculations)
         {
-            if (calculations == null || calculations.Count == 0)
-            {
-                throw new ArgumentException("The calculations list cannot be null or empty.", nameof(calculations));
-            }
-
-            await _obligationCalculationRepository.AddObligationCalculation(calculations);
-        }
-
-        public async Task SaveCalculatedPomDataAsync(Guid organisationId, List<ObligationCalculation> calculations)
-        {
-            if (calculations == null || calculations.Count == 0)
-            {
-                throw new ArgumentException("The calculations list cannot be null or empty.", nameof(calculations));
-            }
-            var obligationCalculations = await _obligationCalculationRepository.GetObligationCalculation(organisationId, calculations.First().Year);
-
-            if (obligationCalculations.Count() == 0)
-            {
-                await _obligationCalculationRepository.AddObligationCalculation(calculations);
-            }
-            else
-            {
-                foreach (var calculation in calculations)
-                {
-
-                }
-            }
+            await _obligationCalculationRepository.UpsertObligationCalculationAsync(organisationId, calculations);
         }
 
         public async Task<ObligationCalculationResult> GetObligationCalculation(Guid organisationId, int year)
