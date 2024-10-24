@@ -84,18 +84,6 @@ public class PrnControllerTests
     }
 
     [TestMethod]
-    public async Task GetAllPrnByOrganisationId_ReturnsNotFound_WhenPrnIdDoesntExists()
-    {
-        var orgId = Guid.NewGuid();
-        _mockPrnService.Setup(s => s.GetAllPrnByOrganisationId(orgId)).ReturnsAsync([]);
-
-        var result = await _systemUnderTest.GetAllPrnByOrganisationId(orgId) as NotFoundResult;
-
-        result.Should().NotBeNull();
-        result.StatusCode.Should().Be((int)HttpStatusCode.NotFound);
-    }
-
-    [TestMethod]
     public async Task UpdatePrnStatus_ReturnsOk_WhenUpdateSuccessfully()
     {
         var orgId = Guid.NewGuid();

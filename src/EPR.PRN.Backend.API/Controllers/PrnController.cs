@@ -63,9 +63,6 @@ public class PrnController : Controller
     {
         var prn = await _prnService.GetAllPrnByOrganisationId(orgId);
 
-        if (prn.Count == 0)
-            return NotFound();
-
         return Ok(prn);
     }
 
