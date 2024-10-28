@@ -1,5 +1,6 @@
 ﻿using AutoFixture;
 using EPR.PRN.Backend.API.Common.DTO;
+using EPR.PRN.Backend.API.Configs;
 using EPR.PRN.Backend.API.Controllers;
 using EPR.PRN.Backend.API.Helpers;
 using EPR.PRN.Backend.API.Services.Interfaces;
@@ -11,6 +12,7 @@ using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Moq;
 using System.Net;
 
@@ -23,6 +25,8 @@ public class PrnControllerTests
     private Mock<IPrnService> _mockPrnService;
     private Mock<ILogger<PrnController>> _mockLogger;
     private Mock<IObligationCalculatorService> _mockObligationCalculatorService;
+    private Mock<IOptions<PrnObligationCalculationConfig>> _configMock;
+
     private static readonly IFixture _fixture = new Fixture();
 
     [TestInitialize]
@@ -31,7 +35,12 @@ public class PrnControllerTests
         _mockPrnService = new Mock<IPrnService>();
         _mockLogger = new Mock<ILogger<PrnController>>();
         _mockObligationCalculatorService = new Mock<IObligationCalculatorService>();
-        _systemUnderTest = new PrnController(_mockPrnService.Object, _mockLogger.Object, _mockObligationCalculatorService.Object);
+
+        _configMock = new Mock<IOptions<PrnObligationCalculationConfig>>();
+        var config = new PrnObligationCalculationConfig { StartYear = 2024, EndYear = 2029 };
+        _configMock.Setup(c => c.Value).Returns(config);
+
+        _systemUnderTest = new PrnController(_mockPrnService.Object, _mockLogger.Object, _mockObligationCalculatorService.Object, _configMock.Object);
     }
 
     [TestMethod]
@@ -289,54 +298,27 @@ public class PrnControllerTests
         var result = await _systemUnderTest.GetObligationCalculation(organisationId, year);
 
         // Assert
-        var badRequestResult = result.Result as BadRequestObjectResult;
+        var badRequestResult = result as BadRequestObjectResult;
         badRequestResult.Should().NotBeNull();
         badRequestResult.StatusCode.Should().Be(400);
         badRequestResult.Value.Should().Be($"Invalid year provided: {year}.");
     }
 
     [TestMethod]
-    public async Task GetObligationCalculation_ValidYear_NoDataFound_ReturnsNotFound()
+    public async Task GetObligationCalculation_WhenIsSuccessFalse_Returns500()
     {
         // Arrange
         var organisationId = Guid.NewGuid();
         var year = 2025;
-
-        // Mock the service to return null (no obligation data)
-        _mockObligationCalculatorService
-            .Setup(service => service.GetObligationCalculation(organisationId, year))
-            .ReturnsAsync((List<ObligationData>)null);
+        var obligationResult = new ObligationCalculationResult { Errors = null, IsSuccess = false };
+        _mockObligationCalculatorService.Setup(service => service.GetObligationCalculation(organisationId, year)).ReturnsAsync(obligationResult);
 
         // Act
         var result = await _systemUnderTest.GetObligationCalculation(organisationId, year);
 
-        // Assert
-        var notFoundResult = result.Result as NotFoundObjectResult;
-        notFoundResult.Should().NotBeNull();
-        notFoundResult.StatusCode.Should().Be(404);
-        notFoundResult.Value.Should().Be($"Obligation calculation not found for Organisation Id : {organisationId}");
-    }
-
-    [TestMethod]
-    public async Task GetObligationCalculation_ValidYear_EmptyData_ReturnsNotFound()
-    {
-        // Arrange
-        var organisationId = Guid.NewGuid();
-        var year = 2025;
-
-        // Mock the service to return an empty list (no obligation data)
-        _mockObligationCalculatorService
-            .Setup(service => service.GetObligationCalculation(organisationId, year))
-            .ReturnsAsync(new List<ObligationData>());
-
-        // Act
-        var result = await _systemUnderTest.GetObligationCalculation(organisationId, year);
-
-        // Assert
-        var notFoundResult = result.Result as NotFoundObjectResult;
-        notFoundResult.Should().NotBeNull();
-        notFoundResult.StatusCode.Should().Be(404);
-        notFoundResult.Value.Should().Be($"Obligation calculation not found for Organisation Id : {organisationId}");
+        var statusCodeResult = result as ObjectResult;
+        statusCodeResult.Should().NotBeNull();
+        statusCodeResult.StatusCode.Should().Be(500);
     }
 
     [TestMethod]
@@ -359,18 +341,20 @@ public class PrnControllerTests
             prns[i].OrganisationId = organisationId;
         }
 
+        var obligationResult = new ObligationCalculationResult { Errors = null, IsSuccess = true, ObligationModel = new ObligationModel { NumberOfPrnsAwaitingAcceptance = 8, ObligationData = prns } };
+
         // Mock the service to return obligation data
         _mockObligationCalculatorService
             .Setup(service => service.GetObligationCalculation(organisationId, year))
-            .ReturnsAsync(prns);
+            .ReturnsAsync(obligationResult);
 
         // Act
         var result = await _systemUnderTest.GetObligationCalculation(organisationId, year);
 
         // Assert
-        var okResult = result.Result as OkObjectResult;
+        var okResult = result as OkObjectResult;
         okResult.Should().NotBeNull();
         okResult.StatusCode.Should().Be(200);
-        okResult.Value.Should().BeEquivalentTo(new ObligationModel { ObligationData = prns, NumberOfPrnsAwaitingAcceptance = 0 });
+        okResult.Value.Should().BeEquivalentTo(new ObligationModel { ObligationData = prns, NumberOfPrnsAwaitingAcceptance = obligationResult.ObligationModel.NumberOfPrnsAwaitingAcceptance });
     }
 }

@@ -66,11 +66,12 @@
 
         private void UpdatePrn(Guid userId, PrnUpdateStatusDto prnUpdate, Eprn prn)
         {
+            var updateDate = DateTime.UtcNow;
             var prnStatusHistory = new PrnStatusHistory()
             {
                 PrnIdFk = prn.Id,
                 PrnStatusIdFk = (int)prnUpdate.Status,
-                CreatedOn = DateTime.UtcNow,
+                CreatedOn = updateDate,
                 CreatedByUser = userId,
             };
 
@@ -78,7 +79,8 @@
 
             prn.PrnStatusId = (int)prnUpdate.Status;
             prn.LastUpdatedBy = userId;
-            prn.LastUpdatedDate = DateTime.UtcNow;
+            prn.LastUpdatedDate = updateDate;
+            prn.StatusUpdatedOn = updateDate;
         }
 
         public async Task<DateTime?> GetObligationCalculatorLastSuccessRun()
