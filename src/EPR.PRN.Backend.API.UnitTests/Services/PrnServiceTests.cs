@@ -187,6 +187,8 @@ public class PrnServiceTests
 
         availablePrns.Should().AllSatisfy(x => x.PrnStatusId.Should().Be((int)EprnStatus.ACCEPTED));
         availablePrns.Should().AllSatisfy(x => x.LastUpdatedBy.Should().Be(userId));
+        availablePrns.Should().AllSatisfy(x => x.StatusUpdatedOn.Should().BeCloseTo(DateTime.UtcNow,new TimeSpan(0,10,0)));
+        availablePrns.Should().AllSatisfy(x => x.StatusUpdatedOn.Should().BeCloseTo(DateTime.UtcNow, new TimeSpan(0, 10, 0)));
         _mockRepository.Verify(x => x.SaveTransaction(It.IsAny<IDbContextTransaction>()), Times.Once());
         _mockRepository.Verify(x => x.AddPrnStatusHistory(It.IsAny<PrnStatusHistory>()), Times.Exactly(3));
     }
