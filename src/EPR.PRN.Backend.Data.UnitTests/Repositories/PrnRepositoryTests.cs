@@ -3,96 +3,56 @@ using EPR.PRN.Backend.Data.DataModels;
 using EPR.PRN.Backend.Data.Repositories;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
-using Moq;
-using Moq.EntityFrameworkCore;
 
 namespace EPR.PRN.Backend.Data.UnitTests.Repositories
 {
     [TestClass]
     public class PrnRepositoryTests
     {
-        private Mock<EprContext> _mockContext;
-        private Guid organisationId = Guid.NewGuid();
+        private EprContext _context;
+        private PrnRepository _repository;
 
         [TestInitialize]
-        public void Initialize()
+        public void Setup()
         {
-            var dbContextOptions = new DbContextOptionsBuilder<EprContext>().Options;
-            _mockContext = new Mock<EprContext>(dbContextOptions);
-            var fixture = new Fixture();
-            var prns = fixture.CreateMany<Eprn>(10).ToList();
-            for (int i = 0; i < 2; i++)
-            {
-                prns[i].MaterialName = "Plastic";
-                prns[i].PrnStatusId = 1;
-                prns[i].TonnageValue = 300;
-                prns[i].OrganisationId = organisationId;
-            }
-            for (int i = 2; i < 5; i++)
-            {
-                prns[i].MaterialName = "Plastic";
-                prns[i].PrnStatusId = 4;
-                prns[i].TonnageValue = 500;
-                prns[i].OrganisationId = organisationId;
-            }
-            for (int i = 5; i < 7; i++)
-            {
-                prns[i].MaterialName = "Wood";
-                prns[i].PrnStatusId = 1;
-                prns[i].TonnageValue = 100;
-                prns[i].OrganisationId = organisationId;
-            }
-            for (int i = 7; i < prns.Count; i++)
-            {
-                prns[i].MaterialName = "Wood";
-                prns[i].PrnStatusId = 4;
-                prns[i].TonnageValue = 200;
-                prns[i].OrganisationId = organisationId;
-            }
-            _mockContext.Setup(context => context.Prn).ReturnsDbSet(prns);
-            var prnStatuses = new List<PrnStatus>
-            {
-                new() { Id = 1, StatusName = EprnStatus.ACCEPTED.ToString(), StatusDescription = "Prn Accepted"},
-                new() { Id = 2, StatusName = EprnStatus.REJECTED.ToString(), StatusDescription = "Prn Rejected"},
-                new() { Id = 3, StatusName = EprnStatus.CANCELLED.ToString(), StatusDescription = "Prn Cancelled"},
-                new() { Id = 4, StatusName = EprnStatus.AWAITINGACCEPTANCE.ToString(), StatusDescription = "Prn Awaiting Acceptance"}
-            };
-            _mockContext.Setup(context => context.PrnStatus).ReturnsDbSet(prnStatuses);
+            var options = new DbContextOptionsBuilder<EprContext>()
+                .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
+                .Options;
+
+            _context = new EprContext(options);
+            _repository = new PrnRepository(_context);
         }
 
         [TestMethod]
-        [DataRow("ACCEPTED")]
-        [DataRow("AWAITINGACCEPTANCE")]
-        [DataRow("CANCELLED")]
-        public async Task GetSumOfTonnageForMaterials_ReturnsExpectedResult(string statusName)
+        public async Task GetAcceptedAndAwaitingPrnsByYearAsync_ReturnsFilteredPrns()
         {
             // Arrange
-            var prnRepository = new PrnRepository(_mockContext.Object);
+            var organisationId = Guid.NewGuid();
+            var year = 2023;
+            var fixture = new Fixture();
+            var prns = fixture.CreateMany<Eprn>(10).ToList();
+            prns[0].OrganisationId = organisationId;
+            prns[0].PrnStatusId = 1; // ACCEPTED
+            prns[0].ObligationYear = year.ToString();
+            prns[1].OrganisationId = organisationId;
+            prns[1].PrnStatusId = 2; // AWAITINGACCEPTANCE
+            prns[1].ObligationYear = year.ToString();
+            await _context.Prn.AddRangeAsync(prns);
+            var prnStatuses = new[]
+            {
+            new PrnStatus { Id = 1, StatusName = EprnStatus.ACCEPTED.ToString() },
+            new PrnStatus { Id = 2, StatusName = EprnStatus.AWAITINGACCEPTANCE.ToString() }
+            };
+            await _context.PrnStatus.AddRangeAsync(prnStatuses);
+            await _context.SaveChangesAsync();
 
             // Act
-            var result = await prnRepository.GetSumOfTonnageForMaterials(organisationId, statusName);
+            var result = _repository.GetAcceptedAndAwaitingPrnsByYear(organisationId);
 
             // Assert
-            if (statusName == EprnStatus.ACCEPTED.ToString())
-            {
-                result.Should().NotBeNull();
-                result.Should().HaveCount(2);
-                result.Should().ContainSingle(r => r.MaterialName == "Plastic" && r.TotalTonnage == 600);
-                result.Should().ContainSingle(r => r.MaterialName == "Wood" && r.TotalTonnage == 200);
-            }
-            if (statusName == EprnStatus.AWAITINGACCEPTANCE.ToString())
-            {
-                result.Should().NotBeNull();
-                result.Should().HaveCount(2);
-                result.Should().ContainSingle(r => r.MaterialName == "Plastic" && r.TotalTonnage == 1500);
-                result.Should().ContainSingle(r => r.MaterialName == "Wood" && r.TotalTonnage == 600);
-            }
-            if (statusName == EprnStatus.CANCELLED.ToString())
-            {
-                result.Should().NotBeNull();
-                result.Should().HaveCount(0);
-            }
+            result.Should().HaveCount(2);
+            result.Should().ContainSingle(r => r.Status.StatusName == EprnStatus.ACCEPTED.ToString());
+            result.Should().ContainSingle(r => r.Status.StatusName == EprnStatus.AWAITINGACCEPTANCE.ToString());
         }
-
     }
 }

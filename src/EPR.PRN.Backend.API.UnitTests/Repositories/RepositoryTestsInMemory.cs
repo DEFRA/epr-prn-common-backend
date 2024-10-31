@@ -1,5 +1,4 @@
 ﻿using AutoFixture;
-using Azure.Core;
 using EPR.PRN.Backend.API.Common.Constants;
 using EPR.PRN.Backend.API.Common.DTO;
 using EPR.PRN.Backend.API.Repositories;
@@ -7,7 +6,9 @@ using EPR.PRN.Backend.Data;
 using EPR.PRN.Backend.Data.DataModels;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
+
 namespace EPR.PRN.Backend.API.UnitTests.Repositories;
+
 [TestClass]
 public class RepositoryTestsInMemory
 {
@@ -165,8 +166,8 @@ public class RepositoryTestsInMemory
         var data = _fixture.Build<Eprn>()
                            .With(x => x.OrganisationId, orgId)
                            .Without(x => x.Id)
-                           .With(x =>x.MaterialName, material)
-                           .With(x => x.PrnStatusId,10)
+                           .With(x => x.MaterialName, material)
+                           .With(x => x.PrnStatusId, 10)
                            .CreateMany().ToArray();
 
         //Assign passed status to first element and only this should present on result
@@ -178,7 +179,7 @@ public class RepositoryTestsInMemory
         var result = await _repository.GetSearchPrnsForOrganisation(orgId, request);
 
         result.TotalItems.Should().Be(1);
-        result.Items.Should().ContainSingle().Which.Should().Match<PrnDto>(x => 
+        result.Items.Should().ContainSingle().Which.Should().Match<PrnDto>(x =>
         x.ExternalId == data[0].ExternalId
         && x.PrnNumber == data[0].PrnNumber);
 

@@ -1,4 +1,5 @@
-﻿using EPR.PRN.Backend.API.Helpers;
+﻿using EPR.PRN.Backend.API.Configs;
+using EPR.PRN.Backend.API.Helpers;
 using EPR.PRN.Backend.Data;
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
@@ -35,6 +36,8 @@ namespace EPR.PRN.Backend.API
             );
 
             services.AddDependencies();
+
+            services.Configure<PrnObligationCalculationConfig>(_config.GetSection(PrnObligationCalculationConfig.SectionName));
 
             AddHealthChecks(services);
         }

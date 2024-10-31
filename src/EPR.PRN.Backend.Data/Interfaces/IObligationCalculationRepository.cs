@@ -6,5 +6,7 @@ namespace EPR.PRN.Backend.Data.Interfaces
     {
         Task<List<ObligationCalculation>> GetObligationCalculation(Guid organisationId, int year);
         Task AddObligationCalculation(List<ObligationCalculation> calculation);
+
+        Task UpsertObligationCalculationAsync(Guid organisationId, List<ObligationCalculation> calculations);
     }
 }
