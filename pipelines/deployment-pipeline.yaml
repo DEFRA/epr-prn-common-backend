@@ -9,6 +9,7 @@ parameters:
   type: string
   values:
     - DEV10
+    - DEV12
 - name: envToDeploy
   displayName: 'Target Environment to deploy:'
   default: development
