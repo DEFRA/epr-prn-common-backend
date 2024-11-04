@@ -6,12 +6,18 @@ using EPR.PRN.Backend.Data;
 using EPR.PRN.Backend.Data.DataModels;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using Moq;
 
 namespace EPR.PRN.Backend.API.UnitTests.Repositories;
 
 [TestClass]
 public class RepositoryTestsInMemory
 {
+    private Mock<ILogger<Repository>> _mockLogger;
+    private Mock<IConfiguration> _configurationMock;
+
     private EprContext _context;
     private Repository _repository;
     private readonly Fixture _fixture = new Fixture();
@@ -23,7 +29,11 @@ public class RepositoryTestsInMemory
             .UseInMemoryDatabase(databaseName: "TestDatabase")
             .Options;
         _context = new EprContext(options);
-        _repository = new Repository(_context);
+        _mockLogger = new Mock<ILogger<Repository>>();
+        _configurationMock = new Mock<IConfiguration>();
+        _configurationMock.Setup(c => c["LogPrefix"]).Returns("[EPR.PRN.Backend]");
+
+        _repository = new Repository(_context, _mockLogger.Object, _configurationMock.Object);
         var orgId = Guid.NewGuid();
         var eprns = new List<Eprn>
         {
@@ -33,12 +43,14 @@ public class RepositoryTestsInMemory
         _context.Prn.AddRange(eprns);
         _context.SaveChanges();
     }
+
     [TestCleanup]
     public void Cleanup()
     {
         _context.Database.EnsureDeleted();
         _context.Dispose();
     }
+
     [TestMethod]
     public async Task GetSearchPrnsForOrganisation_WithSearchTerm_FiltersResults()
     {
@@ -57,6 +69,7 @@ public class RepositoryTestsInMemory
         Assert.AreEqual(2, result.Items.Count);
         Assert.IsTrue(result.Items.Any(i => i.PrnNumber.Contains("searchTerm")));
     }
+
     [TestMethod]
     public async Task GetSearchPrnsForOrganisation_Returns_CorrectResults()
     {
@@ -71,6 +84,7 @@ public class RepositoryTestsInMemory
         Assert.AreEqual(1, result.Items.Count);
         Assert.AreEqual("searchTerm1", result.Items.First().PrnNumber);
     }
+
     [TestMethod]
     public async Task GetSearchPrnsForOrganisation_Returns_Empty_When_NoMatch()
     {
@@ -84,6 +98,7 @@ public class RepositoryTestsInMemory
         var result = await _repository.GetSearchPrnsForOrganisation(orgId, request);
         Assert.AreEqual(0, result.Items.Count);
     }
+
     [TestMethod]
     public async Task GetSearchPrnsForOrganisation_Paginates_Correctly()
     {
@@ -97,6 +112,7 @@ public class RepositoryTestsInMemory
         Assert.AreEqual(1, result.Items.Count);
         Assert.AreEqual(2, result.TotalItems);
     }
+
     [TestMethod]
     public async Task GetSearchPrnsForOrganisation_Filters_By_SearchTerm()
     {
@@ -111,6 +127,7 @@ public class RepositoryTestsInMemory
         Assert.AreEqual(1, result.Items.Count);
         Assert.AreEqual("Org2", result.Items.First().IssuedByOrg);
     }
+
     [TestMethod]
     public async Task GetSearchPrnsForOrganisation_ReturnsEmptyResponse_WhenNoResults()
     {
@@ -149,7 +166,6 @@ public class RepositoryTestsInMemory
     [DataRow(PrnConstants.Filters.AwaitngPlastic, EprnStatus.AWAITINGACCEPTANCE, PrnConstants.Materials.Plastic)]
     [DataRow(PrnConstants.Filters.AwaitngSteel, EprnStatus.AWAITINGACCEPTANCE, PrnConstants.Materials.Steel)]
     [DataRow(PrnConstants.Filters.AwaitngWood, EprnStatus.AWAITINGACCEPTANCE, PrnConstants.Materials.Wood)]
-
     public async Task GetSearchPrnsForOrganisation_Filter_Result_AsPerPassedFilterParameter(string filterBy, EprnStatus status, string material)
     {
         var request = new PaginatedRequestDto
@@ -186,7 +202,6 @@ public class RepositoryTestsInMemory
     }
 
     [TestMethod]
-
     public async Task GetSearchPrnsForOrganisation_Filter_Result_ReturnAll_IfFilterByISAnthingThanAboveListed()
     {
         var request = new PaginatedRequestDto
@@ -365,7 +380,6 @@ public class RepositoryTestsInMemory
         result.TotalItems.Should().Be(3);
         result.Items[2].ExternalId.Should().Be(data[0].ExternalId);
     }
-
 
     [TestMethod]
     public async Task GetSearchPrnsForOrganisation_Sort_Result_AsDecemberWaste()
