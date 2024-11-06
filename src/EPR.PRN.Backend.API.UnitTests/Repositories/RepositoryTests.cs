@@ -1,10 +1,13 @@
 ﻿using AutoFixture;
 using EPR.PRN.Backend.API.Repositories;
+using EPR.PRN.Backend.API.Services;
 using EPR.PRN.Backend.Data;
 using EPR.PRN.Backend.Data.DataModels;
 using FluentAssertions;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Moq;
 using System.Diagnostics.CodeAnalysis;
 
@@ -18,6 +21,8 @@ public class RepositoryTests
     private DbContextOptions<EprContext> _contextOptions;
     private Fixture _fixture;
     private Mock<EprContext> _mockContext;
+    private Mock<ILogger<Repository>> _mockLogger;
+    private Mock<IConfiguration> _configurationMock;
     private Repository _repository;
 
     [TestInitialize]
@@ -33,7 +38,12 @@ public class RepositoryTests
 
         _fixture = new Fixture();
         _mockContext = new Mock<EprContext>();
-        _repository = new Repository(_mockContext.Object);
+        
+        _mockLogger = new Mock<ILogger<Repository>>();
+        _configurationMock = new Mock<IConfiguration>();
+        _configurationMock.Setup(c => c["LogPrefix"]).Returns("[EPR.PRN.Backend]");
+
+        _repository = new Repository(_mockContext.Object, _mockLogger.Object, _configurationMock.Object);
     }
 
     [TestMethod]
@@ -50,7 +60,7 @@ public class RepositoryTests
             await context.SaveChangesAsync();
         }
         //Act
-        var repo = new Repository(context);
+        var repo = new Repository(context, _mockLogger.Object, _configurationMock.Object);
 
         //Assert
         var prns = await repo.GetAllPrnByOrganisationId(data[0].OrganisationId);
@@ -73,7 +83,7 @@ public class RepositoryTests
             await context.SaveChangesAsync();
         }
         //Act
-        var repo = new Repository(context);
+        var repo = new Repository(context, _mockLogger.Object, _configurationMock.Object);
 
         //Assert
         var prn = await repo.GetPrnForOrganisationById(data[0].OrganisationId, data[0].ExternalId);
@@ -94,7 +104,7 @@ public class RepositoryTests
             await context.SaveChangesAsync();
         }
         //Act
-        var repo = new Repository(context);
+        var repo = new Repository(context, _mockLogger.Object, _configurationMock.Object);
 
         var transaction = repo.BeginTransaction();
         var updatingPrn = await repo.GetAllPrnByOrganisationId(data[0].OrganisationId);
@@ -123,7 +133,7 @@ public class RepositoryTests
             await context.SaveChangesAsync();
         }
         //Act
-        var repo = new Repository(context);
+        var repo = new Repository(context, _mockLogger.Object, _configurationMock.Object);
 
         var transaction = repo.BeginTransaction();
         repo.AddPrnStatusHistory(statusHistory);

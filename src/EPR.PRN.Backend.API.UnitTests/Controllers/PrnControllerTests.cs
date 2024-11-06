@@ -11,6 +11,7 @@ using EPR.PRN.Backend.Obligation.Models;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
@@ -26,6 +27,7 @@ public class PrnControllerTests
     private Mock<ILogger<PrnController>> _mockLogger;
     private Mock<IObligationCalculatorService> _mockObligationCalculatorService;
     private Mock<IOptions<PrnObligationCalculationConfig>> _configMock;
+    private Mock<IConfiguration> _configurationMock;
 
     private static readonly IFixture _fixture = new Fixture();
 
@@ -40,7 +42,10 @@ public class PrnControllerTests
         var config = new PrnObligationCalculationConfig { StartYear = 2024, EndYear = 2029 };
         _configMock.Setup(c => c.Value).Returns(config);
 
-        _systemUnderTest = new PrnController(_mockPrnService.Object, _mockLogger.Object, _mockObligationCalculatorService.Object, _configMock.Object);
+        _configurationMock = new Mock<IConfiguration>();
+        _configurationMock.Setup(c => c["LogPrefix"]).Returns("[EPR.PRN.Backend]");
+
+        _systemUnderTest = new PrnController(_mockPrnService.Object, _mockLogger.Object, _mockObligationCalculatorService.Object, _configMock.Object, _configurationMock.Object);
     }
 
     [TestMethod]
