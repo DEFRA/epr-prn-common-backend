@@ -3,4 +3,8 @@ variables:
   docker.imageName: 'eprprncommonbackend'
   acr.azureContainerRegistryName: 'tstrwdinfac1401'
   acr.repositoryName: 'eprprncommonbackendrepository'
-  serviceName: 'tstrwdwebwaa418'
+  serviceName: 'tstrwdwebwa1418'
+  kvName: TSTRWDINFKV1401
+  sqlDBserver: 'tstrwddbssq1401.database.windows.net'
+  sqlDB: 'tst1_prn'
+  acr.Subscription: 'AZD-RWD-TST1'
