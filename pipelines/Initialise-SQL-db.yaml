@@ -10,6 +10,7 @@ parameters:
   values:
     - DEV4
     - DEV8
+    - DEV9
     - DEV10
     - DEV12
     - tst
