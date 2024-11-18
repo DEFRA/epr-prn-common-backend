@@ -141,7 +141,7 @@ namespace EPR.PRN.Backend.Obligation.Services
                     MaterialTarget = GetRecyclingTarget(year, materialName, recyclingTargets) ?? 0
                 });
             }
-            var obligationModel = new ObligationModel { ObligationData = obligationData };
+            var obligationModel = new ObligationModel { ObligationData = obligationData, NumberOfPrnsAwaitingAcceptance = awaitingAcceptanceCount };
             return new ObligationCalculationResult { IsSuccess = true, ObligationModel = obligationModel };
         }
 
