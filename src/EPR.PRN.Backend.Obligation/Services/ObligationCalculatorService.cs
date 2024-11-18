@@ -115,7 +115,7 @@ namespace EPR.PRN.Backend.Obligation.Services
             }
             var materialsWithRemelt = AddGlassRemelt(materials.ToList());
             var obligationCalculations = await _obligationCalculationRepository.GetObligationCalculation(organisationId, year);
-            var prns = _prnRepository.GetAcceptedAndAwaitingPrnsByYear(organisationId);
+            var prns = _prnRepository.GetAcceptedAndAwaitingPrnsByYear(organisationId, year);
             var acceptedTonnageForPrns = GetSumOfTonnageForMaterials(prns, EprnStatus.ACCEPTED.ToString());
             var awaitingAcceptanceForPrns = GetSumOfTonnageForMaterials(prns, EprnStatus.AWAITINGACCEPTANCE.ToString());
             var awaitingAcceptanceCount = GetPrnStatusCount(prns, EprnStatus.AWAITINGACCEPTANCE.ToString());
@@ -141,7 +141,7 @@ namespace EPR.PRN.Backend.Obligation.Services
                     MaterialTarget = GetRecyclingTarget(year, materialName, recyclingTargets) ?? 0
                 });
             }
-            var obligationModel = new ObligationModel { ObligationData = obligationData };
+            var obligationModel = new ObligationModel { ObligationData = obligationData, NumberOfPrnsAwaitingAcceptance = awaitingAcceptanceCount };
             return new ObligationCalculationResult { IsSuccess = true, ObligationModel = obligationModel };
         }
 

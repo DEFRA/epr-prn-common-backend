@@ -4,6 +4,6 @@ namespace EPR.PRN.Backend.Data.Interfaces
 {
     public interface IPrnRepository
     {
-        IQueryable<EprnResultsDto> GetAcceptedAndAwaitingPrnsByYear(Guid organisationId);
+        IQueryable<EprnResultsDto> GetAcceptedAndAwaitingPrnsByYear(Guid organisationId, int year);
     }
 }

@@ -8,8 +8,14 @@ parameters:
   default: 'DEV10'
   type: string
   values:
+    - DEV8
+    - DEV9
     - DEV10
     - DEV12
+    - tst
+    - preprod
+    - prod
+
 - name: envToDeploy
   displayName: 'Target Environment to deploy:'
   default: development
