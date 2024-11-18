@@ -98,7 +98,7 @@ public class ObligationCalculatorServiceTests
         var prns = prnList.AsQueryable();
         _mockMaterialRepository.Setup(repo => repo.GetAllMaterials()).ReturnsAsync(materials);
         _mockObligationCalculationRepository.Setup(repo => repo.GetObligationCalculation(organisationId, year)).ReturnsAsync(obligationCalculations);
-        _mockPrnRepository.Setup(repo => repo.GetAcceptedAndAwaitingPrnsByYear(organisationId)).Returns(prns);
+        _mockPrnRepository.Setup(repo => repo.GetAcceptedAndAwaitingPrnsByYear(organisationId, year)).Returns(prns);
         var acceptedTonnage = _fixture.CreateMany<EprnTonnageResultsDto>(5).ToList();
         var awaitingTonnage = _fixture.CreateMany<EprnTonnageResultsDto>(5).ToList();
         _mockRecyclingTargetDataService.Setup(x => x.GetRecyclingTargetsAsync()).ReturnsAsync(GetRecyclingTargets());
@@ -137,7 +137,7 @@ public class ObligationCalculatorServiceTests
         var prns = prnList.AsQueryable();
         _mockMaterialRepository.Setup(repo => repo.GetAllMaterials()).ReturnsAsync(materials);
         _mockObligationCalculationRepository.Setup(repo => repo.GetObligationCalculation(organisationId, year)).ReturnsAsync(obligationCalculations);
-        _mockPrnRepository.Setup(repo => repo.GetAcceptedAndAwaitingPrnsByYear(organisationId)).Returns(prns);
+        _mockPrnRepository.Setup(repo => repo.GetAcceptedAndAwaitingPrnsByYear(organisationId, year)).Returns(prns);
         _mockRecyclingTargetDataService.Setup(x => x.GetRecyclingTargetsAsync()).ReturnsAsync(GetRecyclingTargets());
         var acceptedTonnage = _fixture.CreateMany<EprnTonnageResultsDto>(6).ToList();
         var awaitingTonnage = _fixture.CreateMany<EprnTonnageResultsDto>(6).ToList();
@@ -155,6 +155,42 @@ public class ObligationCalculatorServiceTests
         glassRemeltData.TonnageAccepted.Should().Be(0);
         glassRemeltData.TonnageAwaitingAcceptance.Should().Be(0);
         glassRemeltData.Status.Should().Be(ObligationConstants.Statuses.NoDataYet);
+    }
+
+    [TestMethod]
+    public async Task GetObligationCalculation_ShouldHandlePRNAwaitingAcceptanceCorrectly()
+    {
+        // Arrange
+        var organisationId = Guid.NewGuid();
+        var year = 2024;
+
+        var materials = _fixture.CreateMany<Material>(5).ToList();
+        var obligationCalculations = _fixture.CreateMany<ObligationCalculation>(6).ToList();
+        var prnList = _fixture.CreateMany<EprnResultsDto>(5).ToList();
+        prnList[0].Eprn.PrnStatusId = 4;
+        prnList[0].Status.Id = 4;
+        prnList[0].Status.StatusName = EprnStatus.AWAITINGACCEPTANCE.ToString();
+        prnList[2].Eprn.PrnStatusId = 4;
+        prnList[2].Status.Id = 4;
+        prnList[2].Status.StatusName = EprnStatus.AWAITINGACCEPTANCE.ToString();
+        prnList[4].Eprn.PrnStatusId = 4;
+        prnList[4].Status.Id = 4;
+        prnList[4].Status.StatusName = EprnStatus.AWAITINGACCEPTANCE.ToString();
+        prnList[1].Eprn.MaterialName = "GlassRemelt";
+        var prns = prnList.AsQueryable();
+        _mockMaterialRepository.Setup(repo => repo.GetAllMaterials()).ReturnsAsync(materials);
+        _mockObligationCalculationRepository.Setup(repo => repo.GetObligationCalculation(organisationId, year)).ReturnsAsync(obligationCalculations);
+        _mockPrnRepository.Setup(repo => repo.GetAcceptedAndAwaitingPrnsByYear(organisationId, year)).Returns(prns);
+        _mockRecyclingTargetDataService.Setup(x => x.GetRecyclingTargetsAsync()).ReturnsAsync(GetRecyclingTargets());
+        var acceptedTonnage = _fixture.CreateMany<EprnTonnageResultsDto>(6).ToList();
+        var awaitingTonnage = _fixture.CreateMany<EprnTonnageResultsDto>(6).ToList();
+
+        // Act
+        var result = await _service.GetObligationCalculation(organisationId, year);
+
+        // Assert
+        result.IsSuccess.Should().BeTrue();
+        result.ObligationModel.NumberOfPrnsAwaitingAcceptance.Should().Be(3);
     }
 
     [TestMethod]
