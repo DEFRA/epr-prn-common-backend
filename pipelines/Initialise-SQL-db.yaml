@@ -9,6 +9,7 @@ parameters:
   type: string
   values:
     - DEV4
+    - DEV7
     - DEV10
     - DEV12
 - name: envToDeploy
