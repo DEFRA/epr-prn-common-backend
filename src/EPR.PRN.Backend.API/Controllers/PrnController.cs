@@ -4,6 +4,7 @@ using EPR.PRN.Backend.API.Common.DTO;
 using EPR.PRN.Backend.API.Configs;
 using EPR.PRN.Backend.API.Helpers;
 using EPR.PRN.Backend.API.Services.Interfaces;
+using EPR.PRN.Backend.Data.DataModels;
 using EPR.PRN.Backend.Obligation.DTO;
 using EPR.PRN.Backend.Obligation.Interfaces;
 using EPR.PRN.Backend.Obligation.Models;
@@ -87,6 +88,18 @@ public class PrnController : Controller
 
         return Ok(obligationCalculation.ObligationModel);
     }
+
+    [HttpGet("ModifiedPrnsbyDate")]
+    [ProducesResponseType(typeof(List<PrnUpdateStatus>), 200)]
+    public async Task<IActionResult> GetModifiedPrnsbyDate(DateTime fromDate, DateTime toDate)
+    {
+        var prns = await _prnService.GetModifiedPrnsbyDate(fromDate, toDate);
+        if (prns == null)
+            return NotFound();
+
+        return Ok(prns);
+    }
+
     #endregion
 
     #region Post Methods

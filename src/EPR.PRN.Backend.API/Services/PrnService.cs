@@ -28,6 +28,13 @@
             return (await _repository.GetAllPrnByOrganisationId(orgId)).Select(x => (PrnDto)x).ToList();
         }
 
+        public async Task<List<PrnUpdateStatus>?> GetModifiedPrnsbyDate(DateTime fromDate, DateTime toDate)
+        {
+            var modifiedPrns = await _repository.GetModifiedPrnsbyDate(fromDate, toDate);
+
+            return modifiedPrns == null ? null : modifiedPrns;
+        }
+
         public async Task<PaginatedResponseDto<PrnDto>> GetSearchPrnsForOrganisation(Guid orgId, PaginatedRequestDto request)
 		{
 			return await _repository.GetSearchPrnsForOrganisation( orgId,request);

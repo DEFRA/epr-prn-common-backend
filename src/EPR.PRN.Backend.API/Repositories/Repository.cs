@@ -1,6 +1,7 @@
 ﻿namespace EPR.PRN.Backend.API.Repositories
 {
     using EPR.PRN.Backend.API.Common.DTO;
+    using EPR.PRN.Backend.API.Common.Enums;
     using EPR.PRN.Backend.API.Repositories.Interfaces;
     using EPR.PRN.Backend.Data;
     using EPR.PRN.Backend.Data.DataModels;
@@ -29,6 +30,31 @@
                         .ToListAsync();
         }
 
+        public async Task<List<PrnUpdateStatus>> GetModifiedPrnsbyDate(DateTime fromDate, DateTime toDate)
+        {
+            var result = await (from p in _eprContext.Prn
+                                join ps in _eprContext.PrnStatus on p.PrnStatusId equals ps.Id
+                                where p.LastUpdatedDate >= fromDate && p.LastUpdatedDate <= toDate
+                                select new
+                                {
+                                    p.PrnNumber,
+                                    ps.StatusName,
+                                    p.StatusUpdatedOn,
+                                    p.AccreditationYear
+                                }).ToListAsync();
+
+            var prnUpdateStatuses = result.Select(p => new PrnUpdateStatus
+            {
+                EvidenceNo = p.PrnNumber,
+                EvidenceStatusCode = GetEvidenceStatusCodeString(
+                    MapStatusCode((EprnStatus)Enum.Parse(typeof(EprnStatus), p.StatusName), p.AccreditationYear)),
+                StatusDate = p.StatusUpdatedOn,
+                AccreditationYear = p.AccreditationYear
+            }).ToList();
+
+            return prnUpdateStatuses;
+        }
+
         public async Task<Eprn?> GetPrnForOrganisationById(Guid orgId, Guid prnId)
         {
             return await GetAllPrnsForOrganisation(orgId)
@@ -50,6 +76,34 @@
         {
             _eprContext.PrnStatusHistory.Add(prnStatusHistory);
         }
+
+        private static string GetEvidenceStatusCodeString(EvidenceStatusCode statusCode)
+        {
+            return Enum.GetName(typeof(EvidenceStatusCode), statusCode);
+        }
+
+        private EvidenceStatusCode MapStatusCode(EprnStatus status, string accreditationYear)
+        {
+            switch (status)
+            {
+                case EprnStatus.ACCEPTED:
+                    return EvidenceStatusCode.EV_ACCEP;
+                case EprnStatus.REJECTED:
+                    return EvidenceStatusCode.EV_ACANCEL;
+                case EprnStatus.CANCELLED:
+                    return EvidenceStatusCode.EV_CANCEL;
+                case EprnStatus.AWAITINGACCEPTANCE:
+                    if (accreditationYear == "2024")
+                        return EvidenceStatusCode.EV_AWACCEP;
+                    else if (accreditationYear == "2025")
+                        return EvidenceStatusCode.EV_AWACCEP_EPR;
+                    else
+                        return EvidenceStatusCode.EV_AWACCEP; // Default case, assuming for any other years it maps to EV_AWACCEP
+                default:
+                    throw new ArgumentException($"Unknown status: {status}");
+            }
+        }
+
 
         private static Expression<Func<Eprn, bool>> GetFilterByCondition(string? filterBy)
         {
