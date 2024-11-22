@@ -47,7 +47,7 @@ public class ObligationCalculationRepository(EprContext context) : IObligationCa
                     existingCalculation.OrganisationId = organisationId;
                     existingCalculation.MaterialName = calculation.MaterialName;
                     existingCalculation.MaterialObligationValue = calculation.MaterialObligationValue;
-                    existingCalculation.MaterialWeight = calculation.MaterialWeight;
+                    existingCalculation.Tonnage = calculation.Tonnage;
                     existingCalculation.CalculatedOn = DateTime.Now;
                     existingCalculation.Year = calculation.Year;
                 }
