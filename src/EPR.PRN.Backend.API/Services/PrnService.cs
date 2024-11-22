@@ -1,6 +1,8 @@
 ﻿namespace EPR.PRN.Backend.API.Services
 {
-    using EPR.PRN.Backend.API.Common.DTO;
+    using EPR.PRN.Backend.API.Common.Dto;
+    using EPR.PRN.Backend.API.Common.Enums;
+    using EPR.PRN.Backend.API.Dto;
     using EPR.PRN.Backend.API.Helpers;
     using EPR.PRN.Backend.API.Repositories.Interfaces;
     using EPR.PRN.Backend.API.Services.Interfaces;
@@ -29,16 +31,16 @@
         }
 
         public async Task<PaginatedResponseDto<PrnDto>> GetSearchPrnsForOrganisation(Guid orgId, PaginatedRequestDto request)
-		{
-			return await _repository.GetSearchPrnsForOrganisation( orgId,request);
-		}
+        {
+            return await _repository.GetSearchPrnsForOrganisation(orgId, request);
+        }
 
-		public async Task UpdateStatus(Guid orgId, Guid userId, List<PrnUpdateStatusDto> prnUpdates)
+        public async Task UpdateStatus(Guid orgId, Guid userId, List<PrnUpdateStatusDto> prnUpdates)
         {
             using var transaction = _repository.BeginTransaction();
-            
+
             var prns = await _repository.GetAllPrnByOrganisationId(orgId);
-            
+
             if (prns.Count == 0)
                 throw new NotFoundException($"No record present for organisation {orgId}");
 
@@ -46,7 +48,7 @@
 
             //makes sure all the prns exsits in system
             if (nonExistingPrns.Any())
-                throw new NotFoundException($"{string.Join(",",nonExistingPrns)} Prns doesn't exists in system");
+                throw new NotFoundException($"{string.Join(",", nonExistingPrns)} Prns doesn't exists in system");
 
             foreach (var prnUpdate in prnUpdates)
             {

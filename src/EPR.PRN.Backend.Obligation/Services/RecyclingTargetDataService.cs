@@ -1,6 +1,7 @@
-﻿using EPR.PRN.Backend.Data.DataModels;
+﻿using EPR.PRN.Backend.API.Common.Enums;
+using EPR.PRN.Backend.Data.DataModels;
 using EPR.PRN.Backend.Data.Interfaces;
-using EPR.PRN.Backend.Obligation.Enums;
+using EPR.PRN.Backend.Obligation.Helpers;
 using EPR.PRN.Backend.Obligation.Interfaces;
 
 namespace EPR.PRN.Backend.Obligation.Services
@@ -21,24 +22,30 @@ namespace EPR.PRN.Backend.Obligation.Services
             if (_recyclingTargets.Count == 0)
             {
                 var recyclingTargets = (await _recyclingTargetRepository.GetAllAsync()).ToList();
-                _recyclingTargets = recyclingTargets.Select(x => new KeyValuePair<int, Dictionary<MaterialType, double>>(x.Year, TransformTargets(x))).ToDictionary();
+                _recyclingTargets = recyclingTargets.GroupBy(target => target.Year)
+                                                    .ToDictionary(
+                                                        group => group.Key,
+                                                        group => TransformTargets(group.ToList())
+                                                    );
             }
 
             return _recyclingTargets;
         }
 
-        private static Dictionary<MaterialType, double> TransformTargets(RecyclingTarget recyclingTarget)
+        private static Dictionary<MaterialType, double> TransformTargets(List<RecyclingTarget> recyclingTargets)
         {
-            var dictionary = new Dictionary<MaterialType, double>(7)
+            var dictionary = new Dictionary<MaterialType, double>();
+
+            foreach (var target in recyclingTargets)
             {
-                { MaterialType.Aluminium, recyclingTarget.AluminiumTarget },
-                { MaterialType.Glass, recyclingTarget.GlassTarget },
-                { MaterialType.GlassRemelt, recyclingTarget.GlassRemeltTarget },
-                { MaterialType.Paper, recyclingTarget.PaperTarget },
-                { MaterialType.Plastic, recyclingTarget.PlasticTarget },
-                { MaterialType.Steel, recyclingTarget.SteelTarget },
-                { MaterialType.Wood, recyclingTarget.WoodTarget }
-            };
+                var materialType = EnumHelper.ConvertStringToEnum<MaterialType>(target.MaterialNameRT);
+                if (materialType == null)
+                {
+                    throw new ArgumentException($"Invalid material name '{target.MaterialNameRT}' in recycling targets.");
+                }
+
+                dictionary[materialType.Value] = target.Target;
+            }
 
             return dictionary;
         }

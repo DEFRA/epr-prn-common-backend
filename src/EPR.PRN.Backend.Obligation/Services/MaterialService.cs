@@ -1,5 +1,5 @@
-﻿using EPR.PRN.Backend.Data.Interfaces;
-using EPR.PRN.Backend.Obligation.Enums;
+﻿using EPR.PRN.Backend.API.Common.Enums;
+using EPR.PRN.Backend.Data.Interfaces;
 using EPR.PRN.Backend.Obligation.Interfaces;
 using Microsoft.IdentityModel.Tokens;
 

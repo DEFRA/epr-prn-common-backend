@@ -1,7 +1,8 @@
-﻿namespace EPR.PRN.Backend.API.Services.Interfaces
-{
-    using EPR.PRN.Backend.API.Common.DTO;
+﻿using EPR.PRN.Backend.API.Common.Dto;
+using EPR.PRN.Backend.API.Dto;
 
+namespace EPR.PRN.Backend.API.Services.Interfaces
+{
     public interface IPrnService
     {
         Task<PrnDto?> GetPrnForOrganisationById(Guid orgId, Guid prnId);

@@ -1,4 +1,5 @@
-﻿using EPR.PRN.Backend.Data.DataModels;
+﻿using EPR.PRN.Backend.API.Common.Enums;
+using EPR.PRN.Backend.Data.DataModels;
 using EPR.PRN.Backend.Data.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Moq;
@@ -14,12 +15,54 @@ public class RecyclingTargetRepositoryTests
     private Mock<EprContext> _mockEprContext;
     private readonly IEnumerable<RecyclingTarget> recyclingTarget =
         [
-            new RecyclingTarget { Year = 2025, PaperTarget = 0.75, GlassTarget = 0.74, AluminiumTarget = 0.61, SteelTarget = 0.8, PlasticTarget = 0.55, WoodTarget = 0.45, GlassRemeltTarget = 0.75 },
-            new RecyclingTarget { Year = 2026, PaperTarget = 0.77, GlassTarget = 0.76, AluminiumTarget = 0.62, SteelTarget = 0.81, PlasticTarget = 0.57, WoodTarget = 0.46, GlassRemeltTarget = 0.76 },
-            new RecyclingTarget { Year = 2027, PaperTarget = 0.79, GlassTarget = 0.78, AluminiumTarget = 0.63, SteelTarget = 0.82, PlasticTarget = 0.59, WoodTarget = 0.47, GlassRemeltTarget = 0.77 },
-            new RecyclingTarget { Year = 2028, PaperTarget = 0.81, GlassTarget = 0.80, AluminiumTarget = 0.64, SteelTarget = 0.83, PlasticTarget = 0.61, WoodTarget = 0.48, GlassRemeltTarget = 0.78 },
-            new RecyclingTarget { Year = 2029, PaperTarget = 0.83, GlassTarget = 0.82, AluminiumTarget = 0.65, SteelTarget = 0.84, PlasticTarget = 0.63, WoodTarget = 0.49, GlassRemeltTarget = 0.79 },
-            new RecyclingTarget { Year = 2030, PaperTarget = 0.85, GlassTarget = 0.85, AluminiumTarget = 0.67, SteelTarget = 0.85, PlasticTarget = 0.65, WoodTarget = 0.50, GlassRemeltTarget = 0.80 }
+            new RecyclingTarget { MaterialNameRT = MaterialType.Paper.ToString(), Target = 0.75, Year = 2025 },
+            new RecyclingTarget { MaterialNameRT = MaterialType.Paper.ToString(), Target = 0.77, Year = 2026 },
+            new RecyclingTarget { MaterialNameRT = MaterialType.Paper.ToString(), Target = 0.79, Year = 2027 },
+            new RecyclingTarget { MaterialNameRT = MaterialType.Paper.ToString(), Target = 0.81, Year = 2028 },
+            new RecyclingTarget { MaterialNameRT = MaterialType.Paper.ToString(), Target = 0.83, Year = 2029 },
+            new RecyclingTarget { MaterialNameRT = MaterialType.Paper.ToString(), Target = 0.85, Year = 2030 },
+
+            new RecyclingTarget { MaterialNameRT = MaterialType.Glass.ToString(), Target = 0.74, Year = 2025 },
+            new RecyclingTarget { MaterialNameRT = MaterialType.Glass.ToString(), Target = 0.76, Year = 2026 },
+            new RecyclingTarget { MaterialNameRT = MaterialType.Glass.ToString(), Target = 0.78, Year = 2027 },
+            new RecyclingTarget { MaterialNameRT = MaterialType.Glass.ToString(), Target = 0.80, Year = 2028 },
+            new RecyclingTarget { MaterialNameRT = MaterialType.Glass.ToString(), Target = 0.82, Year = 2029 },
+            new RecyclingTarget { MaterialNameRT = MaterialType.Glass.ToString(), Target = 0.85, Year = 2030 },
+
+            new RecyclingTarget { MaterialNameRT = MaterialType.Aluminium.ToString(), Target = 0.61, Year = 2025 },
+            new RecyclingTarget { MaterialNameRT = MaterialType.Aluminium.ToString(), Target = 0.62, Year = 2026 },
+            new RecyclingTarget { MaterialNameRT = MaterialType.Aluminium.ToString(), Target = 0.63, Year = 2027 },
+            new RecyclingTarget { MaterialNameRT = MaterialType.Aluminium.ToString(), Target = 0.64, Year = 2028 },
+            new RecyclingTarget { MaterialNameRT = MaterialType.Aluminium.ToString(), Target = 0.65, Year = 2029 },
+            new RecyclingTarget { MaterialNameRT = MaterialType.Aluminium.ToString(), Target = 0.67, Year = 2030 },
+
+            new RecyclingTarget { MaterialNameRT = MaterialType.Steel.ToString(), Target = 0.8, Year = 2025 },
+            new RecyclingTarget { MaterialNameRT = MaterialType.Steel.ToString(), Target = 0.81, Year = 2026 },
+            new RecyclingTarget { MaterialNameRT = MaterialType.Steel.ToString(), Target = 0.82, Year = 2027 },
+            new RecyclingTarget { MaterialNameRT = MaterialType.Steel.ToString(), Target = 0.83, Year = 2028 },
+            new RecyclingTarget { MaterialNameRT = MaterialType.Steel.ToString(), Target = 0.84, Year = 2029 },
+            new RecyclingTarget { MaterialNameRT = MaterialType.Steel.ToString(), Target = 0.85, Year = 2030 },
+
+            new RecyclingTarget { MaterialNameRT = MaterialType.Plastic.ToString(), Target = 0.55, Year = 2025 },
+            new RecyclingTarget { MaterialNameRT = MaterialType.Plastic.ToString(), Target = 0.57, Year = 2026 },
+            new RecyclingTarget { MaterialNameRT = MaterialType.Plastic.ToString(), Target = 0.59, Year = 2027 },
+            new RecyclingTarget { MaterialNameRT = MaterialType.Plastic.ToString(), Target = 0.61, Year = 2028 },
+            new RecyclingTarget { MaterialNameRT = MaterialType.Plastic.ToString(), Target = 0.63, Year = 2029 },
+            new RecyclingTarget { MaterialNameRT = MaterialType.Plastic.ToString(), Target = 0.65, Year = 2030 },
+
+            new RecyclingTarget { MaterialNameRT = MaterialType.Wood.ToString(), Target = 0.45, Year = 2025 },
+            new RecyclingTarget { MaterialNameRT = MaterialType.Wood.ToString(), Target = 0.46, Year = 2026 },
+            new RecyclingTarget { MaterialNameRT = MaterialType.Wood.ToString(), Target = 0.47, Year = 2027 },
+            new RecyclingTarget { MaterialNameRT = MaterialType.Wood.ToString(), Target = 0.48, Year = 2028 },
+            new RecyclingTarget { MaterialNameRT = MaterialType.Wood.ToString(), Target = 0.49, Year = 2029 },
+            new RecyclingTarget { MaterialNameRT = MaterialType.Wood.ToString(), Target = 0.50, Year = 2030 },
+
+            new RecyclingTarget { MaterialNameRT = MaterialType.GlassRemelt.ToString(), Target = 0.75, Year = 2025 },
+            new RecyclingTarget { MaterialNameRT = MaterialType.GlassRemelt.ToString(), Target = 0.76, Year = 2026 },
+            new RecyclingTarget { MaterialNameRT = MaterialType.GlassRemelt.ToString(), Target = 0.77, Year = 2027 },
+            new RecyclingTarget { MaterialNameRT = MaterialType.GlassRemelt.ToString(), Target = 0.78, Year = 2028 },
+            new RecyclingTarget { MaterialNameRT = MaterialType.GlassRemelt.ToString(), Target = 0.79, Year = 2029 },
+            new RecyclingTarget { MaterialNameRT = MaterialType.GlassRemelt.ToString(), Target = 0.80, Year = 2030 }
         ];
 
     [TestInitialize]
@@ -41,6 +84,6 @@ public class RecyclingTargetRepositoryTests
 
         // Assert
         Assert.IsNotNull(result);
-        Assert.AreEqual(6, result.Count());
+        Assert.AreEqual(42, result.Count());
     }
 }

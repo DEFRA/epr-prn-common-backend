@@ -1,11 +1,12 @@
 ﻿using AutoFixture;
-using EPR.PRN.Backend.API.Common.DTO;
+using EPR.PRN.Backend.API.Common.Dto;
 using EPR.PRN.Backend.API.Configs;
 using EPR.PRN.Backend.API.Controllers;
+using EPR.PRN.Backend.API.Dto;
 using EPR.PRN.Backend.API.Helpers;
 using EPR.PRN.Backend.API.Services.Interfaces;
 using EPR.PRN.Backend.Data.DataModels;
-using EPR.PRN.Backend.Obligation.DTO;
+using EPR.PRN.Backend.Obligation.Dto;
 using EPR.PRN.Backend.Obligation.Interfaces;
 using EPR.PRN.Backend.Obligation.Models;
 using FluentAssertions;
