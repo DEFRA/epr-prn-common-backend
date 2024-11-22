@@ -7,4 +7,4 @@ variables:
   kvName: PRERWDINFKV1401
   sqlDBserver: 'prerwddbssq1401.database.windows.net'
   sqlDB: 'pre1_prn'
-  acr.Subscription: 'AZD-RWD-PRE1'
+  acr.Subscription: 'AZR-RWD-PRE1'
