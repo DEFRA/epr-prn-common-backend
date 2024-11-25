@@ -4,11 +4,10 @@ using EPR.PRN.Backend.Data.Interfaces;
 using EPR.PRN.Backend.Obligation.Services;
 using FluentAssertions;
 using Moq;
-using System.Diagnostics.CodeAnalysis;
+using System.Reflection;
 
 namespace EPR.PRN.Backend.Obligation.UnitTests.Services;
 
-[ExcludeFromCodeCoverage]
 [TestClass]
 public class RecyclingTargetDataServiceTests
 {
@@ -84,6 +83,109 @@ public class RecyclingTargetDataServiceTests
         recyclingTargetRepositoryMock.Verify(x => x.GetAllAsync(), Times.Once, "the repository should not be queried again");
 
         recyclingTargetRepositoryMock.VerifyNoOtherCalls();
+    }
+
+    [TestMethod]
+    public async Task GetRecyclingTargetsAsync_WhenMaterialNameIsInvalid_ShouldThrowArgumentException()
+    {
+        // Arrange
+        var recyclingTargetRepositoryMock = new Mock<IRecyclingTargetRepository>(MockBehavior.Strict);
+        recyclingTargetRepositoryMock.Setup(x => x.GetAllAsync())
+            .ReturnsAsync(new List<RecyclingTarget>
+            {
+            new RecyclingTarget { Year = 1, MaterialNameRT = "InvalidMaterial", Target = 0.1 }
+            });
+
+        var recyclingTargetDataService = new RecyclingTargetDataService(recyclingTargetRepositoryMock.Object);
+
+        // Act
+        Func<Task> act = async () => await recyclingTargetDataService.GetRecyclingTargetsAsync();
+
+        // Assert
+        await act.Should().ThrowAsync<ArgumentException>()
+            .WithMessage("Invalid material name 'InvalidMaterial' in recycling targets.");
+    }
+
+    [TestMethod]
+    public async Task GetRecyclingTargetsAsync_WhenRepositoryReturnsNoData_ShouldReturnEmptyDictionary()
+    {
+        // Arrange
+        var recyclingTargetRepositoryMock = new Mock<IRecyclingTargetRepository>(MockBehavior.Strict);
+        recyclingTargetRepositoryMock.Setup(x => x.GetAllAsync())
+            .ReturnsAsync(new List<RecyclingTarget>());
+
+        var recyclingTargetDataService = new RecyclingTargetDataService(recyclingTargetRepositoryMock.Object);
+
+        // Act
+        var annualRecyclingTargets = await recyclingTargetDataService.GetRecyclingTargetsAsync();
+
+        // Assert
+        annualRecyclingTargets.Should().BeEmpty("no data in repository should result in an empty dictionary");
+        recyclingTargetRepositoryMock.Verify(x => x.GetAllAsync(), Times.Once);
+    }
+
+    [TestMethod]
+    public async Task GetRecyclingTargetsAsync_WhenDataSpansMultipleYears_ShouldGroupByYearCorrectly()
+    {
+        // Arrange
+        var recyclingTargetRepositoryMock = new Mock<IRecyclingTargetRepository>(MockBehavior.Strict);
+        recyclingTargetRepositoryMock.Setup(x => x.GetAllAsync())
+            .ReturnsAsync(new List<RecyclingTarget>
+            {
+            new RecyclingTarget { Year = 1, MaterialNameRT = MaterialType.Aluminium.ToString(), Target = 0.1 },
+            new RecyclingTarget { Year = 2, MaterialNameRT = MaterialType.Plastic.ToString(), Target = 0.2 }
+            });
+
+        var recyclingTargetDataService = new RecyclingTargetDataService(recyclingTargetRepositoryMock.Object);
+
+        // Act
+        var annualRecyclingTargets = await recyclingTargetDataService.GetRecyclingTargetsAsync();
+
+        // Assert
+        annualRecyclingTargets.Should().BeEquivalentTo(
+            new Dictionary<int, Dictionary<MaterialType, double>>
+            {
+            { 1, new Dictionary<MaterialType, double> { { MaterialType.Aluminium, 0.1 } } },
+            { 2, new Dictionary<MaterialType, double> { { MaterialType.Plastic, 0.2 } } }
+            },
+            "the data should be grouped by year and transformed correctly"
+        );
+    }
+
+    [TestMethod]
+    public async Task GetRecyclingTargetsAsync_WhenRepositoryReturnsNull_ShouldReturnEmptyDictionary()
+    {
+        // Arrange
+        var recyclingTargetRepositoryMock = new Mock<IRecyclingTargetRepository>(MockBehavior.Strict);
+        recyclingTargetRepositoryMock.Setup(x => x.GetAllAsync())
+            .ReturnsAsync((List<RecyclingTarget>)null);
+
+        var recyclingTargetDataService = new RecyclingTargetDataService(recyclingTargetRepositoryMock.Object);
+
+        // Act
+        var annualRecyclingTargets = await recyclingTargetDataService.GetRecyclingTargetsAsync();
+
+        // Assert
+        annualRecyclingTargets.Should().BeEmpty("null response from repository should result in an empty dictionary");
+        recyclingTargetRepositoryMock.Verify(x => x.GetAllAsync(), Times.Once);
+    }
+
+    [TestMethod]
+    public void RecyclingTargetDataService_Constructor_ShouldInitializeWithEmptyDictionary()
+    {
+        // Arrange
+        var recyclingTargetRepositoryMock = new Mock<IRecyclingTargetRepository>();
+
+        // Act
+        var recyclingTargetDataService = new RecyclingTargetDataService(recyclingTargetRepositoryMock.Object);
+
+        // Assert
+        var targetsField = typeof(RecyclingTargetDataService)
+            .GetField("_recyclingTargets", BindingFlags.NonPublic | BindingFlags.Instance);
+        var targetsValue = (Dictionary<int, Dictionary<MaterialType, double>>)targetsField.GetValue(recyclingTargetDataService);
+
+        targetsValue.Should().NotBeNull("the dictionary should be initialized");
+        targetsValue.Should().BeEmpty("the dictionary should be empty upon initialization");
     }
 }
 

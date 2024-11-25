@@ -21,7 +21,7 @@ namespace EPR.PRN.Backend.Obligation.Services
         {
             if (_recyclingTargets.Count == 0)
             {
-                var recyclingTargets = (await _recyclingTargetRepository.GetAllAsync()).ToList();
+                var recyclingTargets = (await _recyclingTargetRepository.GetAllAsync()) ?? new List<RecyclingTarget>();
                 _recyclingTargets = recyclingTargets.GroupBy(target => target.Year)
                                                     .ToDictionary(
                                                         group => group.Key,
