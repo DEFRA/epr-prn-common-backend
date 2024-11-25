@@ -140,14 +140,9 @@ public class RepositoryTests
         var fromDate = DateTime.UtcNow.AddDays(-7);
         var toDate = DateTime.UtcNow;
 
-        var data = _fixture.CreateMany<Eprn>().ToArray();
-
         using var context = new EprContext(_contextOptions);
         if (await context.Database.EnsureCreatedAsync())
-        {
-            context.AddRange(data);
-            await context.SaveChangesAsync();
-        }
+        { }
 
         //Act
         var repo = new Repository(context);
