@@ -46,8 +46,7 @@
             var prnUpdateStatuses = result.Select(p => new PrnUpdateStatus
             {
                 EvidenceNo = p.PrnNumber,
-                EvidenceStatusCode = GetEvidenceStatusCodeString(
-                    MapStatusCode((EprnStatus)Enum.Parse(typeof(EprnStatus), p.StatusName), p.AccreditationYear)),
+                EvidenceStatusCode = MapStatusCode((EprnStatus)Enum.Parse(typeof(EprnStatus), p.StatusName), p.AccreditationYear),
                 StatusDate = p.StatusUpdatedOn,
                 AccreditationYear = p.AccreditationYear
             }).ToList();
@@ -77,28 +76,23 @@
             _eprContext.PrnStatusHistory.Add(prnStatusHistory);
         }
 
-        private static string GetEvidenceStatusCodeString(EvidenceStatusCode statusCode)
-        {
-            return Enum.GetName(typeof(EvidenceStatusCode), statusCode);
-        }
-
-        private EvidenceStatusCode MapStatusCode(EprnStatus status, string accreditationYear)
+        private string MapStatusCode(EprnStatus status, string accreditationYear)
         {
             switch (status)
             {
                 case EprnStatus.ACCEPTED:
-                    return EvidenceStatusCode.EV_ACCEP;
+                    return EvidenceStatusCode.EV_ACCEP.ToHyphenatedString();
                 case EprnStatus.REJECTED:
-                    return EvidenceStatusCode.EV_ACANCEL;
+                    return EvidenceStatusCode.EV_ACANCEL.ToHyphenatedString();
                 case EprnStatus.CANCELLED:
-                    return EvidenceStatusCode.EV_CANCEL;
+                    return EvidenceStatusCode.EV_CANCEL.ToHyphenatedString();
                 case EprnStatus.AWAITINGACCEPTANCE:
                     if (accreditationYear == "2024")
-                        return EvidenceStatusCode.EV_AWACCEP;
+                        return EvidenceStatusCode.EV_AWACCEP.ToHyphenatedString();
                     else if (accreditationYear == "2025")
-                        return EvidenceStatusCode.EV_AWACCEP_EPR;
+                        return EvidenceStatusCode.EV_AWACCEP_EPR.ToHyphenatedString();
                     else
-                        return EvidenceStatusCode.EV_AWACCEP; // Default case, assuming for any other years it maps to EV_AWACCEP
+                        return EvidenceStatusCode.EV_AWACCEP.ToHyphenatedString(); // Default case, assuming for any other years it maps to EV_AWACCEP
                 default:
                     throw new ArgumentException($"Unknown status: {status}");
             }
