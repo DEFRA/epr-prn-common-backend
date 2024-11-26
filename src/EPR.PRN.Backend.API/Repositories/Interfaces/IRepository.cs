@@ -13,5 +13,6 @@ namespace EPR.PRN.Backend.API.Repositories.Interfaces
         public Task SaveTransaction(IDbContextTransaction transaction);
         void AddPrnStatusHistory(PrnStatusHistory prnStatusHistory);
         Task<PaginatedResponseDto<PrnDto>> GetSearchPrnsForOrganisation(Guid orgId, PaginatedRequestDto request);
+        Task SavePrnDetails(Eprn entity);
     }
 }

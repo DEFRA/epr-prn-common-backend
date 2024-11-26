@@ -1,4 +1,5 @@
 ﻿using AutoFixture;
+using Castle.Core.Logging;
 using EPR.PRN.Backend.API.Common.Constants;
 using EPR.PRN.Backend.API.Common.DTO;
 using EPR.PRN.Backend.API.Repositories;
@@ -6,6 +7,8 @@ using EPR.PRN.Backend.Data;
 using EPR.PRN.Backend.Data.DataModels;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using Moq;
 
 namespace EPR.PRN.Backend.API.UnitTests.Repositories;
 
@@ -15,6 +18,7 @@ public class RepositoryTestsInMemory
     private EprContext _context;
     private Repository _repository;
     private readonly Fixture _fixture = new Fixture();
+    private readonly Mock<ILogger<EprContext>> _mockLogger =  new Mock<ILogger<EprContext>>();
 
     [TestInitialize]
     public void Setup()
@@ -23,7 +27,7 @@ public class RepositoryTestsInMemory
             .UseInMemoryDatabase(databaseName: "TestDatabase")
             .Options;
         _context = new EprContext(options);
-        _repository = new Repository(_context);
+        _repository = new Repository(_context, _mockLogger.Object);
         var orgId = Guid.NewGuid();
         var eprns = new List<Eprn>
         {

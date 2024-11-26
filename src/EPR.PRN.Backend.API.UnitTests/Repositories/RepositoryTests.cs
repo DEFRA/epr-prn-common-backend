@@ -1,10 +1,12 @@
 ﻿using AutoFixture;
 using EPR.PRN.Backend.API.Repositories;
+using EPR.PRN.Backend.API.Repositories.Interfaces;
 using EPR.PRN.Backend.Data;
 using EPR.PRN.Backend.Data.DataModels;
 using FluentAssertions;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Moq;
 using System.Diagnostics.CodeAnalysis;
 
@@ -19,6 +21,7 @@ public class RepositoryTests
     private Fixture _fixture;
     private Mock<EprContext> _mockContext;
     private Repository _repository;
+    private Mock<ILogger<EprContext>> _mockLogger;
 
     [TestInitialize]
     public void TestInitialize()
@@ -33,7 +36,7 @@ public class RepositoryTests
 
         _fixture = new Fixture();
         _mockContext = new Mock<EprContext>();
-        _repository = new Repository(_mockContext.Object);
+        _repository = new Repository(_mockContext.Object, _mockLogger.Object);
     }
 
     [TestMethod]
@@ -50,7 +53,7 @@ public class RepositoryTests
             await context.SaveChangesAsync();
         }
         //Act
-        var repo = new Repository(context);
+        var repo = new Repository(context, _mockLogger.Object);
 
         //Assert
         var prns = await repo.GetAllPrnByOrganisationId(data[0].OrganisationId);
@@ -73,7 +76,7 @@ public class RepositoryTests
             await context.SaveChangesAsync();
         }
         //Act
-        var repo = new Repository(context);
+        var repo = new Repository(context, _mockLogger.Object);
 
         //Assert
         var prn = await repo.GetPrnForOrganisationById(data[0].OrganisationId, data[0].ExternalId);
@@ -94,7 +97,7 @@ public class RepositoryTests
             await context.SaveChangesAsync();
         }
         //Act
-        var repo = new Repository(context);
+        var repo = new Repository(context, _mockLogger.Object);
 
         var transaction = repo.BeginTransaction();
         var updatingPrn = await repo.GetAllPrnByOrganisationId(data[0].OrganisationId);
@@ -123,7 +126,7 @@ public class RepositoryTests
             await context.SaveChangesAsync();
         }
         //Act
-        var repo = new Repository(context);
+        var repo = new Repository(context, _mockLogger.Object);
 
         var transaction = repo.BeginTransaction();
         repo.AddPrnStatusHistory(statusHistory);
