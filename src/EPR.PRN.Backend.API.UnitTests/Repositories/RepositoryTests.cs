@@ -132,4 +132,23 @@ public class RepositoryTests
         var history = await context.PrnStatusHistory.Where(p => p.CreatedByUser == statusHistory.CreatedByUser).ToListAsync();
         history.Should().HaveCount(1);
     }
+
+    [TestMethod]
+    public async Task GetModifiedPrnsbyDate_ReturnsMappedPrnUpdateStatuses()
+    {
+        //Arrange
+        var fromDate = DateTime.UtcNow.AddDays(-7);
+        var toDate = DateTime.UtcNow;
+
+        using var context = new EprContext(_contextOptions);
+        if (await context.Database.EnsureCreatedAsync())
+        { }
+
+        //Act
+        var repo = new Repository(context);
+        var result = await repo.GetModifiedPrnsbyDate(fromDate, toDate);
+
+        //Assert
+        Assert.IsNotNull(result);
+    }
 }
