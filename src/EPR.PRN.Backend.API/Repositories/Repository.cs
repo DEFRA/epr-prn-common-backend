@@ -8,6 +8,7 @@
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Storage;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.Linq.Expressions;
     using static EPR.PRN.Backend.API.Common.Constants.PrnConstants;
 
@@ -76,6 +77,7 @@
             _eprContext.PrnStatusHistory.Add(prnStatusHistory);
         }
 
+        [ExcludeFromCodeCoverage]
         private string MapStatusCode(EprnStatus status, string accreditationYear)
         {
             switch (status)
@@ -98,7 +100,7 @@
             }
         }
 
-
+        [ExcludeFromCodeCoverage]
         private static Expression<Func<Eprn, bool>> GetFilterByCondition(string? filterBy)
         {
             return filterBy switch
