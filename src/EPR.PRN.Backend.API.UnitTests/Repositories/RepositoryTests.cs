@@ -161,9 +161,17 @@ public class RepositoryTests
 
         // Act & Assert
         var acceptedResult = privateMethod.Invoke(_repository, new object[] { EprnStatus.ACCEPTED, "2024" });
+        var rejectedResult = privateMethod.Invoke(_repository, new object[] { EprnStatus.REJECTED, "2024" });
         var cancelledResult = privateMethod.Invoke(_repository, new object[] { EprnStatus.CANCELLED, "2024" });
+        var awaiting2024Result = privateMethod.Invoke(_repository, new object[] { EprnStatus.AWAITINGACCEPTANCE, "2024" });
+        var awaiting2025Result = privateMethod.Invoke(_repository, new object[] { EprnStatus.AWAITINGACCEPTANCE, "2025" });
+        var awaitingOtherResult = privateMethod.Invoke(_repository, new object[] { EprnStatus.AWAITINGACCEPTANCE, "2023" });
 
         Assert.AreEqual("EV-ACCEP", acceptedResult);
+        Assert.AreEqual("EV-ACANCEL", rejectedResult);
         Assert.AreEqual("EV-CANCEL", cancelledResult);
+        Assert.AreEqual("EV-AWACCEP", awaiting2024Result);
+        Assert.AreEqual("EV-AWACCEP-EPR", awaiting2025Result);
+        Assert.AreEqual("EV-AWACCEP", awaitingOtherResult);
     }
 }
