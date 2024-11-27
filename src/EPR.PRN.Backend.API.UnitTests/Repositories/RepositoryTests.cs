@@ -178,4 +178,19 @@ public class RepositoryTests
         Assert.AreEqual("2024", secondPrn.AccreditationYear);
         Assert.AreEqual("EV-ACANCEL", secondPrn.EvidenceStatusCode);
     }
+
+    [TestMethod]
+    public void MapStatusCode_ReturnsCorrectValues()
+    {
+        // Arrange
+        var privateMethod = typeof(Repository)
+            .GetMethod("MapStatusCode", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+
+        // Act & Assert
+        var acceptedResult = privateMethod.Invoke(_repository, new object[] { EprnStatus.ACCEPTED, "2024" });
+        var cancelledResult = privateMethod.Invoke(_repository, new object[] { EprnStatus.CANCELLED, "2024" });
+
+        Assert.AreEqual("EV-ACCEP", acceptedResult);
+        Assert.AreEqual("EV-CANCEL", cancelledResult);
+    }
 }
