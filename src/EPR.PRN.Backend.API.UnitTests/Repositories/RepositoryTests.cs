@@ -140,9 +140,25 @@ public class RepositoryTests
         var fromDate = DateTime.UtcNow.AddDays(-7);
         var toDate = DateTime.UtcNow;
 
+        var data = _fixture.CreateMany<Eprn>().ToArray();
+        data[0].PrnNumber = "PRN001";
+        data[0].LastUpdatedDate = new DateTime(2024, 11, 21);
+        data[0].PrnStatusId = 1;
+        data[0].AccreditationYear = "2023";
+
+        data[1].PrnNumber = "PRN002";
+        data[1].LastUpdatedDate = new DateTime(2024, 11, 22);
+        data[1].PrnStatusId = 1;
+        data[1].AccreditationYear = "2024";
+
+        data[0].PrnStatusId = 1;
+        data[1].PrnStatusId = 2;
         using var context = new EprContext(_contextOptions);
         if (await context.Database.EnsureCreatedAsync())
-        { }
+        {
+            context.AddRange(data);
+            await context.SaveChangesAsync();
+        }
 
         //Act
         var repo = new Repository(context);
@@ -150,6 +166,17 @@ public class RepositoryTests
 
         //Assert
         Assert.IsNotNull(result);
+        Assert.AreEqual(2, result.Count);
+
+        var firstPrn = result[0];
+        Assert.AreEqual("PRN001", firstPrn.EvidenceNo);
+        Assert.AreEqual("2023", firstPrn.AccreditationYear);
+        Assert.AreEqual("EV-ACCEP", firstPrn.EvidenceStatusCode);
+
+        var secondPrn = result[1];
+        Assert.AreEqual("PRN002", secondPrn.EvidenceNo);
+        Assert.AreEqual("2024", secondPrn.AccreditationYear);
+        Assert.AreEqual("EV-ACANCEL", secondPrn.EvidenceStatusCode);
     }
 
     [TestMethod]
