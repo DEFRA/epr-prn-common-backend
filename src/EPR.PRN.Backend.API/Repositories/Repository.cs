@@ -77,7 +77,6 @@
             _eprContext.PrnStatusHistory.Add(prnStatusHistory);
         }
 
-        [ExcludeFromCodeCoverage]
         private string MapStatusCode(EprnStatus status, string accreditationYear)
         {
             switch (status)
@@ -100,7 +99,6 @@
             }
         }
 
-        [ExcludeFromCodeCoverage]
         private static Expression<Func<Eprn, bool>> GetFilterByCondition(string? filterBy)
         {
             return filterBy switch
