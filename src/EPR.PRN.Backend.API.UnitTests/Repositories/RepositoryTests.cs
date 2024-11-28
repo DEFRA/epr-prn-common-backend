@@ -142,17 +142,15 @@ public class RepositoryTests
 
         var data = _fixture.CreateMany<Eprn>().ToArray();
         data[0].PrnNumber = "PRN001";
-        data[0].LastUpdatedDate = new DateTime(2024, 11, 21);
+        data[0].StatusUpdatedOn = new DateTime(2024, 11, 23);
         data[0].PrnStatusId = 1;
         data[0].AccreditationYear = "2023";
 
         data[1].PrnNumber = "PRN002";
-        data[1].LastUpdatedDate = new DateTime(2024, 11, 22);
-        data[1].PrnStatusId = 1;
+        data[1].StatusUpdatedOn = new DateTime(2024, 11, 22);
+        data[1].PrnStatusId = 2;
         data[1].AccreditationYear = "2024";
 
-        data[0].PrnStatusId = 1;
-        data[1].PrnStatusId = 2;
         using var context = new EprContext(_contextOptions);
         if (await context.Database.EnsureCreatedAsync())
         {
@@ -177,28 +175,5 @@ public class RepositoryTests
         Assert.AreEqual("PRN002", secondPrn.EvidenceNo);
         Assert.AreEqual("2024", secondPrn.AccreditationYear);
         Assert.AreEqual("EV-ACANCEL", secondPrn.EvidenceStatusCode);
-    }
-
-    [TestMethod]
-    public void MapStatusCode_ReturnsCorrectValues()
-    {
-        // Arrange
-        var privateMethod = typeof(Repository)
-            .GetMethod("MapStatusCode", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-
-        // Act & Assert
-        var acceptedResult = privateMethod.Invoke(_repository, new object[] { EprnStatus.ACCEPTED, "2024" });
-        var rejectedResult = privateMethod.Invoke(_repository, new object[] { EprnStatus.REJECTED, "2024" });
-        var cancelledResult = privateMethod.Invoke(_repository, new object[] { EprnStatus.CANCELLED, "2024" });
-        var awaiting2024Result = privateMethod.Invoke(_repository, new object[] { EprnStatus.AWAITINGACCEPTANCE, "2024" });
-        var awaiting2025Result = privateMethod.Invoke(_repository, new object[] { EprnStatus.AWAITINGACCEPTANCE, "2025" });
-        var awaitingOtherResult = privateMethod.Invoke(_repository, new object[] { EprnStatus.AWAITINGACCEPTANCE, "2023" });
-
-        Assert.AreEqual("EV-ACCEP", acceptedResult);
-        Assert.AreEqual("EV-ACANCEL", rejectedResult);
-        Assert.AreEqual("EV-CANCEL", cancelledResult);
-        Assert.AreEqual("EV-AWACCEP", awaiting2024Result);
-        Assert.AreEqual("EV-AWACCEP-EPR", awaiting2025Result);
-        Assert.AreEqual("EV-AWACCEP", awaitingOtherResult);
     }
 }

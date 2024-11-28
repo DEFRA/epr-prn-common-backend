@@ -8,7 +8,6 @@
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Storage;
     using System.Collections.Generic;
-    using System.Diagnostics.CodeAnalysis;
     using System.Linq.Expressions;
     using static EPR.PRN.Backend.API.Common.Constants.PrnConstants;
 
@@ -35,7 +34,8 @@
         {
             var result = await (from p in _eprContext.Prn
                                 join ps in _eprContext.PrnStatus on p.PrnStatusId equals ps.Id
-                                where p.LastUpdatedDate >= fromDate && p.LastUpdatedDate <= toDate
+                                where p.StatusUpdatedOn >= fromDate && p.StatusUpdatedOn <= toDate
+                                && (p.PrnStatusId == 1 || p.PrnStatusId == 2)
                                 select new
                                 {
                                     p.PrnNumber,
