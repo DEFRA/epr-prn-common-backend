@@ -2,12 +2,10 @@
 
 namespace EPR.PRN.Backend.API.Controllers;
 
-using Azure.Core;
 using EPR.PRN.Backend.API.Common.DTO;
 using EPR.PRN.Backend.API.Configs;
 using EPR.PRN.Backend.API.Helpers;
 using EPR.PRN.Backend.API.Services.Interfaces;
-using EPR.PRN.Backend.Data.DataModels;
 using EPR.PRN.Backend.Obligation.DTO;
 using EPR.PRN.Backend.Obligation.Interfaces;
 using EPR.PRN.Backend.Obligation.Models;
@@ -15,7 +13,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using System.Net;
-using System.Security.Cryptography;
 
 [ApiController]
 [ApiVersion("1.0")]
@@ -92,6 +89,7 @@ public class PrnController(IPrnService prnService, ILogger<PrnController> logger
             logger.LogError("{Logprefix}: PrnController - GetObligationCalculation: Invalid year provided: {Year}.", logPrefix, year);
             return BadRequest($"Invalid year provided: {year}.");
         }
+
 
         var obligationCalculation = await obligationCalculatorService.GetObligationCalculation(organisationId, year);
 
