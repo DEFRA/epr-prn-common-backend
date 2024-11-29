@@ -1,9 +1,9 @@
-﻿namespace EPR.PRN.Backend.API.Common.DTO
-{
-    using EPR.PRN.Backend.Data.DataModels;
-    using System;
-    using System.Diagnostics.CodeAnalysis;
+﻿using EPR.PRN.Backend.API.Common.Enums;
+using EPR.PRN.Backend.Data.DataModels;
+using System.Diagnostics.CodeAnalysis;
 
+namespace EPR.PRN.Backend.API.Dto
+{
     [ExcludeFromCodeCoverage]
     public class PrnDto
     {

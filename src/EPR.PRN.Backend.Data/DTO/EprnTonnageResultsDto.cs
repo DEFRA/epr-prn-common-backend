@@ -1,4 +1,4 @@
-﻿namespace EPR.PRN.Backend.Data.DTO
+﻿namespace EPR.PRN.Backend.Data.Dto
 {
     public class EprnTonnageResultsDto
     {

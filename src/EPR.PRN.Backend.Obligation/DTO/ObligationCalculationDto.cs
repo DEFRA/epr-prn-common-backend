@@ -2,7 +2,7 @@
 
 using System.Diagnostics.CodeAnalysis;
 
-namespace EPR.PRN.Backend.Obligation.DTO;
+namespace EPR.PRN.Backend.Obligation.Dto;
 
 [ExcludeFromCodeCoverage]
 public class ObligationCalculationDto

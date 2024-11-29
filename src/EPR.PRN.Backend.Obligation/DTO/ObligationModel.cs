@@ -1,4 +1,4 @@
-﻿namespace EPR.PRN.Backend.Obligation.DTO
+﻿namespace EPR.PRN.Backend.Obligation.Dto
 {
     public class ObligationModel
     {

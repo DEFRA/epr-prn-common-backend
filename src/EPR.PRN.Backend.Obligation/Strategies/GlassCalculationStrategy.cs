@@ -1,6 +1,6 @@
-﻿using EPR.PRN.Backend.Data.DataModels;
-using EPR.PRN.Backend.Obligation.DTO;
-using EPR.PRN.Backend.Obligation.Enums;
+﻿using EPR.PRN.Backend.API.Common.Enums;
+using EPR.PRN.Backend.Data.DataModels;
+using EPR.PRN.Backend.Obligation.Dto;
 using EPR.PRN.Backend.Obligation.Helpers;
 using EPR.PRN.Backend.Obligation.Interfaces;
 
