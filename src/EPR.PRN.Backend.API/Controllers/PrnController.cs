@@ -1,4 +1,6 @@
-﻿namespace EPR.PRN.Backend.API.Controllers;
+﻿#nullable disable
+
+namespace EPR.PRN.Backend.API.Controllers;
 
 using EPR.PRN.Backend.API.Common.DTO;
 using EPR.PRN.Backend.API.Configs;
@@ -9,36 +11,34 @@ using EPR.PRN.Backend.Obligation.Interfaces;
 using EPR.PRN.Backend.Obligation.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 using System.Net;
 
 [ApiController]
 [ApiVersion("1.0")]
 [Route("api/v{version:apiVersion}/prn")]
-public class PrnController : Controller
+public class PrnController(IPrnService prnService, ILogger<PrnController> logger, IObligationCalculatorService obligationCalculatorService, IOptions<PrnObligationCalculationConfig> config, IConfiguration configuration) : ControllerBase
 {
-    private readonly IPrnService _prnService;
-    private readonly ILogger<PrnController> _logger;
-    private readonly IObligationCalculatorService _obligationCalculatorService;
-    private readonly PrnObligationCalculationConfig _config;
-
-    public PrnController(IPrnService prnService, ILogger<PrnController> logger, IObligationCalculatorService obligationCalculatorService, IOptions<PrnObligationCalculationConfig> config)
-    {
-        _prnService = prnService;
-        _logger = logger;
-        _obligationCalculatorService = obligationCalculatorService;
-        _config = config.Value;
-    }
+    private readonly PrnObligationCalculationConfig _config = config.Value;
+    private readonly string logPrefix = configuration["LogPrefix"];
 
     #region Get methods
+
     [HttpGet("{prnId}")]
     [ProducesResponseType(typeof(PrnDto), 200)]
     public async Task<IActionResult> GetPrn([FromHeader(Name = "X-EPR-ORGANISATION")] Guid orgId, [FromRoute] Guid prnId)
     {
-        var prn = await _prnService.GetPrnForOrganisationById(orgId, prnId);
+        logger.LogInformation("{Logprefix}: PrnController - GetPrn: Api Route api/v1/prn/{PrnId}", logPrefix, prnId);
+        logger.LogInformation("{Logprefix}: PrnController - GetPrn: Get Prn request for user organisation {Organisation} and Prn {PrnId}", logPrefix, orgId, prnId);
+        var prn = await prnService.GetPrnForOrganisationById(orgId, prnId);
 
         if (prn == null)
+        {
+            logger.LogError("{Logprefix}: PrnController - GetPrn: Prn Not Found", logPrefix);
             return NotFound();
+        }
 
+        logger.LogInformation("{Logprefix}: PrnController - GetPrn: Prn returned {Prn}", logPrefix, prn);
         return Ok(prn);
     }
 
@@ -46,13 +46,18 @@ public class PrnController : Controller
     [ProducesResponseType(typeof(PaginatedResponseDto<PrnDto>), 200)]
     [ProducesResponseType(400)]
     [ProducesResponseType(401)]
-    public async Task<IActionResult> GetSearchPrns([FromHeader(Name = "X-EPR-ORGANISATION")] Guid orgId,
-        [FromQuery] PaginatedRequestDto request)
+    public async Task<IActionResult> GetSearchPrns([FromHeader(Name = "X-EPR-ORGANISATION")] Guid orgId, [FromQuery] PaginatedRequestDto request)
     {
+        logger.LogInformation("{Logprefix}: PrnController - GetSearchPrns: Api Route api/v1/prn/search/", logPrefix);
+        logger.LogInformation("{Logprefix}: PrnController - GetSearchPrns: Search Prns request for user organisation {Organisation} and Search criteria {Searchcriteria}", logPrefix, orgId, JsonConvert.SerializeObject(request));
         if (orgId == Guid.Empty)
+        {
+            logger.LogInformation("{Logprefix}: PrnController - GetSearchPrns: UnAuthorised Request", logPrefix);
             return Unauthorized();
+        }
 
-        var result = await _prnService.GetSearchPrnsForOrganisation(orgId, request);
+        var result = await prnService.GetSearchPrnsForOrganisation(orgId, request);
+        logger.LogInformation("{Logprefix}: PrnController - GetSearchPrns: Prns returned {Prns}", logPrefix, JsonConvert.SerializeObject(result));
 
         return Ok(result);
     }
@@ -61,60 +66,73 @@ public class PrnController : Controller
     [ProducesResponseType(typeof(List<PrnDto>), 200)]
     public async Task<IActionResult> GetAllPrnByOrganisationId([FromHeader(Name = "X-EPR-ORGANISATION")] Guid orgId)
     {
-        var prn = await _prnService.GetAllPrnByOrganisationId(orgId);
+        logger.LogInformation("{Logprefix}: PrnController - GetAllPrnByOrganisationId: Api Route api/v1/prn/organisation", logPrefix);
+        logger.LogInformation("{Logprefix}: PrnController - GetAllPrnByOrganisationId: request for user organisation {Organisation}", logPrefix, orgId);
 
-        return Ok(prn);
+        var prns = await prnService.GetAllPrnByOrganisationId(orgId);
+        logger.LogInformation("{Logprefix}: PrnController - GetAllPrnByOrganisationId: Prns returned {Prns}", logPrefix, JsonConvert.SerializeObject(prns));
+
+        return Ok(prns);
     }
 
     [HttpGet("obligationcalculation/{year}")]
     [ProducesResponseType(typeof(List<ObligationData>), 200)]
     [ProducesResponseType(400)]
     [ProducesResponseType(500)]
-    public async Task<IActionResult> GetObligationCalculation([FromHeader(Name = "X-EPR-ORGANISATION")] Guid organisationId,
-        [FromRoute] int year)
+    public async Task<IActionResult> GetObligationCalculation([FromHeader(Name = "X-EPR-ORGANISATION")] Guid organisationId, [FromRoute] int year)
     {
+        logger.LogInformation("{Logprefix}: PrnController - GetObligationCalculation: Api Route api/v1/prn/obligationcalculation/{Year}", logPrefix, year);
+        logger.LogInformation("{Logprefix}: PrnController - GetObligationCalculation: request to get Obligation Calculation for user organisation {Organisation} for {Year}", logPrefix, organisationId, year);
+
         if (year < _config.StartYear || year > _config.EndYear)
         {
+            logger.LogError("{Logprefix}: PrnController - GetObligationCalculation: Invalid year provided: {Year}.", logPrefix, year);
             return BadRequest($"Invalid year provided: {year}.");
         }
 
-        var obligationCalculation = await _obligationCalculatorService.GetObligationCalculation(organisationId, year);
+
+        var obligationCalculation = await obligationCalculatorService.GetObligationCalculation(organisationId, year);
 
         if (!obligationCalculation.IsSuccess)
         {
+            logger.LogError("{Logprefix}: PrnController - GetObligationCalculation: Get Obligation Calculation Failed - Errors {Errors}", logPrefix, JsonConvert.SerializeObject(obligationCalculation.Errors));
             return StatusCode(500, obligationCalculation.Errors);
         }
 
+        logger.LogInformation("{Logprefix}: PrnController - GetObligationCalculation: Obligation Calculation returned {ObligationCalculation}", logPrefix, JsonConvert.SerializeObject(obligationCalculation));
         return Ok(obligationCalculation.ObligationModel);
     }
-    #endregion
+
+    #endregion Get methods
 
     #region Post Methods
+
     [HttpPost("status")]
-    public async Task<IActionResult> UpdatePrnStatus(
-        [FromHeader(Name = "X-EPR-ORGANISATION")] Guid orgId,
-        [FromHeader(Name = "X-EPR-USER")] Guid userId,
-        [FromBody] List<PrnUpdateStatusDto> prnUpdates)
+    public async Task<IActionResult> UpdatePrnStatus([FromHeader(Name = "X-EPR-ORGANISATION")] Guid orgId, [FromHeader(Name = "X-EPR-USER")] Guid userId, [FromBody] List<PrnUpdateStatusDto> prnUpdates)
     {
+        logger.LogInformation("{Logprefix}: PrnController - UpdatePrnStatus: Api Route api/v1/prn/status", logPrefix);
+        logger.LogInformation("{Logprefix}: PrnController - UpdatePrnStatus: request for user {User} organisation {Organisation} - Prns {PrnUpdates}", logPrefix, userId, orgId, JsonConvert.SerializeObject(prnUpdates));
+
         try
         {
-            await _prnService.UpdateStatus(orgId, userId, prnUpdates);
+            await prnService.UpdateStatus(orgId, userId, prnUpdates);
 
+            logger.LogInformation("{Logprefix}: PrnController - UpdatePrnStatus: Prn status updated successfully for {Prns}", logPrefix, JsonConvert.SerializeObject(prnUpdates));
             return Ok();
         }
         catch (NotFoundException ex)
         {
-            _logger.LogInformation(ex, "Recieved not found exception");
+            logger.LogError(ex, "{Logprefix}: PrnController - UpdatePrnStatus: Recieved not found exception", logPrefix);
             return Problem(ex.Message, null, (int)HttpStatusCode.NotFound);
         }
         catch (ConflictException ex)
         {
-            _logger.LogInformation(ex, "Recieved conflict exception");
+            logger.LogError(ex, "{Logprefix}: PrnController - UpdatePrnStatus: Recieved conflict exception", logPrefix);
             return Problem(ex.Message, null, (int)HttpStatusCode.Conflict);
         }
         catch (Exception ex)
         {
-            _logger.LogInformation(ex, "Recieved Unhandled exception");
+            logger.LogError(ex, "{Logprefix}: PrnController - UpdatePrnStatus: Recieved Unhandled exception", logPrefix);
             return Problem("Internal Server Error", null, (int)HttpStatusCode.InternalServerError);
         }
     }
@@ -126,38 +144,49 @@ public class PrnController : Controller
     [ProducesResponseType(StatusCodes.Status504GatewayTimeout)]
     public async Task<IActionResult> CalculateAsync(Guid organisationId, [FromBody] List<SubmissionCalculationRequest> request)
     {
+        logger.LogInformation("{Logprefix}: PrnController - CalculateAsync: Api Route api/v1/prn/organisation/{OrganisationId}/calculate", logPrefix, organisationId);
+        logger.LogInformation("{Logprefix}: PrnController - CalculateAsync: request for user organisation {Organisation} submissions {SubmissionsRequest}", logPrefix, organisationId, JsonConvert.SerializeObject(request));
+
         if (request == null || request.Count == 0)
         {
+            logger.LogError("{Logprefix}: PrnController - CalculateAsync: Submission calculation request cannot be null or empty.", logPrefix);
             return BadRequest(new { message = "Submission calculation request cannot be null or empty." });
         }
 
         if (!ModelState.IsValid)
         {
+            logger.LogError("{Logprefix}: PrnController - CalculateAsync: Invalid submission calculation request provided: {SubmissionsRequest}.", logPrefix, JsonConvert.SerializeObject(request));
             return BadRequest(ModelState);
         }
 
         try
         {
-            var calculationResult = await _obligationCalculatorService.CalculateAsync(organisationId, request);
+            var calculationResult = await obligationCalculatorService.CalculateAsync(organisationId, request);
 
             if (!calculationResult.Success)
             {
+                logger.LogError("{Logprefix}: PrnController - CalculateAsync: Get Calculation Failed - {Errors}", logPrefix, JsonConvert.SerializeObject(calculationResult));
                 return StatusCode(StatusCodes.Status500InternalServerError, new { message = "Calculation failed due to internal errors." });
             }
+            logger.LogInformation("{Logprefix}: PrnController - CalculateAsync: Obligation Calculation returned {CalculationResult}", logPrefix, JsonConvert.SerializeObject(calculationResult.Calculations));
 
-            await _obligationCalculatorService.UpsertCalculatedPomDataAsync(organisationId, calculationResult.Calculations);
+            logger.LogInformation("{Logprefix}: PrnController - CalculateAsync: calling UpsertCalculatedPomDataAsync ", logPrefix);
+            await obligationCalculatorService.UpsertCalculatedPomDataAsync(organisationId, calculationResult.Calculations);
+            logger.LogInformation("{Logprefix}: PrnController - CalculateAsync: Obligation Calculation Successful {Calculations}", logPrefix, JsonConvert.SerializeObject(calculationResult.Calculations));
 
             return Accepted(new { message = "Calculation successful.", data = calculationResult.Calculations });
         }
         catch (TimeoutException ex)
         {
+            logger.LogError(ex, "{Logprefix}: PrnController - CalculateAsync: Calculation timed out. - {Message}", logPrefix, ex.Message);
             return StatusCode(StatusCodes.Status504GatewayTimeout, new { message = "Calculation timed out.", details = ex.Message });
         }
         catch (Exception ex)
         {
+            logger.LogError(ex, "{Logprefix}: PrnController - CalculateAsync: An error occurred during calculation - {Message}", logPrefix, ex.Message);
             return StatusCode(StatusCodes.Status500InternalServerError, new { message = "An error occurred during calculation.", details = ex.Message });
         }
     }
 
-    #endregion
+    #endregion Post Methods
 }
