@@ -6,6 +6,8 @@ using EPR.PRN.Backend.Data;
 using EPR.PRN.Backend.Data.DataModels;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using Moq;
 
 namespace EPR.PRN.Backend.API.UnitTests.Repositories;
 
@@ -13,8 +15,10 @@ namespace EPR.PRN.Backend.API.UnitTests.Repositories;
 public class RepositoryTestsInMemory
 {
     private EprContext _context;
+    private DbContextOptions<EprContext> _contextOptions;
     private Repository _repository;
     private readonly Fixture _fixture = new Fixture();
+    private Mock<ILogger<EprContext>> _mockLogger;
 
     [TestInitialize]
     public void Setup()
@@ -23,7 +27,8 @@ public class RepositoryTestsInMemory
             .UseInMemoryDatabase(databaseName: "TestDatabase")
             .Options;
         _context = new EprContext(options);
-        _repository = new Repository(_context);
+        _mockLogger = new Mock<ILogger<EprContext>>();
+        _repository = new Repository(_context, _mockLogger.Object);
         var orgId = Guid.NewGuid();
         var eprns = new List<Eprn>
         {
@@ -451,4 +456,150 @@ public class RepositoryTestsInMemory
             CreatedOn = DateTime.Now
         };
     }
+
+    [TestMethod]
+
+    public async Task SavePrnDetails_SavesPrnAndHistory_Correctly()
+
+    {
+
+        var dto = new SavePrnDetailsRequest()
+
+        {
+
+            AccreditationNo = "ABC",
+
+            AccreditationYear = "2018",
+
+            CancelledDate = DateTime.UtcNow.AddDays(-1),
+
+            DecemberWaste = true,
+
+            EvidenceMaterial = "Aluminium",
+
+            EvidenceNo = Guid.NewGuid().ToString(),
+
+            EvidenceStatusCode = Common.Enums.PrnStatus.AwaitingAcceptance,
+
+            EvidenceTonnes = 5000,
+
+            ExternalId = Guid.NewGuid(),
+
+            IssueDate = DateTime.UtcNow.AddDays(-5),
+
+            IssuedByNPWDCode = Guid.NewGuid(),
+
+            IssuedByOrgName = "ANB",
+
+            IssuedToEPRId = Guid.NewGuid(),
+
+            IssuedToNPWDCode = Guid.NewGuid(),
+
+            IssuedToOrgName = "ZNZ",
+
+            IssuerNotes = "no notes",
+
+            IssuerRef = "ANB-1123",
+
+            MaterialOperationCode = Guid.NewGuid(),
+
+            ObligationYear = "2025",
+
+            PrnSignatory = "Pat Anderson",
+
+            PrnSignatoryPosition = "Director",
+
+            ProducerAgency = "TTL",
+
+            RecoveryProcessCode = "N11",
+
+            ReprocessorAgency = "BEX",
+
+            StatusDate = DateTime.UtcNow,
+
+        };
+
+        var entity = CreateEprnEntityFromDto(dto);
+
+        await _repository.SavePrnDetails(entity);
+
+        var savedEnt = await _context.Prn.FirstOrDefaultAsync(x => x.PrnNumber == dto.EvidenceNo);
+
+        savedEnt.Should().NotBeNull();
+
+        var savedHistory = await _context.PrnStatusHistory.FirstOrDefaultAsync(x => x.PrnIdFk == savedEnt.Id);
+
+        savedHistory.Should().NotBeNull();
+
+    }
+
+
+    private static Eprn CreateEprnEntityFromDto(SavePrnDetailsRequest prn)
+
+    {
+
+        if (prn == null) return null;
+
+        Eprn prnEntity = new Eprn()
+
+        {
+
+            AccreditationNumber = prn.AccreditationNo!,
+
+            AccreditationYear = prn.AccreditationYear!,
+
+            // CancelledDate = prn.CancelledDate, // This property /column does not exist on Eprn entity or DB table PRN
+
+            DecemberWaste = prn.DecemberWaste!.Value,
+
+            PrnNumber = prn.EvidenceNo!,
+
+            PrnStatusId = (int)prn.EvidenceStatusCode!.Value,
+
+            TonnageValue = prn.EvidenceTonnes!.Value,
+
+            IssueDate = prn.IssueDate!.Value,
+
+            IssuedByOrg = prn.IssuedByOrgName!,
+
+            MaterialName = prn.EvidenceMaterial!,
+
+            OrganisationName = prn.IssuedToOrgName!,
+
+            OrganisationId = prn.IssuedToEPRId!.Value,
+
+            IssuerNotes = prn.IssuerNotes,
+
+            IssuerReference = prn.IssuerRef!,
+
+            ObligationYear = prn.ObligationYear!,
+
+            PackagingProducer = string.Empty, // Not defined in NPWD to PRN mapping requirements
+
+            PrnSignatory = prn.PrnSignatory,
+
+            PrnSignatoryPosition = prn.PrnSignatoryPosition,
+
+            ProducerAgency = prn.ProducerAgency!,
+
+            ProcessToBeUsed = prn.RecoveryProcessCode,
+
+            ReprocessingSite = prn.ReprocessorAgency,
+
+            StatusUpdatedOn = prn.StatusDate,
+
+            LastUpdatedDate = prn.StatusDate!.Value,
+
+            ExternalId = prn.ExternalId!.Value,
+
+            ReprocessorExporterAgency = string.Empty,// Not defined in NPWD to PRN mapping requirements
+
+            Signature = null,  // Not defined in NPWD to PRN mapping requirements
+
+        };
+
+        return prnEntity;
+
+    }
+
 }

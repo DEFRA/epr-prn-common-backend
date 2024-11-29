@@ -10,10 +10,12 @@
     public class PrnService : IPrnService
     {
         protected readonly IRepository _repository;
+        private readonly ILogger<PrnService> _logger;
 
-        public PrnService(IRepository repository)
+        public PrnService(IRepository repository, ILogger<PrnService> logger)
         {
             _repository = repository;
+            _logger = logger;
         }
 
         public async Task<PrnDto?> GetPrnForOrganisationById(Guid orgId, Guid prnId)
@@ -88,6 +90,49 @@
             prn.LastUpdatedBy = userId;
             prn.LastUpdatedDate = updateDate;
             prn.StatusUpdatedOn = updateDate;
+        }
+
+        public async Task SavePrnDetails(SavePrnDetailsRequest prn)
+        {
+            try
+            {
+                Eprn prnEntity = new Eprn()
+                {
+                    AccreditationNumber = prn.AccreditationNo!,
+                    AccreditationYear = prn.AccreditationYear!,
+                    // CancelledDate = prn.CancelledDate, // This property /column does not exist on Eprn entity or DB table PRN
+                    DecemberWaste = prn.DecemberWaste!.Value,
+                    PrnNumber = prn.EvidenceNo!,
+                    PrnStatusId = (int)prn.EvidenceStatusCode!.Value,
+                    TonnageValue = prn.EvidenceTonnes!.Value,
+                    IssueDate = prn.IssueDate!.Value,
+                    IssuedByOrg = prn.IssuedByOrgName!,
+                    MaterialName = prn.EvidenceMaterial!,
+                    OrganisationName = prn.IssuedToOrgName!,
+                    OrganisationId = prn.IssuedToEPRId!.Value,
+                    IssuerNotes = prn.IssuerNotes,
+                    IssuerReference = prn.IssuerRef!,
+                    ObligationYear = prn.ObligationYear!,
+                    PackagingProducer = string.Empty, // Not defined in NPWD to PRN mapping requirements
+                    PrnSignatory = prn.PrnSignatory,
+                    PrnSignatoryPosition = prn.PrnSignatoryPosition,
+                    ProducerAgency = prn.ProducerAgency!,
+                    ProcessToBeUsed = prn.RecoveryProcessCode,
+                    ReprocessingSite = prn.ReprocessorAgency,
+                    StatusUpdatedOn = prn.StatusDate,
+                    LastUpdatedDate = prn.StatusDate!.Value,
+                    ExternalId = prn.ExternalId!.Value,
+                    ReprocessorExporterAgency = string.Empty,// Not defined in NPWD to PRN mapping requirements
+                    Signature = null,  // Not defined in NPWD to PRN mapping requirements
+                };
+
+                await _repository.SavePrnDetails(prnEntity);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(message: ex.Message, exception: ex);
+                throw;
+            }
         }
     }
 }

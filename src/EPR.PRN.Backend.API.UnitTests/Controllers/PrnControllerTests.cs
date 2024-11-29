@@ -391,4 +391,145 @@ public class PrnControllerTests
         Assert.IsInstanceOfType(result, typeof(NotFoundResult));
     }
 
+    [TestMethod]
+    public async Task SavePrn_ReturnsStatusCode200_WhenValidInputSavedSuccessfully()
+    {
+        var dto = new SavePrnDetailsRequest()
+        {
+            AccreditationNo = "ABC",
+            AccreditationYear = "2018",
+            CancelledDate = DateTime.UtcNow.AddDays(-1),
+            DecemberWaste = true,
+            EvidenceMaterial = "Aluminium",
+            EvidenceNo = Guid.NewGuid().ToString(),
+            EvidenceStatusCode = Common.Enums.PrnStatus.AwaitingAcceptance,
+            EvidenceTonnes = 5000,
+            ExternalId = Guid.NewGuid(),
+            IssueDate = DateTime.UtcNow.AddDays(-5),
+            IssuedByNPWDCode = Guid.NewGuid(),
+            IssuedByOrgName = "ANB",
+            IssuedToEPRId = Guid.NewGuid(),
+            IssuedToNPWDCode = Guid.NewGuid(),
+            IssuedToOrgName = "ZNZ",
+            IssuerNotes = "no notes",
+            IssuerRef = "ANB-1123",
+            MaterialOperationCode = Guid.NewGuid(),
+            ObligationYear = "2025",
+            PrnSignatory = "Pat Anderson",
+            PrnSignatoryPosition = "Director",
+            ProducerAgency = "TTL",
+            RecoveryProcessCode = "N11",
+            ReprocessorAgency = "BEX",
+            StatusDate = DateTime.UtcNow,
+        };
+
+        _mockPrnService.Setup(s => s.SavePrnDetails(dto)).Returns(() => Task.CompletedTask);
+        var result = await _systemUnderTest.SaveAsync(dto) as OkResult;
+
+        result.Should().NotBeNull();
+        result.StatusCode.Should().Be((int)HttpStatusCode.OK);
+    }
+
+    [TestMethod]
+    [DataRow("AccreditationNo", null)]
+    [DataRow("AccreditationYear", null)]
+    [DataRow("CancelledDate", null)]
+    [DataRow("EvidenceMaterial", null)]
+    [DataRow("EvidenceNo", null)]
+    [DataRow("EvidenceStatusCode", null)]
+    [DataRow("EvidenceTonnes", null)]
+    [DataRow("IssuedByOrgName", null)]
+    [DataRow("IssuedToOrgName", null)]
+    [DataRow("ProducerAgency", null)]
+    [DataRow("RecoveryProcessCode", null)]
+    [DataRow("StatusDate", null)]
+    public async Task SavePrn_ReturnsStatusCode400_OnInvalidInput(string propertyName, object propertyValue)
+    {
+        var dto = new SavePrnDetailsRequest()
+        {
+            AccreditationNo = "ABC",
+            AccreditationYear = "2018",
+            CancelledDate = DateTime.UtcNow.AddDays(-1),
+            DecemberWaste = true,
+            EvidenceMaterial = "Aluminium",
+            EvidenceNo = Guid.NewGuid().ToString(),
+            EvidenceStatusCode = Common.Enums.PrnStatus.AwaitingAcceptance,
+            EvidenceTonnes = 5000,
+            ExternalId = Guid.NewGuid(),
+            IssueDate = DateTime.UtcNow.AddDays(-5),
+            IssuedByNPWDCode = Guid.NewGuid(),
+            IssuedByOrgName = "ANB",
+            IssuedToEPRId = Guid.NewGuid(),
+            IssuedToNPWDCode = Guid.NewGuid(),
+            IssuedToOrgName = "ZNZ",
+            IssuerNotes = "no notes",
+            IssuerRef = "ANB-1123",
+            MaterialOperationCode = Guid.NewGuid(),
+            ObligationYear = "2025",
+            PrnSignatory = "Pat Anderson",
+            PrnSignatoryPosition = "Director",
+            ProducerAgency = "TTL",
+            RecoveryProcessCode = "N11",
+            ReprocessorAgency = "BEX",
+            StatusDate = DateTime.UtcNow,
+        };
+
+        var props = typeof(SavePrnDetailsRequest)
+                        .GetProperties(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance)
+                        .ToList();
+
+
+        var matchingProp = props.FirstOrDefault(x => string.Equals(x.Name, propertyName, StringComparison.InvariantCulture));
+        matchingProp.Should().NotBeNull();
+
+        matchingProp.SetValue(dto, propertyValue);
+
+        _mockPrnService.Setup(s => s.SavePrnDetails(dto)).Returns(() => Task.CompletedTask);
+        var result = await _systemUnderTest.SaveAsync(dto) as BadRequestObjectResult;
+
+        result.Should().NotBeNull();
+        result.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
+        var errors = result.Value as IEnumerable<string>;
+        errors.Should().NotBeNull();
+        errors.Should().Contain(propertyName);
+    }
+
+    [TestMethod]
+    public async Task SavePrn_ReturnsInternalServerError_WhenServiceThrowsException()
+    {
+        var dto = new SavePrnDetailsRequest()
+        {
+            AccreditationNo = "ABC",
+            AccreditationYear = "2018",
+            CancelledDate = DateTime.UtcNow.AddDays(-1),
+            DecemberWaste = true,
+            EvidenceMaterial = "Aluminium",
+            EvidenceNo = Guid.NewGuid().ToString(),
+            EvidenceStatusCode = Common.Enums.PrnStatus.AwaitingAcceptance,
+            EvidenceTonnes = 5000,
+            ExternalId = Guid.NewGuid(),
+            IssueDate = DateTime.UtcNow.AddDays(-5),
+            IssuedByNPWDCode = Guid.NewGuid(),
+            IssuedByOrgName = "ANB",
+            IssuedToEPRId = Guid.NewGuid(),
+            IssuedToNPWDCode = Guid.NewGuid(),
+            IssuedToOrgName = "ZNZ",
+            IssuerNotes = "no notes",
+            IssuerRef = "ANB-1123",
+            MaterialOperationCode = Guid.NewGuid(),
+            ObligationYear = "2025",
+            PrnSignatory = "Pat Anderson",
+            PrnSignatoryPosition = "Director",
+            ProducerAgency = "TTL",
+            RecoveryProcessCode = "N11",
+            ReprocessorAgency = "BEX",
+            StatusDate = DateTime.UtcNow,
+        };
+        _mockPrnService.Setup(s => s.SavePrnDetails(dto)).Throws<ApplicationException>();
+
+        var result = await _systemUnderTest.SaveAsync(dto) as ObjectResult;
+
+        result.Should().NotBeNull();
+        result.StatusCode.Should().Be((int)HttpStatusCode.InternalServerError);
+    }
 }

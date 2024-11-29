@@ -1,11 +1,14 @@
 ﻿using AutoFixture;
+using Castle.Core.Logging;
 using EPR.PRN.Backend.API.Common.DTO;
 using EPR.PRN.Backend.API.Helpers;
 using EPR.PRN.Backend.API.Repositories.Interfaces;
 using EPR.PRN.Backend.API.Services;
+using EPR.PRN.Backend.Data;
 using EPR.PRN.Backend.Data.DataModels;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore.Storage;
+using Microsoft.Extensions.Logging;
 using Moq;
 using System.Diagnostics.CodeAnalysis;
 
@@ -17,13 +20,15 @@ public class PrnServiceTests
 {
     private PrnService _systemUnderTest;
     private Mock<IRepository> _mockRepository;
+    private Mock<ILogger<PrnService>> _mockLogger;
     private static readonly IFixture _fixture = new Fixture();
 
     [TestInitialize]
     public void Init()
     {
         _mockRepository = new Mock<IRepository>();
-        _systemUnderTest = new PrnService(_mockRepository.Object);
+        _mockLogger = new Mock<ILogger<PrnService>>();
+        _systemUnderTest = new PrnService(_mockRepository.Object, _mockLogger.Object);
     }
 
     [TestMethod]
@@ -187,7 +192,7 @@ public class PrnServiceTests
 
         availablePrns.Should().AllSatisfy(x => x.PrnStatusId.Should().Be((int)EprnStatus.ACCEPTED));
         availablePrns.Should().AllSatisfy(x => x.LastUpdatedBy.Should().Be(userId));
-        availablePrns.Should().AllSatisfy(x => x.StatusUpdatedOn.Should().BeCloseTo(DateTime.UtcNow,new TimeSpan(0,10,0)));
+        availablePrns.Should().AllSatisfy(x => x.StatusUpdatedOn.Should().BeCloseTo(DateTime.UtcNow, new TimeSpan(0, 10, 0)));
         availablePrns.Should().AllSatisfy(x => x.StatusUpdatedOn.Should().BeCloseTo(DateTime.UtcNow, new TimeSpan(0, 10, 0)));
         _mockRepository.Verify(x => x.SaveTransaction(It.IsAny<IDbContextTransaction>()), Times.Once());
         _mockRepository.Verify(x => x.AddPrnStatusHistory(It.IsAny<PrnStatusHistory>()), Times.Exactly(3));
@@ -213,10 +218,10 @@ public class PrnServiceTests
         var fromDate = DateTime.UtcNow.AddDays(-7);
         var toDate = DateTime.UtcNow;
         var mockPrns = new List<PrnUpdateStatus>
-        {
-            new() { EvidenceNo = "123", EvidenceStatusCode = "Modified", AccreditationYear= "2014" },
-            new() { EvidenceNo = "456", EvidenceStatusCode = "Unchanged", AccreditationYear= "2014" }
-        };
+    {
+        new() { EvidenceNo = "123", EvidenceStatusCode = "Modified", AccreditationYear= "2014" },
+        new() { EvidenceNo = "456", EvidenceStatusCode = "Unchanged", AccreditationYear= "2014" }
+    };
 
         _mockRepository
             .Setup(repo => repo.GetModifiedPrnsbyDate(fromDate, toDate))
@@ -248,5 +253,83 @@ public class PrnServiceTests
         // Assert
         Assert.IsNull(result);
         _mockRepository.Verify(repo => repo.GetModifiedPrnsbyDate(fromDate, toDate), Times.Once);
+    }
+
+
+    [TestMethod]
+    public async Task SavePrnDetails_ReturnsWithoutError_OnSuccessfullySave()
+    {
+        _mockRepository.Setup(s => s.SavePrnDetails(It.IsAny<Eprn>())).Returns(Task.CompletedTask);
+
+        var dto = new SavePrnDetailsRequest()
+        {
+            AccreditationNo = "ABC",
+            AccreditationYear = "2018",
+            CancelledDate = DateTime.UtcNow.AddDays(-1),
+            DecemberWaste = true,
+            EvidenceMaterial = "Aluminium",
+            EvidenceNo = Guid.NewGuid().ToString(),
+            EvidenceStatusCode = Common.Enums.PrnStatus.AwaitingAcceptance,
+            EvidenceTonnes = 5000,
+            ExternalId = Guid.NewGuid(),
+            IssueDate = DateTime.UtcNow.AddDays(-5),
+            IssuedByNPWDCode = Guid.NewGuid(),
+            IssuedByOrgName = "ANB",
+            IssuedToEPRId = Guid.NewGuid(),
+            IssuedToNPWDCode = Guid.NewGuid(),
+            IssuedToOrgName = "ZNZ",
+            IssuerNotes = "no notes",
+            IssuerRef = "ANB-1123",
+            MaterialOperationCode = Guid.NewGuid(),
+            ObligationYear = "2025",
+            PrnSignatory = "Pat Anderson",
+            PrnSignatoryPosition = "Director",
+            ProducerAgency = "TTL",
+            RecoveryProcessCode = "N11",
+            ReprocessorAgency = "BEX",
+            StatusDate = DateTime.UtcNow,
+        };
+
+        await _systemUnderTest.SavePrnDetails(dto);
+        _mockRepository.Verify(x => x.SavePrnDetails(It.IsAny<Eprn>()), Times.Once());
+    }
+
+    [TestMethod]
+    public async Task SavePrnDetails_ThrowsException_OnRepositoryError()
+    {
+        _mockRepository.Setup(s => s.SavePrnDetails(It.IsAny<Eprn>())).Throws<Exception>();
+
+        var dto = new SavePrnDetailsRequest()
+        {
+            AccreditationNo = "ABC",
+            AccreditationYear = "2018",
+            CancelledDate = DateTime.UtcNow.AddDays(-1),
+            DecemberWaste = true,
+            EvidenceMaterial = "Aluminium",
+            EvidenceNo = Guid.NewGuid().ToString(),
+            EvidenceStatusCode = Common.Enums.PrnStatus.AwaitingAcceptance,
+            EvidenceTonnes = 5000,
+            ExternalId = Guid.NewGuid(),
+            IssueDate = DateTime.UtcNow.AddDays(-5),
+            IssuedByNPWDCode = Guid.NewGuid(),
+            IssuedByOrgName = "ANB",
+            IssuedToEPRId = Guid.NewGuid(),
+            IssuedToNPWDCode = Guid.NewGuid(),
+            IssuedToOrgName = "ZNZ",
+            IssuerNotes = "no notes",
+            IssuerRef = "ANB-1123",
+            MaterialOperationCode = Guid.NewGuid(),
+            ObligationYear = "2025",
+            PrnSignatory = "Pat Anderson",
+            PrnSignatoryPosition = "Director",
+            ProducerAgency = "TTL",
+            RecoveryProcessCode = "N11",
+            ReprocessorAgency = "BEX",
+            StatusDate = DateTime.UtcNow,
+        };
+
+        var call = () => _systemUnderTest.SavePrnDetails(dto);
+        await call.Should().ThrowAsync<Exception>();
+        _mockRepository.Verify(x => x.SavePrnDetails(It.IsAny<Eprn>()), Times.Once());
     }
 }

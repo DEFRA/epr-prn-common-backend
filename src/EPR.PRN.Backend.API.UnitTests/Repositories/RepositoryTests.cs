@@ -5,6 +5,7 @@ using EPR.PRN.Backend.Data.DataModels;
 using FluentAssertions;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Moq;
 using System.Diagnostics.CodeAnalysis;
 
@@ -19,13 +20,14 @@ public class RepositoryTests
     private Fixture _fixture;
     private Mock<EprContext> _mockContext;
     private Repository _repository;
+    private Mock<ILogger<EprContext>> _mockLogger;
 
     [TestInitialize]
     public void TestInitialize()
     {
         _connection = new SqliteConnection("Filename=:memory:");
         _connection.Open();
-
+        _mockLogger = new Mock<ILogger<EprContext>>();
         // These options will be used by the context instances in this test suite, including the connection opened above.
         _contextOptions = new DbContextOptionsBuilder<EprContext>()
            .UseSqlite(_connection)
@@ -33,7 +35,7 @@ public class RepositoryTests
 
         _fixture = new Fixture();
         _mockContext = new Mock<EprContext>();
-        _repository = new Repository(_mockContext.Object);
+        _repository = new Repository(_mockContext.Object, _mockLogger.Object);
     }
 
     [TestMethod]
@@ -50,7 +52,7 @@ public class RepositoryTests
             await context.SaveChangesAsync();
         }
         //Act
-        var repo = new Repository(context);
+        var repo = new Repository(context, _mockLogger.Object);
 
         //Assert
         var prns = await repo.GetAllPrnByOrganisationId(data[0].OrganisationId);
@@ -73,7 +75,7 @@ public class RepositoryTests
             await context.SaveChangesAsync();
         }
         //Act
-        var repo = new Repository(context);
+        var repo = new Repository(context, _mockLogger.Object);
 
         //Assert
         var prn = await repo.GetPrnForOrganisationById(data[0].OrganisationId, data[0].ExternalId);
@@ -94,7 +96,7 @@ public class RepositoryTests
             await context.SaveChangesAsync();
         }
         //Act
-        var repo = new Repository(context);
+        var repo = new Repository(context, _mockLogger.Object);
 
         var transaction = repo.BeginTransaction();
         var updatingPrn = await repo.GetAllPrnByOrganisationId(data[0].OrganisationId);
@@ -123,7 +125,7 @@ public class RepositoryTests
             await context.SaveChangesAsync();
         }
         //Act
-        var repo = new Repository(context);
+        var repo = new Repository(context, _mockLogger.Object);
 
         var transaction = repo.BeginTransaction();
         repo.AddPrnStatusHistory(statusHistory);
@@ -137,8 +139,8 @@ public class RepositoryTests
     public async Task GetModifiedPrnsbyDate_ReturnsMappedPrnUpdateStatuses()
     {
         //Arrange
-        var fromDate = DateTime.UtcNow.AddDays(-7);
-        var toDate = DateTime.UtcNow;
+        var fromDate = new DateTime(2024, 11, 19);
+        var toDate = new DateTime(2024, 11, 24);
 
         var data = _fixture.CreateMany<Eprn>().ToArray();
         data[0].PrnNumber = "PRN001";
@@ -147,7 +149,7 @@ public class RepositoryTests
         data[0].AccreditationYear = "2023";
 
         data[1].PrnNumber = "PRN002";
-        data[1].StatusUpdatedOn = new DateTime(2024, 11, 22);
+        data[1].StatusUpdatedOn = new DateTime(2024, 11, 20);
         data[1].PrnStatusId = 2;
         data[1].AccreditationYear = "2024";
 
@@ -159,7 +161,7 @@ public class RepositoryTests
         }
 
         //Act
-        var repo = new Repository(context);
+        var repo = new Repository(context, _mockLogger.Object);
         var result = await repo.GetModifiedPrnsbyDate(fromDate, toDate);
 
         //Assert
