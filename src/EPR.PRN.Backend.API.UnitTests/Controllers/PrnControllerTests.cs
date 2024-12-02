@@ -374,7 +374,7 @@ public class PrnControllerTests
     }
 
     [TestMethod]
-    public async Task GetModifiedPrnsbyDate_ReturnsNotFound_WhenNoPrnsExist()
+    public async Task GetModifiedPrnsbyDate_ReturnsNoContent_WhenNoPrnsExist()
     {
         // Arrange
         var fromDate = DateTime.UtcNow.AddDays(-7);
@@ -388,7 +388,9 @@ public class PrnControllerTests
         var result = await _systemUnderTest.GetModifiedPrnsbyDate(fromDate, toDate);
 
         // Assert
-        Assert.IsInstanceOfType(result, typeof(NotFoundResult));
+        var statusCodeResult = result as StatusCodeResult;
+        Assert.IsNotNull(statusCodeResult);
+        Assert.AreEqual(204, statusCodeResult.StatusCode);
     }
 
 }

@@ -137,8 +137,8 @@ public class RepositoryTests
     public async Task GetModifiedPrnsbyDate_ReturnsMappedPrnUpdateStatuses()
     {
         //Arrange
-        var fromDate = DateTime.UtcNow.AddDays(-7);
-        var toDate = DateTime.UtcNow;
+        var fromDate = new DateTime(2024, 11, 22);
+        var toDate = new DateTime(2024, 11, 24);
 
         var data = _fixture.CreateMany<Eprn>().ToArray();
         data[0].PrnNumber = "PRN001";
