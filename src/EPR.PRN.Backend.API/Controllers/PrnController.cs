@@ -94,8 +94,8 @@ public class PrnController : Controller
     public async Task<IActionResult> GetModifiedPrnsbyDate(DateTime fromDate, DateTime toDate)
     {
         var prns = await _prnService.GetModifiedPrnsbyDate(fromDate, toDate);
-        if (prns == null)
-            return NotFound();
+        if (prns == null || !prns.Any())
+            return StatusCode(StatusCodes.Status204NoContent);
 
         return Ok(prns);
     }
