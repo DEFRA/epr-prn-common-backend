@@ -403,3 +403,34 @@ GO
 COMMIT;
 GO
 
+BEGIN TRANSACTION;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20241202142542_AddPEprNpwdSyncTable'
+)
+BEGIN
+    CREATE TABLE [PEprNpwdSync] (
+        [Id] int NOT NULL IDENTITY,
+        [PRNId] int NOT NULL,
+        [PRNStatusId] int NOT NULL,
+        [CreatedOn] datetime2 NOT NULL,
+        CONSTRAINT [PK_PEprNpwdSync] PRIMARY KEY ([Id])
+    );
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20241202142542_AddPEprNpwdSyncTable'
+)
+BEGIN
+    INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+    VALUES (N'20241202142542_AddPEprNpwdSyncTable', N'8.0.8');
+END;
+GO
+
+COMMIT;
+GO
+
