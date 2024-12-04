@@ -1,5 +1,6 @@
 ﻿namespace EPR.PRN.Backend.API.Controllers;
 
+using BackendAccountService.Core.Models.Request;
 using EPR.PRN.Backend.API.Common.DTO;
 using EPR.PRN.Backend.API.Configs;
 using EPR.PRN.Backend.API.Helpers;
@@ -91,9 +92,14 @@ public class PrnController : Controller
 
     [HttpGet("ModifiedPrnsbyDate")]
     [ProducesResponseType(typeof(List<PrnUpdateStatus>), 200)]
-    public async Task<IActionResult> GetModifiedPrnsbyDate(DateTime fromDate, DateTime toDate)
+    public async Task<IActionResult> GetModifiedPrnsbyDate([FromQuery] ModifiedPrnsbyDateRequest request)
     {
-        var prns = await _prnService.GetModifiedPrnsbyDate(fromDate, toDate);
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
+        var prns = await _prnService.GetModifiedPrnsbyDate(request.From, request.To);
         if (prns == null || !prns.Any())
             return StatusCode(StatusCodes.Status204NoContent);
 

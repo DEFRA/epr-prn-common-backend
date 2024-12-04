@@ -25,6 +25,10 @@ namespace EPR.PRN.Backend.API
             services.AddApiVersioning();
             services.AddControllers()
                 .AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
+            services.AddControllers(options =>
+            {
+                options.ModelBinderProviders.Insert(0, new DateTimeModelBinderProvider());
+            });
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen(config =>
             {
