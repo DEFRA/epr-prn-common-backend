@@ -465,4 +465,84 @@ public class RepositoryTestsInMemory
             CreatedOn = DateTime.Now
         };
     }
+
+    private static Eprn CreateEprnEntityFromDto(SavePrnDetailsRequest prn)
+    {
+        if (prn == null) return null;
+
+        Eprn prnEntity = new Eprn()
+        {
+            AccreditationNumber = prn.AccreditationNo!,
+            AccreditationYear = prn.AccreditationYear.ToString()!,
+            // CancelledDate = prn.CancelledDate, // This property /column does not exist on Eprn entity or DB table PRN
+            DecemberWaste = prn.DecemberWaste!.Value,
+            PrnNumber = prn.EvidenceNo!,
+            PrnStatusId = (int)prn.EvidenceStatusCode!.Value,
+            TonnageValue = prn.EvidenceTonnes!.Value,
+            IssueDate = prn.IssueDate!.Value,
+            IssuedByOrg = prn.IssuedByOrgName!,
+            MaterialName = prn.EvidenceMaterial!,
+            OrganisationName = prn.IssuedToOrgName!,
+            OrganisationId = prn.IssuedToEPRId!.Value,
+            IssuerNotes = prn.IssuerNotes,
+            IssuerReference = prn.IssuerRef!,
+            ObligationYear = prn.ObligationYear.ToString()!,
+            PackagingProducer = string.Empty, // Not defined in NPWD to PRN mapping requirements
+            PrnSignatory = prn.PrnSignatory,
+            PrnSignatoryPosition = prn.PrnSignatoryPosition,
+            ProducerAgency = prn.ProducerAgency!,
+            ProcessToBeUsed = prn.RecoveryProcessCode,
+            ReprocessingSite = prn.ReprocessorAgency,
+            StatusUpdatedOn = prn.StatusDate,
+            LastUpdatedDate = prn.StatusDate!.Value,
+            ExternalId = prn.ExternalId!.Value,
+            ReprocessorExporterAgency = string.Empty,// Not defined in NPWD to PRN mapping requirements
+            Signature = null,  // Not defined in NPWD to PRN mapping requirements
+        };
+
+        return prnEntity;
+    }
+
+    [TestMethod]
+    public async Task SavePrnDetails_SavesPrnAndHistory_Correctly()
+    {
+        var dto = new SavePrnDetailsRequest()
+        {
+            AccreditationNo = "ABC",
+            AccreditationYear = 2018,
+            CancelledDate = DateTime.UtcNow.AddDays(-1),
+            DecemberWaste = true,
+            EvidenceMaterial = "Aluminium",
+            EvidenceNo = Guid.NewGuid().ToString(),
+            EvidenceStatusCode = Common.Enums.PrnStatus.AwaitingAcceptance,
+            EvidenceTonnes = 5000,
+            ExternalId = Guid.NewGuid(),
+            IssueDate = DateTime.UtcNow.AddDays(-5),
+            IssuedByNPWDCode = "NPWD367742",
+            IssuedByOrgName = "ANB",
+            IssuedToEPRId = Guid.NewGuid(),
+            IssuedToNPWDCode = "NPWD557742",
+            IssuedToOrgName = "ZNZ",
+            IssuerNotes = "no notes",
+            IssuerRef = "ANB-1123",
+            MaterialOperationCode = "R-PLA",
+            ObligationYear = 2025,
+            PrnSignatory = "Pat Anderson",
+            PrnSignatoryPosition = "Director",
+            ProducerAgency = "TTL",
+            RecoveryProcessCode = "N11",
+            ReprocessorAgency = "BEX",
+            StatusDate = DateTime.UtcNow,
+        };
+
+        var entity = CreateEprnEntityFromDto(dto);
+
+        await _repository.SavePrnDetails(entity);
+
+        var savedEnt = await _context.Prn.FirstOrDefaultAsync(x => x.PrnNumber == dto.EvidenceNo);
+        savedEnt.Should().NotBeNull();
+
+        var savedHistory = await _context.PrnStatusHistory.FirstOrDefaultAsync(x => x.PrnIdFk == savedEnt.Id);
+        savedHistory.Should().NotBeNull();
+    }
 }

@@ -8,5 +8,6 @@
         Task<List<PrnDto>> GetAllPrnByOrganisationId(Guid orgId);
         Task UpdateStatus(Guid orgId, Guid userId, List<PrnUpdateStatusDto> prnUpdates);
         Task<PaginatedResponseDto<PrnDto>> GetSearchPrnsForOrganisation(Guid orgId, PaginatedRequestDto request);
+        Task SavePrnDetails(SavePrnDetailsRequest prn);
     }
 }

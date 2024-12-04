@@ -87,6 +87,50 @@ public class PrnService(IRepository repository, ILogger<PrnService> logger, ICon
         await _repository.SaveTransaction(transaction);
     }
 
+    public async Task SavePrnDetails(SavePrnDetailsRequest prn)
+    {
+        try
+        {
+            Eprn prnEntity = new Eprn()
+            {
+                AccreditationNumber = prn.AccreditationNo!,
+                AccreditationYear = prn.AccreditationYear.ToString()!,
+                // CancelledDate = prn.CancelledDate, // This property /column does not exist on Eprn entity or DB table PRN
+                DecemberWaste = prn.DecemberWaste!.Value,
+                PrnNumber = prn.EvidenceNo!,
+                PrnStatusId = (int)prn.EvidenceStatusCode!.Value,
+                TonnageValue = prn.EvidenceTonnes!.Value,
+                IssueDate = prn.IssueDate!.Value,
+                IssuedByOrg = prn.IssuedByOrgName!,
+                MaterialName = prn.EvidenceMaterial!,
+                OrganisationName = prn.IssuedToOrgName!,
+                OrganisationId = prn.IssuedToEPRId!.Value,
+                IssuerNotes = prn.IssuerNotes,
+                IssuerReference = prn.IssuerRef!,
+                ObligationYear = prn.ObligationYear.ToString()!,
+                PackagingProducer = prn.ProducerAgency!, // Not defined in NPWD to PRN mapping requirements so mapping to default
+                PrnSignatory = prn.PrnSignatory,
+                PrnSignatoryPosition = prn.PrnSignatoryPosition,
+                ProducerAgency = prn.ProducerAgency!,
+                ProcessToBeUsed = prn.RecoveryProcessCode,
+                ReprocessingSite = string.Empty,
+                StatusUpdatedOn = prn.StatusDate,
+                LastUpdatedDate = prn.StatusDate!.Value,
+                ExternalId = prn.ExternalId!.Value,
+                ReprocessorExporterAgency = prn.ReprocessorAgency!,// Not defined in NPWD to PRN mapping requirements
+                Signature = null,  // Not defined in NPWD to PRN mapping requirements,
+                IsExport = false, // Not defined in NPWD to PRN mapping requirements so mapping to default
+            };
+
+            await repository.SavePrnDetails(prnEntity);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(message: ex.Message, exception: ex);
+            throw;
+        }
+    }
+
     private void UpdatePrn(Guid userId, PrnUpdateStatusDto prnUpdate, Eprn prn)
     {
         var updateDate = DateTime.UtcNow;

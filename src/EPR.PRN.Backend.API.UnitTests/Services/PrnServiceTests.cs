@@ -215,4 +215,81 @@ public class PrnServiceTests
         var result = await _systemUnderTest.GetSearchPrnsForOrganisation(orgId, request);
         result.Should().Be(repoResponse);
     }
+
+    [TestMethod]
+    public async Task SavePrnDetails_ReturnsWithoutError_OnSuccessfullySave()
+    {
+        _mockRepository.Setup(s => s.SavePrnDetails(It.IsAny<Eprn>())).Returns(Task.CompletedTask);
+
+        var dto = new SavePrnDetailsRequest()
+        {
+            AccreditationNo = "ABC",
+            AccreditationYear = 2018,
+            CancelledDate = DateTime.UtcNow.AddDays(-1),
+            DecemberWaste = true,
+            EvidenceMaterial = "Aluminium",
+            EvidenceNo = Guid.NewGuid().ToString(),
+            EvidenceStatusCode = Common.Enums.PrnStatus.AwaitingAcceptance,
+            EvidenceTonnes = 5000,
+            ExternalId = Guid.NewGuid(),
+            IssueDate = DateTime.UtcNow.AddDays(-5),
+            IssuedByNPWDCode = "NPWD367742",
+            IssuedByOrgName = "ANB",
+            IssuedToEPRId = Guid.NewGuid(),
+            IssuedToNPWDCode = "NPWD557742",
+            IssuedToOrgName = "ZNZ",
+            IssuerNotes = "no notes",
+            IssuerRef = "ANB-1123",
+            MaterialOperationCode = "R-PLA",
+            ObligationYear = 2025,
+            PrnSignatory = "Pat Anderson",
+            PrnSignatoryPosition = "Director",
+            ProducerAgency = "TTL",
+            RecoveryProcessCode = "N11",
+            ReprocessorAgency = "BEX",
+            StatusDate = DateTime.UtcNow,
+        };
+
+        await _systemUnderTest.SavePrnDetails(dto);
+        _mockRepository.Verify(x => x.SavePrnDetails(It.IsAny<Eprn>()), Times.Once());
+    }
+
+    [TestMethod]
+    public async Task SavePrnDetails_ThrowsException_OnRepositoryError()
+    {
+        _mockRepository.Setup(s => s.SavePrnDetails(It.IsAny<Eprn>())).Throws<Exception>();
+
+        var dto = new SavePrnDetailsRequest()
+        {
+            AccreditationNo = "ABC",
+            AccreditationYear = 2018,
+            CancelledDate = DateTime.UtcNow.AddDays(-1),
+            DecemberWaste = true,
+            EvidenceMaterial = "Aluminium",
+            EvidenceNo = Guid.NewGuid().ToString(),
+            EvidenceStatusCode = Common.Enums.PrnStatus.AwaitingAcceptance,
+            EvidenceTonnes = 5000,
+            ExternalId = Guid.NewGuid(),
+            IssueDate = DateTime.UtcNow.AddDays(-5),
+            IssuedByNPWDCode = "NPWD367742",
+            IssuedByOrgName = "ANB",
+            IssuedToEPRId = Guid.NewGuid(),
+            IssuedToNPWDCode = "NPWD557742",
+            IssuedToOrgName = "ZNZ",
+            IssuerNotes = "no notes",
+            IssuerRef = "ANB-1123",
+            MaterialOperationCode = "R-PLA",
+            ObligationYear = 2025,
+            PrnSignatory = "Pat Anderson",
+            PrnSignatoryPosition = "Director",
+            ProducerAgency = "TTL",
+            RecoveryProcessCode = "N11",
+            ReprocessorAgency = "BEX",
+            StatusDate = DateTime.UtcNow,
+        };
+
+        var call = () => _systemUnderTest.SavePrnDetails(dto);
+        await call.Should().ThrowAsync<Exception>();
+        _mockRepository.Verify(x => x.SavePrnDetails(It.IsAny<Eprn>()), Times.Once());
+    }
 }
