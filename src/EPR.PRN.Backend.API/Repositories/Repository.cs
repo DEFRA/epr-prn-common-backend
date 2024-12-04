@@ -243,9 +243,11 @@
                 // Update existing PRN entity
                 else
                 {
+                    entity.Id = existingEntity.Id;
+                    _eprContext.Entry(existingEntity).State = EntityState.Modified;
                     _eprContext.Entry(existingEntity).CurrentValues.SetValues(entity);
-                    statusHistory.PrnIdFk = existingEntity.Id;
-                    
+                   
+                    statusHistory.PrnIdFk = existingEntity.Id;                    
                     _logger.LogInformation("Attempting to update Prn entity with PrnNumber : {PrnNumber} and {Id}", entity?.PrnNumber, entity?.Id);
                 }
 

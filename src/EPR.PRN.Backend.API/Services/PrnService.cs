@@ -92,7 +92,7 @@
                 Eprn prnEntity = new Eprn()
                 {
                     AccreditationNumber = prn.AccreditationNo!,
-                    AccreditationYear = prn.AccreditationYear!,
+                    AccreditationYear = prn.AccreditationYear.ToString()!,
                     // CancelledDate = prn.CancelledDate, // This property /column does not exist on Eprn entity or DB table PRN
                     DecemberWaste = prn.DecemberWaste!.Value,
                     PrnNumber = prn.EvidenceNo!,
@@ -105,18 +105,19 @@
                     OrganisationId = prn.IssuedToEPRId!.Value,
                     IssuerNotes = prn.IssuerNotes,
                     IssuerReference = prn.IssuerRef!,
-                    ObligationYear = prn.ObligationYear!,
-                    PackagingProducer = string.Empty, // Not defined in NPWD to PRN mapping requirements
+                    ObligationYear = prn.ObligationYear.ToString()!,
+                    PackagingProducer = prn.ProducerAgency!, // Not defined in NPWD to PRN mapping requirements so mapping to default
                     PrnSignatory = prn.PrnSignatory,
                     PrnSignatoryPosition = prn.PrnSignatoryPosition,
                     ProducerAgency = prn.ProducerAgency!,                    
                     ProcessToBeUsed = prn.RecoveryProcessCode,
-                    ReprocessingSite = prn.ReprocessorAgency,
+                    ReprocessingSite = string.Empty,
                     StatusUpdatedOn = prn.StatusDate,
                     LastUpdatedDate = prn.StatusDate!.Value,
                     ExternalId = prn.ExternalId!.Value,                                                                                                                                 
-                    ReprocessorExporterAgency = string.Empty,// Not defined in NPWD to PRN mapping requirements
-                    Signature = null,  // Not defined in NPWD to PRN mapping requirements
+                    ReprocessorExporterAgency = prn.ReprocessorAgency!,// Not defined in NPWD to PRN mapping requirements
+                    Signature = null,  // Not defined in NPWD to PRN mapping requirements,
+                    IsExport = false, // Not defined in NPWD to PRN mapping requirements so mapping to default
                 };
 
                 await _repository.SavePrnDetails(prnEntity);

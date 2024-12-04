@@ -8,6 +8,7 @@ using EPR.PRN.Backend.API.Services.Interfaces;
 using EPR.PRN.Backend.Obligation.DTO;
 using EPR.PRN.Backend.Obligation.Interfaces;
 using EPR.PRN.Backend.Obligation.Models;
+using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using System.Net;
@@ -21,13 +22,18 @@ public class PrnController : Controller
     private readonly IPrnService _prnService;
     private readonly ILogger<PrnController> _logger;
     private readonly IObligationCalculatorService _obligationCalculatorService;
+    private readonly IValidator<SavePrnDetailsRequest> _savePrnDetailsRequestValidator;
     private readonly PrnObligationCalculationConfig _config;
 
-    public PrnController(IPrnService prnService, ILogger<PrnController> logger, IObligationCalculatorService obligationCalculatorService, IOptions<PrnObligationCalculationConfig> config)
+    public PrnController(IPrnService prnService, ILogger<PrnController> logger, 
+        IObligationCalculatorService obligationCalculatorService,
+        IValidator<SavePrnDetailsRequest> savePrnDetailsRequestValidator,
+        IOptions<PrnObligationCalculationConfig> config)
     {
         _prnService = prnService;
         _logger = logger;
         _obligationCalculatorService = obligationCalculatorService;
+        _savePrnDetailsRequestValidator = savePrnDetailsRequestValidator;
         _config = config.Value;
     }
 
@@ -129,61 +135,12 @@ public class PrnController : Controller
     {
         try
         {
-            var errors = new List<string>();
+            var validationResult = _savePrnDetailsRequestValidator.Validate(request);
 
-            if(request == null)
-                return BadRequest(nameof(request));
-
-            if(string.IsNullOrWhiteSpace(request.AccreditationNo))
-                errors.Add(nameof(request.AccreditationNo));
-
-            if (string.IsNullOrWhiteSpace(request.AccreditationYear))
-                errors.Add(nameof(request.AccreditationYear));
-
-            if (!request.CancelledDate.HasValue)
-                errors.Add(nameof(request.CancelledDate));
-
-            if (request.DecemberWaste == null)
-                errors.Add(nameof(request.DecemberWaste));
-
-            if (string.IsNullOrWhiteSpace(request.EvidenceMaterial))
-                errors.Add(nameof(request.EvidenceMaterial));
-
-            if (string.IsNullOrWhiteSpace(request.EvidenceNo))
-                errors.Add(nameof(request.EvidenceNo));
-
-            if (request.EvidenceStatusCode == null)
-                errors.Add(nameof(request.EvidenceStatusCode));
-
-            if (request.EvidenceTonnes == null)
-                errors.Add(nameof(request.EvidenceTonnes));
-
-            if (request.IssueDate == null)
-                errors.Add(nameof(request.IssueDate));
-
-            if (string.IsNullOrWhiteSpace(request.IssuedByOrgName))
-                errors.Add(nameof(request.IssuedByOrgName));
-
-            if (string.IsNullOrWhiteSpace(request.IssuedToOrgName))
-                errors.Add(nameof(request.IssuedToOrgName));
-
-            if (request.IssuedToEPRId == null || !Guid.TryParse(request.IssuedToEPRId.ToString(), out _))
-                errors.Add(nameof(request.IssuedToEPRId));
-
-            if (string.IsNullOrWhiteSpace(request.ProducerAgency))
-                errors.Add(nameof(request.ProducerAgency));
-
-            if (string.IsNullOrWhiteSpace(request.RecoveryProcessCode))
-                errors.Add(nameof(request.RecoveryProcessCode));
-
-            if (string.IsNullOrWhiteSpace(request.ReprocessorAgency))
-                errors.Add(nameof(request.ReprocessorAgency));
-
-            if (request.StatusDate == null)
-                errors.Add(nameof(request.StatusDate));
-
-            if(errors.Count > 0) 
-                return BadRequest(errors);            
+            if(!validationResult.IsValid)
+            {
+               return new BadRequestObjectResult(validationResult.Errors);
+            }
 
             await _prnService.SavePrnDetails(request);
 

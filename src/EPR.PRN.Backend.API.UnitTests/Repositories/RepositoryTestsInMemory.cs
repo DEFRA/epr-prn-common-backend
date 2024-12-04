@@ -441,7 +441,7 @@ public class RepositoryTestsInMemory
         var dto = new SavePrnDetailsRequest()
         {
             AccreditationNo = "ABC",
-            AccreditationYear = "2018",
+            AccreditationYear = 2018,
             CancelledDate = DateTime.UtcNow.AddDays(-1),
             DecemberWaste = true,
             EvidenceMaterial = "Aluminium",
@@ -450,15 +450,15 @@ public class RepositoryTestsInMemory
             EvidenceTonnes = 5000,
             ExternalId = Guid.NewGuid(),
             IssueDate = DateTime.UtcNow.AddDays(-5),
-            IssuedByNPWDCode = Guid.NewGuid(),
+            IssuedByNPWDCode = "NPWD367742",
             IssuedByOrgName = "ANB",
             IssuedToEPRId = Guid.NewGuid(),
-            IssuedToNPWDCode = Guid.NewGuid(),
+            IssuedToNPWDCode = "NPWD557742",
             IssuedToOrgName = "ZNZ",
             IssuerNotes = "no notes",
             IssuerRef = "ANB-1123",
-            MaterialOperationCode = Guid.NewGuid(),
-            ObligationYear = "2025",
+            MaterialOperationCode = "R-PLA",
+            ObligationYear = 2025,
             PrnSignatory = "Pat Anderson",
             PrnSignatoryPosition = "Director",
             ProducerAgency = "TTL",
@@ -509,7 +509,7 @@ public class RepositoryTestsInMemory
         Eprn prnEntity = new Eprn()
         {
             AccreditationNumber = prn.AccreditationNo!,
-            AccreditationYear = prn.AccreditationYear!,
+            AccreditationYear = prn.AccreditationYear.ToString()!,
             // CancelledDate = prn.CancelledDate, // This property /column does not exist on Eprn entity or DB table PRN
             DecemberWaste = prn.DecemberWaste!.Value,
             PrnNumber = prn.EvidenceNo!,
@@ -522,7 +522,7 @@ public class RepositoryTestsInMemory
             OrganisationId = prn.IssuedToEPRId!.Value,
             IssuerNotes = prn.IssuerNotes,
             IssuerReference = prn.IssuerRef!,
-            ObligationYear = prn.ObligationYear!,
+            ObligationYear = prn.ObligationYear.ToString()!,
             PackagingProducer = string.Empty, // Not defined in NPWD to PRN mapping requirements
             PrnSignatory = prn.PrnSignatory,
             PrnSignatoryPosition = prn.PrnSignatoryPosition,
