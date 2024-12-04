@@ -1,4 +1,5 @@
 ﻿using AutoFixture;
+using BackendAccountService.Core.Models.Request;
 using EPR.PRN.Backend.API.Common.DTO;
 using EPR.PRN.Backend.API.Configs;
 using EPR.PRN.Backend.API.Controllers;
@@ -363,8 +364,14 @@ public class PrnControllerTests
             .Setup(service => service.GetModifiedPrnsbyDate(fromDate, toDate))
             .ReturnsAsync(mockPrns);
 
+        var modifiedPrnsbyDateRequest = new ModifiedPrnsbyDateRequest
+        {
+            From = fromDate,
+            To = toDate
+        };
+
         // Act
-        var result = await _systemUnderTest.GetModifiedPrnsbyDate(fromDate, toDate);
+        var result = await _systemUnderTest.GetModifiedPrnsbyDate(modifiedPrnsbyDateRequest);
 
         // Assert
         var okResult = result as OkObjectResult;
@@ -383,14 +390,18 @@ public class PrnControllerTests
         _mockPrnService
             .Setup(service => service.GetModifiedPrnsbyDate(fromDate, toDate))
             .ReturnsAsync((List<PrnUpdateStatus>)null);
-
+        
+        var modifiedPrnsbyDateRequest = new ModifiedPrnsbyDateRequest
+        {
+            From = fromDate,
+            To = toDate
+        };
         // Act
-        var result = await _systemUnderTest.GetModifiedPrnsbyDate(fromDate, toDate);
+        var result = await _systemUnderTest.GetModifiedPrnsbyDate(modifiedPrnsbyDateRequest);
 
         // Assert
         var statusCodeResult = result as StatusCodeResult;
         Assert.IsNotNull(statusCodeResult);
         Assert.AreEqual(204, statusCodeResult.StatusCode);
     }
-
 }
