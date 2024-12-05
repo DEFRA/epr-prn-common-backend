@@ -26,5 +26,5 @@ public class ObligationCalculation
     public DateTime CalculatedOn { get; set; }
 
     [Required]
-    public double MaterialWeight { get; set; }
+    public double Tonnage { get; set; }
 }

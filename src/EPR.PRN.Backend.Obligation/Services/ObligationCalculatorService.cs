@@ -137,7 +137,7 @@ namespace EPR.PRN.Backend.Obligation.Services
                     TonnageAwaitingAcceptance = tonnageAwaitingAcceptance ?? 0,
                     TonnageOutstanding = tonnageOutstanding,
                     Status = GetStatus(obligationCalculation?.MaterialObligationValue, tonnageAccepted),
-                    MaterialWeight = obligationCalculation?.MaterialWeight ?? 0,
+                    Tonnage = obligationCalculation?.Tonnage ?? 0,
                     MaterialTarget = GetRecyclingTarget(year, materialName, recyclingTargets) ?? 0
                 });
             }

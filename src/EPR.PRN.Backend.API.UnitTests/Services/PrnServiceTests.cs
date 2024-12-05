@@ -1,11 +1,14 @@
 ﻿using AutoFixture;
 using EPR.PRN.Backend.API.Common.DTO;
+using EPR.PRN.Backend.API.Controllers;
 using EPR.PRN.Backend.API.Helpers;
 using EPR.PRN.Backend.API.Repositories.Interfaces;
 using EPR.PRN.Backend.API.Services;
 using EPR.PRN.Backend.Data.DataModels;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore.Storage;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Moq;
 using System.Diagnostics.CodeAnalysis;
 
@@ -17,14 +20,21 @@ public class PrnServiceTests
 {
     private PrnService _systemUnderTest;
     private Mock<IRepository> _mockRepository;
+    private Mock<ILogger<PrnService>> _mockLogger;
+    private Mock<IConfiguration> _configurationMock;
     private static readonly IFixture _fixture = new Fixture();
 
     [TestInitialize]
     public void Init()
     {
         _mockRepository = new Mock<IRepository>();
-        _systemUnderTest = new PrnService(_mockRepository.Object);
-    }
+
+        _mockLogger = new Mock<ILogger<PrnService>>();
+        _configurationMock = new Mock<IConfiguration>();
+        _configurationMock.Setup(c => c["LogPrefix"]).Returns("[EPR.PRN.Backend]");
+
+        _systemUnderTest = new PrnService(_mockRepository.Object, _mockLogger.Object, _configurationMock.Object);
+   }
 
     [TestMethod]
     public async Task GetPrnForOrganisationById_WithValidId_ReturnsExpectedDto()
