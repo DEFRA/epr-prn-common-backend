@@ -1,6 +1,4 @@
-﻿#nullable disable
-
-namespace EPR.PRN.Backend.API.Controllers;
+﻿namespace EPR.PRN.Backend.API.Controllers;
 
 using BackendAccountService.Core.Models.Request;
 using EPR.PRN.Backend.API.Common.DTO;
@@ -114,13 +112,14 @@ public class PrnController(IPrnService prnService, ILogger<PrnController> logger
             return BadRequest(ModelState);
         }
 
-        var prns = await _prnService.GetModifiedPrnsbyDate(request.From, request.To);
+        var prns = await prnService.GetModifiedPrnsbyDate(request.From, request.To);
         if (prns == null || !prns.Any())
             return StatusCode(StatusCodes.Status204NoContent);
 
         return Ok(prns);
     }
 
+    #endregion Get Methods
 
     #region Post Methods
 

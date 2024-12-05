@@ -169,7 +169,7 @@ public class RepositoryTests
         }
 
         //Act
-        var repo = new Repository(context);
+        var repo = new Repository(context, _mockLogger.Object, _configurationMock.Object);
         var result = await repo.GetModifiedPrnsbyDate(fromDate, toDate);
 
         //Assert
