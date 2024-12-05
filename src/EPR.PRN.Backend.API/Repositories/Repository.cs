@@ -209,6 +209,8 @@ public class Repository(EprContext eprContext, ILogger<Repository> logger, IConf
                 CreatedOn = currentTimestamp,
             };
 
+            var prnLogVal = entity.PrnNumber?.Replace(Environment.NewLine, "");
+
             // Add new PRN entity
             if (existingEntity == null)
             {
@@ -217,7 +219,7 @@ public class Repository(EprContext eprContext, ILogger<Repository> logger, IConf
                 _eprContext.Prn.Add(entity);
                 statusHistory.PrnIdFk = entity.Id;
 
-                logger.LogInformation("Attempting to add new Prn entity with PrnNumber : {PrnNumber}", entity?.PrnNumber);
+                logger.LogInformation("Attempting to add new Prn entity with PrnNumber : {PrnNumber}", prnLogVal);
             }
             // Update existing PRN entity
             else
@@ -227,14 +229,14 @@ public class Repository(EprContext eprContext, ILogger<Repository> logger, IConf
                 _eprContext.Entry(existingEntity).CurrentValues.SetValues(entity);
 
                 statusHistory.PrnIdFk = existingEntity.Id;
-                logger.LogInformation("Attempting to update Prn entity with PrnNumber : {PrnNumber} and {Id}", entity?.PrnNumber, entity?.Id);
+                logger.LogInformation("Attempting to update Prn entity with PrnNumber : {PrnNumber} and {Id}", prnLogVal, entity?.Id);
             }
 
             // Add Prn status history
             _eprContext.PrnStatusHistory.Add(statusHistory);
 
             await _eprContext.SaveChangesAsync();
-            logger.LogInformation("Prn Entity successfully upserted. PrnNumber : {PrnNumber} and {Id}", entity?.PrnNumber, entity?.Id);
+            logger.LogInformation("Prn Entity successfully upserted. PrnNumber : {PrnNumber} and {Id}", prnLogVal, entity?.Id);
 
         }
         catch (Exception ex)
