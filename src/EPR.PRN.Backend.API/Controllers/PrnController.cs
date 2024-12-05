@@ -232,7 +232,7 @@ public class PrnController(IPrnService prnService,
         }
         catch (Exception ex)
         {
-            logger.LogInformation(ex, "Recieved Unhandled exception");
+            logger.LogError(ex, "Recieved Unhandled exception");
             return Problem("Internal Server Error", null, (int)HttpStatusCode.InternalServerError);
         }
     }
