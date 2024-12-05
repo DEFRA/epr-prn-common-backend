@@ -36,6 +36,13 @@ public class PrnService(IRepository repository, ILogger<PrnService> logger, ICon
         return prns;
     }
 
+        public async Task<List<PrnUpdateStatus>?> GetModifiedPrnsbyDate(DateTime fromDate, DateTime toDate)
+        {
+            var modifiedPrns = await _repository.GetModifiedPrnsbyDate(fromDate, toDate);
+
+            return modifiedPrns == null ? null : modifiedPrns;
+        }
+
     public async Task<PaginatedResponseDto<PrnDto>> GetSearchPrnsForOrganisation(Guid orgId, PaginatedRequestDto request)
     {
         logger.LogInformation("{Logprefix}: PrnService - GetSearchPrnsForOrganisation: search request for user organisation {Organisation} with criteria {Request}", logPrefix, orgId, JsonConvert.SerializeObject(request));

@@ -1,4 +1,5 @@
 ﻿using AutoFixture;
+using BackendAccountService.Core.Models.Request;
 using EPR.PRN.Backend.API.Common.DTO;
 using EPR.PRN.Backend.API.Configs;
 using EPR.PRN.Backend.API.Controllers;
@@ -16,6 +17,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
 using System.Net;
+
 
 namespace EPR.PRN.Backend.API.UnitTests.Services;
 
@@ -181,7 +183,7 @@ public class PrnControllerTests
 
         _systemUnderTest.ModelState.AddModelError("Key", "Error message");
 
-        var result = await _systemUnderTest.CalculateAsync(organisationId, new List<SubmissionCalculationRequest> { new SubmissionCalculationRequest() });
+        var result = await _systemUnderTest.CalculateAsync(organisationId, new List<SubmissionCalculationRequest> { new() });
 
         result.Should().BeOfType<BadRequestObjectResult>();
     }
@@ -195,7 +197,7 @@ public class PrnControllerTests
             .Setup(x => x.CalculateAsync(It.IsAny<Guid>(), It.IsAny<List<SubmissionCalculationRequest>>()))
             .ReturnsAsync(calculationResult);
 
-        var result = await _systemUnderTest.CalculateAsync(organisationId, new List<SubmissionCalculationRequest> { new SubmissionCalculationRequest() });
+        var result = await _systemUnderTest.CalculateAsync(organisationId, new List<SubmissionCalculationRequest> { new() });
 
         result.Should().BeOfType<ObjectResult>().Which.StatusCode.Should().Be(StatusCodes.Status500InternalServerError);
     }
@@ -215,7 +217,7 @@ public class PrnControllerTests
             .Setup(x => x.CalculateAsync(It.IsAny<Guid>(), It.IsAny<List<SubmissionCalculationRequest>>()))
             .ReturnsAsync(calculationResult);
 
-        var result = await _systemUnderTest.CalculateAsync(organisationId, new List<SubmissionCalculationRequest> { new SubmissionCalculationRequest() });
+        var result = await _systemUnderTest.CalculateAsync(organisationId, new List<SubmissionCalculationRequest> { new() });
 
         result.Should().BeOfType<AcceptedResult>().Which.Value.Should().BeEquivalentTo(new
         {
@@ -232,7 +234,7 @@ public class PrnControllerTests
             .Setup(x => x.CalculateAsync(It.IsAny<Guid>(), It.IsAny<List<SubmissionCalculationRequest>>()))
             .ThrowsAsync(new TimeoutException("Request timed out"));
 
-        var result = await _systemUnderTest.CalculateAsync(organisationId, new List<SubmissionCalculationRequest> { new SubmissionCalculationRequest() });
+        var result = await _systemUnderTest.CalculateAsync(organisationId, new List<SubmissionCalculationRequest> { new() });
 
         result.Should().BeOfType<ObjectResult>().Which.StatusCode.Should().Be(StatusCodes.Status504GatewayTimeout);
 
@@ -249,7 +251,7 @@ public class PrnControllerTests
             .Setup(x => x.CalculateAsync(It.IsAny<Guid>(), It.IsAny<List<SubmissionCalculationRequest>>()))
             .ThrowsAsync(new Exception("Unexpected error"));
 
-        var result = await _systemUnderTest.CalculateAsync(organisationId, new List<SubmissionCalculationRequest> { new SubmissionCalculationRequest() });
+        var result = await _systemUnderTest.CalculateAsync(organisationId, new List<SubmissionCalculationRequest> { new() });
 
         result.Should().BeOfType<ObjectResult>().Which.StatusCode.Should().Be(StatusCodes.Status500InternalServerError);
 
@@ -349,5 +351,62 @@ public class PrnControllerTests
         okResult.Should().NotBeNull();
         okResult.StatusCode.Should().Be(200);
         okResult.Value.Should().BeEquivalentTo(new ObligationModel { ObligationData = prns, NumberOfPrnsAwaitingAcceptance = obligationResult.ObligationModel.NumberOfPrnsAwaitingAcceptance });
+    }
+
+    [TestMethod]
+    public async Task GetModifiedPrnsbyDate_ReturnsOkWithPrns_WhenPrnsExist()
+    {
+        // Arrange
+        var fromDate = DateTime.UtcNow.AddDays(-7);
+        var toDate = DateTime.UtcNow;
+        var mockPrns = new List<PrnUpdateStatus>
+        {
+            new() { EvidenceNo = "123", EvidenceStatusCode = "Modified", AccreditationYear= "2014" },
+            new() { EvidenceNo = "456", EvidenceStatusCode = "Unchanged", AccreditationYear= "2014" }
+        };
+
+        _mockPrnService
+            .Setup(service => service.GetModifiedPrnsbyDate(fromDate, toDate))
+            .ReturnsAsync(mockPrns);
+
+        var modifiedPrnsbyDateRequest = new ModifiedPrnsbyDateRequest
+        {
+            From = fromDate,
+            To = toDate
+        };
+
+        // Act
+        var result = await _systemUnderTest.GetModifiedPrnsbyDate(modifiedPrnsbyDateRequest);
+
+        // Assert
+        var okResult = result as OkObjectResult;
+        Assert.IsNotNull(okResult);
+        Assert.AreEqual(200, okResult.StatusCode);
+        CollectionAssert.AreEqual(mockPrns, okResult.Value as List<PrnUpdateStatus>);
+    }
+
+    [TestMethod]
+    public async Task GetModifiedPrnsbyDate_ReturnsNoContent_WhenNoPrnsExist()
+    {
+        // Arrange
+        var fromDate = DateTime.UtcNow.AddDays(-7);
+        var toDate = DateTime.UtcNow;
+
+        _mockPrnService
+            .Setup(service => service.GetModifiedPrnsbyDate(fromDate, toDate))
+            .ReturnsAsync((List<PrnUpdateStatus>)null);
+        
+        var modifiedPrnsbyDateRequest = new ModifiedPrnsbyDateRequest
+        {
+            From = fromDate,
+            To = toDate
+        };
+        // Act
+        var result = await _systemUnderTest.GetModifiedPrnsbyDate(modifiedPrnsbyDateRequest);
+
+        // Assert
+        var statusCodeResult = result as StatusCodeResult;
+        Assert.IsNotNull(statusCodeResult);
+        Assert.AreEqual(204, statusCodeResult.StatusCode);
     }
 }

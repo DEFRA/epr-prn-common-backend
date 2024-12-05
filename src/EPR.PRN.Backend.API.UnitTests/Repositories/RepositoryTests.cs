@@ -142,4 +142,48 @@ public class RepositoryTests
         var history = await context.PrnStatusHistory.Where(p => p.CreatedByUser == statusHistory.CreatedByUser).ToListAsync();
         history.Should().HaveCount(1);
     }
+
+    [TestMethod]
+    public async Task GetModifiedPrnsbyDate_ReturnsMappedPrnUpdateStatuses()
+    {
+        //Arrange
+        var fromDate = new DateTime(2024, 11, 22);
+        var toDate = new DateTime(2024, 11, 24);
+
+        var data = _fixture.CreateMany<Eprn>().ToArray();
+        data[0].PrnNumber = "PRN001";
+        data[0].StatusUpdatedOn = new DateTime(2024, 11, 23);
+        data[0].PrnStatusId = 1;
+        data[0].AccreditationYear = "2023";
+
+        data[1].PrnNumber = "PRN002";
+        data[1].StatusUpdatedOn = new DateTime(2024, 11, 22);
+        data[1].PrnStatusId = 2;
+        data[1].AccreditationYear = "2024";
+
+        using var context = new EprContext(_contextOptions);
+        if (await context.Database.EnsureCreatedAsync())
+        {
+            context.AddRange(data);
+            await context.SaveChangesAsync();
+        }
+
+        //Act
+        var repo = new Repository(context, _mockLogger.Object, _configurationMock.Object);
+        var result = await repo.GetModifiedPrnsbyDate(fromDate, toDate);
+
+        //Assert
+        Assert.IsNotNull(result);
+        Assert.AreEqual(2, result.Count);
+
+        var firstPrn = result[0];
+        Assert.AreEqual("PRN001", firstPrn.EvidenceNo);
+        Assert.AreEqual("2023", firstPrn.AccreditationYear);
+        Assert.AreEqual("EV-ACCEP", firstPrn.EvidenceStatusCode);
+
+        var secondPrn = result[1];
+        Assert.AreEqual("PRN002", secondPrn.EvidenceNo);
+        Assert.AreEqual("2024", secondPrn.AccreditationYear);
+        Assert.AreEqual("EV-ACANCEL", secondPrn.EvidenceStatusCode);
+    }
 }
