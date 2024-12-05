@@ -2,7 +2,7 @@
 {
     using System;
     using System.Diagnostics.CodeAnalysis;
-    using EPR.PRN.Backend.API.Common.Enums;
+    using EPR.PRN.Backend.Data.DataModels;
 
     [ExcludeFromCodeCoverage]
     public class SavePrnDetailsRequest
@@ -13,7 +13,7 @@
         public bool? DecemberWaste { get; set; }
         public string? EvidenceMaterial { get; set; }
         public string? EvidenceNo { get; set; }
-        public PrnStatus? EvidenceStatusCode { get; set; }
+        public EprnStatus? EvidenceStatusCode { get; set; }
         public int? EvidenceTonnes { get; set; }
         public DateTime? IssueDate { get; set; }
         public string? IssuedByNPWDCode { get; set; }

@@ -514,7 +514,7 @@ public class RepositoryTestsInMemory
             DecemberWaste = true,
             EvidenceMaterial = "Aluminium",
             EvidenceNo = Guid.NewGuid().ToString(),
-            EvidenceStatusCode = Common.Enums.PrnStatus.AwaitingAcceptance,
+            EvidenceStatusCode = EprnStatus.AWAITINGACCEPTANCE,
             EvidenceTonnes = 5000,
             ExternalId = Guid.NewGuid(),
             IssueDate = DateTime.UtcNow.AddDays(-5),

@@ -71,7 +71,7 @@
                 .NotNull().WithMessage("StatusDate is required.");
 
             RuleFor(x => x.CancelledDate).NotNull()
-                .When(x => x.EvidenceStatusCode == Common.Enums.PrnStatus.Cancelled)
+                .When(x => x.EvidenceStatusCode == Data.DataModels.EprnStatus.CANCELLED)
                 .WithMessage("CancelledDate is required when the request has cancelled status");
 
             RuleFor(x => x.IssuerNotes)

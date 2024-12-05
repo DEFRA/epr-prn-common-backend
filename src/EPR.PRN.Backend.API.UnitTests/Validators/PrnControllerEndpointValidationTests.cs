@@ -1,5 +1,6 @@
 ﻿using EPR.PRN.Backend.API.Common.DTO;
 using EPR.PRN.Backend.API.Validators;
+using EPR.PRN.Backend.Data.DataModels;
 using FluentAssertions;
 
 namespace EPR.PRN.Backend.API.UnitTests.Validators
@@ -35,7 +36,7 @@ namespace EPR.PRN.Backend.API.UnitTests.Validators
                 DecemberWaste = true,
                 EvidenceMaterial = "Aluminium",
                 EvidenceNo = Guid.NewGuid().ToString(),
-                EvidenceStatusCode = Common.Enums.PrnStatus.AwaitingAcceptance,
+                EvidenceStatusCode = EprnStatus.AWAITINGACCEPTANCE,
                 EvidenceTonnes = 5000,
                 ExternalId = Guid.NewGuid(),
                 IssueDate = DateTime.UtcNow.AddDays(-5),
@@ -113,12 +114,12 @@ namespace EPR.PRN.Backend.API.UnitTests.Validators
             // Set Status based on test method parameter
             if (isCancelledStatus)
             {
-                dto.EvidenceStatusCode = Common.Enums.PrnStatus.Cancelled;
+                dto.EvidenceStatusCode = EprnStatus.CANCELLED;
                 dto.CancelledDate = null;
             }
             else
             {
-                dto.EvidenceStatusCode = Common.Enums.PrnStatus.AwaitingAcceptance;
+                dto.EvidenceStatusCode = EprnStatus.AWAITINGACCEPTANCE;
                 dto.CancelledDate = DateTime.UtcNow.AddDays(-1);
             }
 
@@ -158,7 +159,7 @@ namespace EPR.PRN.Backend.API.UnitTests.Validators
                 DecemberWaste = true,
                 EvidenceMaterial = "Aluminium",
                 EvidenceNo = Guid.NewGuid().ToString(),
-                EvidenceStatusCode = Common.Enums.PrnStatus.AwaitingAcceptance,
+                EvidenceStatusCode = EprnStatus.AWAITINGACCEPTANCE,
                 EvidenceTonnes = 5000,
                 ExternalId = Guid.NewGuid(),
                 IssueDate = DateTime.UtcNow.AddDays(-5),
