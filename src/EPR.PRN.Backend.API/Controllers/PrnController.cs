@@ -4,6 +4,7 @@ using BackendAccountService.Core.Models.Request;
 using EPR.PRN.Backend.API.Common.DTO;
 using EPR.PRN.Backend.API.Configs;
 using EPR.PRN.Backend.API.Helpers;
+using EPR.PRN.Backend.API.Models;
 using EPR.PRN.Backend.API.Services.Interfaces;
 using EPR.PRN.Backend.Data.DataModels;
 using EPR.PRN.Backend.Obligation.DTO;
@@ -13,7 +14,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using System.Net;
-using System.Security.Cryptography;
 
 [ApiController]
 [ApiVersion("1.0")]
@@ -205,5 +205,25 @@ public class PrnController(IPrnService prnService, ILogger<PrnController> logger
         }
     }
 
+    [HttpPost("updatesyncstatus")]
+    public async Task<IActionResult> PeprToNpwdSyncedPrns([FromBody] List<InsertSyncedPrn> syncedPrns)
+    {
+        try
+        {
+            await prnService.InsertPeprNpwdSyncPrns(syncedPrns);
+
+            return Ok();
+        }
+        catch (NotFoundException ex)
+        {
+            logger.LogWarning(ex, "Recieved not found exception");
+            return Problem(ex.Message, null, (int)HttpStatusCode.NotFound);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Recieved Unhandled exception");
+            return Problem("Internal Server Error", null, (int)HttpStatusCode.InternalServerError);
+        }
+    }
     #endregion Post Methods
 }

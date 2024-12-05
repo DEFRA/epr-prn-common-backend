@@ -1,7 +1,7 @@
 ﻿using AutoFixture;
 using EPR.PRN.Backend.API.Common.DTO;
-using EPR.PRN.Backend.API.Controllers;
 using EPR.PRN.Backend.API.Helpers;
+using EPR.PRN.Backend.API.Models;
 using EPR.PRN.Backend.API.Repositories.Interfaces;
 using EPR.PRN.Backend.API.Services;
 using EPR.PRN.Backend.Data.DataModels;
@@ -258,5 +258,41 @@ public class PrnServiceTests
         // Assert
         Assert.IsNull(result);
         _mockRepository.Verify(repo => repo.GetModifiedPrnsbyDate(fromDate, toDate), Times.Once);
+    }
+
+    [TestMethod]
+    public async Task InsertPeprNpwdSyncPrns_throwsNotFoundIfNoPrnRecordsForEvidence()
+    {
+        var syncPrns = _fixture.CreateMany<InsertSyncedPrn>().ToList();
+
+        _mockRepository.Setup(r => r.GetPrnsForPrnNumbers(It.IsAny<List<string>>())).ReturnsAsync([]);
+
+        await _systemUnderTest
+            .Invoking(x => x.InsertPeprNpwdSyncPrns(syncPrns))
+            .Should()
+            .ThrowAsync<NotFoundException>();
+    }
+
+    [TestMethod]
+    public async Task InsertPeprNpwdSyncPrns_CallsDBWithCorrectData()
+    {
+        var expectedPeprSync = new List<PEprNpwdSync>();
+        var syncPrns = _fixture.CreateMany<InsertSyncedPrn>().ToList();
+        var prns = _fixture.CreateMany<Eprn>().ToList();
+        prns[0].PrnNumber = syncPrns[0].EvidenceNo;
+        prns[1].PrnNumber = syncPrns[1].EvidenceNo;
+        prns[2].PrnNumber = syncPrns[2].EvidenceNo;
+
+        _mockRepository.Setup(r => r.GetPrnsForPrnNumbers(It.IsAny<List<string>>())).ReturnsAsync(prns);
+        _mockRepository.Setup(r => r.InsertPeprNpwdSyncPrns(It.IsAny<List<PEprNpwdSync>>()))
+            .Callback<List<PEprNpwdSync>>(p => expectedPeprSync = p);
+
+        await _systemUnderTest.InsertPeprNpwdSyncPrns(syncPrns);
+
+        _mockRepository.Verify(x => x.InsertPeprNpwdSyncPrns(It.IsAny<List<PEprNpwdSync>>()), Times.Once());
+
+        expectedPeprSync.Count.Should().Be(3);
+        expectedPeprSync.Select(p => p.PRNId).Should().BeEquivalentTo(prns.Select(p => p.Id));
+        expectedPeprSync.Select(p => p.PRNStatusId).Should().BeEquivalentTo(syncPrns.Select(p => (int)p.EvidenceStatus));
     }
 }

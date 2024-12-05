@@ -4,6 +4,7 @@ using EPR.PRN.Backend.API.Common.DTO;
 using EPR.PRN.Backend.API.Configs;
 using EPR.PRN.Backend.API.Controllers;
 using EPR.PRN.Backend.API.Helpers;
+using EPR.PRN.Backend.API.Models;
 using EPR.PRN.Backend.API.Services.Interfaces;
 using EPR.PRN.Backend.Data.DataModels;
 using EPR.PRN.Backend.Obligation.DTO;
@@ -408,5 +409,44 @@ public class PrnControllerTests
         var statusCodeResult = result as StatusCodeResult;
         Assert.IsNotNull(statusCodeResult);
         Assert.AreEqual(204, statusCodeResult.StatusCode);
+    }
+
+
+    [TestMethod]
+    public async Task PeprToNpwdSyncedPrns_ReturnsNotFound_WhenServiceThrowsNotFoundException()
+    {
+        var syncPrns = _fixture.CreateMany<InsertSyncedPrn>().ToList();
+
+        _mockPrnService.Setup(s => s.InsertPeprNpwdSyncPrns(syncPrns)).Throws<NotFoundException>();
+
+        var result = await _systemUnderTest.PeprToNpwdSyncedPrns(syncPrns) as ObjectResult;
+
+        result.Should().NotBeNull();
+        result.StatusCode.Should().Be((int)HttpStatusCode.NotFound);
+    }
+
+    [TestMethod]
+    public async Task PeprToNpwdSyncedPrns_ReturnsInternalServer_WhenServiceThrowsUnexpectedException()
+    {
+        var syncPrns = _fixture.CreateMany<InsertSyncedPrn>().ToList();
+
+        _mockPrnService.Setup(s => s.InsertPeprNpwdSyncPrns(syncPrns)).Throws<ArgumentNullException>();
+
+        var result = await _systemUnderTest.PeprToNpwdSyncedPrns(syncPrns) as ObjectResult;
+
+        result.Should().NotBeNull();
+        result.StatusCode.Should().Be((int)HttpStatusCode.InternalServerError);
+    }
+
+    [TestMethod]
+    public async Task PeprToNpwdSyncedPrns_CallsService_ReturnOk()
+    {
+        var syncPrns = _fixture.CreateMany<InsertSyncedPrn>().ToList();
+
+        _mockPrnService.Setup(s => s.InsertPeprNpwdSyncPrns(syncPrns)).Returns(Task.CompletedTask);
+
+        var result = await _systemUnderTest.PeprToNpwdSyncedPrns(syncPrns);
+        result.Should().BeOfType<OkResult>().Which.StatusCode.Should().Be(200);
+        _mockPrnService.Verify(x => x.InsertPeprNpwdSyncPrns(syncPrns), Times.Once());
     }
 }

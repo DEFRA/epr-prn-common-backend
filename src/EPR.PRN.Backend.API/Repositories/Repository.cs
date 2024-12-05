@@ -238,4 +238,15 @@ public class Repository(EprContext eprContext, ILogger<Repository> logger, IConf
         logger.LogInformation("{Logprefix}: Repository - GetSearchPrnsForOrganisation: returning: {DtoObject}", logPrefix, JsonConvert.SerializeObject(dtoObject));
         return dtoObject;
     }
+
+    public async Task<List<Eprn>> GetPrnsForPrnNumbers(List<string> prnNumbers)
+    {
+        return await _eprContext.Prn.Where(p => prnNumbers.Contains(p.PrnNumber)).AsNoTracking().ToListAsync();
+    }
+
+    public async Task InsertPeprNpwdSyncPrns(List<PEprNpwdSync> syncedPrns)
+    {
+        await _eprContext.PEprNpwdSync.AddRangeAsync(syncedPrns);
+        await _eprContext.SaveChangesAsync();
+    }
 }
