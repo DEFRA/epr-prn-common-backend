@@ -196,7 +196,7 @@ public class Repository(EprContext eprContext, ILogger<Repository> logger, IConf
     {
         try
         {
-            var currentUser = WindowsIdentity.GetCurrent().Name;
+            var currentUser = Environment.UserName;
             var currentTimestamp = DateTime.UtcNow;
 
             var existingEntity = await _eprContext.Prn.FirstOrDefaultAsync(x => x.PrnNumber == entity.PrnNumber);
