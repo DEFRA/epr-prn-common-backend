@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using System.Net;
+using System.Security.Cryptography;
 
 [ApiController]
 [ApiVersion("1.0")]
