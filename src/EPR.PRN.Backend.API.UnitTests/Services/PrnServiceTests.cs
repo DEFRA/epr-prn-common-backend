@@ -217,6 +217,50 @@ public class PrnServiceTests
     }
 
     [TestMethod]
+    public async Task GetModifiedPrnsbyDate_ReturnsModifiedPrns_WhenDataExists()
+    {
+        // Arrange
+        var fromDate = DateTime.UtcNow.AddDays(-7);
+        var toDate = DateTime.UtcNow;
+        var mockPrns = new List<PrnUpdateStatus>
+        {
+            new() { EvidenceNo = "123", EvidenceStatusCode = "Modified", AccreditationYear= "2014" },
+            new() { EvidenceNo = "456", EvidenceStatusCode = "Unchanged", AccreditationYear= "2014" }
+        };
+
+        _mockRepository
+            .Setup(repo => repo.GetModifiedPrnsbyDate(fromDate, toDate))
+            .ReturnsAsync(mockPrns);
+
+        // Act
+        var result = await _systemUnderTest.GetModifiedPrnsbyDate(fromDate, toDate);
+
+        // Assert
+        Assert.IsNotNull(result);
+        CollectionAssert.AreEqual(mockPrns, result);
+        _mockRepository.Verify(repo => repo.GetModifiedPrnsbyDate(fromDate, toDate), Times.Once);
+    }
+
+    [TestMethod]
+    public async Task GetModifiedPrnsbyDate_ReturnsNull_WhenNoDataExists()
+    {
+        // Arrange
+        var fromDate = DateTime.UtcNow.AddDays(-7);
+        var toDate = DateTime.UtcNow;
+
+        _mockRepository
+            .Setup(repo => repo.GetModifiedPrnsbyDate(fromDate, toDate))
+            .ReturnsAsync((List<PrnUpdateStatus>?)null);
+
+        // Act
+        var result = await _systemUnderTest.GetModifiedPrnsbyDate(fromDate, toDate);
+
+        // Assert
+        Assert.IsNull(result);
+        _mockRepository.Verify(repo => repo.GetModifiedPrnsbyDate(fromDate, toDate), Times.Once);
+    }
+
+    [TestMethod]
     public async Task SavePrnDetails_ReturnsWithoutError_OnSuccessfullySave()
     {
         _mockRepository.Setup(s => s.SavePrnDetails(It.IsAny<Eprn>())).Returns(Task.CompletedTask);

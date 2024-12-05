@@ -1,12 +1,12 @@
-﻿#nullable disable
+﻿namespace EPR.PRN.Backend.API.Controllers;
 
-namespace EPR.PRN.Backend.API.Controllers;
-
+using BackendAccountService.Core.Models.Request;
 using EPR.PRN.Backend.API.Common.DTO;
 using EPR.PRN.Backend.API.Configs;
 using EPR.PRN.Backend.API.Helpers;
 using EPR.PRN.Backend.API.Services;
 using EPR.PRN.Backend.API.Services.Interfaces;
+using EPR.PRN.Backend.Data.DataModels;
 using EPR.PRN.Backend.Obligation.DTO;
 using EPR.PRN.Backend.Obligation.Interfaces;
 using EPR.PRN.Backend.Obligation.Models;
@@ -110,7 +110,23 @@ public class PrnController(IPrnService prnService,
         return Ok(obligationCalculation.ObligationModel);
     }
 
-    #endregion Get methods
+    [HttpGet("ModifiedPrnsbyDate")]
+    [ProducesResponseType(typeof(List<PrnUpdateStatus>), 200)]
+    public async Task<IActionResult> GetModifiedPrnsbyDate([FromQuery] ModifiedPrnsbyDateRequest request)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
+        var prns = await prnService.GetModifiedPrnsbyDate(request.From, request.To);
+        if (prns == null || !prns.Any())
+            return StatusCode(StatusCodes.Status204NoContent);
+
+        return Ok(prns);
+    }
+
+    #endregion Get Methods
 
     #region Post Methods
 
