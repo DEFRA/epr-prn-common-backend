@@ -14,5 +14,6 @@ namespace EPR.PRN.Backend.API.Repositories.Interfaces
         void AddPrnStatusHistory(PrnStatusHistory prnStatusHistory);
         Task<PaginatedResponseDto<PrnDto>> GetSearchPrnsForOrganisation(Guid orgId, PaginatedRequestDto request);
         Task<List<PrnUpdateStatus>> GetModifiedPrnsbyDate(DateTime fromDate, DateTime toDate);
+        Task SavePrnDetails(Eprn entity);
     }
 }
