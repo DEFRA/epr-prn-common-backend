@@ -244,7 +244,6 @@ public class Repository(EprContext eprContext, ILogger<Repository> logger, IConf
     {
         try
         {
-            var currentUser = Environment.UserName;
             var currentTimestamp = DateTime.UtcNow;
 
             var existingEntity = await _eprContext.Prn.FirstOrDefaultAsync(x => x.PrnNumber == entity.PrnNumber);
@@ -262,7 +261,6 @@ public class Repository(EprContext eprContext, ILogger<Repository> logger, IConf
             // Add new PRN entity
             if (existingEntity == null)
             {
-                entity.CreatedBy = currentUser;
                 entity.CreatedOn = currentTimestamp;
                 entity.ExternalId = entity.ExternalId == Guid.Empty ? Guid.NewGuid() : entity.ExternalId;
                 _eprContext.Prn.Add(entity);
