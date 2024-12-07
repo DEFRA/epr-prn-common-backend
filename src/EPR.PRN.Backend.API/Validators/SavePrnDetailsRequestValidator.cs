@@ -15,10 +15,6 @@
                 .NotEmpty().WithMessage("AccreditationYear is required.")
                 .Must(x => x > 1900 && x <= 9999).WithMessage("AccreditationYear must be a valid year value");
 
-            RuleFor(x => x.ObligationYear)
-                .NotEmpty().WithMessage("ObligationYear is required.")
-                .Must(x => x > 1900 && x <= 9999).WithMessage("ObligationYear must be a valid year value");
-
             RuleFor(x => x.DecemberWaste)
                 .NotNull().WithMessage("DecemberWaste is required.");
 
@@ -34,8 +30,9 @@
                 .NotNull().WithMessage("EvidenceStatusCode is required.");
 
             RuleFor(x => x.EvidenceTonnes)
-                .NotNull().WithMessage("EvidenceTonnes is required.");
-
+                .NotNull().WithMessage("EvidenceTonnes is required.")
+                .Must(x => x!.Value > 0).WithMessage("EvidenceTonnes must be greater than 0");
+                
             RuleFor(x => x.IssueDate)
                 .NotNull().WithMessage("IssueDate is required.");
 
@@ -50,10 +47,6 @@
             RuleFor(x => x.IssuedToEPRId)
                 .NotNull().WithMessage("IssuedToEPRId is required.")
                 .Must(x => Guid.TryParse(x.ToString(), out _)).WithMessage("Invalid IssuedToEPRId. It must be a valid Guid.");
-
-            RuleFor(x => x.ExternalId)
-                .NotNull().WithMessage("ExternalId is required.")
-                .Must(x => Guid.TryParse(x.ToString(), out _)).WithMessage("Invalid ExternalId. It must be a valid Guid.");
 
             RuleFor(x => x.ProducerAgency)
                 .NotEmpty().WithMessage("ProducerAgency is required.")
@@ -89,6 +82,10 @@
             RuleFor(x => x.PrnSignatoryPosition)
                 .MaximumLength(50).WithMessage("PrnSignatoryPosition cannot be longer than 50 characters")
                 .When(x => !string.IsNullOrWhiteSpace(x.PrnSignatoryPosition));
+
+            RuleFor(x => x.CreatedByUser)
+                .NotNull().WithMessage("CreatedByUser is required.")
+                .MaximumLength(20).WithMessage("CreatedByUser cannot be longer than 20 characters");
         }
     }
 }

@@ -9,6 +9,7 @@ using EPR.PRN.Backend.API.Helpers;
 using EPR.PRN.Backend.API.Repositories.Interfaces;
 using EPR.PRN.Backend.API.Services.Interfaces;
 using EPR.PRN.Backend.Data.DataModels;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System.Collections.Generic;
@@ -102,7 +103,6 @@ public class PrnService(IRepository repository, ILogger<PrnService> logger, ICon
             {
                 AccreditationNumber = prn.AccreditationNo!,
                 AccreditationYear = prn.AccreditationYear.ToString()!,
-                // CancelledDate = prn.CancelledDate, // This property /column does not exist on Eprn entity or DB table PRN
                 DecemberWaste = prn.DecemberWaste!.Value,
                 PrnNumber = prn.EvidenceNo!,
                 PrnStatusId = (int)prn.EvidenceStatusCode!.Value,
@@ -114,19 +114,20 @@ public class PrnService(IRepository repository, ILogger<PrnService> logger, ICon
                 OrganisationId = prn.IssuedToEPRId!.Value,
                 IssuerNotes = prn.IssuerNotes,
                 IssuerReference = prn.IssuerRef!,
-                ObligationYear = prn.ObligationYear.ToString()!,
-                PackagingProducer = prn.ProducerAgency!, // Not defined in NPWD to PRN mapping requirements so mapping to default
+                ObligationYear = prn.ObligationYear?.ToString() ?? Common.Constants.PrnConstants.ObligationYearDefault.ToString(),
+                PackagingProducer = prn.ProducerAgency!,
                 PrnSignatory = prn.PrnSignatory,
                 PrnSignatoryPosition = prn.PrnSignatoryPosition,
                 ProducerAgency = prn.ProducerAgency!,
                 ProcessToBeUsed = prn.RecoveryProcessCode,
                 ReprocessingSite = string.Empty,
-                StatusUpdatedOn = prn.StatusDate,
+                StatusUpdatedOn = prn.EvidenceStatusCode == EprnStatus.CANCELLED ? prn.CancelledDate : prn.StatusDate,
                 LastUpdatedDate = prn.StatusDate!.Value,
-                ExternalId = prn.ExternalId!.Value,
-                ReprocessorExporterAgency = prn.ReprocessorAgency!,// Not defined in NPWD to PRN mapping requirements
+                ExternalId = Guid.Empty, // set value in repo when inserting and set to new guid
+                ReprocessorExporterAgency = prn.ReprocessorAgency!,
                 Signature = null,  // Not defined in NPWD to PRN mapping requirements,
-                IsExport = false, // Not defined in NPWD to PRN mapping requirements so mapping to default
+                IsExport = IsExport(prn.EvidenceNo),
+                CreatedBy = prn.CreatedByUser!,
             };
 
             await repository.SavePrnDetails(prnEntity);
@@ -134,8 +135,19 @@ public class PrnService(IRepository repository, ILogger<PrnService> logger, ICon
         catch (Exception ex)
         {
             logger.LogError(message: ex.Message, exception: ex);
-            throw;
+            throw new OperationCanceledException("Error encountered when attempting to map and save PRN requst. Please see the logs for details.");
         }
+    }
+
+    private static bool IsExport(string evidenceNo)
+    {
+        if(string.IsNullOrEmpty(evidenceNo)) 
+            return false;
+
+        var val = evidenceNo.Substring(0,2).Trim();
+
+        return string.Equals(val, Common.Constants.PrnConstants.ExporterCodePrefixes.EaExport, StringComparison.InvariantCultureIgnoreCase)
+                || string.Equals(val, Common.Constants.PrnConstants.ExporterCodePrefixes.SepaExport, StringComparison.InvariantCultureIgnoreCase);
     }
 
     private void UpdatePrn(Guid userId, PrnUpdateStatusDto prnUpdate, Eprn prn)

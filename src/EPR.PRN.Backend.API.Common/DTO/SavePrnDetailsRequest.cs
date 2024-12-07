@@ -31,7 +31,8 @@
         public string? ProducerAgency { get; set; }
         public string? RecoveryProcessCode { get; set; }
         public string? ReprocessorAgency { get; set; }
+        public string? ReprocessingSite { get; set; }
         public DateTime? StatusDate { get; set; }
-        public Guid? ExternalId { get; set; }
+        public string? CreatedByUser { get; set; }
     }
 }

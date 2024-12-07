@@ -495,7 +495,7 @@ public class RepositoryTestsInMemory
             ReprocessingSite = prn.ReprocessorAgency,
             StatusUpdatedOn = prn.StatusDate,
             LastUpdatedDate = prn.StatusDate!.Value,
-            ExternalId = prn.ExternalId!.Value,
+            ExternalId = Guid.Empty,
             ReprocessorExporterAgency = string.Empty,// Not defined in NPWD to PRN mapping requirements
             Signature = null,  // Not defined in NPWD to PRN mapping requirements
         };
@@ -516,7 +516,6 @@ public class RepositoryTestsInMemory
             EvidenceNo = Guid.NewGuid().ToString(),
             EvidenceStatusCode = EprnStatus.AWAITINGACCEPTANCE,
             EvidenceTonnes = 5000,
-            ExternalId = Guid.NewGuid(),
             IssueDate = DateTime.UtcNow.AddDays(-5),
             IssuedByNPWDCode = "NPWD367742",
             IssuedByOrgName = "ANB",

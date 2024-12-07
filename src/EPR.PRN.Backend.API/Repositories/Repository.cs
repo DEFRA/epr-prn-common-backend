@@ -253,7 +253,7 @@ public class Repository(EprContext eprContext, ILogger<Repository> logger, IConf
             {
                 CreatedByOrganisationId = entity.OrganisationId,
                 PrnStatusIdFk = entity.PrnStatusId,
-                CreatedByUser = Guid.Empty,
+                CreatedByUser = Guid.Empty,                
                 CreatedOn = currentTimestamp,
             };
 
@@ -264,6 +264,7 @@ public class Repository(EprContext eprContext, ILogger<Repository> logger, IConf
             {
                 entity.CreatedBy = currentUser;
                 entity.CreatedOn = currentTimestamp;
+                entity.ExternalId = entity.ExternalId == Guid.Empty ? Guid.NewGuid() : entity.ExternalId;
                 _eprContext.Prn.Add(entity);
                 statusHistory.PrnIdFk = entity.Id;
 

@@ -6,7 +6,7 @@ using FluentAssertions;
 namespace EPR.PRN.Backend.API.UnitTests.Validators
 {
     [TestClass]
-    public class PrnControllerEndpointValidationTests
+    public class SavePrnDetailsRequestValidatorTests
     {
         
         [TestMethod]
@@ -38,7 +38,6 @@ namespace EPR.PRN.Backend.API.UnitTests.Validators
                 EvidenceNo = Guid.NewGuid().ToString(),
                 EvidenceStatusCode = EprnStatus.AWAITINGACCEPTANCE,
                 EvidenceTonnes = 5000,
-                ExternalId = Guid.NewGuid(),
                 IssueDate = DateTime.UtcNow.AddDays(-5),
                 IssuedByNPWDCode = "NPWD367742",
                 IssuedByOrgName = "ANB",
@@ -92,7 +91,6 @@ namespace EPR.PRN.Backend.API.UnitTests.Validators
                 EvidenceMaterial = "Aluminium",
                 EvidenceNo = Guid.NewGuid().ToString(),                
                 EvidenceTonnes = 5000,
-                ExternalId = Guid.NewGuid(),
                 IssueDate = DateTime.UtcNow.AddDays(-5),
                 IssuedByNPWDCode = "NPWD367742",
                 IssuedByOrgName = "ANB",
@@ -161,7 +159,6 @@ namespace EPR.PRN.Backend.API.UnitTests.Validators
                 EvidenceNo = Guid.NewGuid().ToString(),
                 EvidenceStatusCode = EprnStatus.AWAITINGACCEPTANCE,
                 EvidenceTonnes = 5000,
-                ExternalId = Guid.NewGuid(),
                 IssueDate = DateTime.UtcNow.AddDays(-5),
                 IssuedByNPWDCode = "NPWD367742",
                 IssuedByOrgName = "ANB",
