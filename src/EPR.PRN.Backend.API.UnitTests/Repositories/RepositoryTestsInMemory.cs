@@ -474,7 +474,6 @@ public class RepositoryTestsInMemory
         {
             AccreditationNumber = prn.AccreditationNo!,
             AccreditationYear = prn.AccreditationYear.ToString()!,
-            // CancelledDate = prn.CancelledDate, // This property /column does not exist on Eprn entity or DB table PRN
             DecemberWaste = prn.DecemberWaste!.Value,
             PrnNumber = prn.EvidenceNo!,
             PrnStatusId = (int)prn.EvidenceStatusCode!.Value,

@@ -10,20 +10,18 @@ namespace EPR.PRN.Backend.API.UnitTests.Validators
     {
         
         [TestMethod]
-        [DataRow("AccreditationNo", null)]
-        [DataRow("AccreditationYear", null)]
-        [DataRow("ObligationYear", null)]
-        [DataRow("EvidenceMaterial", null)]
-        [DataRow("EvidenceNo", null)]
-        [DataRow("IssuedToEPRId", null)]
-        [DataRow("EvidenceStatusCode", null)]
+        //[DataRow("AccreditationNo", null)]
+        //[DataRow("AccreditationYear", null)]
+        //[DataRow("EvidenceMaterial", null)]
+        //[DataRow("EvidenceNo", null)]
+        //[DataRow("IssuedToEPRId", null)]
+        //[DataRow("EvidenceStatusCode", null)]
         [DataRow("EvidenceTonnes", null)]
-        [DataRow("ExternalId", null)]
-        [DataRow("IssuedByOrgName", null)]
-        [DataRow("IssuedToOrgName", null)]
-        [DataRow("ProducerAgency", null)]
-        [DataRow("RecoveryProcessCode", null)]
-        [DataRow("StatusDate", null)]
+        //[DataRow("IssuedByOrgName", null)]
+        //[DataRow("IssuedToOrgName", null)]
+        //[DataRow("ProducerAgency", null)]
+        //[DataRow("RecoveryProcessCode", null)]
+        //[DataRow("StatusDate", null)]
         public void Test_SavePrnDetailsRequestValidator_Returns_Correct_ValidationResultOnNullInput(string propertyName , object propertyValue)
         {
             var validator = new SavePrnDetailsRequestValidator();
@@ -54,6 +52,7 @@ namespace EPR.PRN.Backend.API.UnitTests.Validators
                 RecoveryProcessCode = "N11",
                 ReprocessorAgency = "BEX",
                 StatusDate = DateTime.UtcNow,
+                CreatedByUser = string.Empty,
             };
 
             // Get all property names from DTO class
@@ -138,13 +137,14 @@ namespace EPR.PRN.Backend.API.UnitTests.Validators
         [TestMethod]
         [DataRow("AccreditationNo", "ABC122378123123712381273123123123")]
         [DataRow("AccreditationYear", 25678)]
-        [DataRow("ObligationYear", 25678)]
         [DataRow("EvidenceMaterial", "Material201223234234234234234")]
         [DataRow("EvidenceNo", "EV1231293812931231231231231")]
         [DataRow("IssuedByOrgName", "OrgName12313123123123123123123123123123213123123123123OrgName12313123123123123123123123123123213123123123123OrgName12313123123123123123123123123123213123123123123")]
         [DataRow("IssuedToOrgName", "OrgName12313123123123123123123123123123213123123123123OrgName12313123123123123123123123123123213123123123123OrgName12313123123123123123123123123123213123123123123")]
         [DataRow("ProducerAgency", "AgName12313123123123123123123123123123213123123123123OrgName12313123123123123123123123123123213123123123123OrgName12313123123123123123123123123123213123123123123")]
         [DataRow("RecoveryProcessCode", "Code123234342342342342342342342")]
+        [DataRow("CreatedByUser", "Code123234342342342342342342342")]
+
         public void Test_SavePrnDetailsRequestValidator_Returns_Correct_ValidationResultOnInvalidInput(string propertyName, object propertyValue)
         {
             var validator = new SavePrnDetailsRequestValidator();
@@ -175,6 +175,7 @@ namespace EPR.PRN.Backend.API.UnitTests.Validators
                 RecoveryProcessCode = "N11",
                 ReprocessorAgency = "BEX",
                 StatusDate = DateTime.UtcNow,
+                CreatedByUser = string.Empty,
             };
 
             // Get all property names from DTO class

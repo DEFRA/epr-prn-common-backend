@@ -334,4 +334,53 @@ public class PrnServiceTests
         await call.Should().ThrowAsync<Exception>();
         _mockRepository.Verify(x => x.SavePrnDetails(It.IsAny<Eprn>()), Times.Once());
     }
+
+    [TestMethod]
+    [DataRow("EA26899222", false)]
+    [DataRow("EX26899222", true)]
+    [DataRow("SX26899222", true)]
+    public async Task SavePrnDetails_SetsIsExportCorrectly_BeforeSaving(string evidenceNo, bool expectedIsExportValue)
+    {
+        Eprn? createdEntity = null;
+
+        _mockRepository.Setup(s => s.SavePrnDetails(It.IsAny<Eprn>()))
+            .Callback<Eprn>(x => createdEntity = x);
+
+        var dto = new SavePrnDetailsRequest()
+        {
+            AccreditationNo = "ABC",
+            AccreditationYear = 2018,
+            CancelledDate = DateTime.UtcNow.AddDays(-1),
+            DecemberWaste = true,
+            EvidenceMaterial = "Aluminium",
+            EvidenceNo = Guid.NewGuid().ToString(),
+            EvidenceStatusCode = EprnStatus.AWAITINGACCEPTANCE,
+            EvidenceTonnes = 5000,
+            IssueDate = DateTime.UtcNow.AddDays(-5),
+            IssuedByNPWDCode = "NPWD367742",
+            IssuedByOrgName = "ANB",
+            IssuedToEPRId = Guid.NewGuid(),
+            IssuedToNPWDCode = "NPWD557742",
+            IssuedToOrgName = "ZNZ",
+            IssuerNotes = "no notes",
+            IssuerRef = "ANB-1123",
+            MaterialOperationCode = "R-PLA",
+            ObligationYear = 2025,
+            PrnSignatory = "Pat Anderson",
+            PrnSignatoryPosition = "Director",
+            ProducerAgency = "TTL",
+            RecoveryProcessCode = "N11",
+            ReprocessorAgency = "BEX",
+            StatusDate = DateTime.UtcNow,
+            CreatedByUser = "UserTest",
+        };
+
+        // OVerride Evidence no with input argument from Test data
+        dto.EvidenceNo = evidenceNo;
+
+        await _systemUnderTest.SavePrnDetails(dto);
+        _mockRepository.Verify(x => x.SavePrnDetails(It.IsAny<Eprn>()), Times.Once());
+
+        createdEntity.IsExport.Should().Be(expectedIsExportValue);
+    }
 }
