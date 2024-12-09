@@ -2,14 +2,12 @@
 
 namespace EPR.PRN.Backend.API.Services;
 
-using Azure.Core;
 using EPR.PRN.Backend.API.Common.DTO;
-using EPR.PRN.Backend.API.Controllers;
 using EPR.PRN.Backend.API.Helpers;
+using EPR.PRN.Backend.API.Models;
 using EPR.PRN.Backend.API.Repositories.Interfaces;
 using EPR.PRN.Backend.API.Services.Interfaces;
 using EPR.PRN.Backend.Data.DataModels;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System.Collections.Generic;
@@ -150,6 +148,32 @@ public class PrnService(IRepository repository, ILogger<PrnService> logger, ICon
                 || string.Equals(val, Common.Constants.PrnConstants.ExporterCodePrefixes.SepaExport, StringComparison.InvariantCultureIgnoreCase);
     }
 
+    public async Task InsertPeprNpwdSyncPrns(List<InsertSyncedPrn> syncedPrns)
+    {
+        List<Eprn> prns = await _repository.GetPrnsForPrnNumbers(syncedPrns.Select(p => p.EvidenceNo).ToList());
+        var nonExistingPrns = syncedPrns.Select(x => x.EvidenceNo).Except(prns.Select(x => x.PrnNumber));
+
+        if (nonExistingPrns.Any())
+        {
+            logger.LogError("{Logprefix}: PrnService - InsertPeprNpwdSyncPrns: No Non existing Prns Found", logPrefix);
+            throw new NotFoundException($"{string.Join(",", nonExistingPrns)} Prns doesn't exists in system");
+        }
+
+        var currentDateTime = DateTime.UtcNow;
+
+        var peprNpwdSyncs = syncedPrns.Join(prns,
+                    l => l.EvidenceNo,
+                    r => r.PrnNumber,
+                    (l, r) => new PEprNpwdSync
+                    {
+                        PRNId = r.Id,
+                        PRNStatusId = (int)l.EvidenceStatus,
+                        CreatedOn = currentDateTime
+                    }).ToList();
+
+        await _repository.InsertPeprNpwdSyncPrns(peprNpwdSyncs);
+        logger.LogInformation("{Logprefix}: PrnService - InsertPeprNpwdSyncPrns: sync record inserted", logPrefix);
+    }
     private void UpdatePrn(Guid userId, PrnUpdateStatusDto prnUpdate, Eprn prn)
     {
         var updateDate = DateTime.UtcNow;

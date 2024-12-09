@@ -543,4 +543,53 @@ public class RepositoryTestsInMemory
         var savedHistory = await _context.PrnStatusHistory.FirstOrDefaultAsync(x => x.PrnIdFk == savedEnt.Id);
         savedHistory.Should().NotBeNull();
     }
+
+    [TestMethod]
+    public async Task SavePrnDetails_UpdatePrn_Correctly()
+    {
+        var dto = new SavePrnDetailsRequest()
+        {
+            AccreditationNo = "ABC",
+            AccreditationYear = 2018,
+            CancelledDate = DateTime.UtcNow.AddDays(-1),
+            DecemberWaste = true,
+            EvidenceMaterial = "Aluminium",
+            EvidenceNo = Guid.NewGuid().ToString(),
+            EvidenceStatusCode = EprnStatus.AWAITINGACCEPTANCE,
+            EvidenceTonnes = 5000,
+            IssueDate = DateTime.UtcNow.AddDays(-5),
+            IssuedByNPWDCode = "NPWD367742",
+            IssuedByOrgName = "ANB",
+            IssuedToEPRId = Guid.NewGuid(),
+            IssuedToNPWDCode = "NPWD557742",
+            IssuedToOrgName = "ZNZ",
+            IssuerNotes = "no notes",
+            IssuerRef = "ANB-1123",
+            MaterialOperationCode = "R-PLA",
+            ObligationYear = 2025,
+            PrnSignatory = "Pat Anderson",
+            PrnSignatoryPosition = "Director",
+            ProducerAgency = "TTL",
+            RecoveryProcessCode = "N11",
+            ReprocessorAgency = "BEX",
+            StatusDate = DateTime.UtcNow,
+        };
+
+        var entity = CreateEprnEntityFromDto(dto);
+
+        await _repository.SavePrnDetails(entity);
+
+        var savedEnt = await _context.Prn.FirstOrDefaultAsync(x => x.PrnNumber == dto.EvidenceNo);
+
+        //updating 
+        var updatingEntity = CreateEprnEntityFromDto(dto);
+        updatingEntity.MaterialName = "UpdatingMaterial";
+
+        await _repository.SavePrnDetails(updatingEntity);
+
+        var updatedEntity = await _context.Prn.FirstOrDefaultAsync(x => x.PrnNumber == dto.EvidenceNo);
+
+        savedEnt.ExternalId.Should().Be(updatedEntity.ExternalId);
+        updatedEntity.MaterialName.Should().Be("UpdatingMaterial");
+    }
 }
