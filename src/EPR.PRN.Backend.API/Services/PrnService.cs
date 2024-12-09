@@ -35,12 +35,12 @@ public class PrnService(IRepository repository, ILogger<PrnService> logger, ICon
         return prns;
     }
 
-    public async Task<List<PrnUpdateStatus>?> GetModifiedPrnsbyDate(DateTime fromDate, DateTime toDate)
-    {
-        var modifiedPrns = await _repository.GetModifiedPrnsbyDate(fromDate, toDate);
+        public async Task<List<PrnUpdateStatus>?> GetModifiedPrnsbyDate(DateTime fromDate, DateTime toDate)
+        {
+            var modifiedPrns = await _repository.GetModifiedPrnsbyDate(fromDate, toDate);
 
-        return modifiedPrns == null ? null : modifiedPrns;
-    }
+            return modifiedPrns == null ? null : modifiedPrns;
+        }
 
     public async Task<PaginatedResponseDto<PrnDto>> GetSearchPrnsForOrganisation(Guid orgId, PaginatedRequestDto request)
     {
@@ -92,6 +92,62 @@ public class PrnService(IRepository repository, ILogger<PrnService> logger, ICon
         }
         await _repository.SaveTransaction(transaction);
     }
+
+    public async Task SavePrnDetails(SavePrnDetailsRequest prn)
+    {
+        try
+        {
+            Eprn prnEntity = new Eprn()
+            {
+                AccreditationNumber = prn.AccreditationNo!,
+                AccreditationYear = prn.AccreditationYear.ToString()!,
+                DecemberWaste = prn.DecemberWaste!.Value,
+                PrnNumber = prn.EvidenceNo!,
+                PrnStatusId = (int)prn.EvidenceStatusCode!.Value,
+                TonnageValue = prn.EvidenceTonnes!.Value,
+                IssueDate = prn.IssueDate!.Value,
+                IssuedByOrg = prn.IssuedByOrgName!,
+                MaterialName = prn.EvidenceMaterial!,
+                OrganisationName = prn.IssuedToOrgName!,
+                OrganisationId = prn.IssuedToEPRId!.Value,
+                IssuerNotes = prn.IssuerNotes,
+                IssuerReference = prn.IssuerRef!,
+                ObligationYear = prn.ObligationYear?.ToString() ?? Common.Constants.PrnConstants.ObligationYearDefault.ToString(),
+                PackagingProducer = prn.ProducerAgency!,
+                PrnSignatory = prn.PrnSignatory,
+                PrnSignatoryPosition = prn.PrnSignatoryPosition,
+                ProducerAgency = prn.ProducerAgency!,
+                ProcessToBeUsed = prn.RecoveryProcessCode,
+                ReprocessingSite = string.Empty,
+                StatusUpdatedOn = prn.EvidenceStatusCode == EprnStatus.CANCELLED ? prn.CancelledDate : prn.StatusDate,
+                LastUpdatedDate = prn.StatusDate!.Value,
+                ExternalId = Guid.Empty, // set value in repo when inserting and set to new guid
+                ReprocessorExporterAgency = prn.ReprocessorAgency!,
+                Signature = null,  // Not defined in NPWD to PRN mapping requirements,
+                IsExport = IsExport(prn.EvidenceNo),
+                CreatedBy = prn.CreatedByUser!,
+            };
+
+            await repository.SavePrnDetails(prnEntity);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(message: ex.Message, exception: ex);
+            throw new OperationCanceledException("Error encountered when attempting to map and save PRN requst. Please see the logs for details.");
+        }
+    }
+
+    private static bool IsExport(string evidenceNo)
+    {
+        if(string.IsNullOrEmpty(evidenceNo)) 
+            return false;
+
+        var val = evidenceNo.Substring(0,2).Trim();
+
+        return string.Equals(val, Common.Constants.PrnConstants.ExporterCodePrefixes.EaExport, StringComparison.InvariantCultureIgnoreCase)
+                || string.Equals(val, Common.Constants.PrnConstants.ExporterCodePrefixes.SepaExport, StringComparison.InvariantCultureIgnoreCase);
+    }
+
     public async Task InsertPeprNpwdSyncPrns(List<InsertSyncedPrn> syncedPrns)
     {
         List<Eprn> prns = await _repository.GetPrnsForPrnNumbers(syncedPrns.Select(p => p.EvidenceNo).ToList());

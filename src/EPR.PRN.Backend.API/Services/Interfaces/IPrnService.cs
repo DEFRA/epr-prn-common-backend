@@ -11,6 +11,7 @@
         Task UpdateStatus(Guid orgId, Guid userId, List<PrnUpdateStatusDto> prnUpdates);
         Task<PaginatedResponseDto<PrnDto>> GetSearchPrnsForOrganisation(Guid orgId, PaginatedRequestDto request);
         Task<List<PrnUpdateStatus>?> GetModifiedPrnsbyDate(DateTime fromDate, DateTime toDate);
+        Task SavePrnDetails(SavePrnDetailsRequest prn);
         Task InsertPeprNpwdSyncPrns(List<InsertSyncedPrn> syncedPrns);
     }
 }

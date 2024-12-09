@@ -3,9 +3,8 @@
 namespace EPR.PRN.Backend.API.Repositories;
 
 using EPR.PRN.Backend.API.Common.DTO;
-    using EPR.PRN.Backend.API.Common.Enums;
+using EPR.PRN.Backend.API.Common.Enums;
 using EPR.PRN.Backend.API.Repositories.Interfaces;
-using EPR.PRN.Backend.API.Services;
 using EPR.PRN.Backend.Data;
 using EPR.PRN.Backend.Data.DataModels;
 using Microsoft.EntityFrameworkCore;
@@ -237,6 +236,59 @@ public class Repository(EprContext eprContext, ILogger<Repository> logger, IConf
 
         logger.LogInformation("{Logprefix}: Repository - GetSearchPrnsForOrganisation: returning: {DtoObject}", logPrefix, JsonConvert.SerializeObject(dtoObject));
         return dtoObject;
+    }
+
+    public async Task SavePrnDetails(Eprn entity)
+    {
+        try
+        {
+            var currentTimestamp = DateTime.UtcNow;
+
+            var existingEntity = await _eprContext.Prn.FirstOrDefaultAsync(x => x.PrnNumber == entity.PrnNumber);
+
+            var statusHistory = new PrnStatusHistory
+            {
+                CreatedByOrganisationId = entity.OrganisationId,
+                PrnStatusIdFk = entity.PrnStatusId,
+                CreatedByUser = Guid.Empty,                
+                CreatedOn = currentTimestamp,
+            };
+
+            var prnLogVal = entity.PrnNumber?.Replace(Environment.NewLine, "");
+
+            // Add new PRN entity
+            if (existingEntity == null)
+            {
+                entity.CreatedOn = currentTimestamp;
+                entity.ExternalId = entity.ExternalId == Guid.Empty ? Guid.NewGuid() : entity.ExternalId;
+                _eprContext.Prn.Add(entity);
+                statusHistory.PrnIdFk = entity.Id;
+
+                logger.LogInformation("Attempting to add new Prn entity with PrnNumber : {PrnNumber}", prnLogVal);
+            }
+            // Update existing PRN entity
+            else
+            {
+                entity.Id = existingEntity.Id;
+                _eprContext.Entry(existingEntity).State = EntityState.Modified;
+                _eprContext.Entry(existingEntity).CurrentValues.SetValues(entity);
+
+                statusHistory.PrnIdFk = existingEntity.Id;
+                logger.LogInformation("Attempting to update Prn entity with PrnNumber : {PrnNumber} and {Id}", prnLogVal, entity?.Id);
+            }
+
+            // Add Prn status history
+            _eprContext.PrnStatusHistory.Add(statusHistory);
+
+            await _eprContext.SaveChangesAsync();
+            logger.LogInformation("Prn Entity successfully upserted. PrnNumber : {PrnNumber} and {Id}", prnLogVal, entity?.Id);
+
+        }
+        catch (Exception ex)
+        {
+            logger?.LogError(message: ex.Message, exception: ex);
+            throw;
+        }
     }
 
     public async Task<List<Eprn>> GetPrnsForPrnNumbers(List<string> prnNumbers)
