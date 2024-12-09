@@ -53,7 +53,7 @@ public class Repository(EprContext eprContext, ILogger<Repository> logger, IConf
         {
             EvidenceNo = p.PrnNumber,
             EvidenceStatusCode = MapStatusCode((EprnStatus)Enum.Parse(typeof(EprnStatus), p.StatusName), p.AccreditationYear),
-            StatusDate = p.StatusUpdatedOn,
+            StatusDate = p.StatusUpdatedOn.Value.ToUniversalTime(),
             AccreditationYear = p.AccreditationYear
         }).ToList();
 
