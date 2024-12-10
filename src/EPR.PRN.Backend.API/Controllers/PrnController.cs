@@ -4,11 +4,13 @@ using BackendAccountService.Core.Models.Request;
 using EPR.PRN.Backend.API.Common.DTO;
 using EPR.PRN.Backend.API.Configs;
 using EPR.PRN.Backend.API.Helpers;
+using EPR.PRN.Backend.API.Models;
 using EPR.PRN.Backend.API.Services.Interfaces;
 using EPR.PRN.Backend.Data.DataModels;
 using EPR.PRN.Backend.Obligation.DTO;
 using EPR.PRN.Backend.Obligation.Interfaces;
 using EPR.PRN.Backend.Obligation.Models;
+using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
@@ -17,7 +19,12 @@ using System.Net;
 [ApiController]
 [ApiVersion("1.0")]
 [Route("api/v{version:apiVersion}/prn")]
-public class PrnController(IPrnService prnService, ILogger<PrnController> logger, IObligationCalculatorService obligationCalculatorService, IOptions<PrnObligationCalculationConfig> config, IConfiguration configuration) : ControllerBase
+public class PrnController(IPrnService prnService, 
+    ILogger<PrnController> logger, 
+    IObligationCalculatorService obligationCalculatorService, 
+    IOptions<PrnObligationCalculationConfig> config, 
+    IConfiguration configuration,
+    IValidator<SavePrnDetailsRequest> savePrnDetailsRequestValidator) : ControllerBase
 {
     private readonly PrnObligationCalculationConfig _config = config.Value;
     private readonly string logPrefix = configuration["LogPrefix"];
@@ -204,5 +211,51 @@ public class PrnController(IPrnService prnService, ILogger<PrnController> logger
         }
     }
 
+    [HttpPost("prn-details")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> SaveAsync(SavePrnDetailsRequest request)
+    {
+        try
+        {
+            var validationResult = savePrnDetailsRequestValidator.Validate(request);
+
+            if (!validationResult.IsValid)
+            {
+                return new BadRequestObjectResult(validationResult.Errors);
+            }
+
+            await prnService.SavePrnDetails(request);
+
+            return Ok();
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Recieved Unhandled exception");
+            return Problem("Internal Server Error", null, (int)HttpStatusCode.InternalServerError);
+        }
+    }
+
+    [HttpPost("updatesyncstatus")]
+    public async Task<IActionResult> PeprToNpwdSyncedPrns([FromBody] List<InsertSyncedPrn> syncedPrns)
+    {
+        try
+        {
+            await prnService.InsertPeprNpwdSyncPrns(syncedPrns);
+
+            return Ok();
+        }
+        catch (NotFoundException ex)
+        {
+            logger.LogWarning(ex, "Recieved not found exception");
+            return Problem(ex.Message, null, (int)HttpStatusCode.NotFound);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Recieved Unhandled exception");
+            return Problem("Internal Server Error", null, (int)HttpStatusCode.InternalServerError);
+        }
+    }
     #endregion Post Methods
 }

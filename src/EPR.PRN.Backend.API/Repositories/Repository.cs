@@ -3,9 +3,8 @@
 namespace EPR.PRN.Backend.API.Repositories;
 
 using EPR.PRN.Backend.API.Common.DTO;
-    using EPR.PRN.Backend.API.Common.Enums;
+using EPR.PRN.Backend.API.Common.Enums;
 using EPR.PRN.Backend.API.Repositories.Interfaces;
-using EPR.PRN.Backend.API.Services;
 using EPR.PRN.Backend.Data;
 using EPR.PRN.Backend.Data.DataModels;
 using Microsoft.EntityFrameworkCore;
@@ -36,30 +35,30 @@ public class Repository(EprContext eprContext, ILogger<Repository> logger, IConf
         return prns;
     }
 
-        public async Task<List<PrnUpdateStatus>> GetModifiedPrnsbyDate(DateTime fromDate, DateTime toDate)
+    public async Task<List<PrnUpdateStatus>> GetModifiedPrnsbyDate(DateTime fromDate, DateTime toDate)
+    {
+        var result = await (from p in _eprContext.Prn
+                            join ps in _eprContext.PrnStatus on p.PrnStatusId equals ps.Id
+                            where p.StatusUpdatedOn >= fromDate && p.StatusUpdatedOn <= toDate
+                            && (p.PrnStatusId == 1 || p.PrnStatusId == 2)
+                            select new
+                            {
+                                p.PrnNumber,
+                                ps.StatusName,
+                                p.StatusUpdatedOn,
+                                p.AccreditationYear
+                            }).ToListAsync();
+
+        var prnUpdateStatuses = result.Select(p => new PrnUpdateStatus
         {
-            var result = await (from p in _eprContext.Prn
-                                join ps in _eprContext.PrnStatus on p.PrnStatusId equals ps.Id
-                                where p.StatusUpdatedOn >= fromDate && p.StatusUpdatedOn <= toDate
-                                && (p.PrnStatusId == 1 || p.PrnStatusId == 2)
-                                select new
-                                {
-                                    p.PrnNumber,
-                                    ps.StatusName,
-                                    p.StatusUpdatedOn,
-                                    p.AccreditationYear
-                                }).ToListAsync();
+            EvidenceNo = p.PrnNumber,
+            EvidenceStatusCode = MapStatusCode((EprnStatus)Enum.Parse(typeof(EprnStatus), p.StatusName), p.AccreditationYear),
+            StatusDate = p.StatusUpdatedOn.Value.ToUniversalTime(),
+            AccreditationYear = p.AccreditationYear
+        }).ToList();
 
-            var prnUpdateStatuses = result.Select(p => new PrnUpdateStatus
-            {
-                EvidenceNo = p.PrnNumber,
-                EvidenceStatusCode = MapStatusCode((EprnStatus)Enum.Parse(typeof(EprnStatus), p.StatusName), p.AccreditationYear),
-                StatusDate = p.StatusUpdatedOn,
-                AccreditationYear = p.AccreditationYear
-            }).ToList();
-
-            return prnUpdateStatuses;
-        }
+        return prnUpdateStatuses;
+    }
 
     public async Task<Eprn?> GetPrnForOrganisationById(Guid orgId, Guid prnId)
     {
@@ -85,28 +84,19 @@ public class Repository(EprContext eprContext, ILogger<Repository> logger, IConf
     {
         logger.LogInformation("{Logprefix}: Repository - AddPrnStatusHistory: {PrnStatusHistory}", logPrefix, JsonConvert.SerializeObject(prnStatusHistory));
         _eprContext.PrnStatusHistory.Add(prnStatusHistory);
-        }
+    }
 
-        private string MapStatusCode(EprnStatus status, string accreditationYear)
+    private string MapStatusCode(EprnStatus status, string accreditationYear)
+    {
+        switch (status)
         {
-            switch (status)
-            {
-                case EprnStatus.ACCEPTED:
-                    return EvidenceStatusCode.EV_ACCEP.ToHyphenatedString();
-                case EprnStatus.REJECTED:
-                    return EvidenceStatusCode.EV_ACANCEL.ToHyphenatedString();
-                case EprnStatus.CANCELLED:
-                    return EvidenceStatusCode.EV_CANCEL.ToHyphenatedString();
-                case EprnStatus.AWAITINGACCEPTANCE:
-                    if (accreditationYear == "2024")
-                        return EvidenceStatusCode.EV_AWACCEP.ToHyphenatedString();
-                    else if (accreditationYear == "2025")
-                        return EvidenceStatusCode.EV_AWACCEP_EPR.ToHyphenatedString();
-                    else
-                        return EvidenceStatusCode.EV_AWACCEP.ToHyphenatedString(); // Default case, assuming for any other years it maps to EV_AWACCEP
-                default:
-                    throw new ArgumentException($"Unknown status: {status}");
-            }
+            case EprnStatus.ACCEPTED:
+                return EvidenceStatusCode.EV_ACCEP.ToHyphenatedString();
+            case EprnStatus.REJECTED:
+                return EvidenceStatusCode.EV_ACANCEL.ToHyphenatedString();
+            default:
+                throw new ArgumentException($"Unknown status: {status}");
+        }
     }
 
     private static Expression<Func<Eprn, bool>> GetFilterByCondition(string? filterBy)
@@ -237,5 +227,69 @@ public class Repository(EprContext eprContext, ILogger<Repository> logger, IConf
 
         logger.LogInformation("{Logprefix}: Repository - GetSearchPrnsForOrganisation: returning: {DtoObject}", logPrefix, JsonConvert.SerializeObject(dtoObject));
         return dtoObject;
+    }
+
+    public async Task SavePrnDetails(Eprn entity)
+    {
+        try
+        {
+            var currentTimestamp = DateTime.UtcNow;
+
+            var existingEntity = await _eprContext.Prn.FirstOrDefaultAsync(x => x.PrnNumber == entity.PrnNumber);
+
+            var statusHistory = new PrnStatusHistory
+            {
+                CreatedByOrganisationId = entity.OrganisationId,
+                PrnStatusIdFk = entity.PrnStatusId,
+                CreatedByUser = Guid.Empty,
+                CreatedOn = currentTimestamp,
+            };
+
+            var prnLogVal = entity.PrnNumber?.Replace(Environment.NewLine, "");
+
+            // Add new PRN entity
+            if (existingEntity == null)
+            {
+                entity.CreatedOn = currentTimestamp;
+                entity.ExternalId = Guid.NewGuid();
+                _eprContext.Prn.Add(entity);
+                statusHistory.PrnIdFk = entity.Id;
+
+                logger.LogInformation("Attempting to add new Prn entity with PrnNumber : {PrnNumber}", prnLogVal);
+            }
+            // Update existing PRN entity
+            else
+            {
+                entity.Id = existingEntity.Id;
+                _eprContext.Entry(existingEntity).State = EntityState.Modified;
+                _eprContext.Entry(existingEntity).CurrentValues.SetValues(entity);
+
+                statusHistory.PrnIdFk = existingEntity.Id;
+                logger.LogInformation("Attempting to update Prn entity with PrnNumber : {PrnNumber} and {Id}", prnLogVal, entity?.Id);
+            }
+
+            // Add Prn status history
+            _eprContext.PrnStatusHistory.Add(statusHistory);
+
+            await _eprContext.SaveChangesAsync();
+            logger.LogInformation("Prn Entity successfully upserted. PrnNumber : {PrnNumber} and {Id}", prnLogVal, entity?.Id);
+
+        }
+        catch (Exception ex)
+        {
+            logger?.LogError(message: ex.Message, exception: ex);
+            throw;
+        }
+    }
+
+    public async Task<List<Eprn>> GetPrnsForPrnNumbers(List<string> prnNumbers)
+    {
+        return await _eprContext.Prn.Where(p => prnNumbers.Contains(p.PrnNumber)).AsNoTracking().ToListAsync();
+    }
+
+    public async Task InsertPeprNpwdSyncPrns(List<PEprNpwdSync> syncedPrns)
+    {
+        await _eprContext.PEprNpwdSync.AddRangeAsync(syncedPrns);
+        await _eprContext.SaveChangesAsync();
     }
 }

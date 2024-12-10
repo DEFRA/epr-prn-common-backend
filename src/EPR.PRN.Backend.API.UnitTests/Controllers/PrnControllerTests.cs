@@ -4,12 +4,15 @@ using EPR.PRN.Backend.API.Common.DTO;
 using EPR.PRN.Backend.API.Configs;
 using EPR.PRN.Backend.API.Controllers;
 using EPR.PRN.Backend.API.Helpers;
+using EPR.PRN.Backend.API.Models;
 using EPR.PRN.Backend.API.Services.Interfaces;
 using EPR.PRN.Backend.Data.DataModels;
 using EPR.PRN.Backend.Obligation.DTO;
 using EPR.PRN.Backend.Obligation.Interfaces;
 using EPR.PRN.Backend.Obligation.Models;
 using FluentAssertions;
+using FluentValidation;
+using FluentValidation.Results;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -30,6 +33,7 @@ public class PrnControllerTests
     private Mock<IObligationCalculatorService> _mockObligationCalculatorService;
     private Mock<IOptions<PrnObligationCalculationConfig>> _configMock;
     private Mock<IConfiguration> _configurationMock;
+    private Mock<IValidator<SavePrnDetailsRequest>> _validatorSavePrnDetailsMock;
 
     private static readonly IFixture _fixture = new Fixture();
 
@@ -47,7 +51,14 @@ public class PrnControllerTests
         _configurationMock = new Mock<IConfiguration>();
         _configurationMock.Setup(c => c["LogPrefix"]).Returns("[EPR.PRN.Backend]");
 
-        _systemUnderTest = new PrnController(_mockPrnService.Object, _mockLogger.Object, _mockObligationCalculatorService.Object, _configMock.Object, _configurationMock.Object);
+        _validatorSavePrnDetailsMock = new();
+
+        _systemUnderTest = new PrnController(_mockPrnService.Object, 
+            _mockLogger.Object, 
+            _mockObligationCalculatorService.Object, 
+            _configMock.Object, 
+            _configurationMock.Object, 
+            _validatorSavePrnDetailsMock.Object);
     }
 
     [TestMethod]
@@ -408,5 +419,293 @@ public class PrnControllerTests
         var statusCodeResult = result as StatusCodeResult;
         Assert.IsNotNull(statusCodeResult);
         Assert.AreEqual(204, statusCodeResult.StatusCode);
+    }
+
+    [TestMethod]
+    public async Task SavePrn_ReturnsStatusCode200_WhenValidInputSavedSuccessfully()
+    {
+        var dto = new SavePrnDetailsRequest()
+        {
+            AccreditationNo = "ABC",
+            AccreditationYear = 2018,
+            CancelledDate = DateTime.UtcNow.AddDays(-1),
+            DecemberWaste = true,
+            EvidenceMaterial = "Aluminium",
+            EvidenceNo = Guid.NewGuid().ToString(),
+            EvidenceStatusCode = EprnStatus.AWAITINGACCEPTANCE,
+            EvidenceTonnes = 5000,
+            IssueDate = DateTime.UtcNow.AddDays(-5),
+            IssuedByNPWDCode = "NPWD367742",
+            IssuedByOrgName = "ANB",
+            IssuedToEPRId = Guid.NewGuid(),
+            IssuedToNPWDCode = "NPWD557742",
+            IssuedToOrgName = "ZNZ",
+            IssuerNotes = "no notes",
+            IssuerRef = "ANB-1123",
+            MaterialOperationCode = "R-PLA",
+            ObligationYear = 2025,
+            PrnSignatory = "Pat Anderson",
+            PrnSignatoryPosition = "Director",
+            ProducerAgency = "TTL",
+            RecoveryProcessCode = "N11",
+            ReprocessorAgency = "BEX",
+            StatusDate = DateTime.UtcNow,
+        };
+
+        var validationResult = new ValidationResult();
+
+        _validatorSavePrnDetailsMock.Setup(x => x.Validate(It.IsAny<SavePrnDetailsRequest>()))
+                                    .Returns(validationResult);
+
+        _mockPrnService.Setup(s => s.SavePrnDetails(dto)).Returns(() => Task.CompletedTask);
+        var result = await _systemUnderTest.SaveAsync(dto) as OkResult;
+
+        result.Should().NotBeNull();
+        result.StatusCode.Should().Be((int)HttpStatusCode.OK);
+    }
+
+    [TestMethod]
+    [DataRow("AccreditationNo", null)]
+    [DataRow("AccreditationYear", null)]
+    [DataRow("CancelledDate", null)]
+    [DataRow("EvidenceMaterial", null)]
+    [DataRow("EvidenceNo", null)]
+    [DataRow("EvidenceStatusCode", null)]
+    [DataRow("EvidenceTonnes", null)]
+    [DataRow("IssuedByOrgName", null)]
+    [DataRow("IssuedToOrgName", null)]
+    [DataRow("ProducerAgency", null)]
+    [DataRow("RecoveryProcessCode", null)]
+    [DataRow("StatusDate", null)]
+    public async Task SavePrn_ReturnsStatusCode400_OnInvalidInput(string propertyName, object propertyValue)
+    {
+        var dto = new SavePrnDetailsRequest()
+        {
+            AccreditationNo = "ABC",
+            AccreditationYear = 2018,
+            CancelledDate = DateTime.UtcNow.AddDays(-1),
+            DecemberWaste = true,
+            EvidenceMaterial = "Aluminium",
+            EvidenceNo = Guid.NewGuid().ToString(),
+            EvidenceStatusCode = EprnStatus.AWAITINGACCEPTANCE,
+            EvidenceTonnes = 5000,
+            IssueDate = DateTime.UtcNow.AddDays(-5),
+            IssuedByNPWDCode = "NPWD367742",
+            IssuedByOrgName = "ANB",
+            IssuedToEPRId = Guid.NewGuid(),
+            IssuedToNPWDCode = "NPWD557742",
+            IssuedToOrgName = "ZNZ",
+            IssuerNotes = "no notes",
+            IssuerRef = "ANB-1123",
+            MaterialOperationCode = "R-PLA",
+            ObligationYear = 2025,
+            PrnSignatory = "Pat Anderson",
+            PrnSignatoryPosition = "Director",
+            ProducerAgency = "TTL",
+            RecoveryProcessCode = "N11",
+            ReprocessorAgency = "BEX",
+            StatusDate = DateTime.UtcNow,
+        };
+
+        // Get all property names from DTO class
+        var props = typeof(SavePrnDetailsRequest)
+                        .GetProperties(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance)
+                        .ToList();
+
+
+        var matchingProp = props.FirstOrDefault(x => string.Equals(x.Name, propertyName, StringComparison.InvariantCulture));
+        matchingProp.Should().NotBeNull();
+
+        // Set the value of the property (overriding the default value set above) to the value passed in as the argument to this method
+        matchingProp.SetValue(dto, propertyValue);
+
+        // Set validation error on the validator for the target input property
+        var validationErrors = new[]
+        {
+            new ValidationFailure(propertyName, $"{propertyName} is not valid")
+        };
+
+        var validationResult = new ValidationResult(validationErrors);
+
+        // Setup validator mock to return custom validation result
+        _validatorSavePrnDetailsMock.Setup(x => x.Validate(It.IsAny<SavePrnDetailsRequest>()))
+                                    .Returns(validationResult);
+
+
+
+        _mockPrnService.Setup(s => s.SavePrnDetails(dto)).Returns(() => Task.CompletedTask);
+        var result = await _systemUnderTest.SaveAsync(dto) as BadRequestObjectResult;
+
+        result.Should().NotBeNull();
+        result.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
+        var errors = result.Value as IEnumerable<ValidationFailure>;
+        errors.Should().NotBeNull();
+
+        errors.Select(x => x.PropertyName)
+            .Should()
+            .Contain(propertyName);
+    }
+
+    [TestMethod]
+    public async Task SavePrn_ReturnsInternalServerError_WhenServiceThrowsException()
+    {
+        var dto = new SavePrnDetailsRequest()
+        {
+            AccreditationNo = "ABC",
+            AccreditationYear = 2018,
+            CancelledDate = DateTime.UtcNow.AddDays(-1),
+            DecemberWaste = true,
+            EvidenceMaterial = "Aluminium",
+            EvidenceNo = Guid.NewGuid().ToString(),
+            EvidenceStatusCode = EprnStatus.AWAITINGACCEPTANCE,
+            EvidenceTonnes = 5000,
+            IssueDate = DateTime.UtcNow.AddDays(-5),
+            IssuedByNPWDCode = "NPWD367742",
+            IssuedByOrgName = "ANB",
+            IssuedToEPRId = Guid.NewGuid(),
+            IssuedToNPWDCode = "NPWD557742",
+            IssuedToOrgName = "ZNZ",
+            IssuerNotes = "no notes",
+            IssuerRef = "ANB-1123",
+            MaterialOperationCode = "R-PLA",
+            ObligationYear = 2025,
+            PrnSignatory = "Pat Anderson",
+            PrnSignatoryPosition = "Director",
+            ProducerAgency = "TTL",
+            RecoveryProcessCode = "N11",
+            ReprocessorAgency = "BEX",
+            StatusDate = DateTime.UtcNow,
+        };
+
+        // setup mock validator
+        var validationResult = new ValidationResult();
+
+        _validatorSavePrnDetailsMock.Setup(x => x.Validate(It.IsAny<SavePrnDetailsRequest>()))
+                                    .Returns(validationResult);
+
+        // Setup mock PrnService
+        _mockPrnService.Setup(s => s.SavePrnDetails(dto)).Throws<ApplicationException>();
+
+        // Act
+        var result = await _systemUnderTest.SaveAsync(dto) as ObjectResult;
+
+        // Assert
+        result.Should().NotBeNull();
+        result.StatusCode.Should().Be((int)HttpStatusCode.InternalServerError);
+    }
+
+    [TestMethod]
+    [DataRow("AccreditationNo", "ABC122378123123712381273123123123")]
+    [DataRow("AccreditationYear", 25678)]
+    [DataRow("EvidenceMaterial", "Material201223234234234234234")]
+    [DataRow("EvidenceNo", "EV1231293812931231231231231")]
+    [DataRow("IssuedByOrgName", "OrgName12313123123123123123123123123123213123123123123OrgName12313123123123123123123123123123213123123123123OrgName12313123123123123123123123123123213123123123123")]
+    [DataRow("IssuedToOrgName", "OrgName12313123123123123123123123123123213123123123123OrgName12313123123123123123123123123123213123123123123OrgName12313123123123123123123123123123213123123123123")]
+    [DataRow("ProducerAgency", "AgName12313123123123123123123123123123213123123123123OrgName12313123123123123123123123123123213123123123123OrgName12313123123123123123123123123123213123123123123")]
+    [DataRow("RecoveryProcessCode", "Code123234342342342342342342342")]
+    public async Task SavePrn_ReturnsStatusCode400_OnDataValidationFailure(string propertyName, object propertyValue)
+    {
+        var dto = new SavePrnDetailsRequest()
+        {
+            AccreditationNo = "ABC",
+            AccreditationYear = 2018,
+            CancelledDate = DateTime.UtcNow.AddDays(-1),
+            DecemberWaste = true,
+            EvidenceMaterial = "Aluminium",
+            EvidenceNo = Guid.NewGuid().ToString(),
+            EvidenceStatusCode = EprnStatus.AWAITINGACCEPTANCE,
+            EvidenceTonnes = 5000,
+            IssueDate = DateTime.UtcNow.AddDays(-5),
+            IssuedByNPWDCode = "NPWD367742",
+            IssuedByOrgName = "ANB",
+            IssuedToEPRId = Guid.NewGuid(),
+            IssuedToNPWDCode = "NPWD557742",
+            IssuedToOrgName = "ZNZ",
+            IssuerNotes = "no notes",
+            IssuerRef = "ANB-1123",
+            MaterialOperationCode = "R-PLA",
+            ObligationYear = 2025,
+            PrnSignatory = "Pat Anderson",
+            PrnSignatoryPosition = "Director",
+            ProducerAgency = "TTL",
+            RecoveryProcessCode = "N11",
+            ReprocessorAgency = "BEX",
+            StatusDate = DateTime.UtcNow,
+        };
+
+        // Get all property names from DTO class
+        var props = typeof(SavePrnDetailsRequest)
+                        .GetProperties(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance)
+                        .ToList();
+
+
+        var matchingProp = props.FirstOrDefault(x => string.Equals(x.Name, propertyName, StringComparison.InvariantCulture));
+        matchingProp.Should().NotBeNull();
+
+        // Set the value of the property (overriding the default value set above) to the value passed in as the argument to this method
+        matchingProp.SetValue(dto, propertyValue);
+
+        // Set validation error on the validator for the target input property
+        var validationErrors = new[]
+        {
+            new ValidationFailure(propertyName, $"{propertyName} is not valid")
+        };
+
+        var validationResult = new ValidationResult(validationErrors);
+
+        // Setup validator mock to return custom validation result
+        _validatorSavePrnDetailsMock.Setup(x => x.Validate(It.IsAny<SavePrnDetailsRequest>()))
+                                    .Returns(validationResult);
+
+
+
+        _mockPrnService.Setup(s => s.SavePrnDetails(dto)).Returns(() => Task.CompletedTask);
+        var result = await _systemUnderTest.SaveAsync(dto) as BadRequestObjectResult;
+
+        result.Should().NotBeNull();
+        result.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
+        var errors = result.Value as IEnumerable<ValidationFailure>;
+        errors.Should().NotBeNull();
+
+        errors.Select(x => x.PropertyName)
+            .Should()
+            .Contain(propertyName);
+    }
+    [TestMethod]
+    public async Task PeprToNpwdSyncedPrns_ReturnsNotFound_WhenServiceThrowsNotFoundException()
+    {
+        var syncPrns = _fixture.CreateMany<InsertSyncedPrn>().ToList();
+
+        _mockPrnService.Setup(s => s.InsertPeprNpwdSyncPrns(syncPrns)).Throws<NotFoundException>();
+
+        var result = await _systemUnderTest.PeprToNpwdSyncedPrns(syncPrns) as ObjectResult;
+
+        result.Should().NotBeNull();
+        result.StatusCode.Should().Be((int)HttpStatusCode.NotFound);
+    }
+
+    [TestMethod]
+    public async Task PeprToNpwdSyncedPrns_ReturnsInternalServer_WhenServiceThrowsUnexpectedException()
+    {
+        var syncPrns = _fixture.CreateMany<InsertSyncedPrn>().ToList();
+
+        _mockPrnService.Setup(s => s.InsertPeprNpwdSyncPrns(syncPrns)).Throws<ArgumentNullException>();
+
+        var result = await _systemUnderTest.PeprToNpwdSyncedPrns(syncPrns) as ObjectResult;
+
+        result.Should().NotBeNull();
+        result.StatusCode.Should().Be((int)HttpStatusCode.InternalServerError);
+    }
+
+    [TestMethod]
+    public async Task PeprToNpwdSyncedPrns_CallsService_ReturnOk()
+    {
+        var syncPrns = _fixture.CreateMany<InsertSyncedPrn>().ToList();
+
+        _mockPrnService.Setup(s => s.InsertPeprNpwdSyncPrns(syncPrns)).Returns(Task.CompletedTask);
+
+        var result = await _systemUnderTest.PeprToNpwdSyncedPrns(syncPrns);
+        result.Should().BeOfType<OkResult>().Which.StatusCode.Should().Be(200);
+        _mockPrnService.Verify(x => x.InsertPeprNpwdSyncPrns(syncPrns), Times.Once());
     }
 }

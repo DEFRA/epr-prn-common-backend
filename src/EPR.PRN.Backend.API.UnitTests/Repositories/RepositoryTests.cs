@@ -1,6 +1,5 @@
 ﻿using AutoFixture;
 using EPR.PRN.Backend.API.Repositories;
-using EPR.PRN.Backend.API.Services;
 using EPR.PRN.Backend.Data;
 using EPR.PRN.Backend.Data.DataModels;
 using FluentAssertions;
@@ -185,5 +184,35 @@ public class RepositoryTests
         Assert.AreEqual("PRN002", secondPrn.EvidenceNo);
         Assert.AreEqual("2024", secondPrn.AccreditationYear);
         Assert.AreEqual("EV-ACANCEL", secondPrn.EvidenceStatusCode);
+    }
+
+    [TestMethod]
+    public async Task GetPrnsForPrnNumbers_ReturnMatchingPrns()
+    {
+        var prns = _fixture.CreateMany<Eprn>().ToList();
+        using var context = new EprContext(_contextOptions);
+        if (await context.Database.EnsureCreatedAsync())
+        {
+            context.AddRange(prns);
+            await context.SaveChangesAsync();
+        }
+        _repository = new Repository(context, _mockLogger.Object, _configurationMock.Object);
+        var result = await _repository.GetPrnsForPrnNumbers([prns[0].PrnNumber, prns[1].PrnNumber]);
+
+        result.Count.Should().Be(2);
+        result.Should().BeEquivalentTo([prns[0], prns[1]]);
+    }
+
+    [TestMethod]
+    public async Task InsertPeprNpwdSyncPrns_ReturnMatchingPrns()
+    {
+        var syncPepr = _fixture.CreateMany<PEprNpwdSync>().ToList();
+        using var context = new EprContext(_contextOptions);
+        await context.Database.EnsureCreatedAsync();
+
+        _repository = new Repository(context, _mockLogger.Object, _configurationMock.Object);
+        await _repository.InsertPeprNpwdSyncPrns(syncPepr);
+
+        context.PEprNpwdSync.Count().Should().Be(syncPepr.Count);
     }
 }
