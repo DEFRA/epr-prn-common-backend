@@ -10,18 +10,18 @@ namespace EPR.PRN.Backend.API.UnitTests.Validators
     {
         
         [TestMethod]
-        //[DataRow("AccreditationNo", null)]
-        //[DataRow("AccreditationYear", null)]
-        //[DataRow("EvidenceMaterial", null)]
-        //[DataRow("EvidenceNo", null)]
-        //[DataRow("IssuedToEPRId", null)]
-        //[DataRow("EvidenceStatusCode", null)]
+        [DataRow("AccreditationNo", null)]
+        [DataRow("AccreditationYear", null)]
+        [DataRow("EvidenceMaterial", null)]
+        [DataRow("EvidenceNo", null)]
+        [DataRow("IssuedToEPRId", null)]
+        [DataRow("EvidenceStatusCode", null)]
         [DataRow("EvidenceTonnes", null)]
-        //[DataRow("IssuedByOrgName", null)]
-        //[DataRow("IssuedToOrgName", null)]
-        //[DataRow("ProducerAgency", null)]
-        //[DataRow("RecoveryProcessCode", null)]
-        //[DataRow("StatusDate", null)]
+        [DataRow("IssuedByOrgName", null)]
+        [DataRow("IssuedToOrgName", null)]
+        [DataRow("ProducerAgency", null)]
+        [DataRow("RecoveryProcessCode", null)]
+        [DataRow("StatusDate", null)]
         public void Test_SavePrnDetailsRequestValidator_Returns_Correct_ValidationResultOnNullInput(string propertyName , object propertyValue)
         {
             var validator = new SavePrnDetailsRequestValidator();
