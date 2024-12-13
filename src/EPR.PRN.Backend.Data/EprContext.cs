@@ -12,12 +12,10 @@ namespace EPR.PRN.Backend.Data
 
         public EprContext()
         {
-
         }
 
         public EprContext(DbContextOptions options) : base(options)
         {
-
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

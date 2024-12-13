@@ -179,7 +179,7 @@ public class PrnControllerTests
     {
         var organisationId = Guid.NewGuid();
 
-        var result = await _systemUnderTest.CalculateAsync(organisationId, new List<SubmissionCalculationRequest>());
+        var result = await _systemUnderTest.CalculateAsync(organisationId, []);
 
         result.Should().BeOfType<BadRequestObjectResult>();
 
@@ -194,7 +194,7 @@ public class PrnControllerTests
 
         _systemUnderTest.ModelState.AddModelError("Key", "Error message");
 
-        var result = await _systemUnderTest.CalculateAsync(organisationId, new List<SubmissionCalculationRequest> { new() });
+        var result = await _systemUnderTest.CalculateAsync(organisationId, [new()]);
 
         result.Should().BeOfType<BadRequestObjectResult>();
     }
@@ -208,7 +208,7 @@ public class PrnControllerTests
             .Setup(x => x.CalculateAsync(It.IsAny<Guid>(), It.IsAny<List<SubmissionCalculationRequest>>()))
             .ReturnsAsync(calculationResult);
 
-        var result = await _systemUnderTest.CalculateAsync(organisationId, new List<SubmissionCalculationRequest> { new() });
+        var result = await _systemUnderTest.CalculateAsync(organisationId, [new()]);
 
         result.Should().BeOfType<ObjectResult>().Which.StatusCode.Should().Be(StatusCodes.Status500InternalServerError);
     }
@@ -228,7 +228,7 @@ public class PrnControllerTests
             .Setup(x => x.CalculateAsync(It.IsAny<Guid>(), It.IsAny<List<SubmissionCalculationRequest>>()))
             .ReturnsAsync(calculationResult);
 
-        var result = await _systemUnderTest.CalculateAsync(organisationId, new List<SubmissionCalculationRequest> { new() });
+        var result = await _systemUnderTest.CalculateAsync(organisationId, [new()]);
 
         result.Should().BeOfType<AcceptedResult>().Which.Value.Should().BeEquivalentTo(new
         {
@@ -245,7 +245,7 @@ public class PrnControllerTests
             .Setup(x => x.CalculateAsync(It.IsAny<Guid>(), It.IsAny<List<SubmissionCalculationRequest>>()))
             .ThrowsAsync(new TimeoutException("Request timed out"));
 
-        var result = await _systemUnderTest.CalculateAsync(organisationId, new List<SubmissionCalculationRequest> { new() });
+        var result = await _systemUnderTest.CalculateAsync(organisationId, [new()]);
 
         result.Should().BeOfType<ObjectResult>().Which.StatusCode.Should().Be(StatusCodes.Status504GatewayTimeout);
 
@@ -262,7 +262,7 @@ public class PrnControllerTests
             .Setup(x => x.CalculateAsync(It.IsAny<Guid>(), It.IsAny<List<SubmissionCalculationRequest>>()))
             .ThrowsAsync(new Exception("Unexpected error"));
 
-        var result = await _systemUnderTest.CalculateAsync(organisationId, new List<SubmissionCalculationRequest> { new() });
+        var result = await _systemUnderTest.CalculateAsync(organisationId, [new()]);
 
         result.Should().BeOfType<ObjectResult>().Which.StatusCode.Should().Be(StatusCodes.Status500InternalServerError);
 

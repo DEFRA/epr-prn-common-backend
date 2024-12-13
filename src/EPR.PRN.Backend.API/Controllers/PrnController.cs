@@ -49,7 +49,11 @@ public class PrnController(IPrnService prnService,
         return Ok(prn);
     }
 
+    // using FromQuery to parse using PaginatedRequestDto.
+    // ignoring the warning in agreement with Alex Joyce
+#pragma warning disable ASP0018 // Unused route parameter
     [HttpGet("search/{page?}/{search?}/{filterBy?}/{sortBy?}")]
+#pragma warning restore ASP0018 // Unused route parameter
     [ProducesResponseType(typeof(PaginatedResponseDto<PrnDto>), 200)]
     [ProducesResponseType(400)]
     [ProducesResponseType(401)]
