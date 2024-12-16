@@ -8,97 +8,89 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Serialization;
 
-namespace EPR.PRN.Backend.API
+namespace EPR.PRN.Backend.API;
+
+[ExcludeFromCodeCoverage]
+public class Startup(IHostEnvironment env, IConfiguration config)
 {
-    [ExcludeFromCodeCoverage]
-	public class Startup
-	{
-		private readonly IConfiguration _config;
-
-		public Startup(IHostEnvironment env, IConfiguration config)
-		{
-			_config = config;
-		}
-
-        public void ConfigureServices(IServiceCollection services)
+    public void ConfigureServices(IServiceCollection services)
+    {
+        services.AddApiVersioning();
+        services.AddControllers()
+            .AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
+        services.AddControllers(options =>
         {
-            services.AddApiVersioning();
-            services.AddControllers()
-                .AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
-            services.AddControllers(options =>
-            {
-                options.ModelBinderProviders.Insert(0, new DateTimeModelBinderProvider());
-            });
-            services.AddEndpointsApiExplorer();
-            services.AddSwaggerGen(config =>
-            {
-                config.CustomSchemaIds(s => s.FullName);
-            });
+            options.ModelBinderProviders.Insert(0, new DateTimeModelBinderProvider());
+        });
+        services.AddEndpointsApiExplorer();
+        services.AddSwaggerGen(config =>
+        {
+            config.CustomSchemaIds(s => s.FullName);
+        });
 
-            services.AddDbContext<EprContext>(options =>
-                options.UseSqlServer(_config.GetConnectionString("EprConnectionString"))
-            );
+        services.AddDbContext<EprContext>(options =>
+            options.UseSqlServer(config.GetConnectionString("EprConnectionString"))
+        );
 
-            services.AddDependencies();
+        services.AddDependencies();
 
-            services.Configure<PrnObligationCalculationConfig>(_config.GetSection(PrnObligationCalculationConfig.SectionName));
+        services.Configure<PrnObligationCalculationConfig>(config.GetSection(PrnObligationCalculationConfig.SectionName));
 
-            AddHealthChecks(services);
+        AddHealthChecks(services);
+    }
+
+    public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+    {
+        if (env.IsDevelopment())
+        {
+            app.UseSwagger();
+            app.UseSwaggerUI();
+            RunMigration(app);
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        app.UseRouting();
+        app.UseAuthorization();
+        app.UseEndpoints(endpoints =>
         {
-            if (env.IsDevelopment())
+            endpoints.MapControllers();
+            endpoints.MapHealthChecks("/admin/health", new HealthCheckOptions()
             {
-                app.UseSwagger();
-                app.UseSwaggerUI();
-                RunMigration(app);
+                Predicate = _ => true,
+                ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+            }).AllowAnonymous();
+        }); 
+    }
+
+    private void AddHealthChecks(IServiceCollection services)
+    {
+        services.AddHealthChecks()
+        .AddSqlServer(
+            config.GetConnectionString("EprConnectionString")!,
+            failureStatus: HealthStatus.Unhealthy,
+            tags: ["Database"]);
+    }
+
+    private void RunMigration(IApplicationBuilder app)
+    {
+        if (config.GetValue<bool>("RunMigration"))
+        {
+            using var scope = app.ApplicationServices.CreateScope();
+
+            var services = scope.ServiceProvider;
+            var logger = services.GetRequiredService<ILogger<EprContext>>();
+            var context = services.GetService<EprContext>();
+
+            try
+            {
+                logger.LogInformation("Migrating database associated with context {DbContextName}", typeof(EprContext).Name);
+
+                context?.Database.Migrate();
+
+                logger.LogInformation("Migrated database associated with context {DbContextName}", typeof(EprContext).Name);
             }
-
-            app.UseRouting();
-            app.UseAuthorization();
-            app.UseEndpoints(endpoints =>
+            catch (Exception ex)
             {
-                endpoints.MapControllers();
-                endpoints.MapHealthChecks("/admin/health", new HealthCheckOptions()
-                {
-                    Predicate = _ => true,
-                    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
-                }).AllowAnonymous();
-            }); 
-        }
-
-        private void AddHealthChecks(IServiceCollection services)
-        {
-            services.AddHealthChecks()
-            .AddSqlServer(
-                _config.GetConnectionString("EprConnectionString")!,
-                failureStatus: HealthStatus.Unhealthy,
-                tags: ["Database"]);
-        }
-
-        private void RunMigration(IApplicationBuilder app)
-        {
-            if (_config.GetValue<bool>("RunMigration"))
-            {
-                using var scope = app.ApplicationServices.CreateScope();
-
-                var services = scope.ServiceProvider;
-                var logger = services.GetRequiredService<ILogger<EprContext>>();
-                var context = services.GetService<EprContext>();
-
-                try
-                {
-                    logger.LogInformation("Migrating database associated with context {DbContextName}", typeof(EprContext).Name);
-
-                    context?.Database.Migrate();
-
-                    logger.LogInformation("Migrated database associated with context {DbContextName}", typeof(EprContext).Name);
-                }
-                catch (Exception ex)
-                {
-                    logger.LogError(ex, "An error occurred while migrating the database used on context {DbContextName}", typeof(EprContext).Name);
-                }
+                logger.LogError(ex, "An error occurred while migrating the database used on context {DbContextName}", typeof(EprContext).Name);
             }
         }
     }

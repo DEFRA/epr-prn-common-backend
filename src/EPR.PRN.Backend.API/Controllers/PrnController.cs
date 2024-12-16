@@ -27,7 +27,7 @@ public class PrnController(IPrnService prnService,
     IValidator<SavePrnDetailsRequest> savePrnDetailsRequestValidator) : ControllerBase
 {
     private readonly PrnObligationCalculationConfig _config = config.Value;
-    private readonly string logPrefix = configuration["LogPrefix"];
+    private readonly string? logPrefix = configuration["LogPrefix"];
 
     #region Get methods
 
@@ -124,8 +124,10 @@ public class PrnController(IPrnService prnService,
         }
 
         var prns = await prnService.GetModifiedPrnsbyDate(request.From, request.To);
-        if (prns == null || !prns.Any())
+        if (prns == null || prns.Count == 0)
+        {
             return StatusCode(StatusCodes.Status204NoContent);
+        }
 
         return Ok(prns);
     }
