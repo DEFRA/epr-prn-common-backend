@@ -27,7 +27,7 @@ public class PrnController(IPrnService prnService,
     IValidator<SavePrnDetailsRequest> savePrnDetailsRequestValidator) : ControllerBase
 {
     private readonly PrnObligationCalculationConfig _config = config.Value;
-    private readonly string? logPrefix = configuration["LogPrefix"];
+    private readonly string logPrefix = configuration["LogPrefix"];
 
     #region Get methods
 
@@ -49,11 +49,7 @@ public class PrnController(IPrnService prnService,
         return Ok(prn);
     }
 
-    // using FromQuery to parse using PaginatedRequestDto.
-    // ignoring the warning in agreement with Alex Joyce
-#pragma warning disable ASP0018 // Unused route parameter
     [HttpGet("search/{page?}/{search?}/{filterBy?}/{sortBy?}")]
-#pragma warning restore ASP0018 // Unused route parameter
     [ProducesResponseType(typeof(PaginatedResponseDto<PrnDto>), 200)]
     [ProducesResponseType(400)]
     [ProducesResponseType(401)]
@@ -124,10 +120,8 @@ public class PrnController(IPrnService prnService,
         }
 
         var prns = await prnService.GetModifiedPrnsbyDate(request.From, request.To);
-        if (prns == null || prns.Count == 0)
-        {
+        if (prns == null || !prns.Any())
             return StatusCode(StatusCodes.Status204NoContent);
-        }
 
         return Ok(prns);
     }
