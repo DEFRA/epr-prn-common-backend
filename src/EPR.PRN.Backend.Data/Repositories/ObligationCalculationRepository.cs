@@ -14,9 +14,9 @@ public class ObligationCalculationRepository(EprContext context) : IObligationCa
             .ToListAsync();
     }
 
-    public async Task AddObligationCalculation(List<ObligationCalculation> calculations)
+    public async Task AddObligationCalculation(List<ObligationCalculation> calculation)
     {
-        await context.ObligationCalculations.AddRangeAsync(calculations);
+        await context.ObligationCalculations.AddRangeAsync(calculation);
         await context.SaveChangesAsync();
     }
 
@@ -27,11 +27,11 @@ public class ObligationCalculationRepository(EprContext context) : IObligationCa
             throw new ArgumentException("The calculations list cannot be null or empty.", nameof(calculations));
         }
 
-        var obligationCalculations = await GetObligationCalculation(organisationId, calculations.First().Year);
+        var obligationCalculations = await GetObligationCalculation(organisationId, calculations[0].Year);
 
         var newCalculations = new List<ObligationCalculation>();
 
-        if (obligationCalculations.Count() == 0)
+        if (obligationCalculations.Count == 0)
         {
             context.ObligationCalculations.AddRange(calculations);
         }
@@ -39,7 +39,7 @@ public class ObligationCalculationRepository(EprContext context) : IObligationCa
         {
             foreach (var calculation in calculations)
             {
-                var existingCalculation = obligationCalculations.FirstOrDefault(c => c.MaterialName == calculation.MaterialName);
+                var existingCalculation = obligationCalculations.Find(c => c.MaterialName == calculation.MaterialName);
 
                 if (existingCalculation != null)
                 {
@@ -58,7 +58,7 @@ public class ObligationCalculationRepository(EprContext context) : IObligationCa
             }
         }
 
-        if (newCalculations.Count() != 0)
+        if (newCalculations.Count != 0)
         {
             context.ObligationCalculations.AddRange(newCalculations);
         }
