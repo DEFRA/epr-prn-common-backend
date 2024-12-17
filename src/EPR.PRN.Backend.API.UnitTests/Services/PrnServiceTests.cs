@@ -250,7 +250,7 @@ public class PrnServiceTests
 
         _mockRepository
             .Setup(repo => repo.GetModifiedPrnsbyDate(fromDate, toDate))
-            .ReturnsAsync((List<PrnUpdateStatus>)null);
+            .ReturnsAsync((List<PrnUpdateStatus>?)null);
 
         // Act
         var result = await _systemUnderTest.GetModifiedPrnsbyDate(fromDate, toDate);
@@ -341,7 +341,7 @@ public class PrnServiceTests
     [DataRow("SX26899222", true)]
     public async Task SavePrnDetails_SetsIsExportCorrectly_BeforeSaving(string evidenceNo, bool expectedIsExportValue)
     {
-        Eprn createdEntity = null;
+        Eprn? createdEntity = null;
 
         _mockRepository.Setup(s => s.SavePrnDetails(It.IsAny<Eprn>()))
             .Callback<Eprn>(x => createdEntity = x);
