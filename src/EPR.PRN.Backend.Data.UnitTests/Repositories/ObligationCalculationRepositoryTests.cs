@@ -82,7 +82,7 @@ public class ObligationCalculationRepositoryTests
                 MaterialName = "Wood",
                 MaterialObligationValue = 75,
                 Year = 2024,
-                MaterialWeight = 2000,
+                Tonnage = 2000,
                 CalculatedOn = calculatedOn
             },
             new ObligationCalculation
@@ -91,7 +91,7 @@ public class ObligationCalculationRepositoryTests
                 MaterialName = "GlassRemelt",
                 MaterialObligationValue = 75,
                 Year = 2024,
-                MaterialWeight = 20023,
+                Tonnage = 20023,
                 CalculatedOn = calculatedOn
             }
         ];
@@ -119,7 +119,7 @@ public class ObligationCalculationRepositoryTests
                 MaterialName = "Metal",
                 MaterialObligationValue = 50,
                 Year = 2024,
-                MaterialWeight = 5000,
+                Tonnage = 5000,
                 CalculatedOn = calculatedOn
             },
             new ObligationCalculation
@@ -128,7 +128,7 @@ public class ObligationCalculationRepositoryTests
                 MaterialName = "Wood",
                 MaterialObligationValue = 30,
                 Year = 2024,
-                MaterialWeight = 3000,
+                Tonnage = 3000,
                 CalculatedOn = calculatedOn
             }
         };
@@ -156,7 +156,7 @@ public class ObligationCalculationRepositoryTests
             MaterialName = "Paper",
             MaterialObligationValue = 80, // Updated value
             Year = 2024,
-            MaterialWeight = 1200,
+            Tonnage = 1200,
             CalculatedOn = calculatedOn
         },
         new ObligationCalculation
@@ -165,7 +165,7 @@ public class ObligationCalculationRepositoryTests
             MaterialName = "Glass",
             MaterialObligationValue = 90, // Updated value
             Year = 2024,
-            MaterialWeight = 2500,
+            Tonnage = 2500,
             CalculatedOn = calculatedOn
         }
     };
@@ -193,7 +193,7 @@ public class ObligationCalculationRepositoryTests
                 MaterialName = "Paper", // Existing
                 MaterialObligationValue = 100, // Updated value
                 Year = 2024,
-                MaterialWeight = 1500,
+                Tonnage = 1500,
                 CalculatedOn = calculatedOn
             },
             new ObligationCalculation
@@ -202,7 +202,7 @@ public class ObligationCalculationRepositoryTests
                 MaterialName = "Plastic", // Existing
                 MaterialObligationValue = 80, // Updated value
                 Year = 2024,
-                MaterialWeight = 2100,
+                Tonnage = 2100,
                 CalculatedOn = calculatedOn
             },
             new ObligationCalculation
@@ -211,7 +211,7 @@ public class ObligationCalculationRepositoryTests
                 MaterialName = "Copper", // New
                 MaterialObligationValue = 70,
                 Year = 2024,
-                MaterialWeight = 3000,
+                Tonnage = 3000,
                 CalculatedOn = calculatedOn
             }
         };

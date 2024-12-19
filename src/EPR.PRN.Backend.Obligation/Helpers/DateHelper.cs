@@ -16,7 +16,7 @@
             if (parts.Length > 0 && int.TryParse(parts[0], out int year))
             {
                 // Return year plus one as per domain requirements
-                return new DateTime(year, 1, 1).Year + 1;
+                return new DateTime(year, 1, 1, 0, 0, 0, DateTimeKind.Utc).Year + 1;
             }
 
             throw new FormatException("The input string is not in the correct format.");

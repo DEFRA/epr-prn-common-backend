@@ -32,13 +32,13 @@ namespace EPR.PRN.Backend.Obligation.Strategies
                     OrganisationId = calculationRequest.OrganisationId,
                     MaterialObligationValue = remainder,
                     Year = DateTime.UtcNow.Year,
-                    MaterialWeight = calculationRequest.SubmissionCalculationRequest.PackagingMaterialWeight },
+                    Tonnage = calculationRequest.SubmissionCalculationRequest.PackagingMaterialWeight },
                 new ObligationCalculation { MaterialName = MaterialType.GlassRemelt.ToString(),
                     CalculatedOn = calculatedOn,
                     OrganisationId = calculationRequest.OrganisationId,
                     MaterialObligationValue = remelt,
                     Year = DateTime.UtcNow.Year,
-                    MaterialWeight = calculationRequest.SubmissionCalculationRequest.PackagingMaterialWeight }
+                    Tonnage = calculationRequest.SubmissionCalculationRequest.PackagingMaterialWeight }
             };
         }
     }

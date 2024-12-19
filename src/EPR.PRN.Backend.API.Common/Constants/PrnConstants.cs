@@ -2,6 +2,8 @@
 {
     public static class PrnConstants
     {
+        public const int ObligationYearDefault = 9999;
+
         public static class Filters
         {
             public const string AcceptedAll = "accepted-all";
@@ -41,6 +43,12 @@
             public const string Plastic = "Plastic";
             public const string Steel = "Steel";
             public const string Wood = "Wood";
+        }
+
+        public static class ExporterCodePrefixes
+        {
+            public const string EaExport = "EX";
+            public const string SepaExport = "SX";
         }
     }
 }

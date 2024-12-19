@@ -1,12 +1,15 @@
-﻿using EPR.PRN.Backend.API.Repositories;
+﻿using EPR.PRN.Backend.API.Common.Dto;
+using EPR.PRN.Backend.API.Repositories;
 using EPR.PRN.Backend.API.Repositories.Interfaces;
 using EPR.PRN.Backend.API.Services;
 using EPR.PRN.Backend.API.Services.Interfaces;
+using EPR.PRN.Backend.API.Validators;
 using EPR.PRN.Backend.Data.Interfaces;
 using EPR.PRN.Backend.Data.Repositories;
 using EPR.PRN.Backend.Obligation.Interfaces;
 using EPR.PRN.Backend.Obligation.Services;
 using EPR.PRN.Backend.Obligation.Strategies;
+using FluentValidation;
 using System.Diagnostics.CodeAnalysis;
 
 namespace EPR.PRN.Backend.API.Helpers
@@ -28,7 +31,8 @@ namespace EPR.PRN.Backend.API.Helpers
                 .AddScoped<IMaterialCalculationService, MaterialCalculationService>()
                 .AddScoped<IMaterialService, MaterialService>()
                 .AddScoped<IMaterialRepository, MaterialRepository>()
-                .AddScoped<IPrnRepository, PrnRepository>();
+                .AddScoped<IPrnRepository, PrnRepository>()
+                .AddScoped<IValidator<SavePrnDetailsRequest>, SavePrnDetailsRequestValidator>();
 
             return services;
         }

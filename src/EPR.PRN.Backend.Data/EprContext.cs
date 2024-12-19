@@ -9,23 +9,21 @@ namespace EPR.PRN.Backend.Data
     [ExcludeFromCodeCoverage]
     public class EprContext : DbContext
     {
-        private readonly IConfiguration _configuration;
+        private readonly IConfiguration? _configuration;
 
         public EprContext()
         {
-
         }
 
         public EprContext(DbContextOptions options) : base(options)
         {
-
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseSqlServer(_configuration.GetConnectionString("EprConnectionString"));
+                optionsBuilder.UseSqlServer(_configuration?.GetConnectionString("EprConnectionString"));
             }
         }
 
@@ -69,7 +67,7 @@ namespace EPR.PRN.Backend.Data
                             new RecyclingTarget { Id = 18, MaterialNameRT = MaterialType.Aluminium.ToString(), Target = 0.67, Year = 2030 },
 
                             // Steel
-                            new RecyclingTarget { Id = 19, MaterialNameRT = MaterialType.Steel.ToString(), Target = 0.8, Year = 2025 },
+                            new RecyclingTarget { Id = 19, MaterialNameRT = MaterialType.Steel.ToString(), Target = 0.80, Year = 2025 },
                             new RecyclingTarget { Id = 20, MaterialNameRT = MaterialType.Steel.ToString(), Target = 0.81, Year = 2026 },
                             new RecyclingTarget { Id = 21, MaterialNameRT = MaterialType.Steel.ToString(), Target = 0.82, Year = 2027 },
                             new RecyclingTarget { Id = 22, MaterialNameRT = MaterialType.Steel.ToString(), Target = 0.83, Year = 2028 },
@@ -125,5 +123,7 @@ namespace EPR.PRN.Backend.Data
         public virtual DbSet<ObligationCalculation> ObligationCalculations { get; set; }
 
         public virtual DbSet<Material> Material { get; set; }
+
+        public virtual DbSet<PEprNpwdSync> PEprNpwdSync { get; set; }
     }
 }
