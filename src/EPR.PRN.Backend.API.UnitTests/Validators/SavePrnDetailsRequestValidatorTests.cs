@@ -1,6 +1,6 @@
-﻿using EPR.PRN.Backend.API.Common.DTO;
+﻿using EPR.PRN.Backend.API.Common.Dto;
+using EPR.PRN.Backend.API.Common.Enums;
 using EPR.PRN.Backend.API.Validators;
-using EPR.PRN.Backend.Data.DataModels;
 using FluentAssertions;
 
 namespace EPR.PRN.Backend.API.UnitTests.Validators
@@ -61,7 +61,7 @@ namespace EPR.PRN.Backend.API.UnitTests.Validators
                             .ToList();
 
 
-            var matchingProp = props.FirstOrDefault(x => string.Equals(x.Name, propertyName, StringComparison.InvariantCulture));
+            var matchingProp = props.Find(x => string.Equals(x.Name, propertyName, StringComparison.InvariantCulture));
             matchingProp.Should().NotBeNull();
 
             // Set the value of the property (overriding the default value set above) to the value passed in as the argument to this method
@@ -184,7 +184,7 @@ namespace EPR.PRN.Backend.API.UnitTests.Validators
                             .ToList();
 
 
-            var matchingProp = props.FirstOrDefault(x => string.Equals(x.Name, propertyName, StringComparison.InvariantCulture));
+            var matchingProp = props.Find(x => string.Equals(x.Name, propertyName, StringComparison.InvariantCulture));
             matchingProp.Should().NotBeNull();
 
             // Set the value of the property (overriding the default value set above) to the value passed in as the argument to this method

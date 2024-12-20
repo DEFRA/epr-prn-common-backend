@@ -1,6 +1,7 @@
 ﻿namespace EPR.PRN.Backend.API.Validators
 {
-    using EPR.PRN.Backend.API.Common.DTO;
+    using EPR.PRN.Backend.API.Common.Dto;
+    using EPR.PRN.Backend.API.Common.Enums;
     using FluentValidation;
 
     public class SavePrnDetailsRequestValidator : AbstractValidator<SavePrnDetailsRequest>
@@ -64,7 +65,7 @@
                 .NotNull().WithMessage("StatusDate is required.");
 
             RuleFor(x => x.CancelledDate).NotNull()
-                .When(x => x.EvidenceStatusCode == Data.DataModels.EprnStatus.CANCELLED)
+                .When(x => x.EvidenceStatusCode == EprnStatus.CANCELLED)
                 .WithMessage("CancelledDate is required when the request has cancelled status");
 
             RuleFor(x => x.IssuerNotes)

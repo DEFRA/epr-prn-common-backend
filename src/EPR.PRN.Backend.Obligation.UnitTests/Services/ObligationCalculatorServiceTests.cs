@@ -1,10 +1,10 @@
 ﻿using AutoFixture;
+using EPR.PRN.Backend.API.Common.Enums;
 using EPR.PRN.Backend.Data.DataModels;
-using EPR.PRN.Backend.Data.DTO;
+using EPR.PRN.Backend.Data.Dto;
 using EPR.PRN.Backend.Data.Interfaces;
 using EPR.PRN.Backend.Obligation.Constants;
-using EPR.PRN.Backend.Obligation.DTO;
-using EPR.PRN.Backend.Obligation.Enums;
+using EPR.PRN.Backend.Obligation.Dto;
 using EPR.PRN.Backend.Obligation.Helpers;
 using EPR.PRN.Backend.Obligation.Interfaces;
 using EPR.PRN.Backend.Obligation.Models;
@@ -347,29 +347,79 @@ public class ObligationCalculatorServiceTests
     {
         var targets = new List<RecyclingTarget>()
         {
-            new RecyclingTarget { Year = 2024, PaperTarget = 0.75, GlassTarget = 0.74, AluminiumTarget = 0.61, SteelTarget = 0.8, PlasticTarget = 0.55, WoodTarget = 0.45, GlassRemeltTarget = 0.75 },
-            new RecyclingTarget { Year = 2025, PaperTarget = 0.77, GlassTarget = 0.76, AluminiumTarget = 0.62, SteelTarget = 0.81, PlasticTarget = 0.57, WoodTarget = 0.46, GlassRemeltTarget = 0.76 },
-            new RecyclingTarget { Year = 2026, PaperTarget = 0.79, GlassTarget = 0.78, AluminiumTarget = 0.63, SteelTarget = 0.82, PlasticTarget = 0.59, WoodTarget = 0.47, GlassRemeltTarget = 0.77 },
-            new RecyclingTarget { Year = 2027, PaperTarget = 0.81, GlassTarget = 0.80, AluminiumTarget = 0.64, SteelTarget = 0.83, PlasticTarget = 0.61, WoodTarget = 0.48, GlassRemeltTarget = 0.78 },
-            new RecyclingTarget { Year = 2028, PaperTarget = 0.83, GlassTarget = 0.82, AluminiumTarget = 0.65, SteelTarget = 0.84, PlasticTarget = 0.63, WoodTarget = 0.49, GlassRemeltTarget = 0.79 },
-            new RecyclingTarget { Year = 2029, PaperTarget = 0.85, GlassTarget = 0.85, AluminiumTarget = 0.67, SteelTarget = 0.85, PlasticTarget = 0.65, WoodTarget = 0.50, GlassRemeltTarget = 0.80 }
+            // Paper
+            new RecyclingTarget { Id = 1, MaterialNameRT = MaterialType.Paper.ToString(), Target = 0.75, Year = 2025 },
+            new RecyclingTarget { Id = 2, MaterialNameRT = MaterialType.Paper.ToString(), Target = 0.77, Year = 2026 },
+            new RecyclingTarget { Id = 3, MaterialNameRT = MaterialType.Paper.ToString(), Target = 0.79, Year = 2027 },
+            new RecyclingTarget { Id = 4, MaterialNameRT = MaterialType.Paper.ToString(), Target = 0.81, Year = 2028 },
+            new RecyclingTarget { Id = 5, MaterialNameRT = MaterialType.Paper.ToString(), Target = 0.83, Year = 2029 },
+            new RecyclingTarget { Id = 6, MaterialNameRT = MaterialType.Paper.ToString(), Target = 0.85, Year = 2030 },
+
+            // Glass
+            new RecyclingTarget { Id = 7, MaterialNameRT = MaterialType.Glass.ToString(), Target = 0.74, Year = 2025 },
+            new RecyclingTarget { Id = 8, MaterialNameRT = MaterialType.Glass.ToString(), Target = 0.76, Year = 2026 },
+            new RecyclingTarget { Id = 9, MaterialNameRT = MaterialType.Glass.ToString(), Target = 0.78, Year = 2027 },
+            new RecyclingTarget { Id = 10, MaterialNameRT = MaterialType.Glass.ToString(), Target = 0.80, Year = 2028 },
+            new RecyclingTarget { Id = 11, MaterialNameRT = MaterialType.Glass.ToString(), Target = 0.82, Year = 2029 },
+            new RecyclingTarget { Id = 12, MaterialNameRT = MaterialType.Glass.ToString(), Target = 0.85, Year = 2030 },
+
+            // Aluminium
+            new RecyclingTarget { Id = 13, MaterialNameRT = MaterialType.Aluminium.ToString(), Target = 0.61, Year = 2025 },
+            new RecyclingTarget { Id = 14, MaterialNameRT = MaterialType.Aluminium.ToString(), Target = 0.62, Year = 2026 },
+            new RecyclingTarget { Id = 15, MaterialNameRT = MaterialType.Aluminium.ToString(), Target = 0.63, Year = 2027 },
+            new RecyclingTarget { Id = 16, MaterialNameRT = MaterialType.Aluminium.ToString(), Target = 0.64, Year = 2028 },
+            new RecyclingTarget { Id = 17, MaterialNameRT = MaterialType.Aluminium.ToString(), Target = 0.65, Year = 2029 },
+            new RecyclingTarget { Id = 18, MaterialNameRT = MaterialType.Aluminium.ToString(), Target = 0.67, Year = 2030 },
+
+            // Steel
+            new RecyclingTarget { Id = 19, MaterialNameRT = MaterialType.Steel.ToString(), Target = 0.8, Year = 2025 },
+            new RecyclingTarget { Id = 20, MaterialNameRT = MaterialType.Steel.ToString(), Target = 0.81, Year = 2026 },
+            new RecyclingTarget { Id = 21, MaterialNameRT = MaterialType.Steel.ToString(), Target = 0.82, Year = 2027 },
+            new RecyclingTarget { Id = 22, MaterialNameRT = MaterialType.Steel.ToString(), Target = 0.83, Year = 2028 },
+            new RecyclingTarget { Id = 23, MaterialNameRT = MaterialType.Steel.ToString(), Target = 0.84, Year = 2029 },
+            new RecyclingTarget { Id = 24, MaterialNameRT = MaterialType.Steel.ToString(), Target = 0.85, Year = 2030 },
+
+            // Plastic
+            new RecyclingTarget { Id = 25, MaterialNameRT = MaterialType.Plastic.ToString(), Target = 0.55, Year = 2025 },
+            new RecyclingTarget { Id = 26, MaterialNameRT = MaterialType.Plastic.ToString(), Target = 0.57, Year = 2026 },
+            new RecyclingTarget { Id = 27, MaterialNameRT = MaterialType.Plastic.ToString(), Target = 0.59, Year = 2027 },
+            new RecyclingTarget { Id = 28, MaterialNameRT = MaterialType.Plastic.ToString(), Target = 0.61, Year = 2028 },
+            new RecyclingTarget { Id = 29, MaterialNameRT = MaterialType.Plastic.ToString(), Target = 0.63, Year = 2029 },
+            new RecyclingTarget { Id = 30, MaterialNameRT = MaterialType.Plastic.ToString(), Target = 0.65, Year = 2030 },
+
+            // Wood
+            new RecyclingTarget { Id = 31, MaterialNameRT = MaterialType.Wood.ToString(), Target = 0.45, Year = 2025 },
+            new RecyclingTarget { Id = 32, MaterialNameRT = MaterialType.Wood.ToString(), Target = 0.46, Year = 2026 },
+            new RecyclingTarget { Id = 33, MaterialNameRT = MaterialType.Wood.ToString(), Target = 0.47, Year = 2027 },
+            new RecyclingTarget { Id = 34, MaterialNameRT = MaterialType.Wood.ToString(), Target = 0.48, Year = 2028 },
+            new RecyclingTarget { Id = 35, MaterialNameRT = MaterialType.Wood.ToString(), Target = 0.49, Year = 2029 },
+            new RecyclingTarget { Id = 36, MaterialNameRT = MaterialType.Wood.ToString(), Target = 0.50, Year = 2030 },
+
+            // Glass Remelt
+            new RecyclingTarget { Id = 37, MaterialNameRT = MaterialType.GlassRemelt.ToString(), Target = 0.75, Year = 2025 },
+            new RecyclingTarget { Id = 38, MaterialNameRT = MaterialType.GlassRemelt.ToString(), Target = 0.76, Year = 2026 },
+            new RecyclingTarget { Id = 39, MaterialNameRT = MaterialType.GlassRemelt.ToString(), Target = 0.77, Year = 2027 },
+            new RecyclingTarget { Id = 40, MaterialNameRT = MaterialType.GlassRemelt.ToString(), Target = 0.78, Year = 2028 },
+            new RecyclingTarget { Id = 41, MaterialNameRT = MaterialType.GlassRemelt.ToString(), Target = 0.79, Year = 2029 },
+            new RecyclingTarget { Id = 42, MaterialNameRT = MaterialType.GlassRemelt.ToString(), Target = 0.80, Year = 2030 }
         };
 
-        return targets.Select(x => new KeyValuePair<int, Dictionary<MaterialType, double>>(x.Year, TransformTargets(x))).ToDictionary();
+        return targets
+        .GroupBy(target => target.Year)
+        .ToDictionary(
+            group => group.Key,
+            group => TransformTargets(group.ToList())
+        );
     }
 
-    private static Dictionary<MaterialType, double> TransformTargets(RecyclingTarget recyclingTarget)
+    private static Dictionary<MaterialType, double> TransformTargets(List<RecyclingTarget> recyclingTargets)
     {
-        var dictionary = new Dictionary<MaterialType, double>(7)
-            {
-                { MaterialType.Aluminium, recyclingTarget.AluminiumTarget },
-                { MaterialType.Glass, recyclingTarget.GlassTarget },
-                { MaterialType.GlassRemelt, recyclingTarget.GlassRemeltTarget },
-                { MaterialType.Paper, recyclingTarget.PaperTarget },
-                { MaterialType.Plastic, recyclingTarget.PlasticTarget },
-                { MaterialType.Steel, recyclingTarget.SteelTarget },
-                { MaterialType.Wood, recyclingTarget.WoodTarget }
-            };
+        var dictionary = new Dictionary<MaterialType, double>();
+
+        foreach (var target in recyclingTargets)
+        {
+            dictionary[EnumHelper.ConvertStringToEnum<MaterialType>(target.MaterialNameRT).Value] = target.Target;
+        }
 
         return dictionary;
     }

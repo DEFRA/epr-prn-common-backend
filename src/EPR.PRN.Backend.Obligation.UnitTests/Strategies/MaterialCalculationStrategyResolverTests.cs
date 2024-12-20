@@ -1,4 +1,4 @@
-﻿using EPR.PRN.Backend.Obligation.Enums;
+﻿using EPR.PRN.Backend.API.Common.Enums;
 using EPR.PRN.Backend.Obligation.Interfaces;
 using EPR.PRN.Backend.Obligation.Strategies;
 using Microsoft.Extensions.Logging;

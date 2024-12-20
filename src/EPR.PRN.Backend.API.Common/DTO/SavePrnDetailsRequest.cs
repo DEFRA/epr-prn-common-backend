@@ -1,8 +1,8 @@
-﻿namespace EPR.PRN.Backend.API.Common.DTO
+﻿namespace EPR.PRN.Backend.API.Common.Dto
 {
     using System;
     using System.Diagnostics.CodeAnalysis;
-    using EPR.PRN.Backend.Data.DataModels;
+    using EPR.PRN.Backend.API.Common.Enums;
 
     [ExcludeFromCodeCoverage]
     public class SavePrnDetailsRequest

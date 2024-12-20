@@ -1,4 +1,4 @@
-﻿using EPR.PRN.Backend.Data.DTO;
+﻿using EPR.PRN.Backend.Data.Dto;
 
 namespace EPR.PRN.Backend.Data.Interfaces
 {
