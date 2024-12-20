@@ -50,49 +50,49 @@ public class PrnService(IRepository repository, ILogger<PrnService> logger, ICon
         return prns;
     }
 
-        public async Task UpdateStatus(Guid orgId, Guid userId, List<PrnUpdateStatusDto> prnUpdates)
+    public async Task UpdateStatus(Guid orgId, Guid userId, List<PrnUpdateStatusDto> prnUpdates)
+    {
+        logger.LogInformation("{Logprefix}: PrnService - UpdateStatus: request for user {User}, organisation {Organisation} and Prns to Update {PrnId}", logPrefix, userId, orgId, prnUpdates);
+        using var transaction = repository.BeginTransaction();
+
+        logger.LogInformation("{Logprefix}: PrnService - UpdateStatus: get all Prns for organisation {Organisation}", logPrefix, orgId);
+        var prns = await repository.GetAllPrnByOrganisationId(orgId);
+
+        if (prns.Count == 0)
         {
-            logger.LogInformation("{Logprefix}: PrnService - UpdateStatus: request for user {User}, organisation {Organisation} and Prns to Update {PrnId}", logPrefix, userId, orgId, prnUpdates);
-            using var transaction = repository.BeginTransaction();
+            logger.LogError("{Logprefix}: PrnService - UpdateStatus: No Prns Found for organisation {OrgId}", logPrefix, orgId);
+            throw new NotFoundException($"No record present for organisation {orgId}");
+        }
+        logger.LogInformation("{Logprefix}: PrnService - UpdateStatus: Prns found for organisation {Organisation} : {Prns}", logPrefix, orgId, JsonConvert.SerializeObject(prns));
 
-            logger.LogInformation("{Logprefix}: PrnService - UpdateStatus: get all Prns for organisation {Organisation}", logPrefix, orgId);
-            var prns = await repository.GetAllPrnByOrganisationId(orgId);
+        var nonExistingPrns = prnUpdates.Select(x => x.PrnId).Except(prns.Select(x => x.ExternalId));
+        logger.LogInformation("{Logprefix}: PrnService - UpdateStatus: Filter non Existing Prns from Prns to update. {NonExistingPrns}", logPrefix, nonExistingPrns);
 
-            if (prns.Count == 0)
-            {
-                logger.LogError("{Logprefix}: PrnService - UpdateStatus: No Prns Found for organisation {OrgId}", logPrefix, orgId);
-                throw new NotFoundException($"No record present for organisation {orgId}");
-            }
-            logger.LogInformation("{Logprefix}: PrnService - UpdateStatus: Prns found for organisation {Organisation} : {Prns}", logPrefix, orgId, JsonConvert.SerializeObject(prns));
-
-            var nonExistingPrns = prnUpdates.Select(x => x.PrnId).Except(prns.Select(x => x.ExternalId));
-            logger.LogInformation("{Logprefix}: PrnService - UpdateStatus: Filter non Existing Prns from Prns to update. {NonExistingPrns}", logPrefix, nonExistingPrns);
-
-            //makes sure all the prns exsits in system
-            if (nonExistingPrns.Any())
-            {
-                logger.LogError("{Logprefix}: PrnService - UpdateStatus: No Non existing Prns Found to update", logPrefix);
-                throw new NotFoundException($"{string.Join(",", nonExistingPrns)} Prns doesn't exists in system");
-            }
-
-            foreach (var prnUpdate in prnUpdates)
-            {
-                var prn = prns.Find(x => x.ExternalId == prnUpdate.PrnId);
-
-                if (prn!.PrnStatusId == (int)EprnStatus.AWAITINGACCEPTANCE || prn!.PrnStatusId == (int)prnUpdate.Status)
-                {
-                    UpdatePrn(userId, prnUpdate, prn);
-                }
-                else
-                {
-                    logger.LogError("{Logprefix}: PrnService - UpdateStatus: Conflict with {Prn}, cannot be accepted or rejected please refresh and try again", logPrefix, prnUpdate.PrnId);
-                    throw new ConflictException($"{prnUpdate.PrnId} cannot be accepted or rejected please refresh and try again");
-                }
-            }
-            await repository.SaveTransaction(transaction);
+        //makes sure all the prns exsits in system
+        if (nonExistingPrns.Any())
+        {
+            logger.LogError("{Logprefix}: PrnService - UpdateStatus: No Non existing Prns Found to update", logPrefix);
+            throw new NotFoundException($"{string.Join(",", nonExistingPrns)} Prns doesn't exists in system");
         }
 
-        public async Task SavePrnDetails(SavePrnDetailsRequest prn)
+        foreach (var prnUpdate in prnUpdates)
+        {
+            var prn = prns.Find(x => x.ExternalId == prnUpdate.PrnId);
+
+            if (prn!.PrnStatusId == (int)EprnStatus.AWAITINGACCEPTANCE || prn!.PrnStatusId == (int)prnUpdate.Status)
+            {
+                UpdatePrn(userId, prnUpdate, prn);
+            }
+            else
+            {
+                logger.LogError("{Logprefix}: PrnService - UpdateStatus: Conflict with {Prn}, cannot be accepted or rejected please refresh and try again", logPrefix, prnUpdate.PrnId);
+                throw new ConflictException($"{prnUpdate.PrnId} cannot be accepted or rejected please refresh and try again");
+            }
+        }
+        await repository.SaveTransaction(transaction);
+    }
+
+    public async Task SavePrnDetails(SavePrnDetailsRequest prn)
     {
         try
         {
@@ -138,7 +138,7 @@ public class PrnService(IRepository repository, ILogger<PrnService> logger, ICon
 
     private static bool IsExport(string? evidenceNo)
     {
-        if(string.IsNullOrEmpty(evidenceNo)) 
+        if (string.IsNullOrEmpty(evidenceNo))
             return false;
 
         var val = evidenceNo[..2].Trim();
