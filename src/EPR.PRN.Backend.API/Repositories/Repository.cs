@@ -261,6 +261,7 @@ public class Repository(EprContext eprContext, ILogger<Repository> logger, IConf
             else
             {
                 entity.Id = existingEntity.Id;
+                entity.ExternalId = existingEntity.ExternalId;
                 _eprContext.Entry(existingEntity).State = EntityState.Modified;
                 _eprContext.Entry(existingEntity).CurrentValues.SetValues(entity);
 
