@@ -72,7 +72,7 @@
                  .When(x => !string.IsNullOrWhiteSpace(x.IssuerNotes));
 
             RuleFor(x => x.IssuerRef)
-                 .MaximumLength(200).WithMessage("IssuerNotes cannot be longer than 200 characters")
+                 .MaximumLength(200).WithMessage("IssuerRef cannot be longer than 200 characters")
                  .When(x => !string.IsNullOrWhiteSpace(x.IssuerRef));
 
             RuleFor(x => x.PrnSignatory)
