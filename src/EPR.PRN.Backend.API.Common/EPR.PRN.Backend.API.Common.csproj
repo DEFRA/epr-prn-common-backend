@@ -6,8 +6,4 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\EPR.PRN.Backend.Data\EPR.PRN.Backend.Data.csproj" />
-  </ItemGroup>
-
 </Project>

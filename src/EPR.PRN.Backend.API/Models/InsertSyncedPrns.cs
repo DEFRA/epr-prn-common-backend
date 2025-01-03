@@ -1,5 +1,4 @@
-﻿using EPR.PRN.Backend.API.Common.DTO;
-using EPR.PRN.Backend.Data.DataModels;
+﻿using EPR.PRN.Backend.API.Common.Enums;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
 

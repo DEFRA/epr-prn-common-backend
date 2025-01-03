@@ -1,6 +1,6 @@
 ﻿using EPR.PRN.Backend.Data.DataModels;
 
-namespace EPR.PRN.Backend.Data.DTO
+namespace EPR.PRN.Backend.Data.Dto
 {
     public class EprnResultsDto
     {
