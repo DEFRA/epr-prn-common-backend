@@ -174,7 +174,7 @@ namespace EPR.PRN.Backend.Obligation.Services
             {
                 return null;
             }
-            return recyclingTargets[year + 1][materialType.Value];
+            return recyclingTargets[year][materialType.Value];
         }
 
         private static List<Material> AddGlassRemelt(List<Material> materials)
