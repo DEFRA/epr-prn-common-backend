@@ -23,26 +23,35 @@ namespace EPR.PRN.Backend.API
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddApiVersioning();
+
+            // Controllers
             services.AddControllers()
                 .AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
             services.AddControllers(options =>
             {
                 options.ModelBinderProviders.Insert(0, new DateTimeModelBinderProvider());
             });
+
+            // Swagger setup
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen(config =>
             {
                 config.CustomSchemaIds(s => s.FullName);
             });
 
+            // Database dependencies
             services.AddDbContext<EprContext>(options =>
                 options.UseSqlServer(_config.GetConnectionString("EprConnectionString"))
             );
 
+            // Dependencies registration
             services.AddDependencies();
 
+            // Config settings
             services.Configure<PrnObligationCalculationConfig>(_config.GetSection(PrnObligationCalculationConfig.SectionName));
+            services.Configure<PrnApiOptions>(_config.GetSection(PrnApiOptions.SectionName));
 
+            // Healthcheck endpoint
             AddHealthChecks(services);
         }
 
