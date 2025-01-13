@@ -52,7 +52,7 @@ public class Repository(EprContext eprContext, ILogger<Repository> logger, IConf
         var prnUpdateStatuses = result.Select(p => new PrnUpdateStatus
         {
             EvidenceNo = p.PrnNumber,
-            EvidenceStatusCode = MapStatusCode((EprnStatus)Enum.Parse(typeof(EprnStatus), p.StatusName)),
+            EvidenceStatusCode = MapStatusCode((EprnStatus)Enum.Parse(typeof(EprnStatus), p.StatusName), p.AccreditationYear),
             StatusDate = p.StatusUpdatedOn.Value.ToUniversalTime(),
             AccreditationYear = p.AccreditationYear
         }).ToList();
@@ -60,7 +60,7 @@ public class Repository(EprContext eprContext, ILogger<Repository> logger, IConf
         return prnUpdateStatuses;
     }
 
-    public async Task<Eprn> GetPrnForOrganisationById(Guid orgId, Guid prnId)
+    public async Task<Eprn?> GetPrnForOrganisationById(Guid orgId, Guid prnId)
     {
         logger.LogInformation("{Logprefix}: Repository - GetPrnForOrganisationById: request for organisation {Organisation}, Prn {PrnId}", logPrefix, orgId, prnId);
         var eprn = await GetAllPrnsForOrganisation(orgId).FirstOrDefaultAsync(p => p.ExternalId == prnId);
@@ -72,7 +72,7 @@ public class Repository(EprContext eprContext, ILogger<Repository> logger, IConf
     {
         logger.LogInformation("{Logprefix}: Repository - SaveTransaction: Saving Transaction", logPrefix);
         await _eprContext.SaveChangesAsync();
-        await transaction.CommitAsync();
+        transaction.Commit();
     }
 
     public IDbContextTransaction BeginTransaction()
@@ -86,17 +86,20 @@ public class Repository(EprContext eprContext, ILogger<Repository> logger, IConf
         _eprContext.PrnStatusHistory.Add(prnStatusHistory);
     }
 
-    private static string MapStatusCode(EprnStatus status)
+    private string MapStatusCode(EprnStatus status, string accreditationYear)
     {
-        return status switch
+        switch (status)
         {
-            EprnStatus.ACCEPTED => EvidenceStatusCode.EV_ACCEP.ToHyphenatedString(),
-            EprnStatus.REJECTED => EvidenceStatusCode.EV_ACANCEL.ToHyphenatedString(),
-            _ => throw new ArgumentException($"Unknown status: {status}"),
-        };
+            case EprnStatus.ACCEPTED:
+                return EvidenceStatusCode.EV_ACCEP.ToHyphenatedString();
+            case EprnStatus.REJECTED:
+                return EvidenceStatusCode.EV_ACANCEL.ToHyphenatedString();
+            default:
+                throw new ArgumentException($"Unknown status: {status}");
+        }
     }
 
-    private static Expression<Func<Eprn, bool>> GetFilterByCondition(string filterBy)
+    private static Expression<Func<Eprn, bool>> GetFilterByCondition(string? filterBy)
     {
         return filterBy switch
         {
@@ -127,7 +130,7 @@ public class Repository(EprContext eprContext, ILogger<Repository> logger, IConf
 
     }
 
-    private static (string order, Expression<Func<Eprn, dynamic>> expr) GetOrderByCondition(string sortBy)
+    private static (string order, Expression<Func<Eprn, dynamic>> expr) GetOrderByCondition(string? sortBy)
     {
         return sortBy switch
         {
@@ -155,7 +158,7 @@ public class Repository(EprContext eprContext, ILogger<Repository> logger, IConf
         var typeAhead = prnNumbers.Concat(issuedByOrgs).ToListAsync().Result;
 
         // Return empty response if no results
-        if (!(await prns.AnyAsync()))
+        if (!prns.Any())
         {
             return new PaginatedResponseDto<PrnDto>
             {
@@ -226,55 +229,56 @@ public class Repository(EprContext eprContext, ILogger<Repository> logger, IConf
         return dtoObject;
     }
 
-    public async Task SavePrnDetails(Eprn entity)
+    public async Task SavePrnDetails(Eprn newPrn)
     {
         try
         {
             var currentTimestamp = DateTime.UtcNow;
 
-            var existingEntity = await _eprContext.Prn.FirstOrDefaultAsync(x => x.PrnNumber == entity.PrnNumber);
+            var existingPrn = await _eprContext.Prn.FirstOrDefaultAsync(x => x.PrnNumber == newPrn.PrnNumber);
 
             var statusHistory = new PrnStatusHistory
             {
-                CreatedByOrganisationId = entity.OrganisationId,
-                PrnStatusIdFk = entity.PrnStatusId,
+                CreatedByOrganisationId = newPrn.OrganisationId,
+                PrnStatusIdFk = newPrn.PrnStatusId,
                 CreatedByUser = Guid.Empty,
                 CreatedOn = currentTimestamp,
             };
 
-            var prnLogVal = entity.PrnNumber?.Replace(Environment.NewLine, "");
+            var prnLogVal = newPrn.PrnNumber?.Replace(Environment.NewLine, "");
 
             // Add new PRN entity
-            if (existingEntity == null)
+            if (existingPrn == null)
             {
-                entity.CreatedOn = currentTimestamp;
-                entity.ExternalId = Guid.NewGuid();
-                _eprContext.Prn.Add(entity);
-                statusHistory.PrnIdFk = entity.Id;
+                newPrn.CreatedOn = currentTimestamp;
+                newPrn.ExternalId = Guid.NewGuid();
+                _eprContext.Prn.Add(newPrn);
+                statusHistory.PrnIdFk = newPrn.Id;
 
-                logger.LogInformation("{Logprefix}: Attempting to add new Prn entity with PrnNumber : {PrnNumber}", logPrefix, prnLogVal);
+                logger.LogInformation("Attempting to add new Prn entity with PrnNumber : {PrnNumber}", prnLogVal);
             }
             // Update existing PRN entity
             else
             {
-                entity.Id = existingEntity.Id;
-                _eprContext.Entry(existingEntity).State = EntityState.Modified;
-                _eprContext.Entry(existingEntity).CurrentValues.SetValues(entity);
+                newPrn.Id = existingPrn.Id;
+                newPrn.ExternalId = existingPrn.ExternalId;
+                _eprContext.Entry(existingPrn).State = EntityState.Modified;
+                _eprContext.Entry(existingPrn).CurrentValues.SetValues(newPrn);
 
-                statusHistory.PrnIdFk = existingEntity.Id;
-                logger.LogInformation("{Logprefix}: Attempting to update Prn entity with PrnNumber : {PrnNumber} and {Id}", logPrefix, prnLogVal, entity?.Id);
+                statusHistory.PrnIdFk = existingPrn.Id;
+                logger.LogInformation("Attempting to update Prn entity with PrnNumber : {PrnNumber} and {Id}", prnLogVal, newPrn?.Id);
             }
 
             // Add Prn status history
             _eprContext.PrnStatusHistory.Add(statusHistory);
 
             await _eprContext.SaveChangesAsync();
-            logger.LogInformation("{Logprefix}: Prn Entity successfully upserted. PrnNumber : {PrnNumber} and {Id}", logPrefix, prnLogVal, entity?.Id);
+            logger.LogInformation("Prn Entity successfully upserted. PrnNumber : {PrnNumber} and {Id}", prnLogVal, newPrn?.Id);
 
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "{Logprefix}: message: {Message}, exception: {Exception}", logPrefix, ex.Message, JsonConvert.SerializeObject(ex));
+            logger?.LogError(message: ex.Message, exception: ex);
             throw;
         }
     }
