@@ -1,4 +1,6 @@
-﻿namespace EPR.PRN.Backend.API.Services;
+﻿#nullable disable
+
+namespace EPR.PRN.Backend.API.Services;
 
 using EPR.PRN.Backend.API.Common.Dto;
 using EPR.PRN.Backend.API.Common.Enums;
@@ -14,12 +16,13 @@ using System.Collections.Generic;
 
 public class PrnService(IRepository repository, ILogger<PrnService> logger, IConfiguration configuration) : IPrnService
 {
-    private readonly string? logPrefix = configuration["LogPrefix"];
+    protected readonly IRepository _repository = repository;
+    private readonly string logPrefix = configuration["LogPrefix"];
 
     public async Task<PrnDto?> GetPrnForOrganisationById(Guid orgId, Guid prnId)
     {
         logger.LogInformation("{Logprefix}: PrnService - GetPrnForOrganisationById: request for organisation {Organisation} and Prns to Update {PrnId}", logPrefix, orgId, prnId);
-        var prns = await repository.GetPrnForOrganisationById(orgId, prnId);
+        var prns = await _repository.GetPrnForOrganisationById(orgId, prnId);
         logger.LogInformation("{Logprefix}: PrnService - GetPrnForOrganisationById: Prns fetched {Prns}", logPrefix, JsonConvert.SerializeObject(prns));
 
         return prns == null ? null : (PrnDto)prns;
@@ -28,23 +31,23 @@ public class PrnService(IRepository repository, ILogger<PrnService> logger, ICon
     public async Task<List<PrnDto>> GetAllPrnByOrganisationId(Guid orgId)
     {
         logger.LogInformation("{Logprefix}: PrnService - GetAllPrnByOrganisationId: request for user organisation {Organisation}", logPrefix, orgId);
-        var prns = (await repository.GetAllPrnByOrganisationId(orgId)).Select(x => (PrnDto)x).ToList();
+        var prns = (await _repository.GetAllPrnByOrganisationId(orgId)).Select(x => (PrnDto)x).ToList();
         logger.LogInformation("{Logprefix}: PrnService - GetAllPrnByOrganisationId: Prns fetched {Prns}", logPrefix, JsonConvert.SerializeObject(prns));
 
         return prns;
     }
 
-    public async Task<List<PrnUpdateStatus>?> GetModifiedPrnsbyDate(DateTime fromDate, DateTime toDate)
-    {
-        var modifiedPrns = await repository.GetModifiedPrnsbyDate(fromDate, toDate);
+        public async Task<List<PrnUpdateStatus>?> GetModifiedPrnsbyDate(DateTime fromDate, DateTime toDate)
+        {
+            var modifiedPrns = await _repository.GetModifiedPrnsbyDate(fromDate, toDate);
 
-        return modifiedPrns ?? null;
-    }
+            return modifiedPrns == null ? null : modifiedPrns;
+        }
 
     public async Task<PaginatedResponseDto<PrnDto>> GetSearchPrnsForOrganisation(Guid orgId, PaginatedRequestDto request)
     {
         logger.LogInformation("{Logprefix}: PrnService - GetSearchPrnsForOrganisation: search request for user organisation {Organisation} with criteria {Request}", logPrefix, orgId, JsonConvert.SerializeObject(request));
-        var prns = await repository.GetSearchPrnsForOrganisation(orgId, request);
+        var prns = await _repository.GetSearchPrnsForOrganisation(orgId, request);
         logger.LogInformation("{Logprefix}: PrnService - GetSearchPrnsForOrganisation: Prns fetched {Prns}", logPrefix, JsonConvert.SerializeObject(prns));
 
         return prns;
@@ -53,10 +56,10 @@ public class PrnService(IRepository repository, ILogger<PrnService> logger, ICon
     public async Task UpdateStatus(Guid orgId, Guid userId, List<PrnUpdateStatusDto> prnUpdates)
     {
         logger.LogInformation("{Logprefix}: PrnService - UpdateStatus: request for user {User}, organisation {Organisation} and Prns to Update {PrnId}", logPrefix, userId, orgId, prnUpdates);
-        using var transaction = repository.BeginTransaction();
+        using var transaction = _repository.BeginTransaction();
 
         logger.LogInformation("{Logprefix}: PrnService - UpdateStatus: get all Prns for organisation {Organisation}", logPrefix, orgId);
-        var prns = await repository.GetAllPrnByOrganisationId(orgId);
+        var prns = await _repository.GetAllPrnByOrganisationId(orgId);
 
         if (prns.Count == 0)
         {
@@ -89,14 +92,14 @@ public class PrnService(IRepository repository, ILogger<PrnService> logger, ICon
                 throw new ConflictException($"{prnUpdate.PrnId} cannot be accepted or rejected please refresh and try again");
             }
         }
-        await repository.SaveTransaction(transaction);
+        await _repository.SaveTransaction(transaction);
     }
 
     public async Task SavePrnDetails(SavePrnDetailsRequest prn)
     {
         try
         {
-            Eprn prnEntity = new()
+            Eprn prnEntity = new Eprn()
             {
                 AccreditationNumber = prn.AccreditationNo!,
                 AccreditationYear = prn.AccreditationYear.ToString()!,
@@ -131,17 +134,17 @@ public class PrnService(IRepository repository, ILogger<PrnService> logger, ICon
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "{Logprefix}: message: {Message}, exception: {Exception}", logPrefix, ex.Message, JsonConvert.SerializeObject(ex));
+            logger.LogError(message: ex.Message, exception: ex);
             throw new OperationCanceledException("Error encountered when attempting to map and save PRN requst. Please see the logs for details.");
         }
     }
 
-    private static bool IsExport(string? evidenceNo)
+    private static bool IsExport(string evidenceNo)
     {
         if (string.IsNullOrEmpty(evidenceNo))
             return false;
 
-        var val = evidenceNo[..2].Trim();
+        var val = evidenceNo.Substring(0,2).Trim();
 
         return string.Equals(val, Common.Constants.PrnConstants.ExporterCodePrefixes.EaExport, StringComparison.InvariantCultureIgnoreCase)
                 || string.Equals(val, Common.Constants.PrnConstants.ExporterCodePrefixes.SepaExport, StringComparison.InvariantCultureIgnoreCase);
@@ -149,7 +152,7 @@ public class PrnService(IRepository repository, ILogger<PrnService> logger, ICon
 
     public async Task InsertPeprNpwdSyncPrns(List<InsertSyncedPrn> syncedPrns)
     {
-        List<Eprn> prns = await repository.GetPrnsForPrnNumbers(syncedPrns.Select(p => p.EvidenceNo).ToList());
+        List<Eprn> prns = await _repository.GetPrnsForPrnNumbers(syncedPrns.Select(p => p.EvidenceNo).ToList());
         var nonExistingPrns = syncedPrns.Select(x => x.EvidenceNo).Except(prns.Select(x => x.PrnNumber));
 
         if (nonExistingPrns.Any())
@@ -170,7 +173,7 @@ public class PrnService(IRepository repository, ILogger<PrnService> logger, ICon
                         CreatedOn = currentDateTime
                     }).ToList();
 
-        await repository.InsertPeprNpwdSyncPrns(peprNpwdSyncs);
+        await _repository.InsertPeprNpwdSyncPrns(peprNpwdSyncs);
         logger.LogInformation("{Logprefix}: PrnService - InsertPeprNpwdSyncPrns: sync record inserted", logPrefix);
     }
     private void UpdatePrn(Guid userId, PrnUpdateStatusDto prnUpdate, Eprn prn)
@@ -184,7 +187,7 @@ public class PrnService(IRepository repository, ILogger<PrnService> logger, ICon
             CreatedByUser = userId,
         };
 
-        repository.AddPrnStatusHistory(prnStatusHistory);
+        _repository.AddPrnStatusHistory(prnStatusHistory);
         logger.LogInformation("{Logprefix}: PrnService - UpdateStatus: Added Prn Status History. {PrnStatusHistory}", logPrefix, JsonConvert.SerializeObject(prnStatusHistory));
 
         prn.PrnStatusId = (int)prnUpdate.Status;
