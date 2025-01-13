@@ -60,6 +60,31 @@ public class Repository(EprContext eprContext, ILogger<Repository> logger, IConf
         return prnUpdateStatuses;
     }
 
+    public async Task<List<PrnStatusSync>> GetSyncStatus(DateTime fromDate, DateTime toDate)
+    {
+        var result = await (from p in _eprContext.Prn
+                            join ps in _eprContext.PEprNpwdSync on p.Id equals ps.PRNId
+                            where p.StatusUpdatedOn >= fromDate && p.StatusUpdatedOn <= toDate
+                            && (p.PrnStatusId == 1 || p.PrnStatusId == 2)
+                            select new
+                            {
+                                p.PrnNumber,
+                                ps.PRNStatusId,
+                                p.OrganisationName,
+                                p.CreatedOn
+                            }).ToListAsync();
+
+        var prnStatusSync = result.Select(p => new PrnStatusSync
+        {
+            PrnNumber = p.PrnNumber,
+            StatusName = (p.PRNStatusId == 1) ? "EV_ACCEP" : "EV_ACANCEL",
+            OrganisationName = p.OrganisationName,
+            UpatedOn = p.CreatedOn
+        }).ToList();
+
+        return prnStatusSync;
+    }
+
     public async Task<Eprn?> GetPrnForOrganisationById(Guid orgId, Guid prnId)
     {
         logger.LogInformation("{Logprefix}: Repository - GetPrnForOrganisationById: request for organisation {Organisation}, Prn {PrnId}", logPrefix, orgId, prnId);

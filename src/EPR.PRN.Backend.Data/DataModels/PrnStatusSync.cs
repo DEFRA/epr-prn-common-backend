@@ -1,0 +1,17 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace EPR.PRN.Backend.Data.DataModels
+{
+    public class PrnStatusSync
+    {
+       // public int PrnStatusId { get; set; }
+        public string StatusName { get; set; } = string.Empty;
+        public DateTime? UpatedOn { get; set; }  
+        public string OrganisationName { get; set; } = string.Empty;
+        public string PrnNumber { get; set; } = string.Empty;
+    }
+}
