@@ -187,6 +187,61 @@ public class RepositoryTests
     }
 
     [TestMethod]
+    public async Task GetSyncStatus_ReturnsMappedPrnStatusSyncs()
+    {
+        // Arrange
+        var fromDate = new DateTime(2024, 11, 22);
+        var toDate = new DateTime(2024, 11, 24);
+
+        // Create the Eprn entities
+        var prnData = _fixture.CreateMany<Eprn>().ToArray();
+        prnData[0].PrnStatusId = 1;
+        prnData[0].Id = 1;
+        prnData[0].PrnNumber = "PRN001";
+        prnData[0].StatusUpdatedOn = new DateTime(2024, 11, 23);
+        prnData[0].OrganisationName = "Org1";
+
+        prnData[1].PrnStatusId = 2;
+        prnData[1].Id = 2;
+        prnData[1].PrnNumber = "PRN002";
+        prnData[1].StatusUpdatedOn = new DateTime(2024, 11, 23);
+        prnData[1].OrganisationName = "Org2";
+
+        // Create the PEprNpwdSync entities
+        var syncData = new List<PEprNpwdSync>
+    {
+        new PEprNpwdSync { PRNId = 1, PRNStatusId = 1, CreatedOn= new DateTime(2024, 11, 23), Id=1 },
+        new PEprNpwdSync { PRNId = 2, PRNStatusId = 2, CreatedOn = new DateTime(2024, 11, 23),Id=2 }
+    };
+
+        using var context = new EprContext(_contextOptions);
+        if (await context.Database.EnsureCreatedAsync())
+        {
+            await context.AddRangeAsync(prnData);  // Add Eprn entities
+            await context.AddRangeAsync(syncData); // Add PEprNpwdSync entities
+            await context.SaveChangesAsync();
+        }
+
+        // Act
+        var repo = new Repository(context, _mockLogger.Object, _configurationMock.Object);
+        var result = await repo.GetSyncStatus(fromDate, toDate);
+
+        // Assert
+        Assert.IsNotNull(result);
+        Assert.AreEqual(2, result.Count);
+
+        var firstSync = result.First(x => x.PrnNumber == "PRN001");
+        Assert.AreEqual("PRN001", firstSync.PrnNumber);
+        Assert.AreEqual("Org1", firstSync.OrganisationName);
+        Assert.AreEqual("EV_ACCEP", firstSync.StatusName);
+
+        var secondSync = result.First(x => x.PrnNumber == "PRN002");
+        Assert.AreEqual("PRN002", secondSync.PrnNumber);
+        Assert.AreEqual("Org2", secondSync.OrganisationName);
+        Assert.AreEqual("EV_ACANCEL", secondSync.StatusName);
+    }
+
+    [TestMethod]
     public async Task GetPrnsForPrnNumbers_ReturnMatchingPrns()
     {
         var prns = _fixture.CreateMany<Eprn>().ToList();
