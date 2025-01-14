@@ -422,6 +422,80 @@ public class PrnControllerTests
     }
 
     [TestMethod]
+    public async Task SyncStatus_ReturnsOk_WhenStatusesExist()
+    {
+        // Arrange
+        var fromDate = DateTime.UtcNow.AddDays(-7);
+        var toDate = DateTime.UtcNow;
+
+        var statusList = new List<PrnStatusSync>
+        {
+            new PrnStatusSync {OrganisationName="OName", PrnNumber="A1", StatusName="Accepted", UpatedOn= DateTime.UtcNow.AddDays(-1) }
+        };
+
+        _mockPrnService
+            .Setup(service => service.GetSyncStatus(fromDate, toDate))
+            .ReturnsAsync(statusList);
+
+        var request = new ModifiedPrnsbyDateRequest
+        {
+            From = fromDate,
+            To = toDate
+        };
+
+        // Act
+        var result = await _systemUnderTest.SyncStatus(request);
+
+        // Assert
+        var okResult = result as OkObjectResult;
+        Assert.IsNotNull(okResult);
+        Assert.AreEqual(200, okResult.StatusCode);
+        Assert.AreEqual(statusList, okResult.Value);
+    }
+
+    [TestMethod]
+    public async Task SyncStatus_ReturnsNoContent_WhenNoStatusExists()
+    {
+        // Arrange
+        var fromDate = DateTime.UtcNow.AddDays(-7);
+        var toDate = DateTime.UtcNow;
+
+        _mockPrnService
+            .Setup(service => service.GetSyncStatus(fromDate, toDate))
+            .ReturnsAsync((List<PrnStatusSync>)null);
+
+        var request = new ModifiedPrnsbyDateRequest
+        {
+            From = fromDate,
+            To = toDate
+        };
+
+        // Act
+        var result = await _systemUnderTest.SyncStatus(request);
+
+        // Assert
+        var statusCodeResult = result as StatusCodeResult;
+        Assert.IsNotNull(statusCodeResult);
+        Assert.AreEqual(204, statusCodeResult.StatusCode);
+    }
+
+    [TestMethod]
+    public async Task SyncStatus_ReturnsBadRequest_WhenModelStateIsInvalid()
+    {
+        // Arrange
+        var invalidRequest = new ModifiedPrnsbyDateRequest();
+        _systemUnderTest.ModelState.AddModelError("From", "The From field is required.");
+
+        // Act
+        var result = await _systemUnderTest.SyncStatus(invalidRequest);
+
+        // Assert
+        var badRequestResult = result as BadRequestObjectResult;
+        Assert.IsNotNull(badRequestResult);
+        Assert.AreEqual(400, badRequestResult.StatusCode);
+    }
+
+    [TestMethod]
     public async Task SavePrn_ReturnsStatusCode200_WhenValidInputSavedSuccessfully()
     {
         var dto = new SavePrnDetailsRequest()
