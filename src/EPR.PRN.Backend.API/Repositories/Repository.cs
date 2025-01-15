@@ -60,12 +60,11 @@ public class Repository(EprContext eprContext, ILogger<Repository> logger, IConf
         return prnUpdateStatuses;
     }
 
-    public async Task<List<PrnStatusSync>> GetSyncStatus(DateTime fromDate, DateTime toDate)
+    public async Task<List<PrnStatusSync>> GetSyncStatuses(DateTime fromDate, DateTime toDate)
     {
         var result = await (from p in _eprContext.Prn
                             join ps in _eprContext.PEprNpwdSync on p.Id equals ps.PRNId
                             where p.StatusUpdatedOn >= fromDate && p.StatusUpdatedOn <= toDate
-                            && (p.PrnStatusId == 1 || p.PrnStatusId == 2)
                             select new
                             {
                                 p.PrnNumber,
@@ -77,7 +76,7 @@ public class Repository(EprContext eprContext, ILogger<Repository> logger, IConf
         var prnStatusSync = result.Select(p => new PrnStatusSync
         {
             PrnNumber = p.PrnNumber,
-            StatusName = (p.PRNStatusId == 1) ? "EV_ACCEP" : "EV_ACANCEL",
+            StatusName = MapEprnStatusCode((EprnStatus)p.PRNStatusId),
             OrganisationName = p.OrganisationName,
             UpatedOn = p.CreatedOn
         }).ToList();
@@ -122,7 +121,7 @@ public class Repository(EprContext eprContext, ILogger<Repository> logger, IConf
             default:
                 throw new ArgumentException($"Unknown status: {status}");
         }
-    }
+    }   
 
     private static Expression<Func<Eprn, bool>> GetFilterByCondition(string? filterBy)
     {
@@ -317,5 +316,21 @@ public class Repository(EprContext eprContext, ILogger<Repository> logger, IConf
     {
         await _eprContext.PEprNpwdSync.AddRangeAsync(syncedPrns);
         await _eprContext.SaveChangesAsync();
+    }
+    private string MapEprnStatusCode(EprnStatus status)
+    {
+        switch (status)
+        {
+            case EprnStatus.ACCEPTED:
+                return EvidenceStatusCode.EV_ACCEP.ToHyphenatedString();
+            case EprnStatus.REJECTED:
+                return EvidenceStatusCode.EV_ACANCEL.ToHyphenatedString();
+            case EprnStatus.CANCELLED:
+                return EvidenceStatusCode.EV_CANCEL.ToHyphenatedString();
+            case EprnStatus.AWAITINGACCEPTANCE:
+                return EvidenceStatusCode.EV_AWACCEP.ToHyphenatedString();
+            default:
+                throw new ArgumentException($"Unknown status: {status}");
+        }
     }
 }

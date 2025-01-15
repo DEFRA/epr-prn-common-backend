@@ -224,7 +224,7 @@ public class RepositoryTests
 
         // Act
         var repo = new Repository(context, _mockLogger.Object, _configurationMock.Object);
-        var result = await repo.GetSyncStatus(fromDate, toDate);
+        var result = await repo.GetSyncStatuses(fromDate, toDate);
 
         // Assert
         Assert.IsNotNull(result);
@@ -233,12 +233,12 @@ public class RepositoryTests
         var firstSync = result.First(x => x.PrnNumber == "PRN001");
         Assert.AreEqual("PRN001", firstSync.PrnNumber);
         Assert.AreEqual("Org1", firstSync.OrganisationName);
-        Assert.AreEqual("EV_ACCEP", firstSync.StatusName);
+        Assert.AreEqual("EV-ACCEP", firstSync.StatusName);
 
         var secondSync = result.First(x => x.PrnNumber == "PRN002");
         Assert.AreEqual("PRN002", secondSync.PrnNumber);
         Assert.AreEqual("Org2", secondSync.OrganisationName);
-        Assert.AreEqual("EV_ACANCEL", secondSync.StatusName);
+        Assert.AreEqual("EV-ACANCEL", secondSync.StatusName);
     }
 
     [TestMethod]

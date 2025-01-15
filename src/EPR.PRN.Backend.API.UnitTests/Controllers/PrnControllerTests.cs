@@ -434,7 +434,7 @@ public class PrnControllerTests
         };
 
         _mockPrnService
-            .Setup(service => service.GetSyncStatus(fromDate, toDate))
+            .Setup(service => service.GetSyncStatuses(fromDate, toDate))
             .ReturnsAsync(statusList);
 
         var request = new ModifiedPrnsbyDateRequest
@@ -444,7 +444,7 @@ public class PrnControllerTests
         };
 
         // Act
-        var result = await _systemUnderTest.SyncStatus(request);
+        var result = await _systemUnderTest.GetSyncStatuses(request);
 
         // Assert
         var okResult = result as OkObjectResult;
@@ -461,7 +461,7 @@ public class PrnControllerTests
         var toDate = DateTime.UtcNow;
 
         _mockPrnService
-            .Setup(service => service.GetSyncStatus(fromDate, toDate))
+            .Setup(service => service.GetSyncStatuses(fromDate, toDate))
             .ReturnsAsync((List<PrnStatusSync>)null);
 
         var request = new ModifiedPrnsbyDateRequest
@@ -471,7 +471,7 @@ public class PrnControllerTests
         };
 
         // Act
-        var result = await _systemUnderTest.SyncStatus(request);
+        var result = await _systemUnderTest.GetSyncStatuses(request);
 
         // Assert
         var statusCodeResult = result as StatusCodeResult;
@@ -487,7 +487,7 @@ public class PrnControllerTests
         _systemUnderTest.ModelState.AddModelError("From", "The From field is required.");
 
         // Act
-        var result = await _systemUnderTest.SyncStatus(invalidRequest);
+        var result = await _systemUnderTest.GetSyncStatuses(invalidRequest);
 
         // Assert
         var badRequestResult = result as BadRequestObjectResult;
