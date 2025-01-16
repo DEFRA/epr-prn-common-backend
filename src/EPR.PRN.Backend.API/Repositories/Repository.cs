@@ -64,13 +64,13 @@ public class Repository(EprContext eprContext, ILogger<Repository> logger, IConf
     {
         var result = await (from p in _eprContext.Prn
                             join ps in _eprContext.PEprNpwdSync on p.Id equals ps.PRNId
-                            where p.StatusUpdatedOn >= fromDate && p.StatusUpdatedOn <= toDate
+                            where p.StatusUpdatedOn >= fromDate && p.StatusUpdatedOn < toDate
                             select new
                             {
                                 p.PrnNumber,
                                 ps.PRNStatusId,
                                 p.OrganisationName,
-                                p.CreatedOn
+                                ps.CreatedOn
                             }).ToListAsync();
 
         var prnStatusSync = result.Select(p => new PrnStatusSync
