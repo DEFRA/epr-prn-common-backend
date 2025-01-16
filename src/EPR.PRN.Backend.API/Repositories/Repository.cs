@@ -76,7 +76,7 @@ public class Repository(EprContext eprContext, ILogger<Repository> logger, IConf
         var prnStatusSync = result.Select(p => new PrnStatusSync
         {
             PrnNumber = p.PrnNumber,
-            StatusName = MapEprnStatusCode((EprnStatus)p.PRNStatusId),
+            StatusName = MapStatusCode((EprnStatus)p.PRNStatusId, string.Empty),
             OrganisationName = p.OrganisationName,
             UpatedOn = p.CreatedOn
         }).ToList();
@@ -316,21 +316,5 @@ public class Repository(EprContext eprContext, ILogger<Repository> logger, IConf
     {
         await _eprContext.PEprNpwdSync.AddRangeAsync(syncedPrns);
         await _eprContext.SaveChangesAsync();
-    }
-    private string MapEprnStatusCode(EprnStatus status)
-    {
-        switch (status)
-        {
-            case EprnStatus.ACCEPTED:
-                return EvidenceStatusCode.EV_ACCEP.ToHyphenatedString();
-            case EprnStatus.REJECTED:
-                return EvidenceStatusCode.EV_ACANCEL.ToHyphenatedString();
-            case EprnStatus.CANCELLED:
-                return EvidenceStatusCode.EV_CANCEL.ToHyphenatedString();
-            case EprnStatus.AWAITINGACCEPTANCE:
-                return EvidenceStatusCode.EV_AWACCEP.ToHyphenatedString();
-            default:
-                throw new ArgumentException($"Unknown status: {status}");
-        }
     }
 }
