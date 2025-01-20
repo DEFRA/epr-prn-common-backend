@@ -85,5 +85,7 @@ namespace EPR.PRN.Backend.Data.DataModels
 		public DateTime LastUpdatedDate { get; set; }
 		
 		public bool IsExport { get; set; }
-	}
+
+        public ICollection<PrnStatusHistory> PrnStatusHistories { get; set; } = null!;
+    }
 }

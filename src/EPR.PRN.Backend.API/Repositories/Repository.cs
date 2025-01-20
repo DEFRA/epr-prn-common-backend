@@ -251,9 +251,11 @@ public class Repository(EprContext eprContext, ILogger<Repository> logger, IConf
             if (existingPrn == null)
             {
                 newPrn.CreatedOn = currentTimestamp;
+                newPrn.LastUpdatedDate = currentTimestamp;
                 newPrn.ExternalId = Guid.NewGuid();
+                List<PrnStatusHistory> history = [statusHistory];
+                newPrn.PrnStatusHistories = history;
                 _eprContext.Prn.Add(newPrn);
-                statusHistory.PrnIdFk = newPrn.Id;
 
                 logger.LogInformation("Attempting to add new Prn entity with PrnNumber : {PrnNumber}", prnLogVal);
             }
@@ -267,10 +269,10 @@ public class Repository(EprContext eprContext, ILogger<Repository> logger, IConf
 
                 statusHistory.PrnIdFk = existingPrn.Id;
                 logger.LogInformation("Attempting to update Prn entity with PrnNumber : {PrnNumber} and {Id}", prnLogVal, newPrn?.Id);
-            }
 
-            // Add Prn status history
-            _eprContext.PrnStatusHistory.Add(statusHistory);
+                // Add Prn status history
+                _eprContext.PrnStatusHistory.Add(statusHistory);
+            }
 
             await _eprContext.SaveChangesAsync();
             logger.LogInformation("Prn Entity successfully upserted. PrnNumber : {PrnNumber} and {Id}", prnLogVal, newPrn?.Id);
