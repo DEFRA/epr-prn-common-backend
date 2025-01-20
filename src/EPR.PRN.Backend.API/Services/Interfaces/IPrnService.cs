@@ -13,6 +13,5 @@
         Task<List<PrnUpdateStatus>?> GetModifiedPrnsbyDate(DateTime fromDate, DateTime toDate);
         Task SavePrnDetails(SavePrnDetailsRequest prn);
         Task InsertPeprNpwdSyncPrns(List<InsertSyncedPrn> syncedPrns);
-        Task<List<PrnStatusSync>?> GetSyncStatuses(DateTime fromDate, DateTime toDate);
     }
 }
