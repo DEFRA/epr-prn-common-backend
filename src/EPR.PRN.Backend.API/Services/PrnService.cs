@@ -35,17 +35,12 @@ public class PrnService(IRepository repository, ILogger<PrnService> logger, ICon
         return prns;
     }
 
-    public async Task<List<PrnUpdateStatus>?> GetModifiedPrnsbyDate(DateTime fromDate, DateTime toDate)
-    {
-        var modifiedPrns = await _repository.GetModifiedPrnsbyDate(fromDate, toDate);
+        public async Task<List<PrnUpdateStatus>?> GetModifiedPrnsbyDate(DateTime fromDate, DateTime toDate)
+        {
+            var modifiedPrns = await _repository.GetModifiedPrnsbyDate(fromDate, toDate);
 
-        return modifiedPrns == null ? null : modifiedPrns;
-    }
-
-    public async Task<List<PrnStatusSync>?> GetSyncStatuses(DateTime fromDate, DateTime toDate)
-    {
-        return await _repository.GetSyncStatuses(fromDate, toDate);
-    }
+            return modifiedPrns == null ? null : modifiedPrns;
+        }
 
     public async Task<PaginatedResponseDto<PrnDto>> GetSearchPrnsForOrganisation(Guid orgId, PaginatedRequestDto request)
     {
@@ -142,6 +137,17 @@ public class PrnService(IRepository repository, ILogger<PrnService> logger, ICon
         }
     }
 
+    private static bool IsExport(string evidenceNo)
+    {
+        if(string.IsNullOrEmpty(evidenceNo)) 
+            return false;
+
+        var val = evidenceNo.Substring(0,2).Trim();
+
+        return string.Equals(val, Common.Constants.PrnConstants.ExporterCodePrefixes.EaExport, StringComparison.InvariantCultureIgnoreCase)
+                || string.Equals(val, Common.Constants.PrnConstants.ExporterCodePrefixes.SepaExport, StringComparison.InvariantCultureIgnoreCase);
+    }
+
     public async Task InsertPeprNpwdSyncPrns(List<InsertSyncedPrn> syncedPrns)
     {
         List<Eprn> prns = await _repository.GetPrnsForPrnNumbers(syncedPrns.Select(p => p.EvidenceNo).ToList());
@@ -168,18 +174,6 @@ public class PrnService(IRepository repository, ILogger<PrnService> logger, ICon
         await _repository.InsertPeprNpwdSyncPrns(peprNpwdSyncs);
         logger.LogInformation("{Logprefix}: PrnService - InsertPeprNpwdSyncPrns: sync record inserted", logPrefix);
     }
-
-    private static bool IsExport(string evidenceNo)
-    {
-        if (string.IsNullOrEmpty(evidenceNo))
-            return false;
-
-        var prefix = evidenceNo.Substring(0, 2).Trim();
-
-        return string.Equals(prefix, Common.Constants.PrnConstants.ExporterCodePrefixes.EaExport, StringComparison.InvariantCultureIgnoreCase)
-                || string.Equals(prefix, Common.Constants.PrnConstants.ExporterCodePrefixes.SepaExport, StringComparison.InvariantCultureIgnoreCase);
-    }
-
     private void UpdatePrn(Guid userId, PrnUpdateStatusDto prnUpdate, Eprn prn)
     {
         var updateDate = DateTime.UtcNow;
