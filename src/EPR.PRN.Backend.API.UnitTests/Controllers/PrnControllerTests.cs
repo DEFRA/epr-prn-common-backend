@@ -430,7 +430,7 @@ public class PrnControllerTests
 
         var statusList = new List<PrnStatusSync>
         {
-            new PrnStatusSync {OrganisationName="OName", PrnNumber="A1", StatusName="Accepted", UpatedOn= DateTime.UtcNow.AddDays(-1) }
+            new PrnStatusSync {OrganisationName="OName", PrnNumber="A1", StatusName="Accepted", UpdatedOn= DateTime.UtcNow.AddDays(-1) }
         };
 
         _mockPrnService

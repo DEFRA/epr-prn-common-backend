@@ -78,7 +78,7 @@ public class Repository(EprContext eprContext, ILogger<Repository> logger, IConf
             PrnNumber = p.PrnNumber,
             StatusName = MapStatusCode((EprnStatus)p.PRNStatusId, string.Empty),
             OrganisationName = p.OrganisationName,
-            UpatedOn = p.CreatedOn
+            UpdatedOn = p.CreatedOn
         }).ToList();
 
         return prnStatusSync;
