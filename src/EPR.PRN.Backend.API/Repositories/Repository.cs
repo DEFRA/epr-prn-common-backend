@@ -52,12 +52,36 @@ public class Repository(EprContext eprContext, ILogger<Repository> logger, IConf
         var prnUpdateStatuses = result.Select(p => new PrnUpdateStatus
         {
             EvidenceNo = p.PrnNumber,
-            EvidenceStatusCode = MapStatusCode((EprnStatus)Enum.Parse(typeof(EprnStatus), p.StatusName), p.AccreditationYear),
+            EvidenceStatusCode = MapStatusCode((EprnStatus)Enum.Parse(typeof(EprnStatus), p.StatusName)),
             StatusDate = p.StatusUpdatedOn.Value.ToUniversalTime(),
             AccreditationYear = p.AccreditationYear
         }).ToList();
 
         return prnUpdateStatuses;
+    }
+
+    public async Task<List<PrnStatusSync>> GetSyncStatuses(DateTime fromDate, DateTime toDate)
+    {
+        var result = await (from p in _eprContext.Prn
+                            join ps in _eprContext.PEprNpwdSync on p.Id equals ps.PRNId
+                            where ps.CreatedOn >= fromDate && ps.CreatedOn < toDate
+                            select new
+                            {
+                                p.PrnNumber,
+                                ps.PRNStatusId,
+                                p.OrganisationName,
+                                ps.CreatedOn
+                            }).ToListAsync();
+
+        var prnStatusSync = result.Select(p => new PrnStatusSync
+        {
+            PrnNumber = p.PrnNumber,
+            StatusName = MapStatusCode((EprnStatus)p.PRNStatusId),
+            OrganisationName = p.OrganisationName,
+            UpdatedOn = p.CreatedOn
+        }).ToList();
+
+        return prnStatusSync;
     }
 
     public async Task<Eprn?> GetPrnForOrganisationById(Guid orgId, Guid prnId)
@@ -86,7 +110,7 @@ public class Repository(EprContext eprContext, ILogger<Repository> logger, IConf
         _eprContext.PrnStatusHistory.Add(prnStatusHistory);
     }
 
-    private string MapStatusCode(EprnStatus status, string accreditationYear)
+    private string MapStatusCode(EprnStatus status)
     {
         switch (status)
         {
@@ -97,7 +121,7 @@ public class Repository(EprContext eprContext, ILogger<Repository> logger, IConf
             default:
                 throw new ArgumentException($"Unknown status: {status}");
         }
-    }
+    }   
 
     private static Expression<Func<Eprn, bool>> GetFilterByCondition(string? filterBy)
     {
