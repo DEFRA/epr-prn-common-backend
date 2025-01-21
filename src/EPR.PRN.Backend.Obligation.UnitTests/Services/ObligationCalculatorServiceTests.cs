@@ -32,6 +32,9 @@ public class ObligationCalculatorServiceTests
     public void TestInitialize()
     {
         _fixture = new Fixture();
+        _fixture.Customize(new NoCircularReferencesCustomization());
+        _fixture.Customize(new IgnoreVirtualMembersCustomization());
+
         _mockObligationCalculationRepository = new Mock<IObligationCalculationRepository>();
         _mockRecyclingTargetDataService = new Mock<IRecyclingTargetDataService>();
         _mockMaterialService = new Mock<IMaterialService>();

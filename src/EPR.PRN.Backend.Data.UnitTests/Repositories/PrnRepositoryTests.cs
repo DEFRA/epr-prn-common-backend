@@ -30,7 +30,7 @@ namespace EPR.PRN.Backend.Data.UnitTests.Repositories
             var organisationId = Guid.NewGuid();
             var year = 2023;
             var fixture = new Fixture();
-            var prns = fixture.CreateMany<Eprn>(10).ToList();
+            var prns = fixture.Build<Eprn>().Without(x => x.PrnStatusHistories).CreateMany(10).ToList();
             prns[0].OrganisationId = organisationId;
             prns[0].PrnStatusId = 1; // ACCEPTED
             prns[0].ObligationYear = year.ToString();
