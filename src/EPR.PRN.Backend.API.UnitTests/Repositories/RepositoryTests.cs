@@ -36,6 +36,9 @@ public class RepositoryTests
            .Options;
 
         _fixture = new Fixture();
+        _fixture.Customize(new NoCircularReferencesCustomization());
+        _fixture.Customize(new IgnoreVirtualMembersCustomization());
+
         _mockContext = new Mock<EprContext>();
         
         _mockLogger = new Mock<ILogger<Repository>>();

@@ -27,6 +27,9 @@ public class PrnServiceTests
     [TestInitialize]
     public void Init()
     {
+        _fixture.Customize(new NoCircularReferencesCustomization());
+        _fixture.Customize(new IgnoreVirtualMembersCustomization());
+
         _mockRepository = new Mock<IRepository>();
 
         _mockLogger = new Mock<ILogger<PrnService>>();
@@ -72,7 +75,7 @@ public class PrnServiceTests
 
         var result = await _systemUnderTest.GetAllPrnByOrganisationId(orgId);
 
-        result.Should().BeEquivalentTo(expectedPrns);
+        result.Should().BeEquivalentTo(expectedPrns, opts => opts.Excluding(x => x.PrnStatusHistories));
     }
 
     [TestMethod]

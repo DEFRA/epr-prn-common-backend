@@ -25,6 +25,9 @@ public class RepositoryTestsInMemory
     [TestInitialize]
     public void Setup()
     {
+        _fixture.Customize(new NoCircularReferencesCustomization());
+        _fixture.Customize(new IgnoreVirtualMembersCustomization());
+
         var options = new DbContextOptionsBuilder<EprContext>()
             .UseInMemoryDatabase(databaseName: "TestDatabase")
             .Options;
