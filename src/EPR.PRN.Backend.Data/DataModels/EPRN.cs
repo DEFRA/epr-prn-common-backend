@@ -86,6 +86,6 @@ namespace EPR.PRN.Backend.Data.DataModels
 		
 		public bool IsExport { get; set; }
 
-        public ICollection<PrnStatusHistory> PrnStatusHistories { get; set; } = null!;
+        public virtual ICollection<PrnStatusHistory> PrnStatusHistories { get; set; } = null!;
     }
 }

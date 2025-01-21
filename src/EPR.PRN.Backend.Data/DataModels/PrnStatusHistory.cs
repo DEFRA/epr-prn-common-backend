@@ -22,6 +22,6 @@ namespace EPR.PRN.Backend.Data.DataModels
 		[MaxLength(1000)]
 		public string? Comment { get; set; }
 
-        public Eprn Prn { get; set; } = null!;
+        public virtual Eprn Prn { get; set; } = null!;
     }
 }
