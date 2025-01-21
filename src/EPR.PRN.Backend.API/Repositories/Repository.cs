@@ -247,7 +247,7 @@ public class Repository(EprContext eprContext, ILogger<Repository> logger, IConf
 
             var prnLogVal = newPrn.PrnNumber?.Replace(Environment.NewLine, "");
 
-            // Add new PRN entity
+            // Add new PRN
             if (existingPrn == null)
             {
                 newPrn.CreatedOn = currentTimestamp;
@@ -259,7 +259,7 @@ public class Repository(EprContext eprContext, ILogger<Repository> logger, IConf
 
                 logger.LogInformation("Attempting to add new Prn entity with PrnNumber : {PrnNumber}", prnLogVal);
             }
-            // Update existing PRN entity
+            // Update existing PRN
             else
             {
                 newPrn.Id = existingPrn.Id;
