@@ -4,6 +4,7 @@ using EPR.PRN.Backend.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EPR.PRN.Backend.Data.Migrations
 {
     [DbContext(typeof(EprContext))]
-    partial class EprContextModelSnapshot : ModelSnapshot
+    [Migration("20250121153034_PrnStatusHistoryForeignKeyToPrn")]
+    partial class PrnStatusHistoryForeignKeyToPrn
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -344,320 +347,103 @@ namespace EPR.PRN.Backend.Data.Migrations
 
             modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.RecyclingTarget", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("Year")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Year"));
 
-                    b.Property<string>("MaterialNameRT")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<decimal>("Target")
+                    b.Property<decimal>("AluminiumTarget")
                         .HasColumnType("decimal(5,2)");
 
-                    b.Property<int>("Year")
-                        .HasColumnType("int");
+                    b.Property<decimal>("GlassRemeltTarget")
+                        .HasColumnType("decimal(5,2)");
 
-                    b.HasKey("Id");
+                    b.Property<decimal>("GlassTarget")
+                        .HasColumnType("decimal(5,2)");
+
+                    b.Property<decimal>("PaperTarget")
+                        .HasColumnType("decimal(5,2)");
+
+                    b.Property<decimal>("PlasticTarget")
+                        .HasColumnType("decimal(5,2)");
+
+                    b.Property<decimal>("SteelTarget")
+                        .HasColumnType("decimal(5,2)");
+
+                    b.Property<decimal>("WoodTarget")
+                        .HasColumnType("decimal(5,2)");
+
+                    b.HasKey("Year");
 
                     b.ToTable("RecyclingTargets");
 
                     b.HasData(
                         new
                         {
-                            Id = 1,
-                            MaterialNameRT = "Paper",
-                            Target = 0.75m,
-                            Year = 2025
+                            Year = 2025,
+                            AluminiumTarget = 0.61m,
+                            GlassRemeltTarget = 0.75m,
+                            GlassTarget = 0.74m,
+                            PaperTarget = 0.75m,
+                            PlasticTarget = 0.55m,
+                            SteelTarget = 0.8m,
+                            WoodTarget = 0.45m
                         },
                         new
                         {
-                            Id = 2,
-                            MaterialNameRT = "Paper",
-                            Target = 0.77m,
-                            Year = 2026
+                            Year = 2026,
+                            AluminiumTarget = 0.62m,
+                            GlassRemeltTarget = 0.76m,
+                            GlassTarget = 0.76m,
+                            PaperTarget = 0.77m,
+                            PlasticTarget = 0.57m,
+                            SteelTarget = 0.81m,
+                            WoodTarget = 0.46m
                         },
                         new
                         {
-                            Id = 3,
-                            MaterialNameRT = "Paper",
-                            Target = 0.79m,
-                            Year = 2027
+                            Year = 2027,
+                            AluminiumTarget = 0.63m,
+                            GlassRemeltTarget = 0.77m,
+                            GlassTarget = 0.78m,
+                            PaperTarget = 0.79m,
+                            PlasticTarget = 0.59m,
+                            SteelTarget = 0.82m,
+                            WoodTarget = 0.47m
                         },
                         new
                         {
-                            Id = 4,
-                            MaterialNameRT = "Paper",
-                            Target = 0.81m,
-                            Year = 2028
+                            Year = 2028,
+                            AluminiumTarget = 0.64m,
+                            GlassRemeltTarget = 0.78m,
+                            GlassTarget = 0.8m,
+                            PaperTarget = 0.81m,
+                            PlasticTarget = 0.61m,
+                            SteelTarget = 0.83m,
+                            WoodTarget = 0.48m
                         },
                         new
                         {
-                            Id = 5,
-                            MaterialNameRT = "Paper",
-                            Target = 0.83m,
-                            Year = 2029
+                            Year = 2029,
+                            AluminiumTarget = 0.65m,
+                            GlassRemeltTarget = 0.79m,
+                            GlassTarget = 0.82m,
+                            PaperTarget = 0.83m,
+                            PlasticTarget = 0.63m,
+                            SteelTarget = 0.84m,
+                            WoodTarget = 0.49m
                         },
                         new
                         {
-                            Id = 6,
-                            MaterialNameRT = "Paper",
-                            Target = 0.85m,
-                            Year = 2030
-                        },
-                        new
-                        {
-                            Id = 7,
-                            MaterialNameRT = "Glass",
-                            Target = 0.74m,
-                            Year = 2025
-                        },
-                        new
-                        {
-                            Id = 8,
-                            MaterialNameRT = "Glass",
-                            Target = 0.76m,
-                            Year = 2026
-                        },
-                        new
-                        {
-                            Id = 9,
-                            MaterialNameRT = "Glass",
-                            Target = 0.78m,
-                            Year = 2027
-                        },
-                        new
-                        {
-                            Id = 10,
-                            MaterialNameRT = "Glass",
-                            Target = 0.8m,
-                            Year = 2028
-                        },
-                        new
-                        {
-                            Id = 11,
-                            MaterialNameRT = "Glass",
-                            Target = 0.82m,
-                            Year = 2029
-                        },
-                        new
-                        {
-                            Id = 12,
-                            MaterialNameRT = "Glass",
-                            Target = 0.85m,
-                            Year = 2030
-                        },
-                        new
-                        {
-                            Id = 13,
-                            MaterialNameRT = "Aluminium",
-                            Target = 0.61m,
-                            Year = 2025
-                        },
-                        new
-                        {
-                            Id = 14,
-                            MaterialNameRT = "Aluminium",
-                            Target = 0.62m,
-                            Year = 2026
-                        },
-                        new
-                        {
-                            Id = 15,
-                            MaterialNameRT = "Aluminium",
-                            Target = 0.63m,
-                            Year = 2027
-                        },
-                        new
-                        {
-                            Id = 16,
-                            MaterialNameRT = "Aluminium",
-                            Target = 0.64m,
-                            Year = 2028
-                        },
-                        new
-                        {
-                            Id = 17,
-                            MaterialNameRT = "Aluminium",
-                            Target = 0.65m,
-                            Year = 2029
-                        },
-                        new
-                        {
-                            Id = 18,
-                            MaterialNameRT = "Aluminium",
-                            Target = 0.67m,
-                            Year = 2030
-                        },
-                        new
-                        {
-                            Id = 19,
-                            MaterialNameRT = "Steel",
-                            Target = 0.8m,
-                            Year = 2025
-                        },
-                        new
-                        {
-                            Id = 20,
-                            MaterialNameRT = "Steel",
-                            Target = 0.81m,
-                            Year = 2026
-                        },
-                        new
-                        {
-                            Id = 21,
-                            MaterialNameRT = "Steel",
-                            Target = 0.82m,
-                            Year = 2027
-                        },
-                        new
-                        {
-                            Id = 22,
-                            MaterialNameRT = "Steel",
-                            Target = 0.83m,
-                            Year = 2028
-                        },
-                        new
-                        {
-                            Id = 23,
-                            MaterialNameRT = "Steel",
-                            Target = 0.84m,
-                            Year = 2029
-                        },
-                        new
-                        {
-                            Id = 24,
-                            MaterialNameRT = "Steel",
-                            Target = 0.85m,
-                            Year = 2030
-                        },
-                        new
-                        {
-                            Id = 25,
-                            MaterialNameRT = "Plastic",
-                            Target = 0.55m,
-                            Year = 2025
-                        },
-                        new
-                        {
-                            Id = 26,
-                            MaterialNameRT = "Plastic",
-                            Target = 0.57m,
-                            Year = 2026
-                        },
-                        new
-                        {
-                            Id = 27,
-                            MaterialNameRT = "Plastic",
-                            Target = 0.59m,
-                            Year = 2027
-                        },
-                        new
-                        {
-                            Id = 28,
-                            MaterialNameRT = "Plastic",
-                            Target = 0.61m,
-                            Year = 2028
-                        },
-                        new
-                        {
-                            Id = 29,
-                            MaterialNameRT = "Plastic",
-                            Target = 0.63m,
-                            Year = 2029
-                        },
-                        new
-                        {
-                            Id = 30,
-                            MaterialNameRT = "Plastic",
-                            Target = 0.65m,
-                            Year = 2030
-                        },
-                        new
-                        {
-                            Id = 31,
-                            MaterialNameRT = "Wood",
-                            Target = 0.45m,
-                            Year = 2025
-                        },
-                        new
-                        {
-                            Id = 32,
-                            MaterialNameRT = "Wood",
-                            Target = 0.46m,
-                            Year = 2026
-                        },
-                        new
-                        {
-                            Id = 33,
-                            MaterialNameRT = "Wood",
-                            Target = 0.47m,
-                            Year = 2027
-                        },
-                        new
-                        {
-                            Id = 34,
-                            MaterialNameRT = "Wood",
-                            Target = 0.48m,
-                            Year = 2028
-                        },
-                        new
-                        {
-                            Id = 35,
-                            MaterialNameRT = "Wood",
-                            Target = 0.49m,
-                            Year = 2029
-                        },
-                        new
-                        {
-                            Id = 36,
-                            MaterialNameRT = "Wood",
-                            Target = 0.5m,
-                            Year = 2030
-                        },
-                        new
-                        {
-                            Id = 37,
-                            MaterialNameRT = "GlassRemelt",
-                            Target = 0.75m,
-                            Year = 2025
-                        },
-                        new
-                        {
-                            Id = 38,
-                            MaterialNameRT = "GlassRemelt",
-                            Target = 0.76m,
-                            Year = 2026
-                        },
-                        new
-                        {
-                            Id = 39,
-                            MaterialNameRT = "GlassRemelt",
-                            Target = 0.77m,
-                            Year = 2027
-                        },
-                        new
-                        {
-                            Id = 40,
-                            MaterialNameRT = "GlassRemelt",
-                            Target = 0.78m,
-                            Year = 2028
-                        },
-                        new
-                        {
-                            Id = 41,
-                            MaterialNameRT = "GlassRemelt",
-                            Target = 0.79m,
-                            Year = 2029
-                        },
-                        new
-                        {
-                            Id = 42,
-                            MaterialNameRT = "GlassRemelt",
-                            Target = 0.8m,
-                            Year = 2030
+                            Year = 2030,
+                            AluminiumTarget = 0.67m,
+                            GlassRemeltTarget = 0.8m,
+                            GlassTarget = 0.85m,
+                            PaperTarget = 0.85m,
+                            PlasticTarget = 0.65m,
+                            SteelTarget = 0.85m,
+                            WoodTarget = 0.5m
                         });
                 });
 
