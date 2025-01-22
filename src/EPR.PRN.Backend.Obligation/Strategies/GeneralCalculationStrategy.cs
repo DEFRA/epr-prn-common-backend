@@ -21,6 +21,7 @@ namespace EPR.PRN.Backend.Obligation.Strategies
         public List<ObligationCalculation> Calculate(CalculationRequestDto calculationRequest)
         {
             var targetYear = DateHelper.ExtractYear(calculationRequest.SubmissionCalculationRequest.SubmissionPeriod);
+            targetYear = targetYear < calculationRequest.RecyclingTargets.Keys.Min() ? calculationRequest.RecyclingTargets.Keys.Min() : targetYear;
             var calculation = new ObligationCalculation
             {
                 MaterialName = calculationRequest.MaterialType.ToString(),

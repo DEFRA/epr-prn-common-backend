@@ -54,7 +54,7 @@ public class ObligationCalculatorServiceTests
     {
         // Arrange
         var organisationId = Guid.NewGuid();
-        var year = 2024;
+        var year = 2025;
 
         _mockMaterialRepository
             .Setup(repo => repo.GetAllMaterials())
@@ -75,7 +75,7 @@ public class ObligationCalculatorServiceTests
     {
         // Arrange
         var organisationId = Guid.NewGuid();
-        var year = 2024;
+        var year = 2025;
 
         var materials = GetMaterialCodes();
         var obligationCalculations = _fixture.CreateMany<ObligationCalculation>(5).ToList();
@@ -128,7 +128,7 @@ public class ObligationCalculatorServiceTests
     {
         // Arrange
         var organisationId = Guid.NewGuid();
-        var year = 2024;
+        var year = 2025;
 
         var materials = _fixture.CreateMany<Material>(5).ToList(); // No GlassRemelt initially
         var obligationCalculations = _fixture.CreateMany<ObligationCalculation>(6).ToList();
@@ -162,7 +162,7 @@ public class ObligationCalculatorServiceTests
     {
         // Arrange
         var organisationId = Guid.NewGuid();
-        var year = 2024;
+        var year = 2025;
 
         var materials = _fixture.CreateMany<Material>(5).ToList();
         var obligationCalculations = _fixture.CreateMany<ObligationCalculation>(6).ToList();

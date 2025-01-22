@@ -100,7 +100,7 @@ public class GeneralCalculationStrategyTests
             PackagingMaterial = "Plastic",
             PackagingMaterialWeight = 100,
             SubmissionId = Guid.NewGuid(),
-            SubmissionPeriod = "2024-P1"
+            SubmissionPeriod = "2025-P1"
         };
 
         var materialType = MaterialType.Plastic;
