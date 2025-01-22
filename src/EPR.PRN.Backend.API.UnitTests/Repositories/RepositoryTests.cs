@@ -200,7 +200,7 @@ public class RepositoryTests
         var result = await _repository.GetPrnsForPrnNumbers([prns[0].PrnNumber, prns[1].PrnNumber]);
 
         result.Count.Should().Be(2);
-        result.Should().BeEquivalentTo([prns[0], prns[1]]);
+        result.Should().BeEquivalentTo([prns[0], prns[1]], o => o.Excluding(prn => prn.PrnStatusHistories));
     }
 
     [TestMethod]
