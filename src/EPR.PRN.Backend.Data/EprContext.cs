@@ -61,6 +61,14 @@ namespace EPR.PRN.Backend.Data
                             new Material { MaterialCode = "GL", MaterialName = "Glass" }
                 );
 
+            modelBuilder.Entity<Eprn>(entity =>
+            {
+                entity.HasMany(prn => prn.PrnStatusHistories)
+                .WithOne()
+                .HasForeignKey(s => s.PrnIdFk)
+                .OnDelete(DeleteBehavior.NoAction);
+            });
+
             base.OnModelCreating(modelBuilder);
         }
 
