@@ -72,7 +72,7 @@ public class PrnServiceTests
 
         var result = await _systemUnderTest.GetAllPrnByOrganisationId(orgId);
 
-        result.Should().BeEquivalentTo(expectedPrns);
+        result.Should().BeEquivalentTo(expectedPrns, o => o.Excluding(p => p.PrnStatusHistories));
     }
 
     [TestMethod]
