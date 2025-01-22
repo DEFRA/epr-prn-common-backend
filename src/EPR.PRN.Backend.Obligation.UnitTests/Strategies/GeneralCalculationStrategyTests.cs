@@ -1,5 +1,5 @@
-﻿using EPR.PRN.Backend.Obligation.DTO;
-using EPR.PRN.Backend.Obligation.Enums;
+﻿using EPR.PRN.Backend.API.Common.Enums;
+using EPR.PRN.Backend.Obligation.Dto;
 using EPR.PRN.Backend.Obligation.Interfaces;
 using EPR.PRN.Backend.Obligation.Models;
 using EPR.PRN.Backend.Obligation.Strategies;
@@ -100,7 +100,7 @@ public class GeneralCalculationStrategyTests
             PackagingMaterial = "Plastic",
             PackagingMaterialWeight = 100,
             SubmissionId = Guid.NewGuid(),
-            SubmissionPeriod = "2024-P1"
+            SubmissionPeriod = "2025-P1"
         };
 
         var materialType = MaterialType.Plastic;

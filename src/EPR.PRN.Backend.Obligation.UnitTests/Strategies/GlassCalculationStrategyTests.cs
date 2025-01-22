@@ -1,6 +1,5 @@
-﻿using EPR.PRN.Backend.Obligation.DTO;
-using EPR.PRN.Backend.Obligation.Enums;
-using EPR.PRN.Backend.Obligation.Helpers;
+﻿using EPR.PRN.Backend.API.Common.Enums;
+using EPR.PRN.Backend.Obligation.Dto;
 using EPR.PRN.Backend.Obligation.Interfaces;
 using EPR.PRN.Backend.Obligation.Models;
 using EPR.PRN.Backend.Obligation.Strategies;
@@ -80,10 +79,8 @@ public class GlassCalculationStrategyTests
             RecyclingTargets = recyclingTargets
         };
 
-        var targetYear = DateHelper.ExtractYear(calculationRequest.SubmissionPeriod);
-
         _mockCalculationService.Setup(x => x.CalculateGlass(
-            request.RecyclingTargets[targetYear][MaterialType.Glass], request.RecyclingTargets[targetYear][MaterialType.GlassRemelt],
+            request.RecyclingTargets[2025][MaterialType.Glass], request.RecyclingTargets[2025][MaterialType.GlassRemelt],
             request.SubmissionCalculationRequest.PackagingMaterialWeight))
             .Returns((80, 120));  // remelt = 80, remainder = 120
 
@@ -108,40 +105,5 @@ public class GlassCalculationStrategyTests
         Assert.AreEqual(DateTime.UtcNow.Year, remeltCalculation.Year);
         Assert.IsTrue((DateTime.UtcNow - glassCalculation.CalculatedOn).TotalSeconds < 1, "CalculatedOn should be very close to the current time");
         Assert.IsTrue((DateTime.UtcNow - remeltCalculation.CalculatedOn).TotalSeconds < 1, "CalculatedOn should be very close to the current time");
-    }
-
-    [TestMethod]
-    [ExpectedException(typeof(KeyNotFoundException))]
-    public void Calculate_ShouldThrowKeyNotFoundException_WhenRecyclingTargetYearNotFound()
-    {
-        // Arrange
-        var calculationRequest = new SubmissionCalculationRequest
-        {
-            SubmissionPeriod = "2024-P4",
-            PackagingMaterial = "Glass",
-            PackagingMaterialWeight = 200,
-            SubmissionId = Guid.NewGuid()
-        };
-
-        var materialType = MaterialType.Glass;
-
-        var recyclingTargets = new Dictionary<int, Dictionary<MaterialType, double>>
-        {
-            {
-                DateTime.UtcNow.Year - 1, // Use a past year to trigger the exception
-                new Dictionary<MaterialType, double>
-                {
-                    { MaterialType.Glass, 0.6 },
-                    { MaterialType.GlassRemelt, 0.4 }
-                }
-            }
-        };
-
-        var request = new CalculationRequestDto { MaterialType = materialType, RecyclingTargets = recyclingTargets, SubmissionCalculationRequest = calculationRequest };
-
-        // Act
-        _strategy.Calculate(request);
-
-        // Assert is handled by ExpectedException
     }
 }

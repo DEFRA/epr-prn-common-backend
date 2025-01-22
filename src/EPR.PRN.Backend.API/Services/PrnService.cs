@@ -2,7 +2,9 @@
 
 namespace EPR.PRN.Backend.API.Services;
 
-using EPR.PRN.Backend.API.Common.DTO;
+using EPR.PRN.Backend.API.Common.Dto;
+using EPR.PRN.Backend.API.Common.Enums;
+using EPR.PRN.Backend.API.Dto;
 using EPR.PRN.Backend.API.Helpers;
 using EPR.PRN.Backend.API.Models;
 using EPR.PRN.Backend.API.Repositories.Interfaces;
@@ -139,7 +141,7 @@ public class PrnService(IRepository repository, ILogger<PrnService> logger, ICon
 
     private static bool IsExport(string evidenceNo)
     {
-        if(string.IsNullOrEmpty(evidenceNo)) 
+        if (string.IsNullOrEmpty(evidenceNo))
             return false;
 
         var val = evidenceNo.Substring(0,2).Trim();

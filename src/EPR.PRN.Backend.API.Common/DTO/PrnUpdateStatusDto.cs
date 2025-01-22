@@ -1,7 +1,7 @@
-﻿using EPR.PRN.Backend.Data.DataModels;
+﻿using EPR.PRN.Backend.API.Common.Enums;
 using System.Diagnostics.CodeAnalysis;
 
-namespace EPR.PRN.Backend.API.Common.DTO
+namespace EPR.PRN.Backend.API.Common.Dto
 {
     [ExcludeFromCodeCoverage]
     public class PrnUpdateStatusDto

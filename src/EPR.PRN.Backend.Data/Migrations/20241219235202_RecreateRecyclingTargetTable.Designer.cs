@@ -4,6 +4,7 @@ using EPR.PRN.Backend.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EPR.PRN.Backend.Data.Migrations
 {
     [DbContext(typeof(EprContext))]
-    partial class EprContextModelSnapshot : ModelSnapshot
+    [Migration("20241219235202_RecreateRecyclingTargetTable")]
+    partial class RecreateRecyclingTargetTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -337,8 +340,6 @@ namespace EPR.PRN.Backend.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("PrnIdFk");
-
                     b.ToTable("PrnStatusHistory");
                 });
 
@@ -659,20 +660,6 @@ namespace EPR.PRN.Backend.Data.Migrations
                             Target = 0.8m,
                             Year = 2030
                         });
-                });
-
-            modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.PrnStatusHistory", b =>
-                {
-                    b.HasOne("EPR.PRN.Backend.Data.DataModels.Eprn", null)
-                        .WithMany("PrnStatusHistories")
-                        .HasForeignKey("PrnIdFk")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Eprn", b =>
-                {
-                    b.Navigation("PrnStatusHistories");
                 });
 #pragma warning restore 612, 618
         }
