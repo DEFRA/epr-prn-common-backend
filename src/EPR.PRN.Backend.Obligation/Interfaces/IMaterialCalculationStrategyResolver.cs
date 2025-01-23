@@ -1,4 +1,4 @@
-﻿using EPR.PRN.Backend.Obligation.Enums;
+﻿using EPR.PRN.Backend.API.Common.Enums;
 
 namespace EPR.PRN.Backend.Obligation.Interfaces
 {

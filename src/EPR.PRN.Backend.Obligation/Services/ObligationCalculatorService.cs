@@ -1,9 +1,9 @@
-﻿using EPR.PRN.Backend.Data.DataModels;
-using EPR.PRN.Backend.Data.DTO;
+﻿using EPR.PRN.Backend.API.Common.Enums;
+using EPR.PRN.Backend.Data.DataModels;
+using EPR.PRN.Backend.Data.Dto;
 using EPR.PRN.Backend.Data.Interfaces;
 using EPR.PRN.Backend.Obligation.Constants;
-using EPR.PRN.Backend.Obligation.DTO;
-using EPR.PRN.Backend.Obligation.Enums;
+using EPR.PRN.Backend.Obligation.Dto;
 using EPR.PRN.Backend.Obligation.Helpers;
 using EPR.PRN.Backend.Obligation.Interfaces;
 using EPR.PRN.Backend.Obligation.Models;
@@ -174,7 +174,7 @@ namespace EPR.PRN.Backend.Obligation.Services
             {
                 return null;
             }
-            return recyclingTargets[year + 1][materialType.Value];
+            return recyclingTargets[year][materialType.Value];
         }
 
         private static List<Material> AddGlassRemelt(List<Material> materials)

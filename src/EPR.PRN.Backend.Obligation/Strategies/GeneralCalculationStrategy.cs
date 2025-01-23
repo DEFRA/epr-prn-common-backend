@@ -1,6 +1,6 @@
-﻿using EPR.PRN.Backend.Data.DataModels;
-using EPR.PRN.Backend.Obligation.DTO;
-using EPR.PRN.Backend.Obligation.Enums;
+﻿using EPR.PRN.Backend.API.Common.Enums;
+using EPR.PRN.Backend.Data.DataModels;
+using EPR.PRN.Backend.Obligation.Dto;
 using EPR.PRN.Backend.Obligation.Helpers;
 using EPR.PRN.Backend.Obligation.Interfaces;
 
@@ -21,6 +21,7 @@ namespace EPR.PRN.Backend.Obligation.Strategies
         public List<ObligationCalculation> Calculate(CalculationRequestDto calculationRequest)
         {
             var targetYear = DateHelper.ExtractYear(calculationRequest.SubmissionCalculationRequest.SubmissionPeriod);
+            targetYear = targetYear < calculationRequest.RecyclingTargets.Keys.Min() ? calculationRequest.RecyclingTargets.Keys.Min() : targetYear;
             var calculation = new ObligationCalculation
             {
                 MaterialName = calculationRequest.MaterialType.ToString(),

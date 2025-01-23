@@ -1,7 +1,4 @@
-﻿
-using EPR.PRN.Backend.Data.DataModels;
-
-namespace EPR.PRN.Backend.API.Common.Constants
+﻿namespace EPR.PRN.Backend.API.Common.Constants
 {
     public static class PrnConstants
     {
@@ -27,9 +24,9 @@ namespace EPR.PRN.Backend.API.Common.Constants
             public const string Descending = "desc";
             public const string Ascending = "asc";
             public const string IssueDateDesc = "date-issued-desc";
-            public const string IssueDateAsc = "date-issued-asc" ;
+            public const string IssueDateAsc = "date-issued-asc";
             public const string TonnageDesc = "tonnage-desc";
-            public const string TonnageAsc ="tonnage-asc";
+            public const string TonnageAsc = "tonnage-asc";
             public const string IssuedByDesc = "issued-by-desc";
             public const string IssuedByAsc = "issued-by-asc";
             public const string DescemberWasteDesc = "december-waste-desc";
