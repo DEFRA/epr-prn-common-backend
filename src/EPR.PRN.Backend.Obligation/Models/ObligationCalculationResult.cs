@@ -1,4 +1,4 @@
-﻿using EPR.PRN.Backend.Obligation.DTO;
+﻿using EPR.PRN.Backend.Obligation.Dto;
 
 namespace EPR.PRN.Backend.Obligation.Models
 {

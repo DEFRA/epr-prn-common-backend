@@ -1,13 +1,15 @@
 ﻿using AutoFixture;
 using BackendAccountService.Core.Models.Request;
-using EPR.PRN.Backend.API.Common.DTO;
+using EPR.PRN.Backend.API.Common.Dto;
+using EPR.PRN.Backend.API.Common.Enums;
 using EPR.PRN.Backend.API.Configs;
 using EPR.PRN.Backend.API.Controllers;
+using EPR.PRN.Backend.API.Dto;
 using EPR.PRN.Backend.API.Helpers;
 using EPR.PRN.Backend.API.Models;
 using EPR.PRN.Backend.API.Services.Interfaces;
 using EPR.PRN.Backend.Data.DataModels;
-using EPR.PRN.Backend.Obligation.DTO;
+using EPR.PRN.Backend.Obligation.Dto;
 using EPR.PRN.Backend.Obligation.Interfaces;
 using EPR.PRN.Backend.Obligation.Models;
 using FluentAssertions;
@@ -587,7 +589,7 @@ public class PrnControllerTests
                         .ToList();
 
 
-        var matchingProp = props.FirstOrDefault(x => string.Equals(x.Name, propertyName, StringComparison.InvariantCulture));
+        var matchingProp = props.Find(x => string.Equals(x.Name, propertyName, StringComparison.InvariantCulture));
         matchingProp.Should().NotBeNull();
 
         // Set the value of the property (overriding the default value set above) to the value passed in as the argument to this method
@@ -713,7 +715,7 @@ public class PrnControllerTests
                         .ToList();
 
 
-        var matchingProp = props.FirstOrDefault(x => string.Equals(x.Name, propertyName, StringComparison.InvariantCulture));
+        var matchingProp = props.Find(x => string.Equals(x.Name, propertyName, StringComparison.InvariantCulture));
         matchingProp.Should().NotBeNull();
 
         // Set the value of the property (overriding the default value set above) to the value passed in as the argument to this method

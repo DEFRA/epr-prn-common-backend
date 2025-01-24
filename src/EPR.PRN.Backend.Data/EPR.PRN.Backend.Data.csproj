@@ -23,6 +23,9 @@
 		<PackageReference Include="System.Formats.Asn1" Version="8.0.1" />
 	</ItemGroup>
 	<ItemGroup>
+	  <ProjectReference Include="..\EPR.PRN.Backend.API.Common\EPR.PRN.Backend.API.Common.csproj" />
+	</ItemGroup>
+	<ItemGroup>
 		
 		<SonarQubeSetting Include="sonar.coverage.exclusions">
 			<Value>Migrations/*,Scripts/*</Value>

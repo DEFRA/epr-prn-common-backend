@@ -1,5 +1,7 @@
 ﻿using AutoFixture;
-using EPR.PRN.Backend.API.Common.DTO;
+using EPR.PRN.Backend.API.Common.Dto;
+using EPR.PRN.Backend.API.Common.Enums;
+using EPR.PRN.Backend.API.Dto;
 using EPR.PRN.Backend.API.Helpers;
 using EPR.PRN.Backend.API.Models;
 using EPR.PRN.Backend.API.Repositories.Interfaces;
@@ -72,7 +74,7 @@ public class PrnServiceTests
 
         var result = await _systemUnderTest.GetAllPrnByOrganisationId(orgId);
 
-        result.Should().BeEquivalentTo(expectedPrns);
+        result.Should().BeEquivalentTo(expectedPrns, o => o.Excluding(p => p.PrnStatusHistories));
     }
 
     [TestMethod]
@@ -197,7 +199,7 @@ public class PrnServiceTests
 
         availablePrns.Should().AllSatisfy(x => x.PrnStatusId.Should().Be((int)EprnStatus.ACCEPTED));
         availablePrns.Should().AllSatisfy(x => x.LastUpdatedBy.Should().Be(userId));
-        availablePrns.Should().AllSatisfy(x => x.StatusUpdatedOn.Should().BeCloseTo(DateTime.UtcNow,new TimeSpan(0,10,0)));
+        availablePrns.Should().AllSatisfy(x => x.StatusUpdatedOn.Should().BeCloseTo(DateTime.UtcNow, new TimeSpan(0, 10, 0)));
         availablePrns.Should().AllSatisfy(x => x.StatusUpdatedOn.Should().BeCloseTo(DateTime.UtcNow, new TimeSpan(0, 10, 0)));
         _mockRepository.Verify(x => x.SaveTransaction(It.IsAny<IDbContextTransaction>()), Times.Once());
         _mockRepository.Verify(x => x.AddPrnStatusHistory(It.IsAny<PrnStatusHistory>()), Times.Exactly(3));

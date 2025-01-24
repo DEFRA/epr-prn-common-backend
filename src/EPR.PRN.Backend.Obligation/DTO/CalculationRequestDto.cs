@@ -1,7 +1,7 @@
-﻿using EPR.PRN.Backend.Obligation.Enums;
+﻿using EPR.PRN.Backend.API.Common.Enums;
 using EPR.PRN.Backend.Obligation.Models;
 
-namespace EPR.PRN.Backend.Obligation.DTO
+namespace EPR.PRN.Backend.Obligation.Dto
 {
     public class CalculationRequestDto
     {

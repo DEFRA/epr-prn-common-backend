@@ -2,7 +2,9 @@
 
 namespace EPR.PRN.Backend.API.Services;
 
-using EPR.PRN.Backend.API.Common.DTO;
+using EPR.PRN.Backend.API.Common.Dto;
+using EPR.PRN.Backend.API.Common.Enums;
+using EPR.PRN.Backend.API.Dto;
 using EPR.PRN.Backend.API.Helpers;
 using EPR.PRN.Backend.API.Models;
 using EPR.PRN.Backend.API.Repositories.Interfaces;
@@ -140,6 +142,17 @@ public class PrnService(IRepository repository, ILogger<PrnService> logger, ICon
             logger.LogError(message: ex.Message, exception: ex);
             throw new OperationCanceledException("Error encountered when attempting to map and save PRN requst. Please see the logs for details.");
         }
+    }
+
+    private static bool IsExport(string evidenceNo)
+    {
+        if (string.IsNullOrEmpty(evidenceNo))
+            return false;
+
+        var val = evidenceNo.Substring(0,2).Trim();
+
+        return string.Equals(val, Common.Constants.PrnConstants.ExporterCodePrefixes.EaExport, StringComparison.InvariantCultureIgnoreCase)
+                || string.Equals(val, Common.Constants.PrnConstants.ExporterCodePrefixes.SepaExport, StringComparison.InvariantCultureIgnoreCase);
     }
 
     public async Task InsertPeprNpwdSyncPrns(List<InsertSyncedPrn> syncedPrns)

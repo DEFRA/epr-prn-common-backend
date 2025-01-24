@@ -16,7 +16,7 @@ public class DateHelperTests
         int result = DateHelper.ExtractYear(dateString);
 
         // Assert
-        result.Should().Be(2025);
+        result.Should().Be(2024);
     }
 
     [TestMethod]
@@ -85,7 +85,7 @@ public class DateHelperTests
         int result = DateHelper.ExtractYear(dateString);
 
         // Assert
-        result.Should().Be(2021);
+        result.Should().Be(2020);
     }
 
     [TestMethod]

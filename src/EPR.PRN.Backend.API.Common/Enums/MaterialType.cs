@@ -1,4 +1,4 @@
-﻿namespace EPR.PRN.Backend.Obligation.Enums
+﻿namespace EPR.PRN.Backend.API.Common.Enums
 {
     public enum MaterialType
     {
