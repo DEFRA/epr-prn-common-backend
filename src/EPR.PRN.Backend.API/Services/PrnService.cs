@@ -182,17 +182,6 @@ public class PrnService(IRepository repository, ILogger<PrnService> logger, ICon
         logger.LogInformation("{Logprefix}: PrnService - InsertPeprNpwdSyncPrns: sync record inserted", logPrefix);
     }
 
-    private static bool IsExport(string evidenceNo)
-    {
-        if (string.IsNullOrEmpty(evidenceNo))
-            return false;
-
-        var prefix = evidenceNo.Substring(0, 2).Trim();
-
-        return string.Equals(prefix, Common.Constants.PrnConstants.ExporterCodePrefixes.EaExport, StringComparison.InvariantCultureIgnoreCase)
-                || string.Equals(prefix, Common.Constants.PrnConstants.ExporterCodePrefixes.SepaExport, StringComparison.InvariantCultureIgnoreCase);
-    }
-
     private void UpdatePrn(Guid userId, PrnUpdateStatusDto prnUpdate, Eprn prn)
     {
         var updateDate = DateTime.UtcNow;
