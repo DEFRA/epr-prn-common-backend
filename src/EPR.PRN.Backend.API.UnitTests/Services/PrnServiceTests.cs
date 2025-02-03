@@ -387,6 +387,54 @@ public class PrnServiceTests
     }
 
     [TestMethod]
+    public async Task SavePrnDetails_SetsDatesCorrectly_BeforeSaving()
+    {
+        Eprn? prn = null;
+        DateTime? issuedDate = DateTime.UtcNow.AddDays(-5);
+        DateTime statusUpdatedDate = DateTime.UtcNow.AddDays(-2);
+
+        _mockRepository.Setup(s => s.SavePrnDetails(It.IsAny<Eprn>()))
+            .Callback<Eprn>(x => prn = x);
+
+        var dto = _fixture.Create<SavePrnDetailsRequest>();
+        //dto.CancelledDate = statusUpdatedDate.AddDays(1);
+        dto.EvidenceStatusCode = EprnStatus.AWAITINGACCEPTANCE;
+        dto.IssueDate = issuedDate;
+        dto.StatusDate = statusUpdatedDate;
+
+        await _systemUnderTest.SavePrnDetails(dto);
+
+        prn.CreatedOn.Should().Be(default);
+        prn.IssueDate.Should().Be(issuedDate);
+        prn.LastUpdatedDate.Should().Be(statusUpdatedDate);
+        prn.StatusUpdatedOn.Should().Be(statusUpdatedDate);
+    }
+
+    [TestMethod]
+    public async Task SavePrnDetails_WhenCancelled_SetsDatesCorrectly_BeforeSaving()
+    {
+        Eprn? prn = null;
+        DateTime? issuedDate = DateTime.UtcNow.AddDays(-5);
+        DateTime statusUpdatedDate = DateTime.UtcNow.AddDays(-2);
+
+        _mockRepository.Setup(s => s.SavePrnDetails(It.IsAny<Eprn>()))
+            .Callback<Eprn>(x => prn = x);
+
+        var dto = _fixture.Create<SavePrnDetailsRequest>();
+        dto.CancelledDate = statusUpdatedDate.AddDays(1);
+        dto.EvidenceStatusCode = EprnStatus.CANCELLED;
+        dto.IssueDate = issuedDate;
+        dto.StatusDate = statusUpdatedDate;
+ 
+        await _systemUnderTest.SavePrnDetails(dto);
+
+        prn.CreatedOn.Should().Be(default);
+        prn.IssueDate.Should().Be(issuedDate);
+        prn.LastUpdatedDate.Should().Be(statusUpdatedDate);
+        prn.StatusUpdatedOn.Should().Be(statusUpdatedDate.AddDays(1));
+    }
+
+    [TestMethod]
     public async Task InsertPeprNpwdSyncPrns_throwsNotFoundIfNoPrnRecordsForEvidence()
     {
         var syncPrns = _fixture.CreateMany<InsertSyncedPrn>().ToList();
