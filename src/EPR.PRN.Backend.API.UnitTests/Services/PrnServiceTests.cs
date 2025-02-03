@@ -406,7 +406,7 @@ public class PrnServiceTests
 
         prn.CreatedOn.Should().Be(default);
         prn.IssueDate.Should().Be(issuedDate);
-        prn.LastUpdatedDate.Should().Be(statusUpdatedDate);
+        prn.LastUpdatedDate.Should().Be(default);
         prn.StatusUpdatedOn.Should().Be(statusUpdatedDate);
     }
 
@@ -430,7 +430,7 @@ public class PrnServiceTests
 
         prn.CreatedOn.Should().Be(default);
         prn.IssueDate.Should().Be(issuedDate);
-        prn.LastUpdatedDate.Should().Be(statusUpdatedDate);
+        prn.LastUpdatedDate.Should().Be(default);
         prn.StatusUpdatedOn.Should().Be(statusUpdatedDate.AddDays(1));
     }
 
