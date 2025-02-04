@@ -122,7 +122,6 @@ public class PrnService(IRepository repository, ILogger<PrnService> logger, ICon
                 ProcessToBeUsed = prn.RecoveryProcessCode,
                 ReprocessingSite = string.Empty,
                 StatusUpdatedOn = prn.EvidenceStatusCode == EprnStatus.CANCELLED ? prn.CancelledDate : prn.StatusDate,
-                LastUpdatedDate = prn.StatusDate!.Value,
                 ExternalId = Guid.Empty, // set value in repo when inserting and set to new guid
                 ReprocessorExporterAgency = prn.ReprocessorAgency!,
                 Signature = null,  // Not defined in NPWD to PRN mapping requirements,
