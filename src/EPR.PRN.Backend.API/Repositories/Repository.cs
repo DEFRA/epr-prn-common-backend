@@ -285,6 +285,8 @@ public class Repository(EprContext eprContext, ILogger<Repository> logger, IConf
             // Update existing PRN
             else
             {
+                newPrn.CreatedOn = existingPrn.CreatedOn;
+                newPrn.LastUpdatedDate = currentTimestamp;
                 newPrn.Id = existingPrn.Id;
                 newPrn.ExternalId = existingPrn.ExternalId;
                 _eprContext.Entry(existingPrn).State = EntityState.Modified;
