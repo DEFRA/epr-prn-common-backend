@@ -127,6 +127,19 @@ public class PrnController(IPrnService prnService,
         return Ok(prns);
     }
 
+    [HttpGet("syncstatuses")]
+    [ProducesResponseType(typeof(List<PrnStatusSync>), 200)]
+    public async Task<IActionResult> GetSyncStatuses([FromQuery] ModifiedPrnsbyDateRequest request)
+    {
+        if (!ModelState.IsValid)
+        { return BadRequest(ModelState); }
+
+        var statusList = await prnService.GetSyncStatuses(request.From, request.To);
+        return statusList == null || !statusList.Any()
+            ? StatusCode(StatusCodes.Status204NoContent)
+            : Ok(statusList);
+    }
+
     #endregion Get Methods
 
     #region Post Methods

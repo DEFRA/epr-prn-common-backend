@@ -37,12 +37,17 @@ public class PrnService(IRepository repository, ILogger<PrnService> logger, ICon
         return prns;
     }
 
-        public async Task<List<PrnUpdateStatus>?> GetModifiedPrnsbyDate(DateTime fromDate, DateTime toDate)
-        {
-            var modifiedPrns = await _repository.GetModifiedPrnsbyDate(fromDate, toDate);
+    public async Task<List<PrnUpdateStatus>?> GetModifiedPrnsbyDate(DateTime fromDate, DateTime toDate)
+    {
+        var modifiedPrns = await _repository.GetModifiedPrnsbyDate(fromDate, toDate);
 
-            return modifiedPrns == null ? null : modifiedPrns;
-        }
+        return modifiedPrns == null ? null : modifiedPrns;
+    }
+
+    public async Task<List<PrnStatusSync>?> GetSyncStatuses(DateTime fromDate, DateTime toDate)
+    {
+        return await _repository.GetSyncStatuses(fromDate, toDate);
+    }
 
     public async Task<PaginatedResponseDto<PrnDto>> GetSearchPrnsForOrganisation(Guid orgId, PaginatedRequestDto request)
     {
@@ -175,6 +180,7 @@ public class PrnService(IRepository repository, ILogger<PrnService> logger, ICon
         await _repository.InsertPeprNpwdSyncPrns(peprNpwdSyncs);
         logger.LogInformation("{Logprefix}: PrnService - InsertPeprNpwdSyncPrns: sync record inserted", logPrefix);
     }
+
     private void UpdatePrn(Guid userId, PrnUpdateStatusDto prnUpdate, Eprn prn)
     {
         var updateDate = DateTime.UtcNow;
