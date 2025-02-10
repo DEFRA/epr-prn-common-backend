@@ -9,6 +9,7 @@
         Aluminium,
         Steel,
         Plastic,
-        Wood
+        Wood,
+        FibreComposite
     }
 }
