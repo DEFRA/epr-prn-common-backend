@@ -41,6 +41,7 @@ public class Repository(EprContext eprContext, ILogger<Repository> logger, IConf
                             join ps in _eprContext.PrnStatus on p.PrnStatusId equals ps.Id
                             where p.StatusUpdatedOn >= fromDate && p.StatusUpdatedOn <= toDate
                             && (p.PrnStatusId == 1 || p.PrnStatusId == 2)
+                            && !_eprContext.PEprNpwdSync.Any(s => p.Id == s.PRNId && p.PrnStatusId == s.PRNStatusId)
                             select new
                             {
                                 p.PrnNumber,
