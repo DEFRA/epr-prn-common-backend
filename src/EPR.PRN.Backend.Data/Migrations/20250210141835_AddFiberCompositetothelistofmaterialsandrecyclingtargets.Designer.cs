@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EPR.PRN.Backend.Data.Migrations
 {
     [DbContext(typeof(EprContext))]
-    [Migration("20250210141835_Add FiberComposite to the list of materials and recycling targets")]
+    [Migration("20250210141835_AddFiberCompositetothelistofmaterialsandrecyclingtargets")]
     partial class AddFiberCompositetothelistofmaterialsandrecyclingtargets
     {
         /// <inheritdoc />
