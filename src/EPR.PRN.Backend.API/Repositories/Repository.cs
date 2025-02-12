@@ -263,6 +263,24 @@ public class Repository(EprContext eprContext, ILogger<Repository> logger, IConf
             // Update existing PRN
             else
             {
+                // the Prn has already been accepted or rejected
+                if (newPrn.PrnStatusId != existingPrn.PrnStatusId && newPrn.PrnStatusId == (int)EprnStatus.AWAITINGACCEPTANCE)
+                {
+                    string incomingStatus = ((EprnStatus)newPrn.PrnStatusId).ToString();
+
+                    // put back status and status date in Prn
+                    newPrn.PrnStatusId = existingPrn.PrnStatusId;
+                    newPrn.StatusUpdatedOn = existingPrn.StatusUpdatedOn;
+                    
+                    // put back status in status history
+                    statusHistory.PrnStatusIdFk = newPrn.PrnStatusId;
+                    statusHistory.Comment = $"{incomingStatus} => {((EprnStatus)newPrn.PrnStatusId).ToString()}";
+
+                    logger.LogInformation("Resetting status history on {PrnNumber}: {Msg}", prnLogVal, statusHistory.Comment);
+                }
+
+                newPrn.CreatedOn = existingPrn.CreatedOn;
+                newPrn.LastUpdatedDate = currentTimestamp;
                 newPrn.Id = existingPrn.Id;
                 newPrn.ExternalId = existingPrn.ExternalId;
                 _eprContext.Entry(existingPrn).State = EntityState.Modified;
