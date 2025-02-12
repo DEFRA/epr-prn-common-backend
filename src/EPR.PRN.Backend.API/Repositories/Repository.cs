@@ -291,6 +291,7 @@ public class Repository(EprContext eprContext, ILogger<Repository> logger, IConf
                 {
                     string incomingStatus = ((EprnStatus)newPrn.PrnStatusId).ToString();
                     newPrn.PrnStatusId = existingPrn.PrnStatusId;
+                    statusHistory.PrnStatusIdFk = newPrn.PrnStatusId;
                     statusHistory.Comment = $"{incomingStatus} => {((EprnStatus)newPrn.PrnStatusId).ToString()}";
 
                     logger.LogInformation("Resetting status history on {PrnNumber}: {Msg}", prnLogVal, statusHistory.Comment);
