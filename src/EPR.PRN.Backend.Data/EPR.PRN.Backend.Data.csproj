@@ -9,7 +9,12 @@
 		<Exec Condition="$(Configuration) == Release" Command="dotnet-ef migrations script --configuration Release --verbose --no-build --context EPR.PRN.Backend.Data.EprContext --idempotent --output Scripts/migrations.sql" />
 	</Target>
 	<ItemGroup>
+	  <Compile Remove="Repositories\Models\InsertSyncedPrns.cs" />
+	  <Compile Remove="Repositories\Models\ModifiedPrnsbyDateRequest.cs" />
+	</ItemGroup>
+	<ItemGroup>
 		<PackageReference Include="Azure.Identity" Version="1.12.0" />
+		<PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.3.0" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.8" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.8">
 			<PrivateAssets>all</PrivateAssets>
@@ -42,5 +47,9 @@
 		<SonarQubeSetting Include="sonar.exclusions">
 			<Value>Scripts/*</Value>
 		</SonarQubeSetting>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="Repositories\Models\" />
 	</ItemGroup>
 </Project>
