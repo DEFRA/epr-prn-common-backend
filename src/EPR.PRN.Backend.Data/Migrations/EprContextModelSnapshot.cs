@@ -202,11 +202,6 @@ namespace EPR.PRN.Backend.Data.Migrations
                         {
                             MaterialName = "Glass",
                             MaterialCode = "GL"
-                        },
-                        new
-                        {
-                            MaterialName = "FibreComposite",
-                            MaterialCode = "FC"
                         });
                 });
 

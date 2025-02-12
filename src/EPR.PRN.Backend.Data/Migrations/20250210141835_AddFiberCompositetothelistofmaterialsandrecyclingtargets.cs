@@ -11,14 +11,6 @@ namespace EPR.PRN.Backend.Data.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.InsertData(
-            table: "Material",
-            columns: new[] { "MaterialName", "MaterialCode" },
-            values: new object[,]
-            {
-                { "FibreComposite", "FC" }
-            });
-
-            migrationBuilder.InsertData(
             table: "RecyclingTargets",
             columns: new[] { "Id", "MaterialNameRT", "Target", "Year" },
             values: new object[,]
@@ -39,11 +31,6 @@ namespace EPR.PRN.Backend.Data.Migrations
             table: "RecyclingTargets",
             keyColumn: "Id",
             keyValues: new object[] { 43, 44, 45, 46, 47, 48 });
-
-            migrationBuilder.DeleteData(
-            table: "Material",
-            keyColumn: "MaterialCode",
-            keyValues: new object[] { "FC" });
         }
     }
 }
