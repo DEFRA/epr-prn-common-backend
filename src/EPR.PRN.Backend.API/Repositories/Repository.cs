@@ -290,9 +290,12 @@ public class Repository(EprContext eprContext, ILogger<Repository> logger, IConf
                 if (newPrn.PrnStatusId != existingPrn.PrnStatusId && newPrn.PrnStatusId == (int)EprnStatus.AWAITINGACCEPTANCE)
                 {
                     string incomingStatus = ((EprnStatus)newPrn.PrnStatusId).ToString();
+
+                    // put back status and status date in Prn
                     newPrn.PrnStatusId = existingPrn.PrnStatusId;
                     newPrn.StatusUpdatedOn = existingPrn.StatusUpdatedOn;
                     
+                    // put back status in status history
                     statusHistory.PrnStatusIdFk = newPrn.PrnStatusId;
                     statusHistory.Comment = $"{incomingStatus} => {((EprnStatus)newPrn.PrnStatusId).ToString()}";
 
