@@ -98,7 +98,15 @@ namespace EPR.PRN.Backend.Data
                             new RecyclingTarget { Id = 39, MaterialNameRT = MaterialType.GlassRemelt.ToString(), Target = 0.77, Year = 2027 },
                             new RecyclingTarget { Id = 40, MaterialNameRT = MaterialType.GlassRemelt.ToString(), Target = 0.78, Year = 2028 },
                             new RecyclingTarget { Id = 41, MaterialNameRT = MaterialType.GlassRemelt.ToString(), Target = 0.79, Year = 2029 },
-                            new RecyclingTarget { Id = 42, MaterialNameRT = MaterialType.GlassRemelt.ToString(), Target = 0.80, Year = 2030 }
+                            new RecyclingTarget { Id = 42, MaterialNameRT = MaterialType.GlassRemelt.ToString(), Target = 0.80, Year = 2030 },
+
+                            // Fibre Composite
+                            new RecyclingTarget { Id = 43, MaterialNameRT = MaterialType.FibreComposite.ToString(), Target = 0.75, Year = 2025 },
+                            new RecyclingTarget { Id = 44, MaterialNameRT = MaterialType.FibreComposite.ToString(), Target = 0.77, Year = 2026 },
+                            new RecyclingTarget { Id = 45, MaterialNameRT = MaterialType.FibreComposite.ToString(), Target = 0.79, Year = 2027 },
+                            new RecyclingTarget { Id = 46, MaterialNameRT = MaterialType.FibreComposite.ToString(), Target = 0.81, Year = 2028 },
+                            new RecyclingTarget { Id = 47, MaterialNameRT = MaterialType.FibreComposite.ToString(), Target = 0.83, Year = 2029 },
+                            new RecyclingTarget { Id = 48, MaterialNameRT = MaterialType.FibreComposite.ToString(), Target = 0.85, Year = 2030 }
                         );
 
             modelBuilder.Entity<Material>()
@@ -108,7 +116,8 @@ namespace EPR.PRN.Backend.Data
                             new Material { MaterialCode = "AL", MaterialName = "Aluminium" },
                             new Material { MaterialCode = "ST", MaterialName = "Steel" },
                             new Material { MaterialCode = "PC", MaterialName = "Paper" },
-                            new Material { MaterialCode = "GL", MaterialName = "Glass" }
+                            new Material { MaterialCode = "GL", MaterialName = "Glass" },
+                            new Material { MaterialCode = "FC", MaterialName = "FibreComposite" }
                 );
 
             modelBuilder.Entity<Eprn>(entity =>

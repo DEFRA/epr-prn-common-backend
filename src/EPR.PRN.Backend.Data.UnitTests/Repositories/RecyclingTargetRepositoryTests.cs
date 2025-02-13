@@ -62,7 +62,14 @@ public class RecyclingTargetRepositoryTests
             new RecyclingTarget { MaterialNameRT = MaterialType.GlassRemelt.ToString(), Target = 0.77, Year = 2027 },
             new RecyclingTarget { MaterialNameRT = MaterialType.GlassRemelt.ToString(), Target = 0.78, Year = 2028 },
             new RecyclingTarget { MaterialNameRT = MaterialType.GlassRemelt.ToString(), Target = 0.79, Year = 2029 },
-            new RecyclingTarget { MaterialNameRT = MaterialType.GlassRemelt.ToString(), Target = 0.80, Year = 2030 }
+            new RecyclingTarget { MaterialNameRT = MaterialType.GlassRemelt.ToString(), Target = 0.80, Year = 2030 },
+
+            new RecyclingTarget { MaterialNameRT = MaterialType.FibreComposite.ToString(), Target = 0.75, Year = 2025 },
+            new RecyclingTarget { MaterialNameRT = MaterialType.FibreComposite.ToString(), Target = 0.77, Year = 2026 },
+            new RecyclingTarget { MaterialNameRT = MaterialType.FibreComposite.ToString(), Target = 0.79, Year = 2027 },
+            new RecyclingTarget { MaterialNameRT = MaterialType.FibreComposite.ToString(), Target = 0.81, Year = 2028 },
+            new RecyclingTarget { MaterialNameRT = MaterialType.FibreComposite.ToString(), Target = 0.83, Year = 2029 },
+            new RecyclingTarget { MaterialNameRT = MaterialType.FibreComposite.ToString(), Target = 0.85, Year = 2030 }
         ];
 
     [TestInitialize]
@@ -84,6 +91,6 @@ public class RecyclingTargetRepositoryTests
 
         // Assert
         Assert.IsNotNull(result);
-        Assert.AreEqual(42, result.Count());
+        Assert.AreEqual(48, result.Count());
     }
 }
