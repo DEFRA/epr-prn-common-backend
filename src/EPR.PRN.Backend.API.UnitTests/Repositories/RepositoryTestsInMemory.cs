@@ -592,4 +592,209 @@ public class RepositoryTestsInMemory
         savedEnt.ExternalId.Should().Be(updatedEntity.ExternalId);
         updatedEntity.MaterialName.Should().Be("UpdatingMaterial");
     }
+
+    [TestMethod]
+    public async Task SavePrnDetails_InsertsNewPrn_WithCorrectCreateAndUpdateDates()
+    {
+        var statusUpdatedDate = DateTime.UtcNow.AddDays(-2);
+        var dto = new SavePrnDetailsRequest()
+        {
+            AccreditationNo = "ABC",
+            AccreditationYear = 2018,
+            CancelledDate = DateTime.UtcNow.AddDays(-1),
+            DecemberWaste = true,
+            EvidenceMaterial = "Aluminium",
+            EvidenceNo = Guid.NewGuid().ToString(),
+            EvidenceStatusCode = EprnStatus.AWAITINGACCEPTANCE,
+            EvidenceTonnes = 5000,
+            IssueDate = DateTime.UtcNow.AddDays(-5),
+            IssuedByNPWDCode = "NPWD367742",
+            IssuedByOrgName = "ANB",
+            IssuedToEPRId = Guid.NewGuid(),
+            IssuedToNPWDCode = "NPWD557742",
+            IssuedToOrgName = "ZNZ",
+            IssuerNotes = "no notes",
+            IssuerRef = "ANB-1123",
+            MaterialOperationCode = "R-PLA",
+            ObligationYear = 2025,
+            PrnSignatory = "Pat Anderson",
+            PrnSignatoryPosition = "Director",
+            ProducerAgency = "TTL",
+            RecoveryProcessCode = "N11",
+            ReprocessorAgency = "BEX",
+            StatusDate = DateTime.UtcNow.AddDays(-5),
+        };
+
+        var entity = CreateEprnEntityFromDto(dto);
+
+        await _repository.SavePrnDetails(entity);
+
+        var newPrn = await _context.Prn.SingleAsync(x => x.PrnNumber == dto.EvidenceNo);
+        newPrn.Should().NotBeNull();
+        newPrn.CreatedOn.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromMinutes(5));
+        newPrn.LastUpdatedDate.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromMinutes(5));
+    }
+
+    [TestMethod]
+    public async Task SavePrnDetails_UpdatesPrn_WithCorrectCreateAndUpdateDates()
+    {
+        var statusUpdatedDate = DateTime.UtcNow.AddDays(-2);
+        var dto = new SavePrnDetailsRequest()
+        {
+            AccreditationNo = "ABC",
+            AccreditationYear = 2018,
+            CancelledDate = DateTime.UtcNow.AddDays(-1),
+            DecemberWaste = true,
+            EvidenceMaterial = "Aluminium",
+            EvidenceNo = Guid.NewGuid().ToString(),
+            EvidenceStatusCode = EprnStatus.AWAITINGACCEPTANCE,
+            EvidenceTonnes = 5000,
+            IssueDate = DateTime.UtcNow.AddDays(-5),
+            IssuedByNPWDCode = "NPWD367742",
+            IssuedByOrgName = "ANB",
+            IssuedToEPRId = Guid.NewGuid(),
+            IssuedToNPWDCode = "NPWD557742",
+            IssuedToOrgName = "ZNZ",
+            IssuerNotes = "no notes",
+            IssuerRef = "ANB-1123",
+            MaterialOperationCode = "R-PLA",
+            ObligationYear = 2025,
+            PrnSignatory = "Pat Anderson",
+            PrnSignatoryPosition = "Director",
+            ProducerAgency = "TTL",
+            RecoveryProcessCode = "N11",
+            ReprocessorAgency = "BEX",
+            StatusDate = DateTime.UtcNow.AddDays(-5),
+        };
+
+        var entity = CreateEprnEntityFromDto(dto);
+        await _repository.SavePrnDetails(entity);
+
+        var newPrn = await _context.Prn.SingleAsync(x => x.PrnNumber == dto.EvidenceNo);
+        DateTime createdDate = newPrn.CreatedOn;
+        DateTime updatedDate = newPrn.LastUpdatedDate;
+        await _repository.SavePrnDetails(newPrn);
+
+        var updatedPrn = await _context.Prn.SingleAsync(x => x.PrnNumber == dto.EvidenceNo);
+        updatedPrn.CreatedOn.Should().Be(createdDate);
+        updatedPrn.LastUpdatedDate.Should().BeAfter(updatedDate);
+    }
+
+    [TestMethod]
+    [DataRow(EprnStatus.ACCEPTED)]
+    [DataRow(EprnStatus.CANCELLED)]
+    [DataRow(EprnStatus.REJECTED)]
+    public async Task SavePrnDetails_WhenIncomingPrnIsAwaitingAcceptance_UpdatesPrn_WithOriginalStatus(EprnStatus eOldStatus)
+    {
+        // Arrange
+        var statusUpdatedDate = DateTime.UtcNow.AddDays(-2);
+        var dto = new SavePrnDetailsRequest()
+        {
+            AccreditationNo = "ABC",
+            AccreditationYear = 2018,
+            CancelledDate = DateTime.UtcNow.AddDays(-1),
+            DecemberWaste = true,
+            EvidenceMaterial = "Aluminium",
+            EvidenceNo = Guid.NewGuid().ToString(),
+            EvidenceStatusCode = eOldStatus,
+            EvidenceTonnes = 5000,
+            IssueDate = DateTime.UtcNow.AddDays(-5),
+            IssuedByNPWDCode = "NPWD367742",
+            IssuedByOrgName = "ANB",
+            IssuedToEPRId = Guid.NewGuid(),
+            IssuedToNPWDCode = "NPWD557742",
+            IssuedToOrgName = "ZNZ",
+            IssuerNotes = "no notes",
+            IssuerRef = "ANB-1123",
+            MaterialOperationCode = "R-PLA",
+            ObligationYear = 2025,
+            PrnSignatory = "Pat Anderson",
+            PrnSignatoryPosition = "Director",
+            ProducerAgency = "TTL",
+            RecoveryProcessCode = "N11",
+            ReprocessorAgency = "BEX",
+            StatusDate = DateTime.UtcNow.AddDays(-5),
+        };
+
+        var entity = CreateEprnEntityFromDto(dto);
+        await _repository.SavePrnDetails(entity);
+        _context.SaveChanges();
+
+        var awaitingAcceptancePrn = await _context.Prn.AsNoTracking().SingleAsync(x => x.PrnNumber == dto.EvidenceNo);
+        awaitingAcceptancePrn.PrnStatusId = (int)EprnStatus.AWAITINGACCEPTANCE;
+
+        // Act
+        await _repository.SavePrnDetails(awaitingAcceptancePrn);
+
+        // Assert
+        var updatedPrn = await _context.Prn.SingleAsync(x => x.PrnNumber == dto.EvidenceNo);
+        updatedPrn.PrnStatusId.Should().Be((int) eOldStatus);
+
+        _mockLogger.Verify(logger => logger.Log(
+            LogLevel.Information,
+            It.IsAny<EventId>(),
+            It.Is<It.IsAnyType>((v, t) => $"{v}".ToString().StartsWith("Resetting status history on")),
+            null,
+            It.IsAny<Func<It.IsAnyType, Exception?, string>>()), Times.Once);
+    }
+
+
+    [TestMethod]
+    [DataRow(EprnStatus.ACCEPTED)]
+    [DataRow(EprnStatus.CANCELLED)]
+    [DataRow(EprnStatus.REJECTED)]
+    [DataRow(EprnStatus.AWAITINGACCEPTANCE)]
+    public async Task SavePrnDetails_WhenExistingPrnIsAwaitingAcceptance_UpdatesPrn_WithNewStatus(EprnStatus eNewStatus)
+    {
+        // Arrange
+        var statusUpdatedDate = DateTime.UtcNow.AddDays(-2);
+        var dto = new SavePrnDetailsRequest()
+        {
+            AccreditationNo = "ABC",
+            AccreditationYear = 2018,
+            CancelledDate = DateTime.UtcNow.AddDays(-1),
+            DecemberWaste = true,
+            EvidenceMaterial = "Aluminium",
+            EvidenceNo = Guid.NewGuid().ToString(),
+            EvidenceStatusCode = EprnStatus.AWAITINGACCEPTANCE,
+            EvidenceTonnes = 5000,
+            IssueDate = DateTime.UtcNow.AddDays(-5),
+            IssuedByNPWDCode = "NPWD367742",
+            IssuedByOrgName = "ANB",
+            IssuedToEPRId = Guid.NewGuid(),
+            IssuedToNPWDCode = "NPWD557742",
+            IssuedToOrgName = "ZNZ",
+            IssuerNotes = "no notes",
+            IssuerRef = "ANB-1123",
+            MaterialOperationCode = "R-PLA",
+            ObligationYear = 2025,
+            PrnSignatory = "Pat Anderson",
+            PrnSignatoryPosition = "Director",
+            ProducerAgency = "TTL",
+            RecoveryProcessCode = "N11",
+            ReprocessorAgency = "BEX",
+            StatusDate = DateTime.UtcNow.AddDays(-5),
+        };
+
+        var entity = CreateEprnEntityFromDto(dto);
+        await _repository.SavePrnDetails(entity);
+        _context.SaveChanges();
+
+        var newPrn = await _context.Prn.AsNoTracking().SingleAsync(x => x.PrnNumber == dto.EvidenceNo);
+        newPrn.PrnStatusId = (int) eNewStatus;
+
+        // Act
+        await _repository.SavePrnDetails(newPrn);
+
+        // Assert
+        var updatedPrn = await _context.Prn.SingleAsync(x => x.PrnNumber == dto.EvidenceNo);
+        updatedPrn.PrnStatusId.Should().Be((int)eNewStatus);
+
+        _mockLogger.Verify(logger => logger.Log(
+            LogLevel.Information,
+            It.IsAny<EventId>(),
+            It.Is<It.IsAnyType>((v, t) => $"{v}".ToString().StartsWith("Resetting status history on")),
+            null,
+            It.IsAny<Func<It.IsAnyType, Exception?, string>>()), Times.Never);
+    }
 }
