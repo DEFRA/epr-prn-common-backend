@@ -6,6 +6,7 @@ using EPR.PRN.Backend.Obligation.Constants;
 using EPR.PRN.Backend.Obligation.Dto;
 using EPR.PRN.Backend.Obligation.Helpers;
 using EPR.PRN.Backend.Obligation.Interfaces;
+using EPR.PRN.Backend.Obligation.Mappers;
 using EPR.PRN.Backend.Obligation.Models;
 using Microsoft.Extensions.Logging;
 
@@ -116,6 +117,10 @@ namespace EPR.PRN.Backend.Obligation.Services
             var materialsWithRemelt = AddGlassRemelt(materials.ToList());
             var obligationCalculations = await _obligationCalculationRepository.GetObligationCalculation(organisationId, year);
             var prns = _prnRepository.GetAcceptedAndAwaitingPrnsByYear(organisationId, year);
+
+            // make sure material names match materials table
+            prns = Mappers.MaterialsMapper.AdjustPrnMaterialNames(prns);
+
             var acceptedTonnageForPrns = GetSumOfTonnageForMaterials(prns, EprnStatus.ACCEPTED.ToString());
             var awaitingAcceptanceForPrns = GetSumOfTonnageForMaterials(prns, EprnStatus.AWAITINGACCEPTANCE.ToString());
             var awaitingAcceptanceCount = GetPrnStatusCount(prns, EprnStatus.AWAITINGACCEPTANCE.ToString());
@@ -214,5 +219,6 @@ namespace EPR.PRN.Backend.Obligation.Services
                 .Select(x => x.TotalTonnage)
                 .FirstOrDefault();
         }
+
     }
 }
