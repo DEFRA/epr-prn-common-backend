@@ -150,6 +150,7 @@ namespace EPR.PRN.Backend.Obligation.Services
             return new ObligationCalculationResult { IsSuccess = true, ObligationModel = obligationModel };
         }
 
+        [Obsolete]
         public async Task<ObligationCalculationResult> GetObligationCalculation(Guid organisationId, int year)
         {
             var materials = await _materialRepository.GetAllMaterials();
@@ -197,20 +198,6 @@ namespace EPR.PRN.Backend.Obligation.Services
             var obligationModel = new ObligationModel { ObligationData = obligationData, NumberOfPrnsAwaitingAcceptance = awaitingAcceptanceCount };
             return new ObligationCalculationResult { IsSuccess = true, ObligationModel = obligationModel };
         }
-
-        //private List<EprnTonnageResultsDto> GetSumOfTonnageForMaterialsPerOrganisation(IQueryable<EprnResultsDto> prns, string status)
-        //{
-        //    return prns
-        //        .Where(joined => joined.Status.StatusName == status)
-        //        .GroupBy(joined => new { joined.Eprn.OrganisationId, joined.Eprn.MaterialName, joined.Status.StatusName })
-        //        .Select(g => new EprnTonnageResultsDto
-        //        {
-        //            OrganisationId = g.Key.OrganisationId,
-        //            MaterialName = g.Key.MaterialName,
-        //            StatusName = g.Key.StatusName,
-        //            TotalTonnage = g.Sum(x => x.Eprn.TonnageValue)
-        //        }).ToList();
-        //}
 
         private List<EprnTonnageResultsDto> GetSumOfTonnageForMaterials(IQueryable<EprnResultsDto> prns, string status)
         {
@@ -281,6 +268,5 @@ namespace EPR.PRN.Backend.Obligation.Services
                 .Select(x => x.TotalTonnage)
                 .FirstOrDefault();
         }
-
     }
 }

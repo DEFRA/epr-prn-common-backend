@@ -6,6 +6,7 @@ namespace EPR.PRN.Backend.Data.Repositories
 {
     public class PrnRepository(EprContext context) : IPrnRepository
     {
+        [Obsolete]
         public IQueryable<EprnResultsDto> GetAcceptedAndAwaitingPrnsByYear(Guid organisationId, int year)
         {
             return context.Prn.Join(

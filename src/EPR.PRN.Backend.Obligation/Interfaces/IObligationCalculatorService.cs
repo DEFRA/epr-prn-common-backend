@@ -5,6 +5,7 @@ namespace EPR.PRN.Backend.Obligation.Interfaces
 {
     public interface IObligationCalculatorService
     {
+        [Obsolete]
         Task<ObligationCalculationResult> GetObligationCalculation(Guid organisationId, int year);
 
         Task<ObligationCalculationResult> GetObligationCalculation(IEnumerable<Guid> organisationIds, int year);
