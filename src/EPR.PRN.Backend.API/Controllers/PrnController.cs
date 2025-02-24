@@ -98,7 +98,6 @@ public class PrnController(IPrnService prnService,
             return BadRequest($"Invalid year provided: {year}.");
         }
 
-
         var obligationCalculation = await obligationCalculatorService.GetObligationCalculation(organisationId, year);
 
         if (!obligationCalculation.IsSuccess)
@@ -143,6 +142,33 @@ public class PrnController(IPrnService prnService,
     #endregion Get Methods
 
     #region Post Methods
+
+    [HttpPost("obligationcalculation/{year}")]
+    [ProducesResponseType(typeof(List<ObligationData>), 200)]
+    [ProducesResponseType(400)]
+    [ProducesResponseType(500)]
+    public async Task<IActionResult> GetObligationCalculations([FromHeader(Name = "X-EPR-ORGANISATION")] Guid orgId, [FromRoute] int year, [FromBody] List<Guid> organisationIds)
+    {
+        logger.LogInformation("{Logprefix}: PrnController - GetObligationCalculation: Api Route api/v1/prn/obligationcalculations/{Year}", logPrefix, year);
+        logger.LogInformation("{Logprefix}: PrnController - GetObligationCalculation: request to get Obligation Calculation for organisations {Organisation} for {Year}", logPrefix, string.Join(", ", organisationIds), year);
+
+        if (year < _config.StartYear || year > _config.EndYear)
+        {
+            logger.LogError("{Logprefix}: PrnController - GetObligationCalculation: Invalid year provided: {Year}.", logPrefix, year);
+            return BadRequest($"Invalid year provided: {year}.");
+        }
+
+        var obligationCalculation = await obligationCalculatorService.GetObligationCalculation(organisationIds, year);
+
+        if (!obligationCalculation.IsSuccess)
+        {
+            logger.LogError("{Logprefix}: PrnController - GetObligationCalculation: Get Obligation Calculation Failed - Errors {Errors}", logPrefix, JsonConvert.SerializeObject(obligationCalculation.Errors));
+            return StatusCode(500, obligationCalculation.Errors);
+        }
+
+        logger.LogInformation("{Logprefix}: PrnController - GetObligationCalculation: Obligation Calculation returned {ObligationCalculation}", logPrefix, JsonConvert.SerializeObject(obligationCalculation));
+        return Ok(obligationCalculation.ObligationModel);
+    }
 
     [HttpPost("status")]
     public async Task<IActionResult> UpdatePrnStatus([FromHeader(Name = "X-EPR-ORGANISATION")] Guid orgId, [FromHeader(Name = "X-EPR-USER")] Guid userId, [FromBody] List<PrnUpdateStatusDto> prnUpdates)
@@ -271,5 +297,6 @@ public class PrnController(IPrnService prnService,
             return Problem("Internal Server Error", null, (int)HttpStatusCode.InternalServerError);
         }
     }
+
     #endregion Post Methods
 }

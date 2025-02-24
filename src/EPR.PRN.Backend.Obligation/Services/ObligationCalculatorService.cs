@@ -101,6 +101,54 @@ namespace EPR.PRN.Backend.Obligation.Services
             await _obligationCalculationRepository.UpsertObligationCalculationAsync(organisationId, calculations);
         }
 
+        public async Task<ObligationCalculationResult> GetObligationCalculation(IEnumerable<Guid> organisationIds, int year)
+        {
+            var materials = await _materialRepository.GetAllMaterials();
+            if (!materials.Any())
+            {
+                _logger.LogError(ObligationConstants.ErrorMessages.NoMaterialsFoundErrorMessage);
+                return new ObligationCalculationResult
+                {
+                    Errors = ObligationConstants.ErrorMessages.NoMaterialsFoundErrorMessage,
+                    IsSuccess = false
+                };
+            }
+            var materialsWithRemelt = AddGlassRemelt(materials.ToList());
+
+            var obligationCalculations = await _obligationCalculationRepository.GetObligationCalculation(organisationIds, year);
+            var prns = _prnRepository.GetAcceptedAndAwaitingPrnsByYear(organisationIds, year);
+
+            var acceptedTonnageForPrns = GetSumOfTonnageForMaterials(prns, EprnStatus.ACCEPTED.ToString());
+            var awaitingAcceptanceForPrns = GetSumOfTonnageForMaterials(prns, EprnStatus.AWAITINGACCEPTANCE.ToString());
+            var awaitingAcceptanceCount = GetPrnStatusCount(prns, EprnStatus.AWAITINGACCEPTANCE.ToString());
+            var materialNames = materialsWithRemelt.Select(material => material.MaterialName);
+            var obligationData = new List<ObligationData>();
+            var recyclingTargets = await _recyclingTargetDataService.GetRecyclingTargetsAsync();
+
+            foreach (var materialName in materialNames)
+            {
+                var obligationCalculation = obligationCalculations.Find(x => x.MaterialName == materialName);
+
+                var tonnageAccepted = GetTonnage(materialName, acceptedTonnageForPrns);
+                var tonnageAwaitingAcceptance = GetTonnage(materialName, awaitingAcceptanceForPrns);
+                var tonnageOutstanding = GetTonnageOutstanding(obligationCalculation?.MaterialObligationValue, tonnageAccepted);
+                obligationData.Add(new ObligationData
+                {
+                    OrganisationId = organisationIds.FirstOrDefault(),
+                    MaterialName = materialName,
+                    ObligationToMeet = obligationCalculation?.MaterialObligationValue,
+                    TonnageAccepted = tonnageAccepted ?? 0,
+                    TonnageAwaitingAcceptance = tonnageAwaitingAcceptance ?? 0,
+                    TonnageOutstanding = tonnageOutstanding,
+                    Status = GetStatus(obligationCalculation?.MaterialObligationValue, tonnageAccepted),
+                    Tonnage = obligationCalculation?.Tonnage ?? 0,
+                    MaterialTarget = GetRecyclingTarget(year, materialName, recyclingTargets) ?? 0
+                });
+            }
+            var obligationModel = new ObligationModel { ObligationData = obligationData, NumberOfPrnsAwaitingAcceptance = awaitingAcceptanceCount };
+            return new ObligationCalculationResult { IsSuccess = true, ObligationModel = obligationModel };
+        }
+
         public async Task<ObligationCalculationResult> GetObligationCalculation(Guid organisationId, int year)
         {
             var materials = await _materialRepository.GetAllMaterials();
@@ -144,6 +192,20 @@ namespace EPR.PRN.Backend.Obligation.Services
             var obligationModel = new ObligationModel { ObligationData = obligationData, NumberOfPrnsAwaitingAcceptance = awaitingAcceptanceCount };
             return new ObligationCalculationResult { IsSuccess = true, ObligationModel = obligationModel };
         }
+
+        //private List<EprnTonnageResultsDto> GetSumOfTonnageForMaterialsPerOrganisation(IQueryable<EprnResultsDto> prns, string status)
+        //{
+        //    return prns
+        //        .Where(joined => joined.Status.StatusName == status)
+        //        .GroupBy(joined => new { joined.Eprn.OrganisationId, joined.Eprn.MaterialName, joined.Status.StatusName })
+        //        .Select(g => new EprnTonnageResultsDto
+        //        {
+        //            OrganisationId = g.Key.OrganisationId,
+        //            MaterialName = g.Key.MaterialName,
+        //            StatusName = g.Key.StatusName,
+        //            TotalTonnage = g.Sum(x => x.Eprn.TonnageValue)
+        //        }).ToList();
+        //}
 
         private List<EprnTonnageResultsDto> GetSumOfTonnageForMaterials(IQueryable<EprnResultsDto> prns, string status)
         {

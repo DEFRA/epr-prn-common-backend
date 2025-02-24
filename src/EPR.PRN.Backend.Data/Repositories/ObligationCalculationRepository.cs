@@ -6,6 +6,14 @@ namespace EPR.PRN.Backend.Data.Repositories;
 
 public class ObligationCalculationRepository(EprContext context) : IObligationCalculationRepository
 {
+    public async Task<List<ObligationCalculation>> GetObligationCalculation(IEnumerable<Guid> organisationIds, int year)
+    {
+        return await context.ObligationCalculations
+            .AsNoTracking()
+            .Where(x => organisationIds.Contains(x.OrganisationId) && x.Year == year)
+            .ToListAsync();
+    }
+
     public async Task<List<ObligationCalculation>> GetObligationCalculation(Guid organisationId, int year)
     {
         return await context.ObligationCalculations

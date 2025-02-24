@@ -255,7 +255,6 @@ public class PrnControllerTests
         objectResult.Value.Should().BeEquivalentTo(new { message = "Calculation timed out.", details = "Request timed out" });
     }
 
-
     [TestMethod]
     public async Task CalculateAsync_WhenUnexpectedErrorOccurs_ReturnsInternalServerError()
     {
@@ -292,6 +291,86 @@ public class PrnControllerTests
 
         var result = await _systemUnderTest.GetSearchPrns(orgId, request);
         result.Should().BeOfType<OkObjectResult>().Which.Value.Should().Be(response);
+    }
+
+    [TestMethod]
+    [DataRow(2023)] // Invalid year
+    [DataRow(2030)] // Invalid year
+    public async Task GetObligationCalculation_MultipleOrganisationIds_InvalidYear_ReturnsBadRequest(int year)
+    {
+        // Arrange
+        List<Guid> organisationIds = [];
+        organisationIds.Append(Guid.NewGuid());
+        organisationIds.Append(Guid.NewGuid());
+
+        // Act
+        var result = await _systemUnderTest.GetObligationCalculations(Guid.NewGuid(), year, organisationIds);
+
+        // Assert
+        var badRequestResult = result as BadRequestObjectResult;
+        badRequestResult.Should().NotBeNull();
+        badRequestResult.StatusCode.Should().Be(400);
+        badRequestResult.Value.Should().Be($"Invalid year provided: {year}.");
+    }
+
+    [TestMethod]
+    public async Task GetObligationCalculation_MultipleOrganisationIds_WhenIsSuccessFalse_Returns500()
+    {
+        // Arrange
+        List<Guid> organisationIds = [];
+        organisationIds.Append(Guid.NewGuid());
+        organisationIds.Append(Guid.NewGuid());
+
+        var year = 2025;
+        var obligationResult = new ObligationCalculationResult { Errors = null, IsSuccess = false };
+        _mockObligationCalculatorService.Setup(service => service.GetObligationCalculation(organisationIds, year)).ReturnsAsync(obligationResult);
+
+        // Act
+        var result = await _systemUnderTest.GetObligationCalculations(Guid.NewGuid(), year, organisationIds);
+
+        var statusCodeResult = result as ObjectResult;
+        statusCodeResult.Should().NotBeNull();
+        statusCodeResult.StatusCode.Should().Be(500);
+    }
+
+    [TestMethod]
+    public async Task GetObligationCalculation_MultipleOrganisationIds_ValidYear_DataFound_ReturnsOk()
+    {
+        // Arrange
+        List<Guid> organisationIds = [];
+        organisationIds.Append(Guid.NewGuid());
+        organisationIds.Append(Guid.NewGuid());
+        var organisationId = Guid.NewGuid();
+        var year = 2025;
+        var fixture = new Fixture();
+        var prns = fixture.CreateMany<ObligationData>(10).ToList();
+        for (int i = 0; i < 2; i++)
+        {
+            prns[i].MaterialName = "Plastic";
+            prns[i].OrganisationId = organisationId;
+
+        }
+        for (int i = 2; i < 5; i++)
+        {
+            prns[i].MaterialName = "Wood";
+            prns[i].OrganisationId = organisationId;
+        }
+
+        var obligationResult = new ObligationCalculationResult { Errors = null, IsSuccess = true, ObligationModel = new ObligationModel { NumberOfPrnsAwaitingAcceptance = 8, ObligationData = prns } };
+
+        // Mock the service to return obligation data
+        _mockObligationCalculatorService
+            .Setup(service => service.GetObligationCalculation(organisationIds, year))
+            .ReturnsAsync(obligationResult);
+
+        // Act
+        var result = await _systemUnderTest.GetObligationCalculations(Guid.NewGuid(), year, organisationIds);
+
+        // Assert
+        var okResult = result as OkObjectResult;
+        okResult.Should().NotBeNull();
+        okResult.StatusCode.Should().Be(200);
+        okResult.Value.Should().BeEquivalentTo(new ObligationModel { ObligationData = prns, NumberOfPrnsAwaitingAcceptance = obligationResult.ObligationModel.NumberOfPrnsAwaitingAcceptance });
     }
 
     [TestMethod]
