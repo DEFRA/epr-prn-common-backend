@@ -14,7 +14,6 @@ public class ObligationCalculationRepository(EprContext context) : IObligationCa
             .ToListAsync();
     }
 
-    [Obsolete]
     public async Task<List<ObligationCalculation>> GetObligationCalculation(Guid organisationId, int year)
     {
         return await context.ObligationCalculations

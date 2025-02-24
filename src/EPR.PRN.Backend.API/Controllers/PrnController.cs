@@ -83,7 +83,6 @@ public class PrnController(IPrnService prnService,
         return Ok(prns);
     }
 
-    [Obsolete]
     [HttpGet("obligationcalculation/{year}")]
     [ProducesResponseType(typeof(List<ObligationData>), 200)]
     [ProducesResponseType(400)]

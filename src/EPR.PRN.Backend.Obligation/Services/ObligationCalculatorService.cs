@@ -150,7 +150,6 @@ namespace EPR.PRN.Backend.Obligation.Services
             return new ObligationCalculationResult { IsSuccess = true, ObligationModel = obligationModel };
         }
 
-        [Obsolete]
         public async Task<ObligationCalculationResult> GetObligationCalculation(Guid organisationId, int year)
         {
             var materials = await _materialRepository.GetAllMaterials();
