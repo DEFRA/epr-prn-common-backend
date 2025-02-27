@@ -150,54 +150,6 @@ namespace EPR.PRN.Backend.Obligation.Services
             return new ObligationCalculationResult { IsSuccess = true, ObligationModel = obligationModel };
         }
 
-        public async Task<ObligationCalculationResult> GetObligationCalculation(Guid organisationId, int year)
-        {
-            var materials = await _materialRepository.GetAllMaterials();
-            if (!materials.Any())
-            {
-                _logger.LogError(ObligationConstants.ErrorMessages.NoMaterialsFoundErrorMessage);
-                return new ObligationCalculationResult
-                {
-                    Errors = ObligationConstants.ErrorMessages.NoMaterialsFoundErrorMessage,
-                    IsSuccess = false
-                };
-            }
-            var materialsWithRemelt = AddGlassRemelt(materials.ToList());
-            var obligationCalculations = await _obligationCalculationRepository.GetObligationCalculation(organisationId, year);
-            var prns = _prnRepository.GetAcceptedAndAwaitingPrnsByYear(organisationId, year);
-
-            // make sure material names match materials table
-            prns = Mappers.MaterialsMapper.AdjustPrnMaterialNames(prns);
-
-            var acceptedTonnageForPrns = GetSumOfTonnageForMaterials(prns, EprnStatus.ACCEPTED.ToString());
-            var awaitingAcceptanceForPrns = GetSumOfTonnageForMaterials(prns, EprnStatus.AWAITINGACCEPTANCE.ToString());
-            var awaitingAcceptanceCount = GetPrnStatusCount(prns, EprnStatus.AWAITINGACCEPTANCE.ToString());
-            var materialNames = materialsWithRemelt.Select(material => material.MaterialName);
-            var obligationData = new List<ObligationData>();
-            var recyclingTargets = await _recyclingTargetDataService.GetRecyclingTargetsAsync();
-            foreach (var materialName in materialNames)
-            {
-                var obligationCalculation = obligationCalculations.Find(x => x.MaterialName == materialName);
-                var tonnageAccepted = GetTonnage(materialName, acceptedTonnageForPrns);
-                var tonnageAwaitingAcceptance = GetTonnage(materialName, awaitingAcceptanceForPrns);
-                var tonnageOutstanding = GetTonnageOutstanding(obligationCalculation?.MaterialObligationValue, tonnageAccepted);
-                obligationData.Add(new ObligationData
-                {
-                    OrganisationId = organisationId,
-                    MaterialName = materialName,
-                    ObligationToMeet = obligationCalculation?.MaterialObligationValue,
-                    TonnageAccepted = tonnageAccepted ?? 0,
-                    TonnageAwaitingAcceptance = tonnageAwaitingAcceptance ?? 0,
-                    TonnageOutstanding = tonnageOutstanding,
-                    Status = GetStatus(obligationCalculation?.MaterialObligationValue, tonnageAccepted),
-                    Tonnage = obligationCalculation?.Tonnage ?? 0,
-                    MaterialTarget = GetRecyclingTarget(year, materialName, recyclingTargets) ?? 0
-                });
-            }
-            var obligationModel = new ObligationModel { ObligationData = obligationData, NumberOfPrnsAwaitingAcceptance = awaitingAcceptanceCount };
-            return new ObligationCalculationResult { IsSuccess = true, ObligationModel = obligationModel };
-        }
-
         private List<EprnTonnageResultsDto> GetSumOfTonnageForMaterials(IQueryable<EprnResultsDto> prns, string status)
         {
             return prns
@@ -211,12 +163,12 @@ namespace EPR.PRN.Backend.Obligation.Services
                 }).ToList();
         }
 
-        private int GetPrnStatusCount(IQueryable<EprnResultsDto> prns, string status)
+        private static int GetPrnStatusCount(IQueryable<EprnResultsDto> prns, string status)
         {
             return prns.Where(joined => joined.Status.StatusName == status).Count();
         }
 
-        private double? GetRecyclingTarget(int year, string? materialName, Dictionary<int, Dictionary<MaterialType, double>> recyclingTargets)
+        private static double? GetRecyclingTarget(int year, string? materialName, Dictionary<int, Dictionary<MaterialType, double>> recyclingTargets)
         {
             if (string.IsNullOrWhiteSpace(materialName))
             {

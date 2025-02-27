@@ -19,13 +19,13 @@ public class RecyclingTargetDataServiceTests
         recyclingTargetRepositoryMock.Setup(x => x.GetAllAsync())
             .ReturnsAsync(new List<RecyclingTarget>
             {
-                new RecyclingTarget { Year = 1, MaterialNameRT = MaterialType.Aluminium.ToString(), Target = 0.1 },
-                new RecyclingTarget { Year = 1, MaterialNameRT = MaterialType.GlassRemelt.ToString(), Target = 0.2 },
-                new RecyclingTarget { Year = 1, MaterialNameRT = MaterialType.Glass.ToString(), Target = 0.3 },
-                new RecyclingTarget { Year = 1, MaterialNameRT = MaterialType.Paper.ToString(), Target = 0.4 },
-                new RecyclingTarget { Year = 1, MaterialNameRT = MaterialType.Plastic.ToString(), Target = 0.5 },
-                new RecyclingTarget { Year = 1, MaterialNameRT = MaterialType.Steel.ToString(), Target = 0.6 },
-                new RecyclingTarget { Year = 1, MaterialNameRT = MaterialType.Wood.ToString(), Target = 0.7 }
+                new() { Year = 1, MaterialNameRT = MaterialType.Aluminium.ToString(), Target = 0.1 },
+                new() { Year = 1, MaterialNameRT = MaterialType.GlassRemelt.ToString(), Target = 0.2 },
+                new() { Year = 1, MaterialNameRT = MaterialType.Glass.ToString(), Target = 0.3 },
+                new() { Year = 1, MaterialNameRT = MaterialType.Paper.ToString(), Target = 0.4 },
+                new() { Year = 1, MaterialNameRT = MaterialType.Plastic.ToString(), Target = 0.5 },
+                new() { Year = 1, MaterialNameRT = MaterialType.Steel.ToString(), Target = 0.6 },
+                new() { Year = 1, MaterialNameRT = MaterialType.Wood.ToString(), Target = 0.7 }
             });
 
         var recyclingTargetDataService = new RecyclingTargetDataService(recyclingTargetRepositoryMock.Object);
@@ -62,13 +62,13 @@ public class RecyclingTargetDataServiceTests
         recyclingTargetRepositoryMock.Setup(x => x.GetAllAsync())
             .ReturnsAsync(new List<RecyclingTarget>
             {
-                new RecyclingTarget { Year = 1, MaterialNameRT = MaterialType.Aluminium.ToString(), Target = 0.1 },
-                new RecyclingTarget { Year = 1, MaterialNameRT = MaterialType.GlassRemelt.ToString(), Target = 0.2 },
-                new RecyclingTarget { Year = 1, MaterialNameRT = MaterialType.Glass.ToString(), Target = 0.3 },
-                new RecyclingTarget { Year = 1, MaterialNameRT = MaterialType.Paper.ToString(), Target = 0.4 },
-                new RecyclingTarget { Year = 1, MaterialNameRT = MaterialType.Plastic.ToString(), Target = 0.5 },
-                new RecyclingTarget { Year = 1, MaterialNameRT = MaterialType.Steel.ToString(), Target = 0.6 },
-                new RecyclingTarget { Year = 1, MaterialNameRT = MaterialType.Wood.ToString(), Target = 0.7 }
+                new() { Year = 1, MaterialNameRT = MaterialType.Aluminium.ToString(), Target = 0.1 },
+                new() { Year = 1, MaterialNameRT = MaterialType.GlassRemelt.ToString(), Target = 0.2 },
+                new() { Year = 1, MaterialNameRT = MaterialType.Glass.ToString(), Target = 0.3 },
+                new() { Year = 1, MaterialNameRT = MaterialType.Paper.ToString(), Target = 0.4 },
+                new() { Year = 1, MaterialNameRT = MaterialType.Plastic.ToString(), Target = 0.5 },
+                new() { Year = 1, MaterialNameRT = MaterialType.Steel.ToString(), Target = 0.6 },
+                new() { Year = 1, MaterialNameRT = MaterialType.Wood.ToString(), Target = 0.7 }
             });
 
         var recyclingTargetDataService = new RecyclingTargetDataService(recyclingTargetRepositoryMock.Object);
@@ -93,7 +93,7 @@ public class RecyclingTargetDataServiceTests
         recyclingTargetRepositoryMock.Setup(x => x.GetAllAsync())
             .ReturnsAsync(new List<RecyclingTarget>
             {
-            new RecyclingTarget { Year = 1, MaterialNameRT = "InvalidMaterial", Target = 0.1 }
+            new() { Year = 1, MaterialNameRT = "InvalidMaterial", Target = 0.1 }
             });
 
         var recyclingTargetDataService = new RecyclingTargetDataService(recyclingTargetRepositoryMock.Object);
@@ -132,8 +132,8 @@ public class RecyclingTargetDataServiceTests
         recyclingTargetRepositoryMock.Setup(x => x.GetAllAsync())
             .ReturnsAsync(new List<RecyclingTarget>
             {
-            new RecyclingTarget { Year = 1, MaterialNameRT = MaterialType.Aluminium.ToString(), Target = 0.1 },
-            new RecyclingTarget { Year = 2, MaterialNameRT = MaterialType.Plastic.ToString(), Target = 0.2 }
+            new() { Year = 1, MaterialNameRT = MaterialType.Aluminium.ToString(), Target = 0.1 },
+            new() { Year = 2, MaterialNameRT = MaterialType.Plastic.ToString(), Target = 0.2 }
             });
 
         var recyclingTargetDataService = new RecyclingTargetDataService(recyclingTargetRepositoryMock.Object);
