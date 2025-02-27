@@ -1,8 +1,8 @@
-﻿using EPR.PRN.Backend.API.Common.Enums;
+﻿using System.Diagnostics.CodeAnalysis;
+using EPR.PRN.Backend.API.Common.Enums;
 using EPR.PRN.Backend.Data.DataModels;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using System.Diagnostics.CodeAnalysis;
 
 namespace EPR.PRN.Backend.Data
 {
@@ -116,8 +116,7 @@ namespace EPR.PRN.Backend.Data
                             new Material { MaterialCode = "AL", MaterialName = "Aluminium" },
                             new Material { MaterialCode = "ST", MaterialName = "Steel" },
                             new Material { MaterialCode = "PC", MaterialName = "Paper" },
-                            new Material { MaterialCode = "GL", MaterialName = "Glass" },
-                            new Material { MaterialCode = "FC", MaterialName = "FibreComposite" }
+                            new Material { MaterialCode = "GL", MaterialName = "Glass" }
                 );
 
             modelBuilder.Entity<Eprn>(entity =>
