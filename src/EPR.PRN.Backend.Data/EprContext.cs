@@ -116,7 +116,8 @@ namespace EPR.PRN.Backend.Data
                             new Material { MaterialCode = "AL", MaterialName = "Aluminium" },
                             new Material { MaterialCode = "ST", MaterialName = "Steel" },
                             new Material { MaterialCode = "PC", MaterialName = "Paper" },
-                            new Material { MaterialCode = "GL", MaterialName = "Glass" }
+                            new Material { MaterialCode = "GL", MaterialName = "Glass" },
+                            new Material { MaterialCode = "FC", MaterialName = "FibreComposite" }
                 );
 
             modelBuilder.Entity<Eprn>(entity =>
