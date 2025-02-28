@@ -14,14 +14,6 @@ public class ObligationCalculationRepository(EprContext context) : IObligationCa
             .ToListAsync();
     }
 
-    public async Task<List<ObligationCalculation>> GetObligationCalculation(Guid organisationId, int year)
-    {
-        return await context.ObligationCalculations
-            .AsNoTracking()
-            .Where(x => x.OrganisationId == organisationId && x.Year == year)
-            .ToListAsync();
-    }
-
     public async Task AddObligationCalculation(List<ObligationCalculation> calculation)
     {
         await context.ObligationCalculations.AddRangeAsync(calculation);
@@ -35,7 +27,10 @@ public class ObligationCalculationRepository(EprContext context) : IObligationCa
             throw new ArgumentException("The calculations list cannot be null or empty.", nameof(calculations));
         }
 
-        var obligationCalculations = await GetObligationCalculation(organisationId, calculations[0].Year);
+        List<Guid> organisationIds = [];
+        organisationIds.Add(organisationId);
+
+        var obligationCalculations = await GetObligationCalculation(organisationIds, calculations[0].Year);
 
         var newCalculations = new List<ObligationCalculation>();
 
@@ -52,7 +47,7 @@ public class ObligationCalculationRepository(EprContext context) : IObligationCa
                 if (existingCalculation != null)
                 {
                     context.ObligationCalculations.Attach(existingCalculation);
-                    existingCalculation.OrganisationId = organisationId;
+                    existingCalculation.OrganisationId = organisationIds[0];
                     existingCalculation.MaterialName = calculation.MaterialName;
                     existingCalculation.MaterialObligationValue = calculation.MaterialObligationValue;
                     existingCalculation.Tonnage = calculation.Tonnage;
