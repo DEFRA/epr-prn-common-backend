@@ -6,17 +6,17 @@ namespace EPR.PRN.Backend.Data.Repositories;
 
 public class ObligationCalculationRepository(EprContext context) : IObligationCalculationRepository
 {
-    public async Task<List<ObligationCalculation>> GetObligationCalculation(Guid organisationId, int year)
+    public async Task<List<ObligationCalculation>> GetObligationCalculation(IEnumerable<Guid> organisationIds, int year)
     {
         return await context.ObligationCalculations
             .AsNoTracking()
-            .Where(x => x.OrganisationId == organisationId && x.Year == year)
+            .Where(x => organisationIds.Contains(x.OrganisationId) && x.Year == year)
             .ToListAsync();
     }
 
-    public async Task AddObligationCalculation(List<ObligationCalculation> calculations)
+    public async Task AddObligationCalculation(List<ObligationCalculation> calculation)
     {
-        await context.ObligationCalculations.AddRangeAsync(calculations);
+        await context.ObligationCalculations.AddRangeAsync(calculation);
         await context.SaveChangesAsync();
     }
 
@@ -27,11 +27,14 @@ public class ObligationCalculationRepository(EprContext context) : IObligationCa
             throw new ArgumentException("The calculations list cannot be null or empty.", nameof(calculations));
         }
 
-        var obligationCalculations = await GetObligationCalculation(organisationId, calculations.First().Year);
+        List<Guid> organisationIds = [];
+        organisationIds.Add(organisationId);
+
+        var obligationCalculations = await GetObligationCalculation(organisationIds, calculations[0].Year);
 
         var newCalculations = new List<ObligationCalculation>();
 
-        if (obligationCalculations.Count() == 0)
+        if (obligationCalculations.Count == 0)
         {
             context.ObligationCalculations.AddRange(calculations);
         }
@@ -44,7 +47,7 @@ public class ObligationCalculationRepository(EprContext context) : IObligationCa
                 if (existingCalculation != null)
                 {
                     context.ObligationCalculations.Attach(existingCalculation);
-                    existingCalculation.OrganisationId = organisationId;
+                    existingCalculation.OrganisationId = organisationIds[0];
                     existingCalculation.MaterialName = calculation.MaterialName;
                     existingCalculation.MaterialObligationValue = calculation.MaterialObligationValue;
                     existingCalculation.Tonnage = calculation.Tonnage;
@@ -58,7 +61,7 @@ public class ObligationCalculationRepository(EprContext context) : IObligationCa
             }
         }
 
-        if (newCalculations.Count() != 0)
+        if (newCalculations.Count != 0)
         {
             context.ObligationCalculations.AddRange(newCalculations);
         }
@@ -66,4 +69,3 @@ public class ObligationCalculationRepository(EprContext context) : IObligationCa
         await context.SaveChangesAsync();
     }
 }
-
