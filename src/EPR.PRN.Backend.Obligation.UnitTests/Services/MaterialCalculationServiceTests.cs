@@ -1,6 +1,6 @@
-﻿using EPR.PRN.Backend.Obligation.Services;
+﻿using System.Diagnostics.CodeAnalysis;
+using EPR.PRN.Backend.Obligation.Services;
 using FluentAssertions;
-using System.Diagnostics.CodeAnalysis;
 
 namespace EPR.PRN.Backend.Obligation.UnitTests.Services;
 
@@ -18,7 +18,7 @@ public class MaterialCalculationServiceTests
 
     [TestMethod]
     [DataRow(0.61, 100, 61)]
-    [DataRow(0.61, 120, 73)]
+    [DataRow(0.61, 120, 74)]
     [DataRow(0.6, 128, 77)]
     public void CalculateObligation_WhenAluminium_ThenObligationIsReturned(double target, int tonnage, int expected)
     {

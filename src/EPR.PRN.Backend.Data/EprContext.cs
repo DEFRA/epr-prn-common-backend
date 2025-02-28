@@ -1,8 +1,8 @@
-﻿using EPR.PRN.Backend.API.Common.Enums;
+﻿using System.Diagnostics.CodeAnalysis;
+using EPR.PRN.Backend.API.Common.Enums;
 using EPR.PRN.Backend.Data.DataModels;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using System.Diagnostics.CodeAnalysis;
 
 namespace EPR.PRN.Backend.Data
 {

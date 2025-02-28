@@ -33,7 +33,7 @@ namespace EPR.PRN.Backend.Obligation.Strategies
                 Tonnage = calculationRequest.SubmissionCalculationRequest.PackagingMaterialWeight
             };
 
-            return new List<ObligationCalculation> { calculation };
+            return [calculation];
         }
     }
 }

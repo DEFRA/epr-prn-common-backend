@@ -2,6 +2,7 @@
 using EPR.PRN.Backend.Obligation.Dto;
 using EPR.PRN.Backend.Obligation.Interfaces;
 using EPR.PRN.Backend.Obligation.Models;
+using EPR.PRN.Backend.Obligation.Services;
 using EPR.PRN.Backend.Obligation.Strategies;
 using Moq;
 
@@ -46,14 +47,17 @@ public class GeneralCalculationStrategyTests
     }
 
     [TestMethod]
-    public void Calculate_ShouldReturnCorrectObligationCalculation()
+    [DataRow(100, 0.7, 70)]
+    [DataRow(101, 0.75, 76)]
+    [DataRow(101, 0.72, 73)]
+    public void Calculate_ShouldReturnCorrectObligationCalculation(int materialWeight, double recyclingTarget, int expectedRoundedObligationCalculationResult)
     {
         // Arrange
         var organisationId = Guid.NewGuid();
         var calculationRequest = new SubmissionCalculationRequest
         {
             PackagingMaterial = "Plastic",
-            PackagingMaterialWeight = 100,
+            PackagingMaterialWeight = materialWeight,
             SubmissionId = Guid.NewGuid(),
             SubmissionPeriod = "2024-P1"
         };
@@ -66,14 +70,20 @@ public class GeneralCalculationStrategyTests
                 2025,
                 new Dictionary<MaterialType, double>
                 {
-                    { materialType, 0.7 }
+                    { materialType, recyclingTarget }
                 }
             }
         };
 
-        var request = new CalculationRequestDto { SubmissionCalculationRequest = calculationRequest, RecyclingTargets = recyclingTargets, MaterialType = materialType, OrganisationId = organisationId };
+        var request = new CalculationRequestDto
+        {
+            SubmissionCalculationRequest = calculationRequest,
+            RecyclingTargets = recyclingTargets,
+            MaterialType = materialType,
+            OrganisationId = organisationId,
+        };
 
-        _mockCalculationService.Setup(x => x.Calculate(0.7, 100)).Returns(70);
+        _strategy = new GeneralCalculationStrategy(new MaterialCalculationService());
 
         // Act
         var result = _strategy.Calculate(request);
@@ -82,7 +92,7 @@ public class GeneralCalculationStrategyTests
         Assert.IsNotNull(result);
         Assert.AreEqual(1, result.Count);
         Assert.AreEqual("Plastic", result[0].MaterialName);
-        Assert.AreEqual(70, result[0].MaterialObligationValue);
+        Assert.AreEqual(expectedRoundedObligationCalculationResult, result[0].MaterialObligationValue);
         Assert.AreEqual(organisationId, result[0].OrganisationId);
         Assert.AreEqual(DateTime.UtcNow.Year, result[0].Year);
         Assert.AreEqual(calculationRequest.PackagingMaterialWeight, result[0].Tonnage);
