@@ -6,7 +6,7 @@ namespace EPR.PRN.Backend.Obligation.Services
     {
         public int Calculate(double target, double tonnage)
         {
-            return (int)Math.Round(target * tonnage, 0, MidpointRounding.ToPositiveInfinity);
+            return (int)Math.Ceiling(target * tonnage);
         }
 
         public (int remelt, int remainder) CalculateGlass(double target, double remeltTarget, double tonnage)
