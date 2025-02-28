@@ -23,7 +23,6 @@ using Microsoft.Extensions.Options;
 using Moq;
 using System.Net;
 
-
 namespace EPR.PRN.Backend.API.UnitTests.Services;
 
 [TestClass]
@@ -38,6 +37,10 @@ public class PrnControllerTests
     private Mock<IValidator<SavePrnDetailsRequest>> _validatorSavePrnDetailsMock;
 
     private static readonly IFixture _fixture = new Fixture();
+    private readonly List<Guid> organisationIds = [];
+    private readonly Guid organisationId = Guid.NewGuid();
+    private readonly Guid prnId = Guid.NewGuid();
+    private readonly Guid userId = Guid.NewGuid();
 
     [TestInitialize]
     public void TestInitialize()
@@ -61,17 +64,18 @@ public class PrnControllerTests
             _configMock.Object, 
             _configurationMock.Object, 
             _validatorSavePrnDetailsMock.Object);
+
+        organisationIds.Add(Guid.NewGuid());
+        organisationIds.Add(Guid.NewGuid());
     }
 
     [TestMethod]
     public async Task GetPrn_ReturnsOkWithPrn_WhenValidPrnId()
     {
-        var orgId = Guid.NewGuid();
-        var prnId = Guid.NewGuid();
         var expectedPrn = _fixture.Create<PrnDto>();
-        _mockPrnService.Setup(s => s.GetPrnForOrganisationById(orgId, prnId)).ReturnsAsync(expectedPrn);
+        _mockPrnService.Setup(s => s.GetPrnForOrganisationById(organisationId, prnId)).ReturnsAsync(expectedPrn);
 
-        var result = await _systemUnderTest.GetPrn(orgId, prnId) as OkObjectResult;
+        var result = await _systemUnderTest.GetPrn(organisationId, prnId) as OkObjectResult;
 
         result.Value.Should().BeEquivalentTo(expectedPrn);
     }
@@ -79,12 +83,9 @@ public class PrnControllerTests
     [TestMethod]
     public async Task GetPrn_ReturnsNotFound_WhenPrnIdDoesntExists()
     {
-        var orgId = Guid.NewGuid();
-        var prnId = Guid.NewGuid();
+        _mockPrnService.Setup(s => s.GetPrnForOrganisationById(organisationId, prnId)).ReturnsAsync((PrnDto)null);
 
-        _mockPrnService.Setup(s => s.GetPrnForOrganisationById(orgId, prnId)).ReturnsAsync((PrnDto)null);
-
-        var result = await _systemUnderTest.GetPrn(orgId, prnId) as NotFoundResult;
+        var result = await _systemUnderTest.GetPrn(organisationId, prnId) as NotFoundResult;
 
         result.Should().NotBeNull();
         result.StatusCode.Should().Be((int)HttpStatusCode.NotFound);
@@ -93,12 +94,10 @@ public class PrnControllerTests
     [TestMethod]
     public async Task GetAllPrnByOrganisationId_ReturnsOkWithPrns_WhenValidOrgId()
     {
-        var orgId = Guid.NewGuid();
         var expectedPrns = _fixture.CreateMany<PrnDto>().ToList();
+        _mockPrnService.Setup(s => s.GetAllPrnByOrganisationId(organisationId)).ReturnsAsync(expectedPrns);
 
-        _mockPrnService.Setup(s => s.GetAllPrnByOrganisationId(orgId)).ReturnsAsync(expectedPrns);
-
-        var result = await _systemUnderTest.GetAllPrnByOrganisationId(orgId) as OkObjectResult;
+        var result = await _systemUnderTest.GetAllPrnByOrganisationId(organisationId) as OkObjectResult;
 
         result.Value.Should().BeEquivalentTo(expectedPrns);
     }
@@ -106,13 +105,10 @@ public class PrnControllerTests
     [TestMethod]
     public async Task UpdatePrnStatus_ReturnsOk_WhenUpdateSuccessfully()
     {
-        var orgId = Guid.NewGuid();
-        var userId = Guid.NewGuid();
         var prnUpdates = _fixture.CreateMany<PrnUpdateStatusDto>().ToList();
+        _mockPrnService.Setup(s => s.UpdateStatus(organisationId, userId, prnUpdates)).Returns(Task.CompletedTask);
 
-        _mockPrnService.Setup(s => s.UpdateStatus(orgId, userId, prnUpdates)).Returns(Task.CompletedTask);
-
-        var result = await _systemUnderTest.UpdatePrnStatus(orgId, userId, prnUpdates) as OkResult;
+        var result = await _systemUnderTest.UpdatePrnStatus(organisationId, userId, prnUpdates) as OkResult;
 
         result.Should().NotBeNull();
         result.StatusCode.Should().Be((int)HttpStatusCode.OK);
@@ -121,13 +117,10 @@ public class PrnControllerTests
     [TestMethod]
     public async Task UpdatePrnStatus_ReturnsConflict_WhenServiceThrowsConflictException()
     {
-        var orgId = Guid.NewGuid();
-        var userId = Guid.NewGuid();
         var prnUpdates = _fixture.CreateMany<PrnUpdateStatusDto>().ToList();
+        _mockPrnService.Setup(s => s.UpdateStatus(organisationId, userId, prnUpdates)).Throws<ConflictException>();
 
-        _mockPrnService.Setup(s => s.UpdateStatus(orgId, userId, prnUpdates)).Throws<ConflictException>();
-
-        var result = await _systemUnderTest.UpdatePrnStatus(orgId, userId, prnUpdates) as ObjectResult;
+        var result = await _systemUnderTest.UpdatePrnStatus(organisationId, userId, prnUpdates) as ObjectResult;
 
         result.Should().NotBeNull();
         result.StatusCode.Should().Be((int)HttpStatusCode.Conflict);
@@ -136,13 +129,10 @@ public class PrnControllerTests
     [TestMethod]
     public async Task UpdatePrnStatus_ReturnsNotFound_WhenServiceThrowsNotFoundException()
     {
-        var orgId = Guid.NewGuid();
-        var userId = Guid.NewGuid();
         var prnUpdates = _fixture.CreateMany<PrnUpdateStatusDto>().ToList();
+        _mockPrnService.Setup(s => s.UpdateStatus(organisationId, userId, prnUpdates)).Throws<NotFoundException>();
 
-        _mockPrnService.Setup(s => s.UpdateStatus(orgId, userId, prnUpdates)).Throws<NotFoundException>();
-
-        var result = await _systemUnderTest.UpdatePrnStatus(orgId, userId, prnUpdates) as ObjectResult;
+        var result = await _systemUnderTest.UpdatePrnStatus(organisationId, userId, prnUpdates) as ObjectResult;
 
         result.Should().NotBeNull();
         result.StatusCode.Should().Be((int)HttpStatusCode.NotFound);
@@ -151,13 +141,11 @@ public class PrnControllerTests
     [TestMethod]
     public async Task UpdatePrnStatus_ReturnsInternalServer_WhenServiceThrowsUnexpectedException()
     {
-        var orgId = Guid.NewGuid();
-        var userId = Guid.NewGuid();
         var prnUpdates = _fixture.CreateMany<PrnUpdateStatusDto>().ToList();
 
-        _mockPrnService.Setup(s => s.UpdateStatus(orgId, userId, prnUpdates)).Throws<ArgumentNullException>();
+        _mockPrnService.Setup(s => s.UpdateStatus(organisationId, userId, prnUpdates)).Throws<ArgumentNullException>();
 
-        var result = await _systemUnderTest.UpdatePrnStatus(orgId, userId, prnUpdates) as ObjectResult;
+        var result = await _systemUnderTest.UpdatePrnStatus(organisationId, userId, prnUpdates) as ObjectResult;
 
         result.Should().NotBeNull();
         result.StatusCode.Should().Be((int)HttpStatusCode.InternalServerError);
@@ -166,8 +154,6 @@ public class PrnControllerTests
     [TestMethod]
     public async Task CalculateAsync_WhenRequestIsNull_ReturnsBadRequest()
     {
-        var organisationId = Guid.NewGuid();
-
         var result = await _systemUnderTest.CalculateAsync(organisationId, null);
 
         result.Should().BeOfType<BadRequestObjectResult>();
@@ -180,7 +166,6 @@ public class PrnControllerTests
     public async Task CalculateAsync_WhenRequestIsEmpty_ReturnsBadRequest()
     {
         var organisationId = Guid.NewGuid();
-
         var result = await _systemUnderTest.CalculateAsync(organisationId, new List<SubmissionCalculationRequest>());
 
         result.Should().BeOfType<BadRequestObjectResult>();
@@ -193,7 +178,6 @@ public class PrnControllerTests
     public async Task CalculateAsync_WhenModelStateIsInvalid_ReturnsBadRequest()
     {
         var organisationId = Guid.NewGuid();
-
         _systemUnderTest.ModelState.AddModelError("Key", "Error message");
 
         var result = await _systemUnderTest.CalculateAsync(organisationId, new List<SubmissionCalculationRequest> { new() });
@@ -283,13 +267,12 @@ public class PrnControllerTests
     [TestMethod]
     public async Task GetSearchPrns_ReturnsResponse()
     {
-        var orgId = Guid.NewGuid();
         var request = _fixture.Create<PaginatedRequestDto>();
         var response = _fixture.Create<PaginatedResponseDto<PrnDto>>();
+        _mockPrnService.Setup(s => s.GetSearchPrnsForOrganisation(organisationId, request)).ReturnsAsync(response);
 
-        _mockPrnService.Setup(s => s.GetSearchPrnsForOrganisation(orgId, request)).ReturnsAsync(response);
+        var result = await _systemUnderTest.GetSearchPrns(organisationId, request);
 
-        var result = await _systemUnderTest.GetSearchPrns(orgId, request);
         result.Should().BeOfType<OkObjectResult>().Which.Value.Should().Be(response);
     }
 
@@ -298,11 +281,6 @@ public class PrnControllerTests
     [DataRow(2030)] // Invalid year
     public async Task GetObligationCalculation_MultipleOrganisationIds_InvalidYear_ReturnsBadRequest(int year)
     {
-        // Arrange
-        List<Guid> organisationIds = [];
-        organisationIds.Append(Guid.NewGuid());
-        organisationIds.Append(Guid.NewGuid());
-
         // Act
         var result = await _systemUnderTest.GetObligationCalculations(Guid.NewGuid(), year, organisationIds);
 
@@ -317,10 +295,6 @@ public class PrnControllerTests
     public async Task GetObligationCalculation_MultipleOrganisationIds_WhenIsSuccessFalse_Returns500()
     {
         // Arrange
-        List<Guid> organisationIds = [];
-        organisationIds.Append(Guid.NewGuid());
-        organisationIds.Append(Guid.NewGuid());
-
         var year = 2025;
         var obligationResult = new ObligationCalculationResult { Errors = null, IsSuccess = false };
         _mockObligationCalculatorService.Setup(service => service.GetObligationCalculation(organisationIds, year)).ReturnsAsync(obligationResult);
@@ -337,10 +311,6 @@ public class PrnControllerTests
     public async Task GetObligationCalculation_MultipleOrganisationIds_ValidYear_DataFound_ReturnsOk()
     {
         // Arrange
-        List<Guid> organisationIds = [];
-        organisationIds.Append(Guid.NewGuid());
-        organisationIds.Append(Guid.NewGuid());
-        var organisationId = Guid.NewGuid();
         var year = 2025;
         var fixture = new Fixture();
         var prns = fixture.CreateMany<ObligationData>(10).ToList();
@@ -439,7 +409,7 @@ public class PrnControllerTests
 
         var statusList = new List<PrnStatusSync>
         {
-            new PrnStatusSync {OrganisationName="OName", PrnNumber="A1", StatusName="Accepted", UpdatedOn= DateTime.UtcNow.AddDays(-1) }
+            new() {OrganisationName="OName", PrnNumber="A1", StatusName="Accepted", UpdatedOn= DateTime.UtcNow.AddDays(-1) }
         };
 
         _mockPrnService
@@ -537,8 +507,7 @@ public class PrnControllerTests
 
         var validationResult = new ValidationResult();
 
-        _validatorSavePrnDetailsMock.Setup(x => x.Validate(It.IsAny<SavePrnDetailsRequest>()))
-                                    .Returns(validationResult);
+        _validatorSavePrnDetailsMock.Setup(x => x.Validate(It.IsAny<SavePrnDetailsRequest>())).Returns(validationResult);
 
         _mockPrnService.Setup(s => s.SavePrnDetails(dto)).Returns(() => Task.CompletedTask);
         var result = await _systemUnderTest.SaveAsync(dto) as OkResult;
@@ -595,7 +564,6 @@ public class PrnControllerTests
                         .GetProperties(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance)
                         .ToList();
 
-
         var matchingProp = props.Find(x => string.Equals(x.Name, propertyName, StringComparison.InvariantCulture));
         matchingProp.Should().NotBeNull();
 
@@ -611,10 +579,7 @@ public class PrnControllerTests
         var validationResult = new ValidationResult(validationErrors);
 
         // Setup validator mock to return custom validation result
-        _validatorSavePrnDetailsMock.Setup(x => x.Validate(It.IsAny<SavePrnDetailsRequest>()))
-                                    .Returns(validationResult);
-
-
+        _validatorSavePrnDetailsMock.Setup(x => x.Validate(It.IsAny<SavePrnDetailsRequest>())).Returns(validationResult);
 
         _mockPrnService.Setup(s => s.SavePrnDetails(dto)).Returns(() => Task.CompletedTask);
         var result = await _systemUnderTest.SaveAsync(dto) as BadRequestObjectResult;
@@ -624,9 +589,7 @@ public class PrnControllerTests
         var errors = result.Value as IEnumerable<ValidationFailure>;
         errors.Should().NotBeNull();
 
-        errors.Select(x => x.PropertyName)
-            .Should()
-            .Contain(propertyName);
+        errors.Select(x => x.PropertyName).Should().Contain(propertyName);
     }
 
     [TestMethod]
@@ -663,8 +626,7 @@ public class PrnControllerTests
         // setup mock validator
         var validationResult = new ValidationResult();
 
-        _validatorSavePrnDetailsMock.Setup(x => x.Validate(It.IsAny<SavePrnDetailsRequest>()))
-                                    .Returns(validationResult);
+        _validatorSavePrnDetailsMock.Setup(x => x.Validate(It.IsAny<SavePrnDetailsRequest>())).Returns(validationResult);
 
         // Setup mock PrnService
         _mockPrnService.Setup(s => s.SavePrnDetails(dto)).Throws<ApplicationException>();
@@ -721,7 +683,6 @@ public class PrnControllerTests
                         .GetProperties(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance)
                         .ToList();
 
-
         var matchingProp = props.Find(x => string.Equals(x.Name, propertyName, StringComparison.InvariantCulture));
         matchingProp.Should().NotBeNull();
 
@@ -737,10 +698,7 @@ public class PrnControllerTests
         var validationResult = new ValidationResult(validationErrors);
 
         // Setup validator mock to return custom validation result
-        _validatorSavePrnDetailsMock.Setup(x => x.Validate(It.IsAny<SavePrnDetailsRequest>()))
-                                    .Returns(validationResult);
-
-
+        _validatorSavePrnDetailsMock.Setup(x => x.Validate(It.IsAny<SavePrnDetailsRequest>())).Returns(validationResult);
 
         _mockPrnService.Setup(s => s.SavePrnDetails(dto)).Returns(() => Task.CompletedTask);
         var result = await _systemUnderTest.SaveAsync(dto) as BadRequestObjectResult;
@@ -750,15 +708,13 @@ public class PrnControllerTests
         var errors = result.Value as IEnumerable<ValidationFailure>;
         errors.Should().NotBeNull();
 
-        errors.Select(x => x.PropertyName)
-            .Should()
-            .Contain(propertyName);
+        errors.Select(x => x.PropertyName).Should().Contain(propertyName);
     }
+
     [TestMethod]
     public async Task PeprToNpwdSyncedPrns_ReturnsNotFound_WhenServiceThrowsNotFoundException()
     {
         var syncPrns = _fixture.CreateMany<InsertSyncedPrn>().ToList();
-
         _mockPrnService.Setup(s => s.InsertPeprNpwdSyncPrns(syncPrns)).Throws<NotFoundException>();
 
         var result = await _systemUnderTest.PeprToNpwdSyncedPrns(syncPrns) as ObjectResult;
@@ -771,7 +727,6 @@ public class PrnControllerTests
     public async Task PeprToNpwdSyncedPrns_ReturnsInternalServer_WhenServiceThrowsUnexpectedException()
     {
         var syncPrns = _fixture.CreateMany<InsertSyncedPrn>().ToList();
-
         _mockPrnService.Setup(s => s.InsertPeprNpwdSyncPrns(syncPrns)).Throws<ArgumentNullException>();
 
         var result = await _systemUnderTest.PeprToNpwdSyncedPrns(syncPrns) as ObjectResult;
@@ -784,7 +739,6 @@ public class PrnControllerTests
     public async Task PeprToNpwdSyncedPrns_CallsService_ReturnOk()
     {
         var syncPrns = _fixture.CreateMany<InsertSyncedPrn>().ToList();
-
         _mockPrnService.Setup(s => s.InsertPeprNpwdSyncPrns(syncPrns)).Returns(Task.CompletedTask);
 
         var result = await _systemUnderTest.PeprToNpwdSyncedPrns(syncPrns);

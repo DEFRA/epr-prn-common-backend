@@ -119,6 +119,9 @@ namespace EPR.PRN.Backend.Obligation.Services
             var obligationCalculations = await _obligationCalculationRepository.GetObligationCalculation(organisationIds, year);
             var prns = _prnRepository.GetAcceptedAndAwaitingPrnsByYear(organisationIds, year);
 
+            // make sure material names match materials table
+            prns = Mappers.MaterialsMapper.AdjustPrnMaterialNames(prns);
+
             var acceptedTonnageForPrns = GetSumOfTonnageForMaterials(prns, EprnStatus.ACCEPTED.ToString());
             var awaitingAcceptanceForPrns = GetSumOfTonnageForMaterials(prns, EprnStatus.AWAITINGACCEPTANCE.ToString());
             var awaitingAcceptanceCount = GetPrnStatusCount(prns, EprnStatus.AWAITINGACCEPTANCE.ToString());

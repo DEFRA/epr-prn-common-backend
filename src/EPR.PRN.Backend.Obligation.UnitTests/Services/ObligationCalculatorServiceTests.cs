@@ -27,6 +27,7 @@ public class ObligationCalculatorServiceTests
     private Mock<ILogger<ObligationCalculatorService>> _mockLogger;
     private ObligationCalculatorService _service;
     private Fixture _fixture;
+    private readonly List<Guid> organisationIds = [];
 
     [TestInitialize]
     public void TestInitialize()
@@ -47,17 +48,16 @@ public class ObligationCalculatorServiceTests
             _mockLogger.Object,
             _mockPrnRepository.Object,
             _mockMaterialRepository.Object);
+
+        organisationIds.Add(Guid.NewGuid());
+        organisationIds.Add(Guid.NewGuid());
     }
 
     [TestMethod]
     public async Task GetObligationCalculation_ShouldReturnSuccess_WithExpectedData()
     {
         // Arrange
-        List<Guid> organisationIds = [];
-        organisationIds.Append(Guid.NewGuid());
-        organisationIds.Append(Guid.NewGuid());
         var year = 2025;
-
         var materials = GetMaterialCodes();
         var obligationCalculations = _fixture.CreateMany<ObligationCalculation>(5).ToList();
         obligationCalculations[0].MaterialName = MaterialType.Plastic.ToString();
@@ -108,11 +108,7 @@ public class ObligationCalculatorServiceTests
     public async Task GetObligationCalculation_ShouldHandleGlassRemeltCorrectly()
     {
         // Arrange
-        List<Guid> organisationIds = [];
-        organisationIds.Append(Guid.NewGuid());
-        organisationIds.Append(Guid.NewGuid());
         var year = 2025;
-
         var materials = _fixture.CreateMany<Material>(5).ToList(); // No GlassRemelt initially
         var obligationCalculations = _fixture.CreateMany<ObligationCalculation>(6).ToList();
         var prnList = _fixture.CreateMany<EprnResultsDto>(5).ToList();
@@ -142,11 +138,7 @@ public class ObligationCalculatorServiceTests
     public async Task GetObligationCalculation_ShouldHandlePRNAwaitingAcceptanceCorrectly()
     {
         // Arrange
-        List<Guid> organisationIds = [];
-        organisationIds.Append(Guid.NewGuid());
-        organisationIds.Append(Guid.NewGuid());
         var year = 2025;
-
         var materials = _fixture.CreateMany<Material>(5).ToList();
         var obligationCalculations = _fixture.CreateMany<ObligationCalculation>(6).ToList();
         var prnList = _fixture.CreateMany<EprnResultsDto>(5).ToList();
