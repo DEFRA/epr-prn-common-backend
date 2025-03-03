@@ -121,17 +121,17 @@ namespace EPR.PRN.Backend.Obligation.Services
                 var tonnageAwaitingAcceptance = GetTonnage(materialName, awaitingAcceptanceForPrns);
                 var tonnageOutstanding = GetTonnageOutstanding(obligationCalculation?.MaterialObligationValue, tonnageAccepted);
 
-                if ((!materialName.Contains("Paper") && !materialName.Contains("FibreComposite")))
+                if ((!materialName.Contains(MaterialType.Paper.ToString()) && !materialName.Contains(MaterialType.FibreComposite.ToString())))
                 {
                     obligationData.Add(GetObligationData(materialName, callingOrganisationId, obligationCalculation, tonnageAccepted, tonnageAwaitingAcceptance, tonnageOutstanding, recyclingTarget));
                 }
 
-                if (materialName.Contains("Paper"))
+                if (materialName.Contains(MaterialType.Paper.ToString()))
                 {
                     paperFCObligationData.Add(GetObligationData(materialName, callingOrganisationId, obligationCalculation, tonnageAccepted, tonnageAwaitingAcceptance, tonnageOutstanding, recyclingTarget));
                 }
 
-                if (materialName.Contains("FibreComposite"))
+                if (materialName.Contains(MaterialType.FibreComposite.ToString()))
                 {
                     paperFCObligationData.Add(GetObligationData(materialName, callingOrganisationId, obligationCalculation, tonnageAccepted, tonnageAwaitingAcceptance, tonnageOutstanding, recyclingTarget));
                 }
