@@ -100,7 +100,7 @@ namespace EPR.PRN.Backend.Obligation.Services
             var materialsWithRemelt = AddGlassRemelt(materials.ToList());
 
             var obligationCalculations = await obligationCalculationRepository.GetObligationCalculation(organisationIds, year);
-            var prns = prnRepository.GetAcceptedAndAwaitingPrnsByYear(organisationIds, year);
+            var prns = prnRepository.GetAcceptedAndAwaitingPrnsByYear(callingOrganisationId, year);
 
             // make sure material names match materials table
             prns = Mappers.MaterialsMapper.AdjustPrnMaterialNames(prns);

@@ -7,13 +7,13 @@ namespace EPR.PRN.Backend.Data.Repositories;
 
 public class PrnRepository(EprContext context) : IPrnRepository
 {
-    public IQueryable<EprnResultsDto> GetAcceptedAndAwaitingPrnsByYear(IEnumerable<Guid> organisationIds, int year)
+    public IQueryable<EprnResultsDto> GetAcceptedAndAwaitingPrnsByYear(Guid organisationId, int year)
     {
         return context.Prn.Join(
                 context.PrnStatus, 
                 eprn => eprn.PrnStatusId, 
                 status => status.Id, (eprn, status) => new EprnResultsDto { Eprn = eprn, Status = status }
-                ).Where(joined => organisationIds.Contains(joined.Eprn.OrganisationId) && (joined.Status.StatusName == EprnStatus.ACCEPTED.ToString()
+                ).Where(joined => joined.Eprn.OrganisationId == organisationId && (joined.Status.StatusName == EprnStatus.ACCEPTED.ToString()
                 || joined.Status.StatusName == EprnStatus.AWAITINGACCEPTANCE.ToString()) && joined.Eprn.ObligationYear == year.ToString()).AsNoTracking();
     }
 }

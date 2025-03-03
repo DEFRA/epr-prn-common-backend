@@ -28,16 +28,14 @@ namespace EPR.PRN.Backend.Data.UnitTests.Repositories
         public async Task GetAcceptedAndAwaitingPrnsByYearAsync_ReturnsFilteredPrns()
         {
             // Arrange
-            List<Guid> organisationIds = [];
-            organisationIds.Add(Guid.NewGuid());
-            organisationIds.Add(Guid.NewGuid());
+            var organisationId = Guid.NewGuid();
             var year = 2023;
             var fixture = new Fixture();
             var prns = fixture.CreateMany<Eprn>(10).ToList();
-            prns[0].OrganisationId = organisationIds[0];
+            prns[0].OrganisationId = organisationId;
             prns[0].PrnStatusId = 1; // ACCEPTED
             prns[0].ObligationYear = year.ToString();
-            prns[1].OrganisationId = organisationIds[1];
+            prns[1].OrganisationId = organisationId;
             prns[1].PrnStatusId = 2; // AWAITINGACCEPTANCE
             prns[1].ObligationYear = year.ToString();
             await _context.Prn.AddRangeAsync(prns);
@@ -50,7 +48,7 @@ namespace EPR.PRN.Backend.Data.UnitTests.Repositories
             await _context.SaveChangesAsync();
 
             // Act
-            var result = _repository.GetAcceptedAndAwaitingPrnsByYear(organisationIds, year);
+            var result = _repository.GetAcceptedAndAwaitingPrnsByYear(organisationId, year);
 
             // Assert
             result.Should().HaveCount(2);
