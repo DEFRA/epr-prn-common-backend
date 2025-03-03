@@ -125,6 +125,12 @@ public class PrnController(IPrnService prnService,
         logger.LogInformation("{Logprefix}: PrnController - GetObligationCalculation: Api Route api/v1/prn/obligationcalculations/{Year}", logPrefix, year);
         logger.LogInformation("{Logprefix}: PrnController - GetObligationCalculation: request to get Obligation Calculation for organisations {Organisation} for {Year}", logPrefix, string.Join(", ", organisationIds), year);
 
+        if (organisationIds.Count < 1)
+        {
+            logger.LogError("{Logprefix}: PrnController - GetObligationCalculation: Organisation Ids list can't be empty. {Organisations}", logPrefix, organisationIds);
+            return BadRequest($"Organisation Ids list can't be empty.");
+        }
+
         if (year < _config.StartYear || year > _config.EndYear)
         {
             logger.LogError("{Logprefix}: PrnController - GetObligationCalculation: Invalid year provided: {Year}.", logPrefix, year);
