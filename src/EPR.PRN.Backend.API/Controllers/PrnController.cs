@@ -131,7 +131,7 @@ public class PrnController(IPrnService prnService,
             return BadRequest($"Invalid year provided: {year}.");
         }
 
-        var obligationCalculation = await obligationCalculatorService.GetObligationCalculation(organisationIds, year);
+        var obligationCalculation = await obligationCalculatorService.GetObligationCalculation(orgId, organisationIds, year);
 
         if (!obligationCalculation.IsSuccess)
         {

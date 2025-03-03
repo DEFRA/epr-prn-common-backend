@@ -28,6 +28,7 @@ public class ObligationCalculatorServiceTests
     private ObligationCalculatorService _service;
     private Fixture _fixture;
     private readonly List<Guid> organisationIds = [];
+    private readonly Guid orgId = Guid.NewGuid();
 
     [TestInitialize]
     public void TestInitialize()
@@ -86,7 +87,7 @@ public class ObligationCalculatorServiceTests
         _mockRecyclingTargetDataService.Setup(x => x.GetRecyclingTargetsAsync()).ReturnsAsync(GetRecyclingTargets());
 
         // Act
-        var result = await _service.GetObligationCalculation(organisationIds, year);
+        var result = await _service.GetObligationCalculation(orgId, organisationIds, year);
 
         // Assert
         result.IsSuccess.Should().BeTrue();
@@ -98,7 +99,7 @@ public class ObligationCalculatorServiceTests
             var obligationData = result.ObligationModel.ObligationData.FirstOrDefault(d => d.MaterialName == material.MaterialName);
             obligationData.Should().NotBeNull();
             obligationData.MaterialName.Should().Be(material.MaterialName);
-            obligationData.ObligationToMeet.Should().Be(obligationCalculations.FirstOrDefault(o => o.MaterialName == material.MaterialName)?.MaterialObligationValue);
+            obligationData.ObligationToMeet.Should().Be(obligationCalculations.FirstOrDefault(o => o.MaterialName == material.MaterialName)?.MaterialObligationValue ?? 0);
             obligationData.TonnageAccepted.Should().Be(acceptedTonnage.FirstOrDefault(t => t.MaterialName == material.MaterialName)?.TotalTonnage ?? 0);
             obligationData.TonnageAwaitingAcceptance.Should().Be(awaitingTonnage.FirstOrDefault(t => t.MaterialName == material.MaterialName)?.TotalTonnage ?? 0);
         }
@@ -120,7 +121,7 @@ public class ObligationCalculatorServiceTests
         _mockRecyclingTargetDataService.Setup(x => x.GetRecyclingTargetsAsync()).ReturnsAsync(GetRecyclingTargets());
 
         // Act
-        var result = await _service.GetObligationCalculation(organisationIds, year);
+        var result = await _service.GetObligationCalculation(orgId, organisationIds, year);
 
         // Assert
         result.IsSuccess.Should().BeTrue();
@@ -128,7 +129,7 @@ public class ObligationCalculatorServiceTests
 
         var glassRemeltData = result.ObligationModel.ObligationData.FirstOrDefault(d => d.MaterialName == "GlassRemelt");
         glassRemeltData.Should().NotBeNull();
-        glassRemeltData.ObligationToMeet.Should().BeNull();
+        glassRemeltData.ObligationToMeet.Should().Be(0);
         glassRemeltData.TonnageAccepted.Should().Be(0);
         glassRemeltData.TonnageAwaitingAcceptance.Should().Be(0);
         glassRemeltData.Status.Should().Be(ObligationConstants.Statuses.NoDataYet);
@@ -159,7 +160,7 @@ public class ObligationCalculatorServiceTests
         _mockRecyclingTargetDataService.Setup(x => x.GetRecyclingTargetsAsync()).ReturnsAsync(GetRecyclingTargets());
 
         // Act
-        var result = await _service.GetObligationCalculation(organisationIds, year);
+        var result = await _service.GetObligationCalculation(orgId, organisationIds, year);
 
         // Assert
         result.IsSuccess.Should().BeTrue();

@@ -165,7 +165,6 @@ public class PrnControllerTests
     [TestMethod]
     public async Task CalculateAsync_WhenRequestIsEmpty_ReturnsBadRequest()
     {
-        var organisationId = Guid.NewGuid();
         var result = await _systemUnderTest.CalculateAsync(organisationId, new List<SubmissionCalculationRequest>());
 
         result.Should().BeOfType<BadRequestObjectResult>();
@@ -177,7 +176,6 @@ public class PrnControllerTests
     [TestMethod]
     public async Task CalculateAsync_WhenModelStateIsInvalid_ReturnsBadRequest()
     {
-        var organisationId = Guid.NewGuid();
         _systemUnderTest.ModelState.AddModelError("Key", "Error message");
 
         var result = await _systemUnderTest.CalculateAsync(organisationId, new List<SubmissionCalculationRequest> { new() });
@@ -188,7 +186,6 @@ public class PrnControllerTests
     [TestMethod]
     public async Task CalculateAsync_WhenCalculationFails_ReturnsInternalServerError()
     {
-        var organisationId = Guid.NewGuid();
         var calculationResult = new CalculationResult { Success = false };
         _mockObligationCalculatorService
             .Setup(x => x.CalculateAsync(It.IsAny<Guid>(), It.IsAny<List<SubmissionCalculationRequest>>()))
@@ -202,7 +199,6 @@ public class PrnControllerTests
     [TestMethod]
     public async Task CalculateAsync_WhenCalculationSucceeds_ReturnsAccepted()
     {
-        var organisationId = Guid.NewGuid();
         var Calculations = _fixture.CreateMany<ObligationCalculation>().ToList();
         var calculationResult = new CalculationResult
         {
@@ -226,7 +222,6 @@ public class PrnControllerTests
     [TestMethod]
     public async Task CalculateAsync_WhenTimeoutOccurs_ReturnsGatewayTimeout()
     {
-        var organisationId = Guid.NewGuid();
         _mockObligationCalculatorService
             .Setup(x => x.CalculateAsync(It.IsAny<Guid>(), It.IsAny<List<SubmissionCalculationRequest>>()))
             .ThrowsAsync(new TimeoutException("Request timed out"));
@@ -242,7 +237,6 @@ public class PrnControllerTests
     [TestMethod]
     public async Task CalculateAsync_WhenUnexpectedErrorOccurs_ReturnsInternalServerError()
     {
-        var organisationId = Guid.NewGuid();
         _mockObligationCalculatorService
             .Setup(x => x.CalculateAsync(It.IsAny<Guid>(), It.IsAny<List<SubmissionCalculationRequest>>()))
             .ThrowsAsync(new Exception("Unexpected error"));
@@ -297,10 +291,10 @@ public class PrnControllerTests
         // Arrange
         var year = 2025;
         var obligationResult = new ObligationCalculationResult { Errors = null, IsSuccess = false };
-        _mockObligationCalculatorService.Setup(service => service.GetObligationCalculation(organisationIds, year)).ReturnsAsync(obligationResult);
+        _mockObligationCalculatorService.Setup(service => service.GetObligationCalculation(organisationId, organisationIds, year)).ReturnsAsync(obligationResult);
 
         // Act
-        var result = await _systemUnderTest.GetObligationCalculations(Guid.NewGuid(), year, organisationIds);
+        var result = await _systemUnderTest.GetObligationCalculations(organisationId, year, organisationIds);
 
         var statusCodeResult = result as ObjectResult;
         statusCodeResult.Should().NotBeNull();
@@ -329,12 +323,10 @@ public class PrnControllerTests
         var obligationResult = new ObligationCalculationResult { Errors = null, IsSuccess = true, ObligationModel = new ObligationModel { NumberOfPrnsAwaitingAcceptance = 8, ObligationData = prns } };
 
         // Mock the service to return obligation data
-        _mockObligationCalculatorService
-            .Setup(service => service.GetObligationCalculation(organisationIds, year))
-            .ReturnsAsync(obligationResult);
+        _mockObligationCalculatorService.Setup(service => service.GetObligationCalculation(organisationId, organisationIds, year)).ReturnsAsync(obligationResult);
 
         // Act
-        var result = await _systemUnderTest.GetObligationCalculations(Guid.NewGuid(), year, organisationIds);
+        var result = await _systemUnderTest.GetObligationCalculations(organisationId, year, organisationIds);
 
         // Assert
         var okResult = result as OkObjectResult;
