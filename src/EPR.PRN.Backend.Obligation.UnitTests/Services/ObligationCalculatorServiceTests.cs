@@ -67,7 +67,7 @@ public class ObligationCalculatorServiceTests
         obligationCalculations[3].MaterialName = MaterialType.Wood.ToString();
         obligationCalculations[4].MaterialName = MaterialType.Aluminium.ToString();
         obligationCalculations[5].MaterialName = MaterialType.Glass.ToString();
-        obligationCalculations[6].MaterialName = MaterialType.FibreComposite.ToString();
+        obligationCalculations[6].MaterialName = MaterialType.GlassRemelt.ToString();
 
         var prnList = _fixture.CreateMany<EprnResultsDto>(7).ToList();
         prnList[0].Eprn.MaterialName = MaterialType.Plastic.ToString();
@@ -76,7 +76,7 @@ public class ObligationCalculatorServiceTests
         prnList[3].Eprn.MaterialName = MaterialType.Wood.ToString();
         prnList[4].Eprn.MaterialName = MaterialType.Aluminium.ToString();
         prnList[5].Eprn.MaterialName = MaterialType.Glass.ToString();
-        prnList[6].Eprn.MaterialName = MaterialType.FibreComposite.ToString();
+        prnList[6].Eprn.MaterialName = MaterialType.GlassRemelt.ToString();
 
         prnList[0].Eprn.ObligationYear = year.ToString();
         prnList[1].Eprn.ObligationYear = year.ToString();
@@ -91,8 +91,8 @@ public class ObligationCalculatorServiceTests
         _mockObligationCalculationRepository.Setup(repo => repo.GetObligationCalculation(organisationIds, year)).ReturnsAsync(obligationCalculations);
         _mockPrnRepository.Setup(repo => repo.GetAcceptedAndAwaitingPrnsByYear(orgId, year)).Returns(prns);
 
-        var acceptedTonnage = _fixture.CreateMany<EprnTonnageResultsDto>(7).ToList();
-        var awaitingTonnage = _fixture.CreateMany<EprnTonnageResultsDto>(7).ToList();
+        var acceptedTonnage = _fixture.CreateMany<EprnTonnageResultsDto>(8).ToList();
+        var awaitingTonnage = _fixture.CreateMany<EprnTonnageResultsDto>(8).ToList();
         _mockRecyclingTargetDataService.Setup(x => x.GetRecyclingTargetsAsync()).ReturnsAsync(GetRecyclingTargets());
 
         // Act
@@ -112,6 +112,22 @@ public class ObligationCalculatorServiceTests
             obligationData.TonnageAccepted.Should().Be(acceptedTonnage.FirstOrDefault(t => t.MaterialName == material.MaterialName)?.TotalTonnage ?? 0);
             obligationData.TonnageAwaitingAcceptance.Should().Be(awaitingTonnage.FirstOrDefault(t => t.MaterialName == material.MaterialName)?.TotalTonnage ?? 0);
         }
+    }
+
+    [TestMethod]
+    public async Task GetObligationCalculation_ShouldReturnSuccess_WithNoData()
+    {
+        // Arrange
+        var year = 2025;
+        var materials = new List<Material>();
+        _mockMaterialRepository.Setup(repo => repo.GetAllMaterials()).ReturnsAsync(materials);
+
+        // Act
+        var result = await _service.GetObligationCalculation(orgId, organisationIds, year);
+
+        // Assert
+        result.IsSuccess.Should().BeFalse();
+        result.Errors.Should().Contain($"No Materials found in PRN BAckend Database");
     }
 
     [TestMethod]
@@ -417,5 +433,4 @@ public class ObligationCalculatorServiceTests
             new Material { MaterialCode = "GL", MaterialName = MaterialType.Glass.ToString() }
         ];
     }
-
 }
