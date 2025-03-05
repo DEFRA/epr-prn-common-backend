@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace EPR.PRN.Backend.Data.DataModels
 {
@@ -23,9 +18,9 @@ namespace EPR.PRN.Backend.Data.DataModels
         
         public DateTime DateUploaded { get; set; }
        
-        public required Guid UploadedBy { get; set; }
+        public Guid UploadedBy { get; set; }
         
-        public required string FileUploadTypeId { get; set; }
+        public int FileUploadTypeId { get; set; }
         
         public int MaterialId { get; set; }
         

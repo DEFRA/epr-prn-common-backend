@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EPR.PRN.Backend.Data.DataModels
 {
@@ -14,7 +15,8 @@ namespace EPR.PRN.Backend.Data.DataModels
 
         public string? RawMaterialName { get; set; }
 
-        public decimal TonneValue { get; set; }
+        [Column(TypeName = "decimal(10,2)")]
+        public double TonneValue { get; set; }
 
         public bool IsInput { get; set; }
 

@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EPR.PRN.Backend.Data.DataModels
 {
@@ -18,18 +19,24 @@ namespace EPR.PRN.Backend.Data.DataModels
 
         public bool ReprocessingPackgagingWasteLastYearFlag { get; set; }
 
-        public decimal UKPackgagingWasteTonne { get; set; }
+        [Column(TypeName = "decimal(10,2)")]
+        public double UKPackgagingWasteTonne { get; set; }
 
-        public decimal NonUKPackgagingWasteTonne { get; set; }
+        [Column(TypeName = "decimal(10,2)")]
+        public double NonUKPackgagingWasteTonne { get; set; }
 
-        public decimal NotUKPackgagingWasteTonne { get; set; }
+        [Column(TypeName = "decimal(10,2)")]
+        public double NotUKPackgagingWasteTonne { get; set; }
 
-        public decimal SentToOtherSiteTonne { get; set; }
+        [Column(TypeName = "decimal(10,2)")]
+        public double SentToOtherSiteTonne { get; set; }
 
-        public decimal ContaminantsTonne { get; set; }
+        [Column(TypeName = "decimal(10,2)")]
+        public double ContaminantsTonne { get; set; }
 
-        public decimal ProcessLossTonne { get; set; }
+        [Column(TypeName = "decimal(10,2)")]
+        public double ProcessLossTonne { get; set; }
 
-        public required string PlantEquipmentUsed { get; set; }
+        public string? PlantEquipmentUsed { get; set; }
     }
 }
