@@ -30,13 +30,13 @@ public class MaterialCalculationServiceTests
     [TestMethod]
     [DataRow(0.75, 0.75, 100, 57, 18)]
     [DataRow(0.6, 0.75, 128, 58, 19)]
-    [DataRow(0.7, 0.7, 123, 61, 25)]
+    [DataRow(0.7, 0.7, 123, 61, 26)]
     [DataRow(0.78, 0.77, 170, 103, 30)]
     public void CalculateObligation_WhenGlassRemelt_ThenObligationIsReturned(double target, double remeltTarget, int tonnage, int expectedRemelt, int expectedRemainder)
     {
         var (remeltResult, remainderResult) = _service.CalculateGlass(target, remeltTarget, tonnage);
 
-        expectedRemelt.Should().Be(remeltResult, "the expected remelt target should match the calculated obligation");
-        expectedRemainder.Should().Be(remainderResult, "the expected remainder should match the calculated remainder");
+        remeltResult.Should().Be(expectedRemelt, "the expected remelt target should match the calculated obligation");
+        remainderResult.Should().Be(expectedRemainder, "the expected remainder should match the calculated remainder");
     }
 }
