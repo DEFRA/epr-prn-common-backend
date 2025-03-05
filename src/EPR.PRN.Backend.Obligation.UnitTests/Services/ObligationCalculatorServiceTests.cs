@@ -60,23 +60,29 @@ public class ObligationCalculatorServiceTests
         // Arrange
         var year = 2025;
         var materials = GetMaterialCodes();
-        var obligationCalculations = _fixture.CreateMany<ObligationCalculation>(5).ToList();
+        var obligationCalculations = _fixture.CreateMany<ObligationCalculation>(6).ToList();
         obligationCalculations[0].MaterialName = MaterialType.Plastic.ToString();
         obligationCalculations[1].MaterialName = MaterialType.Paper.ToString();
         obligationCalculations[2].MaterialName = MaterialType.Steel.ToString();
         obligationCalculations[3].MaterialName = MaterialType.Wood.ToString();
         obligationCalculations[4].MaterialName = MaterialType.Aluminium.ToString();
-        var prnList = _fixture.CreateMany<EprnResultsDto>(5).ToList();
+        obligationCalculations[5].MaterialName = MaterialType.Glass.ToString();
+
+        var prnList = _fixture.CreateMany<EprnResultsDto>(6).ToList();
         prnList[0].Eprn.MaterialName = MaterialType.Plastic.ToString();
         prnList[1].Eprn.MaterialName = MaterialType.Paper.ToString();
         prnList[2].Eprn.MaterialName = MaterialType.Steel.ToString();
         prnList[3].Eprn.MaterialName = MaterialType.Wood.ToString();
         prnList[4].Eprn.MaterialName = MaterialType.Aluminium.ToString();
+        prnList[5].Eprn.MaterialName = MaterialType.Glass.ToString();
+
         prnList[0].Eprn.ObligationYear = year.ToString();
         prnList[1].Eprn.ObligationYear = year.ToString();
         prnList[2].Eprn.ObligationYear = year.ToString();
         prnList[3].Eprn.ObligationYear = year.ToString();
         prnList[4].Eprn.ObligationYear = year.ToString();
+        prnList[5].Eprn.ObligationYear = year.ToString();
+
         var prns = prnList.AsQueryable();
         _mockMaterialRepository.Setup(repo => repo.GetAllMaterials()).ReturnsAsync(materials);
         _mockObligationCalculationRepository.Setup(repo => repo.GetObligationCalculation(organisationIds, year)).ReturnsAsync(obligationCalculations);
@@ -99,7 +105,7 @@ public class ObligationCalculatorServiceTests
             var obligationData = result.ObligationModel.ObligationData.FirstOrDefault(d => d.MaterialName == material.MaterialName);
             obligationData.Should().NotBeNull();
             obligationData.MaterialName.Should().Be(material.MaterialName);
-            obligationData.ObligationToMeet.Should().Be(obligationCalculations.FirstOrDefault(o => o.MaterialName == material.MaterialName)?.MaterialObligationValue ?? 0);
+            obligationData.ObligationToMeet.Should().Be(obligationCalculations.FirstOrDefault(o => o.MaterialName == material.MaterialName).MaterialObligationValue);
             obligationData.TonnageAccepted.Should().Be(acceptedTonnage.FirstOrDefault(t => t.MaterialName == material.MaterialName)?.TotalTonnage ?? 0);
             obligationData.TonnageAwaitingAcceptance.Should().Be(awaitingTonnage.FirstOrDefault(t => t.MaterialName == material.MaterialName)?.TotalTonnage ?? 0);
         }
@@ -400,12 +406,12 @@ public class ObligationCalculatorServiceTests
     {
         return
         [
-            new Material { MaterialCode = "PL", MaterialName = "Plastic" },
-            new Material { MaterialCode = "WD", MaterialName = "Wood" },
-            new Material { MaterialCode = "AL", MaterialName = "Aluminium" },
-            new Material { MaterialCode = "ST", MaterialName = "Steel" },
-            new Material { MaterialCode = "PC", MaterialName = "Paper" },
-            new Material { MaterialCode = "GL", MaterialName = "Glass" }
+            new Material { MaterialCode = "PL", MaterialName = MaterialType.Plastic.ToString() },
+            new Material { MaterialCode = "WD", MaterialName = MaterialType.Wood.ToString() },
+            new Material { MaterialCode = "AL", MaterialName = MaterialType.Aluminium.ToString() },
+            new Material { MaterialCode = "ST", MaterialName = MaterialType.Steel.ToString() },
+            new Material { MaterialCode = "PC", MaterialName = MaterialType.Paper.ToString() },
+            new Material { MaterialCode = "GL", MaterialName = MaterialType.Glass.ToString() }
         ];
     }
 

@@ -9,8 +9,10 @@ using EPR.PRN.Backend.Obligation.Interfaces;
 using EPR.PRN.Backend.Obligation.Mappers;
 using EPR.PRN.Backend.Obligation.Models;
 using Microsoft.Extensions.Logging;
+using Microsoft.SqlServer.Server;
 using System.Collections.Generic;
 using System.Linq;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace EPR.PRN.Backend.Obligation.Services
 {
@@ -164,22 +166,31 @@ namespace EPR.PRN.Backend.Obligation.Services
 
         private static ObligationData GetPaperFibreCompositeObligationData(List<ObligationData> pcFiberObligationData)
         {
-            var pcfcObligationData = pcFiberObligationData
-                    .GroupBy(joined => joined.OrganisationId )
-                    .Select(static g => new ObligationData
-                    {
-                        OrganisationId = g.Key,
-                        MaterialName = MaterialType.Paper.ToString(),
-                        ObligationToMeet = g.Sum(ob => ob.ObligationToMeet),
-                        TonnageAccepted = g.Sum(ta => ta.TonnageAccepted),
-                        TonnageAwaitingAcceptance = g.Sum(a => a.TonnageAwaitingAcceptance),
-                        TonnageOutstanding = g.Sum(to => to.TonnageOutstanding),
-                        Tonnage = g.Sum(t => t.Tonnage),
-                        MaterialTarget = g.Max(o => o.MaterialTarget)
-                    }).ToList()[0];
+            ObligationData obligationData = new()
+            {
+                OrganisationId = pcFiberObligationData[0].OrganisationId,
+                MaterialName = MaterialType.Paper.ToString(),
+                MaterialTarget = pcFiberObligationData[0].MaterialTarget
+            };
 
-            pcfcObligationData.Status = GetStatus(pcfcObligationData.ObligationToMeet, pcfcObligationData.TonnageAccepted);
-            return pcfcObligationData;
+            foreach (var data in pcFiberObligationData)
+            {
+                if (data.ObligationToMeet.HasValue)
+                {
+                    obligationData.ObligationToMeet = obligationData.ObligationToMeet ?? 0 + data.ObligationToMeet;
+                }
+                obligationData.TonnageAccepted += data.TonnageAccepted;
+                obligationData.TonnageAwaitingAcceptance += data.TonnageAwaitingAcceptance;
+
+                if (data.TonnageOutstanding.HasValue)
+                {
+                    obligationData.TonnageOutstanding = obligationData.TonnageOutstanding ?? 0 + data.TonnageOutstanding;
+                }
+                obligationData.Tonnage += data.Tonnage;
+            }
+
+            obligationData.Status = GetStatus(obligationData.ObligationToMeet, obligationData.TonnageAccepted);
+            return obligationData;
         }
 
         private static List<EprnTonnageResultsDto> GetSumOfTonnageForMaterials(IQueryable<EprnResultsDto> prns, string status)
