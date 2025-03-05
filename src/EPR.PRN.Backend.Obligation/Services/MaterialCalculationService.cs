@@ -11,7 +11,6 @@ namespace EPR.PRN.Backend.Obligation.Services
 
         public (int remelt, int remainder) CalculateGlass(double target, double remeltTarget, double tonnage)
         {
-            //var initialTarget = (int)Math.Round(target * tonnage, 0, MidpointRounding.ToPositiveInfinity);
             var initialTarget = (int)Math.Ceiling(target * tonnage);
             var remelt = (int)Math.Ceiling(remeltTarget * initialTarget);
 
