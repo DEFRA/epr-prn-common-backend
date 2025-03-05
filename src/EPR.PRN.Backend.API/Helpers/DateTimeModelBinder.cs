@@ -1,8 +1,10 @@
-﻿using System.Globalization;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace EPR.PRN.Backend.API.Helpers
 {
+    [ExcludeFromCodeCoverage]
     public class DateTimeModelBinder : IModelBinder
     {
         private readonly string[] _dateFormats;

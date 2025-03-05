@@ -6,13 +6,8 @@ using EPR.PRN.Backend.Obligation.Constants;
 using EPR.PRN.Backend.Obligation.Dto;
 using EPR.PRN.Backend.Obligation.Helpers;
 using EPR.PRN.Backend.Obligation.Interfaces;
-using EPR.PRN.Backend.Obligation.Mappers;
 using EPR.PRN.Backend.Obligation.Models;
 using Microsoft.Extensions.Logging;
-using Microsoft.SqlServer.Server;
-using System.Collections.Generic;
-using System.Linq;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace EPR.PRN.Backend.Obligation.Services
 {

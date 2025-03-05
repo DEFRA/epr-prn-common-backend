@@ -1,9 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
 using EPR.PRN.Backend.API.Helpers;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BackendAccountService.Core.Models.Request;
 
+[ExcludeFromCodeCoverage]
 public class ModifiedPrnsbyDateRequest : IValidatableObject
 {
     [Required(ErrorMessage = "From date is required.")]
