@@ -164,20 +164,22 @@ namespace EPR.PRN.Backend.Obligation.Services
 
         private static ObligationData GetPaperFibreCompositeObligationData(List<ObligationData> pcFiberObligationData)
         {
-            return pcFiberObligationData
-                    .GroupBy(joined => new { joined.OrganisationId, joined.Status })
+            var pcfcObligationData = pcFiberObligationData
+                    .GroupBy(joined => joined.OrganisationId )
                     .Select(static g => new ObligationData
                     {
-                        OrganisationId = g.Key.OrganisationId,
-                        MaterialName = "Paper",
+                        OrganisationId = g.Key,
+                        MaterialName = MaterialType.Paper.ToString(),
                         ObligationToMeet = g.Sum(ob => ob.ObligationToMeet),
                         TonnageAccepted = g.Sum(ta => ta.TonnageAccepted),
                         TonnageAwaitingAcceptance = g.Sum(a => a.TonnageAwaitingAcceptance),
                         TonnageOutstanding = g.Sum(to => to.TonnageOutstanding),
                         Tonnage = g.Sum(t => t.Tonnage),
-                        MaterialTarget = g.Max(o => o.MaterialTarget),
-                        Status = g.Key.Status
+                        MaterialTarget = g.Max(o => o.MaterialTarget)
                     }).ToList()[0];
+
+            pcfcObligationData.Status = GetStatus(pcfcObligationData.ObligationToMeet, pcfcObligationData.TonnageAccepted);
+            return pcfcObligationData;
         }
 
         private static List<EprnTonnageResultsDto> GetSumOfTonnageForMaterials(IQueryable<EprnResultsDto> prns, string status)
