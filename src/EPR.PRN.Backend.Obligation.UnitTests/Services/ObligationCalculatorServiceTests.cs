@@ -60,30 +60,39 @@ public class ObligationCalculatorServiceTests
         // Arrange
         var year = 2025;
         var materials = GetMaterialCodes();
-        var obligationCalculations = _fixture.CreateMany<ObligationCalculation>(5).ToList();
+        var obligationCalculations = _fixture.CreateMany<ObligationCalculation>(7).ToList();
         obligationCalculations[0].MaterialName = MaterialType.Plastic.ToString();
         obligationCalculations[1].MaterialName = MaterialType.Paper.ToString();
         obligationCalculations[2].MaterialName = MaterialType.Steel.ToString();
         obligationCalculations[3].MaterialName = MaterialType.Wood.ToString();
         obligationCalculations[4].MaterialName = MaterialType.Aluminium.ToString();
-        var prnList = _fixture.CreateMany<EprnResultsDto>(5).ToList();
+        obligationCalculations[5].MaterialName = MaterialType.Glass.ToString();
+        obligationCalculations[6].MaterialName = MaterialType.GlassRemelt.ToString();
+
+        var prnList = _fixture.CreateMany<EprnResultsDto>(7).ToList();
         prnList[0].Eprn.MaterialName = MaterialType.Plastic.ToString();
         prnList[1].Eprn.MaterialName = MaterialType.Paper.ToString();
         prnList[2].Eprn.MaterialName = MaterialType.Steel.ToString();
         prnList[3].Eprn.MaterialName = MaterialType.Wood.ToString();
         prnList[4].Eprn.MaterialName = MaterialType.Aluminium.ToString();
+        prnList[5].Eprn.MaterialName = MaterialType.Glass.ToString();
+        prnList[6].Eprn.MaterialName = MaterialType.GlassRemelt.ToString();
+
         prnList[0].Eprn.ObligationYear = year.ToString();
         prnList[1].Eprn.ObligationYear = year.ToString();
         prnList[2].Eprn.ObligationYear = year.ToString();
         prnList[3].Eprn.ObligationYear = year.ToString();
         prnList[4].Eprn.ObligationYear = year.ToString();
+        prnList[5].Eprn.ObligationYear = year.ToString();
+        prnList[6].Eprn.ObligationYear = year.ToString();
+
         var prns = prnList.AsQueryable();
         _mockMaterialRepository.Setup(repo => repo.GetAllMaterials()).ReturnsAsync(materials);
         _mockObligationCalculationRepository.Setup(repo => repo.GetObligationCalculation(organisationIds, year)).ReturnsAsync(obligationCalculations);
         _mockPrnRepository.Setup(repo => repo.GetAcceptedAndAwaitingPrnsByYear(orgId, year)).Returns(prns);
 
-        var acceptedTonnage = _fixture.CreateMany<EprnTonnageResultsDto>(5).ToList();
-        var awaitingTonnage = _fixture.CreateMany<EprnTonnageResultsDto>(5).ToList();
+        var acceptedTonnage = _fixture.CreateMany<EprnTonnageResultsDto>(7).ToList();
+        var awaitingTonnage = _fixture.CreateMany<EprnTonnageResultsDto>(7).ToList();
         _mockRecyclingTargetDataService.Setup(x => x.GetRecyclingTargetsAsync()).ReturnsAsync(GetRecyclingTargets());
 
         // Act
@@ -99,10 +108,26 @@ public class ObligationCalculatorServiceTests
             var obligationData = result.ObligationModel.ObligationData.FirstOrDefault(d => d.MaterialName == material.MaterialName);
             obligationData.Should().NotBeNull();
             obligationData.MaterialName.Should().Be(material.MaterialName);
-            obligationData.ObligationToMeet.Should().Be(obligationCalculations.FirstOrDefault(o => o.MaterialName == material.MaterialName)?.MaterialObligationValue ?? 0);
+            obligationData.ObligationToMeet.Should().Be(obligationCalculations.FirstOrDefault(o => o.MaterialName == material.MaterialName).MaterialObligationValue);
             obligationData.TonnageAccepted.Should().Be(acceptedTonnage.FirstOrDefault(t => t.MaterialName == material.MaterialName)?.TotalTonnage ?? 0);
             obligationData.TonnageAwaitingAcceptance.Should().Be(awaitingTonnage.FirstOrDefault(t => t.MaterialName == material.MaterialName)?.TotalTonnage ?? 0);
         }
+    }
+
+    [TestMethod]
+    public async Task GetObligationCalculation_ShouldReturnSuccess_WithNoData()
+    {
+        // Arrange
+        var year = 2025;
+        var materials = new List<Material>();
+        _mockMaterialRepository.Setup(repo => repo.GetAllMaterials()).ReturnsAsync(materials);
+
+        // Act
+        var result = await _service.GetObligationCalculation(orgId, organisationIds, year);
+
+        // Assert
+        result.IsSuccess.Should().BeFalse();
+        result.Errors.Should().Contain($"No Materials found in PRN BAckend Database");
     }
 
     [TestMethod]
@@ -129,7 +154,7 @@ public class ObligationCalculatorServiceTests
 
         var glassRemeltData = result.ObligationModel.ObligationData.FirstOrDefault(d => d.MaterialName == "GlassRemelt");
         glassRemeltData.Should().NotBeNull();
-        glassRemeltData.ObligationToMeet.Should().Be(0);
+        glassRemeltData.ObligationToMeet.Should().BeNull();
         glassRemeltData.TonnageAccepted.Should().Be(0);
         glassRemeltData.TonnageAwaitingAcceptance.Should().Be(0);
         glassRemeltData.Status.Should().Be(ObligationConstants.Statuses.NoDataYet);
@@ -400,13 +425,12 @@ public class ObligationCalculatorServiceTests
     {
         return
         [
-            new Material { MaterialCode = "PL", MaterialName = "Plastic" },
-            new Material { MaterialCode = "WD", MaterialName = "Wood" },
-            new Material { MaterialCode = "AL", MaterialName = "Aluminium" },
-            new Material { MaterialCode = "ST", MaterialName = "Steel" },
-            new Material { MaterialCode = "PC", MaterialName = "Paper" },
-            new Material { MaterialCode = "GL", MaterialName = "Glass" }
+            new Material { MaterialCode = "PL", MaterialName = MaterialType.Plastic.ToString() },
+            new Material { MaterialCode = "WD", MaterialName = MaterialType.Wood.ToString() },
+            new Material { MaterialCode = "AL", MaterialName = MaterialType.Aluminium.ToString() },
+            new Material { MaterialCode = "ST", MaterialName = MaterialType.Steel.ToString() },
+            new Material { MaterialCode = "PC", MaterialName = MaterialType.Paper.ToString() },
+            new Material { MaterialCode = "GL", MaterialName = MaterialType.Glass.ToString() }
         ];
     }
-
 }

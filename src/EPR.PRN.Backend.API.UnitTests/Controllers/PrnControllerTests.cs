@@ -271,6 +271,20 @@ public class PrnControllerTests
     }
 
     [TestMethod]
+    [DataRow(2025)] // Invalid year
+    public async Task GetObligationCalculation_EmptyOrganisationIds_ShouldReturn_BadRequest(int year)
+    {
+        // Act
+        var result = await _systemUnderTest.GetObligationCalculations(Guid.NewGuid(), year, []);
+
+        // Assert
+        var badRequestResult = result as BadRequestObjectResult;
+        badRequestResult.Should().NotBeNull();
+        badRequestResult.StatusCode.Should().Be(400);
+        badRequestResult.Value.Should().Be($"Organisation Ids list can't be empty.");
+    }
+
+    [TestMethod]
     [DataRow(2023)] // Invalid year
     [DataRow(2030)] // Invalid year
     public async Task GetObligationCalculation_MultipleOrganisationIds_InvalidYear_ReturnsBadRequest(int year)
