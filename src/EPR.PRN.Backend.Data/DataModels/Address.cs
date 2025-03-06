@@ -34,5 +34,8 @@ namespace EPR.PRN.Backend.Data.DataModels
         [Required]
         [MaxLength(20)]
         public string GridReference { get; set; }
+
+        public virtual ICollection<Registration> Registrations { get; set; }
+
     }
 }

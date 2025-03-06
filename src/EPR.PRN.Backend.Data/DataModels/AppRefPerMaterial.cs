@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EPR.PRN.Backend.Data.DataModels
 {
@@ -19,5 +20,8 @@ namespace EPR.PRN.Backend.Data.DataModels
         [Required]
         [MaxLength(100)]
         public string ReferenceNo { get; set; }
+
+        [ForeignKey("RegistrationId")]
+        public virtual Registration Registration { get; set; }
     }
 }

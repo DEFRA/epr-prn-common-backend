@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EPR.PRN.Backend.Data.DataModels
 {
@@ -10,5 +11,7 @@ namespace EPR.PRN.Backend.Data.DataModels
         [MaxLength(200)]
         [Required]
         public string Name{ get; set; }
+
+        public virtual ICollection<Registration> Registrations { get; set; }
     }
 }

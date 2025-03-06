@@ -82,5 +82,32 @@ namespace EPR.PRN.Backend.Data.DataModels
 
         [Required]
         public int MaxPeriodId { get; set; }
+
+        [ForeignKey("RegistrationId")]
+        public virtual Registration Registration { get; set; }
+
+        [ForeignKey("FeesId")]
+        public virtual FeesAmount Fees { get; set; }
+
+        [ForeignKey("PermitTypeId")]
+        public virtual MaterialPermitType MaterialPermitType { get; set; }
+
+        [ForeignKey("MaximumReprocessingPeriodId")]
+        public virtual Period MaximumReprocessingPeriod { get; set; }
+
+        [ForeignKey("PPCPeriodId")]
+        public virtual Period PPCPeriod { get; set; }
+
+        [ForeignKey("WasteManagementPeriodId")]
+        public virtual Period WasteManagementPeriod { get; set; }
+
+        [ForeignKey("InstallationPeriodId")]
+        public virtual Period InstallationPeriod { get; set; }
+
+        [ForeignKey("EnvironmentalPermitWasteManagementPeriodId")]
+        public virtual Period EnvironmentalPermitWasteManagementPeriod { get; set; }
+
+        [ForeignKey("MaxPeriodId")]
+        public virtual Period MaxPeriod { get; set; }
     }
 }

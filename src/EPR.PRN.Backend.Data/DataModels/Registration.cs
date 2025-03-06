@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EPR.PRN.Backend.Data.DataModels
 {
@@ -30,6 +31,26 @@ namespace EPR.PRN.Backend.Data.DataModels
 
         public int LegalDocumentAddressId { get; set; }
 
+        [ForeignKey("ApplicationTypeId")]
+        public virtual ApplicationType ApplicationType { get; set; }
+
+        [ForeignKey("RegistrationStatusId")]
+        public virtual RegistrationStatus RegistrationStatus { get; set; }
+
+        [ForeignKey("BusinessAddressId")]
+        public virtual Address BusinessAddress { get; set; }
+
+        [ForeignKey("ReprocessingSiteAddressId")]
+        public virtual Address ReprocessingSiteAddress { get; set; }
+
+        [ForeignKey("LegalDocumentAddressId")]
+        public virtual Address LegalDocumentAddress { get; set; }
+
+
         public virtual ICollection<FileUpload> FileUploads { get; set; } = null!;
+
+        public virtual ICollection<AppRefPerMaterial> AppRefPerMaterials { get; set; }
+
+        public virtual ICollection<RegistrationMaterial> RegistrationMaterials { get; set; }
     }
 }

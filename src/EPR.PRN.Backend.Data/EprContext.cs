@@ -42,6 +42,10 @@ namespace EPR.PRN.Backend.Data
             modelBuilder.Entity<PrnStatus>()
                 .HasData(DataModels.PrnStatus.Data);
 
+            modelBuilder.Entity<FeesAmount>()
+                .HasIndex(a => a.MaterialId)
+                .IsUnique();
+
             modelBuilder.Entity<RecyclingTarget>()
                 .HasData(
                             // Paper
@@ -109,6 +113,42 @@ namespace EPR.PRN.Backend.Data
                             new RecyclingTarget { Id = 48, MaterialNameRT = MaterialType.FibreComposite.ToString(), Target = 0.85, Year = 2030 }
                         );
 
+            modelBuilder.Entity<ApplicationType>()
+                .HasData(
+                            new ApplicationType { Name = "Reprocessor" },
+                            new ApplicationType { Name = "Exporter" }
+                );
+
+            modelBuilder.Entity<Period>()
+                .HasData(
+                    new Period { Name = "Per Week" },
+                    new Period { Name = "Per Month" },
+                    new Period { Name = "Per Year" }
+                );
+
+            modelBuilder.Entity<MaterialPermitType>()
+                .HasData(
+                    new MaterialPermitType { Name = "Environmental permit or waste management licence" },
+                    new MaterialPermitType { Name = "Installation Permit" },
+                    new MaterialPermitType { Name = "Pollution, Prevention, and Control (PPC) permit" },
+                    new MaterialPermitType { Name = "Waste Exemption" },
+                    new MaterialPermitType { Name = "Waste Management Licence" }
+                );
+
+            modelBuilder.Entity<RegistrationStatus>()
+                .HasData(
+                    new RegistrationStatus { Name = "Accepted" },
+                    new RegistrationStatus { Name = "Cancelled" },
+                    new RegistrationStatus { Name = "Granted" },
+                    new RegistrationStatus { Name = "Queried" },
+                    new RegistrationStatus { Name = "Refused" },
+                    new RegistrationStatus { Name = "Started" },
+                    new RegistrationStatus { Name = "Submitted" },
+                    new RegistrationStatus { Name = "Suspended" },
+                    new RegistrationStatus { Name = "Updated" },
+                    new RegistrationStatus { Name = "Withdrawn" }
+                );
+
             modelBuilder.Entity<Material>()
                 .HasData(
                             new Material { MaterialCode = "PL", MaterialName = "Plastic" },
@@ -162,40 +202,31 @@ namespace EPR.PRN.Backend.Data
             base.OnModelCreating(modelBuilder);
         }
 
-        public virtual DbSet<Eprn> Prn { get; set; }
-
-        public virtual DbSet<PrnStatus> PrnStatus { get; set; }
-
-        public virtual DbSet<PrnStatusHistory> PrnStatusHistory { get; set; }
-
-        public virtual DbSet<RecyclingTarget> RecyclingTargets { get; set; }
-
-        public virtual DbSet<ObligationCalculation> ObligationCalculations { get; set; }
-
-        public virtual DbSet<Material> Material { get; set; }
-
-        public virtual DbSet<PEprNpwdSync> PEprNpwdSync { get; set; }
-
+        public DbSet<Address> Address { get; set; }
+        public DbSet<ApplicationType> ApplicationType { get; set; }
+        public DbSet<AppRefPerMaterial> AppRefPerMaterial { get; set; }
+        public DbSet<FeesAmount> FeesAmount { get; set; }
         public virtual DbSet<FileUpload> FileUpload { get; set; }
-
-        public virtual DbSet<FileUploadType> FileUploadType { get; set; }
-
         public virtual DbSet<FileUploadStatus> FileUploadStatus { get; set; }
-
+        public virtual DbSet<FileUploadType> FileUploadType { get; set; }
+        public virtual DbSet<Material> Material { get; set; }
+        public DbSet<MaterialPermitType> MaterialPermitType { get; set; }
+        public virtual DbSet<ObligationCalculation> ObligationCalculations { get; set; }
+        public virtual DbSet<PEprNpwdSync> PEprNpwdSync { get; set; }
+        public DbSet<Period> Period { get; set; }
+        public virtual DbSet<Eprn> Prn { get; set; }
+        public virtual DbSet<PrnStatus> PrnStatus { get; set; }
+        public virtual DbSet<PrnStatusHistory> PrnStatusHistory { get; set; }
+        public virtual DbSet<RecyclingTarget> RecyclingTargets { get; set; }
         public virtual DbSet<Registration> Registration { get; set; }
-
         public virtual DbSet<RegistrationContact> RegistrationContact { get; set; }
-
-        public virtual DbSet<RegistrationProcessingIORawMaterial> RegistrationProcessingIORawMaterial { get; set; }
-
-        public virtual DbSet<RegistrationReprocessingIO> RegistrationReprocessingIO { get; set; }
-
         public virtual DbSet<RegistrationContact> RegistrationTaskStatus { get; set; }
-
+        public virtual DbSet<RegistrationMaterial> RegistrationMaterial { get; set; }
+        public virtual DbSet<RegistrationProcessingIORawMaterial> RegistrationProcessingIORawMaterial { get; set; }
+        public virtual DbSet<RegistrationReprocessingIO> RegistrationReprocessingIO { get; set; }
+        public virtual DbSet<RegistrationStatus> RegistrationStatus { get; set; }
         public virtual DbSet<SaveAndContinue> SaveAndContinue { get; set; }
-
         public virtual DbSet<TaskName> TaskName { get; set; }
-
         public virtual DbSet<TaskName> Taskstatus { get; set; }
     }
 }
