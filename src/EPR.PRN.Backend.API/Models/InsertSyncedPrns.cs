@@ -4,7 +4,6 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace EPR.PRN.Backend.API.Models
 {
-    [ExcludeFromCodeCoverage]
     public class InsertSyncedPrn
     {
         public string EvidenceNo { get; set; } = null!;

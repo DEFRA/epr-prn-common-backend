@@ -3,7 +3,6 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace EPR.PRN.Backend.API.Helpers;
 
-[ExcludeFromCodeCoverage]
 public class DateTimeModelBinderProvider : IModelBinderProvider
 {
     public IModelBinder GetBinder(ModelBinderProviderContext context)

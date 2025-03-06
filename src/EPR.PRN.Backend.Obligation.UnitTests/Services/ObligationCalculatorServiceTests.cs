@@ -154,7 +154,7 @@ public class ObligationCalculatorServiceTests
 
         var glassRemeltData = result.ObligationModel.ObligationData.FirstOrDefault(d => d.MaterialName == "GlassRemelt");
         glassRemeltData.Should().NotBeNull();
-        glassRemeltData.ObligationToMeet.Should().Be(0);
+        glassRemeltData.ObligationToMeet.Should().BeNull();
         glassRemeltData.TonnageAccepted.Should().Be(0);
         glassRemeltData.TonnageAwaitingAcceptance.Should().Be(0);
         glassRemeltData.Status.Should().Be(ObligationConstants.Statuses.NoDataYet);
