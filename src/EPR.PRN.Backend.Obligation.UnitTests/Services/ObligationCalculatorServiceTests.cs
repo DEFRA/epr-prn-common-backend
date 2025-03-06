@@ -91,8 +91,8 @@ public class ObligationCalculatorServiceTests
         _mockObligationCalculationRepository.Setup(repo => repo.GetObligationCalculation(organisationIds, year)).ReturnsAsync(obligationCalculations);
         _mockPrnRepository.Setup(repo => repo.GetAcceptedAndAwaitingPrnsByYear(orgId, year)).Returns(prns);
 
-        var acceptedTonnage = _fixture.CreateMany<EprnTonnageResultsDto>(8).ToList();
-        var awaitingTonnage = _fixture.CreateMany<EprnTonnageResultsDto>(8).ToList();
+        var acceptedTonnage = _fixture.CreateMany<EprnTonnageResultsDto>(7).ToList();
+        var awaitingTonnage = _fixture.CreateMany<EprnTonnageResultsDto>(7).ToList();
         _mockRecyclingTargetDataService.Setup(x => x.GetRecyclingTargetsAsync()).ReturnsAsync(GetRecyclingTargets());
 
         // Act
