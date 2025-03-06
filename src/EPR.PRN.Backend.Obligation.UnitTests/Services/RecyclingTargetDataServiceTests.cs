@@ -70,7 +70,8 @@ public class RecyclingTargetDataServiceTests
                 new RecyclingTarget { Year = 1, MaterialNameRT = MaterialType.Paper.ToString(), Target = 0.4 },
                 new RecyclingTarget { Year = 1, MaterialNameRT = MaterialType.Plastic.ToString(), Target = 0.5 },
                 new RecyclingTarget { Year = 1, MaterialNameRT = MaterialType.Steel.ToString(), Target = 0.6 },
-                new RecyclingTarget { Year = 1, MaterialNameRT = MaterialType.Wood.ToString(), Target = 0.7 }
+                new RecyclingTarget { Year = 1, MaterialNameRT = MaterialType.Wood.ToString(), Target = 0.7 },
+                new RecyclingTarget { Year = 1, MaterialNameRT = MaterialType.FibreComposite.ToString(), Target = 0.8 }
             });
 
         var recyclingTargetDataService = new RecyclingTargetDataService(recyclingTargetRepositoryMock.Object);
