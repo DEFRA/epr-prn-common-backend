@@ -2,5 +2,6 @@
 {
     public class FileUploadType: BaseModel
     {
+        public virtual ICollection<FileUpload> FileUploads { get; set; } = null!;
     }
 }

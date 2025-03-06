@@ -2,5 +2,6 @@
 {
     public class TaskStatus: BaseModel
     {
+        public virtual ICollection<RegistrationTaskStatus> RegistrationTasks { get; set; } = null!;
     }
 }

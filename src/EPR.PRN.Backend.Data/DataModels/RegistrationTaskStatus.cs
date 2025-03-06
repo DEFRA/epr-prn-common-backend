@@ -15,5 +15,11 @@ namespace EPR.PRN.Backend.Data.DataModels
         public int TaskId { get; set; }
 
         public int TaskStatusId { get; set; }
+
+        public virtual TaskStatus TaskStatus { get; set; } = null!;
+        public virtual TaskName Task { get; set; } = null!;
+
+        public virtual Registration Registration { get; set; } = null!;
+
     }
 }

@@ -144,5 +144,27 @@ namespace EPR.PRN.Backend.Data
         public virtual DbSet<Material> Material { get; set; }
 
         public virtual DbSet<PEprNpwdSync> PEprNpwdSync { get; set; }
+
+        public virtual DbSet<FileUpload> FileUpload { get; set; }
+
+        public virtual DbSet<FileUploadType> FileUploadType { get; set; }
+
+        public virtual DbSet<FileUploadStatus> FileUploadStatus { get; set; }
+
+        public virtual DbSet<Registration> Registration { get; set; }
+
+        public virtual DbSet<RegistrationContact> RegistrationContact { get; set; }
+
+        public virtual DbSet<RegistrationProcessingIORawMaterial> RegistrationProcessingIORawMaterial { get; set; }
+
+        public virtual DbSet<RegistrationReprocessingIO> RegistrationReprocessingIO { get; set; }
+
+        public virtual DbSet<RegistrationContact> RegistrationTaskStatus { get; set; }
+
+        public virtual DbSet<SaveAndContinue> SaveAndContinue { get; set; }
+
+        public virtual DbSet<TaskName> TaskName { get; set; }
+
+        public virtual DbSet<TaskName> Taskstatus { get; set; }
     }
 }

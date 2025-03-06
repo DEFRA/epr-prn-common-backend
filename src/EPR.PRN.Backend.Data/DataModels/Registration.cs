@@ -29,5 +29,7 @@ namespace EPR.PRN.Backend.Data.DataModels
         public int ReprocessingSiteAddressId { get; set; }
 
         public int LegalDocumentAddressId { get; set; }
+
+        public virtual ICollection<FileUpload> FileUploads { get; set; } = null!;
     }
 }
