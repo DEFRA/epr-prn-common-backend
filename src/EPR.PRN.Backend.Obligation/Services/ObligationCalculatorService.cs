@@ -123,12 +123,7 @@ namespace EPR.PRN.Backend.Obligation.Services
                     obligationData.Add(GetObligationData(materialName, callingOrganisationId, obligationCalculation, tonnageAccepted, tonnageAwaitingAcceptance, tonnageOutstanding, recyclingTarget));
                 }
 
-                if (materialName.Contains(MaterialType.Paper.ToString()))
-                {
-                    paperFCObligationData.Add(GetObligationData(materialName, callingOrganisationId, obligationCalculation, tonnageAccepted, tonnageAwaitingAcceptance, tonnageOutstanding, recyclingTarget));
-                }
-
-                if (materialName.Contains(MaterialType.FibreComposite.ToString()))
+                if (materialName.Contains(MaterialType.Paper.ToString()) || materialName.Contains(MaterialType.FibreComposite.ToString()))
                 {
                     paperFCObligationData.Add(GetObligationData(materialName, callingOrganisationId, obligationCalculation, tonnageAccepted, tonnageAwaitingAcceptance, tonnageOutstanding, recyclingTarget));
                 }
@@ -165,24 +160,13 @@ namespace EPR.PRN.Backend.Obligation.Services
             {
                 OrganisationId = pcFiberObligationData[0].OrganisationId,
                 MaterialName = MaterialType.Paper.ToString(),
-                MaterialTarget = pcFiberObligationData[0].MaterialTarget
+                MaterialTarget = pcFiberObligationData[0].MaterialTarget,
+                ObligationToMeet = pcFiberObligationData.Sum(x => x.ObligationToMeet ?? 0),
+                TonnageAccepted = pcFiberObligationData.Sum(x => x.TonnageAccepted),
+                TonnageAwaitingAcceptance = pcFiberObligationData.Sum(x => x.TonnageAwaitingAcceptance),
+                TonnageOutstanding = pcFiberObligationData.Sum(x => x.TonnageOutstanding ?? 0),
+                Tonnage = pcFiberObligationData.Sum(x => x.Tonnage)
             };
-
-            foreach (var data in pcFiberObligationData)
-            {
-                if (data.ObligationToMeet.HasValue)
-                {
-                    obligationData.ObligationToMeet = obligationData.ObligationToMeet ?? 0 + data.ObligationToMeet;
-                }
-                obligationData.TonnageAccepted += data.TonnageAccepted;
-                obligationData.TonnageAwaitingAcceptance += data.TonnageAwaitingAcceptance;
-
-                if (data.TonnageOutstanding.HasValue)
-                {
-                    obligationData.TonnageOutstanding = obligationData.TonnageOutstanding ?? 0 + data.TonnageOutstanding;
-                }
-                obligationData.Tonnage += data.Tonnage;
-            }
 
             obligationData.Status = GetStatus(obligationData.ObligationToMeet, obligationData.TonnageAccepted);
             return obligationData;
