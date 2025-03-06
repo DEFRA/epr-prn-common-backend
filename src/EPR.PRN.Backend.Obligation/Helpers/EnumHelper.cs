@@ -1,6 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-
-namespace EPR.PRN.Backend.Obligation.Helpers
+﻿namespace EPR.PRN.Backend.Obligation.Helpers
 {
     public static class EnumHelper
     {
