@@ -147,7 +147,7 @@ namespace EPR.PRN.Backend.Obligation.Services
                 TonnageAwaitingAcceptance = tonnageAwaitingAcceptance ?? 0,
                 TonnageOutstanding = (obligationMaterialCalculations.Count > 0 && tonnageAccepted.HasValue) ? obligationMaterialCalculations.Sum(x => x.MaterialObligationValue) - tonnageAccepted : null,
                 MaterialTarget = recyclingTarget ?? 0,
-                ObligationToMeet = obligationMaterialCalculations.Any() ? (int?)obligationMaterialCalculations.Sum(x => x.MaterialObligationValue) : null,
+                ObligationToMeet = obligationMaterialCalculations.Count > 0 ? (int?)obligationMaterialCalculations.Sum(x => x.MaterialObligationValue) : null,
                 Tonnage = obligationMaterialCalculations.Sum(x => x.Tonnage)
             };
 
@@ -162,10 +162,10 @@ namespace EPR.PRN.Backend.Obligation.Services
                 OrganisationId = pcFiberObligationData[0].OrganisationId,
                 MaterialName = MaterialType.Paper.ToString(),
                 MaterialTarget = pcFiberObligationData[0].MaterialTarget,
-                ObligationToMeet = pcFiberObligationData.Any(x => x.ObligationToMeet.HasValue) ? (int?)pcFiberObligationData.Sum(x => x.ObligationToMeet ?? 0) : null,
+                ObligationToMeet = pcFiberObligationData.Exists(x => x.ObligationToMeet.HasValue) ? (int?)pcFiberObligationData.Sum(x => x.ObligationToMeet ?? 0) : null,
                 TonnageAccepted = pcFiberObligationData.Sum(x => x.TonnageAccepted),
                 TonnageAwaitingAcceptance = pcFiberObligationData.Sum(x => x.TonnageAwaitingAcceptance),
-                TonnageOutstanding = pcFiberObligationData.Any(x => x.TonnageOutstanding.HasValue) ? (int?)pcFiberObligationData.Sum(x => x.TonnageOutstanding ?? 0) : null,
+                TonnageOutstanding = pcFiberObligationData.Exists(x => x.TonnageOutstanding.HasValue) ? (int?)pcFiberObligationData.Sum(x => x.TonnageOutstanding ?? 0) : null,
                 Tonnage = pcFiberObligationData.Sum(x => x.Tonnage)
             };
 
