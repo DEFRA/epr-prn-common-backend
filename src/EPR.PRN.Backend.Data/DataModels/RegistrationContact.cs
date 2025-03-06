@@ -15,5 +15,11 @@ namespace EPR.PRN.Backend.Data.DataModels
         public int MaterialId { get; set; }
 
         public int PersonId { get; set; }
+
+        public virtual Registration Registration { get; set; } = null!;
+
+        public virtual Material Material { get; set; } = null!;
+        
+        public virtual ICollection<RegistrationContact> RegistrationContacts { get; set; } = null!;
     }
 }

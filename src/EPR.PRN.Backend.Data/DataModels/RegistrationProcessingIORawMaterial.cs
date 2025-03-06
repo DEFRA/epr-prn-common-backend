@@ -20,5 +20,7 @@ namespace EPR.PRN.Backend.Data.DataModels
 
         public bool IsInput { get; set; }
 
+        public virtual RegistrationReprocessingIO RegistrationReprocessingIO { get; set; } = null!;
+
     }
 }

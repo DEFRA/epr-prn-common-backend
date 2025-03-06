@@ -1,7 +1,16 @@
-﻿namespace EPR.PRN.Backend.Data.DataModels
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace EPR.PRN.Backend.Data.DataModels
 {
-    public class TaskName: BaseModel
+    public class TaskName
     {
+        [Key]
+        public int Id { get; set; }
+
+        [MaxLength(200)]
+        [Required]
+        public string? Name { get; set; }
+
         public virtual ICollection<RegistrationTaskStatus> RegistrationTasks { get; set; } = null!;
     }
 }

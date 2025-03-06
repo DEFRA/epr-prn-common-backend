@@ -12,12 +12,14 @@ namespace EPR.PRN.Backend.Data.DataModels
 
         public int RegistrationId { get; set; }
 
-        public string? FileName { get; set; }
+        [MaxLength(50)]
+        public required string FileName { get; set; }
 
         public Guid FileId { get; set; }
 
         public DateTime DateUploaded { get; set; }
 
+        [MaxLength(200)]
         public Guid UploadedBy { get; set; }
 
         public int FileUploadTypeId { get; set; }
@@ -26,10 +28,10 @@ namespace EPR.PRN.Backend.Data.DataModels
 
         public int FileUploadStatusId { get; set; }
 
-        public virtual FileUploadStatus FileUploadStatus { get; set; }
+        public virtual FileUploadStatus FileUploadStatus { get; set; } = null!;
 
-        public virtual FileUploadType FileUploadType { get; set; }
+        public virtual FileUploadType FileUploadType { get; set; } = null!;
 
-        public virtual Registration Registration { get; set; }
+        public virtual Registration Registration { get; set; } = null!;
     }
 }

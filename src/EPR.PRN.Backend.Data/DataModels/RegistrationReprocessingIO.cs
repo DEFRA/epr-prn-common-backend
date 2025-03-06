@@ -15,7 +15,8 @@ namespace EPR.PRN.Backend.Data.DataModels
 
         public int MaterialId { get; set; }
 
-        public string? TypeOfSuppliers { get; set; }
+        [MaxLength(2000)]
+        public required string TypeOfSuppliers { get; set; }
 
         public bool ReprocessingPackgagingWasteLastYearFlag { get; set; }
 
@@ -37,6 +38,8 @@ namespace EPR.PRN.Backend.Data.DataModels
         [Column(TypeName = "decimal(10,2)")]
         public double ProcessLossTonne { get; set; }
 
-        public string? PlantEquipmentUsed { get; set; }
+        public required string PlantEquipmentUsed { get; set; }
+
+        public virtual Registration Registration { get; set; } = null!; 
     }
 }

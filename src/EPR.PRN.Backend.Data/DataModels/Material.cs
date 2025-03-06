@@ -10,5 +10,7 @@ namespace EPR.PRN.Backend.Data.DataModels
 
         [MaxLength(3)]
         public required string MaterialCode { get; set; }
+
+        public virtual ICollection<Registration> Registrations { get; set; } = null!;
     }
 }

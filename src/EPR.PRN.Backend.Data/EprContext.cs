@@ -128,6 +128,37 @@ namespace EPR.PRN.Backend.Data
                 .OnDelete(DeleteBehavior.NoAction);
             });
 
+
+            modelBuilder.Entity<DataModels.TaskStatus>()
+            .HasData(
+                        new DataModels.TaskStatus { Name = "Not started" },
+                        new DataModels.TaskStatus { Name = "Started" },
+                        new DataModels.TaskStatus { Name = "Completed" },
+                        new DataModels.TaskStatus { Name = "Cannot start yet" }
+            );
+
+            modelBuilder.Entity<DataModels.TaskName>()
+           .HasData(
+                       new DataModels.TaskStatus { Name = "SiteAddressAndContactDetails" },
+                       new DataModels.TaskStatus { Name = "WasteLicensesPermitsAndExemption" },
+                       new DataModels.TaskStatus { Name = "ReprocessingInputandOutput" },
+                       new DataModels.TaskStatus { Name = "SamplingAndInspectionPlanPerMaterial" }
+           );
+
+            modelBuilder.Entity<DataModels.FileUploadType>()
+          .HasData(
+                      new DataModels.FileUploadType { Name = "SamplingAndInspectionPlan" }
+          );
+
+            modelBuilder.Entity<DataModels.FileUploadStatus>()
+        .HasData(
+                    new DataModels.FileUploadStatus { Name = "Virus check failed" },
+                    new DataModels.FileUploadStatus { Name = "Virus check succeeded" },
+                    new DataModels.FileUploadStatus { Name = "Upload complete" },
+                    new DataModels.FileUploadStatus { Name = "Upload failed" },
+                    new DataModels.FileUploadStatus { Name = "File deleted" }
+        );
+
             base.OnModelCreating(modelBuilder);
         }
 
