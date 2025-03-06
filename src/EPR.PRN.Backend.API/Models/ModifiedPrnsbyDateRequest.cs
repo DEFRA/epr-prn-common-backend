@@ -1,6 +1,6 @@
-﻿using EPR.PRN.Backend.API.Helpers;
+﻿using System.ComponentModel.DataAnnotations;
+using EPR.PRN.Backend.API.Helpers;
 using Microsoft.AspNetCore.Mvc;
-using System.ComponentModel.DataAnnotations;
 
 namespace BackendAccountService.Core.Models.Request;
 
