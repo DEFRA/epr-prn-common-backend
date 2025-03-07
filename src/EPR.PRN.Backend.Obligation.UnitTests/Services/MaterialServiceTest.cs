@@ -27,9 +27,9 @@ public class MaterialServiceTests
         var code = "PL"; // Plastic
         var materials = new List<Material>
             {
-                new Material { MaterialCode = "PL", MaterialName = MaterialType.Plastic.ToString() }
+                new() { Id = 1, MaterialCode = code, MaterialName = MaterialType.Plastic.ToString(), IsCaculable = true, IsVisibleToObligation = true }
             };
-        _materialRepository.Setup(repo => repo.GetAllMaterials()).ReturnsAsync(materials);
+        _materialRepository.Setup(repo => repo.GetCalculableMaterials()).ReturnsAsync(materials);
 
         // Act
         var result = await _service.GetMaterialByCode(code);
@@ -84,9 +84,9 @@ public class MaterialServiceTests
         var code = "XX"; // Code that doesn't map to a valid Enum value
         var materials = new List<Material>
             {
-                new Material { MaterialCode = "XX", MaterialName = "UnknownMaterial" }
+                new() { Id = 99, MaterialCode = "XX", MaterialName = "UnknownMaterial", IsCaculable = false, IsVisibleToObligation = false }
             };
-        _materialRepository.Setup(repo => repo.GetAllMaterials()).ReturnsAsync(materials);
+        _materialRepository.Setup(repo => repo.GetCalculableMaterials()).ReturnsAsync(materials);
 
         // Act
         var result = await _service.GetMaterialByCode(code);

@@ -17,7 +17,7 @@ namespace EPR.PRN.Backend.Obligation.Services
         public async Task<MaterialType?> GetMaterialByCode(string code)
         {
             if (code.IsNullOrEmpty()) return null;
-            var materials = await _materialRepository.GetAllMaterials();
+            var materials = await _materialRepository.GetCalculableMaterials();
             var material = materials.FirstOrDefault(m => m.MaterialCode == code);
 
             if (material != null && Enum.TryParse(material.MaterialName, true, out MaterialType materialEnum))
@@ -25,6 +25,6 @@ namespace EPR.PRN.Backend.Obligation.Services
                 return materialEnum;
             }
             return null;
-        }
-    }
+		}
+	}
 }

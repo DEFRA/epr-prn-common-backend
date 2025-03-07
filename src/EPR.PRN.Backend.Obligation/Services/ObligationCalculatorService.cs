@@ -84,7 +84,7 @@ namespace EPR.PRN.Backend.Obligation.Services
 
         public async Task<ObligationCalculationResult> GetObligationCalculation(Guid callingOrganisationId, IEnumerable<Guid> organisationIds, int year)
         {
-            var materials = await materialRepository.GetAllMaterials();
+            var materials = await materialRepository.GetVisibleToObligationMaterials();
             if (!materials.Any())
             {
                 logger.LogError(ObligationConstants.ErrorMessages.NoMaterialsFoundErrorMessage);
@@ -94,28 +94,27 @@ namespace EPR.PRN.Backend.Obligation.Services
                     IsSuccess = false
                 };
             }
-            var materialsWithRemelt = AddGlassRemelt(materials.ToList());
 
             var obligationCalculations = await obligationCalculationRepository.GetObligationCalculation(organisationIds, year);
 
             var prns = prnRepository.GetAcceptedAndAwaitingPrnsByYear(callingOrganisationId, year);
 
-            // make sure material names match materials table
-            prns = Mappers.MaterialsMapper.AdjustPrnMaterialNames(prns);
             var acceptedTonnageForPrns = GetSumOfTonnageForMaterials(prns, EprnStatus.ACCEPTED.ToString());
             var awaitingAcceptanceForPrns = GetSumOfTonnageForMaterials(prns, EprnStatus.AWAITINGACCEPTANCE.ToString());
             var awaitingAcceptanceCount = GetPrnStatusCount(prns, EprnStatus.AWAITINGACCEPTANCE.ToString());
-            var materialNames = materialsWithRemelt.Select(material => material.MaterialName);
+            
             var recyclingTargets = await recyclingTargetDataService.GetRecyclingTargetsAsync();
 
             var obligationData = new List<ObligationData>();
             var paperFCObligationData = new List<ObligationData>();
 
-            foreach (var materialName in materialNames)
+            foreach (var material in materials)
             {
-                var recyclingTarget = GetRecyclingTarget(year, materialName, recyclingTargets);
-                var tonnageAccepted = GetTonnage(materialName, acceptedTonnageForPrns);
-                var tonnageAwaitingAcceptance = GetTonnage(materialName, awaitingAcceptanceForPrns);
+                var materialName = material.MaterialName;
+				var npwdMaterialNames = material.PrnMaterialMappings.Select(npwdm => npwdm.NPWDMaterialName);
+				var recyclingTarget = GetRecyclingTarget(year, materialName, recyclingTargets);
+                var tonnageAccepted = GetTonnage(npwdMaterialNames, acceptedTonnageForPrns);
+                var tonnageAwaitingAcceptance = GetTonnage(npwdMaterialNames, awaitingAcceptanceForPrns);
                 var obligationMaterialCalculations = obligationCalculations.FindAll(x => x.MaterialName == materialName);
 
                 if (materialName.Contains(MaterialType.Paper.ToString()) || materialName.Contains(MaterialType.FibreComposite.ToString()))
@@ -201,12 +200,6 @@ namespace EPR.PRN.Backend.Obligation.Services
             return recyclingTargets[year][materialType.Value];
         }
 
-        private static List<Material> AddGlassRemelt(List<Material> materials)
-        {
-            materials.Add(new Material { MaterialCode = "GR", MaterialName = "GlassRemelt" });
-            return materials;
-        }
-
         private static string GetStatus(int? materialObligationValue, int? tonnageAccepted)
         {
             if (!materialObligationValue.HasValue || !tonnageAccepted.HasValue)
@@ -221,12 +214,12 @@ namespace EPR.PRN.Backend.Obligation.Services
             return ObligationConstants.Statuses.NotMet;
         }
 
-        private static int? GetTonnage(string materialName, List<EprnTonnageResultsDto> acceptedTonnageForMaterials)
-        {
-            return acceptedTonnageForMaterials
-                .Where(x => x.MaterialName == materialName)
-                .Select(x => x.TotalTonnage)
-                .FirstOrDefault();
-        }
-    }
+		private static int? GetTonnage(IEnumerable<string> npwdMaterialNames, List<EprnTonnageResultsDto> acceptedTonnageForMaterials)
+		{
+			return acceptedTonnageForMaterials
+				.Where(x => npwdMaterialNames.Contains(x.MaterialName))
+				.Select(x => x.TotalTonnage)
+				.FirstOrDefault();
+		}
+	}
 }
