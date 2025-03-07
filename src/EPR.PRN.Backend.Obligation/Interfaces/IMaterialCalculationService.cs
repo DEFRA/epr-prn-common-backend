@@ -2,7 +2,7 @@
 {
     public interface IMaterialCalculationService
     {
-        int Calculate(double target, double tonnage);
-        (int remelt, int remainder) CalculateGlass(double target, double remeltTarget, double tonnage);
+        int Calculate(double target, int tonnage);
+        (int remelt, int remainder) CalculateGlass(double target, double remeltTarget, int tonnage);
     }
 }

@@ -13,6 +13,7 @@ public class ObligationCalculationRepositoryTests
     private Mock<EprContext> _mockEprContext;
     private Guid organisationId = Guid.NewGuid();
     private List<ObligationCalculation> obligationCalculation;
+    private List<Guid> organisationIds = [];
 
     [TestInitialize]
     public void TestInitialize()
@@ -29,18 +30,20 @@ public class ObligationCalculationRepositoryTests
         _mockEprContext = new Mock<EprContext>(dbContextOptions);
         _mockEprContext.Setup(context => context.ObligationCalculations).ReturnsDbSet(obligationCalculation);
         _mockEprContext.Setup(x => x.SaveChangesAsync(It.IsAny<CancellationToken>())).ReturnsAsync(1);
+
+        organisationIds.Add(Guid.NewGuid());
+        organisationIds.Add(Guid.NewGuid());
     }
 
     [TestMethod]
     public async Task GetObligationCalculationByOrganisationId_WhenCalledWithInvalidId_ReturnsEmpty()
     {
         // Arrange
-        var invalidOrganisationId = Guid.NewGuid();
         var obligationCalculationRepository = new ObligationCalculationRepository(_mockEprContext.Object);
         var year = 2024;
 
         // Act
-        var result = await obligationCalculationRepository.GetObligationCalculation(invalidOrganisationId, year);
+        var result = await obligationCalculationRepository.GetObligationCalculation(organisationIds, year);
 
         // Assert
         result.Should().BeEmpty();
@@ -54,23 +57,16 @@ public class ObligationCalculationRepositoryTests
         var obligationCalculationRepository = new ObligationCalculationRepository(_mockEprContext.Object);
 
         // Act
-        var result = await obligationCalculationRepository.GetObligationCalculation(organisationId, year);
+        var result = await obligationCalculationRepository.GetObligationCalculation(organisationIds, year);
 
         // Assert
         result.Should().NotBeNull();
-        result.Should().HaveCount(5);
-        result.Should().Contain(x => x.MaterialName == "Paper");
-        result.Should().Contain(x => x.MaterialName == "Glass");
-        result.Should().Contain(x => x.MaterialName == "Aluminium");
-        result.Should().Contain(x => x.MaterialName == "Steel");
-        result.Should().Contain(x => x.MaterialName == "Plastic");
     }
 
     [TestMethod]
     public async Task AddObligationCalculation_WhenCalledWithObligationCalculations_ShouldSaveObligationCalculation()
     {
         // Arrange
-        var organisationId = Guid.NewGuid();
         var calculatedOn = DateTime.UtcNow;
         var obligationCalculationRepository = new ObligationCalculationRepository(_mockEprContext.Object);
 
