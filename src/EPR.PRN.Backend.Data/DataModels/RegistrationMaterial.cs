@@ -18,12 +18,11 @@ namespace EPR.PRN.Backend.Data.DataModels
         public int MaterialId { get; set; }
 
         [Required]
-        [MaxLength(100)]
-        public string FeesId { get; set; }
+        public int FeesId { get; set; }
 
         [Required]
         [MaxLength(12)]
-        public string ReferenceNumber { get; set; }
+        public required string ReferenceNumber { get; set; }
 
         [Required]
         public int PermitTypeId { get; set; }
@@ -65,7 +64,7 @@ namespace EPR.PRN.Backend.Data.DataModels
 
         [Required]
         [MaxLength(50)]
-        public string WasteCarrierBrokerDealerRegistration { get; set; }
+        public required string WasteCarrierBrokerDealerRegistration { get; set; }
 
         [Required]
         public bool RegisteredWasteCarrierBrokerDealerFlag { get; set; }
@@ -74,7 +73,7 @@ namespace EPR.PRN.Backend.Data.DataModels
         public bool IsMaterialRegistered { get; set; }
 
         [MaxLength(2000)]
-        public string ReasonForNotRegistration { get; set; }
+        public required string ReasonForNotRegistration { get; set; }
 
         [Required]
         [Column(TypeName = "decimal(10,2)")]
@@ -83,31 +82,32 @@ namespace EPR.PRN.Backend.Data.DataModels
         [Required]
         public int MaxPeriodId { get; set; }
 
+
         [ForeignKey("RegistrationId")]
-        public virtual Registration Registration { get; set; }
+        public virtual Registration Registration { get; set; } = null!;
 
         [ForeignKey("FeesId")]
-        public virtual FeesAmount Fees { get; set; }
+        public virtual FeesAmount Fees { get; set; } = null!;
 
         [ForeignKey("PermitTypeId")]
-        public virtual MaterialPermitType MaterialPermitType { get; set; }
+        public virtual MaterialPermitType MaterialPermitType { get; set; } = null!;
 
         [ForeignKey("MaximumReprocessingPeriodId")]
-        public virtual Period MaximumReprocessingPeriod { get; set; }
+        public virtual Period MaximumReprocessingPeriod { get; set; } = null!;
 
         [ForeignKey("PPCPeriodId")]
-        public virtual Period PPCPeriod { get; set; }
+        public virtual Period PPCPeriod { get; set; } = null!;
 
         [ForeignKey("WasteManagementPeriodId")]
-        public virtual Period WasteManagementPeriod { get; set; }
+        public virtual Period WasteManagementPeriod { get; set; } = null!;
 
         [ForeignKey("InstallationPeriodId")]
-        public virtual Period InstallationPeriod { get; set; }
+        public virtual Period InstallationPeriod { get; set; } = null!;
 
         [ForeignKey("EnvironmentalPermitWasteManagementPeriodId")]
-        public virtual Period EnvironmentalPermitWasteManagementPeriod { get; set; }
+        public virtual Period EnvironmentalPermitWasteManagementPeriod { get; set; } = null!;
 
         [ForeignKey("MaxPeriodId")]
-        public virtual Period MaxPeriod { get; set; }
+        public virtual Period MaxPeriod { get; set; } = null!;
     }
 }

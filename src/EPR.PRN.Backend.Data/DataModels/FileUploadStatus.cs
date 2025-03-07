@@ -10,6 +10,7 @@ namespace EPR.PRN.Backend.Data.DataModels
         [MaxLength(200)]
         [Required]
         public string? Name { get; set; }
+
         public virtual ICollection<FileUpload> FileUploads { get; set; } = null!;
     }
 }

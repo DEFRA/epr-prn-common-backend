@@ -46,7 +46,6 @@ namespace EPR.PRN.Backend.Data.DataModels
         [ForeignKey("LegalDocumentAddressId")]
         public virtual Address LegalDocumentAddress { get; set; }
 
-
         public virtual ICollection<FileUpload> FileUploads { get; set; } = null!;
 
         public virtual ICollection<AppRefPerMaterial> AppRefPerMaterials { get; set; }

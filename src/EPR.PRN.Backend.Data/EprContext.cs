@@ -115,38 +115,38 @@ namespace EPR.PRN.Backend.Data
 
             modelBuilder.Entity<ApplicationType>()
                 .HasData(
-                            new ApplicationType { Name = "Reprocessor" },
-                            new ApplicationType { Name = "Exporter" }
+                            new ApplicationType { Id = 1, Name = "Reprocessor" },
+                            new ApplicationType { Id = 2, Name = "Exporter" }
                 );
 
             modelBuilder.Entity<Period>()
                 .HasData(
-                    new Period { Name = "Per Week" },
-                    new Period { Name = "Per Month" },
-                    new Period { Name = "Per Year" }
+                    new Period { Id = 1, Name = "Per Week" },
+                    new Period { Id = 2, Name = "Per Month" },
+                    new Period { Id = 3, Name = "Per Year" }
                 );
 
             modelBuilder.Entity<MaterialPermitType>()
                 .HasData(
-                    new MaterialPermitType { Name = "Environmental permit or waste management licence" },
-                    new MaterialPermitType { Name = "Installation Permit" },
-                    new MaterialPermitType { Name = "Pollution, Prevention, and Control (PPC) permit" },
-                    new MaterialPermitType { Name = "Waste Exemption" },
-                    new MaterialPermitType { Name = "Waste Management Licence" }
+                    new MaterialPermitType { Id = 1, Name = "Environmental permit or waste management licence" },
+                    new MaterialPermitType { Id = 2, Name = "Installation Permit" },
+                    new MaterialPermitType { Id = 3, Name = "Pollution, Prevention, and Control (PPC) permit" },
+                    new MaterialPermitType { Id = 4, Name = "Waste Exemption" },
+                    new MaterialPermitType { Id = 5, Name = "Waste Management Licence" }
                 );
 
             modelBuilder.Entity<RegistrationStatus>()
                 .HasData(
-                    new RegistrationStatus { Name = "Accepted" },
-                    new RegistrationStatus { Name = "Cancelled" },
-                    new RegistrationStatus { Name = "Granted" },
-                    new RegistrationStatus { Name = "Queried" },
-                    new RegistrationStatus { Name = "Refused" },
-                    new RegistrationStatus { Name = "Started" },
-                    new RegistrationStatus { Name = "Submitted" },
-                    new RegistrationStatus { Name = "Suspended" },
-                    new RegistrationStatus { Name = "Updated" },
-                    new RegistrationStatus { Name = "Withdrawn" }
+                    new RegistrationStatus { Id = 1, Name = "Accepted" },
+                    new RegistrationStatus { Id = 2, Name = "Cancelled" },
+                    new RegistrationStatus { Id = 3, Name = "Granted" },
+                    new RegistrationStatus { Id = 4, Name = "Queried" },
+                    new RegistrationStatus { Id = 5, Name = "Refused" },
+                    new RegistrationStatus { Id = 6, Name = "Started" },
+                    new RegistrationStatus { Id = 7, Name = "Submitted" },
+                    new RegistrationStatus { Id = 8, Name = "Suspended" },
+                    new RegistrationStatus { Id = 9, Name = "Updated" },
+                    new RegistrationStatus { Id = 10, Name = "Withdrawn" }
                 );
 
             modelBuilder.Entity<Material>()
@@ -171,32 +171,32 @@ namespace EPR.PRN.Backend.Data
 
             modelBuilder.Entity<DataModels.TaskStatus>()
             .HasData(
-                        new DataModels.TaskStatus { Name = "Not started" },
-                        new DataModels.TaskStatus { Name = "Started" },
-                        new DataModels.TaskStatus { Name = "Completed" },
-                        new DataModels.TaskStatus { Name = "Cannot start yet" }
+                        new DataModels.TaskStatus { Id = 1, Name = "Not started" },
+                        new DataModels.TaskStatus { Id = 2, Name = "Started" },
+                        new DataModels.TaskStatus { Id = 3, Name = "Completed" },
+                        new DataModels.TaskStatus { Id = 4, Name = "Cannot start yet" }
             );
 
             modelBuilder.Entity<DataModels.TaskName>()
            .HasData(
-                       new DataModels.TaskStatus { Name = "SiteAddressAndContactDetails" },
-                       new DataModels.TaskStatus { Name = "WasteLicensesPermitsAndExemption" },
-                       new DataModels.TaskStatus { Name = "ReprocessingInputandOutput" },
-                       new DataModels.TaskStatus { Name = "SamplingAndInspectionPlanPerMaterial" }
+                       new DataModels.TaskStatus { Id = 1, Name = "SiteAddressAndContactDetails" },
+                       new DataModels.TaskStatus { Id = 2, Name = "WasteLicensesPermitsAndExemption" },
+                       new DataModels.TaskStatus { Id = 3, Name = "ReprocessingInputandOutput" },
+                       new DataModels.TaskStatus { Id = 4, Name = "SamplingAndInspectionPlanPerMaterial" }
            );
 
             modelBuilder.Entity<DataModels.FileUploadType>()
           .HasData(
-                      new DataModels.FileUploadType { Name = "SamplingAndInspectionPlan" }
+                      new DataModels.FileUploadType { Id = 1, Name = "SamplingAndInspectionPlan" }
           );
 
             modelBuilder.Entity<DataModels.FileUploadStatus>()
         .HasData(
-                    new DataModels.FileUploadStatus { Name = "Virus check failed" },
-                    new DataModels.FileUploadStatus { Name = "Virus check succeeded" },
-                    new DataModels.FileUploadStatus { Name = "Upload complete" },
-                    new DataModels.FileUploadStatus { Name = "Upload failed" },
-                    new DataModels.FileUploadStatus { Name = "File deleted" }
+                    new DataModels.FileUploadStatus { Id = 1, Name = "Virus check failed" },
+                    new DataModels.FileUploadStatus { Id = 2, Name = "Virus check succeeded" },
+                    new DataModels.FileUploadStatus { Id = 3, Name = "Upload complete" },
+                    new DataModels.FileUploadStatus { Id = 4, Name = "Upload failed" },
+                    new DataModels.FileUploadStatus { Id = 5, Name = "File deleted" }
         );
 
             base.OnModelCreating(modelBuilder);

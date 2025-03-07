@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EPR.PRN.Backend.Data.DataModels
 {
@@ -35,7 +36,15 @@ namespace EPR.PRN.Backend.Data.DataModels
         [MaxLength(20)]
         public string GridReference { get; set; }
 
-        public virtual ICollection<Registration> Registrations { get; set; }
+
+        [InverseProperty(nameof(Registration.ReprocessingSiteAddress))]
+        public virtual ICollection<Registration> ReprocessingSiteAddresses { get; set; } = null!;
+
+        [InverseProperty(nameof(Registration.BusinessAddress))]
+        public virtual ICollection<Registration> BusinessAddresses { get; set; } = null!;
+
+        [InverseProperty(nameof(Registration.LegalDocumentAddress))]
+        public virtual ICollection<Registration> LegalDocumentAddresses { get; set; } = null!;
 
     }
 }
