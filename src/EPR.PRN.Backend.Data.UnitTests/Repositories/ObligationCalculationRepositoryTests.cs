@@ -79,7 +79,7 @@ public class ObligationCalculationRepositoryTests
                 MaterialObligationValue = 75,
                 Year = 2024,
                 Tonnage = 2000,
-                CalculatedOn = calculatedOn,
+                CalculatedOn = calculatedOn
             },
             new ObligationCalculation
             {
