@@ -18,6 +18,6 @@ namespace EPR.PRN.Backend.Data.DataModels
 
 		public required bool IsVisibleToObligation { get; set; }
 
-		public virtual ICollection<PrnMaterialMapping> PrnMaterialMappings { get; set; } = null!;
+		public ICollection<PrnMaterialMapping> PrnMaterialMappings { get; set; } = null!;
 	}
 }

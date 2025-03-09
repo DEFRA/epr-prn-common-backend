@@ -11,7 +11,7 @@
 
         public static class ErrorMessages
         {
-            public const string NoMaterialsFoundErrorMessage = "No Materials found in PRN BAckend Database";
+            public const string NoMaterialsFoundErrorMessage = "No Materials found in PRN Backend Database";
         }
     }
 }

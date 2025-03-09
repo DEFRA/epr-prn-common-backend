@@ -24,7 +24,7 @@ namespace EPR.PRN.Backend.Obligation.Strategies
             targetYear = targetYear < calculationRequest.RecyclingTargets.Keys.Min() ? calculationRequest.RecyclingTargets.Keys.Min() : targetYear;
             var calculation = new ObligationCalculation
             {
-                MaterialName = calculationRequest.MaterialType.ToString(),
+                MaterialId = calculationRequest.Materials.First(m => m.MaterialName == calculationRequest.MaterialType.ToString()).Id,
                 CalculatedOn = DateTime.UtcNow,
                 OrganisationId = calculationRequest.OrganisationId,
                 MaterialObligationValue = _calculationService.Calculate(calculationRequest.RecyclingTargets[targetYear][calculationRequest.MaterialType],

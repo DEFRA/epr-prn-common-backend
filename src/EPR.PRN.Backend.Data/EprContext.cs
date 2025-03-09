@@ -118,8 +118,8 @@ namespace EPR.PRN.Backend.Data
                 .HasForeignKey(s => s.PRNMaterialId)
                 .OnDelete(DeleteBehavior.NoAction);
 
-				//entity.HasIndex(a => a.MaterialCode)
-				//.IsUnique();
+                entity.HasIndex(a => a.MaterialCode)
+                .IsUnique();
 
                 entity.HasData
 				(
@@ -129,7 +129,7 @@ namespace EPR.PRN.Backend.Data
 					new Material { Id = 4, MaterialCode = "ST", MaterialName = MaterialType.Steel.ToString(), IsCaculable = true, IsVisibleToObligation = true },
 					new Material { Id = 5, MaterialCode = "PC", MaterialName = MaterialType.Paper.ToString(), IsCaculable = true, IsVisibleToObligation = true },
 					new Material { Id = 6, MaterialCode = "GL", MaterialName = MaterialType.Glass.ToString(), IsCaculable = true, IsVisibleToObligation = true },
-					new Material { Id = 7, MaterialCode = "GL", MaterialName = MaterialType.GlassRemelt.ToString(), IsCaculable = false, IsVisibleToObligation = true },
+					new Material { Id = 7, MaterialCode = "GR", MaterialName = MaterialType.GlassRemelt.ToString(), IsCaculable = false, IsVisibleToObligation = true },
 					new Material { Id = 8, MaterialCode = "FC", MaterialName = MaterialType.FibreComposite.ToString(), IsCaculable = true, IsVisibleToObligation = false }
 				);
 			});

@@ -1,4 +1,5 @@
 ﻿using EPR.PRN.Backend.API.Common.Enums;
+using EPR.PRN.Backend.Data.DataModels;
 using EPR.PRN.Backend.Obligation.Dto;
 using EPR.PRN.Backend.Obligation.Interfaces;
 using EPR.PRN.Backend.Obligation.Models;
@@ -52,14 +53,30 @@ public class GlassCalculationStrategyTests
         var calculationRequest = new SubmissionCalculationRequest
         {
             SubmissionPeriod = "2024-P4",
-            PackagingMaterial = "Glass",
+            PackagingMaterial = "GL",
             PackagingMaterialWeight = 200,
-            SubmissionId = Guid.NewGuid()
+            OrganisationId = Guid.NewGuid()
         };
 
-        var materialType = MaterialType.Glass;
+		var materials = new List<Material>()
+        {
+            new() {
+                Id = 6,
+                MaterialName = MaterialType.Glass.ToString(),
+                MaterialCode = "GL",
+                IsCaculable = true,
+                IsVisibleToObligation = true
+            },
+            new() {
+			    Id = 7,
+			    MaterialName = MaterialType.GlassRemelt.ToString(),
+			    MaterialCode = "GR",
+			    IsCaculable = true,
+			    IsVisibleToObligation = true
+		    }
+		};
 
-        var recyclingTargets = new Dictionary<int, Dictionary<MaterialType, double>>
+		var recyclingTargets = new Dictionary<int, Dictionary<MaterialType, double>>
         {
             {
                 2025,
@@ -73,8 +90,9 @@ public class GlassCalculationStrategyTests
 
         var request = new CalculationRequestDto
         {
-            MaterialType = materialType,
-            SubmissionCalculationRequest = calculationRequest,
+            MaterialType = MaterialType.Glass,
+			Materials = materials,
+			SubmissionCalculationRequest = calculationRequest,
             OrganisationId = orgId,
             RecyclingTargets = recyclingTargets
         };
@@ -91,8 +109,8 @@ public class GlassCalculationStrategyTests
         Assert.IsNotNull(result);
         Assert.AreEqual(2, result.Count);
 
-        var glassCalculation = result.Find(x => x.MaterialName == MaterialType.Glass.ToString());
-        var remeltCalculation = result.Find(x => x.MaterialName == MaterialType.GlassRemelt.ToString());
+        var glassCalculation = result.Find(x => x.MaterialId == 6);
+        var remeltCalculation = result.Find(x => x.MaterialId == 7);
 
         Assert.IsNotNull(glassCalculation);
         Assert.IsNotNull(remeltCalculation);
