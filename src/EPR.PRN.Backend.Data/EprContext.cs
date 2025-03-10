@@ -186,9 +186,9 @@ namespace EPR.PRN.Backend.Data
            );
 
             modelBuilder.Entity<DataModels.FileUploadType>()
-          .HasData(
-                      new DataModels.FileUploadType { Id = 1, Name = "SamplingAndInspectionPlan" }
-          );
+              .HasData(
+                          new DataModels.FileUploadType { Id = 1, Name = "SamplingAndInspectionPlan" }
+              );
 
             modelBuilder.Entity<DataModels.FileUploadStatus>()
         .HasData(
@@ -202,18 +202,18 @@ namespace EPR.PRN.Backend.Data
             base.OnModelCreating(modelBuilder);
         }
 
-        public DbSet<Address> Address { get; set; }
-        public DbSet<ApplicationType> ApplicationType { get; set; }
-        public DbSet<AppRefPerMaterial> AppRefPerMaterial { get; set; }
-        public DbSet<FeesAmount> FeesAmount { get; set; }
+        public virtual DbSet<Address> Address { get; set; }
+        public virtual DbSet<ApplicationType> ApplicationType { get; set; }
+        public  virtual DbSet<AppRefPerMaterial> AppRefPerMaterial { get; set; }
+        public virtual DbSet<FeesAmount> FeesAmount { get; set; }
         public virtual DbSet<FileUpload> FileUpload { get; set; }
         public virtual DbSet<FileUploadStatus> FileUploadStatus { get; set; }
         public virtual DbSet<FileUploadType> FileUploadType { get; set; }
         public virtual DbSet<Material> Material { get; set; }
-        public DbSet<MaterialPermitType> MaterialPermitType { get; set; }
+        public virtual DbSet<MaterialPermitType> MaterialPermitType { get; set; }
         public virtual DbSet<ObligationCalculation> ObligationCalculations { get; set; }
         public virtual DbSet<PEprNpwdSync> PEprNpwdSync { get; set; }
-        public DbSet<Period> Period { get; set; }
+        public virtual DbSet<Period> Period { get; set; }
         public virtual DbSet<Eprn> Prn { get; set; }
         public virtual DbSet<PrnStatus> PrnStatus { get; set; }
         public virtual DbSet<PrnStatusHistory> PrnStatusHistory { get; set; }
