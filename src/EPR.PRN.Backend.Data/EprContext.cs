@@ -227,6 +227,6 @@ namespace EPR.PRN.Backend.Data
         public virtual DbSet<RegistrationStatus> RegistrationStatus { get; set; }
         public virtual DbSet<SaveAndContinue> SaveAndContinue { get; set; }
         public virtual DbSet<TaskName> TaskName { get; set; }
-        public virtual DbSet<TaskName> Taskstatus { get; set; }
+        public virtual DbSet<TaskName> TaskStatus { get; set; }
     }
 }
