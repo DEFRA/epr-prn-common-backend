@@ -22,7 +22,7 @@ namespace EPR.PRN.Backend.Obligation.Services
         public async Task<CalculationResult> CalculateAsync(Guid organisationId, List<SubmissionCalculationRequest> request)
         {
             var recyclingTargets = await recyclingTargetDataService.GetRecyclingTargetsAsync();
-			var materials = await materialRepository.GetCalculableMaterials();
+			var materials = await materialRepository.GetAllMaterials();
 			var result = new CalculationResult();
             var calculations = new List<ObligationCalculation>();
 
@@ -85,7 +85,7 @@ namespace EPR.PRN.Backend.Obligation.Services
 
         public async Task<ObligationCalculationResult> GetObligationCalculation(Guid callingOrganisationId, IEnumerable<Guid> organisationIds, int year)
         {
-            var materials = await materialRepository.GetVisibleToObligationMaterials();
+            var materials = await materialRepository.GetAllMaterials();
             if (!materials.Any())
             {
                 logger.LogError(ObligationConstants.ErrorMessages.NoMaterialsFoundErrorMessage);
@@ -106,33 +106,35 @@ namespace EPR.PRN.Backend.Obligation.Services
             
             var recyclingTargets = await recyclingTargetDataService.GetRecyclingTargetsAsync();
 
-            var nonPaperFiberObligationData = new List<ObligationData>();
-            var paperFiberObligationData = new List<ObligationData>();
+            var responseObligationData = new List<ObligationData>();
+            var paperFibreObligationData = new List<ObligationData>();
 
             foreach (var material in materials)
             {
-                var npwdMaterialNames = material.PrnMaterialMappings.Select(npwdm => npwdm.NPWDMaterialName);
+				var npwdMaterialNames = material.PrnMaterialMappings?.Select(npwdm => npwdm.NPWDMaterialName) ?? [];
 				var recyclingTarget = GetRecyclingTarget(year, material.MaterialName, recyclingTargets);
                 var tonnageAccepted = GetTonnage(npwdMaterialNames, acceptedTonnageForPrns);
                 var tonnageAwaitingAcceptance = GetTonnage(npwdMaterialNames, awaitingAcceptanceForPrns);
                 var obligationMaterialCalculations = obligationCalculations.FindAll(x => x.MaterialId == material.Id);
 
-                if (material.MaterialName.Contains(MaterialType.Paper.ToString()) || material.MaterialName.Contains(MaterialType.FibreComposite.ToString()))
+				// Segregate Paper and Fibre obligation data from other material types
+				if (material.MaterialName.Contains(MaterialType.Paper.ToString()) || material.MaterialName.Contains(MaterialType.FibreComposite.ToString()))
                 {
-                    paperFiberObligationData.Add(GetObligationData(material.MaterialName, callingOrganisationId, obligationMaterialCalculations, tonnageAccepted, tonnageAwaitingAcceptance, recyclingTarget));
+                    paperFibreObligationData.Add(GetObligationData(material.MaterialName, callingOrganisationId, obligationMaterialCalculations, tonnageAccepted, tonnageAwaitingAcceptance, recyclingTarget));
                 }
                 else
                 {
-                    nonPaperFiberObligationData.Add(GetObligationData(material.MaterialName, callingOrganisationId, obligationMaterialCalculations, tonnageAccepted, tonnageAwaitingAcceptance, recyclingTarget));
+                    responseObligationData.Add(GetObligationData(material.MaterialName, callingOrganisationId, obligationMaterialCalculations, tonnageAccepted, tonnageAwaitingAcceptance, recyclingTarget));
                 }
             }
 
-            if (paperFiberObligationData.Count > 0)
+			// Add Paper and Fibre obligation data and return as Paper
+			if (paperFibreObligationData.Count > 0)
             {
-                nonPaperFiberObligationData.Add(GetPaperFibreCompositeObligationData(paperFiberObligationData));
+                responseObligationData.Add(GetPaperFibreCompositeObligationData(paperFibreObligationData));
             }
 
-            var obligationModel = new ObligationModel { ObligationData = nonPaperFiberObligationData, NumberOfPrnsAwaitingAcceptance = awaitingAcceptanceCount };
+            var obligationModel = new ObligationModel { ObligationData = responseObligationData, NumberOfPrnsAwaitingAcceptance = awaitingAcceptanceCount };
             return new ObligationCalculationResult { IsSuccess = true, ObligationModel = obligationModel };
         }
 
@@ -154,18 +156,18 @@ namespace EPR.PRN.Backend.Obligation.Services
             return obligationData;
         }
 
-        private static ObligationData GetPaperFibreCompositeObligationData(List<ObligationData> pcFiberObligationData)
+        private static ObligationData GetPaperFibreCompositeObligationData(List<ObligationData> paperFibreObligationData)
         {
             ObligationData obligationData = new()
             {
-                OrganisationId = pcFiberObligationData[0].OrganisationId,
+                OrganisationId = paperFibreObligationData[0].OrganisationId,
                 MaterialName = MaterialType.Paper.ToString(),
-                MaterialTarget = pcFiberObligationData[0].MaterialTarget,
-                ObligationToMeet = pcFiberObligationData.Exists(x => x.ObligationToMeet.HasValue) ? (int?)pcFiberObligationData.Sum(x => x.ObligationToMeet ?? 0) : null,
-                TonnageAccepted = pcFiberObligationData.Sum(x => x.TonnageAccepted),
-                TonnageAwaitingAcceptance = pcFiberObligationData.Sum(x => x.TonnageAwaitingAcceptance),
-                TonnageOutstanding = pcFiberObligationData.Exists(x => x.TonnageOutstanding.HasValue) ? (int?)pcFiberObligationData.Sum(x => x.TonnageOutstanding ?? 0) : null,
-                Tonnage = pcFiberObligationData.Sum(x => x.Tonnage)
+                MaterialTarget = paperFibreObligationData[0].MaterialTarget,
+                ObligationToMeet = paperFibreObligationData.Exists(x => x.ObligationToMeet.HasValue) ? (int?)paperFibreObligationData.Sum(x => x.ObligationToMeet ?? 0) : null,
+                TonnageAccepted = paperFibreObligationData.Sum(x => x.TonnageAccepted),
+                TonnageAwaitingAcceptance = paperFibreObligationData.Sum(x => x.TonnageAwaitingAcceptance),
+                TonnageOutstanding = paperFibreObligationData.Exists(x => x.TonnageOutstanding.HasValue) ? (int?)paperFibreObligationData.Sum(x => x.TonnageOutstanding ?? 0) : null,
+                Tonnage = paperFibreObligationData.Sum(x => x.Tonnage)
             };
 
             obligationData.Status = GetStatus(obligationData.ObligationToMeet, obligationData.TonnageAccepted);
