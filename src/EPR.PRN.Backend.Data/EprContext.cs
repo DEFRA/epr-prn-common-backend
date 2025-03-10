@@ -220,7 +220,7 @@ namespace EPR.PRN.Backend.Data
         public virtual DbSet<RecyclingTarget> RecyclingTargets { get; set; }
         public virtual DbSet<Registration> Registration { get; set; }
         public virtual DbSet<RegistrationContact> RegistrationContact { get; set; }
-        public virtual DbSet<RegistrationContact> RegistrationTaskStatus { get; set; }
+        public virtual DbSet<RegistrationTaskStatus> RegistrationTaskStatus { get; set; }
         public virtual DbSet<RegistrationMaterial> RegistrationMaterial { get; set; }
         public virtual DbSet<RegistrationProcessingIORawMaterial> RegistrationProcessingIORawMaterial { get; set; }
         public virtual DbSet<RegistrationReprocessingIO> RegistrationReprocessingIO { get; set; }
