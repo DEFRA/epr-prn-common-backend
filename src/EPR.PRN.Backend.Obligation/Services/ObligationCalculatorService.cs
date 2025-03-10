@@ -29,7 +29,7 @@ namespace EPR.PRN.Backend.Obligation.Services
             {
                 if (string.IsNullOrEmpty(submission.PackagingMaterial))
                 {
-                    logger.LogError("Material was null or empty for SubmissionId: {SubmissionId} and OrganisationId: {OrganisationId}.", submission.SubmissionId, organisationId);
+                    logger.LogError("Material was null or empty for OrganisationId: {OrganisationId}.", organisationId);
                     result.Success = false;
                     continue;
                 }
@@ -37,8 +37,7 @@ namespace EPR.PRN.Backend.Obligation.Services
                 var material = await materialService.GetMaterialByCode(submission.PackagingMaterial);
                 if (!material.HasValue)
                 {
-                    logger.LogError("Material provided was not valid: {PackagingMaterial} for SubmissionId: {SubmissionId} and OrganisationId: {OrganisationId}.",
-                        submission.PackagingMaterial, submission.SubmissionId, organisationId);
+                    logger.LogError("Material provided was not valid: {PackagingMaterial} for OrganisationId: {OrganisationId}.", submission.PackagingMaterial, organisationId);
                     result.Success = false;
                     continue;
                 }
@@ -46,8 +45,8 @@ namespace EPR.PRN.Backend.Obligation.Services
                 var strategy = strategyResolver.Resolve(material!.Value);
                 if (strategy == null)
                 {
-                    var error = $"Could not find handler for Material Type: {submission.PackagingMaterial} for SubmissionId: {submission.SubmissionId} and OrganisationId: {organisationId}.";
-                    logger.LogError(error, submission.PackagingMaterial, submission.SubmissionId, organisationId);
+                    var error = $"Could not find handler for Material Type: {submission.PackagingMaterial} for OrganisationId: {organisationId}.";
+                    logger.LogError(error, submission.PackagingMaterial, organisationId);
                     result.Success = false;
                     continue;
                 }

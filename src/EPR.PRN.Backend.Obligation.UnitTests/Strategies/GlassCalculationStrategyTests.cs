@@ -53,8 +53,7 @@ public class GlassCalculationStrategyTests
         {
             SubmissionPeriod = "2024-P4",
             PackagingMaterial = "Glass",
-            PackagingMaterialWeight = 200,
-            SubmissionId = Guid.NewGuid()
+            PackagingMaterialWeight = 200
         };
 
         var materialType = MaterialType.Glass;

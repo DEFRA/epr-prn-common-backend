@@ -195,11 +195,10 @@ public class ObligationCalculatorServiceTests
     [TestMethod]
     public async Task CalculatePomDataAsync_WhenSubmissionMaterialIsNullOrEmpty_ShouldLogErrorAndSkip()
     {
-        var submissionId = Guid.NewGuid();
         var organisationId = Guid.NewGuid();
         var submissions = new List<SubmissionCalculationRequest>
         {
-            new() { SubmissionId = submissionId, PackagingMaterial = null }
+            new() { PackagingMaterial = null }
         };
         _mockRecyclingTargetDataService.Setup(x => x.GetRecyclingTargetsAsync()).ReturnsAsync(new Dictionary<int, Dictionary<MaterialType, double>>());
 
@@ -208,19 +207,18 @@ public class ObligationCalculatorServiceTests
         var result = await _service.CalculateAsync(organisationId, submissions);
 
         result.Success.Should().BeFalse();
-        loggedMessages.Should().Contain($"Material was null or empty for SubmissionId: {submissionId} and OrganisationId: {organisationId}.");
+        loggedMessages.Should().Contain($"Material was null or empty for OrganisationId: {organisationId}.");
         loggedMessages.Should().Contain($"No calculations for OrganisationId: {organisationId}.");
     }
 
     [TestMethod]
     public async Task CalculatePomDataAsync_WhenMaterialIsInvalid_ShouldLogErrorAndSkip()
     {
-        var submissionId = Guid.NewGuid();
         var organisationId = Guid.NewGuid();
         var packagingMaterial = "InvalidMaterial";
         var submissions = new List<SubmissionCalculationRequest>
         {
-            new() { SubmissionId = submissionId, PackagingMaterial = packagingMaterial }
+            new() { PackagingMaterial = packagingMaterial }
         };
         _mockRecyclingTargetDataService.Setup(x => x.GetRecyclingTargetsAsync()).ReturnsAsync(new Dictionary<int, Dictionary<MaterialType, double>>());
         _mockMaterialService.Setup(x => x.GetMaterialByCode("InvalidMaterial")).ReturnsAsync((MaterialType?)null);
@@ -229,19 +227,18 @@ public class ObligationCalculatorServiceTests
         var result = await _service.CalculateAsync(organisationId, submissions);
 
         result.Success.Should().BeFalse();
-        loggedMessages.Should().Contain($"Material provided was not valid: {packagingMaterial} for SubmissionId: {submissionId} and OrganisationId: {organisationId}.");
+        loggedMessages.Should().Contain($"Material provided was not valid: {packagingMaterial} for OrganisationId: {organisationId}.");
         loggedMessages.Should().Contain($"No calculations for OrganisationId: {organisationId}.");
     }
 
     [TestMethod]
     public async Task CalculatePomDataAsync_WhenStrategyIsNull_ShouldLogErrorAndSkip()
     {
-        var submissionId = Guid.NewGuid();
         var organisationId = Guid.NewGuid();
         var packagingMaterial = "ValidMaterial";
         var submissions = new List<SubmissionCalculationRequest>
         {
-            new() { SubmissionId = submissionId, PackagingMaterial = packagingMaterial }
+            new() { PackagingMaterial = packagingMaterial }
         };
         _mockRecyclingTargetDataService.Setup(x => x.GetRecyclingTargetsAsync()).ReturnsAsync(new Dictionary<int, Dictionary<MaterialType, double>>());
         _mockMaterialService.Setup(x => x.GetMaterialByCode("ValidMaterial")).ReturnsAsync(MaterialType.Plastic);
@@ -251,19 +248,18 @@ public class ObligationCalculatorServiceTests
         var result = await _service.CalculateAsync(organisationId, submissions);
 
         result.Success.Should().BeFalse();
-        loggedMessages.Should().Contain($"Could not find handler for Material Type: {packagingMaterial} for SubmissionId: {submissionId} and OrganisationId: {organisationId}.");
+        loggedMessages.Should().Contain($"Could not find handler for Material Type: {packagingMaterial} for OrganisationId: {organisationId}.");
         loggedMessages.Should().Contain($"No calculations for OrganisationId: {organisationId}.");
     }
 
     [TestMethod]
     public async Task CalculatePomDataAsync_WhenCalculationsAreEmpty_ShouldLogError()
     {
-        var submissionId = Guid.NewGuid();
         var organisationId = Guid.NewGuid();
         var packagingMaterial = "ValidMaterial";
         var submissions = new List<SubmissionCalculationRequest>
         {
-            new() { SubmissionId = submissionId, PackagingMaterial = packagingMaterial }
+            new() { PackagingMaterial = packagingMaterial }
         };
         _mockRecyclingTargetDataService.Setup(x => x.GetRecyclingTargetsAsync()).ReturnsAsync(new Dictionary<int, Dictionary<MaterialType, double>>());
         _mockMaterialService.Setup(x => x.GetMaterialByCode("ValidMaterial")).ReturnsAsync(MaterialType.Plastic);
@@ -281,12 +277,11 @@ public class ObligationCalculatorServiceTests
     [TestMethod]
     public async Task CalculatePomDataAsync_WhenCalculationsAreSuccessful_ShouldReturnSuccess()
     {
-        var submissionId = Guid.NewGuid();
         var organisationId = Guid.NewGuid();
         var packagingMaterial = "ValidMaterial";
         var submissions = new List<SubmissionCalculationRequest>
         {
-            new() { SubmissionId = submissionId, PackagingMaterial = packagingMaterial }
+            new() { PackagingMaterial = packagingMaterial }
         };
         _mockRecyclingTargetDataService.Setup(x => x.GetRecyclingTargetsAsync()).ReturnsAsync(new Dictionary<int, Dictionary<MaterialType, double>>());
         _mockMaterialService.Setup(x => x.GetMaterialByCode("ValidMaterial")).ReturnsAsync(MaterialType.Plastic);

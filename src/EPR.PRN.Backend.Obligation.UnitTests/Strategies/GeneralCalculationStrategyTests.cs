@@ -58,7 +58,6 @@ public class GeneralCalculationStrategyTests
         {
             PackagingMaterial = "Plastic",
             PackagingMaterialWeight = materialWeight,
-            SubmissionId = Guid.NewGuid(),
             SubmissionPeriod = "2024-P1"
         };
 
@@ -109,7 +108,6 @@ public class GeneralCalculationStrategyTests
         {
             PackagingMaterial = "Plastic",
             PackagingMaterialWeight = 100,
-            SubmissionId = Guid.NewGuid(),
             SubmissionPeriod = "2025-P1"
         };
 
