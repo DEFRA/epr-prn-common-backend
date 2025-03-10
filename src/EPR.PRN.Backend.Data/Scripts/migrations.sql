@@ -603,7 +603,7 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250310120021_InitialRegistration'
+    WHERE [MigrationId] = N'20250310153234_InitialRegistration'
 )
 BEGIN
     CREATE TABLE [Address] (
@@ -623,7 +623,7 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250310120021_InitialRegistration'
+    WHERE [MigrationId] = N'20250310153234_InitialRegistration'
 )
 BEGIN
     CREATE TABLE [ApplicationType] (
@@ -636,7 +636,7 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250310120021_InitialRegistration'
+    WHERE [MigrationId] = N'20250310153234_InitialRegistration'
 )
 BEGIN
     CREATE TABLE [FeesAmount] (
@@ -650,7 +650,7 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250310120021_InitialRegistration'
+    WHERE [MigrationId] = N'20250310153234_InitialRegistration'
 )
 BEGIN
     CREATE TABLE [FileUploadStatus] (
@@ -663,7 +663,7 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250310120021_InitialRegistration'
+    WHERE [MigrationId] = N'20250310153234_InitialRegistration'
 )
 BEGIN
     CREATE TABLE [FileUploadType] (
@@ -676,7 +676,7 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250310120021_InitialRegistration'
+    WHERE [MigrationId] = N'20250310153234_InitialRegistration'
 )
 BEGIN
     CREATE TABLE [MaterialPermitType] (
@@ -690,7 +690,7 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250310120021_InitialRegistration'
+    WHERE [MigrationId] = N'20250310153234_InitialRegistration'
 )
 BEGIN
     CREATE TABLE [Period] (
@@ -703,7 +703,7 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250310120021_InitialRegistration'
+    WHERE [MigrationId] = N'20250310153234_InitialRegistration'
 )
 BEGIN
     CREATE TABLE [RegistrationStatus] (
@@ -716,7 +716,7 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250310120021_InitialRegistration'
+    WHERE [MigrationId] = N'20250310153234_InitialRegistration'
 )
 BEGIN
     CREATE TABLE [TaskName] (
@@ -729,7 +729,7 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250310120021_InitialRegistration'
+    WHERE [MigrationId] = N'20250310153234_InitialRegistration'
 )
 BEGIN
     CREATE TABLE [TaskStatus] (
@@ -742,7 +742,7 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250310120021_InitialRegistration'
+    WHERE [MigrationId] = N'20250310153234_InitialRegistration'
 )
 BEGIN
     CREATE TABLE [Registration] (
@@ -758,13 +758,11 @@ BEGIN
         [BusinessAddressId] int NULL,
         [ReprocessingSiteAddressId] int NULL,
         [LegalDocumentAddressId] int NULL,
-        [MaterialName] nvarchar(20) NULL,
         CONSTRAINT [PK_Registration] PRIMARY KEY ([Id]),
         CONSTRAINT [FK_Registration_Address_BusinessAddressId] FOREIGN KEY ([BusinessAddressId]) REFERENCES [Address] ([Id]),
         CONSTRAINT [FK_Registration_Address_LegalDocumentAddressId] FOREIGN KEY ([LegalDocumentAddressId]) REFERENCES [Address] ([Id]),
         CONSTRAINT [FK_Registration_Address_ReprocessingSiteAddressId] FOREIGN KEY ([ReprocessingSiteAddressId]) REFERENCES [Address] ([Id]),
         CONSTRAINT [FK_Registration_ApplicationType_ApplicationTypeId] FOREIGN KEY ([ApplicationTypeId]) REFERENCES [ApplicationType] ([Id]) ON DELETE CASCADE,
-        CONSTRAINT [FK_Registration_Material_MaterialName] FOREIGN KEY ([MaterialName]) REFERENCES [Material] ([MaterialName]),
         CONSTRAINT [FK_Registration_RegistrationStatus_RegistrationStatusId] FOREIGN KEY ([RegistrationStatusId]) REFERENCES [RegistrationStatus] ([Id]) ON DELETE CASCADE
     );
 END;
@@ -772,7 +770,7 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250310120021_InitialRegistration'
+    WHERE [MigrationId] = N'20250310153234_InitialRegistration'
 )
 BEGIN
     CREATE TABLE [AppRefPerMaterial] (
@@ -789,7 +787,7 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250310120021_InitialRegistration'
+    WHERE [MigrationId] = N'20250310153234_InitialRegistration'
 )
 BEGIN
     CREATE TABLE [FileUpload] (
@@ -814,7 +812,7 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250310120021_InitialRegistration'
+    WHERE [MigrationId] = N'20250310153234_InitialRegistration'
 )
 BEGIN
     CREATE TABLE [RegistrationContact] (
@@ -834,7 +832,7 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250310120021_InitialRegistration'
+    WHERE [MigrationId] = N'20250310153234_InitialRegistration'
 )
 BEGIN
     CREATE TABLE [RegistrationMaterial] (
@@ -878,7 +876,7 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250310120021_InitialRegistration'
+    WHERE [MigrationId] = N'20250310153234_InitialRegistration'
 )
 BEGIN
     CREATE TABLE [RegistrationReprocessingIO] (
@@ -904,7 +902,7 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250310120021_InitialRegistration'
+    WHERE [MigrationId] = N'20250310153234_InitialRegistration'
 )
 BEGIN
     CREATE TABLE [SaveAndContinue] (
@@ -922,7 +920,7 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250310120021_InitialRegistration'
+    WHERE [MigrationId] = N'20250310153234_InitialRegistration'
 )
 BEGIN
     CREATE TABLE [RegistrationTaskStatus] (
@@ -941,7 +939,7 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250310120021_InitialRegistration'
+    WHERE [MigrationId] = N'20250310153234_InitialRegistration'
 )
 BEGIN
     CREATE TABLE [RegistrationProcessingIORawMaterial] (
@@ -959,7 +957,7 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250310120021_InitialRegistration'
+    WHERE [MigrationId] = N'20250310153234_InitialRegistration'
 )
 BEGIN
     IF EXISTS (SELECT * FROM [sys].[identity_columns] WHERE [name] IN (N'Id', N'Name') AND [object_id] = OBJECT_ID(N'[ApplicationType]'))
@@ -974,7 +972,7 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250310120021_InitialRegistration'
+    WHERE [MigrationId] = N'20250310153234_InitialRegistration'
 )
 BEGIN
     IF EXISTS (SELECT * FROM [sys].[identity_columns] WHERE [name] IN (N'Id', N'Name') AND [object_id] = OBJECT_ID(N'[FileUploadStatus]'))
@@ -992,7 +990,7 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250310120021_InitialRegistration'
+    WHERE [MigrationId] = N'20250310153234_InitialRegistration'
 )
 BEGIN
     IF EXISTS (SELECT * FROM [sys].[identity_columns] WHERE [name] IN (N'Id', N'Name') AND [object_id] = OBJECT_ID(N'[FileUploadType]'))
@@ -1006,7 +1004,7 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250310120021_InitialRegistration'
+    WHERE [MigrationId] = N'20250310153234_InitialRegistration'
 )
 BEGIN
     IF EXISTS (SELECT * FROM [sys].[identity_columns] WHERE [name] IN (N'MaterialName', N'MaterialCode') AND [object_id] = OBJECT_ID(N'[Material]'))
@@ -1020,7 +1018,7 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250310120021_InitialRegistration'
+    WHERE [MigrationId] = N'20250310153234_InitialRegistration'
 )
 BEGIN
     IF EXISTS (SELECT * FROM [sys].[identity_columns] WHERE [name] IN (N'Id', N'Name', N'NationId') AND [object_id] = OBJECT_ID(N'[MaterialPermitType]'))
@@ -1038,7 +1036,7 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250310120021_InitialRegistration'
+    WHERE [MigrationId] = N'20250310153234_InitialRegistration'
 )
 BEGIN
     IF EXISTS (SELECT * FROM [sys].[identity_columns] WHERE [name] IN (N'Id', N'Name') AND [object_id] = OBJECT_ID(N'[Period]'))
@@ -1054,7 +1052,7 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250310120021_InitialRegistration'
+    WHERE [MigrationId] = N'20250310153234_InitialRegistration'
 )
 BEGIN
     IF EXISTS (SELECT * FROM [sys].[identity_columns] WHERE [name] IN (N'Id', N'Name') AND [object_id] = OBJECT_ID(N'[RegistrationStatus]'))
@@ -1077,7 +1075,7 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250310120021_InitialRegistration'
+    WHERE [MigrationId] = N'20250310153234_InitialRegistration'
 )
 BEGIN
     IF EXISTS (SELECT * FROM [sys].[identity_columns] WHERE [name] IN (N'Id', N'Name') AND [object_id] = OBJECT_ID(N'[TaskName]'))
@@ -1094,7 +1092,7 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250310120021_InitialRegistration'
+    WHERE [MigrationId] = N'20250310153234_InitialRegistration'
 )
 BEGIN
     IF EXISTS (SELECT * FROM [sys].[identity_columns] WHERE [name] IN (N'Id', N'Name') AND [object_id] = OBJECT_ID(N'[TaskStatus]'))
@@ -1111,7 +1109,7 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250310120021_InitialRegistration'
+    WHERE [MigrationId] = N'20250310153234_InitialRegistration'
 )
 BEGIN
     CREATE INDEX [IX_AppRefPerMaterial_RegistrationId] ON [AppRefPerMaterial] ([RegistrationId]);
@@ -1120,7 +1118,7 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250310120021_InitialRegistration'
+    WHERE [MigrationId] = N'20250310153234_InitialRegistration'
 )
 BEGIN
     CREATE UNIQUE INDEX [IX_FeesAmount_MaterialId] ON [FeesAmount] ([MaterialId]);
@@ -1129,7 +1127,7 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250310120021_InitialRegistration'
+    WHERE [MigrationId] = N'20250310153234_InitialRegistration'
 )
 BEGIN
     CREATE INDEX [IX_FileUpload_FileUploadStatusId] ON [FileUpload] ([FileUploadStatusId]);
@@ -1138,7 +1136,7 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250310120021_InitialRegistration'
+    WHERE [MigrationId] = N'20250310153234_InitialRegistration'
 )
 BEGIN
     CREATE INDEX [IX_FileUpload_FileUploadTypeId] ON [FileUpload] ([FileUploadTypeId]);
@@ -1147,7 +1145,7 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250310120021_InitialRegistration'
+    WHERE [MigrationId] = N'20250310153234_InitialRegistration'
 )
 BEGIN
     CREATE INDEX [IX_FileUpload_MaterialId] ON [FileUpload] ([MaterialId]);
@@ -1156,7 +1154,7 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250310120021_InitialRegistration'
+    WHERE [MigrationId] = N'20250310153234_InitialRegistration'
 )
 BEGIN
     CREATE INDEX [IX_FileUpload_RegistrationId] ON [FileUpload] ([RegistrationId]);
@@ -1165,7 +1163,7 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250310120021_InitialRegistration'
+    WHERE [MigrationId] = N'20250310153234_InitialRegistration'
 )
 BEGIN
     CREATE INDEX [IX_Registration_ApplicationTypeId] ON [Registration] ([ApplicationTypeId]);
@@ -1174,7 +1172,7 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250310120021_InitialRegistration'
+    WHERE [MigrationId] = N'20250310153234_InitialRegistration'
 )
 BEGIN
     CREATE INDEX [IX_Registration_BusinessAddressId] ON [Registration] ([BusinessAddressId]);
@@ -1183,7 +1181,7 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250310120021_InitialRegistration'
+    WHERE [MigrationId] = N'20250310153234_InitialRegistration'
 )
 BEGIN
     CREATE INDEX [IX_Registration_LegalDocumentAddressId] ON [Registration] ([LegalDocumentAddressId]);
@@ -1192,16 +1190,7 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250310120021_InitialRegistration'
-)
-BEGIN
-    CREATE INDEX [IX_Registration_MaterialName] ON [Registration] ([MaterialName]);
-END;
-GO
-
-IF NOT EXISTS (
-    SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250310120021_InitialRegistration'
+    WHERE [MigrationId] = N'20250310153234_InitialRegistration'
 )
 BEGIN
     CREATE INDEX [IX_Registration_RegistrationStatusId] ON [Registration] ([RegistrationStatusId]);
@@ -1210,7 +1199,7 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250310120021_InitialRegistration'
+    WHERE [MigrationId] = N'20250310153234_InitialRegistration'
 )
 BEGIN
     CREATE INDEX [IX_Registration_ReprocessingSiteAddressId] ON [Registration] ([ReprocessingSiteAddressId]);
@@ -1219,7 +1208,7 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250310120021_InitialRegistration'
+    WHERE [MigrationId] = N'20250310153234_InitialRegistration'
 )
 BEGIN
     CREATE INDEX [IX_RegistrationContact_MaterialId] ON [RegistrationContact] ([MaterialId]);
@@ -1228,7 +1217,7 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250310120021_InitialRegistration'
+    WHERE [MigrationId] = N'20250310153234_InitialRegistration'
 )
 BEGIN
     CREATE INDEX [IX_RegistrationContact_RegistrationContactId] ON [RegistrationContact] ([RegistrationContactId]);
@@ -1237,7 +1226,7 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250310120021_InitialRegistration'
+    WHERE [MigrationId] = N'20250310153234_InitialRegistration'
 )
 BEGIN
     CREATE INDEX [IX_RegistrationContact_RegistrationId] ON [RegistrationContact] ([RegistrationId]);
@@ -1246,7 +1235,7 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250310120021_InitialRegistration'
+    WHERE [MigrationId] = N'20250310153234_InitialRegistration'
 )
 BEGIN
     CREATE INDEX [IX_RegistrationMaterial_EnvironmentalPermitWasteManagementPeriodId] ON [RegistrationMaterial] ([EnvironmentalPermitWasteManagementPeriodId]);
@@ -1255,7 +1244,7 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250310120021_InitialRegistration'
+    WHERE [MigrationId] = N'20250310153234_InitialRegistration'
 )
 BEGIN
     CREATE INDEX [IX_RegistrationMaterial_FeesId] ON [RegistrationMaterial] ([FeesId]);
@@ -1264,7 +1253,7 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250310120021_InitialRegistration'
+    WHERE [MigrationId] = N'20250310153234_InitialRegistration'
 )
 BEGIN
     CREATE INDEX [IX_RegistrationMaterial_InstallationPeriodId] ON [RegistrationMaterial] ([InstallationPeriodId]);
@@ -1273,7 +1262,7 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250310120021_InitialRegistration'
+    WHERE [MigrationId] = N'20250310153234_InitialRegistration'
 )
 BEGIN
     CREATE INDEX [IX_RegistrationMaterial_MaterialId] ON [RegistrationMaterial] ([MaterialId]);
@@ -1282,7 +1271,7 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250310120021_InitialRegistration'
+    WHERE [MigrationId] = N'20250310153234_InitialRegistration'
 )
 BEGIN
     CREATE INDEX [IX_RegistrationMaterial_MaximumReprocessingPeriodId] ON [RegistrationMaterial] ([MaximumReprocessingPeriodId]);
@@ -1291,7 +1280,7 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250310120021_InitialRegistration'
+    WHERE [MigrationId] = N'20250310153234_InitialRegistration'
 )
 BEGIN
     CREATE INDEX [IX_RegistrationMaterial_MaxPeriodId] ON [RegistrationMaterial] ([MaxPeriodId]);
@@ -1300,7 +1289,7 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250310120021_InitialRegistration'
+    WHERE [MigrationId] = N'20250310153234_InitialRegistration'
 )
 BEGIN
     CREATE INDEX [IX_RegistrationMaterial_PermitTypeId] ON [RegistrationMaterial] ([PermitTypeId]);
@@ -1309,7 +1298,7 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250310120021_InitialRegistration'
+    WHERE [MigrationId] = N'20250310153234_InitialRegistration'
 )
 BEGIN
     CREATE INDEX [IX_RegistrationMaterial_PPCPeriodId] ON [RegistrationMaterial] ([PPCPeriodId]);
@@ -1318,7 +1307,7 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250310120021_InitialRegistration'
+    WHERE [MigrationId] = N'20250310153234_InitialRegistration'
 )
 BEGIN
     CREATE INDEX [IX_RegistrationMaterial_RegistrationId] ON [RegistrationMaterial] ([RegistrationId]);
@@ -1327,7 +1316,7 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250310120021_InitialRegistration'
+    WHERE [MigrationId] = N'20250310153234_InitialRegistration'
 )
 BEGIN
     CREATE INDEX [IX_RegistrationMaterial_WasteManagementPeriodId] ON [RegistrationMaterial] ([WasteManagementPeriodId]);
@@ -1336,7 +1325,7 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250310120021_InitialRegistration'
+    WHERE [MigrationId] = N'20250310153234_InitialRegistration'
 )
 BEGIN
     CREATE INDEX [IX_RegistrationProcessingIORawMaterial_RegistrationReprocessingIOId] ON [RegistrationProcessingIORawMaterial] ([RegistrationReprocessingIOId]);
@@ -1345,7 +1334,7 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250310120021_InitialRegistration'
+    WHERE [MigrationId] = N'20250310153234_InitialRegistration'
 )
 BEGIN
     CREATE INDEX [IX_RegistrationReprocessingIO_MaterialId] ON [RegistrationReprocessingIO] ([MaterialId]);
@@ -1354,7 +1343,7 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250310120021_InitialRegistration'
+    WHERE [MigrationId] = N'20250310153234_InitialRegistration'
 )
 BEGIN
     CREATE INDEX [IX_RegistrationReprocessingIO_RegistrationId] ON [RegistrationReprocessingIO] ([RegistrationId]);
@@ -1363,7 +1352,7 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250310120021_InitialRegistration'
+    WHERE [MigrationId] = N'20250310153234_InitialRegistration'
 )
 BEGIN
     CREATE INDEX [IX_RegistrationTaskStatus_RegistrationContactId] ON [RegistrationTaskStatus] ([RegistrationContactId]);
@@ -1372,7 +1361,7 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250310120021_InitialRegistration'
+    WHERE [MigrationId] = N'20250310153234_InitialRegistration'
 )
 BEGIN
     CREATE INDEX [IX_RegistrationTaskStatus_TaskId] ON [RegistrationTaskStatus] ([TaskId]);
@@ -1381,7 +1370,7 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250310120021_InitialRegistration'
+    WHERE [MigrationId] = N'20250310153234_InitialRegistration'
 )
 BEGIN
     CREATE INDEX [IX_RegistrationTaskStatus_TaskStatusId] ON [RegistrationTaskStatus] ([TaskStatusId]);
@@ -1390,7 +1379,7 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250310120021_InitialRegistration'
+    WHERE [MigrationId] = N'20250310153234_InitialRegistration'
 )
 BEGIN
     CREATE INDEX [IX_SaveAndContinue_RegistrationId] ON [SaveAndContinue] ([RegistrationId]);
@@ -1399,11 +1388,11 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250310120021_InitialRegistration'
+    WHERE [MigrationId] = N'20250310153234_InitialRegistration'
 )
 BEGIN
     INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
-    VALUES (N'20250310120021_InitialRegistration', N'8.0.8');
+    VALUES (N'20250310153234_InitialRegistration', N'8.0.8');
 END;
 GO
 

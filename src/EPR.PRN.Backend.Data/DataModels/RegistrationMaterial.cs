@@ -104,6 +104,6 @@ namespace EPR.PRN.Backend.Data.DataModels
         public virtual Period MaxPeriod { get; set; } = null!;
 
         [ForeignKey("MaterialId")]
-        public virtual Material Material { get; set; } = null!;
+        public virtual Material Material { get; set; }
     }
 }

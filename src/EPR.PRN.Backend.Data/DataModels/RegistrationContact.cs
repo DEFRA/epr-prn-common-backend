@@ -17,11 +17,11 @@ namespace EPR.PRN.Backend.Data.DataModels
 
         public int PersonId { get; set; }
 
-        public virtual Registration Registration { get; set; } = null!;
+        public virtual Registration Registration { get; set; }
 
         [ForeignKey("MaterialId")]
-        public virtual Material Material { get; set; } = null!;
+        public virtual Material Material { get; set; }
 
-        public virtual ICollection<RegistrationContact> RegistrationContacts { get; set; } = null!;
+        public virtual ICollection<RegistrationContact> RegistrationContacts { get; set; }
     }
 }

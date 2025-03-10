@@ -17,6 +17,6 @@ namespace EPR.PRN.Backend.Data.DataModels
 
         public int RegistrationId { get; set; }
 
-        public virtual Registration Registration { get; set; } = null!; 
+        public virtual Registration Registration { get; set; }
     }
 }

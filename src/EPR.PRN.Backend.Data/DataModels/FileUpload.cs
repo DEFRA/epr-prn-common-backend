@@ -29,13 +29,13 @@ namespace EPR.PRN.Backend.Data.DataModels
 
         public int FileUploadStatusId { get; set; }
 
-        public virtual FileUploadStatus FileUploadStatus { get; set; } = null!;
+        public virtual FileUploadStatus FileUploadStatus { get; set; }
 
-        public virtual FileUploadType FileUploadType { get; set; } = null!;
+        public virtual FileUploadType FileUploadType { get; set; }
 
-        public virtual Registration Registration { get; set; } = null!;
+        public virtual Registration Registration { get; set; }
 
         [ForeignKey("MaterialId")]
-        public virtual Material Material { get; set; } = null!;
+        public virtual Material Material { get; set; }
     }
 }

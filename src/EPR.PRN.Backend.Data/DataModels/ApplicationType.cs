@@ -12,6 +12,5 @@ namespace EPR.PRN.Backend.Data.DataModels
         [Required]
         public string Name{ get; set; }
 
-        public virtual ICollection<Registration> Registrations { get; set; }
     }
 }

@@ -11,7 +11,5 @@ namespace EPR.PRN.Backend.Data.DataModels
         [MaxLength(100)]
         [Required]
         public string Name { get; set; }
-
-        public virtual ICollection<Registration> Registrations { get; set; }
     }
 }
