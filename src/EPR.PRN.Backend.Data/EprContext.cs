@@ -42,6 +42,10 @@ namespace EPR.PRN.Backend.Data
             modelBuilder.Entity<PrnStatus>()
                 .HasData(DataModels.PrnStatus.Data);
 
+            modelBuilder.Entity<FeesAmount>()
+                .HasIndex(a => a.MaterialId)
+                .IsUnique();
+
             modelBuilder.Entity<RecyclingTarget>()
                 .HasData(
                             // Paper
@@ -109,6 +113,42 @@ namespace EPR.PRN.Backend.Data
                             new RecyclingTarget { Id = 48, MaterialNameRT = MaterialType.FibreComposite.ToString(), Target = 0.85, Year = 2030 }
                         );
 
+            modelBuilder.Entity<ApplicationType>()
+                .HasData(
+                            new ApplicationType { Id = 1, Name = "Reprocessor" },
+                            new ApplicationType { Id = 2, Name = "Exporter" }
+                );
+
+            modelBuilder.Entity<Period>()
+                .HasData(
+                    new Period { Id = 1, Name = "Per Week" },
+                    new Period { Id = 2, Name = "Per Month" },
+                    new Period { Id = 3, Name = "Per Year" }
+                );
+
+            modelBuilder.Entity<MaterialPermitType>()
+                .HasData(
+                    new MaterialPermitType { Id = 1, Name = "Environmental permit or waste management licence" },
+                    new MaterialPermitType { Id = 2, Name = "Installation Permit" },
+                    new MaterialPermitType { Id = 3, Name = "Pollution, Prevention, and Control (PPC) permit" },
+                    new MaterialPermitType { Id = 4, Name = "Waste Exemption" },
+                    new MaterialPermitType { Id = 5, Name = "Waste Management Licence" }
+                );
+
+            modelBuilder.Entity<RegistrationStatus>()
+                .HasData(
+                    new RegistrationStatus { Id = 1, Name = "Accepted" },
+                    new RegistrationStatus { Id = 2, Name = "Cancelled" },
+                    new RegistrationStatus { Id = 3, Name = "Granted" },
+                    new RegistrationStatus { Id = 4, Name = "Queried" },
+                    new RegistrationStatus { Id = 5, Name = "Refused" },
+                    new RegistrationStatus { Id = 6, Name = "Started" },
+                    new RegistrationStatus { Id = 7, Name = "Submitted" },
+                    new RegistrationStatus { Id = 8, Name = "Suspended" },
+                    new RegistrationStatus { Id = 9, Name = "Updated" },
+                    new RegistrationStatus { Id = 10, Name = "Withdrawn" }
+                );
+
             modelBuilder.Entity<Material>()
                 .HasData(
                             new Material { MaterialCode = "PL", MaterialName = "Plastic" },
@@ -128,21 +168,65 @@ namespace EPR.PRN.Backend.Data
                 .OnDelete(DeleteBehavior.NoAction);
             });
 
+
+            modelBuilder.Entity<DataModels.TaskStatus>()
+            .HasData(
+                        new DataModels.TaskStatus { Id = 1, Name = "Not started" },
+                        new DataModels.TaskStatus { Id = 2, Name = "Started" },
+                        new DataModels.TaskStatus { Id = 3, Name = "Completed" },
+                        new DataModels.TaskStatus { Id = 4, Name = "Cannot start yet" }
+            );
+
+            modelBuilder.Entity<DataModels.TaskName>()
+           .HasData(
+                       new DataModels.TaskStatus { Id = 1, Name = "SiteAddressAndContactDetails" },
+                       new DataModels.TaskStatus { Id = 2, Name = "WasteLicensesPermitsAndExemption" },
+                       new DataModels.TaskStatus { Id = 3, Name = "ReprocessingInputandOutput" },
+                       new DataModels.TaskStatus { Id = 4, Name = "SamplingAndInspectionPlanPerMaterial" }
+           );
+
+            modelBuilder.Entity<DataModels.FileUploadType>()
+              .HasData(
+                          new DataModels.FileUploadType { Id = 1, Name = "SamplingAndInspectionPlan" }
+              );
+
+            modelBuilder.Entity<DataModels.FileUploadStatus>()
+        .HasData(
+                    new DataModels.FileUploadStatus { Id = 1, Name = "Virus check failed" },
+                    new DataModels.FileUploadStatus { Id = 2, Name = "Virus check succeeded" },
+                    new DataModels.FileUploadStatus { Id = 3, Name = "Upload complete" },
+                    new DataModels.FileUploadStatus { Id = 4, Name = "Upload failed" },
+                    new DataModels.FileUploadStatus { Id = 5, Name = "File deleted" }
+        );
+
             base.OnModelCreating(modelBuilder);
         }
 
-        public virtual DbSet<Eprn> Prn { get; set; }
-
-        public virtual DbSet<PrnStatus> PrnStatus { get; set; }
-
-        public virtual DbSet<PrnStatusHistory> PrnStatusHistory { get; set; }
-
-        public virtual DbSet<RecyclingTarget> RecyclingTargets { get; set; }
-
-        public virtual DbSet<ObligationCalculation> ObligationCalculations { get; set; }
-
+        public virtual DbSet<Address> Address { get; set; }
+        public virtual DbSet<ApplicationType> ApplicationType { get; set; }
+        public  virtual DbSet<AppRefPerMaterial> AppRefPerMaterial { get; set; }
+        public virtual DbSet<FeesAmount> FeesAmount { get; set; }
+        public virtual DbSet<FileUpload> FileUpload { get; set; }
+        public virtual DbSet<FileUploadStatus> FileUploadStatus { get; set; }
+        public virtual DbSet<FileUploadType> FileUploadType { get; set; }
         public virtual DbSet<Material> Material { get; set; }
-
+        public virtual DbSet<MaterialPermitType> MaterialPermitType { get; set; }
+        public virtual DbSet<ObligationCalculation> ObligationCalculations { get; set; }
         public virtual DbSet<PEprNpwdSync> PEprNpwdSync { get; set; }
+        public virtual DbSet<Period> Period { get; set; }
+        public virtual DbSet<Eprn> Prn { get; set; }
+        public virtual DbSet<PrnStatus> PrnStatus { get; set; }
+        public virtual DbSet<PrnStatusHistory> PrnStatusHistory { get; set; }
+        public virtual DbSet<RecyclingTarget> RecyclingTargets { get; set; }
+        public virtual DbSet<Registration> Registration { get; set; }
+        public virtual DbSet<RegistrationContact> RegistrationContact { get; set; }
+        public virtual DbSet<RegistrationTaskStatus> RegistrationTaskStatus { get; set; }
+        public virtual DbSet<RegistrationMaterial> RegistrationMaterial { get; set; }
+        public virtual DbSet<RegistrationProcessingIORawMaterial> RegistrationProcessingIORawMaterial { get; set; }
+        public virtual DbSet<RegistrationReprocessingIO> RegistrationReprocessingIO { get; set; }
+        public virtual DbSet<RegistrationStatus> RegistrationStatus { get; set; }
+        public virtual DbSet<SaveAndContinue> SaveAndContinue { get; set; }
+        public virtual DbSet<TaskName> TaskName { get; set; }
+        public virtual DbSet<TaskName> TaskStatus { get; set; }
     }
 }
