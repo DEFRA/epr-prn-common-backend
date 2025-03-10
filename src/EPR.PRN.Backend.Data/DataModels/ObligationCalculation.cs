@@ -14,7 +14,6 @@ public class ObligationCalculation
     public Guid OrganisationId { get; set; }
 
     [Required]
-	[ForeignKey("Material")]
 	public int MaterialId { get; set; }
 
     [Required]
@@ -28,4 +27,6 @@ public class ObligationCalculation
 
     [Required]
     public int Tonnage { get; set; }
+
+    public Material Material { get; set; } = null!;
 }

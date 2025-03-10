@@ -155,8 +155,14 @@ namespace EPR.PRN.Backend.Data
                 .HasForeignKey(s => s.PrnIdFk)
                 .OnDelete(DeleteBehavior.NoAction);
             });
+            
+            modelBuilder.Entity<ObligationCalculation>()
+			.HasOne(c => c.Material)
+			.WithMany()
+			.HasForeignKey(c => c.MaterialId)
+			.OnDelete(DeleteBehavior.NoAction);
 
-            base.OnModelCreating(modelBuilder);
+			base.OnModelCreating(modelBuilder);
         }
 
         public virtual DbSet<Eprn> Prn { get; set; }

@@ -47,8 +47,7 @@ namespace EPR.PRN.Backend.Obligation.Services
 				var strategy = strategyResolver.Resolve(materialType);
                 if (strategy == null)
                 {
-                    var error = $"Could not find handler for Material Type: {submission.PackagingMaterial} for OrganisationId: {organisationId}.";
-                    logger.LogError(error, submission.PackagingMaterial, organisationId);
+                    logger.LogError("Could not find handler for Material Type: {submission.PackagingMaterial} for OrganisationId: {organisationId}.", submission.PackagingMaterial, organisationId);
                     result.Success = false;
                     continue;
                 }
@@ -65,7 +64,7 @@ namespace EPR.PRN.Backend.Obligation.Services
                 calculations.AddRange(strategy.Calculate(calculationRequest));
             }
 
-            if (!calculations.Any())
+            if (calculations.Count == 0)
             {
                 logger.LogError("No calculations for OrganisationId: {OrganisationId}.", organisationId);
                 result.Success = false;

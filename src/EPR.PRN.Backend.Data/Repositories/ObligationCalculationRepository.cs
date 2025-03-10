@@ -42,7 +42,7 @@ public class ObligationCalculationRepository(EprContext context) : IObligationCa
         {
             foreach (var calculation in calculations)
             {
-                var existingCalculation = obligationCalculations.FirstOrDefault(c => c.MaterialId == calculation.MaterialId);
+                var existingCalculation = obligationCalculations.Find(c => c.MaterialId == calculation.MaterialId);
 
                 if (existingCalculation != null)
                 {
