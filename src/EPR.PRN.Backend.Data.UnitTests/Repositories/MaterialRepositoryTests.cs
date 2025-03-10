@@ -11,10 +11,10 @@ namespace EPR.PRN.Backend.Data.UnitTests.Repositories;
 [TestClass]
 public class MaterialRepositoryTests
 {
-    private MaterialRepository _materialRepository;
-    private Mock<EprContext> _mockEprContext;
+	private MaterialRepository _materialRepository;
+	private Mock<EprContext> _mockEprContext;
 	private readonly List<Material> _materials =
-        [
+		[
 			new Material { Id = 1, MaterialCode = "PL", MaterialName = MaterialType.Plastic.ToString() },
 			new Material { Id = 2, MaterialCode = "WD", MaterialName = MaterialType.Wood.ToString() },
 			new Material { Id = 3, MaterialCode = "AL", MaterialName = MaterialType.Aluminium.ToString() },
@@ -25,24 +25,24 @@ public class MaterialRepositoryTests
 			new Material { Id = 8, MaterialCode = "FC", MaterialName = MaterialType.FibreComposite.ToString() }
 		];
 
-    [TestInitialize]
-    public void Setup()
-    {
-        var dbContextOptions = new DbContextOptionsBuilder<EprContext>().Options;
-        _mockEprContext = new Mock<EprContext>(dbContextOptions);
-        _mockEprContext.Setup(context => context.Material).ReturnsDbSet(_materials);
-        _materialRepository = new MaterialRepository(_mockEprContext.Object);
+	[TestInitialize]
+	public void Setup()
+	{
+		var dbContextOptions = new DbContextOptionsBuilder<EprContext>().Options;
+		_mockEprContext = new Mock<EprContext>(dbContextOptions);
+		_mockEprContext.Setup(context => context.Material).ReturnsDbSet(_materials);
+		_materialRepository = new MaterialRepository(_mockEprContext.Object);
 	}
 
 	[TestMethod]
-    public async Task GetAllMaterials_ShouldReturnAllMaterials()
-    {
-        // Act
-        var result = await _materialRepository.GetAllMaterials();
+	public async Task GetAllMaterials_ShouldReturnAllMaterials()
+	{
+		// Act
+		var result = await _materialRepository.GetAllMaterials();
 
-        // Assert
-        result.Should().NotBeNull(); // Check that result is not null
-        result.Should().HaveCount(8); // Check that 7 materials are returned
+		// Assert
+		result.Should().NotBeNull(); // Check that result is not null
+		result.Should().HaveCount(8); // Check that 7 materials are returned
 		result.Should().Contain(material => material.MaterialCode == "PL" && material.MaterialName == MaterialType.Plastic.ToString());
 		result.Should().Contain(material => material.MaterialCode == "WD" && material.MaterialName == MaterialType.Wood.ToString());
 		result.Should().Contain(material => material.MaterialCode == "AL" && material.MaterialName == MaterialType.Aluminium.ToString());
