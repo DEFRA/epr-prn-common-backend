@@ -1,4 +1,5 @@
 ﻿using AutoFixture;
+using EPR.PRN.Backend.API.Common.Constants;
 using EPR.PRN.Backend.API.Common.Enums;
 using EPR.PRN.Backend.Data.DataModels;
 using EPR.PRN.Backend.Data.Dto;
@@ -20,7 +21,6 @@ public class ObligationCalculatorServiceTests
 {
     private Mock<IObligationCalculationRepository> _mockObligationCalculationRepository;
     private Mock<IRecyclingTargetDataService> _mockRecyclingTargetDataService;
-    private Mock<IMaterialService> _mockMaterialService;
     private Mock<IMaterialCalculationStrategyResolver> _mockStrategyResolver;
     private Mock<IPrnRepository> _mockPrnRepository;
     private Mock<IMaterialRepository> _mockMaterialRepository;
@@ -36,7 +36,6 @@ public class ObligationCalculatorServiceTests
         _fixture = new Fixture();
         _mockObligationCalculationRepository = new Mock<IObligationCalculationRepository>();
         _mockRecyclingTargetDataService = new Mock<IRecyclingTargetDataService>();
-        _mockMaterialService = new Mock<IMaterialService>();
         _mockStrategyResolver = new Mock<IMaterialCalculationStrategyResolver>();
         _mockPrnRepository = new Mock<IPrnRepository>();
         _mockMaterialRepository = new Mock<IMaterialRepository>();
@@ -44,7 +43,6 @@ public class ObligationCalculatorServiceTests
         _service = new ObligationCalculatorService(
             _mockObligationCalculationRepository.Object,
             _mockRecyclingTargetDataService.Object,
-            _mockMaterialService.Object,
             _mockStrategyResolver.Object,
             _mockLogger.Object,
             _mockPrnRepository.Object,
@@ -59,35 +57,39 @@ public class ObligationCalculatorServiceTests
     {
         // Arrange
         var year = 2025;
-        var materials = GetMaterialCodes();
+        var materials = GetMaterials().Where(m => m.IsVisibleToObligation);
         var obligationCalculations = _fixture.CreateMany<ObligationCalculation>(7).ToList();
-        obligationCalculations[0].MaterialName = MaterialType.Plastic.ToString();
-        obligationCalculations[1].MaterialName = MaterialType.Paper.ToString();
-        obligationCalculations[2].MaterialName = MaterialType.Steel.ToString();
-        obligationCalculations[3].MaterialName = MaterialType.Wood.ToString();
-        obligationCalculations[4].MaterialName = MaterialType.Aluminium.ToString();
-        obligationCalculations[5].MaterialName = MaterialType.Glass.ToString();
-        obligationCalculations[6].MaterialName = MaterialType.GlassRemelt.ToString();
+        obligationCalculations[0].MaterialId = 1;
+        obligationCalculations[1].MaterialId = 2;
+        obligationCalculations[2].MaterialId = 3;
+        obligationCalculations[3].MaterialId = 4;
+        obligationCalculations[4].MaterialId = 5;
+        obligationCalculations[5].MaterialId = 6;
+        obligationCalculations[6].MaterialId = 7;
 
-        var prnList = _fixture.CreateMany<EprnResultsDto>(7).ToList();
-        prnList[0].Eprn.MaterialName = MaterialType.Plastic.ToString();
-        prnList[1].Eprn.MaterialName = MaterialType.Paper.ToString();
-        prnList[2].Eprn.MaterialName = MaterialType.Steel.ToString();
-        prnList[3].Eprn.MaterialName = MaterialType.Wood.ToString();
-        prnList[4].Eprn.MaterialName = MaterialType.Aluminium.ToString();
-        prnList[5].Eprn.MaterialName = MaterialType.Glass.ToString();
-        prnList[6].Eprn.MaterialName = MaterialType.GlassRemelt.ToString();
+		var prnList = _fixture.CreateMany<EprnResultsDto>(9).ToList();
+		prnList[0].Eprn.MaterialName = PrnConstants.Materials.Plastic;
+        prnList[1].Eprn.MaterialName = PrnConstants.Materials.PaperFiber;
+        prnList[2].Eprn.MaterialName = PrnConstants.Materials.Steel;
+        prnList[3].Eprn.MaterialName = PrnConstants.Materials.Wood;
+        prnList[4].Eprn.MaterialName = PrnConstants.Materials.Aluminium;
+        prnList[5].Eprn.MaterialName = PrnConstants.Materials.GlassOther;
+        prnList[6].Eprn.MaterialName = PrnConstants.Materials.GlassMelt;
+		prnList[7].Eprn.MaterialName = PrnConstants.Materials.PaperComposting;
+		prnList[8].Eprn.MaterialName = PrnConstants.Materials.WoodComposting;
 
-        prnList[0].Eprn.ObligationYear = year.ToString();
-        prnList[1].Eprn.ObligationYear = year.ToString();
-        prnList[2].Eprn.ObligationYear = year.ToString();
-        prnList[3].Eprn.ObligationYear = year.ToString();
-        prnList[4].Eprn.ObligationYear = year.ToString();
-        prnList[5].Eprn.ObligationYear = year.ToString();
-        prnList[6].Eprn.ObligationYear = year.ToString();
+		prnList[0].Eprn.ObligationYear = year.ToString();
+		prnList[1].Eprn.ObligationYear = year.ToString();
+		prnList[2].Eprn.ObligationYear = year.ToString();
+		prnList[3].Eprn.ObligationYear = year.ToString();
+		prnList[4].Eprn.ObligationYear = year.ToString();
+		prnList[5].Eprn.ObligationYear = year.ToString();
+		prnList[6].Eprn.ObligationYear = year.ToString();
+		prnList[7].Eprn.ObligationYear = year.ToString();
+		prnList[8].Eprn.ObligationYear = year.ToString();
 
-        var prns = prnList.AsQueryable();
-        _mockMaterialRepository.Setup(repo => repo.GetAllMaterials()).ReturnsAsync(materials);
+		var prns = prnList.AsQueryable();
+        _mockMaterialRepository.Setup(repo => repo.GetVisibleToObligationMaterials()).ReturnsAsync(materials);
         _mockObligationCalculationRepository.Setup(repo => repo.GetObligationCalculation(organisationIds, year)).ReturnsAsync(obligationCalculations);
         _mockPrnRepository.Setup(repo => repo.GetAcceptedAndAwaitingPrnsByYear(orgId, year)).Returns(prns);
 
@@ -101,66 +103,115 @@ public class ObligationCalculatorServiceTests
         // Assert
         result.IsSuccess.Should().BeTrue();
         result.ObligationModel.Should().NotBeNull();
-        result.ObligationModel.ObligationData.Should().HaveCount(materials.Count + 1); // +1 for GlassRemelt
 
         foreach (var material in materials)
         {
-            var obligationData = result.ObligationModel.ObligationData.FirstOrDefault(d => d.MaterialName == material.MaterialName);
+            var obligationData = result.ObligationModel.ObligationData.Find(d => d.MaterialName == material.MaterialName);
             obligationData.Should().NotBeNull();
             obligationData.MaterialName.Should().Be(material.MaterialName);
-            obligationData.ObligationToMeet.Should().Be(obligationCalculations.FirstOrDefault(o => o.MaterialName == material.MaterialName).MaterialObligationValue);
-            obligationData.TonnageAccepted.Should().Be(acceptedTonnage.FirstOrDefault(t => t.MaterialName == material.MaterialName)?.TotalTonnage ?? 0);
-            obligationData.TonnageAwaitingAcceptance.Should().Be(awaitingTonnage.FirstOrDefault(t => t.MaterialName == material.MaterialName)?.TotalTonnage ?? 0);
+            obligationData.ObligationToMeet.Should().Be(obligationCalculations.Find(o => o.MaterialId == material.Id).MaterialObligationValue);
+            obligationData.TonnageAccepted.Should().Be(acceptedTonnage.Find(t => t.MaterialName == material.MaterialName)?.TotalTonnage ?? 0);
+            obligationData.TonnageAwaitingAcceptance.Should().Be(awaitingTonnage.Find(t => t.MaterialName == material.MaterialName)?.TotalTonnage ?? 0);
         }
     }
 
-    [TestMethod]
-    public async Task GetObligationCalculation_ShouldReturnSuccess_WithNoData()
-    {
-        // Arrange
-        var year = 2025;
-        var materials = new List<Material>();
-        _mockMaterialRepository.Setup(repo => repo.GetAllMaterials()).ReturnsAsync(materials);
+	[TestMethod]
+	public async Task GetObligationCalculation_ShouldReturnSuccess_WithExpectedStatus()
+	{
+		// Arrange
+		var year = 2025;
+		var materials = GetMaterials().Where(m => m.IsVisibleToObligation);
+		var obligationCalculations = _fixture.CreateMany<ObligationCalculation>(7).ToList();
+		obligationCalculations[0].MaterialId = 1;
+		obligationCalculations[0].MaterialObligationValue = 2;
+		obligationCalculations[1].MaterialId = 2;
+		obligationCalculations[1].MaterialObligationValue = 1;
 
-        // Act
-        var result = await _service.GetObligationCalculation(orgId, organisationIds, year);
+		var prnList = _fixture.CreateMany<EprnResultsDto>(2).ToList();
+		prnList[0].Eprn.MaterialName = PrnConstants.Materials.Plastic;
+		prnList[0].Eprn.PrnStatusId = 1;
+        prnList[0].Status.StatusName = EprnStatus.ACCEPTED.ToString();
+		prnList[0].Eprn.TonnageValue = 1;
+		prnList[0].Eprn.ObligationYear = year.ToString();
+		prnList[1].Eprn.MaterialName = PrnConstants.Materials.Wood;
+		prnList[1].Eprn.PrnStatusId = 1;
+		prnList[1].Status.StatusName = EprnStatus.ACCEPTED.ToString();
+		prnList[1].Eprn.TonnageValue = 1;
+		prnList[1].Eprn.ObligationYear = year.ToString();
 
-        // Assert
-        result.IsSuccess.Should().BeFalse();
-        result.Errors.Should().Contain($"No Materials found in PRN BAckend Database");
-    }
-
-    [TestMethod]
-    public async Task GetObligationCalculation_ShouldHandleGlassRemeltCorrectly()
-    {
-        // Arrange
-        var year = 2025;
-        var materials = _fixture.CreateMany<Material>(5).ToList(); // No GlassRemelt initially
-        var obligationCalculations = _fixture.CreateMany<ObligationCalculation>(6).ToList();
-        var prnList = _fixture.CreateMany<EprnResultsDto>(5).ToList();
-        prnList[1].Eprn.MaterialName = "GlassRemelt";
-        var prns = prnList.AsQueryable();
-        _mockMaterialRepository.Setup(repo => repo.GetAllMaterials()).ReturnsAsync(materials);
-        _mockObligationCalculationRepository.Setup(repo => repo.GetObligationCalculation(organisationIds, year)).ReturnsAsync(obligationCalculations);
-        _mockPrnRepository.Setup(repo => repo.GetAcceptedAndAwaitingPrnsByYear(orgId, year)).Returns(prns);
+		var prns = prnList.AsQueryable();
+		_mockMaterialRepository.Setup(repo => repo.GetVisibleToObligationMaterials()).ReturnsAsync(materials);
+		_mockObligationCalculationRepository.Setup(repo => repo.GetObligationCalculation(organisationIds, year)).ReturnsAsync(obligationCalculations);
+		_mockPrnRepository.Setup(repo => repo.GetAcceptedAndAwaitingPrnsByYear(orgId, year)).Returns(prns);
         _mockRecyclingTargetDataService.Setup(x => x.GetRecyclingTargetsAsync()).ReturnsAsync(GetRecyclingTargets());
 
-        // Act
-        var result = await _service.GetObligationCalculation(orgId, organisationIds, year);
+		// Act
+		var result = await _service.GetObligationCalculation(orgId, organisationIds, year);
 
-        // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.ObligationModel.ObligationData.Should().Contain(d => d.MaterialName == "GlassRemelt");
+		// Assert
+		result.IsSuccess.Should().BeTrue();
+		result.ObligationModel.Should().NotBeNull();
 
-        var glassRemeltData = result.ObligationModel.ObligationData.FirstOrDefault(d => d.MaterialName == "GlassRemelt");
-        glassRemeltData.Should().NotBeNull();
-        glassRemeltData.ObligationToMeet.Should().BeNull();
-        glassRemeltData.TonnageAccepted.Should().Be(0);
-        glassRemeltData.TonnageAwaitingAcceptance.Should().Be(0);
-        glassRemeltData.Status.Should().Be(ObligationConstants.Statuses.NoDataYet);
-    }
+        var obligationData = result.ObligationModel.ObligationData;
+		obligationData.Should().NotBeNull();
+		obligationData.Count.Should().Be(7);
+        var plasticObligationData = obligationData.Find(d => d.MaterialName == PrnConstants.Materials.Plastic);
+        plasticObligationData.Status.Should().Be(ObligationConstants.Statuses.NotMet);
+		var woodObligationData = obligationData.Find(d => d.MaterialName == PrnConstants.Materials.Wood);
+		woodObligationData.Status.Should().Be(ObligationConstants.Statuses.Met);
+	}
 
-    [TestMethod]
+	[TestMethod]
+    public async Task GetObligationCalculation_ShouldReturnResponse_WhenNoObligationExists()
+    {
+		// Arrange
+		var year = 2025;
+		var materials = GetMaterials().Where(m => m.IsVisibleToObligation);
+		var obligationCalculations = new List<ObligationCalculation>();
+
+
+		var prnList = _fixture.CreateMany<EprnResultsDto>().ToList();
+
+		var prns = prnList.AsQueryable();
+		_mockMaterialRepository.Setup(repo => repo.GetVisibleToObligationMaterials()).ReturnsAsync(materials);
+		_mockObligationCalculationRepository.Setup(repo => repo.GetObligationCalculation(organisationIds, year)).ReturnsAsync(obligationCalculations);
+		_mockPrnRepository.Setup(repo => repo.GetAcceptedAndAwaitingPrnsByYear(orgId, year)).Returns(prns);
+		_mockRecyclingTargetDataService.Setup(x => x.GetRecyclingTargetsAsync()).ReturnsAsync(GetRecyclingTargets());
+
+		// Act
+		var result = await _service.GetObligationCalculation(orgId, organisationIds, year);
+
+		// Assert
+		result.IsSuccess.Should().BeTrue();
+		result.ObligationModel.Should().NotBeNull();
+
+		foreach (var material in materials)
+		{
+			var obligationData = result.ObligationModel.ObligationData.Find(d => d.MaterialName == material.MaterialName);
+			obligationData.Should().NotBeNull();
+			obligationData.MaterialName.Should().Be(material.MaterialName);
+			obligationData.ObligationToMeet.Should().BeNull();obligationData.TonnageOutstanding.Should().BeNull();
+			obligationData.Status.Should().Be(ObligationConstants.Statuses.NoDataYet);
+		}
+	}
+
+	[TestMethod]
+	public async Task GetObligationCalculation_ShouldReturnSuccess_WithNoData()
+	{
+		// Arrange
+		var year = 2025;
+		var materials = new List<Material>();
+		_mockMaterialRepository.Setup(repo => repo.GetVisibleToObligationMaterials()).ReturnsAsync(materials);
+
+		// Act
+		var result = await _service.GetObligationCalculation(orgId, organisationIds, year);
+
+		// Assert
+		result.IsSuccess.Should().BeFalse();
+		result.Errors.Should().Contain($"No Materials found in PRN Backend Database");
+	}
+
+	[TestMethod]
     public async Task GetObligationCalculation_ShouldHandlePRNAwaitingAcceptanceCorrectly()
     {
         // Arrange
@@ -177,9 +228,8 @@ public class ObligationCalculatorServiceTests
         prnList[4].Eprn.PrnStatusId = 4;
         prnList[4].Status.Id = 4;
         prnList[4].Status.StatusName = EprnStatus.AWAITINGACCEPTANCE.ToString();
-        prnList[1].Eprn.MaterialName = "GlassRemelt";
         var prns = prnList.AsQueryable();
-        _mockMaterialRepository.Setup(repo => repo.GetAllMaterials()).ReturnsAsync(materials);
+        _mockMaterialRepository.Setup(repo => repo.GetVisibleToObligationMaterials()).ReturnsAsync(materials);
         _mockObligationCalculationRepository.Setup(repo => repo.GetObligationCalculation(organisationIds, year)).ReturnsAsync(obligationCalculations);
         _mockPrnRepository.Setup(repo => repo.GetAcceptedAndAwaitingPrnsByYear(orgId, year)).Returns(prns);
         _mockRecyclingTargetDataService.Setup(x => x.GetRecyclingTargetsAsync()).ReturnsAsync(GetRecyclingTargets());
@@ -199,7 +249,7 @@ public class ObligationCalculatorServiceTests
         var organisationId = Guid.NewGuid();
         var submissions = new List<SubmissionCalculationRequest>
         {
-            new() { SubmissionId = submissionId, PackagingMaterial = null }
+            new() { OrganisationId = submissionId, PackagingMaterial = null }
         };
         _mockRecyclingTargetDataService.Setup(x => x.GetRecyclingTargetsAsync()).ReturnsAsync(new Dictionary<int, Dictionary<MaterialType, double>>());
 
@@ -208,7 +258,7 @@ public class ObligationCalculatorServiceTests
         var result = await _service.CalculateAsync(organisationId, submissions);
 
         result.Success.Should().BeFalse();
-        loggedMessages.Should().Contain($"Material was null or empty for SubmissionId: {submissionId} and OrganisationId: {organisationId}.");
+        loggedMessages.Should().Contain($"Material was null or empty for OrganisationId: {organisationId}.");
         loggedMessages.Should().Contain($"No calculations for OrganisationId: {organisationId}.");
     }
 
@@ -220,16 +270,15 @@ public class ObligationCalculatorServiceTests
         var packagingMaterial = "InvalidMaterial";
         var submissions = new List<SubmissionCalculationRequest>
         {
-            new() { SubmissionId = submissionId, PackagingMaterial = packagingMaterial }
+            new() { OrganisationId = submissionId, PackagingMaterial = packagingMaterial }
         };
         _mockRecyclingTargetDataService.Setup(x => x.GetRecyclingTargetsAsync()).ReturnsAsync(new Dictionary<int, Dictionary<MaterialType, double>>());
-        _mockMaterialService.Setup(x => x.GetMaterialByCode("InvalidMaterial")).ReturnsAsync((MaterialType?)null);
         var loggedMessages = MockLogger();
 
         var result = await _service.CalculateAsync(organisationId, submissions);
 
         result.Success.Should().BeFalse();
-        loggedMessages.Should().Contain($"Material provided was not valid: {packagingMaterial} for SubmissionId: {submissionId} and OrganisationId: {organisationId}.");
+        loggedMessages.Should().Contain($"Material provided was not valid: {packagingMaterial} for OrganisationId: {organisationId}.");
         loggedMessages.Should().Contain($"No calculations for OrganisationId: {organisationId}.");
     }
 
@@ -238,20 +287,21 @@ public class ObligationCalculatorServiceTests
     {
         var submissionId = Guid.NewGuid();
         var organisationId = Guid.NewGuid();
-        var packagingMaterial = "ValidMaterial";
-        var submissions = new List<SubmissionCalculationRequest>
+        var packagingMaterial = "PL";
+		var materials = GetMaterials().Where(m => m.IsCaculable);
+		var submissions = new List<SubmissionCalculationRequest>
         {
-            new() { SubmissionId = submissionId, PackagingMaterial = packagingMaterial }
+            new() { OrganisationId = submissionId, PackagingMaterial = packagingMaterial }
         };
         _mockRecyclingTargetDataService.Setup(x => x.GetRecyclingTargetsAsync()).ReturnsAsync(new Dictionary<int, Dictionary<MaterialType, double>>());
-        _mockMaterialService.Setup(x => x.GetMaterialByCode("ValidMaterial")).ReturnsAsync(MaterialType.Plastic);
-        _mockStrategyResolver.Setup(x => x.Resolve(MaterialType.Plastic)).Returns((IMaterialCalculationStrategy)null);
+        _mockMaterialRepository.Setup(repo => repo.GetCalculableMaterials()).ReturnsAsync(materials);
+		_mockStrategyResolver.Setup(x => x.Resolve(MaterialType.Plastic)).Returns((IMaterialCalculationStrategy)null);
         var loggedMessages = MockLogger();
 
         var result = await _service.CalculateAsync(organisationId, submissions);
 
         result.Success.Should().BeFalse();
-        loggedMessages.Should().Contain($"Could not find handler for Material Type: {packagingMaterial} for SubmissionId: {submissionId} and OrganisationId: {organisationId}.");
+        loggedMessages.Should().Contain($"Could not find handler for Material Type: {packagingMaterial} for OrganisationId: {organisationId}.");
         loggedMessages.Should().Contain($"No calculations for OrganisationId: {organisationId}.");
     }
 
@@ -260,15 +310,18 @@ public class ObligationCalculatorServiceTests
     {
         var submissionId = Guid.NewGuid();
         var organisationId = Guid.NewGuid();
-        var packagingMaterial = "ValidMaterial";
-        var submissions = new List<SubmissionCalculationRequest>
+        var packagingMaterial = "PL";
+		var materials = GetMaterials().Where(m => m.IsCaculable);
+		var submissions = new List<SubmissionCalculationRequest>
         {
-            new() { SubmissionId = submissionId, PackagingMaterial = packagingMaterial }
+            new() { OrganisationId = submissionId, PackagingMaterial = packagingMaterial }
         };
-        _mockRecyclingTargetDataService.Setup(x => x.GetRecyclingTargetsAsync()).ReturnsAsync(new Dictionary<int, Dictionary<MaterialType, double>>());
-        _mockMaterialService.Setup(x => x.GetMaterialByCode("ValidMaterial")).ReturnsAsync(MaterialType.Plastic);
-        var mockStrategy = new Mock<IMaterialCalculationStrategy>();
-        mockStrategy.Setup(x => x.Calculate(It.IsAny<CalculationRequestDto>())).Returns(new List<ObligationCalculation>());
+
+
+		_mockRecyclingTargetDataService.Setup(x => x.GetRecyclingTargetsAsync()).ReturnsAsync([]);
+		_mockMaterialRepository.Setup(repo => repo.GetCalculableMaterials()).ReturnsAsync(materials);
+		var mockStrategy = new Mock<IMaterialCalculationStrategy>();
+        mockStrategy.Setup(x => x.Calculate(It.IsAny<CalculationRequestDto>())).Returns([]);
         _mockStrategyResolver.Setup(x => x.Resolve(MaterialType.Plastic)).Returns(mockStrategy.Object);
         var loggedMessages = MockLogger();
 
@@ -283,18 +336,20 @@ public class ObligationCalculatorServiceTests
     {
         var submissionId = Guid.NewGuid();
         var organisationId = Guid.NewGuid();
-        var packagingMaterial = "ValidMaterial";
-        var submissions = new List<SubmissionCalculationRequest>
+        var packagingMaterial = "PL";
+		var materials = GetMaterials().Where(m => m.IsCaculable);
+		var submissions = new List<SubmissionCalculationRequest>
         {
-            new() { SubmissionId = submissionId, PackagingMaterial = packagingMaterial }
+            new() { OrganisationId = submissionId, PackagingMaterial = packagingMaterial }
         };
-        _mockRecyclingTargetDataService.Setup(x => x.GetRecyclingTargetsAsync()).ReturnsAsync(new Dictionary<int, Dictionary<MaterialType, double>>());
-        _mockMaterialService.Setup(x => x.GetMaterialByCode("ValidMaterial")).ReturnsAsync(MaterialType.Plastic);
-        var mockStrategy = new Mock<IMaterialCalculationStrategy>();
-        mockStrategy.Setup(x => x.Calculate(It.IsAny<CalculationRequestDto>())).Returns(new List<ObligationCalculation>
-        {
-            new ObligationCalculation()
-        });
+
+		_mockRecyclingTargetDataService.Setup(x => x.GetRecyclingTargetsAsync()).ReturnsAsync(new Dictionary<int, Dictionary<MaterialType, double>>());
+		_mockMaterialRepository.Setup(repo => repo.GetCalculableMaterials()).ReturnsAsync(materials);
+		var mockStrategy = new Mock<IMaterialCalculationStrategy>();
+        mockStrategy.Setup(x => x.Calculate(It.IsAny<CalculationRequestDto>())).Returns(
+		[
+			new ObligationCalculation()
+        ]);
         _mockStrategyResolver.Setup(x => x.Resolve(MaterialType.Plastic)).Returns(mockStrategy.Object);
 
         var result = await _service.CalculateAsync(organisationId, submissions);
@@ -421,16 +476,148 @@ public class ObligationCalculatorServiceTests
         return dictionary;
     }
 
-    private static List<Material> GetMaterialCodes()
+    private static List<Material> GetMaterials()
     {
         return
-        [
-            new Material { MaterialCode = "PL", MaterialName = MaterialType.Plastic.ToString() },
-            new Material { MaterialCode = "WD", MaterialName = MaterialType.Wood.ToString() },
-            new Material { MaterialCode = "AL", MaterialName = MaterialType.Aluminium.ToString() },
-            new Material { MaterialCode = "ST", MaterialName = MaterialType.Steel.ToString() },
-            new Material { MaterialCode = "PC", MaterialName = MaterialType.Paper.ToString() },
-            new Material { MaterialCode = "GL", MaterialName = MaterialType.Glass.ToString() }
-        ];
+		[
+			new Material
+            {
+                Id = 1, MaterialCode = "PL",
+                MaterialName = MaterialType.Plastic.ToString(),
+                IsCaculable = true,
+                IsVisibleToObligation = true,
+                PrnMaterialMappings =
+				[
+					new PrnMaterialMapping()
+                    {
+                        Id = 1,
+                        PRNMaterialId = 1,
+                        NPWDMaterialName = PrnConstants.Materials.Plastic
+                    }
+                ]
+            },
+			new Material
+            {
+                Id = 2,
+                MaterialCode = "WD",
+                MaterialName = MaterialType.Wood.ToString(),
+                IsCaculable = true,
+                IsVisibleToObligation = true,
+				PrnMaterialMappings =
+				[
+					new PrnMaterialMapping()
+					{
+						Id = 2,
+						PRNMaterialId = 2,
+						NPWDMaterialName = PrnConstants.Materials.Wood
+					},
+					new PrnMaterialMapping()
+					{
+						Id = 3,
+						PRNMaterialId = 2,
+						NPWDMaterialName = PrnConstants.Materials.WoodComposting
+					}
+				]
+			},
+			new Material
+            {
+                Id = 3,
+                MaterialCode = "AL",
+                MaterialName = MaterialType.Aluminium.ToString(),
+                IsCaculable = true,
+                IsVisibleToObligation = true,
+				PrnMaterialMappings =
+				[
+					new PrnMaterialMapping()
+					{
+						Id = 4,
+						PRNMaterialId = 3,
+						NPWDMaterialName = PrnConstants.Materials.Aluminium
+					}
+				]
+			},
+			new Material
+            {
+                Id = 4,
+                MaterialCode = "ST",
+                MaterialName = MaterialType.Steel.ToString(),
+                IsCaculable = true,
+                IsVisibleToObligation = true,
+				PrnMaterialMappings =
+				[
+					new PrnMaterialMapping()
+					{
+						Id = 5,
+						PRNMaterialId = 4,
+						NPWDMaterialName = PrnConstants.Materials.Steel
+					}
+				]
+			},
+			new Material
+            {
+                Id = 5,
+                MaterialCode = "PC",
+                MaterialName = MaterialType.Paper.ToString(),
+                IsCaculable = true,
+                IsVisibleToObligation = true,
+				PrnMaterialMappings =
+				[
+					new PrnMaterialMapping()
+					{
+						Id = 6,
+						PRNMaterialId = 5,
+						NPWDMaterialName = PrnConstants.Materials.PaperFiber
+					},
+					new PrnMaterialMapping()
+					{
+						Id = 7,
+						PRNMaterialId = 5,
+						NPWDMaterialName = PrnConstants.Materials.PaperComposting
+					}
+				]
+			},
+			new Material
+            {
+                Id = 6,
+                MaterialCode = "GL",
+                MaterialName = MaterialType.Glass.ToString(),
+                IsCaculable = true,
+                IsVisibleToObligation = true,
+				PrnMaterialMappings =
+				[
+					new PrnMaterialMapping()
+					{
+						Id = 8,
+						PRNMaterialId = 6,
+						NPWDMaterialName = PrnConstants.Materials.GlassOther
+					}
+				]
+			},
+			new Material
+            {
+                Id = 7,
+                MaterialCode = "GR",
+                MaterialName = MaterialType.GlassRemelt.ToString(),
+                IsCaculable = false,
+                IsVisibleToObligation = true,
+				PrnMaterialMappings =
+				[
+					new PrnMaterialMapping()
+					{
+						Id = 9,
+						PRNMaterialId = 7,
+						NPWDMaterialName = PrnConstants.Materials.GlassMelt
+					}
+				]
+			},
+			new Material
+			{
+				Id = 8,
+				MaterialCode = "FC",
+				MaterialName = MaterialType.GlassRemelt.ToString(),
+				IsCaculable = true,
+				IsVisibleToObligation = false
+			}
+		];
     }
 }
