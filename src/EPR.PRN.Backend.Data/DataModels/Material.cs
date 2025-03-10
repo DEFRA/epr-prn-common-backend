@@ -14,10 +14,6 @@ namespace EPR.PRN.Backend.Data.DataModels
 		[MaxLength(3)]
         public required string MaterialCode { get; set; }
 
-		public required bool IsCaculable { get; set; }
-
-		public required bool IsVisibleToObligation { get; set; }
-
 		public ICollection<PrnMaterialMapping> PrnMaterialMappings { get; set; } = null!;
 	}
 }

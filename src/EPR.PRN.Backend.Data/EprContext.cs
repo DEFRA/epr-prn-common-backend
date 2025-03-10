@@ -123,14 +123,14 @@ namespace EPR.PRN.Backend.Data
 
                 entity.HasData
 				(
-					new Material { Id = 1, MaterialCode = "PL", MaterialName = MaterialType.Plastic.ToString(), IsCaculable = true, IsVisibleToObligation = true },
-					new Material { Id = 2, MaterialCode = "WD", MaterialName = MaterialType.Wood.ToString(), IsCaculable = true, IsVisibleToObligation = true },
-					new Material { Id = 3, MaterialCode = "AL", MaterialName = MaterialType.Aluminium.ToString(), IsCaculable = true, IsVisibleToObligation = true },
-					new Material { Id = 4, MaterialCode = "ST", MaterialName = MaterialType.Steel.ToString(), IsCaculable = true, IsVisibleToObligation = true },
-					new Material { Id = 5, MaterialCode = "PC", MaterialName = MaterialType.Paper.ToString(), IsCaculable = true, IsVisibleToObligation = true },
-					new Material { Id = 6, MaterialCode = "GL", MaterialName = MaterialType.Glass.ToString(), IsCaculable = true, IsVisibleToObligation = true },
-					new Material { Id = 7, MaterialCode = "GR", MaterialName = MaterialType.GlassRemelt.ToString(), IsCaculable = false, IsVisibleToObligation = true },
-					new Material { Id = 8, MaterialCode = "FC", MaterialName = MaterialType.FibreComposite.ToString(), IsCaculable = true, IsVisibleToObligation = false }
+					new Material { Id = 1, MaterialCode = "PL", MaterialName = MaterialType.Plastic.ToString() },
+					new Material { Id = 2, MaterialCode = "WD", MaterialName = MaterialType.Wood.ToString() },
+					new Material { Id = 3, MaterialCode = "AL", MaterialName = MaterialType.Aluminium.ToString() },
+					new Material { Id = 4, MaterialCode = "ST", MaterialName = MaterialType.Steel.ToString() },
+					new Material { Id = 5, MaterialCode = "PC", MaterialName = MaterialType.Paper.ToString() },
+					new Material { Id = 6, MaterialCode = "GL", MaterialName = MaterialType.Glass.ToString() },
+					new Material { Id = 7, MaterialCode = "GR", MaterialName = MaterialType.GlassRemelt.ToString() },
+					new Material { Id = 8, MaterialCode = "FC", MaterialName = MaterialType.FibreComposite.ToString() }
 				);
 			});
 
