@@ -25,11 +25,11 @@ namespace EPR.PRN.Backend.Data.DataModels
 
         public Guid UpdatedBy { get; set; }
 
-        public int BusinessAddressId { get; set; }
+        public int? BusinessAddressId { get; set; }
 
-        public int ReprocessingSiteAddressId { get; set; }
+        public int? ReprocessingSiteAddressId { get; set; }
 
-        public int LegalDocumentAddressId { get; set; }
+        public int? LegalDocumentAddressId { get; set; }
 
         [ForeignKey("ApplicationTypeId")]
         public virtual ApplicationType ApplicationType { get; set; }
