@@ -15,7 +15,7 @@ namespace EPR.PRN.Backend.Data.DataModels
         public int RegistrationId { get; set; }
 
         [Required]
-        public int MaterialId { get; set; }
+        public string MaterialId { get; set; }
 
         [Required]
         public int FeesId { get; set; }
@@ -31,36 +31,31 @@ namespace EPR.PRN.Backend.Data.DataModels
         [Column(TypeName = "decimal(10,2)")]
         public decimal MaximumReprocessingCapacityTonne { get; set; }
 
-        [Required]
         public int MaximumReprocessingPeriodId { get; set; }
 
         [Required]
         [Column(TypeName = "decimal(10,2)")]
         public decimal PPCReprocessingCapacityTonne { get; set; }
 
-        [Required]
-        public int PPCPeriodId { get; set; }
+        public int? PPCPeriodId { get; set; }
 
         [Required]
         [Column(TypeName = "decimal(10,2)")]
         public decimal WasteManagementReprocessingCapacityTonne { get; set; }
 
-        [Required]
-        public int WasteManagementPeriodId { get; set; }
+        public int? WasteManagementPeriodId { get; set; }
 
         [Required]
         [Column(TypeName = "decimal(10,2)")]
         public decimal InstallationReprocessingTonne { get; set; }
 
-        [Required]
-        public int InstallationPeriodId { get; set; }
+        public int? InstallationPeriodId { get; set; }
 
         [Required]
         [Column(TypeName = "decimal(10,2)")]
         public decimal EnvironmentalPermitWasteManagementTonne { get; set; }
 
-        [Required]
-        public int EnvironmentalPermitWasteManagementPeriodId { get; set; }
+        public int? EnvironmentalPermitWasteManagementPeriodId { get; set; }
 
         [Required]
         [MaxLength(50)]
@@ -79,9 +74,7 @@ namespace EPR.PRN.Backend.Data.DataModels
         [Column(TypeName = "decimal(10,2)")]
         public decimal MaxCapacityTonne { get; set; }
 
-        [Required]
-        public int MaxPeriodId { get; set; }
-
+        public int? MaxPeriodId { get; set; }
 
         [ForeignKey("RegistrationId")]
         public virtual Registration Registration { get; set; } = null!;
@@ -109,5 +102,8 @@ namespace EPR.PRN.Backend.Data.DataModels
 
         [ForeignKey("MaxPeriodId")]
         public virtual Period MaxPeriod { get; set; } = null!;
+
+        [ForeignKey("MaterialId")]
+        public virtual Material Material { get; set; } = null!;
     }
 }

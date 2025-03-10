@@ -13,7 +13,7 @@ namespace EPR.PRN.Backend.Data.DataModels
 
         public int RegistrationId { get; set; }
 
-        public int MaterialId { get; set; }
+        public string MaterialId { get; set; }
 
         [MaxLength(2000)]
         public required string TypeOfSuppliers { get; set; }
@@ -40,6 +40,9 @@ namespace EPR.PRN.Backend.Data.DataModels
 
         public required string PlantEquipmentUsed { get; set; }
 
-        public virtual Registration Registration { get; set; } = null!; 
+        public virtual Registration Registration { get; set; } = null!;
+
+        [ForeignKey("MaterialId")]
+        public virtual Material Material { get; set; } = null!;
     }
 }

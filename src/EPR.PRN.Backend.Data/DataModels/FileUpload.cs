@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EPR.PRN.Backend.Data.DataModels
 {
@@ -24,7 +25,7 @@ namespace EPR.PRN.Backend.Data.DataModels
 
         public int FileUploadTypeId { get; set; }
 
-        public int MaterialId { get; set; }
+        public string MaterialId { get; set; }
 
         public int FileUploadStatusId { get; set; }
 
@@ -33,5 +34,8 @@ namespace EPR.PRN.Backend.Data.DataModels
         public virtual FileUploadType FileUploadType { get; set; } = null!;
 
         public virtual Registration Registration { get; set; } = null!;
+
+        [ForeignKey("MaterialId")]
+        public virtual Material Material { get; set; } = null!;
     }
 }

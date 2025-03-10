@@ -32,24 +32,24 @@ namespace EPR.PRN.Backend.Data.DataModels
         public int? LegalDocumentAddressId { get; set; }
 
         [ForeignKey("ApplicationTypeId")]
-        public virtual ApplicationType ApplicationType { get; set; }
+        public virtual ApplicationType ApplicationType { get; set; } = null!;
 
         [ForeignKey("RegistrationStatusId")]
-        public virtual RegistrationStatus RegistrationStatus { get; set; }
+        public virtual RegistrationStatus RegistrationStatus { get; set; } = null!;
 
         [ForeignKey("BusinessAddressId")]
-        public virtual Address BusinessAddress { get; set; }
+        public virtual Address BusinessAddress { get; set; } = null!;
 
         [ForeignKey("ReprocessingSiteAddressId")]
-        public virtual Address ReprocessingSiteAddress { get; set; }
+        public virtual Address ReprocessingSiteAddress { get; set; } = null!;
 
         [ForeignKey("LegalDocumentAddressId")]
-        public virtual Address LegalDocumentAddress { get; set; }
+        public virtual Address LegalDocumentAddress { get; set; } = null!;
 
         public virtual ICollection<FileUpload> FileUploads { get; set; } = null!;
 
-        public virtual ICollection<AppRefPerMaterial> AppRefPerMaterials { get; set; }
+        public virtual ICollection<AppRefPerMaterial> AppRefPerMaterials { get; set; } = null!;
 
-        public virtual ICollection<RegistrationMaterial> RegistrationMaterials { get; set; }
-    }
+        public virtual ICollection<RegistrationMaterial> RegistrationMaterials { get; set; } = null!;
+    } 
 }
