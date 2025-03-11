@@ -63,16 +63,12 @@ public class GlassCalculationStrategyTests
             new() {
                 Id = 6,
                 MaterialName = MaterialType.Glass.ToString(),
-                MaterialCode = "GL",
-                IsCaculable = true,
-                IsVisibleToObligation = true
+                MaterialCode = "GL"
             },
             new() {
 			    Id = 7,
 			    MaterialName = MaterialType.GlassRemelt.ToString(),
-			    MaterialCode = "GR",
-			    IsCaculable = true,
-			    IsVisibleToObligation = true
+			    MaterialCode = "GR"
 		    }
 		};
 
