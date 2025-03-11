@@ -59,18 +59,13 @@ public class ObligationCalculatorServiceTests
 		var year = 2025;
 		var pcMaterialId = 5;
 		var fcMaterialId = 8;
-		var expectedObligationToMeetValue = 0;
 		var materials = GetMaterials();
 		var responseMaterials = materials.Where(m => m.MaterialName != MaterialType.FibreComposite.ToString());
 		var obligationCalculations = _fixture.CreateMany<ObligationCalculation>(8).ToList();
-		obligationCalculations[0].MaterialId = 1;
-		obligationCalculations[1].MaterialId = 2;
-		obligationCalculations[2].MaterialId = 3;
-		obligationCalculations[3].MaterialId = 4;
-		obligationCalculations[4].MaterialId = 5;
-		obligationCalculations[5].MaterialId = 6;
-		obligationCalculations[6].MaterialId = 7;
-		obligationCalculations[7].MaterialId = 8;
+		for (int i = 0; i < obligationCalculations.Count; i++)
+		{
+			obligationCalculations[i].MaterialId = i + 1;
+		}
 
 		var prnList = _fixture.CreateMany<EprnResultsDto>(9).ToList();
 		prnList[0].Eprn.MaterialName = PrnConstants.Materials.Plastic;
@@ -83,15 +78,7 @@ public class ObligationCalculatorServiceTests
 		prnList[7].Eprn.MaterialName = PrnConstants.Materials.PaperComposting;
 		prnList[8].Eprn.MaterialName = PrnConstants.Materials.WoodComposting;
 
-		prnList[0].Eprn.ObligationYear = year.ToString();
-		prnList[1].Eprn.ObligationYear = year.ToString();
-		prnList[2].Eprn.ObligationYear = year.ToString();
-		prnList[3].Eprn.ObligationYear = year.ToString();
-		prnList[4].Eprn.ObligationYear = year.ToString();
-		prnList[5].Eprn.ObligationYear = year.ToString();
-		prnList[6].Eprn.ObligationYear = year.ToString();
-		prnList[7].Eprn.ObligationYear = year.ToString();
-		prnList[8].Eprn.ObligationYear = year.ToString();
+		prnList.ForEach(p => p.Eprn.ObligationYear = year.ToString());
 
 		var prns = prnList.AsQueryable();
 		_mockMaterialRepository.Setup(repo => repo.GetAllMaterials()).ReturnsAsync(materials);
@@ -108,25 +95,44 @@ public class ObligationCalculatorServiceTests
 		// Assert
 		result.IsSuccess.Should().BeTrue();
 		result.ObligationModel.Should().NotBeNull();
+
+		var obligationCalculationDict = obligationCalculations.ToDictionary(o => o.MaterialId);
 		foreach (var material in responseMaterials)
 		{
 			var obligationData = result.ObligationModel.ObligationData.Find(d => d.MaterialName == material.MaterialName);
 			obligationData.Should().NotBeNull();
 			obligationData.MaterialName.Should().Be(material.MaterialName);
-			if (material.MaterialName == MaterialType.Paper.ToString())
-			{
-				expectedObligationToMeetValue =
-					obligationCalculations.Find(o => o.MaterialId == pcMaterialId).MaterialObligationValue +
-					obligationCalculations.Find(o => o.MaterialId == fcMaterialId).MaterialObligationValue;
-			}
-			else
-			{
-				expectedObligationToMeetValue = obligationCalculations.Find(o => o.MaterialId == material.Id).MaterialObligationValue;
-			}
-			obligationData.ObligationToMeet.Should().Be(expectedObligationToMeetValue);
+
+			var expectedObligationToMeet = CalculateExpectedObligation(obligationCalculationDict, material, pcMaterialId, fcMaterialId);
+			var expectedTonnage = CalculateExpectedTonnage(obligationCalculationDict, material, pcMaterialId, fcMaterialId);
+
+			obligationData.ObligationToMeet.Should().Be(expectedObligationToMeet);
+			obligationData.Tonnage.Should().Be(expectedTonnage);
 			obligationData.TonnageAccepted.Should().Be(acceptedTonnage.Find(t => t.MaterialName == material.MaterialName)?.TotalTonnage ?? 0);
 			obligationData.TonnageAwaitingAcceptance.Should().Be(awaitingTonnage.Find(t => t.MaterialName == material.MaterialName)?.TotalTonnage ?? 0);
 		}
+	}
+
+	private static int CalculateExpectedObligation(Dictionary<int, ObligationCalculation> obligationCalculationDict, Material material, int pcMaterialId, int fcMaterialId)
+	{
+		if (material.MaterialName == MaterialType.Paper.ToString())
+		{
+			var pcObligation = obligationCalculationDict[pcMaterialId].MaterialObligationValue;
+			var fcObligation = obligationCalculationDict[fcMaterialId].MaterialObligationValue;
+			return pcObligation + fcObligation;
+		}
+		return obligationCalculationDict[material.Id].MaterialObligationValue;
+	}
+
+	private static int CalculateExpectedTonnage(Dictionary<int, ObligationCalculation> obligationCalculationDict, Material material, int pcMaterialId, int fcMaterialId)
+	{
+		if (material.MaterialName == MaterialType.Paper.ToString())
+		{
+			var pcTonnage = obligationCalculationDict[pcMaterialId].Tonnage;
+			var fcTonnage = obligationCalculationDict[fcMaterialId].Tonnage;
+			return pcTonnage + fcTonnage;
+		}
+		return obligationCalculationDict[material.Id].Tonnage;
 	}
 
 	[TestMethod]
