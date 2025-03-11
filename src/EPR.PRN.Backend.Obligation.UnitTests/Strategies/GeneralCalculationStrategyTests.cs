@@ -67,9 +67,7 @@ public class GeneralCalculationStrategyTests
 		{
 			Id = 1,
 			MaterialName = materialType.ToString(),
-			MaterialCode = "PL",
-            IsCaculable = true,
-			IsVisibleToObligation = true
+			MaterialCode = "PL"
 		};
 
 		var recyclingTargets = new Dictionary<int, Dictionary<MaterialType, double>>
@@ -126,9 +124,7 @@ public class GeneralCalculationStrategyTests
 		{
 			Id = 1,
 			MaterialName = materialType.ToString(),
-			MaterialCode = "PL",
-			IsCaculable = true,
-			IsVisibleToObligation = true
+			MaterialCode = "PL"
 		};
 
 		var recyclingTargets = new Dictionary<int, Dictionary<MaterialType, double>>
