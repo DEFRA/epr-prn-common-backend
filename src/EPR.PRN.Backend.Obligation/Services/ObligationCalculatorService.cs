@@ -36,23 +36,23 @@ namespace EPR.PRN.Backend.Obligation.Services
 				}
 
 				var materialName = materials.FirstOrDefault(m => m.MaterialCode == submission.PackagingMaterial)?.MaterialName;
-				if (materialName.IsNullOrEmpty() || !Enum.TryParse(materialName, true, out MaterialType materialType))
-				{
-					logger.LogError("Material provided was not valid: {PackagingMaterial} for OrganisationId: {OrganisationId}.",
-						submission.PackagingMaterial, organisationId);
-					result.Success = false;
-					continue;
-				}
+                if (materialName.IsNullOrEmpty() || !Enum.TryParse(materialName, true, out MaterialType materialType))
+                {
+                    logger.LogError("Material provided was not valid: {PackagingMaterial} for OrganisationId: {OrganisationId}.",
+                        submission.PackagingMaterial, organisationId);
+                    result.Success = false;
+                    continue;
+                }
 
-				var strategy = strategyResolver.Resolve(materialType);
-				if (strategy == null)
-				{
-					logger.LogError("Could not find handler for Material Type: {submission.PackagingMaterial} for OrganisationId: {organisationId}.", submission.PackagingMaterial, organisationId);
-					result.Success = false;
-					continue;
-				}
+                var strategy = strategyResolver.Resolve(materialType);
+                if (strategy == null)
+                {
+                    logger.LogError("Could not find handler for Material Type: {PackagingMaterial} for OrganisationId: {OrganisationId}.", submission.PackagingMaterial, organisationId);
+                    result.Success = false;
+                    continue;
+                }
 
-				var calculationRequest = new CalculationRequestDto
+                var calculationRequest = new CalculationRequestDto
 				{
 					OrganisationId = organisationId,
 					SubmissionCalculationRequest = submission,
