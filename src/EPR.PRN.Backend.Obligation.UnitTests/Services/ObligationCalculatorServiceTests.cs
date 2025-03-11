@@ -349,6 +349,7 @@ public class ObligationCalculatorServiceTests
     [TestMethod]
     public async Task CalculatePomDataAsync_WhenCalculationsAreSuccessful_ShouldReturnSuccess()
     {
+        var submissionId = Guid.NewGuid();
         var organisationId = Guid.NewGuid();
         var packagingMaterial = "PL";
         var materials = GetMaterials();
