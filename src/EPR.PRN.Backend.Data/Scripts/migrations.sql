@@ -857,9 +857,16 @@ IF NOT EXISTS (
 )
 BEGIN
 
-                    UPDATE ObligationCalculations
-                    SET MaterialId = (SELECT Id FROM Material WHERE Material.MaterialName = ObligationCalculations.MaterialName)
-                    WHERE EXISTS (SELECT 1 FROM Material WHERE Material.MaterialName = ObligationCalculations.MaterialName)
+                    BEGIN
+                        IF COL_LENGTH('ObligationCalculations', 'MaterialName') IS NOT NULL
+                        BEGIN
+                            EXEC sp_executesql N'
+                                UPDATE ObligationCalculations
+                                SET MaterialId = (SELECT Id FROM Material WHERE Material.MaterialName = ObligationCalculations.MaterialName)
+                                WHERE EXISTS (SELECT 1 FROM Material WHERE Material.MaterialName = ObligationCalculations.MaterialName)
+                            ';
+                        END
+                    END;
                 
 END;
 GO

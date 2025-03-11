@@ -136,9 +136,16 @@ namespace EPR.PRN.Backend.Data.Migrations
 
 			// Update MaterialId based on MaterialName
 			migrationBuilder.Sql(@"
-                UPDATE ObligationCalculations
-                SET MaterialId = (SELECT Id FROM Material WHERE Material.MaterialName = ObligationCalculations.MaterialName)
-                WHERE EXISTS (SELECT 1 FROM Material WHERE Material.MaterialName = ObligationCalculations.MaterialName)
+                BEGIN
+                    IF COL_LENGTH('ObligationCalculations', 'MaterialName') IS NOT NULL
+                    BEGIN
+                        EXEC sp_executesql N'
+                            UPDATE ObligationCalculations
+                            SET MaterialId = (SELECT Id FROM Material WHERE Material.MaterialName = ObligationCalculations.MaterialName)
+                            WHERE EXISTS (SELECT 1 FROM Material WHERE Material.MaterialName = ObligationCalculations.MaterialName)
+                        ';
+                    END
+                END;
             ");
 
 			// Make MaterialId Non-Nullable
@@ -190,9 +197,16 @@ namespace EPR.PRN.Backend.Data.Migrations
 
 			// Restore MaterialName Data
 			migrationBuilder.Sql(@"
-                UPDATE ObligationCalculations
-                SET MaterialName = (SELECT MaterialName FROM Material WHERE Material.Id = ObligationCalculations.MaterialId)
-                WHERE EXISTS (SELECT 1 FROM Material WHERE Material.Id = ObligationCalculations.MaterialId)
+                BEGIN
+                    IF COL_LENGTH('ObligationCalculations', 'MaterialId') IS NOT NULL
+                    BEGIN
+                        EXEC sp_executesql N'
+                            UPDATE ObligationCalculations
+                            SET MaterialName = (SELECT MaterialName FROM Material WHERE Material.Id = ObligationCalculations.MaterialId)
+                            WHERE EXISTS (SELECT 1 FROM Material WHERE Material.Id = ObligationCalculations.MaterialId)
+                        ';
+                    END
+                END;
             ");
 
 			// Drop Foreign Key Constraint
