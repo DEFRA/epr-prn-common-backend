@@ -23,7 +23,7 @@ using Microsoft.Extensions.Options;
 using Moq;
 using System.Net;
 
-namespace EPR.PRN.Backend.API.UnitTests.Services;
+namespace EPR.PRN.Backend.API.UnitTests.Controllers;
 
 [TestClass]
 public class PrnControllerTests
@@ -58,11 +58,11 @@ public class PrnControllerTests
 
         _validatorSavePrnDetailsMock = new();
 
-        _systemUnderTest = new PrnController(_mockPrnService.Object, 
-            _mockLogger.Object, 
-            _mockObligationCalculatorService.Object, 
-            _configMock.Object, 
-            _configurationMock.Object, 
+        _systemUnderTest = new PrnController(_mockPrnService.Object,
+            _mockLogger.Object,
+            _mockObligationCalculatorService.Object,
+            _configMock.Object,
+            _configurationMock.Object,
             _validatorSavePrnDetailsMock.Object);
 
         organisationIds.Add(Guid.NewGuid());
@@ -165,7 +165,7 @@ public class PrnControllerTests
     [TestMethod]
     public async Task CalculateAsync_WhenRequestIsEmpty_ReturnsBadRequest()
     {
-        var result = await _systemUnderTest.CalculateAsync(organisationId, new List<SubmissionCalculationRequest>());
+        var result = await _systemUnderTest.CalculateAsync(organisationId, []);
 
         result.Should().BeOfType<BadRequestObjectResult>();
 
@@ -178,7 +178,7 @@ public class PrnControllerTests
     {
         _systemUnderTest.ModelState.AddModelError("Key", "Error message");
 
-        var result = await _systemUnderTest.CalculateAsync(organisationId, new List<SubmissionCalculationRequest> { new() });
+        var result = await _systemUnderTest.CalculateAsync(organisationId, [new()]);
 
         result.Should().BeOfType<BadRequestObjectResult>();
     }
@@ -191,7 +191,7 @@ public class PrnControllerTests
             .Setup(x => x.CalculateAsync(It.IsAny<Guid>(), It.IsAny<List<SubmissionCalculationRequest>>()))
             .ReturnsAsync(calculationResult);
 
-        var result = await _systemUnderTest.CalculateAsync(organisationId, new List<SubmissionCalculationRequest> { new() });
+        var result = await _systemUnderTest.CalculateAsync(organisationId, [new()]);
 
         result.Should().BeOfType<ObjectResult>().Which.StatusCode.Should().Be(StatusCodes.Status500InternalServerError);
     }
@@ -210,7 +210,7 @@ public class PrnControllerTests
             .Setup(x => x.CalculateAsync(It.IsAny<Guid>(), It.IsAny<List<SubmissionCalculationRequest>>()))
             .ReturnsAsync(calculationResult);
 
-        var result = await _systemUnderTest.CalculateAsync(organisationId, new List<SubmissionCalculationRequest> { new() });
+        var result = await _systemUnderTest.CalculateAsync(organisationId, [new()]);
 
         result.Should().BeOfType<AcceptedResult>().Which.Value.Should().BeEquivalentTo(new
         {
@@ -226,7 +226,7 @@ public class PrnControllerTests
             .Setup(x => x.CalculateAsync(It.IsAny<Guid>(), It.IsAny<List<SubmissionCalculationRequest>>()))
             .ThrowsAsync(new TimeoutException("Request timed out"));
 
-        var result = await _systemUnderTest.CalculateAsync(organisationId, new List<SubmissionCalculationRequest> { new() });
+        var result = await _systemUnderTest.CalculateAsync(organisationId, [new()]);
 
         result.Should().BeOfType<ObjectResult>().Which.StatusCode.Should().Be(StatusCodes.Status504GatewayTimeout);
 
@@ -241,7 +241,7 @@ public class PrnControllerTests
             .Setup(x => x.CalculateAsync(It.IsAny<Guid>(), It.IsAny<List<SubmissionCalculationRequest>>()))
             .ThrowsAsync(new Exception("Unexpected error"));
 
-        var result = await _systemUnderTest.CalculateAsync(organisationId, new List<SubmissionCalculationRequest> { new() });
+        var result = await _systemUnderTest.CalculateAsync(organisationId, [new()]);
 
         result.Should().BeOfType<ObjectResult>().Which.StatusCode.Should().Be(StatusCodes.Status500InternalServerError);
 
@@ -254,18 +254,22 @@ public class PrnControllerTests
     {
         var request = _fixture.Create<PaginatedRequestDto>();
 
-        var result = await _systemUnderTest.GetSearchPrns(Guid.Empty, request);
+        var result = await _systemUnderTest.GetSearchPrns(Guid.Empty, request.Page, request.Search, request.FilterBy, request.SortBy);
         result.Should().BeOfType<UnauthorizedResult>();
     }
 
     [TestMethod]
     public async Task GetSearchPrns_ReturnsResponse()
     {
+        AssertionOptions.FormattingOptions.MaxDepth = 300;
         var request = _fixture.Create<PaginatedRequestDto>();
         var response = _fixture.Create<PaginatedResponseDto<PrnDto>>();
-        _mockPrnService.Setup(s => s.GetSearchPrnsForOrganisation(organisationId, request)).ReturnsAsync(response);
+        request.PageSize = 10;
+        _mockPrnService.Setup(s => s.GetSearchPrnsForOrganisation(organisationId, 
+                It.Is<PaginatedRequestDto>(r => r.Page == request.Page && r.Search == request.Search && r.FilterBy == request.FilterBy && r.SortBy == request.SortBy)))
+                    .ReturnsAsync(response);
 
-        var result = await _systemUnderTest.GetSearchPrns(organisationId, request);
+        var result = await _systemUnderTest.GetSearchPrns(organisationId, request.Page, request.Search, request.FilterBy, request.SortBy);
 
         result.Should().BeOfType<OkObjectResult>().Which.Value.Should().Be(response);
     }
@@ -391,7 +395,7 @@ public class PrnControllerTests
         _mockPrnService
             .Setup(service => service.GetModifiedPrnsbyDate(fromDate, toDate))
             .ReturnsAsync((List<PrnUpdateStatus>)null);
-        
+
         var modifiedPrnsbyDateRequest = new ModifiedPrnsbyDateRequest
         {
             From = fromDate,
@@ -535,6 +539,14 @@ public class PrnControllerTests
     [DataRow("ProducerAgency", null)]
     [DataRow("RecoveryProcessCode", null)]
     [DataRow("StatusDate", null)]
+    [DataRow("AccreditationNo", "ABC122378123123712381273123123123")]
+    [DataRow("AccreditationYear", 25678)]
+    [DataRow("EvidenceMaterial", "Material201223234234234234234")]
+    [DataRow("EvidenceNo", "EV1231293812931231231231231")]
+    [DataRow("IssuedByOrgName", "OrgName12313123123123123123123123123123213123123123123OrgName12313123123123123123123123123123213123123123123OrgName12313123123123123123123123123123213123123123123")]
+    [DataRow("IssuedToOrgName", "OrgName12313123123123123123123123123123213123123123123OrgName12313123123123123123123123123123213123123123123OrgName12313123123123123123123123123123213123123123123")]
+    [DataRow("ProducerAgency", "AgName12313123123123123123123123123123213123123123123OrgName12313123123123123123123123123123213123123123123OrgName12313123123123123123123123123123213123123123123")]
+    [DataRow("RecoveryProcessCode", "Code123234342342342342342342342")]
     public async Task SavePrn_ReturnsStatusCode400_OnInvalidInput(string propertyName, object propertyValue)
     {
         var dto = new SavePrnDetailsRequest()
@@ -643,78 +655,6 @@ public class PrnControllerTests
         // Assert
         result.Should().NotBeNull();
         result.StatusCode.Should().Be((int)HttpStatusCode.InternalServerError);
-    }
-
-    [TestMethod]
-    [DataRow("AccreditationNo", "ABC122378123123712381273123123123")]
-    [DataRow("AccreditationYear", 25678)]
-    [DataRow("EvidenceMaterial", "Material201223234234234234234")]
-    [DataRow("EvidenceNo", "EV1231293812931231231231231")]
-    [DataRow("IssuedByOrgName", "OrgName12313123123123123123123123123123213123123123123OrgName12313123123123123123123123123123213123123123123OrgName12313123123123123123123123123123213123123123123")]
-    [DataRow("IssuedToOrgName", "OrgName12313123123123123123123123123123213123123123123OrgName12313123123123123123123123123123213123123123123OrgName12313123123123123123123123123123213123123123123")]
-    [DataRow("ProducerAgency", "AgName12313123123123123123123123123123213123123123123OrgName12313123123123123123123123123123213123123123123OrgName12313123123123123123123123123123213123123123123")]
-    [DataRow("RecoveryProcessCode", "Code123234342342342342342342342")]
-    public async Task SavePrn_ReturnsStatusCode400_OnDataValidationFailure(string propertyName, object propertyValue)
-    {
-        var dto = new SavePrnDetailsRequest()
-        {
-            AccreditationNo = "ABC",
-            AccreditationYear = 2018,
-            CancelledDate = DateTime.UtcNow.AddDays(-1),
-            DecemberWaste = true,
-            EvidenceMaterial = "Aluminium",
-            EvidenceNo = Guid.NewGuid().ToString(),
-            EvidenceStatusCode = EprnStatus.AWAITINGACCEPTANCE,
-            EvidenceTonnes = 5000,
-            IssueDate = DateTime.UtcNow.AddDays(-5),
-            IssuedByNPWDCode = "NPWD367742",
-            IssuedByOrgName = "ANB",
-            IssuedToEPRId = Guid.NewGuid(),
-            IssuedToNPWDCode = "NPWD557742",
-            IssuedToOrgName = "ZNZ",
-            IssuerNotes = "no notes",
-            IssuerRef = "ANB-1123",
-            MaterialOperationCode = "R-PLA",
-            ObligationYear = 2025,
-            PrnSignatory = "Pat Anderson",
-            PrnSignatoryPosition = "Director",
-            ProducerAgency = "TTL",
-            RecoveryProcessCode = "N11",
-            ReprocessorAgency = "BEX",
-            StatusDate = DateTime.UtcNow,
-        };
-
-        // Get all property names from DTO class
-        var props = typeof(SavePrnDetailsRequest)
-                        .GetProperties(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance)
-                        .ToList();
-
-        var matchingProp = props.Find(x => string.Equals(x.Name, propertyName, StringComparison.InvariantCulture));
-        matchingProp.Should().NotBeNull();
-
-        // Set the value of the property (overriding the default value set above) to the value passed in as the argument to this method
-        matchingProp.SetValue(dto, propertyValue);
-
-        // Set validation error on the validator for the target input property
-        var validationErrors = new[]
-        {
-            new ValidationFailure(propertyName, $"{propertyName} is not valid")
-        };
-
-        var validationResult = new ValidationResult(validationErrors);
-
-        // Setup validator mock to return custom validation result
-        _validatorSavePrnDetailsMock.Setup(x => x.Validate(It.IsAny<SavePrnDetailsRequest>())).Returns(validationResult);
-
-        _mockPrnService.Setup(s => s.SavePrnDetails(dto)).Returns(() => Task.CompletedTask);
-        var result = await _systemUnderTest.SaveAsync(dto) as BadRequestObjectResult;
-
-        result.Should().NotBeNull();
-        result.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
-        var errors = result.Value as IEnumerable<ValidationFailure>;
-        errors.Should().NotBeNull();
-
-        errors.Select(x => x.PropertyName).Should().Contain(propertyName);
     }
 
     [TestMethod]

@@ -393,11 +393,9 @@ public class PrnServiceTests
         DateTime? issuedDate = DateTime.UtcNow.AddDays(-5);
         DateTime statusUpdatedDate = DateTime.UtcNow.AddDays(-2);
 
-        _mockRepository.Setup(s => s.SavePrnDetails(It.IsAny<Eprn>()))
-            .Callback<Eprn>(x => prn = x);
+        _mockRepository.Setup(s => s.SavePrnDetails(It.IsAny<Eprn>())).Callback<Eprn>(x => prn = x);
 
         var dto = _fixture.Create<SavePrnDetailsRequest>();
-        //dto.CancelledDate = statusUpdatedDate.AddDays(1);
         dto.EvidenceStatusCode = EprnStatus.AWAITINGACCEPTANCE;
         dto.IssueDate = issuedDate;
         dto.StatusDate = statusUpdatedDate;
@@ -417,8 +415,7 @@ public class PrnServiceTests
         DateTime? issuedDate = DateTime.UtcNow.AddDays(-5);
         DateTime statusUpdatedDate = DateTime.UtcNow.AddDays(-2);
 
-        _mockRepository.Setup(s => s.SavePrnDetails(It.IsAny<Eprn>()))
-            .Callback<Eprn>(x => prn = x);
+        _mockRepository.Setup(s => s.SavePrnDetails(It.IsAny<Eprn>())).Callback<Eprn>(x => prn = x);
 
         var dto = _fixture.Create<SavePrnDetailsRequest>();
         dto.CancelledDate = statusUpdatedDate.AddDays(1);
