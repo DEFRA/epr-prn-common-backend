@@ -737,7 +737,6 @@ public class RepositoryTestsInMemory
             It.IsAny<Func<It.IsAnyType, Exception, string>>()), Times.Once);
     }
 
-
     [TestMethod]
     [DataRow(EprnStatus.ACCEPTED)]
     [DataRow(EprnStatus.CANCELLED)]
