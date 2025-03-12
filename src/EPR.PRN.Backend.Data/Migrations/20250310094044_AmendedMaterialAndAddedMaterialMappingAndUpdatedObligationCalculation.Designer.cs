@@ -4,6 +4,7 @@ using EPR.PRN.Backend.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EPR.PRN.Backend.Data.Migrations
 {
     [DbContext(typeof(EprContext))]
-    partial class EprContextModelSnapshot : ModelSnapshot
+    [Migration("20250310094044_AmendedMaterialAndAddedMaterialMappingAndUpdatedObligationCalculation")]
+    partial class AmendedMaterialAndAddedMaterialMappingAndUpdatedObligationCalculation
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -165,6 +168,12 @@ namespace EPR.PRN.Backend.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<bool>("IsCaculable")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsVisibleToObligation")
+                        .HasColumnType("bit");
+
                     b.Property<string>("MaterialCode")
                         .IsRequired()
                         .HasMaxLength(3)
@@ -186,48 +195,64 @@ namespace EPR.PRN.Backend.Data.Migrations
                         new
                         {
                             Id = 1,
+                            IsCaculable = true,
+                            IsVisibleToObligation = true,
                             MaterialCode = "PL",
                             MaterialName = "Plastic"
                         },
                         new
                         {
                             Id = 2,
+                            IsCaculable = true,
+                            IsVisibleToObligation = true,
                             MaterialCode = "WD",
                             MaterialName = "Wood"
                         },
                         new
                         {
                             Id = 3,
+                            IsCaculable = true,
+                            IsVisibleToObligation = true,
                             MaterialCode = "AL",
                             MaterialName = "Aluminium"
                         },
                         new
                         {
                             Id = 4,
+                            IsCaculable = true,
+                            IsVisibleToObligation = true,
                             MaterialCode = "ST",
                             MaterialName = "Steel"
                         },
                         new
                         {
                             Id = 5,
+                            IsCaculable = true,
+                            IsVisibleToObligation = true,
                             MaterialCode = "PC",
                             MaterialName = "Paper"
                         },
                         new
                         {
                             Id = 6,
+                            IsCaculable = true,
+                            IsVisibleToObligation = true,
                             MaterialCode = "GL",
                             MaterialName = "Glass"
                         },
                         new
                         {
                             Id = 7,
+                            IsCaculable = false,
+                            IsVisibleToObligation = true,
                             MaterialCode = "GR",
                             MaterialName = "GlassRemelt"
                         },
                         new
                         {
                             Id = 8,
+                            IsCaculable = true,
+                            IsVisibleToObligation = false,
                             MaterialCode = "FC",
                             MaterialName = "FibreComposite"
                         });
