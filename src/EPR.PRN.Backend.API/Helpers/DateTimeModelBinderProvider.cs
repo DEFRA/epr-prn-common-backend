@@ -8,7 +8,7 @@ public class DateTimeModelBinderProvider : IModelBinderProvider
     {
         if (context.Metadata.ModelType == typeof(DateTime) || context.Metadata.ModelType == typeof(DateTime?))
         {
-            return new DateTimeModelBinder("yyyy-MM-dd", "yyyy-MM-ddTHH:mm:ss");
+            return new DateTimeModelBinder("yyyy-MM-dd", "yyyy-MM-ddTHH:mm:ss", "yyyy-MM-ddTHH:mm:ss.fff");
         }
 
         return null;
