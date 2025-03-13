@@ -19,7 +19,7 @@ public class PrnService(IRepository repository, ILogger<PrnService> logger, ICon
     protected readonly IRepository _repository = repository;
     private readonly string logPrefix = configuration["LogPrefix"];
 
-    public async Task<PrnDto?> GetPrnForOrganisationById(Guid orgId, Guid prnId)
+    public async Task<PrnDto> GetPrnForOrganisationById(Guid orgId, Guid prnId)
     {
         logger.LogInformation("{Logprefix}: PrnService - GetPrnForOrganisationById: request for organisation {Organisation} and Prns to Update {PrnId}", logPrefix, orgId, prnId);
         var prns = await _repository.GetPrnForOrganisationById(orgId, prnId);
@@ -37,14 +37,14 @@ public class PrnService(IRepository repository, ILogger<PrnService> logger, ICon
         return prns;
     }
 
-    public async Task<List<PrnUpdateStatus>?> GetModifiedPrnsbyDate(DateTime fromDate, DateTime toDate)
+    public async Task<List<PrnUpdateStatus>> GetModifiedPrnsbyDate(DateTime fromDate, DateTime toDate)
     {
         var modifiedPrns = await _repository.GetModifiedPrnsbyDate(fromDate, toDate);
 
-        return modifiedPrns == null ? null : modifiedPrns;
+        return modifiedPrns ?? null;
     }
 
-    public async Task<List<PrnStatusSync>?> GetSyncStatuses(DateTime fromDate, DateTime toDate)
+    public async Task<List<PrnStatusSync>> GetSyncStatuses(DateTime fromDate, DateTime toDate)
     {
         return await _repository.GetSyncStatuses(fromDate, toDate);
     }
@@ -104,7 +104,7 @@ public class PrnService(IRepository repository, ILogger<PrnService> logger, ICon
     {
         try
         {
-            Eprn prnEntity = new Eprn()
+            Eprn prnEntity = new()
             {
                 AccreditationNumber = prn.AccreditationNo!,
                 AccreditationYear = prn.AccreditationYear.ToString()!,
@@ -148,7 +148,7 @@ public class PrnService(IRepository repository, ILogger<PrnService> logger, ICon
         if (string.IsNullOrEmpty(evidenceNo))
             return false;
 
-        var val = evidenceNo.Substring(0,2).Trim();
+        var val = evidenceNo[..2].Trim();
 
         return string.Equals(val, Common.Constants.PrnConstants.ExporterCodePrefixes.EaExport, StringComparison.InvariantCultureIgnoreCase)
                 || string.Equals(val, Common.Constants.PrnConstants.ExporterCodePrefixes.SepaExport, StringComparison.InvariantCultureIgnoreCase);
