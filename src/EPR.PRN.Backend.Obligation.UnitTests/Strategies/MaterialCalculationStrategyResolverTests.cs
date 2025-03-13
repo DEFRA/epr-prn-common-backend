@@ -1,6 +1,7 @@
 ﻿using EPR.PRN.Backend.API.Common.Enums;
 using EPR.PRN.Backend.Obligation.Interfaces;
 using EPR.PRN.Backend.Obligation.Strategies;
+using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Moq;
 using System.Diagnostics.CodeAnalysis;
@@ -37,8 +38,8 @@ public class MaterialCalculationStrategyResolverTests
         var result = _resolver.Resolve(materialType);
 
         // Assert
-        Assert.IsNotNull(result);
-        Assert.AreEqual(strategyMock.Object, result);
+        result.Should().NotBeNull();
+		result.Should().Be(strategyMock.Object);
     }
 
     [TestMethod]
@@ -52,7 +53,7 @@ public class MaterialCalculationStrategyResolverTests
         var result = _resolver.Resolve(materialType);
 
         // Assert
-        Assert.IsNull(result);
+        result.Should().BeNull();
         _loggerMock.Verify(
             x => x.Log(
                 It.Is<LogLevel>(logLevel => logLevel == LogLevel.Error),
@@ -84,7 +85,7 @@ public class MaterialCalculationStrategyResolverTests
         var result = _resolver.Resolve(materialType);
 
         // Assert
-        Assert.IsNotNull(result);
-        Assert.AreEqual(firstStrategyMock.Object, result, "The first strategy that can handle the material should be returned.");
+        result.Should().NotBeNull();
+        result.Should().Be(firstStrategyMock.Object, "The first strategy that can handle the material should be returned.");
     }
 }

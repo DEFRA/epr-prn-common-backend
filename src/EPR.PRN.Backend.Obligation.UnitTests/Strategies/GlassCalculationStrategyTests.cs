@@ -4,6 +4,7 @@ using EPR.PRN.Backend.Obligation.Dto;
 using EPR.PRN.Backend.Obligation.Interfaces;
 using EPR.PRN.Backend.Obligation.Models;
 using EPR.PRN.Backend.Obligation.Strategies;
+using FluentAssertions;
 using Moq;
 
 namespace EPR.PRN.Backend.Obligation.UnitTests.Strategies;
@@ -12,13 +13,15 @@ namespace EPR.PRN.Backend.Obligation.UnitTests.Strategies;
 public class GlassCalculationStrategyTests
 {
     private Mock<IMaterialCalculationService> _mockCalculationService;
-    private GlassCalculationStrategy _strategy;
+    private Mock<IDateTimeProvider> _mockDateTimeProvider;
+	private GlassCalculationStrategy _strategy;
 
     [TestInitialize]
     public void SetUp()
     {
         _mockCalculationService = new Mock<IMaterialCalculationService>();
-        _strategy = new GlassCalculationStrategy(_mockCalculationService.Object);
+		_mockDateTimeProvider = new Mock<IDateTimeProvider>();
+		_strategy = new GlassCalculationStrategy(_mockCalculationService.Object, _mockDateTimeProvider.Object);
     }
 
     [TestMethod]
@@ -28,7 +31,7 @@ public class GlassCalculationStrategyTests
         var result = _strategy.CanHandle(MaterialType.Glass);
 
         // Assert
-        Assert.IsTrue(result);
+        result.Should().BeTrue();
     }
 
     [TestMethod]
@@ -42,20 +45,30 @@ public class GlassCalculationStrategyTests
         var result = _strategy.CanHandle(materialType);
 
         // Assert
-        Assert.IsFalse(result);
+        result.Should().BeFalse();
     }
 
     [TestMethod]
-    public void Calculate_ShouldReturnCorrectObligationCalculations()
+    [DataRow(200, 0.60, 0.40, 120, 80, 0)]
+	[DataRow(1523, 0.65, 0.57, 990, 565, 1)]
+	[DataRow(2345, 0.73, 0.71, 1712, 1214, 2 )]
+	[DataRow(1234, 0.68, 0.69, 840, 580, 3)]
+	public void Calculate_ShouldReturnCorrectObligationCalculations(int materialWeight, double glassRecyclingTarget, double remeltRecyclingTarget, int expectedGlassObligationValue, int expectedRemeltObligationValue, int yearOffSet)
     {
-        // Arrange
-        var orgId = Guid.NewGuid();
-        var calculationRequest = new SubmissionCalculationRequest
+		// Arrange
+		var organisationId = Guid.NewGuid();
+		var currentYear = DateTime.UtcNow.Year + yearOffSet;
+		var calculatedOn = DateTime.UtcNow.AddYears(yearOffSet);
+		_mockDateTimeProvider.Setup(m => m.UtcNow).Returns(calculatedOn);
+		_mockDateTimeProvider.Setup(m => m.CurrentYear).Returns(currentYear);
+		var submissionPeriod = $"{currentYear - 1}";
+
+		var calculationRequest = new SubmissionCalculationRequest
         {
-            SubmissionPeriod = "2024-P4",
+            SubmissionPeriod = submissionPeriod,
             PackagingMaterial = "GL",
-            PackagingMaterialWeight = 200,
-            OrganisationId = Guid.NewGuid()
+            PackagingMaterialWeight = materialWeight,
+            OrganisationId = organisationId
         };
 
 		var materials = new List<Material>()
@@ -75,11 +88,11 @@ public class GlassCalculationStrategyTests
 		var recyclingTargets = new Dictionary<int, Dictionary<MaterialType, double>>
         {
             {
-                2025,
+                currentYear,
                 new Dictionary<MaterialType, double>
                 {
-                    { MaterialType.Glass, 0.6 },
-                    { MaterialType.GlassRemelt, 0.4 }
+                    { MaterialType.Glass, glassRecyclingTarget },
+                    { MaterialType.GlassRemelt, remeltRecyclingTarget }
                 }
             }
         };
@@ -89,35 +102,37 @@ public class GlassCalculationStrategyTests
             MaterialType = MaterialType.Glass,
 			Materials = materials,
 			SubmissionCalculationRequest = calculationRequest,
-            OrganisationId = orgId,
+            OrganisationId = organisationId,
             RecyclingTargets = recyclingTargets
         };
 
         _mockCalculationService.Setup(x => x.CalculateGlass(
-            request.RecyclingTargets[2025][MaterialType.Glass], request.RecyclingTargets[2025][MaterialType.GlassRemelt],
+            request.RecyclingTargets[currentYear][MaterialType.Glass], request.RecyclingTargets[currentYear][MaterialType.GlassRemelt],
             request.SubmissionCalculationRequest.PackagingMaterialWeight))
-            .Returns((80, 120));  // remelt = 80, remainder = 120
+            .Returns((expectedRemeltObligationValue, expectedGlassObligationValue));  // remelt = 80, remainder = 120
 
         // Act
         var result = _strategy.Calculate(request);
 
         // Assert
-        Assert.IsNotNull(result);
-        Assert.AreEqual(2, result.Count);
+        result.Should().NotBeNull();
+        result.Should().HaveCount(2);
 
         var glassCalculation = result.Find(x => x.MaterialId == 6);
         var remeltCalculation = result.Find(x => x.MaterialId == 7);
 
-        Assert.IsNotNull(glassCalculation);
-        Assert.IsNotNull(remeltCalculation);
+        glassCalculation.Should().NotBeNull();
+        glassCalculation.MaterialObligationValue.Should().Be(expectedGlassObligationValue);
+        glassCalculation.OrganisationId.Should().Be(organisationId);
+        glassCalculation.Tonnage.Should().Be(materialWeight);
+        glassCalculation.Year.Should().Be(currentYear);
+        glassCalculation.CalculatedOn.Should().Be(calculatedOn);
 
-        Assert.AreEqual(120, glassCalculation.MaterialObligationValue);
-        Assert.AreEqual(80, remeltCalculation.MaterialObligationValue);
-        Assert.AreEqual(request.OrganisationId, glassCalculation.OrganisationId);
-        Assert.AreEqual(request.OrganisationId, remeltCalculation.OrganisationId);
-        Assert.AreEqual(DateTime.UtcNow.Year, glassCalculation.Year);
-        Assert.AreEqual(DateTime.UtcNow.Year, remeltCalculation.Year);
-        Assert.IsTrue((DateTime.UtcNow - glassCalculation.CalculatedOn).TotalSeconds < 1, "CalculatedOn should be very close to the current time");
-        Assert.IsTrue((DateTime.UtcNow - remeltCalculation.CalculatedOn).TotalSeconds < 1, "CalculatedOn should be very close to the current time");
+		remeltCalculation.Should().NotBeNull();
+		remeltCalculation.MaterialObligationValue.Should().Be(expectedRemeltObligationValue);
+		remeltCalculation.OrganisationId.Should().Be(organisationId);
+		remeltCalculation.Tonnage.Should().Be(materialWeight);
+		remeltCalculation.Year.Should().Be(currentYear);
+		remeltCalculation.CalculatedOn.Should().Be(calculatedOn);
     }
 }

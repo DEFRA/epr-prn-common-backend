@@ -2,31 +2,30 @@
 using EPR.PRN.Backend.Obligation.Interfaces;
 using Microsoft.Extensions.Logging;
 
-namespace EPR.PRN.Backend.Obligation.Strategies
+namespace EPR.PRN.Backend.Obligation.Strategies;
+
+public class MaterialCalculationStrategyResolver : IMaterialCalculationStrategyResolver
 {
-    public class MaterialCalculationStrategyResolver : IMaterialCalculationStrategyResolver
+    private readonly IEnumerable<IMaterialCalculationStrategy> _strategies;
+    private readonly ILogger<MaterialCalculationStrategyResolver> _logger;
+
+    public MaterialCalculationStrategyResolver(IEnumerable<IMaterialCalculationStrategy> strategies,
+        ILogger<MaterialCalculationStrategyResolver> logger)
     {
-        private readonly IEnumerable<IMaterialCalculationStrategy> _strategies;
-        private readonly ILogger<MaterialCalculationStrategyResolver> _logger;
+        _strategies = strategies;
+        _logger = logger;
+    }
 
-        public MaterialCalculationStrategyResolver(IEnumerable<IMaterialCalculationStrategy> strategies,
-            ILogger<MaterialCalculationStrategyResolver> logger)
+    public IMaterialCalculationStrategy? Resolve(MaterialType materialType)
+    {
+        var strategy = _strategies.FirstOrDefault(s => s.CanHandle(materialType));
+
+        if (strategy == null)
         {
-            _strategies = strategies;
-            _logger = logger;
+            _logger.LogError("No strategy found for material type: {MaterialType}.", materialType);
+            return null;
         }
 
-        public IMaterialCalculationStrategy? Resolve(MaterialType materialType)
-        {
-            var strategy = _strategies.FirstOrDefault(s => s.CanHandle(materialType));
-
-            if (strategy == null)
-            {
-                _logger.LogError("No strategy found for material type: {MaterialType}.", materialType);
-                return null;
-            }
-
-            return strategy;
-        }
+        return strategy;
     }
 }

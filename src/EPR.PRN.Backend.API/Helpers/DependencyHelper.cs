@@ -7,6 +7,7 @@ using EPR.PRN.Backend.API.Validators;
 using EPR.PRN.Backend.Data.Interfaces;
 using EPR.PRN.Backend.Data.Repositories;
 using EPR.PRN.Backend.Obligation.Interfaces;
+using EPR.PRN.Backend.Obligation.Providers;
 using EPR.PRN.Backend.Obligation.Services;
 using EPR.PRN.Backend.Obligation.Strategies;
 using FluentValidation;
@@ -31,9 +32,10 @@ namespace EPR.PRN.Backend.API.Helpers
                 .AddScoped<IMaterialCalculationService, MaterialCalculationService>()
                 .AddScoped<IMaterialRepository, MaterialRepository>()
                 .AddScoped<IPrnRepository, PrnRepository>()
-                .AddScoped<IValidator<SavePrnDetailsRequest>, SavePrnDetailsRequestValidator>();
+                .AddScoped<IValidator<SavePrnDetailsRequest>, SavePrnDetailsRequestValidator>()
+                .AddScoped<IDateTimeProvider, DateTimeProvider>();
 
-            return services;
+			return services;
         }
     }
 }
