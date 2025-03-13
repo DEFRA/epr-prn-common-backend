@@ -793,6 +793,6 @@ public class RepositoryTestsInMemory
             It.IsAny<EventId>(),
             It.Is<It.IsAnyType>((v, t) => $"{v}".ToString().StartsWith("Resetting status history on")),
             null,
-            It.IsAny<Func<It.IsAnyType, Exception?, string>>()), Times.Never);
+            It.IsAny<Func<It.IsAnyType, Exception, string>>()), Times.Never);
     }
 }
