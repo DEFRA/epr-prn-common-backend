@@ -192,7 +192,7 @@ public class RepositoryTestsInMemory
         data[0].PrnStatusId = (int)status;
 
         _context.Prn.AddRange(data);
-        _context.SaveChanges();
+        await _context.SaveChangesAsync();
 
         var result = await _repository.GetSearchPrnsForOrganisation(orgId, request);
 
@@ -223,7 +223,7 @@ public class RepositoryTestsInMemory
                            .CreateMany().ToArray();
 
         _context.Prn.AddRange(data);
-        _context.SaveChanges();
+        await _context.SaveChangesAsync();
 
         var result = await _repository.GetSearchPrnsForOrganisation(orgId, request);
 
@@ -254,7 +254,7 @@ public class RepositoryTestsInMemory
         data[0].TonnageValue = 200;
 
         _context.Prn.AddRange(data);
-        _context.SaveChanges();
+        await _context.SaveChangesAsync();
 
         var result = await _repository.GetSearchPrnsForOrganisation(orgId, request);
 
@@ -292,7 +292,7 @@ public class RepositoryTestsInMemory
         data[0].MaterialName = PrnConstants.Materials.Aluminium;
 
         _context.Prn.AddRange(data);
-        _context.SaveChanges();
+        await _context.SaveChangesAsync();
 
         var result = await _repository.GetSearchPrnsForOrganisation(orgId, request);
 
@@ -330,7 +330,7 @@ public class RepositoryTestsInMemory
         data[0].IssueDate = DateTime.UtcNow;
 
         _context.Prn.AddRange(data);
-        _context.SaveChanges();
+        await _context.SaveChangesAsync();
 
         var result = await _repository.GetSearchPrnsForOrganisation(orgId, request);
 
@@ -368,7 +368,7 @@ public class RepositoryTestsInMemory
         data[0].IssuedByOrg = "Beta";
 
         _context.Prn.AddRange(data);
-        _context.SaveChanges();
+        await _context.SaveChangesAsync();
 
         var result = await _repository.GetSearchPrnsForOrganisation(orgId, request);
 
@@ -406,7 +406,7 @@ public class RepositoryTestsInMemory
         data[2].DecemberWaste = true;
 
         _context.Prn.AddRange(data);
-        _context.SaveChanges();
+        await _context.SaveChangesAsync();
 
         var result = await _repository.GetSearchPrnsForOrganisation(orgId, request);
 
@@ -437,7 +437,7 @@ public class RepositoryTestsInMemory
         data[2].IssueDate = DateTime.UtcNow;
 
         _context.Prn.AddRange(data);
-        _context.SaveChanges();
+        await _context.SaveChangesAsync();
 
         var result = await _repository.GetSearchPrnsForOrganisation(orgId, request);
 
@@ -598,7 +598,6 @@ public class RepositoryTestsInMemory
     [TestMethod]
     public async Task SavePrnDetails_InsertsNewPrn_WithCorrectCreateAndUpdateDates()
     {
-        var statusUpdatedDate = DateTime.UtcNow.AddDays(-2);
         var dto = new SavePrnDetailsRequest()
         {
             AccreditationNo = "ABC",
@@ -640,7 +639,6 @@ public class RepositoryTestsInMemory
     [TestMethod]
     public async Task SavePrnDetails_UpdatesPrn_WithCorrectCreateAndUpdateDates()
     {
-        var statusUpdatedDate = DateTime.UtcNow.AddDays(-2);
         var dto = new SavePrnDetailsRequest()
         {
             AccreditationNo = "ABC",
@@ -689,7 +687,6 @@ public class RepositoryTestsInMemory
     public async Task SavePrnDetails_WhenIncomingPrnIsAwaitingAcceptance_UpdatesPrn_WithOriginalStatus(EprnStatus eOldStatus)
     {
         // Arrange
-        var statusUpdatedDate = DateTime.UtcNow.AddDays(-2);
         var dto = new SavePrnDetailsRequest()
         {
             AccreditationNo = "ABC",
@@ -720,7 +717,7 @@ public class RepositoryTestsInMemory
 
         var entity = CreateEprnEntityFromDto(dto);
         await _repository.SavePrnDetails(entity);
-        _context.SaveChanges();
+        await _context.SaveChangesAsync();
 
         var awaitingAcceptancePrn = await _context.Prn.AsNoTracking().SingleAsync(x => x.PrnNumber == dto.EvidenceNo);
         awaitingAcceptancePrn.PrnStatusId = (int)EprnStatus.AWAITINGACCEPTANCE;
@@ -737,7 +734,7 @@ public class RepositoryTestsInMemory
             It.IsAny<EventId>(),
             It.Is<It.IsAnyType>((v, t) => $"{v}".ToString().StartsWith("Resetting status history on")),
             null,
-            It.IsAny<Func<It.IsAnyType, Exception?, string>>()), Times.Once);
+            It.IsAny<Func<It.IsAnyType, Exception, string>>()), Times.Once);
     }
 
 
@@ -749,7 +746,6 @@ public class RepositoryTestsInMemory
     public async Task SavePrnDetails_WhenExistingPrnIsAwaitingAcceptance_UpdatesPrn_WithNewStatus(EprnStatus eNewStatus)
     {
         // Arrange
-        var statusUpdatedDate = DateTime.UtcNow.AddDays(-2);
         var dto = new SavePrnDetailsRequest()
         {
             AccreditationNo = "ABC",
@@ -780,7 +776,7 @@ public class RepositoryTestsInMemory
 
         var entity = CreateEprnEntityFromDto(dto);
         await _repository.SavePrnDetails(entity);
-        _context.SaveChanges();
+        await _context.SaveChangesAsync();
 
         var newPrn = await _context.Prn.AsNoTracking().SingleAsync(x => x.PrnNumber == dto.EvidenceNo);
         newPrn.PrnStatusId = (int) eNewStatus;

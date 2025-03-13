@@ -12,8 +12,8 @@ namespace EPR.PRN.Backend.Data.Migrations
         {
             migrationBuilder.InsertData(
                 table: "Material",
-                columns: new[] { "MaterialName", "MaterialCode" },
-                values: new object[] { "FibreComposite", "FC" });
+                columns: ["MaterialName", "MaterialCode"],
+                values: ["FibreComposite", "FC"]);
         }
 
         /// <inheritdoc />

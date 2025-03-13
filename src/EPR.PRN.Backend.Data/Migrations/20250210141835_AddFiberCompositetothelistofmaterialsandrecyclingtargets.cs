@@ -12,7 +12,7 @@ namespace EPR.PRN.Backend.Data.Migrations
         {
             migrationBuilder.InsertData(
             table: "RecyclingTargets",
-            columns: new[] { "Id", "MaterialNameRT", "Target", "Year" },
+            columns: ["Id", "MaterialNameRT", "Target", "Year"],
             values: new object[,]
             {
                 { 43, "FibreComposite", 0.75m, 2025 },
@@ -30,7 +30,7 @@ namespace EPR.PRN.Backend.Data.Migrations
             migrationBuilder.DeleteData(
             table: "RecyclingTargets",
             keyColumn: "Id",
-            keyValues: new object[] { 43, 44, 45, 46, 47, 48 });
+            keyValues: [43, 44, 45, 46, 47, 48]);
         }
     }
 }
