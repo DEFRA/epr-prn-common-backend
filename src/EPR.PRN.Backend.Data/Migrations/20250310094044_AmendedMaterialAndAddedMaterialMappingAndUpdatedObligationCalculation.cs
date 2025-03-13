@@ -99,7 +99,7 @@ namespace EPR.PRN.Backend.Data.Migrations
 
             migrationBuilder.InsertData(
                 table: "Material",
-                columns: new[] { "Id", "IsCaculable", "IsVisibleToObligation", "MaterialCode", "MaterialName" },
+                columns: ["Id", "IsCaculable", "IsVisibleToObligation", "MaterialCode", "MaterialName"],
                 values: new object[,]
                 {
                     { 1, true, true, "PL", "Plastic" },
@@ -114,7 +114,7 @@ namespace EPR.PRN.Backend.Data.Migrations
 
             migrationBuilder.InsertData(
                 table: "PrnMaterialMapping",
-                columns: new[] { "Id", "NPWDMaterialName", "PRNMaterialId" },
+                columns: ["Id", "NPWDMaterialName", "PRNMaterialId"],
                 values: new object[,]
                 {
                     { 1, "Plastic", 1 },
@@ -302,7 +302,7 @@ namespace EPR.PRN.Backend.Data.Migrations
 
             migrationBuilder.InsertData(
                 table: "Material",
-                columns: new[] { "MaterialName", "MaterialCode" },
+                columns: ["MaterialName", "MaterialCode"],
                 values: new object[,]
                 {
                     { "Aluminium", "AL" },
