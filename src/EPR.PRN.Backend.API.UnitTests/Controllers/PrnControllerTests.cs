@@ -601,6 +601,53 @@ public class PrnControllerTests
     }
 
     [TestMethod]
+    public async Task SavePrn_ReturnsInternalServerError_WhenServiceThrowsException()
+    {
+        var dto = new SavePrnDetailsRequest()
+        {
+            AccreditationNo = "ABC",
+            AccreditationYear = 2018,
+            CancelledDate = DateTime.UtcNow.AddDays(-1),
+            DecemberWaste = true,
+            EvidenceMaterial = "Aluminium",
+            EvidenceNo = Guid.NewGuid().ToString(),
+            EvidenceStatusCode = EprnStatus.AWAITINGACCEPTANCE,
+            EvidenceTonnes = 5000,
+            IssueDate = DateTime.UtcNow.AddDays(-5),
+            IssuedByNPWDCode = "NPWD367742",
+            IssuedByOrgName = "ANB",
+            IssuedToEPRId = Guid.NewGuid(),
+            IssuedToNPWDCode = "NPWD557742",
+            IssuedToOrgName = "ZNZ",
+            IssuerNotes = "no notes",
+            IssuerRef = "ANB-1123",
+            MaterialOperationCode = "R-PLA",
+            ObligationYear = 2025,
+            PrnSignatory = "Pat Anderson",
+            PrnSignatoryPosition = "Director",
+            ProducerAgency = "TTL",
+            RecoveryProcessCode = "N11",
+            ReprocessorAgency = "BEX",
+            StatusDate = DateTime.UtcNow,
+        };
+
+        // setup mock validator
+        var validationResult = new ValidationResult();
+
+        _validatorSavePrnDetailsMock.Setup(x => x.Validate(It.IsAny<SavePrnDetailsRequest>())).Returns(validationResult);
+
+        // Setup mock PrnService
+        _mockPrnService.Setup(s => s.SavePrnDetails(dto)).Throws<ApplicationException>();
+
+        // Act
+        var result = await _systemUnderTest.SaveAsync(dto) as ObjectResult;
+
+        // Assert
+        result.Should().NotBeNull();
+        result.StatusCode.Should().Be((int)HttpStatusCode.InternalServerError);
+    }
+
+    [TestMethod]
     [DataRow("AccreditationNo", "ABC122378123123712381273123123123")]
     [DataRow("AccreditationYear", 25678)]
     [DataRow("EvidenceMaterial", "Material201223234234234234234")]
@@ -668,53 +715,6 @@ public class PrnControllerTests
         errors.Should().NotBeNull();
 
         errors.Select(x => x.PropertyName).Should().Contain(propertyName);
-    }
-
-    [TestMethod]
-    public async Task SavePrn_ReturnsInternalServerError_WhenServiceThrowsException()
-    {
-        var dto = new SavePrnDetailsRequest()
-        {
-            AccreditationNo = "ABC",
-            AccreditationYear = 2018,
-            CancelledDate = DateTime.UtcNow.AddDays(-1),
-            DecemberWaste = true,
-            EvidenceMaterial = "Aluminium",
-            EvidenceNo = Guid.NewGuid().ToString(),
-            EvidenceStatusCode = EprnStatus.AWAITINGACCEPTANCE,
-            EvidenceTonnes = 5000,
-            IssueDate = DateTime.UtcNow.AddDays(-5),
-            IssuedByNPWDCode = "NPWD367742",
-            IssuedByOrgName = "ANB",
-            IssuedToEPRId = Guid.NewGuid(),
-            IssuedToNPWDCode = "NPWD557742",
-            IssuedToOrgName = "ZNZ",
-            IssuerNotes = "no notes",
-            IssuerRef = "ANB-1123",
-            MaterialOperationCode = "R-PLA",
-            ObligationYear = 2025,
-            PrnSignatory = "Pat Anderson",
-            PrnSignatoryPosition = "Director",
-            ProducerAgency = "TTL",
-            RecoveryProcessCode = "N11",
-            ReprocessorAgency = "BEX",
-            StatusDate = DateTime.UtcNow,
-        };
-
-        // setup mock validator
-        var validationResult = new ValidationResult();
-
-        _validatorSavePrnDetailsMock.Setup(x => x.Validate(It.IsAny<SavePrnDetailsRequest>())).Returns(validationResult);
-
-        // Setup mock PrnService
-        _mockPrnService.Setup(s => s.SavePrnDetails(dto)).Throws<ApplicationException>();
-
-        // Act
-        var result = await _systemUnderTest.SaveAsync(dto) as ObjectResult;
-
-        // Assert
-        result.Should().NotBeNull();
-        result.StatusCode.Should().Be((int)HttpStatusCode.InternalServerError);
     }
 
     [TestMethod]

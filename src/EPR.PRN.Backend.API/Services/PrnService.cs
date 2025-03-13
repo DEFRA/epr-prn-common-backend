@@ -1,4 +1,6 @@
-﻿namespace EPR.PRN.Backend.API.Services;
+﻿#nullable disable
+
+namespace EPR.PRN.Backend.API.Services;
 
 using EPR.PRN.Backend.API.Common.Dto;
 using EPR.PRN.Backend.API.Common.Enums;
@@ -127,7 +129,7 @@ public class PrnService(IRepository repository, ILogger<PrnService> logger, ICon
                 ExternalId = Guid.Empty, // set value in repo when inserting and set to new guid
                 ReprocessorExporterAgency = prn.ReprocessorAgency!,
                 Signature = null,  // Not defined in NPWD to PRN mapping requirements,
-                IsExport = !string.IsNullOrEmpty(prn.EvidenceNo) && IsExport(prn.EvidenceNo),
+                IsExport = IsExport(prn.EvidenceNo),
                 CreatedBy = prn.CreatedByUser!,
             };
 
