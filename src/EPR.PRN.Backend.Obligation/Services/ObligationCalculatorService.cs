@@ -6,219 +6,222 @@ using EPR.PRN.Backend.Obligation.Constants;
 using EPR.PRN.Backend.Obligation.Dto;
 using EPR.PRN.Backend.Obligation.Helpers;
 using EPR.PRN.Backend.Obligation.Interfaces;
-using EPR.PRN.Backend.Obligation.Mappers;
 using EPR.PRN.Backend.Obligation.Models;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 
 namespace EPR.PRN.Backend.Obligation.Services
 {
-    public class ObligationCalculatorService : IObligationCalculatorService
-    {
-        private readonly IObligationCalculationRepository _obligationCalculationRepository;
-        private readonly IRecyclingTargetDataService _recyclingTargetDataService;
-        private readonly IMaterialService _materialService;
-        private readonly IMaterialCalculationStrategyResolver _strategyResolver;
-        private readonly ILogger<ObligationCalculatorService> _logger;
-        private readonly IPrnRepository _prnRepository;
-        private readonly IMaterialRepository _materialRepository;
+	public class ObligationCalculatorService(IObligationCalculationRepository obligationCalculationRepository,
+		IRecyclingTargetDataService recyclingTargetDataService,
+		IMaterialCalculationStrategyResolver strategyResolver,
+		ILogger<ObligationCalculatorService> logger,
+		IPrnRepository prnRepository,
+		IMaterialRepository materialRepository) : IObligationCalculatorService
+	{
+		public async Task<CalculationResult> CalculateAsync(Guid organisationId, List<SubmissionCalculationRequest> request)
+		{
+			var recyclingTargets = await recyclingTargetDataService.GetRecyclingTargetsAsync();
+			var materials = await materialRepository.GetAllMaterials();
+			var result = new CalculationResult();
+			var calculations = new List<ObligationCalculation>();
 
-        public ObligationCalculatorService(IObligationCalculationRepository obligationCalculationRepository,
-            IRecyclingTargetDataService recyclingTargetDataService,
-            IMaterialService materialService,
-            IMaterialCalculationStrategyResolver strategyResolver,
-            ILogger<ObligationCalculatorService> logger,
-            IPrnRepository prnRepository,
-            IMaterialRepository materialRepository)
-        {
-            _obligationCalculationRepository = obligationCalculationRepository;
-            _recyclingTargetDataService = recyclingTargetDataService;
-            _materialService = materialService;
-            _strategyResolver = strategyResolver;
-            _logger = logger;
-            _prnRepository = prnRepository;
-            _materialRepository = materialRepository;
-        }
+			foreach (var submission in request)
+			{
+				if (string.IsNullOrEmpty(submission.PackagingMaterial))
+				{
+					logger.LogError("Material was null or empty for OrganisationId: {OrganisationId}.", organisationId);
+					result.Success = false;
+					continue;
+				}
 
-        public async Task<CalculationResult> CalculateAsync(Guid organisationId, List<SubmissionCalculationRequest> request)
-        {
-            var recyclingTargets = await _recyclingTargetDataService.GetRecyclingTargetsAsync();
-            var result = new CalculationResult();
-            var calculations = new List<ObligationCalculation>();
-
-            foreach (var submission in request)
-            {
-                if (string.IsNullOrEmpty(submission.PackagingMaterial))
+				var materialName = materials.FirstOrDefault(m => m.MaterialCode == submission.PackagingMaterial)?.MaterialName;
+                if (materialName.IsNullOrEmpty() || !Enum.TryParse(materialName, true, out MaterialType materialType))
                 {
-                    _logger.LogError("Material was null or empty for SubmissionId: {SubmissionId} and OrganisationId: {OrganisationId}.", submission.SubmissionId, organisationId);
+                    logger.LogError("Material provided was not valid: {PackagingMaterial} for OrganisationId: {OrganisationId}.",
+                        submission.PackagingMaterial, organisationId);
                     result.Success = false;
                     continue;
                 }
 
-                var material = await _materialService.GetMaterialByCode(submission.PackagingMaterial);
-                if (!material.HasValue)
-                {
-                    _logger.LogError("Material provided was not valid: {PackagingMaterial} for SubmissionId: {SubmissionId} and OrganisationId: {OrganisationId}.",
-                        submission.PackagingMaterial, submission.SubmissionId, organisationId);
-                    result.Success = false;
-                    continue;
-                }
-
-                var strategy = _strategyResolver.Resolve(material!.Value);
+                var strategy = strategyResolver.Resolve(materialType);
                 if (strategy == null)
                 {
-                    var error = $"Could not find handler for Material Type: {submission.PackagingMaterial} for SubmissionId: {submission.SubmissionId} and OrganisationId: {organisationId}.";
-                    _logger.LogError(error, submission.PackagingMaterial, submission.SubmissionId, organisationId);
+                    logger.LogError("Could not find handler for Material Type: {PackagingMaterial} for OrganisationId: {OrganisationId}.", submission.PackagingMaterial, organisationId);
                     result.Success = false;
                     continue;
                 }
 
                 var calculationRequest = new CalculationRequestDto
-                {
-                    OrganisationId = organisationId,
-                    SubmissionCalculationRequest = submission,
-                    MaterialType = material.Value,
-                    RecyclingTargets = recyclingTargets
-                };
+				{
+					OrganisationId = organisationId,
+					SubmissionCalculationRequest = submission,
+					MaterialType = materialType,
+					Materials = [.. materials],
+					RecyclingTargets = recyclingTargets
+				};
 
-                calculations.AddRange(strategy.Calculate(calculationRequest));
-            }
+				calculations.AddRange(strategy.Calculate(calculationRequest));
+			}
 
-            if (!calculations.Any())
-            {
-                _logger.LogError("No calculations for OrganisationId: {OrganisationId}.", organisationId);
-                result.Success = false;
-            }
-            else
-            {
-                result.Calculations = calculations;
-                result.Success = true;
-            }
+			if (calculations.Count == 0)
+			{
+				logger.LogError("No calculations for OrganisationId: {OrganisationId}.", organisationId);
+				result.Success = false;
+			}
+			else
+			{
+				result.Calculations = calculations;
+				result.Success = true;
+			}
 
-            return result;
-        }
+			return result;
+		}
 
-        public async Task UpsertCalculatedPomDataAsync(Guid organisationId, List<ObligationCalculation> calculations)
-        {
-            await _obligationCalculationRepository.UpsertObligationCalculationAsync(organisationId, calculations);
-        }
+		public async Task UpsertCalculatedPomDataAsync(Guid organisationId, List<ObligationCalculation> calculations)
+		{
+			await obligationCalculationRepository.UpsertObligationCalculationAsync(organisationId, calculations);
+		}
 
-        public async Task<ObligationCalculationResult> GetObligationCalculation(Guid organisationId, int year)
-        {
-            var materials = await _materialRepository.GetAllMaterials();
-            if (!materials.Any())
-            {
-                _logger.LogError(ObligationConstants.ErrorMessages.NoMaterialsFoundErrorMessage);
-                return new ObligationCalculationResult
-                {
-                    Errors = ObligationConstants.ErrorMessages.NoMaterialsFoundErrorMessage,
-                    IsSuccess = false
-                };
-            }
-            var materialsWithRemelt = AddGlassRemelt(materials.ToList());
-            var obligationCalculations = await _obligationCalculationRepository.GetObligationCalculation(organisationId, year);
-            var prns = _prnRepository.GetAcceptedAndAwaitingPrnsByYear(organisationId, year);
+		public async Task<ObligationCalculationResult> GetObligationCalculation(Guid callingOrganisationId, IEnumerable<Guid> organisationIds, int year)
+		{
+			var materials = await materialRepository.GetAllMaterials();
+			if (!materials.Any())
+			{
+				logger.LogError(ObligationConstants.ErrorMessages.NoMaterialsFoundErrorMessage);
+				return new ObligationCalculationResult
+				{
+					Errors = ObligationConstants.ErrorMessages.NoMaterialsFoundErrorMessage,
+					IsSuccess = false
+				};
+			}
 
-            // make sure material names match materials table
-            prns = Mappers.MaterialsMapper.AdjustPrnMaterialNames(prns);
+			var obligationCalculations = await obligationCalculationRepository.GetObligationCalculation(organisationIds, year);
 
-            var acceptedTonnageForPrns = GetSumOfTonnageForMaterials(prns, EprnStatus.ACCEPTED.ToString());
-            var awaitingAcceptanceForPrns = GetSumOfTonnageForMaterials(prns, EprnStatus.AWAITINGACCEPTANCE.ToString());
-            var awaitingAcceptanceCount = GetPrnStatusCount(prns, EprnStatus.AWAITINGACCEPTANCE.ToString());
-            var materialNames = materialsWithRemelt.Select(material => material.MaterialName);
-            var obligationData = new List<ObligationData>();
-            var recyclingTargets = await _recyclingTargetDataService.GetRecyclingTargetsAsync();
-            foreach (var materialName in materialNames)
-            {
-                var obligationCalculation = obligationCalculations.Find(x => x.MaterialName == materialName);
-                var tonnageAccepted = GetTonnage(materialName, acceptedTonnageForPrns);
-                var tonnageAwaitingAcceptance = GetTonnage(materialName, awaitingAcceptanceForPrns);
-                var tonnageOutstanding = GetTonnageOutstanding(obligationCalculation?.MaterialObligationValue, tonnageAccepted);
-                obligationData.Add(new ObligationData
-                {
-                    OrganisationId = organisationId,
-                    MaterialName = materialName,
-                    ObligationToMeet = obligationCalculation?.MaterialObligationValue,
-                    TonnageAccepted = tonnageAccepted ?? 0,
-                    TonnageAwaitingAcceptance = tonnageAwaitingAcceptance ?? 0,
-                    TonnageOutstanding = tonnageOutstanding,
-                    Status = GetStatus(obligationCalculation?.MaterialObligationValue, tonnageAccepted),
-                    Tonnage = obligationCalculation?.Tonnage ?? 0,
-                    MaterialTarget = GetRecyclingTarget(year, materialName, recyclingTargets) ?? 0
-                });
-            }
-            var obligationModel = new ObligationModel { ObligationData = obligationData, NumberOfPrnsAwaitingAcceptance = awaitingAcceptanceCount };
-            return new ObligationCalculationResult { IsSuccess = true, ObligationModel = obligationModel };
-        }
+			var prns = prnRepository.GetAcceptedAndAwaitingPrnsByYear(callingOrganisationId, year);
 
-        private List<EprnTonnageResultsDto> GetSumOfTonnageForMaterials(IQueryable<EprnResultsDto> prns, string status)
-        {
-            return prns
-                .Where(joined => joined.Status.StatusName == status)
-                .GroupBy(joined => new { joined.Eprn.MaterialName, joined.Status.StatusName })
-                .Select(g => new EprnTonnageResultsDto
-                {
-                    MaterialName = g.Key.MaterialName,
-                    StatusName = g.Key.StatusName,
-                    TotalTonnage = g.Sum(x => x.Eprn.TonnageValue)
-                }).ToList();
-        }
+			var acceptedTonnageForPrns = GetSumOfTonnageForMaterials(prns, EprnStatus.ACCEPTED.ToString());
+			var awaitingAcceptanceForPrns = GetSumOfTonnageForMaterials(prns, EprnStatus.AWAITINGACCEPTANCE.ToString());
+			var awaitingAcceptanceCount = GetPrnStatusCount(prns, EprnStatus.AWAITINGACCEPTANCE.ToString());
 
-        private int GetPrnStatusCount(IQueryable<EprnResultsDto> prns, string status)
-        {
-            return prns.Where(joined => joined.Status.StatusName == status).Count();
-        }
+			var recyclingTargets = await recyclingTargetDataService.GetRecyclingTargetsAsync();
 
-        private double? GetRecyclingTarget(int year, string? materialName, Dictionary<int, Dictionary<MaterialType, double>> recyclingTargets)
-        {
-            if (string.IsNullOrWhiteSpace(materialName))
-            {
-                return null;
-            }
-            var materialType = EnumHelper.ConvertStringToEnum<MaterialType>(materialName);
-            if (!materialType.HasValue)
-            {
-                return null;
-            }
-            return recyclingTargets[year][materialType.Value];
-        }
+			var responseObligationData = new List<ObligationData>();
+			var paperFibreObligationData = new List<ObligationData>();
 
-        private static List<Material> AddGlassRemelt(List<Material> materials)
-        {
-            materials.Add(new Material { MaterialCode = "GR", MaterialName = "GlassRemelt" });
-            return materials;
-        }
+			foreach (var material in materials)
+			{
+				var npwdMaterialNames = material.PrnMaterialMappings?.Select(npwdm => npwdm.NPWDMaterialName) ?? [];
+				var recyclingTarget = GetRecyclingTarget(year, material.MaterialName, recyclingTargets);
+				var tonnageAccepted = GetTonnage(npwdMaterialNames, acceptedTonnageForPrns);
+				var tonnageAwaitingAcceptance = GetTonnage(npwdMaterialNames, awaitingAcceptanceForPrns);
+				var obligationMaterialCalculations = obligationCalculations.FindAll(x => x.MaterialId == material.Id);
 
-        private static string GetStatus(int? materialObligationValue, int? tonnageAccepted)
-        {
-            if (!materialObligationValue.HasValue || !tonnageAccepted.HasValue)
-            {
-                return ObligationConstants.Statuses.NoDataYet;
-            }
+				// Segregate Paper and Fibre obligation data from other material types
+				if (material.MaterialName.Contains(MaterialType.Paper.ToString()) || material.MaterialName.Contains(MaterialType.FibreComposite.ToString()))
+				{
+					paperFibreObligationData.Add(GetObligationData(material.MaterialName, callingOrganisationId, obligationMaterialCalculations, tonnageAccepted, tonnageAwaitingAcceptance, recyclingTarget));
+				}
+				else
+				{
+					responseObligationData.Add(GetObligationData(material.MaterialName, callingOrganisationId, obligationMaterialCalculations, tonnageAccepted, tonnageAwaitingAcceptance, recyclingTarget));
+				}
+			}
 
-            if (tonnageAccepted >= materialObligationValue)
-            {
-                return ObligationConstants.Statuses.Met;
-            }
-            return ObligationConstants.Statuses.NotMet;
-        }
+			// Add Paper and Fibre obligation data and return as Paper
+			if (paperFibreObligationData.Count > 0)
+			{
+				responseObligationData.Add(GetPaperFibreCompositeObligationData(paperFibreObligationData));
+			}
 
-        private static int? GetTonnageOutstanding(int? materialObligationValue, int? tonnageAccepted)
-        {
-            if (!materialObligationValue.HasValue || !tonnageAccepted.HasValue)
-            {
-                return null;
-            }
+			var obligationModel = new ObligationModel { ObligationData = responseObligationData, NumberOfPrnsAwaitingAcceptance = awaitingAcceptanceCount };
+			return new ObligationCalculationResult { IsSuccess = true, ObligationModel = obligationModel };
+		}
 
-            return materialObligationValue - tonnageAccepted;
-        }
+		private static ObligationData GetObligationData(string materialName, Guid organisationId, List<ObligationCalculation> obligationMaterialCalculations, int? tonnageAccepted, int? tonnageAwaitingAcceptance, double? recyclingTarget)
+		{
+			ObligationData obligationData = new()
+			{
+				OrganisationId = organisationId,
+				MaterialName = materialName,
+				TonnageAccepted = tonnageAccepted ?? 0,
+				TonnageAwaitingAcceptance = tonnageAwaitingAcceptance ?? 0,
+				TonnageOutstanding = (obligationMaterialCalculations.Count > 0 && tonnageAccepted.HasValue) ? obligationMaterialCalculations.Sum(x => x.MaterialObligationValue) - tonnageAccepted : null,
+				MaterialTarget = recyclingTarget ?? 0,
+				ObligationToMeet = obligationMaterialCalculations.Count > 0 ? (int?)obligationMaterialCalculations.Sum(x => x.MaterialObligationValue) : null,
+				Tonnage = obligationMaterialCalculations.Sum(x => x.Tonnage)
+			};
 
-        private static int? GetTonnage(string materialName, List<EprnTonnageResultsDto> acceptedTonnageForMaterials)
-        {
-            return acceptedTonnageForMaterials
-                .Where(x => x.MaterialName == materialName)
-                .Select(x => x.TotalTonnage)
-                .FirstOrDefault();
-        }
+			obligationData.Status = GetStatus(obligationData.ObligationToMeet, obligationData.TonnageAccepted);
+			return obligationData;
+		}
 
-    }
+		private static ObligationData GetPaperFibreCompositeObligationData(List<ObligationData> paperFibreObligationData)
+		{
+			ObligationData obligationData = new()
+			{
+				OrganisationId = paperFibreObligationData[0].OrganisationId,
+				MaterialName = MaterialType.Paper.ToString(),
+				MaterialTarget = paperFibreObligationData[0].MaterialTarget,
+				ObligationToMeet = paperFibreObligationData.Exists(x => x.ObligationToMeet.HasValue) ? (int?)paperFibreObligationData.Sum(x => x.ObligationToMeet ?? 0) : null,
+				TonnageAccepted = paperFibreObligationData.Sum(x => x.TonnageAccepted),
+				TonnageAwaitingAcceptance = paperFibreObligationData.Sum(x => x.TonnageAwaitingAcceptance),
+				TonnageOutstanding = paperFibreObligationData.Exists(x => x.TonnageOutstanding.HasValue) ? (int?)paperFibreObligationData.Sum(x => x.TonnageOutstanding ?? 0) : null,
+				Tonnage = paperFibreObligationData.Sum(x => x.Tonnage)
+			};
+
+			obligationData.Status = GetStatus(obligationData.ObligationToMeet, obligationData.TonnageAccepted);
+			return obligationData;
+		}
+
+		private static List<EprnTonnageResultsDto> GetSumOfTonnageForMaterials(IQueryable<EprnResultsDto> prns, string status)
+		{
+			return [.. prns
+						.Where(joined => joined.Status.StatusName == status)
+						.GroupBy(joined => new { joined.Eprn.MaterialName, joined.Status.StatusName })
+						.Select(g => new EprnTonnageResultsDto
+						{
+							MaterialName = g.Key.MaterialName,
+							StatusName = g.Key.StatusName,
+							TotalTonnage = g.Sum(x => x.Eprn.TonnageValue)
+						})];
+		}
+
+		private static int GetPrnStatusCount(IQueryable<EprnResultsDto> prns, string status)
+		{
+			return prns.Where(joined => joined.Status.StatusName == status).Count();
+		}
+
+		private static double? GetRecyclingTarget(int year, string materialName, Dictionary<int, Dictionary<MaterialType, double>> recyclingTargets)
+		{
+			var materialType = EnumHelper.ConvertStringToEnum<MaterialType>(materialName);
+			if (!materialType.HasValue)
+			{
+				return null;
+			}
+			return recyclingTargets[year][materialType.Value];
+		}
+
+		private static string GetStatus(int? obligationToMeet, int? tonnageAccepted)
+		{
+			if (!obligationToMeet.HasValue || !tonnageAccepted.HasValue)
+			{
+				return ObligationConstants.Statuses.NoDataYet;
+			}
+
+			if (tonnageAccepted >= obligationToMeet)
+			{
+				return ObligationConstants.Statuses.Met;
+			}
+			return ObligationConstants.Statuses.NotMet;
+		}
+
+		private static int? GetTonnage(IEnumerable<string> npwdMaterialNames, List<EprnTonnageResultsDto> acceptedTonnageForMaterials)
+		{
+			return acceptedTonnageForMaterials
+				.Where(x => npwdMaterialNames.Contains(x.MaterialName))
+				.Select(x => x.TotalTonnage)
+				.FirstOrDefault();
+		}
+	}
 }

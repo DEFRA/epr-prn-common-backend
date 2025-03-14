@@ -4,15 +4,15 @@ namespace EPR.PRN.Backend.Obligation.Services
 {
     public class MaterialCalculationService : IMaterialCalculationService
     {
-        public int Calculate(double target, double tonnage)
+        public int Calculate(double target, int tonnage)
         {
-            return (int)Math.Round(target * tonnage, 0, MidpointRounding.AwayFromZero);
+            return (int)Math.Ceiling(target * tonnage);
         }
 
-        public (int remelt, int remainder) CalculateGlass(double target, double remeltTarget, double tonnage)
+        public (int remelt, int remainder) CalculateGlass(double target, double remeltTarget, int tonnage)
         {
-            var initialTarget = (int)Math.Round(target * tonnage, 0, MidpointRounding.AwayFromZero);
-            var remelt = (int)Math.Round(remeltTarget * initialTarget, 0, MidpointRounding.ToPositiveInfinity);
+            var initialTarget = (int)Math.Ceiling(target * tonnage);
+            var remelt = (int)Math.Ceiling(remeltTarget * initialTarget);
 
             return (remelt, initialTarget - remelt);
         }

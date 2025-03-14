@@ -4,8 +4,8 @@ namespace EPR.PRN.Backend.Obligation.Models;
 
 public class SubmissionCalculationRequest
 {
-    public Guid SubmissionId { get; set; }
+    public Guid OrganisationId { get; set; }
     public string SubmissionPeriod { get; set; }
     public string PackagingMaterial { get; set; }
-    public double PackagingMaterialWeight { get; set; }
+    public int PackagingMaterialWeight { get; set; }
 }

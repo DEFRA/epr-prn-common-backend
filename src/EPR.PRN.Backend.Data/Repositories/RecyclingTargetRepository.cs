@@ -8,6 +8,8 @@ public class RecyclingTargetRepository(EprContext context) : IRecyclingTargetRep
 {
     public async Task<IEnumerable<RecyclingTarget>> GetAllAsync()
     {
-        return await context.RecyclingTargets.ToListAsync();
+        return await context.RecyclingTargets
+                            .AsNoTracking()
+                            .ToListAsync();
     }
 }

@@ -1,10 +1,10 @@
-﻿using EPR.PRN.Backend.API.Common.Enums;
+﻿using System.Reflection;
+using EPR.PRN.Backend.API.Common.Enums;
 using EPR.PRN.Backend.Data.DataModels;
 using EPR.PRN.Backend.Data.Interfaces;
 using EPR.PRN.Backend.Obligation.Services;
 using FluentAssertions;
 using Moq;
-using System.Reflection;
 
 namespace EPR.PRN.Backend.Obligation.UnitTests.Services;
 
@@ -25,7 +25,8 @@ public class RecyclingTargetDataServiceTests
                 new RecyclingTarget { Year = 1, MaterialNameRT = MaterialType.Paper.ToString(), Target = 0.4 },
                 new RecyclingTarget { Year = 1, MaterialNameRT = MaterialType.Plastic.ToString(), Target = 0.5 },
                 new RecyclingTarget { Year = 1, MaterialNameRT = MaterialType.Steel.ToString(), Target = 0.6 },
-                new RecyclingTarget { Year = 1, MaterialNameRT = MaterialType.Wood.ToString(), Target = 0.7 }
+                new RecyclingTarget { Year = 1, MaterialNameRT = MaterialType.Wood.ToString(), Target = 0.7 },
+                new RecyclingTarget { Year = 1, MaterialNameRT = MaterialType.FibreComposite.ToString(), Target = 0.8 }
             });
 
         var recyclingTargetDataService = new RecyclingTargetDataService(recyclingTargetRepositoryMock.Object);
@@ -46,7 +47,8 @@ public class RecyclingTargetDataServiceTests
                         { MaterialType.Paper, 0.4 },
                         { MaterialType.Plastic, 0.5 },
                         { MaterialType.Steel, 0.6 },
-                        { MaterialType.Wood, 0.7 }
+                        { MaterialType.Wood, 0.7 },
+                        { MaterialType.FibreComposite, 0.8 }
                     }
                 }
             },
@@ -68,7 +70,8 @@ public class RecyclingTargetDataServiceTests
                 new RecyclingTarget { Year = 1, MaterialNameRT = MaterialType.Paper.ToString(), Target = 0.4 },
                 new RecyclingTarget { Year = 1, MaterialNameRT = MaterialType.Plastic.ToString(), Target = 0.5 },
                 new RecyclingTarget { Year = 1, MaterialNameRT = MaterialType.Steel.ToString(), Target = 0.6 },
-                new RecyclingTarget { Year = 1, MaterialNameRT = MaterialType.Wood.ToString(), Target = 0.7 }
+                new RecyclingTarget { Year = 1, MaterialNameRT = MaterialType.Wood.ToString(), Target = 0.7 },
+                new RecyclingTarget { Year = 1, MaterialNameRT = MaterialType.FibreComposite.ToString(), Target = 0.8 }
             });
 
         var recyclingTargetDataService = new RecyclingTargetDataService(recyclingTargetRepositoryMock.Object);
@@ -93,7 +96,7 @@ public class RecyclingTargetDataServiceTests
         recyclingTargetRepositoryMock.Setup(x => x.GetAllAsync())
             .ReturnsAsync(new List<RecyclingTarget>
             {
-            new RecyclingTarget { Year = 1, MaterialNameRT = "InvalidMaterial", Target = 0.1 }
+            new() { Year = 1, MaterialNameRT = "InvalidMaterial", Target = 0.1 }
             });
 
         var recyclingTargetDataService = new RecyclingTargetDataService(recyclingTargetRepositoryMock.Object);
@@ -132,8 +135,8 @@ public class RecyclingTargetDataServiceTests
         recyclingTargetRepositoryMock.Setup(x => x.GetAllAsync())
             .ReturnsAsync(new List<RecyclingTarget>
             {
-            new RecyclingTarget { Year = 1, MaterialNameRT = MaterialType.Aluminium.ToString(), Target = 0.1 },
-            new RecyclingTarget { Year = 2, MaterialNameRT = MaterialType.Plastic.ToString(), Target = 0.2 }
+            new() { Year = 1, MaterialNameRT = MaterialType.Aluminium.ToString(), Target = 0.1 },
+            new() { Year = 2, MaterialNameRT = MaterialType.Plastic.ToString(), Target = 0.2 }
             });
 
         var recyclingTargetDataService = new RecyclingTargetDataService(recyclingTargetRepositoryMock.Object);
