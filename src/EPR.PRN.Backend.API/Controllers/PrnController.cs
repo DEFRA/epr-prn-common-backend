@@ -107,7 +107,7 @@ public class PrnController(IPrnService prnService,
         { return BadRequest(ModelState); }
 
         var statusList = await prnService.GetSyncStatuses(request.From, request.To);
-        return statusList == null || !statusList.Any()
+        return statusList == null || statusList.Count == 0
             ? StatusCode(StatusCodes.Status204NoContent)
             : Ok(statusList);
     }
