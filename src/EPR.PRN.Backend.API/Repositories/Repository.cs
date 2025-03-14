@@ -112,16 +112,17 @@ public class Repository(EprContext eprContext, ILogger<Repository> logger, IConf
 
     private static string MapStatusCode(EprnStatus status)
     {
-        switch (status)
+        string result = string.Empty;
+        if (status == EprnStatus.ACCEPTED)
         {
-            case EprnStatus.ACCEPTED:
-                return EvidenceStatusCode.EV_ACCEP.ToHyphenatedString();
-            case EprnStatus.REJECTED:
-                return EvidenceStatusCode.EV_ACANCEL.ToHyphenatedString();
-            default:
-                throw new ArgumentException($"Unknown status: {status}");
+            result = EvidenceStatusCode.EV_ACCEP.ToHyphenatedString();
         }
-    }   
+        else if (status == EprnStatus.REJECTED)
+        {
+            result = EvidenceStatusCode.EV_ACANCEL.ToHyphenatedString();
+        }
+        return result;
+    }
 
     private static Expression<Func<Eprn, bool>> GetFilterByCondition(string? filterBy)
     {
@@ -318,7 +319,6 @@ public class Repository(EprContext eprContext, ILogger<Repository> logger, IConf
 
             await _eprContext.SaveChangesAsync();
             logger.LogInformation("Prn Entity successfully upserted. PrnNumber : {PrnNumber} and {Id}", prnLogVal, entity?.Id);
-
         }
         catch (Exception ex)
         {
