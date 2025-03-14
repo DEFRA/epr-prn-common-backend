@@ -137,7 +137,7 @@ public class PrnService(IRepository _repository, ILogger<PrnService> logger, ICo
         }
         catch (Exception ex)
         {
-            logger?.LogError(message: ex.Message, exception: ex);
+            logger.LogError(exception: ex, "{Logprefix}: Error Message: {Message}", logPrefix, ex.Message);
             throw new OperationCanceledException("Error encountered when attempting to map and save PRN requst. Please see the logs for details.");
         }
     }

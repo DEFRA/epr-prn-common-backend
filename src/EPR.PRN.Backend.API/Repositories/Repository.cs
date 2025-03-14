@@ -321,7 +321,7 @@ public class Repository(EprContext eprContext, ILogger<Repository> logger, IConf
         }
         catch (Exception ex)
         {
-            logger?.LogError(message: ex.Message, exception: ex);
+            logger.LogError(exception: ex, "{Logprefix}: Error Message: {Message}", logPrefix, ex.Message);
             throw;
         }
     }
