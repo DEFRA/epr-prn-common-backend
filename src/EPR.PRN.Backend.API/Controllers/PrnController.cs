@@ -28,7 +28,7 @@ public class PrnController(IPrnService prnService,
     IValidator<SavePrnDetailsRequest> savePrnDetailsRequestValidator) : ControllerBase
 {
     private readonly PrnObligationCalculationConfig _config = config.Value;
-    private readonly string logPrefix = configuration["LogPrefix"];
+    private readonly string? logPrefix = string.IsNullOrEmpty(configuration["LogPrefix"]) ? "[EPR.PRN.Backend]" : configuration["LogPrefix"];
 
     #region Get methods
 
@@ -50,7 +50,7 @@ public class PrnController(IPrnService prnService,
         return Ok(prn);
     }
 
-    [HttpGet("search/{page?}/{search?}/{filterBy?}/{sortBy?}")]
+    [HttpGet("search/{page}/{search}/{filterBy}/{sortBy}")]
     [ProducesResponseType(typeof(PaginatedResponseDto<PrnDto>), 200)]
     [ProducesResponseType(400)]
     [ProducesResponseType(401)]

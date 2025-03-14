@@ -14,9 +14,8 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 
-public class PrnService(IRepository repository, ILogger<PrnService> logger, IConfiguration configuration) : IPrnService
+public class PrnService(IRepository _repository, ILogger<PrnService> logger, IConfiguration configuration) : IPrnService
 {
-    protected readonly IRepository _repository = repository;
     private readonly string logPrefix = configuration["LogPrefix"];
 
     public async Task<PrnDto> GetPrnForOrganisationById(Guid orgId, Guid prnId)
@@ -134,11 +133,11 @@ public class PrnService(IRepository repository, ILogger<PrnService> logger, ICon
                 CreatedBy = prn.CreatedByUser!,
             };
 
-            await repository.SavePrnDetails(prnEntity);
+            await _repository.SavePrnDetails(prnEntity);
         }
         catch (Exception ex)
         {
-            logger.LogError(message: ex.Message, exception: ex);
+            logger.LogError(exception: ex, "{Logprefix}: Error Message: {Message}", logPrefix, ex.Message);
             throw new OperationCanceledException("Error encountered when attempting to map and save PRN requst. Please see the logs for details.");
         }
     }
