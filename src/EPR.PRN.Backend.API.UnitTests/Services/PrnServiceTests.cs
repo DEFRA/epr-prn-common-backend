@@ -206,6 +206,19 @@ public class PrnServiceTests
     }
 
     [TestMethod]
+    public async Task GetSyncStatuses_ReturnsList()
+    {
+        DateTime fromDate = DateTime.UtcNow;
+        DateTime toDate = DateTime.UtcNow;
+        List<PrnStatusSync> prnStatusSyncs = new List<PrnStatusSync>();
+        _mockRepository.Setup(r => r.GetSyncStatuses(fromDate, toDate)).ReturnsAsync(prnStatusSyncs);
+
+        var result = await _systemUnderTest.GetSyncStatuses(fromDate, toDate);
+
+        result.Should().NotBeNull();
+    }
+
+    [TestMethod]
     public async Task GetSearchPrnsForOrganisation_ReturnsRepsoneGotFromRepo()
     {
         var orgId = Guid.NewGuid();
@@ -252,7 +265,7 @@ public class PrnServiceTests
 
         _mockRepository
             .Setup(repo => repo.GetModifiedPrnsbyDate(fromDate, toDate))
-            .ReturnsAsync((List<PrnUpdateStatus>?)null);
+            .ReturnsAsync(null as List<PrnUpdateStatus>);
 
         // Act
         var result = await _systemUnderTest.GetModifiedPrnsbyDate(fromDate, toDate);
@@ -343,10 +356,9 @@ public class PrnServiceTests
     [DataRow("SX26899222", true)]
     public async Task SavePrnDetails_SetsIsExportCorrectly_BeforeSaving(string evidenceNo, bool expectedIsExportValue)
     {
-        Eprn? createdEntity = null;
+        Eprn createdEntity = null;
 
-        _mockRepository.Setup(s => s.SavePrnDetails(It.IsAny<Eprn>()))
-            .Callback<Eprn>(x => createdEntity = x);
+        _mockRepository.Setup(s => s.SavePrnDetails(It.IsAny<Eprn>())).Callback<Eprn>(x => createdEntity = x);
 
         var dto = new SavePrnDetailsRequest()
         {
@@ -387,17 +399,62 @@ public class PrnServiceTests
     }
 
     [TestMethod]
+    public async Task SavePrnDetails_CheckIsExport_ReturningFalse()
+    {
+        Eprn createdEntity = null;
+        string evidenceNo = string.Empty;
+        bool expectedIsExportValue = false;
+
+        _mockRepository.Setup(s => s.SavePrnDetails(It.IsAny<Eprn>())).Callback<Eprn>(x => createdEntity = x);
+
+        var dto = new SavePrnDetailsRequest()
+        {
+            AccreditationNo = "ABC",
+            AccreditationYear = 2018,
+            CancelledDate = DateTime.UtcNow.AddDays(-1),
+            DecemberWaste = true,
+            EvidenceMaterial = "Aluminium",
+            EvidenceNo = string.Empty,
+            EvidenceStatusCode = EprnStatus.AWAITINGACCEPTANCE,
+            EvidenceTonnes = 5000,
+            IssueDate = DateTime.UtcNow.AddDays(-5),
+            IssuedByNPWDCode = "NPWD367742",
+            IssuedByOrgName = "ANB",
+            IssuedToEPRId = Guid.NewGuid(),
+            IssuedToNPWDCode = "NPWD557742",
+            IssuedToOrgName = "ZNZ",
+            IssuerNotes = "no notes",
+            IssuerRef = "ANB-1123",
+            MaterialOperationCode = "R-PLA",
+            ObligationYear = 2025,
+            PrnSignatory = "Pat Anderson",
+            PrnSignatoryPosition = "Director",
+            ProducerAgency = "TTL",
+            RecoveryProcessCode = "N11",
+            ReprocessorAgency = "BEX",
+            StatusDate = DateTime.UtcNow,
+            CreatedByUser = "UserTest",
+        };
+
+        // OVerride Evidence no with input argument from Test data
+        dto.EvidenceNo = evidenceNo;
+
+        await _systemUnderTest.SavePrnDetails(dto);
+        _mockRepository.Verify(x => x.SavePrnDetails(It.IsAny<Eprn>()), Times.Once());
+
+        createdEntity.IsExport.Should().Be(expectedIsExportValue);
+    }
+
+    [TestMethod]
     public async Task SavePrnDetails_SetsDatesCorrectly_BeforeSaving()
     {
-        Eprn? prn = null;
+        Eprn prn = null;
         DateTime? issuedDate = DateTime.UtcNow.AddDays(-5);
         DateTime statusUpdatedDate = DateTime.UtcNow.AddDays(-2);
 
-        _mockRepository.Setup(s => s.SavePrnDetails(It.IsAny<Eprn>()))
-            .Callback<Eprn>(x => prn = x);
+        _mockRepository.Setup(s => s.SavePrnDetails(It.IsAny<Eprn>())).Callback<Eprn>(x => prn = x);
 
         var dto = _fixture.Create<SavePrnDetailsRequest>();
-        //dto.CancelledDate = statusUpdatedDate.AddDays(1);
         dto.EvidenceStatusCode = EprnStatus.AWAITINGACCEPTANCE;
         dto.IssueDate = issuedDate;
         dto.StatusDate = statusUpdatedDate;
@@ -413,12 +470,11 @@ public class PrnServiceTests
     [TestMethod]
     public async Task SavePrnDetails_WhenCancelled_SetsDatesCorrectly_BeforeSaving()
     {
-        Eprn? prn = null;
+        Eprn prn = null;
         DateTime? issuedDate = DateTime.UtcNow.AddDays(-5);
         DateTime statusUpdatedDate = DateTime.UtcNow.AddDays(-2);
 
-        _mockRepository.Setup(s => s.SavePrnDetails(It.IsAny<Eprn>()))
-            .Callback<Eprn>(x => prn = x);
+        _mockRepository.Setup(s => s.SavePrnDetails(It.IsAny<Eprn>())).Callback<Eprn>(x => prn = x);
 
         var dto = _fixture.Create<SavePrnDetailsRequest>();
         dto.CancelledDate = statusUpdatedDate.AddDays(1);

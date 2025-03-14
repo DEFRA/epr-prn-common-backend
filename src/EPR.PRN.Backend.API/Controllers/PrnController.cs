@@ -28,7 +28,7 @@ public class PrnController(IPrnService prnService,
     IValidator<SavePrnDetailsRequest> savePrnDetailsRequestValidator) : ControllerBase
 {
     private readonly PrnObligationCalculationConfig _config = config.Value;
-    private readonly string logPrefix = configuration["LogPrefix"];
+    private readonly string? logPrefix = string.IsNullOrEmpty(configuration["LogPrefix"]) ? "[EPR.PRN.Backend]" : configuration["LogPrefix"];
 
     #region Get methods
 
@@ -50,12 +50,20 @@ public class PrnController(IPrnService prnService,
         return Ok(prn);
     }
 
-    [HttpGet("search/{page?}/{search?}/{filterBy?}/{sortBy?}")]
+    [HttpGet("search/{page}/{search}/{filterBy}/{sortBy}")]
     [ProducesResponseType(typeof(PaginatedResponseDto<PrnDto>), 200)]
     [ProducesResponseType(400)]
     [ProducesResponseType(401)]
-    public async Task<IActionResult> GetSearchPrns([FromHeader(Name = "X-EPR-ORGANISATION")] Guid orgId, [FromQuery] PaginatedRequestDto request)
+    public async Task<IActionResult> GetSearchPrns([FromHeader(Name = "X-EPR-ORGANISATION")] Guid orgId, [FromRoute] int page, [FromRoute] string search, [FromRoute] string filterBy, [FromRoute] string sortBy)
     {
+        PaginatedRequestDto request = new()
+        {
+            Page = page,
+            Search = search,
+            FilterBy = filterBy,
+            SortBy = sortBy
+        };
+
         logger.LogInformation("{Logprefix}: PrnController - GetSearchPrns: Api Route api/v1/prn/search/", logPrefix);
         logger.LogInformation("{Logprefix}: PrnController - GetSearchPrns: Search Prns request for user organisation {Organisation} and Search criteria {Searchcriteria}", logPrefix, orgId, JsonConvert.SerializeObject(request));
         if (orgId == Guid.Empty)
@@ -107,7 +115,7 @@ public class PrnController(IPrnService prnService,
         { return BadRequest(ModelState); }
 
         var statusList = await prnService.GetSyncStatuses(request.From, request.To);
-        return statusList == null || !statusList.Any()
+        return statusList == null || statusList.Count == 0
             ? StatusCode(StatusCodes.Status204NoContent)
             : Ok(statusList);
     }
