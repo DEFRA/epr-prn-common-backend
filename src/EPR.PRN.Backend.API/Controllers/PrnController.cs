@@ -28,7 +28,7 @@ public class PrnController(IPrnService prnService,
     IValidator<SavePrnDetailsRequest> savePrnDetailsRequestValidator) : ControllerBase
 {
     private readonly PrnObligationCalculationConfig _config = config.Value;
-    private readonly string? logPrefix = string.IsNullOrEmpty(configuration["LogPrefix"]) ? "[EPR.PRN.Backend]" : configuration["LogPrefix"];
+    private readonly string logPrefix = configuration["LogPrefix"];
 
     #region Get methods
 
