@@ -206,6 +206,19 @@ public class PrnServiceTests
     }
 
     [TestMethod]
+    public async Task GetSyncStatuses_ReturnsList()
+    {
+        DateTime fromDate = DateTime.UtcNow;
+        DateTime toDate = DateTime.UtcNow;
+        List<PrnStatusSync> prnStatusSyncs = new List<PrnStatusSync>();
+        _mockRepository.Setup(r => r.GetSyncStatuses(fromDate, toDate)).ReturnsAsync(prnStatusSyncs);
+
+        var result = await _systemUnderTest.GetSyncStatuses(fromDate, toDate);
+
+        result.Should().NotBeNull();
+    }
+
+    [TestMethod]
     public async Task GetSearchPrnsForOrganisation_ReturnsRepsoneGotFromRepo()
     {
         var orgId = Guid.NewGuid();
@@ -345,8 +358,7 @@ public class PrnServiceTests
     {
         Eprn createdEntity = null;
 
-        _mockRepository.Setup(s => s.SavePrnDetails(It.IsAny<Eprn>()))
-            .Callback<Eprn>(x => createdEntity = x);
+        _mockRepository.Setup(s => s.SavePrnDetails(It.IsAny<Eprn>())).Callback<Eprn>(x => createdEntity = x);
 
         var dto = new SavePrnDetailsRequest()
         {
@@ -356,6 +368,53 @@ public class PrnServiceTests
             DecemberWaste = true,
             EvidenceMaterial = "Aluminium",
             EvidenceNo = Guid.NewGuid().ToString(),
+            EvidenceStatusCode = EprnStatus.AWAITINGACCEPTANCE,
+            EvidenceTonnes = 5000,
+            IssueDate = DateTime.UtcNow.AddDays(-5),
+            IssuedByNPWDCode = "NPWD367742",
+            IssuedByOrgName = "ANB",
+            IssuedToEPRId = Guid.NewGuid(),
+            IssuedToNPWDCode = "NPWD557742",
+            IssuedToOrgName = "ZNZ",
+            IssuerNotes = "no notes",
+            IssuerRef = "ANB-1123",
+            MaterialOperationCode = "R-PLA",
+            ObligationYear = 2025,
+            PrnSignatory = "Pat Anderson",
+            PrnSignatoryPosition = "Director",
+            ProducerAgency = "TTL",
+            RecoveryProcessCode = "N11",
+            ReprocessorAgency = "BEX",
+            StatusDate = DateTime.UtcNow,
+            CreatedByUser = "UserTest",
+        };
+
+        // OVerride Evidence no with input argument from Test data
+        dto.EvidenceNo = evidenceNo;
+
+        await _systemUnderTest.SavePrnDetails(dto);
+        _mockRepository.Verify(x => x.SavePrnDetails(It.IsAny<Eprn>()), Times.Once());
+
+        createdEntity.IsExport.Should().Be(expectedIsExportValue);
+    }
+
+    [TestMethod]
+    public async Task SavePrnDetails_CheckIsExport_ReturningFalse()
+    {
+        Eprn createdEntity = null;
+        string evidenceNo = string.Empty;
+        bool expectedIsExportValue = false;
+
+        _mockRepository.Setup(s => s.SavePrnDetails(It.IsAny<Eprn>())).Callback<Eprn>(x => createdEntity = x);
+
+        var dto = new SavePrnDetailsRequest()
+        {
+            AccreditationNo = "ABC",
+            AccreditationYear = 2018,
+            CancelledDate = DateTime.UtcNow.AddDays(-1),
+            DecemberWaste = true,
+            EvidenceMaterial = "Aluminium",
+            EvidenceNo = string.Empty,
             EvidenceStatusCode = EprnStatus.AWAITINGACCEPTANCE,
             EvidenceTonnes = 5000,
             IssueDate = DateTime.UtcNow.AddDays(-5),
