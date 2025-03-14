@@ -15,7 +15,7 @@ namespace EPR.PRN.Backend.Data.DataModels
         public int RegistrationId { get; set; }
 
         [Required]
-        public string MaterialId { get; set; }
+        public int MaterialId { get; set; }
 
         [Required]
         public int FeesId { get; set; }

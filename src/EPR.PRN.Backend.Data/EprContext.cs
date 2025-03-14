@@ -43,10 +43,6 @@ namespace EPR.PRN.Backend.Data
             modelBuilder.Entity<PrnStatus>()
                 .HasData(DataModels.PrnStatus.Data);
 
-            modelBuilder.Entity<FeesAmount>()
-                .HasIndex(a => a.MaterialId)
-                .IsUnique();
-
             modelBuilder.Entity<RecyclingTarget>()
                 .HasData
                 (
@@ -126,23 +122,56 @@ namespace EPR.PRN.Backend.Data
                 .IsUnique();
 
                 entity.HasData
-				(
-					new Material { Id = 1, MaterialCode = "PL", MaterialName = MaterialType.Plastic.ToString() },
-					new Material { Id = 2, MaterialCode = "WD", MaterialName = MaterialType.Wood.ToString() },
-					new Material { Id = 3, MaterialCode = "AL", MaterialName = MaterialType.Aluminium.ToString() },
-					new Material { Id = 4, MaterialCode = "ST", MaterialName = MaterialType.Steel.ToString() },
-					new Material { Id = 5, MaterialCode = "PC", MaterialName = MaterialType.Paper.ToString() },
-					new Material { Id = 6, MaterialCode = "GL", MaterialName = MaterialType.Glass.ToString() },
-					new Material { Id = 7, MaterialCode = "GR", MaterialName = MaterialType.GlassRemelt.ToString() },
-					new Material { Id = 8, MaterialCode = "FC", MaterialName = MaterialType.FibreComposite.ToString() }
-				);
-			});
+                (
+                    new Material { Id = 1, MaterialCode = "PL", MaterialName = MaterialType.Plastic.ToString() },
+                    new Material { Id = 2, MaterialCode = "WD", MaterialName = MaterialType.Wood.ToString() },
+                    new Material { Id = 3, MaterialCode = "AL", MaterialName = MaterialType.Aluminium.ToString() },
+                    new Material { Id = 4, MaterialCode = "ST", MaterialName = MaterialType.Steel.ToString() },
+                    new Material { Id = 5, MaterialCode = "PC", MaterialName = MaterialType.Paper.ToString() },
+                    new Material { Id = 6, MaterialCode = "GL", MaterialName = MaterialType.Glass.ToString() },
+                    new Material { Id = 7, MaterialCode = "GR", MaterialName = MaterialType.GlassRemelt.ToString() },
+                    new Material { Id = 8, MaterialCode = "FC", MaterialName = MaterialType.FibreComposite.ToString() }
+                );
+            });
+
+            modelBuilder.Entity<PrnMaterialMapping>()
+                .HasData
+                (
+                    new PrnMaterialMapping { Id = 1, PRNMaterialId = 1, NPWDMaterialName = PrnConstants.Materials.Plastic },
+                    new PrnMaterialMapping { Id = 2, PRNMaterialId = 2, NPWDMaterialName = PrnConstants.Materials.Wood },
+                    new PrnMaterialMapping { Id = 3, PRNMaterialId = 2, NPWDMaterialName = PrnConstants.Materials.WoodComposting },
+                    new PrnMaterialMapping { Id = 4, PRNMaterialId = 3, NPWDMaterialName = PrnConstants.Materials.Aluminium },
+                    new PrnMaterialMapping { Id = 5, PRNMaterialId = 4, NPWDMaterialName = PrnConstants.Materials.Steel },
+                    new PrnMaterialMapping { Id = 6, PRNMaterialId = 5, NPWDMaterialName = PrnConstants.Materials.PaperFiber },
+                    new PrnMaterialMapping { Id = 7, PRNMaterialId = 5, NPWDMaterialName = PrnConstants.Materials.PaperComposting },
+                    new PrnMaterialMapping { Id = 8, PRNMaterialId = 6, NPWDMaterialName = PrnConstants.Materials.GlassOther },
+                    new PrnMaterialMapping { Id = 9, PRNMaterialId = 7, NPWDMaterialName = PrnConstants.Materials.GlassMelt }
+                );
+
+            modelBuilder.Entity<Eprn>(entity =>
+            {
+                entity.HasMany(prn => prn.PrnStatusHistories)
+                .WithOne()
+                .HasForeignKey(s => s.PrnIdFk)
+                .OnDelete(DeleteBehavior.NoAction);
+            });
+
+            modelBuilder.Entity<ObligationCalculation>()
+            .HasOne(c => c.Material)
+            .WithMany()
+            .HasForeignKey(c => c.MaterialId)
+            .OnDelete(DeleteBehavior.NoAction);
+
+
+            modelBuilder.Entity<FeesAmount>()
+                .HasIndex(a => a.MaterialId)
+                .IsUnique();
 
             modelBuilder.Entity<ApplicationType>()
-                .HasData(
-                            new ApplicationType { Id = 1, Name = "Reprocessor" },
-                            new ApplicationType { Id = 2, Name = "Exporter" }
-                );
+              .HasData(
+                          new ApplicationType { Id = 1, Name = "Reprocessor" },
+                          new ApplicationType { Id = 2, Name = "Exporter" }
+              );
 
             modelBuilder.Entity<Period>()
                 .HasData(
@@ -174,33 +203,14 @@ namespace EPR.PRN.Backend.Data
                     new RegistrationStatus { Id = 10, Name = "Withdrawn" }
                 );
 
-            modelBuilder.Entity<Material>()
-                .HasData(
-                            new Material { MaterialCode = "PL", MaterialName = "Plastic" },
-                            new Material { MaterialCode = "WD", MaterialName = "Wood" },
-                            new Material { MaterialCode = "AL", MaterialName = "Aluminium" },
-                            new Material { MaterialCode = "ST", MaterialName = "Steel" },
-                            new Material { MaterialCode = "PC", MaterialName = "Paper" },
-                            new Material { MaterialCode = "GL", MaterialName = "Glass" },
-                            new Material { MaterialCode = "FC", MaterialName = "FibreComposite" }
-                );
-
-			modelBuilder.Entity<Eprn>(entity =>
+            modelBuilder.Entity<Eprn>(entity =>
             {
                 entity.HasMany(prn => prn.PrnStatusHistories)
                 .WithOne()
                 .HasForeignKey(s => s.PrnIdFk)
                 .OnDelete(DeleteBehavior.NoAction);
             });
-            
-            modelBuilder.Entity<ObligationCalculation>()
-			.HasOne(c => c.Material)
-			.WithMany()
-			.HasForeignKey(c => c.MaterialId)
-			.OnDelete(DeleteBehavior.NoAction);
 
-			base.OnModelCreating(modelBuilder);
-        }
 
             modelBuilder.Entity<DataModels.TaskStatus>()
             .HasData(
@@ -237,7 +247,7 @@ namespace EPR.PRN.Backend.Data
 
         public virtual DbSet<Address> Address { get; set; }
         public virtual DbSet<ApplicationType> ApplicationType { get; set; }
-        public  virtual DbSet<AppRefPerMaterial> AppRefPerMaterial { get; set; }
+        public virtual DbSet<AppRefPerMaterial> AppRefPerMaterial { get; set; }
         public virtual DbSet<FeesAmount> FeesAmount { get; set; }
         public virtual DbSet<FileUpload> FileUpload { get; set; }
         public virtual DbSet<FileUploadStatus> FileUploadStatus { get; set; }
@@ -246,6 +256,7 @@ namespace EPR.PRN.Backend.Data
         public virtual DbSet<MaterialPermitType> MaterialPermitType { get; set; }
         public virtual DbSet<ObligationCalculation> ObligationCalculations { get; set; }
         public virtual DbSet<PEprNpwdSync> PEprNpwdSync { get; set; }
+        public virtual DbSet<PrnMaterialMapping> PrnMaterialMapping { get; set; }
         public virtual DbSet<Period> Period { get; set; }
         public virtual DbSet<Eprn> Prn { get; set; }
         public virtual DbSet<PrnStatus> PrnStatus { get; set; }

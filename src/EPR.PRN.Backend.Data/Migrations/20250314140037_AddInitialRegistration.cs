@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace EPR.PRN.Backend.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialRegistration : Migration
+    public partial class AddInitialRegistration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -237,7 +237,7 @@ namespace EPR.PRN.Backend.Data.Migrations
                     DateUploaded = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UploadedBy = table.Column<Guid>(type: "uniqueidentifier", maxLength: 200, nullable: false),
                     FileUploadTypeId = table.Column<int>(type: "int", nullable: false),
-                    MaterialId = table.Column<string>(type: "nvarchar(20)", nullable: false),
+                    MaterialId = table.Column<int>(type: "int", nullable: false),
                     FileUploadStatusId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -259,7 +259,7 @@ namespace EPR.PRN.Backend.Data.Migrations
                         name: "FK_FileUpload_Material_MaterialId",
                         column: x => x.MaterialId,
                         principalTable: "Material",
-                        principalColumn: "MaterialName",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_FileUpload_Registration_RegistrationId",
@@ -277,7 +277,7 @@ namespace EPR.PRN.Backend.Data.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     ExternalId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     RegistrationId = table.Column<int>(type: "int", nullable: false),
-                    MaterialId = table.Column<string>(type: "nvarchar(20)", nullable: false),
+                    MaterialId = table.Column<int>(type: "int", nullable: false),
                     PersonId = table.Column<int>(type: "int", nullable: false),
                     RegistrationContactId = table.Column<int>(type: "int", nullable: true)
                 },
@@ -288,7 +288,7 @@ namespace EPR.PRN.Backend.Data.Migrations
                         name: "FK_RegistrationContact_Material_MaterialId",
                         column: x => x.MaterialId,
                         principalTable: "Material",
-                        principalColumn: "MaterialName",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_RegistrationContact_RegistrationContact_RegistrationContactId",
@@ -311,7 +311,7 @@ namespace EPR.PRN.Backend.Data.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     ExternalId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     RegistrationId = table.Column<int>(type: "int", nullable: false),
-                    MaterialId = table.Column<string>(type: "nvarchar(20)", nullable: false),
+                    MaterialId = table.Column<int>(type: "int", nullable: false),
                     FeesId = table.Column<int>(type: "int", nullable: false),
                     ReferenceNumber = table.Column<string>(type: "nvarchar(12)", maxLength: 12, nullable: false),
                     PermitTypeId = table.Column<int>(type: "int", nullable: false),
@@ -351,7 +351,7 @@ namespace EPR.PRN.Backend.Data.Migrations
                         name: "FK_RegistrationMaterial_Material_MaterialId",
                         column: x => x.MaterialId,
                         principalTable: "Material",
-                        principalColumn: "MaterialName",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_RegistrationMaterial_Period_EnvironmentalPermitWasteManagementPeriodId",
@@ -400,7 +400,7 @@ namespace EPR.PRN.Backend.Data.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     ExternalId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     RegistrationId = table.Column<int>(type: "int", nullable: false),
-                    MaterialId = table.Column<string>(type: "nvarchar(20)", nullable: false),
+                    MaterialId = table.Column<int>(type: "int", nullable: false),
                     TypeOfSuppliers = table.Column<string>(type: "nvarchar(2000)", maxLength: 2000, nullable: false),
                     ReprocessingPackgagingWasteLastYearFlag = table.Column<bool>(type: "bit", nullable: false),
                     UKPackgagingWasteTonne = table.Column<decimal>(type: "decimal(10,2)", nullable: false),
@@ -418,7 +418,7 @@ namespace EPR.PRN.Backend.Data.Migrations
                         name: "FK_RegistrationReprocessingIO_Material_MaterialId",
                         column: x => x.MaterialId,
                         principalTable: "Material",
-                        principalColumn: "MaterialName",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_RegistrationReprocessingIO_Registration_RegistrationId",
@@ -533,11 +533,6 @@ namespace EPR.PRN.Backend.Data.Migrations
                 table: "FileUploadType",
                 columns: new[] { "Id", "Name" },
                 values: new object[] { 1, "SamplingAndInspectionPlan" });
-
-            migrationBuilder.InsertData(
-                table: "Material",
-                columns: new[] { "MaterialName", "MaterialCode" },
-                values: new object[] { "FibreComposite", "FC" });
 
             migrationBuilder.InsertData(
                 table: "MaterialPermitType",
@@ -816,11 +811,6 @@ namespace EPR.PRN.Backend.Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "RegistrationStatus");
-
-            migrationBuilder.DeleteData(
-                table: "Material",
-                keyColumn: "MaterialName",
-                keyValue: "FibreComposite");
         }
     }
 }

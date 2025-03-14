@@ -25,7 +25,7 @@ namespace EPR.PRN.Backend.Data.DataModels
 
         public int FileUploadTypeId { get; set; }
 
-        public string MaterialId { get; set; }
+        public int MaterialId { get; set; }
 
         public int FileUploadStatusId { get; set; }
 
