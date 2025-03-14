@@ -16,9 +16,9 @@ using System.Collections.Generic;
 
 public class PrnService(IRepository repository, ILogger<PrnService> logger, IConfiguration configuration) : IPrnService
 {
-    private readonly string? logPrefix = string.IsNullOrEmpty(configuration["LogPrefix"]) ? "[EPR.PRN.Backend]" : configuration["LogPrefix"];
+    private readonly string logPrefix = string.IsNullOrEmpty(configuration["LogPrefix"]) ? "[EPR.PRN.Backend]" : configuration["LogPrefix"];
 
-    public async Task<PrnDto?> GetPrnForOrganisationById(Guid orgId, Guid prnId)
+    public async Task<PrnDto> GetPrnForOrganisationById(Guid orgId, Guid prnId)
     {
         logger.LogInformation("{Logprefix}: PrnService - GetPrnForOrganisationById: request for organisation {Organisation} and Prns to Update {PrnId}", logPrefix, orgId, prnId);
         var prns = await repository.GetPrnForOrganisationById(orgId, prnId);
@@ -36,14 +36,14 @@ public class PrnService(IRepository repository, ILogger<PrnService> logger, ICon
         return prns;
     }
 
-    public async Task<List<PrnUpdateStatus>?> GetModifiedPrnsbyDate(DateTime fromDate, DateTime toDate)
+    public async Task<List<PrnUpdateStatus>> GetModifiedPrnsbyDate(DateTime fromDate, DateTime toDate)
     {
         var modifiedPrns = await repository.GetModifiedPrnsbyDate(fromDate, toDate);
 
         return modifiedPrns ?? null;
     }
 
-    public async Task<List<PrnStatusSync>?> GetSyncStatuses(DateTime fromDate, DateTime toDate)
+    public async Task<List<PrnStatusSync>> GetSyncStatuses(DateTime fromDate, DateTime toDate)
     {
         return await repository.GetSyncStatuses(fromDate, toDate);
     }
@@ -137,7 +137,7 @@ public class PrnService(IRepository repository, ILogger<PrnService> logger, ICon
         }
         catch (Exception ex)
         {
-            logger.LogError(message: ex.Message, exception: ex);
+            logger.LogError(exception: ex, "{Logprefix}: Error Message: {Message}", logPrefix, ex.Message);
             throw new OperationCanceledException("Error encountered when attempting to map and save PRN requst. Please see the logs for details.");
         }
     }
