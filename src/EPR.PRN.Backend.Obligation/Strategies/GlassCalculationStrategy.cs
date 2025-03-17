@@ -26,21 +26,21 @@ namespace EPR.PRN.Backend.Obligation.Strategies
                 calculationRequest.RecyclingTargets[targetYear][MaterialType.GlassRemelt],
                 calculationRequest.SubmissionCalculationRequest.PackagingMaterialWeight);
 
-            return new List<ObligationCalculation>
-            {
-                new ObligationCalculation { MaterialName = MaterialType.Glass.ToString(),
+            return
+			[
+				new ObligationCalculation { MaterialId = calculationRequest.Materials.First(m => m.MaterialName == MaterialType.Glass.ToString()).Id,
                     CalculatedOn = calculatedOn,
                     OrganisationId = calculationRequest.OrganisationId,
                     MaterialObligationValue = remainder,
                     Year = DateTime.UtcNow.Year,
                     Tonnage = calculationRequest.SubmissionCalculationRequest.PackagingMaterialWeight },
-                new ObligationCalculation { MaterialName = MaterialType.GlassRemelt.ToString(),
+                new ObligationCalculation { MaterialId = calculationRequest.Materials.First(m => m.MaterialName == MaterialType.GlassRemelt.ToString()).Id,
                     CalculatedOn = calculatedOn,
                     OrganisationId = calculationRequest.OrganisationId,
                     MaterialObligationValue = remelt,
                     Year = DateTime.UtcNow.Year,
                     Tonnage = calculationRequest.SubmissionCalculationRequest.PackagingMaterialWeight }
-            };
+            ];
         }
     }
 }

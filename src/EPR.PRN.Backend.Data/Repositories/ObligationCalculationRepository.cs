@@ -9,9 +9,9 @@ public class ObligationCalculationRepository(EprContext context) : IObligationCa
     public async Task<List<ObligationCalculation>> GetObligationCalculation(IEnumerable<Guid> organisationIds, int year)
     {
         return await context.ObligationCalculations
-            .AsNoTracking()
-            .Where(x => organisationIds.Contains(x.OrganisationId) && x.Year == year)
-            .ToListAsync();
+                            .AsNoTracking()
+                            .Where(x => organisationIds.Contains(x.OrganisationId) && x.Year == year)
+                            .ToListAsync();
     }
 
     public async Task AddObligationCalculation(List<ObligationCalculation> calculation)
@@ -42,13 +42,13 @@ public class ObligationCalculationRepository(EprContext context) : IObligationCa
         {
             foreach (var calculation in calculations)
             {
-                var existingCalculation = obligationCalculations.FirstOrDefault(c => c.MaterialName == calculation.MaterialName);
+                var existingCalculation = obligationCalculations.Find(c => c.MaterialId == calculation.MaterialId);
 
                 if (existingCalculation != null)
                 {
                     context.ObligationCalculations.Attach(existingCalculation);
                     existingCalculation.OrganisationId = organisationIds[0];
-                    existingCalculation.MaterialName = calculation.MaterialName;
+                    existingCalculation.MaterialId = calculation.MaterialId;
                     existingCalculation.MaterialObligationValue = calculation.MaterialObligationValue;
                     existingCalculation.Tonnage = calculation.Tonnage;
                     existingCalculation.CalculatedOn = DateTime.Now;

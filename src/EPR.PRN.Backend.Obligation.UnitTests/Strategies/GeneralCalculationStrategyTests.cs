@@ -1,4 +1,5 @@
 ﻿using EPR.PRN.Backend.API.Common.Enums;
+using EPR.PRN.Backend.Data.DataModels;
 using EPR.PRN.Backend.Obligation.Dto;
 using EPR.PRN.Backend.Obligation.Interfaces;
 using EPR.PRN.Backend.Obligation.Models;
@@ -56,15 +57,21 @@ public class GeneralCalculationStrategyTests
         var organisationId = Guid.NewGuid();
         var calculationRequest = new SubmissionCalculationRequest
         {
-            PackagingMaterial = "Plastic",
+            PackagingMaterial = "PL",
             PackagingMaterialWeight = materialWeight,
-            SubmissionId = Guid.NewGuid(),
+            OrganisationId = Guid.NewGuid(),
             SubmissionPeriod = "2024-P1"
         };
 
         var materialType = MaterialType.Plastic;
+        var material = new Material
+		{
+			Id = 1,
+			MaterialName = materialType.ToString(),
+			MaterialCode = "PL"
+		};
 
-        var recyclingTargets = new Dictionary<int, Dictionary<MaterialType, double>>
+		var recyclingTargets = new Dictionary<int, Dictionary<MaterialType, double>>
         {
             {
                 2025,
@@ -80,6 +87,7 @@ public class GeneralCalculationStrategyTests
             SubmissionCalculationRequest = calculationRequest,
             RecyclingTargets = recyclingTargets,
             MaterialType = materialType,
+            Materials = [material],
             OrganisationId = organisationId,
         };
 
@@ -91,7 +99,7 @@ public class GeneralCalculationStrategyTests
         // Assert
         Assert.IsNotNull(result);
         Assert.AreEqual(1, result.Count);
-        Assert.AreEqual("Plastic", result[0].MaterialName);
+        Assert.AreEqual(1, result[0].MaterialId);
         Assert.AreEqual(expectedRoundedObligationCalculationResult, result[0].MaterialObligationValue);
         Assert.AreEqual(organisationId, result[0].OrganisationId);
         Assert.AreEqual(DateTime.UtcNow.Year, result[0].Year);
@@ -107,15 +115,21 @@ public class GeneralCalculationStrategyTests
         var organisationId = Guid.NewGuid();
         var calculationRequest = new SubmissionCalculationRequest
         {
-            PackagingMaterial = "Plastic",
+            PackagingMaterial = "PL",
             PackagingMaterialWeight = 100,
-            SubmissionId = Guid.NewGuid(),
+            OrganisationId = Guid.NewGuid(),
             SubmissionPeriod = "2025-P1"
         };
 
         var materialType = MaterialType.Plastic;
+		var material = new Material
+		{
+			Id = 1,
+			MaterialName = materialType.ToString(),
+			MaterialCode = "PL"
+		};
 
-        var recyclingTargets = new Dictionary<int, Dictionary<MaterialType, double>>
+		var recyclingTargets = new Dictionary<int, Dictionary<MaterialType, double>>
         {
             {
                 DateTime.UtcNow.Year - 1, // Use a past year to trigger the exception
@@ -125,7 +139,14 @@ public class GeneralCalculationStrategyTests
                 }
             }
         };
-        var request = new CalculationRequestDto { SubmissionCalculationRequest = calculationRequest, RecyclingTargets = recyclingTargets, MaterialType = materialType, OrganisationId = organisationId };
+        var request = new CalculationRequestDto
+        {
+            SubmissionCalculationRequest = calculationRequest,
+            RecyclingTargets = recyclingTargets,
+            MaterialType = materialType,
+			Materials = [material],
+			OrganisationId = organisationId
+        };
         // Act
         _strategy.Calculate(request);
 

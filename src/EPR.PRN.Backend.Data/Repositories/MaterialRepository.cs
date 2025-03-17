@@ -6,9 +6,12 @@ namespace EPR.PRN.Backend.Data.Repositories
 {
     public class MaterialRepository(EprContext context) : IMaterialRepository
     {
-        public async Task<IEnumerable<Material>> GetAllMaterials()
-        {
-            return await context.Material.ToListAsync();
-        }
-    }
+		public async Task<IEnumerable<Material>> GetAllMaterials()
+		{
+			return await context.Material
+								.AsNoTracking()
+								.Include(m => m.PrnMaterialMappings)
+								.ToListAsync();
+		}
+	}
 }
