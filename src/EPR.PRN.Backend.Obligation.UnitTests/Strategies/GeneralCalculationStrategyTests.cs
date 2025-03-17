@@ -5,6 +5,7 @@ using EPR.PRN.Backend.Obligation.Interfaces;
 using EPR.PRN.Backend.Obligation.Models;
 using EPR.PRN.Backend.Obligation.Services;
 using EPR.PRN.Backend.Obligation.Strategies;
+using FluentAssertions;
 using Moq;
 
 namespace EPR.PRN.Backend.Obligation.UnitTests.Strategies;
@@ -13,13 +14,15 @@ namespace EPR.PRN.Backend.Obligation.UnitTests.Strategies;
 public class GeneralCalculationStrategyTests
 {
     private Mock<IMaterialCalculationService> _mockCalculationService;
-    private GeneralCalculationStrategy _strategy;
+	private Mock<IDateTimeProvider> _mockDateTimeProvider;
+	private GeneralCalculationStrategy _strategy;
 
     [TestInitialize]
     public void SetUp()
     {
         _mockCalculationService = new Mock<IMaterialCalculationService>();
-        _strategy = new GeneralCalculationStrategy(_mockCalculationService.Object);
+		_mockDateTimeProvider = new Mock<IDateTimeProvider>();
+		_strategy = new GeneralCalculationStrategy(_mockCalculationService.Object, _mockDateTimeProvider.Object);
     }
 
     [TestMethod]
@@ -32,7 +35,7 @@ public class GeneralCalculationStrategyTests
         var result = _strategy.CanHandle(materialType);
 
         // Assert
-        Assert.IsTrue(result);
+        result.Should().BeTrue();
     }
 
     [TestMethod]
@@ -44,24 +47,33 @@ public class GeneralCalculationStrategyTests
         var result = _strategy.CanHandle(materialType);
 
         // Assert
-        Assert.IsFalse(result);
+        result.Should().BeFalse();
     }
 
     [TestMethod]
-    [DataRow(100, 0.7, 70)]
-    [DataRow(101, 0.75, 76)]
-    [DataRow(101, 0.72, 73)]
-    public void Calculate_ShouldReturnCorrectObligationCalculation(int materialWeight, double recyclingTarget, int expectedRoundedObligationCalculationResult)
+	[DataRow(100, 0.70, 70, 0)]
+	[DataRow(101, 0.70, 71, 0)]
+    [DataRow(101, 0.71, 72, 1)]
+	[DataRow(101, 0.72, 73, 2)]
+	[DataRow(101, 0.73, 74, 3)]
+	[DataRow(101, 0.74, 75, 4)]
+	public void Calculate_ShouldReturnCorrectObligationCalculation(int materialWeight, double recyclingTarget, int expectedRoundedMaterialObligationValue, int yearOffSet)
     {
         // Arrange
         var organisationId = Guid.NewGuid();
-        var calculationRequest = new SubmissionCalculationRequest
+		var currentYear = DateTime.UtcNow.Year + yearOffSet;
+		var calculatedOn = DateTime.UtcNow.AddYears(yearOffSet);
+		_mockDateTimeProvider.Setup(m => m.UtcNow).Returns(calculatedOn);
+		_mockDateTimeProvider.Setup(m => m.CurrentYear).Returns(currentYear);
+		var submissionPeriod = $"{currentYear - 1}";
+
+		var calculationRequest = new SubmissionCalculationRequest
         {
             PackagingMaterial = "PL",
             PackagingMaterialWeight = materialWeight,
-            OrganisationId = Guid.NewGuid(),
-            SubmissionPeriod = "2024-P1"
-        };
+            OrganisationId = organisationId,
+            SubmissionPeriod = submissionPeriod
+		};
 
         var materialType = MaterialType.Plastic;
         var material = new Material
@@ -74,7 +86,7 @@ public class GeneralCalculationStrategyTests
 		var recyclingTargets = new Dictionary<int, Dictionary<MaterialType, double>>
         {
             {
-                2025,
+                currentYear,
                 new Dictionary<MaterialType, double>
                 {
                     { materialType, recyclingTarget }
@@ -91,20 +103,20 @@ public class GeneralCalculationStrategyTests
             OrganisationId = organisationId,
         };
 
-        _strategy = new GeneralCalculationStrategy(new MaterialCalculationService());
+        _strategy = new GeneralCalculationStrategy(new MaterialCalculationService(), _mockDateTimeProvider.Object);
 
         // Act
         var result = _strategy.Calculate(request);
 
         // Assert
-        Assert.IsNotNull(result);
-        Assert.AreEqual(1, result.Count);
-        Assert.AreEqual(1, result[0].MaterialId);
-        Assert.AreEqual(expectedRoundedObligationCalculationResult, result[0].MaterialObligationValue);
-        Assert.AreEqual(organisationId, result[0].OrganisationId);
-        Assert.AreEqual(DateTime.UtcNow.Year, result[0].Year);
-        Assert.AreEqual(calculationRequest.PackagingMaterialWeight, result[0].Tonnage);
-        Assert.IsTrue((DateTime.UtcNow - result[0].CalculatedOn).TotalSeconds < 1, "CalculatedOn should be very close to the current time");
+        result.Should().NotBeNull();
+        result.Should().HaveCount(1);
+		result[0].MaterialId.Should().Be(1);
+		result[0].MaterialObligationValue.Should().Be(expectedRoundedMaterialObligationValue);
+        result[0].OrganisationId.Should().Be(organisationId);
+        result[0].Year.Should().Be(currentYear);
+        result[0].Tonnage.Should().Be(materialWeight);
+		result[0].CalculatedOn.Should().Be(calculatedOn);
     }
 
     [TestMethod]
