@@ -13,7 +13,6 @@ namespace EPR.PRN.Backend.API.Services
         public async Task<RegistrationDto?> GetByIdAsync(int id)
         {
             var registrationDto = new RegistrationDto();
-            var addressDto = new List<AddressDto>();
 
             var registration = await repository.GetByIdAsync(id);
 
