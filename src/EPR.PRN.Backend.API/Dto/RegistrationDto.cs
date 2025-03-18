@@ -8,6 +8,7 @@ namespace EPR.PRN.Backend.API.Dto
     {
         public int ApplicationTypeId { get; set; }
         public Guid OrganisatonId { get; set; }
+        public int RegistrationStatusId { get; set; }
         public string RegistrationStatus { get; set; } = null!;
         public DateTime CreatedDate { get; set; }
         public DateTime UpdatedDate { get; set; }

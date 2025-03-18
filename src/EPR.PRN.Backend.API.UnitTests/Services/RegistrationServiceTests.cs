@@ -1,5 +1,6 @@
 ﻿using AutoFixture;
 using EPR.PRN.Backend.API.Common.Constants;
+using EPR.PRN.Backend.API.Helpers;
 using EPR.PRN.Backend.API.Services;
 using EPR.PRN.Backend.Data.DataModels;
 using EPR.PRN.Backend.Data.Interfaces;
@@ -73,19 +74,17 @@ namespace EPR.PRN.Backend.API.UnitTests.Services
         }
 
         [TestMethod]
-        public async Task GetRegistrationById_WithInValidId_ReturnsNull()
+        public async Task GetRegistrationById_WithInValidId_ThrowNotFoundException()
         {
             var registrationId = 1;
             var organisationId = Guid.NewGuid();
 
-            _mockRepository.Setup(r => r.GetByIdAsync(registrationId)).ReturnsAsync((Registration)null);
+            _mockRepository.Setup(r => r.GetByIdAsync(registrationId)).Throws<NotFoundException>();
 
-            var result = await _systemUnderTest.GetByIdAsync(registrationId);
-
-            result.Should().BeNull();
-
-            _mockRepository.Verify(r => r.GetByIdAsync(registrationId), Times.Once);
-            _mockRepository.VerifyNoOtherCalls();
+            await _systemUnderTest
+            .Invoking(x => x.GetByIdAsync(registrationId))
+            .Should()
+            .ThrowAsync<NotFoundException>();
         }
 
         [TestMethod]

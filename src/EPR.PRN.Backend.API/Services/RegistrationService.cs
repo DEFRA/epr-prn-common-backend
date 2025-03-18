@@ -3,6 +3,7 @@ using EPR.PRN.Backend.API.Services.Interfaces;
 using EPR.PRN.Backend.Data.Interfaces;
 using EPR.PRN.Backend.Data.DataModels;
 using EPR.PRN.Backend.API.Common.Constants;
+using EPR.PRN.Backend.API.Helpers;
 
 
 namespace EPR.PRN.Backend.API.Services
@@ -15,12 +16,14 @@ namespace EPR.PRN.Backend.API.Services
             var addressDto = new List<AddressDto>();
 
             var registration = await repository.GetByIdAsync(id);
+
             if (registration is null)
             {
                 logger.LogInformation("Registration was not found {id}.", id);
-                return null;
+                throw new NotFoundException($"Registration with id {id} was not found in system");
             }
 
+            registrationDto.RegistrationStatusId = registration.RegistrationStatusId;
             registrationDto.ApplicationTypeId = registration.ApplicationTypeId;
             registrationDto.OrganisatonId = registration.OrganisationId;
             registrationDto.UpdatedBy = registration.UpdatedBy;
