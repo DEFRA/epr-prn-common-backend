@@ -1,7 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
 
 namespace EPR.PRN.Backend.Data.DataModels
 {
+    [ExcludeFromCodeCoverage]
     public class TaskStatus
     {
         [Key]
