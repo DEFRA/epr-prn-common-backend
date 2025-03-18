@@ -40,6 +40,12 @@ namespace EPR.PRN.Backend.API.UnitTests.Services
             var expectedRegistration = new Registration { Id= 1, 
                 ApplicationTypeId = 1, 
                 OrganisationId = organisationId,
+                RegistrationStatusId = 1,
+                RegistrationStatus = new RegistrationStatus
+                {
+                    Id = 1,
+                    Name = "Accepted"
+                },
                 BusinessAddress = new Address { 
                     Id = 1, 
                     AddressLine1 = "Business Address", 
@@ -112,6 +118,12 @@ namespace EPR.PRN.Backend.API.UnitTests.Services
                 Id = 1,
                 ApplicationTypeId = 1,
                 OrganisationId = organisationId,
+                RegistrationStatusId = 1,
+                RegistrationStatus = new RegistrationStatus
+                {
+                    Id = 1,
+                    Name = "Accepted"
+                },
                 BusinessAddress = new Address
                 {
                     Id = 1,
