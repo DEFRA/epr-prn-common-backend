@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EPR.PRN.Backend.Data.Migrations
 {
     [DbContext(typeof(EprContext))]
-    [Migration("20250314140037_AddInitialRegistration")]
-    partial class AddInitialRegistration
+    [Migration("20250310153234_InitialRegistration")]
+    partial class InitialRegistration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -318,8 +318,9 @@ namespace EPR.PRN.Backend.Data.Migrations
                     b.Property<int>("FileUploadTypeId")
                         .HasColumnType("int");
 
-                    b.Property<int>("MaterialId")
-                        .HasColumnType("int");
+                    b.Property<string>("MaterialId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(20)");
 
                     b.Property<int>("RegistrationId")
                         .HasColumnType("int");
@@ -413,77 +414,54 @@ namespace EPR.PRN.Backend.Data.Migrations
 
             modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Material", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    b.Property<string>("MaterialName")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
 
                     b.Property<string>("MaterialCode")
                         .IsRequired()
                         .HasMaxLength(3)
                         .HasColumnType("nvarchar(3)");
 
-                    b.Property<string>("MaterialName")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("MaterialCode")
-                        .IsUnique();
+                    b.HasKey("MaterialName");
 
                     b.ToTable("Material");
 
                     b.HasData(
                         new
                         {
-                            Id = 1,
-                            MaterialCode = "PL",
-                            MaterialName = "Plastic"
+                            MaterialName = "Plastic",
+                            MaterialCode = "PL"
                         },
                         new
                         {
-                            Id = 2,
-                            MaterialCode = "WD",
-                            MaterialName = "Wood"
+                            MaterialName = "Wood",
+                            MaterialCode = "WD"
                         },
                         new
                         {
-                            Id = 3,
-                            MaterialCode = "AL",
-                            MaterialName = "Aluminium"
+                            MaterialName = "Aluminium",
+                            MaterialCode = "AL"
                         },
                         new
                         {
-                            Id = 4,
-                            MaterialCode = "ST",
-                            MaterialName = "Steel"
+                            MaterialName = "Steel",
+                            MaterialCode = "ST"
                         },
                         new
                         {
-                            Id = 5,
-                            MaterialCode = "PC",
-                            MaterialName = "Paper"
+                            MaterialName = "Paper",
+                            MaterialCode = "PC"
                         },
                         new
                         {
-                            Id = 6,
-                            MaterialCode = "GL",
-                            MaterialName = "Glass"
+                            MaterialName = "Glass",
+                            MaterialCode = "GL"
                         },
                         new
                         {
-                            Id = 7,
-                            MaterialCode = "GR",
-                            MaterialName = "GlassRemelt"
-                        },
-                        new
-                        {
-                            Id = 8,
-                            MaterialCode = "FC",
-                            MaterialName = "FibreComposite"
+                            MaterialName = "FibreComposite",
+                            MaterialCode = "FC"
                         });
                 });
 
@@ -551,8 +529,10 @@ namespace EPR.PRN.Backend.Data.Migrations
                     b.Property<DateTime>("CalculatedOn")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("MaterialId")
-                        .HasColumnType("int");
+                    b.Property<string>("MaterialName")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
 
                     b.Property<int>("MaterialObligationValue")
                         .HasColumnType("int");
@@ -560,15 +540,13 @@ namespace EPR.PRN.Backend.Data.Migrations
                     b.Property<Guid>("OrganisationId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("Tonnage")
-                        .HasColumnType("int");
+                    b.Property<double>("Tonnage")
+                        .HasColumnType("float");
 
                     b.Property<int>("Year")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("MaterialId");
 
                     b.ToTable("ObligationCalculations");
                 });
@@ -627,85 +605,6 @@ namespace EPR.PRN.Backend.Data.Migrations
                         {
                             Id = 3,
                             Name = "Per Year"
-                        });
-                });
-
-            modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.PrnMaterialMapping", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("NPWDMaterialName")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<int>("PRNMaterialId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("PRNMaterialId");
-
-                    b.ToTable("PrnMaterialMapping");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            NPWDMaterialName = "Plastic",
-                            PRNMaterialId = 1
-                        },
-                        new
-                        {
-                            Id = 2,
-                            NPWDMaterialName = "Wood",
-                            PRNMaterialId = 2
-                        },
-                        new
-                        {
-                            Id = 3,
-                            NPWDMaterialName = "Wood Composting",
-                            PRNMaterialId = 2
-                        },
-                        new
-                        {
-                            Id = 4,
-                            NPWDMaterialName = "Aluminium",
-                            PRNMaterialId = 3
-                        },
-                        new
-                        {
-                            Id = 5,
-                            NPWDMaterialName = "Steel",
-                            PRNMaterialId = 4
-                        },
-                        new
-                        {
-                            Id = 6,
-                            NPWDMaterialName = "Paper/board",
-                            PRNMaterialId = 5
-                        },
-                        new
-                        {
-                            Id = 7,
-                            NPWDMaterialName = "Paper Composting",
-                            PRNMaterialId = 5
-                        },
-                        new
-                        {
-                            Id = 8,
-                            NPWDMaterialName = "Glass Other",
-                            PRNMaterialId = 6
-                        },
-                        new
-                        {
-                            Id = 9,
-                            NPWDMaterialName = "Glass Re-melt",
-                            PRNMaterialId = 7
                         });
                 });
 
@@ -1219,8 +1118,9 @@ namespace EPR.PRN.Backend.Data.Migrations
                     b.Property<Guid>("ExternalId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("MaterialId")
-                        .HasColumnType("int");
+                    b.Property<string>("MaterialId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(20)");
 
                     b.Property<int>("PersonId")
                         .HasColumnType("int");
@@ -1271,8 +1171,9 @@ namespace EPR.PRN.Backend.Data.Migrations
                     b.Property<bool>("IsMaterialRegistered")
                         .HasColumnType("bit");
 
-                    b.Property<int>("MaterialId")
-                        .HasColumnType("int");
+                    b.Property<string>("MaterialId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(20)");
 
                     b.Property<decimal>("MaxCapacityTonne")
                         .HasColumnType("decimal(10,2)");
@@ -1391,8 +1292,9 @@ namespace EPR.PRN.Backend.Data.Migrations
                     b.Property<Guid>("ExternalId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("MaterialId")
-                        .HasColumnType("int");
+                    b.Property<string>("MaterialId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(20)");
 
                     b.Property<decimal>("NonUKPackgagingWasteTonne")
                         .HasColumnType("decimal(10,2)");
@@ -1690,26 +1592,6 @@ namespace EPR.PRN.Backend.Data.Migrations
                     b.Navigation("Registration");
                 });
 
-            modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.ObligationCalculation", b =>
-                {
-                    b.HasOne("EPR.PRN.Backend.Data.DataModels.Material", "Material")
-                        .WithMany()
-                        .HasForeignKey("MaterialId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("Material");
-                });
-
-            modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.PrnMaterialMapping", b =>
-                {
-                    b.HasOne("EPR.PRN.Backend.Data.DataModels.Material", null)
-                        .WithMany("PrnMaterialMappings")
-                        .HasForeignKey("PRNMaterialId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.PrnStatusHistory", b =>
                 {
                     b.HasOne("EPR.PRN.Backend.Data.DataModels.Eprn", null)
@@ -1932,11 +1814,6 @@ namespace EPR.PRN.Backend.Data.Migrations
             modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Eprn", b =>
                 {
                     b.Navigation("PrnStatusHistories");
-                });
-
-            modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Material", b =>
-                {
-                    b.Navigation("PrnMaterialMappings");
                 });
 
             modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Period", b =>

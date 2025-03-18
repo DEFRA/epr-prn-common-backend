@@ -13,7 +13,7 @@ namespace EPR.PRN.Backend.Data.DataModels
 
         public int RegistrationId { get; set; }
 
-        public int MaterialId { get; set; }
+        public string MaterialId { get; set; }
 
         public int PersonId { get; set; }
 

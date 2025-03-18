@@ -315,8 +315,9 @@ namespace EPR.PRN.Backend.Data.Migrations
                     b.Property<int>("FileUploadTypeId")
                         .HasColumnType("int");
 
-                    b.Property<int>("MaterialId")
-                        .HasColumnType("int");
+                    b.Property<string>("MaterialId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(20)");
 
                     b.Property<int>("RegistrationId")
                         .HasColumnType("int");
@@ -590,41 +591,6 @@ namespace EPR.PRN.Backend.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("PEprNpwdSync");
-                });
-
-            modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Period", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Period");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Name = "Per Week"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Name = "Per Month"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Name = "Per Year"
-                        });
                 });
 
             modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.PrnMaterialMapping", b =>
@@ -1149,6 +1115,26 @@ namespace EPR.PRN.Backend.Data.Migrations
                         });
                 });
 
+            modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.ObligationCalculation", b =>
+                {
+                    b.HasOne("EPR.PRN.Backend.Data.DataModels.Material", "Material")
+                        .WithMany()
+                        .HasForeignKey("MaterialId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Material");
+                });
+
+            modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.PrnMaterialMapping", b =>
+                {
+                    b.HasOne("EPR.PRN.Backend.Data.DataModels.Material", null)
+                        .WithMany("PrnMaterialMappings")
+                        .HasForeignKey("PRNMaterialId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registration", b =>
                 {
                     b.Property<int>("Id")
@@ -1216,8 +1202,9 @@ namespace EPR.PRN.Backend.Data.Migrations
                     b.Property<Guid>("ExternalId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("MaterialId")
-                        .HasColumnType("int");
+                    b.Property<string>("MaterialId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(20)");
 
                     b.Property<int>("PersonId")
                         .HasColumnType("int");
@@ -1268,8 +1255,9 @@ namespace EPR.PRN.Backend.Data.Migrations
                     b.Property<bool>("IsMaterialRegistered")
                         .HasColumnType("bit");
 
-                    b.Property<int>("MaterialId")
-                        .HasColumnType("int");
+                    b.Property<string>("MaterialId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(20)");
 
                     b.Property<decimal>("MaxCapacityTonne")
                         .HasColumnType("decimal(10,2)");
@@ -1388,8 +1376,9 @@ namespace EPR.PRN.Backend.Data.Migrations
                     b.Property<Guid>("ExternalId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("MaterialId")
-                        .HasColumnType("int");
+                    b.Property<string>("MaterialId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(20)");
 
                     b.Property<decimal>("NonUKPackgagingWasteTonne")
                         .HasColumnType("decimal(10,2)");
@@ -1687,26 +1676,6 @@ namespace EPR.PRN.Backend.Data.Migrations
                     b.Navigation("Registration");
                 });
 
-            modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.ObligationCalculation", b =>
-                {
-                    b.HasOne("EPR.PRN.Backend.Data.DataModels.Material", "Material")
-                        .WithMany()
-                        .HasForeignKey("MaterialId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("Material");
-                });
-
-            modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.PrnMaterialMapping", b =>
-                {
-                    b.HasOne("EPR.PRN.Backend.Data.DataModels.Material", null)
-                        .WithMany("PrnMaterialMappings")
-                        .HasForeignKey("PRNMaterialId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.PrnStatusHistory", b =>
                 {
                     b.HasOne("EPR.PRN.Backend.Data.DataModels.Eprn", null)
@@ -1934,35 +1903,6 @@ namespace EPR.PRN.Backend.Data.Migrations
             modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Material", b =>
                 {
                     b.Navigation("PrnMaterialMappings");
-                });
-
-            modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Period", b =>
-                {
-                    b.Navigation("EnvironmentalPermitWasteManagementPeriods");
-
-                    b.Navigation("InstallationPeriods");
-
-                    b.Navigation("MaxPeriods");
-
-                    b.Navigation("MaximumReprocessingPeriods");
-
-                    b.Navigation("PPCPeriods");
-
-                    b.Navigation("WasteManagementPeriods");
-                });
-
-            modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registration", b =>
-                {
-                    b.Navigation("AppRefPerMaterials");
-
-                    b.Navigation("FileUploads");
-
-                    b.Navigation("RegistrationMaterials");
-                });
-
-            modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.RegistrationContact", b =>
-                {
-                    b.Navigation("RegistrationContacts");
                 });
 #pragma warning restore 612, 618
         }
