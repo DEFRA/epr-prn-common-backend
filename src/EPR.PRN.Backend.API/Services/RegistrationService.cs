@@ -23,6 +23,7 @@ namespace EPR.PRN.Backend.API.Services
             }
 
             registrationDto.RegistrationStatusId = registration.RegistrationStatusId;
+            registrationDto.RegistrationStatus = registration.RegistrationStatus.Name;
             registrationDto.ApplicationTypeId = registration.ApplicationTypeId;
             registrationDto.OrganisatonId = registration.OrganisationId;
             registrationDto.UpdatedBy = registration.UpdatedBy;
