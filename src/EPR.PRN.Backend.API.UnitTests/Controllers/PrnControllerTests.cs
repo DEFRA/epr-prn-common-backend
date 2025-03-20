@@ -254,22 +254,18 @@ public class PrnControllerTests
     {
         var request = _fixture.Create<PaginatedRequestDto>();
 
-        var result = await _systemUnderTest.GetSearchPrns(Guid.Empty, request.Page, request.Search, request.FilterBy, request.SortBy);
+        var result = await _systemUnderTest.GetSearchPrns(Guid.Empty, request);
         result.Should().BeOfType<UnauthorizedResult>();
     }
 
     [TestMethod]
     public async Task GetSearchPrns_ReturnsResponse()
     {
-        AssertionOptions.FormattingOptions.MaxDepth = 300;
         var request = _fixture.Create<PaginatedRequestDto>();
         var response = _fixture.Create<PaginatedResponseDto<PrnDto>>();
-        request.PageSize = 10;
-        _mockPrnService.Setup(s => s.GetSearchPrnsForOrganisation(organisationId, 
-                It.Is<PaginatedRequestDto>(r => r.Page == request.Page && r.Search == request.Search && r.FilterBy == request.FilterBy && r.SortBy == request.SortBy)))
-                    .ReturnsAsync(response);
+        _mockPrnService.Setup(s => s.GetSearchPrnsForOrganisation(organisationId, request)).ReturnsAsync(response);
 
-        var result = await _systemUnderTest.GetSearchPrns(organisationId, request.Page, request.Search, request.FilterBy, request.SortBy);
+        var result = await _systemUnderTest.GetSearchPrns(organisationId, request);
 
         result.Should().BeOfType<OkObjectResult>().Which.Value.Should().Be(response);
     }

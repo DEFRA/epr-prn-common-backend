@@ -54,16 +54,8 @@ public class PrnController(IPrnService prnService,
     [ProducesResponseType(typeof(PaginatedResponseDto<PrnDto>), 200)]
     [ProducesResponseType(400)]
     [ProducesResponseType(401)]
-    public async Task<IActionResult> GetSearchPrns([FromHeader(Name = "X-EPR-ORGANISATION")] Guid orgId, [FromRoute] int page, [FromRoute] string search, [FromRoute] string filterBy, [FromRoute] string sortBy)
+    public async Task<IActionResult> GetSearchPrns([FromHeader(Name = "X-EPR-ORGANISATION")] Guid orgId, [FromQuery] PaginatedRequestDto request)
     {
-        PaginatedRequestDto request = new()
-        {
-            Page = page,
-            Search = search,
-            FilterBy = filterBy,
-            SortBy = sortBy
-        };
-
         logger.LogInformation("{Logprefix}: PrnController - GetSearchPrns: Api Route api/v1/prn/search/", logPrefix);
         logger.LogInformation("{Logprefix}: PrnController - GetSearchPrns: Search Prns request for user organisation {Organisation} and Search criteria {Searchcriteria}", logPrefix, orgId, JsonConvert.SerializeObject(request));
         if (orgId == Guid.Empty)
