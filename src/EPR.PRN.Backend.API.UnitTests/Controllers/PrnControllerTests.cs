@@ -307,7 +307,7 @@ public class PrnControllerTests
     public async Task GetObligationCalculation_MultipleOrganisationIds_WhenIsSuccessFalse_Returns500()
     {
         // Arrange
-        var year = 2025;
+        var year = DateTime.UtcNow.Year;
         var obligationResult = new ObligationCalculationResult { Errors = null, IsSuccess = false };
         _mockObligationCalculatorService.Setup(service => service.GetObligationCalculation(organisationId, organisationIds, year)).ReturnsAsync(obligationResult);
 
@@ -323,7 +323,7 @@ public class PrnControllerTests
     public async Task GetObligationCalculation_MultipleOrganisationIds_ValidYear_DataFound_ReturnsOk()
     {
         // Arrange
-        var year = 2025;
+        var year = DateTime.UtcNow.Year;
         var fixture = new Fixture();
         var prns = fixture.CreateMany<ObligationData>(10).ToList();
         for (int i = 0; i < 2; i++)
