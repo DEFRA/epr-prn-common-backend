@@ -50,7 +50,7 @@ public class PrnController(IPrnService prnService,
         return Ok(prn);
     }
 
-    [HttpGet("search/{page}/{search}/{filterBy}/{sortBy}")]
+    [HttpGet("search/{page?}/{search?}/{filterBy?}/{sortBy?}")]
     [ProducesResponseType(typeof(PaginatedResponseDto<PrnDto>), 200)]
     [ProducesResponseType(400)]
     [ProducesResponseType(401)]
