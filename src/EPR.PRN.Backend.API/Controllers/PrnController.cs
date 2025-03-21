@@ -8,6 +8,7 @@ using EPR.PRN.Backend.API.Helpers;
 using EPR.PRN.Backend.API.Models;
 using EPR.PRN.Backend.API.Services.Interfaces;
 using EPR.PRN.Backend.Data.DataModels;
+using EPR.PRN.Backend.Obligation.Constants;
 using EPR.PRN.Backend.Obligation.Dto;
 using EPR.PRN.Backend.Obligation.Interfaces;
 using EPR.PRN.Backend.Obligation.Models;
@@ -128,7 +129,7 @@ public class PrnController(IPrnService prnService,
         if (organisationIds.Count == 0)
         {
             logger.LogError("{Logprefix}: PrnController - GetObligationCalculation: Organisation Ids list can't be empty. {Organisations}", logPrefix, organisationIds);
-            return BadRequest($"Organisation Ids list can't be empty.");
+            return Ok(new ObligationModel { ObligationData = [], NumberOfPrnsAwaitingAcceptance = 0 });
         }
 
         if (year < _config.StartYear || year > _config.EndYear)
