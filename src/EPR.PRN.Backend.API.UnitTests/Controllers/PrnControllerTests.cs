@@ -270,19 +270,6 @@ public class PrnControllerTests
         result.Should().BeOfType<OkObjectResult>().Which.Value.Should().Be(response);
     }
 
-    //[TestMethod]
-    //[DataRow(2025)] // Invalid year
-    //public async Task GetObligationCalculation_EmptyOrganisationIds_ShouldReturn_BadRequest(int year)
-    //{
-    //    // Act
-    //    var result = await _systemUnderTest.GetObligationCalculations(Guid.NewGuid(), year, []);
-
-    //    // Assert
-    //    var okRequestResult = result as OkObjectResult;
-    //    okRequestResult.Should().NotBeNull();
-    //    okRequestResult.StatusCode.Should().Be(200);
-    //}
-
     [TestMethod]
     [DataRow(2023)] // Invalid year
     [DataRow(2030)] // Invalid year
