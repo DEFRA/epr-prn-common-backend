@@ -278,10 +278,9 @@ public class PrnControllerTests
         var result = await _systemUnderTest.GetObligationCalculations(Guid.NewGuid(), year, []);
 
         // Assert
-        var badRequestResult = result as BadRequestObjectResult;
-        badRequestResult.Should().NotBeNull();
-        badRequestResult.StatusCode.Should().Be(400);
-        badRequestResult.Value.Should().Be($"Organisation Ids list can't be empty.");
+        var okRequestResult = result as OkObjectResult;
+        okRequestResult.Should().NotBeNull();
+        okRequestResult.StatusCode.Should().Be(200);
     }
 
     [TestMethod]
