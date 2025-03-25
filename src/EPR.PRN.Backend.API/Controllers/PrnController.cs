@@ -8,6 +8,7 @@ using EPR.PRN.Backend.API.Helpers;
 using EPR.PRN.Backend.API.Models;
 using EPR.PRN.Backend.API.Services.Interfaces;
 using EPR.PRN.Backend.Data.DataModels;
+using EPR.PRN.Backend.Obligation.Constants;
 using EPR.PRN.Backend.Obligation.Dto;
 using EPR.PRN.Backend.Obligation.Interfaces;
 using EPR.PRN.Backend.Obligation.Models;
@@ -50,20 +51,12 @@ public class PrnController(IPrnService prnService,
         return Ok(prn);
     }
 
-    [HttpGet("search/{page}/{search}/{filterBy}/{sortBy}")]
+    [HttpGet("search/{page?}/{search?}/{filterBy?}/{sortBy?}")]
     [ProducesResponseType(typeof(PaginatedResponseDto<PrnDto>), 200)]
     [ProducesResponseType(400)]
     [ProducesResponseType(401)]
-    public async Task<IActionResult> GetSearchPrns([FromHeader(Name = "X-EPR-ORGANISATION")] Guid orgId, [FromRoute] int page, [FromRoute] string search, [FromRoute] string filterBy, [FromRoute] string sortBy)
+    public async Task<IActionResult> GetSearchPrns([FromHeader(Name = "X-EPR-ORGANISATION")] Guid orgId, [FromQuery] PaginatedRequestDto request)
     {
-        PaginatedRequestDto request = new()
-        {
-            Page = page,
-            Search = search,
-            FilterBy = filterBy,
-            SortBy = sortBy
-        };
-
         logger.LogInformation("{Logprefix}: PrnController - GetSearchPrns: Api Route api/v1/prn/search/", logPrefix);
         logger.LogInformation("{Logprefix}: PrnController - GetSearchPrns: Search Prns request for user organisation {Organisation} and Search criteria {Searchcriteria}", logPrefix, orgId, JsonConvert.SerializeObject(request));
         if (orgId == Guid.Empty)
@@ -132,12 +125,6 @@ public class PrnController(IPrnService prnService,
     {
         logger.LogInformation("{Logprefix}: PrnController - GetObligationCalculation: Api Route api/v1/prn/obligationcalculations/{Year}", logPrefix, year);
         logger.LogInformation("{Logprefix}: PrnController - GetObligationCalculation: request to get Obligation Calculation for organisations {Organisation} for {Year}", logPrefix, string.Join(", ", organisationIds), year);
-
-        if (organisationIds.Count == 0)
-        {
-            logger.LogError("{Logprefix}: PrnController - GetObligationCalculation: Organisation Ids list can't be empty. {Organisations}", logPrefix, organisationIds);
-            return BadRequest($"Organisation Ids list can't be empty.");
-        }
 
         if (year < _config.StartYear || year > _config.EndYear)
         {
