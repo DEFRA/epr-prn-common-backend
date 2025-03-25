@@ -82,8 +82,7 @@ namespace EPR.PRN.Backend.Data.Migrations
                 name: "PrnMaterialMapping",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<int>(type: "int", nullable: false).Annotation("SqlServer:Identity", "1, 1"),
                     PRNMaterialId = table.Column<int>(type: "int", nullable: false),
                     NPWDMaterialName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false)
                 },
@@ -99,7 +98,7 @@ namespace EPR.PRN.Backend.Data.Migrations
 
             migrationBuilder.InsertData(
                 table: "Material",
-                columns: new[] { "Id", "IsCaculable", "IsVisibleToObligation", "MaterialCode", "MaterialName" },
+                columns: ["Id", "IsCaculable", "IsVisibleToObligation", "MaterialCode", "MaterialName"],
                 values: new object[,]
                 {
                     { 1, true, true, "PL", "Plastic" },
@@ -114,7 +113,7 @@ namespace EPR.PRN.Backend.Data.Migrations
 
             migrationBuilder.InsertData(
                 table: "PrnMaterialMapping",
-                columns: new[] { "Id", "NPWDMaterialName", "PRNMaterialId" },
+                columns: ["Id", "NPWDMaterialName", "PRNMaterialId"],
                 values: new object[,]
                 {
                     { 1, "Plastic", 1 },
@@ -302,7 +301,7 @@ namespace EPR.PRN.Backend.Data.Migrations
 
             migrationBuilder.InsertData(
                 table: "Material",
-                columns: new[] { "MaterialName", "MaterialCode" },
+                columns: ["MaterialName", "MaterialCode"],
                 values: new object[,]
                 {
                     { "Aluminium", "AL" },
