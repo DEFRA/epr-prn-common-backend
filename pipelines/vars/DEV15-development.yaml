@@ -1,0 +1,10 @@
+variables:
+  azureSubscription: 'AZD-RWD-DEV15'
+  docker.imageName: 'eprprncommonbackend'
+  acr.azureContainerRegistryName: 'devrwdinfacf401'
+  acr.repositoryName: 'eprprncommonbackendrepository'
+  serviceName: 'devrwdwebwaf418'
+  kvName: DEVRWDINFKVF401
+  sqlDBserver: 'devrwddbssqf401.database.windows.net'
+  sqlDB: 'dev15_prn'
+  acr.Subscription: 'AZD-RWD-DEV15'
