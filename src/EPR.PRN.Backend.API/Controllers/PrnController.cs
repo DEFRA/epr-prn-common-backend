@@ -19,7 +19,6 @@ using System.Net;
 
 [ApiController]
 [ApiVersion("1.0")]
-[Route("api/v{version:apiVersion}/prn")]
 public class PrnController(IPrnService prnService, 
     ILogger<PrnController> logger, 
     IObligationCalculatorService obligationCalculatorService, 

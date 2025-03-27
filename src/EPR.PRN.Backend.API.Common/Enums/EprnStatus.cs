@@ -7,4 +7,9 @@
         CANCELLED,
         AWAITINGACCEPTANCE
     }
+    public enum OutComeTypes
+    {
+        GRANT = 1,
+        REFUSED=2       
+    }
 }

@@ -2,10 +2,12 @@
 using EPR.PRN.Backend.API.Helpers;
 using EPR.PRN.Backend.Data;
 using HealthChecks.UI.Client;
+using MediatR;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using System.Diagnostics.CodeAnalysis;
+using System.Reflection;
 using System.Text.Json.Serialization;
 
 namespace EPR.PRN.Backend.API
@@ -22,6 +24,8 @@ namespace EPR.PRN.Backend.API
 
         public void ConfigureServices(IServiceCollection services)
         {
+
+            services.AddMediatR(Assembly.GetExecutingAssembly());
             services.AddApiVersioning();
             services.AddControllers()
                 .AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
@@ -42,6 +46,7 @@ namespace EPR.PRN.Backend.API
             services.AddDependencies();
 
             services.Configure<PrnObligationCalculationConfig>(_config.GetSection(PrnObligationCalculationConfig.SectionName));
+           
 
             AddHealthChecks(services);
         }

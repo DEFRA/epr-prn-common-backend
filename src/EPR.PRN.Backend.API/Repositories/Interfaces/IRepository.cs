@@ -3,8 +3,10 @@ namespace EPR.PRN.Backend.API.Repositories.Interfaces
 {
     using EPR.PRN.Backend.API.Common.Dto;
     using EPR.PRN.Backend.API.Dto;
+    using EPR.PRN.Backend.API.Models.ReadModel;
     using EPR.PRN.Backend.Data.DataModels;
     using Microsoft.EntityFrameworkCore.Storage;
+    using Polly;
 
     public interface IRepository
     {
@@ -19,6 +21,7 @@ namespace EPR.PRN.Backend.API.Repositories.Interfaces
         Task SavePrnDetails(Eprn entity);
         Task InsertPeprNpwdSyncPrns(List<PEprNpwdSync> syncedPrns);
         Task<List<Eprn>> GetPrnsForPrnNumbers(List<string> prnNumbers);
-        Task<int> UpdateStatus(prnNumbers);
+        Task<bool> UpdateRegistrationOutCome(Guid registrationID, Guid materialID, int outcome, string outComeComment);
+        Task<RegistrationMaterialTaskReadModel> GetMaterialsBYID(Guid RegistrationID);
     }
 }

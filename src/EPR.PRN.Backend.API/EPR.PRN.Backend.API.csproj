@@ -36,8 +36,6 @@
 
   <ItemGroup>
     <Folder Include="Helpers\Comparers\" />
-    <Folder Include="Commands\" />
-    <Folder Include="Queries\" />
   </ItemGroup>
 
   <ItemGroup>

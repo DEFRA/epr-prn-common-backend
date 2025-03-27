@@ -1,8 +1,13 @@
-﻿namespace EPR.PRN.Backend.API.Repositories;
+﻿using EPR.PRN.Backend.Data.DataModels;
 
+namespace EPR.PRN.Backend.API.Repositories;
+
+using Azure.Core;
 using EPR.PRN.Backend.API.Common.Dto;
 using EPR.PRN.Backend.API.Common.Enums;
 using EPR.PRN.Backend.API.Dto;
+using EPR.PRN.Backend.API.Models;
+using EPR.PRN.Backend.API.Models.ReadModel;
 using EPR.PRN.Backend.API.Repositories.Interfaces;
 using EPR.PRN.Backend.Data;
 using EPR.PRN.Backend.Data.DataModels;
@@ -10,6 +15,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using Newtonsoft.Json;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using static EPR.PRN.Backend.API.Common.Constants.PrnConstants;
 
@@ -121,7 +127,7 @@ public class Repository(EprContext eprContext, ILogger<Repository> logger, IConf
             default:
                 throw new ArgumentException($"Unknown status: {status}");
         }
-    }   
+    }
 
     private static Expression<Func<Eprn, bool>> GetFilterByCondition(string? filterBy)
     {
@@ -294,7 +300,7 @@ public class Repository(EprContext eprContext, ILogger<Repository> logger, IConf
                     // put back status and status date in Prn
                     newPrn.PrnStatusId = existingPrn.PrnStatusId;
                     newPrn.StatusUpdatedOn = existingPrn.StatusUpdatedOn;
-                    
+
                     // put back status in status history
                     statusHistory.PrnStatusIdFk = newPrn.PrnStatusId;
                     statusHistory.Comment = $"{incomingStatus} => {((EprnStatus)newPrn.PrnStatusId).ToString()}";
@@ -337,4 +343,52 @@ public class Repository(EprContext eprContext, ILogger<Repository> logger, IConf
         await _eprContext.PEprNpwdSync.AddRangeAsync(syncedPrns);
         await _eprContext.SaveChangesAsync();
     }
+    public async Task<bool> UpdateRegistrationOutCome(Guid RegistrationID, Guid MaterialID, int Outcome, string OutComeComment)
+    {
+        await Task.Delay(50);
+        bool result = true;
+        logger.LogInformation("Update Registration OutCome. RegistrationID : {RegistrationID} and {Outcome}", RegistrationID, Outcome);
+        return true;
+    }
+    public async Task<RegistrationMaterialTaskReadModel> GetMaterialsBYID(Guid RegistrationID)
+    {
+        await Task.Delay(50);
+        return new RegistrationMaterialTaskReadModel
+        {
+            RegistrationId = RegistrationID,
+            Materials = new()
+                {
+                    new EPR.PRN.Backend.API.Models.Materials
+                    {
+                        MaterialId = "1",
+                        MaterialName = "Plastic",
+                        Status = "Granted",
+                        DeterminationDate = DateTime.UtcNow,
+                        ReferenceNumber = "ABC123",
+                        Tasks = new()
+                        {
+                            new Tasks { TaskName = "Waste licences, permits or exemptions", Status = "Complete" },
+                            new Tasks { TaskName = "Sampling and inspection plan", Status = "Approved" }
+                        }
+                    },
+                    new EPR.PRN.Backend.API.Models.Materials
+                    {
+                        MaterialId = "2",
+                        MaterialName = "Steel",
+                        Status = "Refused",
+                        DeterminationDate = DateTime.UtcNow,
+                        ReferenceNumber = "DEF456",
+                        Tasks = new()
+                        {
+                            new Tasks { TaskName = "Waste licences, permits or exemptions", Status = "Not Started" }
+                        }
+                    }
+                }
+        };
+
+        
+    }
 }
+
+ 
+           
