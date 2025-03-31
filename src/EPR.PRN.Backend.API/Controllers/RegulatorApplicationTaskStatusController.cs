@@ -2,24 +2,21 @@
 using EPR.PRN.Backend.API.Common.Enums;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 [ApiController]
 [ApiVersion("1.0")]
-[Route("api/v{version:apiVersion}/regulatorRegistrationTaskStatus")]
+[Route("api/v{version:apiVersion}/RegulatorApplicationTaskStatus")]
 
-public class RegulatorRegistrationTaskStatusController : ControllerBase
+public class RegulatorApplicationTaskStatusController : ControllerBase
 {
     private readonly IMediator _mediator;
     private readonly IMapper _mapper;
 
-    public RegulatorRegistrationTaskStatusController(IMediator mediator, IMapper mapper)
+    public RegulatorApplicationTaskStatusController(IMediator mediator, IMapper mapper)
     {
         this._mediator = mediator;
         this._mapper = mapper;
     }
-
-#region Patch Methods
 
     [HttpPatch("{registrationTaskStatusId}")]
     [ProducesResponseType(200)]
@@ -27,7 +24,7 @@ public class RegulatorRegistrationTaskStatusController : ControllerBase
     [ProducesResponseType(500)]
     public async Task<IActionResult> UpdateRegistrationTaskStatus(int registrationTaskStatusId,[FromBody] RegistrationTaskStatusDto dto)
     {
-        var command = _mapper.Map<UpdateRegulatorRegistrationTaskCommand>(dto);
+        var command = _mapper.Map<UpdateRegulatorApplicationTaskCommand>(dto);
         command.Id = registrationTaskStatusId;
 
         if (!Enum.IsDefined(typeof(StatusTypes), command.Status))
@@ -36,6 +33,4 @@ public class RegulatorRegistrationTaskStatusController : ControllerBase
         var result = await _mediator.Send(command);
         return result ? Ok("Update RegistrationTaskStatus recorded successfully") : StatusCode(500, "Failed to process Status");
     }
-
-    #endregion Patch Methods
 }
