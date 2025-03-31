@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using EPR.PRN.Backend.API.Common.Enums;
+using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using static System.Runtime.InteropServices.JavaScript.JSType;
@@ -12,20 +13,22 @@ public class RegulatorRegistrationTaskStatusController : ControllerBase
 {
     private readonly IMediator _mediator;
     private readonly IMapper _mapper;
+    private readonly IValidator<UpdateTaskStatusRequestDto> _updateTaskStatusRequestDtoValidator;
 
-    public RegulatorRegistrationTaskStatusController(IMediator mediator, IMapper mapper)
+    public RegulatorRegistrationTaskStatusController(IMediator mediator, IMapper mapper, IValidator<UpdateTaskStatusRequestDto> updateTaskStatusRequestDtoValidator)
     {
         this._mediator = mediator;
         this._mapper = mapper;
+        this._updateTaskStatusRequestDtoValidator = updateTaskStatusRequestDtoValidator;
     }
 
-#region Patch Methods
+    #region Patch Methods
 
     [HttpPatch("{registrationTaskStatusId}")]
     [ProducesResponseType(200)]
     [ProducesResponseType(400)]
     [ProducesResponseType(500)]
-    public async Task<IActionResult> UpdateRegistrationTaskStatus(int registrationTaskStatusId,[FromBody] RegistrationTaskStatusDto dto)
+    public async Task<IActionResult> UpdateRegistrationTaskStatus(int registrationTaskStatusId,[FromBody] UpdateTaskStatusRequestDto dto)
     {
         var command = _mapper.Map<UpdateRegulatorRegistrationTaskCommand>(dto);
         command.Id = registrationTaskStatusId;

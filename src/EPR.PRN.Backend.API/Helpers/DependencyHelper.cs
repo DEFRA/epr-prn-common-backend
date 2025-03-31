@@ -32,6 +32,7 @@ namespace EPR.PRN.Backend.API.Helpers
                 .AddScoped<IMaterialRepository, MaterialRepository>()
                 .AddScoped<IPrnRepository, PrnRepository>()
                 .AddScoped<IValidator<SavePrnDetailsRequest>, SavePrnDetailsRequestValidator>()
+                .AddScoped<IValidator<UpdateTaskStatusRequestDto>, UpdateTaskStatusRequestDtoValidator>()
                 .AddAutoMapper(typeof(MappingProfile).Assembly);
             return services;
         }

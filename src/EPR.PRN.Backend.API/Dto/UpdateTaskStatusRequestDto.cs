@@ -1,7 +1,7 @@
 ﻿using EPR.PRN.Backend.API.Common.Enums;
 using System.ComponentModel.DataAnnotations;
 
-public class RegistrationTaskStatusDto
+public class UpdateTaskStatusRequestDto
 {
     public required StatusTypes Status { get; set; }
     [MaxLength(200)]

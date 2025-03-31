@@ -1,7 +1,7 @@
 ﻿using MediatR;
 using System.ComponentModel.DataAnnotations;
 
-public class UpdateRegulatorApplicationTaskCommand : RegistrationTaskStatusDto, IRequest<bool>
+public class UpdateRegulatorApplicationTaskCommand : UpdateTaskStatusRequestDto, IRequest<bool>
 {
     [Required]
     internal int Id { get; set; }

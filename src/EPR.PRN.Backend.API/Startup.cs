@@ -6,6 +6,7 @@ using MediatR;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Microsoft.FeatureManagement;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Text.Json.Serialization;
@@ -24,6 +25,7 @@ namespace EPR.PRN.Backend.API
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddFeatureManagement();//.UseDisabledFeaturesHandler(new RedirectDisabledFeatureHandler());
 
             services.AddMediatR(Assembly.GetExecutingAssembly());
             services.AddApiVersioning();
