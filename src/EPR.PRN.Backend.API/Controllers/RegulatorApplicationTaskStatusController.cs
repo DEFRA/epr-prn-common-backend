@@ -1,8 +1,4 @@
 ﻿using AutoMapper;
-using Azure.Core;
-using EPR.PRN.Backend.API.Common.Dto;
-using EPR.PRN.Backend.API.Common.Enums;
-using EPR.PRN.Backend.API.Validators;
 using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -41,9 +37,6 @@ public class RegulatorApplicationTaskStatusController : ControllerBase
 
         var command = _mapper.Map<UpdateRegulatorApplicationTaskCommand>(dto);
         command.Id = registrationTaskStatusId;
-
-        //if (!Enum.IsDefined(typeof(StatusTypes), command.Status))
-        //    return BadRequest("Invalid Status value");
         
         var result = await _mediator.Send(command);
         return result ? Ok("Update RegistrationTaskStatus recorded successfully") : StatusCode(500, "Failed to process Status");

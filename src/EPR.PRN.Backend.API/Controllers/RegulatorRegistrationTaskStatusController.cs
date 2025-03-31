@@ -1,9 +1,7 @@
 ﻿using AutoMapper;
-using EPR.PRN.Backend.API.Common.Enums;
 using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 [ApiController]
 [ApiVersion("1.0")]
@@ -30,11 +28,15 @@ public class RegulatorRegistrationTaskStatusController : ControllerBase
     [ProducesResponseType(500)]
     public async Task<IActionResult> UpdateRegistrationTaskStatus(int registrationTaskStatusId,[FromBody] UpdateTaskStatusRequestDto dto)
     {
+        var validationResult = _updateTaskStatusRequestDtoValidator.Validate(dto);
+
+        if (!validationResult.IsValid)
+        {
+            return new BadRequestObjectResult(validationResult.Errors);
+        }
+
         var command = _mapper.Map<UpdateRegulatorRegistrationTaskCommand>(dto);
         command.Id = registrationTaskStatusId;
-
-        if (!Enum.IsDefined(typeof(StatusTypes), command.Status))
-            return BadRequest("Invalid Status value");
         
         var result = await _mediator.Send(command);
         return result ? Ok("Update RegistrationTaskStatus recorded successfully") : StatusCode(500, "Failed to process Status");
