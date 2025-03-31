@@ -45,6 +45,10 @@ namespace EPR.PRN.Backend.API
                 options.UseSqlServer(_config.GetConnectionString("EprConnectionString"))
             );
 
+            services.AddDbContext<EprRegistrationsContext>(options =>
+                options.UseInMemoryDatabase("EprRegistrationsDatabase")
+            );
+
             services.AddDependencies();
 
             services.Configure<PrnObligationCalculationConfig>(_config.GetSection(PrnObligationCalculationConfig.SectionName));
