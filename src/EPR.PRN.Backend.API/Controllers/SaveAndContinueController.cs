@@ -12,7 +12,7 @@ namespace EPR.PRN.Backend.API.Controllers
     public class SaveAndContinueController(ISaveAndContinueService saveAndContinueService, ILogger<SaveAndContinueController> logger) : Controller
     {
         [HttpPost]
-        [Route("Save")]
+        [Route("save")]
         [ProducesResponseType(typeof(RegistrationDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
