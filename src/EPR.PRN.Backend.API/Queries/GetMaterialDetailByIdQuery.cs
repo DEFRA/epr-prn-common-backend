@@ -10,6 +10,5 @@ namespace EPR.PRN.Backend.API.Queries;
 public class GetMaterialDetailByIdQuery : IRequest<RegistrationMaterialDto>
 {
     [Required]
-    public int Id { get; set; }   
-
+    public int Id { get; set; }
 }

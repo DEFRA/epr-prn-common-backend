@@ -17,7 +17,7 @@ public class RegisrationMaterialController : ControllerBase
         _mediator = mediator;
         _logger = logger;
     }
-   
+
     #region Get methods
     [HttpGet("registrations/{Id}")]
     [ProducesResponseType(typeof(RegistrationOverviewDto), 200)]
@@ -32,6 +32,7 @@ public class RegisrationMaterialController : ControllerBase
     [ProducesResponseType(400)]
     public async Task<RegistrationMaterialDto> GetMaterialDetailById(int Id)
     {
+
         var result = await _mediator.Send(new GetMaterialDetailByIdQuery() { Id = Id });
         return result;
     }
@@ -39,43 +40,38 @@ public class RegisrationMaterialController : ControllerBase
     #endregion Get Methods
 
     #region Patch Methods
-
     [HttpPatch("registrationMaterials/{Id}/outcome")]
-    [ProducesResponseType(204)]
-    [ProducesResponseType(400)]
-    public async Task<IActionResult> UpdateRegistrationOutcome( int Id,[FromBody] RegistrationOutcomeCommand command)
+     public async Task<IActionResult> UpdateRegistrationOutcome(int Id, [FromBody] RegistrationOutcomeCommand command)
     {
-       
         _logger.LogInformation("UpdateRegistrationOutcome called with Id: {Id}", Id);
 
-    if (command == null)
-    {
-        _logger.LogWarning("UpdateRegistrationOutcome received a null command.");
-        return BadRequest("Invalid request body.");
-    }
+        if (command == null)
+        {
+            _logger.LogWarning("UpdateRegistrationOutcome received a null command.");
+            return BadRequest("Invalid request body.");
+        }
 
         command.Id = Id;
-     var validator = new RegistrationOutcomeValidator();
-    var result = await validator.ValidateAsync(command);
+        var validator = new RegistrationOutcomeValidator();
+        var result = await validator.ValidateAsync(command);
 
-    if (!result.IsValid)
-    {
-        _logger.LogWarning("Validation failed for Id: {Id}. Errors: {Errors}", Id, result.Errors);
-        return BadRequest(result.Errors);
+        if (!result.IsValid)
+        {
+            _logger.LogWarning("Validation failed for Id: {Id}. Errors: {Errors}", Id, result.Errors);
+            return BadRequest(result.Errors);
+        }
+
+        try
+        {
+            var response = await _mediator.Send(command);
+            _logger.LogInformation("Registration outcome updated successfully for Id: {Id}", Id);
+            return StatusCode(response.StatusCode, response.Message ?? (object)response.Data);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An error occurred while updating the registration outcome for Id: {Id}", Id);
+            return StatusCode(500, "An unexpected error occurred.");
+        }
     }
-
-
-    try
-    {
-       var response = await _mediator.Send(command);
-        _logger.LogInformation("Registration outcome updated successfully for Id: {Id}", Id);
-         return StatusCode(response.StatusCode, response.Message ?? (object)response.Data);
-     }
-    catch (Exception ex)
-    {
-        _logger.LogError(ex, "An error occurred while updating the registration outcome for Id: {Id}", Id);
-        return StatusCode(500, "An unexpected error occurred.");
-    }
-}
     #endregion Patch Methods
 }

@@ -10,7 +10,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using Newtonsoft.Json;
 using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
 using static EPR.PRN.Backend.API.Common.Constants.PrnConstants;
 
@@ -337,8 +336,7 @@ public class Repository(EprContext eprContext, ILogger<Repository> logger, IConf
     {
         await _eprContext.PEprNpwdSync.AddRangeAsync(syncedPrns);
         await _eprContext.SaveChangesAsync();
-    }   
+    }
 }
 
- 
-           
+

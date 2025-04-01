@@ -7,9 +7,8 @@ using System.Diagnostics.CodeAnalysis;
 namespace EPR.PRN.Backend.API.Queries;
 
 [ExcludeFromCodeCoverage]
-public class GetRegistrationOverviewDetailByIdQuery  : IRequest<RegistrationOverviewDto>
+public class GetRegistrationOverviewDetailByIdQuery : IRequest<RegistrationOverviewDto>
 {
     [Required]
-    public int Id { get; set; }   
-
+    public int Id { get; set; }
 }
