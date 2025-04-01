@@ -1,16 +1,9 @@
 ﻿using EPR.PRN.Backend.API.Commands;
-using EPR.PRN.Backend.API.Common.Dto;
-using EPR.PRN.Backend.API.Common.Enums;
-using EPR.PRN.Backend.API.Configs;
-using EPR.PRN.Backend.API.Controllers;
 using EPR.PRN.Backend.API.Dto;
 using EPR.PRN.Backend.API.Queries;
 using EPR.PRN.Backend.API.Validators;
-using EPR.PRN.Backend.Obligation.Interfaces;
-using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
 [ApiController]
 [ApiVersion("1.0")]
 [Route("api/v{version:apiVersion}")]

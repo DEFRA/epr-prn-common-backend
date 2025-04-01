@@ -2,8 +2,6 @@ using EPR.PRN.Backend.API.Commands;
 using EPR.PRN.Backend.API.Common.Enums;
 using EPR.PRN.Backend.API.Repositories.Interfaces;
 using MediatR;
-using Microsoft.AspNetCore.Mvc;
-using System.Reflection.Metadata.Ecma335;
 namespace EPR.PRN.Backend.API.Handlers;
 public class RegistrationOutComeHandler : IRequestHandler<RegistrationOutcomeCommand, HandlerResponse<bool>>
 {
