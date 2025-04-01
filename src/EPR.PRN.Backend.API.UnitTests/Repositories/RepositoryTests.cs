@@ -146,17 +146,17 @@ public class RepositoryTests
     public async Task GetModifiedPrnsbyDate_ReturnsMappedPrnUpdateStatuses()
     {
         //Arrange
-        var fromDate = new DateTime(2024, 11, 22);
-        var toDate = new DateTime(2024, 11, 24);
+        var fromDate = new DateTime(2021, 11, 22, 0, 0, 0, DateTimeKind.Utc);
+        var toDate = new DateTime(2024, 11, 24, 0, 0, 0, DateTimeKind.Utc);
 
         var data = _fixture.CreateMany<Eprn>().ToArray();
         data[0].PrnNumber = "PRN001";
-        data[0].StatusUpdatedOn = new DateTime(2024, 11, 23);
+        data[0].StatusUpdatedOn = new DateTime(2024, 11, 23, 0, 0, 0, DateTimeKind.Utc);
         data[0].PrnStatusId = 1;
         data[0].AccreditationYear = "2023";
 
         data[1].PrnNumber = "PRN002";
-        data[1].StatusUpdatedOn = new DateTime(2024, 11, 22);
+        data[1].StatusUpdatedOn = new DateTime(2024, 11, 22, 0, 0, 0, DateTimeKind.Utc);
         data[1].PrnStatusId = 2;
         data[1].AccreditationYear = "2024";
 
