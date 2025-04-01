@@ -36,7 +36,15 @@ namespace EPR.PRN.Backend.Data
             modelBuilder.Entity<Registration>().HasData
             (new Registration { Id=1, ExternalId = "123" });
 
-			base.OnModelCreating(modelBuilder);
+            modelBuilder.Entity<RegistrationMaterial>().HasData();
+
+            modelBuilder.Entity<RegulatorApplicationTaskStatus>().HasData(
+                new Data.RegulatorApplicationTaskStatus { Id = 1 });
+
+            modelBuilder.Entity<RegulatorRegistrationTaskStatus>().HasData();
+
+
+            base.OnModelCreating(modelBuilder);
         }
 
         public virtual DbSet<Registration> Registrations { get; set; }
