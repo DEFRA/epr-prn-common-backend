@@ -1,22 +1,22 @@
-using EPR.PRN.Backend.API.Models.ReadModel;
+using EPR.PRN.Backend.API.Dto;
 using EPR.PRN.Backend.API.Queries;
 using EPR.PRN.Backend.API.Repositories.Interfaces;
 using MediatR;
 namespace EPR.PRN.Backend.API.Handlers;
-public class GetMaterialsBYIDHandler : IRequestHandler<GetAllMaterialsByIdQuery, RegistrationMaterialTaskReadModel>
+public class GetMaterialsBYIDHandler : IRequestHandler<GetMaterialDetailByIdQuery, RegistrationMaterialDto>
 {
-    private readonly IRepository _Repository ;
-    public GetMaterialsBYIDHandler(IRepository Repository)
+    private readonly IRegistrationMaterialRepository _rmRepository ;
+    public GetMaterialsBYIDHandler(IRegistrationMaterialRepository rmRepository)
     {
-        _Repository = Repository;
+        _rmRepository = rmRepository;
     }
         
-    public async Task<RegistrationMaterialTaskReadModel> Handle(GetAllMaterialsByIdQuery request, CancellationToken cancellationToken)
+    public async Task<RegistrationMaterialDto> Handle(GetMaterialDetailByIdQuery request, CancellationToken cancellationToken)
     {
-        RegistrationMaterialTaskReadModel result =  await _Repository.GetMaterialsBYID(request.RegistrationID);
+       
+        RegistrationMaterialDto result =  await _rmRepository.GetMaterialsById(request.Id);
 
         return result;
-
 
     }
 

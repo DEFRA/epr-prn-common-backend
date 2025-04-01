@@ -1,5 +1,5 @@
 #nullable disable
-using EPR.PRN.Backend.API.Models.ReadModel;
+using EPR.PRN.Backend.API.Dto;
 using MediatR;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
@@ -7,10 +7,9 @@ using System.Diagnostics.CodeAnalysis;
 namespace EPR.PRN.Backend.API.Queries;
 
 [ExcludeFromCodeCoverage]
-public class GetAllMaterialsByIdQuery  : IRequest<RegistrationMaterialTaskReadModel>
+public class GetRegistrationOverviewDetailByIdQuery  : IRequest<RegistrationOverviewDto>
 {
     [Required]
-    public Guid RegistrationID { get; set; }
-    
+    public int Id { get; set; }   
 
 }
