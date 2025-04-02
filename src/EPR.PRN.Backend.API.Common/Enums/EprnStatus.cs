@@ -7,9 +7,9 @@
         CANCELLED,
         AWAITINGACCEPTANCE
     }
-    public enum OutComeTypes
+    public enum OutcomeTypes
     {
-        GRANT = 1,
+        GRANTED = 1,
         REFUSED=2       
     }
 }

@@ -1,20 +1,23 @@
 #nullable disable
-using EPR.PRN.Backend.API.Common.Enums;
+using EPR.PRN.Backend.API.Handlers;
 using MediatR;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Newtonsoft.Json;
+using Swashbuckle.AspNetCore.Annotations;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
 
 namespace EPR.PRN.Backend.API.Commands;
 
 [ExcludeFromCodeCoverage]
-public class RegistrationOutComeCommand: IRequest<bool>
+public class RegistrationOutcomeCommand: IRequest<HandlerResponse<bool>>
 {
     [Required]
-    public Guid RegistrationID { get; set; }
+    [BindNever]
+    [SwaggerIgnore]
+    public int Id { get; set; }
     [Required]
-    public Guid MaterialID { get; set; }
-    public required OutComeTypes OutCome { get; set; }
-    [MaxLength(1000)]
-    public string? OutComeComment { get; set; } = string.Empty;
-   
+    public required string Outcome { get; set; }
+    [MaxLength(200)]
+    public string? Comments { get; set; }   
 }
