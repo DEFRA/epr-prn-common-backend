@@ -5,8 +5,11 @@ using HealthChecks.UI.Client;
 using MediatR;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.FeatureManagement;
+using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Text.Json.Serialization;
@@ -28,6 +31,7 @@ namespace EPR.PRN.Backend.API
             services.AddFeatureManagement();//.UseDisabledFeaturesHandler(new RedirectDisabledFeatureHandler());
 
             services.AddMediatR(Assembly.GetExecutingAssembly());
+
             services.AddApiVersioning();
             services.AddControllers()
                 .AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
@@ -44,15 +48,19 @@ namespace EPR.PRN.Backend.API
             services.AddDbContext<EprContext>(options =>
                 options.UseSqlServer(_config.GetConnectionString("EprConnectionString"))
             );
-            services.AddDbContext<EprRegistrationsContext>(options =>
-                options.UseInMemoryDatabase("EprRegistrationsDatabase")
-            );
 
-            services.AddDbContext<EprRegistrationsContext>(options =>
-                options.UseInMemoryDatabase("EprRegistrationsDatabase")
-            );
+            if (_config.GetValue<bool>($"FeatureManagement:{FeatureFlags.ReprocessorExporter}"))
+            {
+                services.AddDbContext<EprRegistrationsContext>(options =>
+                    options.UseInMemoryDatabase("EprRegistrationsDatabase")
+                );
+            }
+            else
+            {
+                services.AddDbContext<EprRegistrationsContext>();                    
+            }
 
-            services.AddDependencies();
+            services.AddDependencies(_config);
 
             services.Configure<PrnObligationCalculationConfig>(_config.GetSection(PrnObligationCalculationConfig.SectionName));
            
@@ -62,11 +70,17 @@ namespace EPR.PRN.Backend.API
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+
             using (var scope = app.ApplicationServices.CreateScope())
             {
-                var context = scope.ServiceProvider.GetRequiredService<EprRegistrationsContext>();
-                context.Database.EnsureCreated();
+                var featureManager = scope.ServiceProvider.GetRequiredService<IFeatureManager>();
+                if (featureManager.IsEnabledAsync(FeatureFlags.ReprocessorExporter).Result)
+                {
+                    var context = scope.ServiceProvider.GetRequiredService<EprRegistrationsContext>();
+                    context.Database.EnsureCreated();
+                }
             }
+
             if (env.IsDevelopment())
             {
                 app.UseSwagger();

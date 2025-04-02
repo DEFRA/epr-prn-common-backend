@@ -1,8 +1,8 @@
 ﻿using FluentValidation;
 
-public class UpdateTaskStatusRequestDtoValidator : AbstractValidator<UpdateTaskStatusRequestDto>
+public class UpdateRegulatorApplicationTaskCommandValidator : AbstractValidator<UpdateRegulatorApplicationTaskCommand>
 {
-    public UpdateTaskStatusRequestDtoValidator()
+    public UpdateRegulatorApplicationTaskCommandValidator()
     {
         RuleFor(x => x.Status)
             .IsInEnum().WithMessage("Invalid Status value");

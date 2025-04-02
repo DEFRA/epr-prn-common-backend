@@ -26,10 +26,6 @@ namespace EPR.PRN.Backend.Data
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            if (!optionsBuilder.IsConfigured)
-            {
-                optionsBuilder.UseInMemoryDatabase("EprRegistrationsDatabase");
-            }
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

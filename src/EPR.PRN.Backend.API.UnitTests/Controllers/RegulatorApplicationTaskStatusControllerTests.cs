@@ -34,11 +34,8 @@ public class RegulatorApplicationTaskStatusControllerTests
     private RegulatorApplicationTaskStatusController _systemUnderTest;
 
     private Mock<IMediator> _mockMediator;
-    private Mock<IMapper> _mockMapper;
     private Mock<ILogger<RegulatorApplicationTaskStatusController>> _mockLogger;
-    private Mock<IOptions<PrnObligationCalculationConfig>> _configMock;
-    private Mock<IConfiguration> _configurationMock;
-    private Mock<IValidator<UpdateTaskStatusRequestDto>> _UpdateTastStatusRequestDtoValidator;
+    private Mock<IValidator<UpdateRegulatorApplicationTaskCommand>> _updateRegulatorApplicationTaskCommandValidatorMock;
     private int TaskStatusId = 1;
 
     private static readonly IFixture _fixture = new Fixture();
@@ -47,25 +44,28 @@ public class RegulatorApplicationTaskStatusControllerTests
     public void TestInitialize()
     {
         _mockMediator = new Mock<IMediator>();
-        _mockMapper = new Mock<IMapper>();
         _mockLogger = new Mock<ILogger<RegulatorApplicationTaskStatusController>>();
 
-        _UpdateTastStatusRequestDtoValidator = new();
+        _updateRegulatorApplicationTaskCommandValidatorMock = new();
 
-        _systemUnderTest = new RegulatorApplicationTaskStatusController(_mockMediator.Object, _mockMapper.Object, _UpdateTastStatusRequestDtoValidator.Object);
-
-
+        _systemUnderTest = new RegulatorApplicationTaskStatusController(_mockMediator.Object, _updateRegulatorApplicationTaskCommandValidatorMock.Object);
     }
 
     [TestMethod]
     public async Task Patch_RegulatorApplicationTaskStatus_ReturnsOk_WhenValidUpdateTaskStatusRequestDto()
     {
-        var expectedTaskStatus = _fixture.Create<UpdateTaskStatusRequestDto>();
+        //Arrange
+        var expectedTaskStatus = _fixture.Create<UpdateRegulatorApplicationTaskCommand>();
         _mockMediator.Setup(m => m.Send(It.IsAny<UpdateRegulatorApplicationTaskCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
 
-        var result = await _systemUnderTest.UpdateRegistrationTaskStatus(expectedTaskStatus., expectedTaskStatus) as OkObjectResult;
+        var validationResult = new ValidationResult();
+        _updateRegulatorApplicationTaskCommandValidatorMock.Setup(x => x.Validate(It.IsAny<UpdateRegulatorApplicationTaskCommand>())).Returns(validationResult);
 
-        
+        //Act
+        var result = await _systemUnderTest.UpdateRegistrationTaskStatus(TaskStatusId, expectedTaskStatus);
+
+        //Assert
+        result.Should().BeOfType<OkObjectResult>();
+        (result as OkObjectResult).StatusCode.Should().Be((int)HttpStatusCode.OK);
     }
-
 }

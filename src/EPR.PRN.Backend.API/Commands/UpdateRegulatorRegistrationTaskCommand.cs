@@ -1,9 +1,17 @@
-﻿using MediatR;
+﻿using EPR.PRN.Backend.API.Common.Enums;
+using MediatR;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Swashbuckle.AspNetCore.Annotations;
 using System.ComponentModel.DataAnnotations;
 
-public class UpdateRegulatorRegistrationTaskCommand: UpdateTaskStatusRequestDto, IRequest<bool>
+public class UpdateRegulatorRegistrationTaskCommand: IRequest<bool>
 {
     [Required]
+    [BindNever]
+    [SwaggerIgnore]
     internal int Id { get; set; }
+    public required StatusTypes Status { get; set; }
+    [MaxLength(200)]
+    public string? Comment { get; set; } = string.Empty;
 }
 

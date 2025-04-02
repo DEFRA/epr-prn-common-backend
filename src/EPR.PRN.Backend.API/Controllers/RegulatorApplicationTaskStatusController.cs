@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using FluentValidation;
+﻿using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.FeatureManagement.Mvc;
@@ -12,32 +11,29 @@ using Microsoft.FeatureManagement.Mvc;
 public class RegulatorApplicationTaskStatusController : ControllerBase
 {
     private readonly IMediator _mediator;
-    private readonly IMapper _mapper;
-    private readonly IValidator<UpdateTaskStatusRequestDto> _updateTaskStatusRequestDtoValidator;
+    private readonly IValidator<UpdateRegulatorApplicationTaskCommand> _updateRegulatorApplicationTaskCommandValidator;
 
-    public RegulatorApplicationTaskStatusController(IMediator mediator, IMapper mapper, IValidator<UpdateTaskStatusRequestDto> updateTaskStatusRequestDtoValidator)
+    public RegulatorApplicationTaskStatusController(IMediator mediator, IValidator<UpdateRegulatorApplicationTaskCommand> updateRegulatorApplicationTaskCommandValidator)
     {
         this._mediator = mediator;
-        this._mapper = mapper;
-        this._updateTaskStatusRequestDtoValidator = updateTaskStatusRequestDtoValidator;
+        this._updateRegulatorApplicationTaskCommandValidator = updateRegulatorApplicationTaskCommandValidator;
     }
 
-    [HttpPatch("{registrationTaskStatusId}")]
+    [HttpPatch("{Id}")]
     [ProducesResponseType(200)]
     [ProducesResponseType(400)]
     [ProducesResponseType(500)]
-    public async Task<IActionResult> UpdateRegistrationTaskStatus(int registrationTaskStatusId,[FromBody] UpdateTaskStatusRequestDto dto)
+    public async Task<IActionResult> UpdateRegistrationTaskStatus(int Id, [FromBody] UpdateRegulatorApplicationTaskCommand command)
     {
-        var validationResult = _updateTaskStatusRequestDtoValidator.Validate(dto);
+        command.Id = Id;
+        
+        var validationResult = _updateRegulatorApplicationTaskCommandValidator.Validate(command);
 
         if (!validationResult.IsValid)
         {
             return new BadRequestObjectResult(validationResult.Errors);
         }
 
-        var command = _mapper.Map<UpdateRegulatorApplicationTaskCommand>(dto);
-        command.Id = registrationTaskStatusId;
-        
         var result = await _mediator.Send(command);
         return result ? Ok("Update RegistrationTaskStatus recorded successfully") : StatusCode(500, "Failed to process Status");
     }

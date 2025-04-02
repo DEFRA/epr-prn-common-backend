@@ -18,7 +18,7 @@ namespace EPR.PRN.Backend.API.Helpers
     [ExcludeFromCodeCoverage]
     public static class DependencyHelper
     {
-        public static IServiceCollection AddDependencies(this IServiceCollection services)
+        public static IServiceCollection AddDependencies(this IServiceCollection services, IConfiguration config)
         {
             services.AddScoped<IRepository, Repository>()
                 .AddScoped<IPrnService, PrnService>()
@@ -33,12 +33,12 @@ namespace EPR.PRN.Backend.API.Helpers
                 .AddScoped<IMaterialRepository, MaterialRepository>()
                 .AddScoped<IPrnRepository, PrnRepository>()
                 .AddScoped<IValidator<SavePrnDetailsRequest>, SavePrnDetailsRequestValidator>()
-                .AddScoped<IValidator<UpdateTaskStatusRequestDto>, UpdateTaskStatusRequestDtoValidator>()
+                .AddScoped<IValidator<UpdateRegulatorApplicationTaskCommand>, UpdateRegulatorApplicationTaskCommandValidator>()
                 .AddScoped<IRegulatorApplicationTaskStatusRepository, RegulatorApplicationTaskStatusRepository>()
                 .AddScoped<IRegulatorRegistrationTaskStatusRepository, RegulatorRegistrationTaskStatusRepository>()
-                .AddAutoMapper(typeof(MappingProfile).Assembly)
                 .AddScoped<IValidator<SavePrnDetailsRequest>, SavePrnDetailsRequestValidator>()
                 .AddScoped<IRegistrationMaterialRepository, RegistrationMaterialRepository>();
+
 
             return services;
         }
