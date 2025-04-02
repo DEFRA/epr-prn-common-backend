@@ -1783,3 +1783,28 @@ GO
 COMMIT;
 GO
 
+BEGIN TRANSACTION;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250402175400_UpdateSaveAndContinue'
+)
+BEGIN
+    ALTER TABLE [SaveAndContinue] ADD [CreatedOn] datetime2 NOT NULL DEFAULT '0001-01-01T00:00:00.0000000';
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250402175400_UpdateSaveAndContinue'
+)
+BEGIN
+    INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+    VALUES (N'20250402175400_UpdateSaveAndContinue', N'8.0.8');
+END;
+GO
+
+COMMIT;
+GO
+
