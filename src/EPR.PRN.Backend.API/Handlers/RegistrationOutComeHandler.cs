@@ -1,6 +1,6 @@
 using EPR.PRN.Backend.API.Commands;
 using EPR.PRN.Backend.API.Common.Enums;
-using EPR.PRN.Backend.API.Repositories.Interfaces;
+using EPR.PRN.Backend.Data.Interfaces.Regulator;
 using MediatR;
 namespace EPR.PRN.Backend.API.Handlers;
 public class RegistrationOutComeHandler : IRequestHandler<RegistrationOutcomeCommand, HandlerResponse<bool>>
@@ -20,14 +20,14 @@ public class RegistrationOutComeHandler : IRequestHandler<RegistrationOutcomeCom
             return new HandlerResponse<bool>(404, false, "Material not found.");
         }
 
-        if (!Enum.TryParse<OutcomeTypes>(request.Outcome, true, out var outcomeEnum))
+        if (!Enum.TryParse<OutcomeStatus>(request.Outcome, true, out var outcomeEnum))
         {
             return new HandlerResponse<bool>(400, false, "Invalid outcome type.");
         }
 
-        if (!string.IsNullOrEmpty(materialData.Status) && Enum.TryParse<OutcomeTypes>(materialData.Status, true, out var currentStatus))
+        if (!string.IsNullOrEmpty(materialData.Status) && Enum.TryParse<OutcomeStatus>(materialData.Status, true, out var currentStatus))
         {
-            if (outcomeEnum == currentStatus || (currentStatus == OutcomeTypes.GRANTED && outcomeEnum != OutcomeTypes.REFUSED))
+            if (outcomeEnum == currentStatus || (currentStatus == OutcomeStatus.GRANTED && outcomeEnum != OutcomeStatus.REFUSED))
             {
                 return new HandlerResponse<bool>(400, false, "Invalid Outcome transition.");
             }

@@ -4,6 +4,7 @@ namespace EPR.PRN.Backend.API.Repositories.Interfaces
     using EPR.PRN.Backend.API.Common.Dto;
     using EPR.PRN.Backend.API.Dto;
     using EPR.PRN.Backend.Data.DataModels;
+    using EPR.PRN.Backend.Data.DataModels.Registrations;
     using Microsoft.EntityFrameworkCore.Storage;
 
     public interface IRepository

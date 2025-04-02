@@ -1,7 +1,7 @@
 ﻿
-namespace EPR.PRN.Backend.API.Repositories.Interfaces;
+namespace EPR.PRN.Backend.Data.Interfaces.Regulator;
+using EPR.PRN.Backend.API.Common.Dto.Regulator;
 
-using EPR.PRN.Backend.API.Dto;
 
 public interface IRegistrationMaterialRepository
 {

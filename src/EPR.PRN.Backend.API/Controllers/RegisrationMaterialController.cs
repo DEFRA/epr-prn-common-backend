@@ -1,5 +1,5 @@
 ﻿using EPR.PRN.Backend.API.Commands;
-using EPR.PRN.Backend.API.Dto;
+using EPR.PRN.Backend.API.Common.Dto.Regulator;
 using EPR.PRN.Backend.API.Queries;
 using EPR.PRN.Backend.API.Validators;
 using MediatR;

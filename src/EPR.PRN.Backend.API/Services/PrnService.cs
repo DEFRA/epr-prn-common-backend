@@ -10,6 +10,7 @@ using EPR.PRN.Backend.API.Models;
 using EPR.PRN.Backend.API.Repositories.Interfaces;
 using EPR.PRN.Backend.API.Services.Interfaces;
 using EPR.PRN.Backend.Data.DataModels;
+using EPR.PRN.Backend.Data.DataModels.Registrations;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System.Collections.Generic;

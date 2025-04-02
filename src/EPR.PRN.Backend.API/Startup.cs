@@ -42,6 +42,9 @@ namespace EPR.PRN.Backend.API
             services.AddDbContext<EprContext>(options =>
                 options.UseSqlServer(_config.GetConnectionString("EprConnectionString"))
             );
+            services.AddDbContext<EprRegistrationsContext>(options =>
+                options.UseInMemoryDatabase("EprRegistrationsDatabase")
+            );
 
             services.AddDependencies();
 
@@ -53,6 +56,11 @@ namespace EPR.PRN.Backend.API
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            using (var scope = app.ApplicationServices.CreateScope())
+            {
+                var context = scope.ServiceProvider.GetRequiredService<EprRegistrationsContext>();
+                context.Database.EnsureCreated();
+            }
             if (env.IsDevelopment())
             {
                 app.UseSwagger();
