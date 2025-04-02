@@ -1,5 +1,6 @@
 ﻿using EPR.PRN.Backend.API.Common.Enums;
 using EPR.PRN.Backend.Data.DataModels;
+using EPR.PRN.Backend.Data.DataModels.Registrations;
 using System.Diagnostics.CodeAnalysis;
 
 namespace EPR.PRN.Backend.API.Dto

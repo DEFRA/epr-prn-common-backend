@@ -1,20 +1,16 @@
-﻿namespace EPR.PRN.Backend.API.Repositories;
-using EPR.PRN.Backend.API.Dto;
-using EPR.PRN.Backend.API.Repositories.Interfaces;
+﻿namespace EPR.PRN.Backend.Data.Repositories;
+using EPR.PRN.Backend.API.Common.Dto.Regulator;
 using EPR.PRN.Backend.Data;
+using EPR.PRN.Backend.Data.Interfaces.Regulator;
 
-public class RegistrationMaterialRepository(EprContext eprContext, ILogger<Repository> logger, IConfiguration configuration) : IRegistrationMaterialRepository
+public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrationMaterialRepository
 {
     protected readonly EprContext _eprContext = eprContext;
-    private readonly string logPrefix = configuration["LogPrefix"];
-
-
     public async Task<bool> UpdateRegistrationOutCome(int RegistrationMaterialId, int Outcome, string? OutComeComment)
     {
         await Task.Delay(50);
         bool result = true;
-        logger.LogInformation("Update Registration OutCome. RegistrationMaterialId : {RegistrationMaterialId} and {Outcome}", RegistrationMaterialId, Outcome);
-        return true;
+       return result;
     }
     public async Task<RegistrationOverviewDto> GetRegistrationOverviewDetailById(int RegistrationId)
     {

@@ -1,5 +1,5 @@
 #nullable disable
-using EPR.PRN.Backend.API.Dto;
+using EPR.PRN.Backend.API.Common.Dto.Regulator;
 using MediatR;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;

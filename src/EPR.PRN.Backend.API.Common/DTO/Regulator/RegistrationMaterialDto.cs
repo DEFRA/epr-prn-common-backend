@@ -1,8 +1,4 @@
-﻿using EPR.PRN.Backend.API.Common.Enums;
-using EPR.PRN.Backend.Data.DataModels;
-using System.Diagnostics.CodeAnalysis;
-
-namespace EPR.PRN.Backend.API.Dto;
+﻿namespace EPR.PRN.Backend.API.Common.Dto.Regulator;
 
 /// <summary>
 /// Material-level section inside a registration.

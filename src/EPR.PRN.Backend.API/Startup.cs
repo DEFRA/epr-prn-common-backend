@@ -44,6 +44,9 @@ namespace EPR.PRN.Backend.API
             services.AddDbContext<EprContext>(options =>
                 options.UseSqlServer(_config.GetConnectionString("EprConnectionString"))
             );
+            services.AddDbContext<EprRegistrationsContext>(options =>
+                options.UseInMemoryDatabase("EprRegistrationsDatabase")
+            );
 
             services.AddDbContext<EprRegistrationsContext>(options =>
                 options.UseInMemoryDatabase("EprRegistrationsDatabase")
@@ -64,7 +67,6 @@ namespace EPR.PRN.Backend.API
                 var context = scope.ServiceProvider.GetRequiredService<EprRegistrationsContext>();
                 context.Database.EnsureCreated();
             }
-
             if (env.IsDevelopment())
             {
                 app.UseSwagger();

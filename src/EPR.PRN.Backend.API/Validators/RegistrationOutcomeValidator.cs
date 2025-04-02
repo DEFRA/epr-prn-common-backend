@@ -16,7 +16,7 @@ public class RegistrationOutcomeValidator : AbstractValidator<RegistrationOutcom
 
         RuleFor(x => x.Outcome)
             .NotEmpty().WithMessage("Outcome is required.")
-            .Must(outcome => Enum.TryParse(typeof(OutcomeTypes), outcome, true, out _))
+            .Must(outcome => Enum.TryParse(typeof(OutcomeStatus), outcome, true, out _))
             .WithMessage("Invalid outcome type.");
 
         RuleFor(x => x.Comments)

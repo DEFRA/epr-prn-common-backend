@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace EPR.PRN.Backend.Data
+namespace EPR.PRN.Backend.Data.DataModels.Registrations
 {
-    public class RegistrationMaterial
+	public class RegistrationMaterial
     {
         [Key]
         public int Id { get; set; }
@@ -36,4 +36,7 @@ namespace EPR.PRN.Backend.Data
         public Guid StatusUpdatedBy { get; set; }
         public DateTime StatusUpdatedDate { get; set; }
     }
+
+    
+   
 }

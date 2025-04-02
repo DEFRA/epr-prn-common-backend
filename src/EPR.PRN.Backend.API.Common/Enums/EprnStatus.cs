@@ -6,10 +6,5 @@
         REJECTED,
         CANCELLED,
         AWAITINGACCEPTANCE
-    }
-    public enum OutcomeTypes
-    {
-        GRANTED = 1,
-        REFUSED=2       
-    }
+    }   
 }

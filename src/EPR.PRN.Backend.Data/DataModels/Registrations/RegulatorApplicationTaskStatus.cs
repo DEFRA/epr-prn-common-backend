@@ -1,7 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace EPR.PRN.Backend.Data
-{    public class RegulatorApplicationTaskStatus
+namespace EPR.PRN.Backend.Data.DataModels.Registrations
+{
+    public class RegulatorApplicationTaskStatus
     {
         [Key]
         public int Id { get; set; } // Unique identifier for each record
