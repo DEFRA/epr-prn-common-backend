@@ -10,7 +10,7 @@ namespace EPR.PRN.Backend.Data.DataModels.Registrations
         public int RegistrationId { get; set; }
         public int MaterialId { get; set; }
         public int PermitId { get; set; }
-        public int StatusID { get; set; }
+        public int? StatusID { get; set; }
         public string ReferenceNumber { get; set; } = string.Empty;
         public string Comments { get; set; } = string.Empty;        
         public decimal MaximumProcessingCapacityTonnes { get; set; }
