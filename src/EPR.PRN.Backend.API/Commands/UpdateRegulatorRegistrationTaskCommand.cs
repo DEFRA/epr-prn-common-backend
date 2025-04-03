@@ -10,6 +10,7 @@ public class UpdateRegulatorRegistrationTaskCommand: IRequest<bool>
     [BindNever]
     [SwaggerIgnore]
     public int Id { get; set; }
+    [Required]
     public required StatusTypes Status { get; set; }
     [MaxLength(200)]
     public string? Comment { get; set; } = string.Empty;

@@ -8,7 +8,7 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using System.Net;
 
-namespace EPR.PRN.Backend.API.UnitTests.Services;
+namespace EPR.PRN.Backend.API.UnitTests.Controllers;
 
 [TestClass]
 public class RegulatorApplicationTaskStatusControllerTests
@@ -47,7 +47,7 @@ public class RegulatorApplicationTaskStatusControllerTests
         var result = await _systemUnderTest.UpdateRegistrationTaskStatus(TaskStatusId, expectedTaskStatus);
 
         //Assert
-        result.Should().BeOfType<OkObjectResult>();
-        (result as OkObjectResult).StatusCode.Should().Be((int)HttpStatusCode.OK);
+        result.Should().BeOfType<NoContentResult>();
+        (result as NoContentResult).StatusCode.Should().Be((int)HttpStatusCode.NoContent);
     }
 }

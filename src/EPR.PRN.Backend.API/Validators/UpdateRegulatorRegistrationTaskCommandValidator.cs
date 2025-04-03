@@ -1,9 +1,9 @@
 ﻿using EPR.PRN.Backend.API.Common.Enums;
 using FluentValidation;
 
-public class UpdateRegulatorApplicationTaskCommandValidator : AbstractValidator<UpdateRegulatorApplicationTaskCommand>
+public class UpdateRegulatorRegistrationTaskCommandValidator : AbstractValidator<UpdateRegulatorRegistrationTaskCommand>
 {
-    public UpdateRegulatorApplicationTaskCommandValidator()
+    public UpdateRegulatorRegistrationTaskCommandValidator()
     {
         RuleFor(x => x.Status)
             .IsInEnum().WithMessage("Invalid Status value");
