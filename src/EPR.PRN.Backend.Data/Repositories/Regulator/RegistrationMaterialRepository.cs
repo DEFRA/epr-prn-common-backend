@@ -1,20 +1,28 @@
 ﻿namespace EPR.PRN.Backend.Data.Repositories;
 using EPR.PRN.Backend.API.Common.Dto.Regulator;
 using EPR.PRN.Backend.Data;
+using EPR.PRN.Backend.Data.DataModels.Registrations;
 using EPR.PRN.Backend.Data.Interfaces.Regulator;
+using Microsoft.EntityFrameworkCore;
 
-public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrationMaterialRepository
+public class RegistrationMaterialRepository(EprRegistrationsContext eprContext) : IRegistrationMaterialRepository
 {
-    protected readonly EprContext _eprContext = eprContext;
+    protected readonly EprRegistrationsContext _eprContext = eprContext;
     public async Task<bool> UpdateRegistrationOutCome(int RegistrationMaterialId, int Outcome, string? OutComeComment)
     {
         await Task.Delay(50);
         bool result = true;
-       return result;
+        return result;
     }
     public async Task<RegistrationOverviewDto> GetRegistrationOverviewDetailById(int RegistrationId)
     {
         await Task.Delay(50);
+
+
+
+
+
+
         return new RegistrationOverviewDto
         {
             Id = RegistrationId,
@@ -79,23 +87,57 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
     public async Task<RegistrationMaterialDto> GetMaterialsById(int RegistrationMetrialId)
     {
         await Task.Delay(50);
-        return new RegistrationMaterialDto
-        {
-            Id = RegistrationMetrialId,
-            MaterialName = "Plastic",
-            Status = "Granted",
-            DeterminationDate = DateTime.UtcNow,
-            ReferenceNumber = "ABC123",
-            Tasks = new()
-            {
-                new RegistrationTaskDto {
-                    Id = 45, // RegulatorRegistrationTaskStatus.Id
-                    TaskId= 5,  // Task.Id (lookup)
-                    TaskName = "Sampling plan",
-                    Status = "Approved"
-                }
-            }
-        };
+        var result = await _eprContext.RegistrationMaterials
+       .Where(rm => rm.Id == RegistrationMetrialId)
+       .Select(rm => new RegistrationMaterialDto
+       {
+           Id = rm.Id,
+           MaterialName = _eprContext.LookupMaterials
+                         .Where(m => m.Id == rm.MaterialId)
+           .Select(m => m.MaterialName)
+                         .FirstOrDefault(),
+           Status = _eprContext.LookupTaskStatuses
+                         .Where(s => s.Id == rm.StatusID)
+                         .Select(s => s.Name)
+                         .FirstOrDefault(),
+           DeterminationDate = rm.DeterminationDate,
+           ReferenceNumber = rm.ReferenceNumber,
+           Tasks = _eprContext.RegistrationTaskStatus
+               .Where(rt => rt.RegistrationId == rm.RegistrationId)
+               .Select(rt => new RegistrationTaskDto
+               {
+                   Id = rt.Id,
+                   TaskId = rt.TaskId,
+                   TaskName = _eprContext.LookupTasks
+                              .Where(t => t.Id == rt.TaskId)
+                   .Select(t => t.Name)
+                              .FirstOrDefault(),
+                   Status = _eprContext.LookupTaskStatuses
+                             .Where(ts => ts.Id == rt.Id)
+                             .Select(ts => ts.Name)
+                             .FirstOrDefault()
+               }).ToList()
+       })
+       .FirstOrDefaultAsync();
+
+        return result;
+        //return new RegistrationMaterialDto
+        //{
+        //    Id = RegistrationMetrialId,
+        //    MaterialName = "Plastic",
+        //    Status = "Granted",
+        //    DeterminationDate = DateTime.UtcNow,
+        //    ReferenceNumber = "ABC123",
+        //    Tasks = new()
+        //    {
+        //        new RegistrationTaskDto {
+        //            Id = 45, // RegulatorRegistrationTaskStatus.Id
+        //            TaskId= 5,  // Task.Id (lookup)
+        //            TaskName = "Sampling plan",
+        //            Status = "Approved"
+        //        }
+        //    }
+        //};
 
     }
 }

@@ -10,7 +10,7 @@ using System.Diagnostics.CodeAnalysis;
 namespace EPR.PRN.Backend.API.Commands;
 
 [ExcludeFromCodeCoverage]
-public class RegistrationOutcomeCommand: IRequest<HandlerResponse<bool>>
+public class RegistrationMaterialsOutcomeCommand : IRequest<HandlerResponse<bool>>
 {
     [Required]
     [BindNever]

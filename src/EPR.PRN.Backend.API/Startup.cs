@@ -1,4 +1,5 @@
-﻿using EPR.PRN.Backend.API.Configs;
+﻿using EPR.PRN.Backend.API.Common.Constants;
+using EPR.PRN.Backend.API.Configs;
 using EPR.PRN.Backend.API.Helpers;
 using EPR.PRN.Backend.Data;
 using HealthChecks.UI.Client;
@@ -8,6 +9,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Microsoft.Extensions.Options;
+using Microsoft.FeatureManagement;
 using Microsoft.FeatureManagement;
 using System;
 using System.Diagnostics.CodeAnalysis;
@@ -43,7 +46,10 @@ namespace EPR.PRN.Backend.API
             services.AddSwaggerGen(config =>
             {
                 config.CustomSchemaIds(s => s.FullName);
+                config.DocumentFilter<FeatureEnabledDocumentFilter>();
+                config.OperationFilter<FeatureGateOperationFilter>();
             });
+            services.AddFeatureManagement();
 
             services.AddDbContext<EprContext>(options =>
                 options.UseSqlServer(_config.GetConnectionString("EprConnectionString"))
@@ -80,7 +86,6 @@ namespace EPR.PRN.Backend.API
                     context.Database.EnsureCreated();
                 }
             }
-
             if (env.IsDevelopment())
             {
                 app.UseSwagger();
