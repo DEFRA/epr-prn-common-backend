@@ -12,11 +12,10 @@ namespace EPR.PRN.Backend.API.Controllers
     public class SaveAndContinueController(ISaveAndContinueService saveAndContinueService, ILogger<SaveAndContinueController> logger) : Controller
     {
         [HttpPost]
-        [Route("save")]
         [ProducesResponseType(typeof(RegistrationDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        public async Task<IActionResult> Save([FromBody] SaveAndContinueRequest request)
+        public async Task<IActionResult> Create([FromBody] SaveAndContinueRequest request)
         {
             try
             {
@@ -26,14 +25,14 @@ namespace EPR.PRN.Backend.API.Controllers
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "SaveAndContinueController - AddAsync: {request}: Recieved Unhandled exception", request);
+                logger.LogError(ex, "SaveAndContinueController - Create: {request}: Recieved Unhandled exception", request);
                 return Problem("Internal Server Error", null, (int)HttpStatusCode.InternalServerError);
             }
         }
 
         [HttpGet]
         [Route("getLatest/{registrationId}/{area}")]
-        [ProducesResponseType(typeof(RegistrationDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(SaveAndContinueDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<IActionResult> Get(int registrationId, string area)
@@ -46,14 +45,14 @@ namespace EPR.PRN.Backend.API.Controllers
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "SaveAndContinueController - GetAsync: {registrationId} {area}: Recieved Unhandled exception", registrationId, area);
+                logger.LogError(ex, "SaveAndContinueController - Get: {registrationId} {area}: Recieved Unhandled exception", registrationId, area);
                 return Problem("Internal Server Error", null, (int)HttpStatusCode.InternalServerError);
             }
         }
 
         [HttpGet]
         [Route("getAll/{registrationId}/{area}")]
-        [ProducesResponseType(typeof(RegistrationDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(SaveAndContinueDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<IActionResult> GetAll(int registrationId, string area)
@@ -66,7 +65,7 @@ namespace EPR.PRN.Backend.API.Controllers
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "SaveAndContinueController - GetAllAsync: {registrationId} {area}: Recieved Unhandled exception", registrationId, area);
+                logger.LogError(ex, "SaveAndContinueController - GetAll: {registrationId} {area}: Recieved Unhandled exception", registrationId, area);
                 return Problem("Internal Server Error", null, (int)HttpStatusCode.InternalServerError);
             }
         }

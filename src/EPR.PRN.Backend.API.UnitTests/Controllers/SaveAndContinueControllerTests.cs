@@ -30,21 +30,21 @@ namespace EPR.PRN.Backend.API.UnitTests.Controllers
         }
 
         [TestMethod]
-        public async Task Save_ReturnsOk()
+        public async Task Create_ReturnsOk()
         {
             var model = new SaveAndContinueRequest() { RegistrationId = 1, Action = "Test", Controller = "Test", Parameters = null, Area = null };
-            var result = await _systemUnderTest.Save(model) as OkResult;
+            var result = await _systemUnderTest.Create(model) as OkResult;
 
             result.StatusCode.Should().Be((int)HttpStatusCode.OK);
         }
 
 
         [TestMethod]
-        public async Task Save_InternalServerError_ReturnsInternalServerStatusCode()
+        public async Task Create_InternalServerError_ReturnsInternalServerStatusCode()
         {
             _mockSaveAndContinueService.Setup(s => s.AddAsync(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).Throws<ArgumentException>();
 
-            var result = await _systemUnderTest.Save(null) as ObjectResult;
+            var result = await _systemUnderTest.Create(null) as ObjectResult;
 
             result.Should().NotBeNull();
             result.StatusCode.Should().Be((int)HttpStatusCode.InternalServerError);
