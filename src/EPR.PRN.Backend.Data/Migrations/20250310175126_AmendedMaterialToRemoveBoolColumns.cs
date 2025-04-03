@@ -40,57 +40,57 @@ namespace EPR.PRN.Backend.Data.Migrations
                 table: "Material",
                 keyColumn: "Id",
                 keyValue: 1,
-                columns: new[] { "IsCaculable", "IsVisibleToObligation" },
-                values: new object[] { true, true });
+                columns: ["IsCaculable", "IsVisibleToObligation"],
+                values: [true, true]);
 
             migrationBuilder.UpdateData(
                 table: "Material",
                 keyColumn: "Id",
                 keyValue: 2,
-                columns: new[] { "IsCaculable", "IsVisibleToObligation" },
-                values: new object[] { true, true });
+                columns: ["IsCaculable", "IsVisibleToObligation"],
+                values: [true, true]);
 
             migrationBuilder.UpdateData(
                 table: "Material",
                 keyColumn: "Id",
                 keyValue: 3,
-                columns: new[] { "IsCaculable", "IsVisibleToObligation" },
-                values: new object[] { true, true });
+                columns: ["IsCaculable", "IsVisibleToObligation"],
+                values: [true, true]);
 
             migrationBuilder.UpdateData(
                 table: "Material",
                 keyColumn: "Id",
                 keyValue: 4,
-                columns: new[] { "IsCaculable", "IsVisibleToObligation" },
-                values: new object[] { true, true });
+                columns: ["IsCaculable", "IsVisibleToObligation"],
+                values: [true, true]);
 
             migrationBuilder.UpdateData(
                 table: "Material",
                 keyColumn: "Id",
                 keyValue: 5,
-                columns: new[] { "IsCaculable", "IsVisibleToObligation" },
-                values: new object[] { true, true });
+                columns: ["IsCaculable", "IsVisibleToObligation"],
+                values: [true, true]);
 
             migrationBuilder.UpdateData(
                 table: "Material",
                 keyColumn: "Id",
                 keyValue: 6,
-                columns: new[] { "IsCaculable", "IsVisibleToObligation" },
-                values: new object[] { true, true });
+                columns: ["IsCaculable", "IsVisibleToObligation"],
+                values: [true, true]);
 
             migrationBuilder.UpdateData(
                 table: "Material",
                 keyColumn: "Id",
                 keyValue: 7,
-                columns: new[] { "IsCaculable", "IsVisibleToObligation" },
-                values: new object[] { false, true });
+                columns: ["IsCaculable", "IsVisibleToObligation"],
+                values: [false, true]);
 
             migrationBuilder.UpdateData(
                 table: "Material",
                 keyColumn: "Id",
                 keyValue: 8,
-                columns: new[] { "IsCaculable", "IsVisibleToObligation" },
-                values: new object[] { true, false });
+                columns: ["IsCaculable", "IsVisibleToObligation"],
+                values: [true, false]);
         }
     }
 }

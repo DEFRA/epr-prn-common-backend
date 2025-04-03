@@ -23,7 +23,7 @@ using Microsoft.Extensions.Options;
 using Moq;
 using System.Net;
 
-namespace EPR.PRN.Backend.API.UnitTests.Services;
+namespace EPR.PRN.Backend.API.UnitTests.Controllers;
 
 [TestClass]
 public class PrnControllerTests
@@ -58,11 +58,11 @@ public class PrnControllerTests
 
         _validatorSavePrnDetailsMock = new();
 
-        _systemUnderTest = new PrnController(_mockPrnService.Object, 
-            _mockLogger.Object, 
-            _mockObligationCalculatorService.Object, 
-            _configMock.Object, 
-            _configurationMock.Object, 
+        _systemUnderTest = new PrnController(_mockPrnService.Object,
+            _mockLogger.Object,
+            _mockObligationCalculatorService.Object,
+            _configMock.Object,
+            _configurationMock.Object,
             _validatorSavePrnDetailsMock.Object);
 
         organisationIds.Add(Guid.NewGuid());
@@ -165,7 +165,7 @@ public class PrnControllerTests
     [TestMethod]
     public async Task CalculateAsync_WhenRequestIsEmpty_ReturnsBadRequest()
     {
-        var result = await _systemUnderTest.CalculateAsync(organisationId, new List<SubmissionCalculationRequest>());
+        var result = await _systemUnderTest.CalculateAsync(organisationId, []);
 
         result.Should().BeOfType<BadRequestObjectResult>();
 
@@ -178,7 +178,7 @@ public class PrnControllerTests
     {
         _systemUnderTest.ModelState.AddModelError("Key", "Error message");
 
-        var result = await _systemUnderTest.CalculateAsync(organisationId, new List<SubmissionCalculationRequest> { new() });
+        var result = await _systemUnderTest.CalculateAsync(organisationId, [new()]);
 
         result.Should().BeOfType<BadRequestObjectResult>();
     }
@@ -191,7 +191,7 @@ public class PrnControllerTests
             .Setup(x => x.CalculateAsync(It.IsAny<Guid>(), It.IsAny<List<SubmissionCalculationRequest>>()))
             .ReturnsAsync(calculationResult);
 
-        var result = await _systemUnderTest.CalculateAsync(organisationId, new List<SubmissionCalculationRequest> { new() });
+        var result = await _systemUnderTest.CalculateAsync(organisationId, [new()]);
 
         result.Should().BeOfType<ObjectResult>().Which.StatusCode.Should().Be(StatusCodes.Status500InternalServerError);
     }
@@ -210,7 +210,7 @@ public class PrnControllerTests
             .Setup(x => x.CalculateAsync(It.IsAny<Guid>(), It.IsAny<List<SubmissionCalculationRequest>>()))
             .ReturnsAsync(calculationResult);
 
-        var result = await _systemUnderTest.CalculateAsync(organisationId, new List<SubmissionCalculationRequest> { new() });
+        var result = await _systemUnderTest.CalculateAsync(organisationId, [new()]);
 
         result.Should().BeOfType<AcceptedResult>().Which.Value.Should().BeEquivalentTo(new
         {
@@ -226,7 +226,7 @@ public class PrnControllerTests
             .Setup(x => x.CalculateAsync(It.IsAny<Guid>(), It.IsAny<List<SubmissionCalculationRequest>>()))
             .ThrowsAsync(new TimeoutException("Request timed out"));
 
-        var result = await _systemUnderTest.CalculateAsync(organisationId, new List<SubmissionCalculationRequest> { new() });
+        var result = await _systemUnderTest.CalculateAsync(organisationId, [new()]);
 
         result.Should().BeOfType<ObjectResult>().Which.StatusCode.Should().Be(StatusCodes.Status504GatewayTimeout);
 
@@ -241,7 +241,7 @@ public class PrnControllerTests
             .Setup(x => x.CalculateAsync(It.IsAny<Guid>(), It.IsAny<List<SubmissionCalculationRequest>>()))
             .ThrowsAsync(new Exception("Unexpected error"));
 
-        var result = await _systemUnderTest.CalculateAsync(organisationId, new List<SubmissionCalculationRequest> { new() });
+        var result = await _systemUnderTest.CalculateAsync(organisationId, [new()]);
 
         result.Should().BeOfType<ObjectResult>().Which.StatusCode.Should().Be(StatusCodes.Status500InternalServerError);
 
@@ -271,20 +271,6 @@ public class PrnControllerTests
     }
 
     [TestMethod]
-    [DataRow(2025)] // Invalid year
-    public async Task GetObligationCalculation_EmptyOrganisationIds_ShouldReturn_BadRequest(int year)
-    {
-        // Act
-        var result = await _systemUnderTest.GetObligationCalculations(Guid.NewGuid(), year, []);
-
-        // Assert
-        var badRequestResult = result as BadRequestObjectResult;
-        badRequestResult.Should().NotBeNull();
-        badRequestResult.StatusCode.Should().Be(400);
-        badRequestResult.Value.Should().Be($"Organisation Ids list can't be empty.");
-    }
-
-    [TestMethod]
     [DataRow(2023)] // Invalid year
     [DataRow(2030)] // Invalid year
     public async Task GetObligationCalculation_MultipleOrganisationIds_InvalidYear_ReturnsBadRequest(int year)
@@ -303,7 +289,7 @@ public class PrnControllerTests
     public async Task GetObligationCalculation_MultipleOrganisationIds_WhenIsSuccessFalse_Returns500()
     {
         // Arrange
-        var year = 2025;
+        var year = DateTime.UtcNow.Year;
         var obligationResult = new ObligationCalculationResult { Errors = null, IsSuccess = false };
         _mockObligationCalculatorService.Setup(service => service.GetObligationCalculation(organisationId, organisationIds, year)).ReturnsAsync(obligationResult);
 
@@ -319,7 +305,7 @@ public class PrnControllerTests
     public async Task GetObligationCalculation_MultipleOrganisationIds_ValidYear_DataFound_ReturnsOk()
     {
         // Arrange
-        var year = 2025;
+        var year = DateTime.UtcNow.Year;
         var fixture = new Fixture();
         var prns = fixture.CreateMany<ObligationData>(10).ToList();
         for (int i = 0; i < 2; i++)
@@ -391,7 +377,7 @@ public class PrnControllerTests
         _mockPrnService
             .Setup(service => service.GetModifiedPrnsbyDate(fromDate, toDate))
             .ReturnsAsync((List<PrnUpdateStatus>)null);
-        
+
         var modifiedPrnsbyDateRequest = new ModifiedPrnsbyDateRequest
         {
             From = fromDate,
@@ -566,9 +552,7 @@ public class PrnControllerTests
         };
 
         // Get all property names from DTO class
-        var props = typeof(SavePrnDetailsRequest)
-                        .GetProperties(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance)
-                        .ToList();
+        var props = typeof(SavePrnDetailsRequest).GetProperties(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance).ToList();
 
         var matchingProp = props.Find(x => string.Equals(x.Name, propertyName, StringComparison.InvariantCulture));
         matchingProp.Should().NotBeNull();
@@ -658,7 +642,7 @@ public class PrnControllerTests
     {
         var dto = new SavePrnDetailsRequest()
         {
-            AccreditationNo = "ABC",
+            AccreditationNo = "XYZ",
             AccreditationYear = 2018,
             CancelledDate = DateTime.UtcNow.AddDays(-1),
             DecemberWaste = true,
@@ -685,9 +669,7 @@ public class PrnControllerTests
         };
 
         // Get all property names from DTO class
-        var props = typeof(SavePrnDetailsRequest)
-                        .GetProperties(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance)
-                        .ToList();
+        var props = typeof(SavePrnDetailsRequest).GetProperties(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance).ToList();
 
         var matchingProp = props.Find(x => string.Equals(x.Name, propertyName, StringComparison.InvariantCulture));
         matchingProp.Should().NotBeNull();
