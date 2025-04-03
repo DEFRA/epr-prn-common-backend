@@ -102,8 +102,8 @@ public class RegistrationMaterialRepository(EprRegistrationsContext eprContext) 
                          .FirstOrDefault(),
            DeterminationDate = rm.DeterminationDate,
            ReferenceNumber = rm.ReferenceNumber,
-           Tasks = _eprContext.RegistrationTaskStatus
-               .Where(rt => rt.RegistrationId == rm.RegistrationId)
+           Tasks = _eprContext.RegulatorApplicationTaskStatus
+               .Where(rt => rt.RegistrationMaterialId == rm.Id)
                .Select(rt => new RegistrationTaskDto
                {
                    Id = rt.Id,

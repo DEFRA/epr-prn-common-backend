@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Swashbuckle.AspNetCore.Annotations;
 using System.ComponentModel.DataAnnotations;
 
-public class UpdateRegulatorRegistrationTaskCommand: IRequest<bool>
+public class UpdateRegulatorRegistrationTaskCommand: IRequest<Unit>
 {
     [Required]
     [BindNever]

@@ -1,18 +1,13 @@
-﻿using EPR.PRN.Backend.API.Common.Constants;
-using EPR.PRN.Backend.API.Configs;
+﻿using EPR.PRN.Backend.API.Configs;
 using EPR.PRN.Backend.API.Helpers;
+using EPR.PRN.Backend.API.Middlewares;
 using EPR.PRN.Backend.Data;
 using HealthChecks.UI.Client;
 using MediatR;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
-using Microsoft.Extensions.Options;
 using Microsoft.FeatureManagement;
-using Microsoft.FeatureManagement;
-using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Text.Json.Serialization;
@@ -32,7 +27,7 @@ namespace EPR.PRN.Backend.API
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddFeatureManagement();//.UseDisabledFeaturesHandler(new RedirectDisabledFeatureHandler());
-
+            services.AddLogging();
             services.AddMediatR(Assembly.GetExecutingAssembly());
 
             services.AddApiVersioning();
@@ -84,6 +79,9 @@ namespace EPR.PRN.Backend.API
                 {
                     var context = scope.ServiceProvider.GetRequiredService<EprRegistrationsContext>();
                     context.Database.EnsureCreated();
+
+                    app.UseExceptionHandler(env.IsDevelopment() ? "/error-development" : "/error");
+                    app.UseMiddleware<ExceptionHandlingMiddleware>();
                 }
             }
             if (env.IsDevelopment())

@@ -20,7 +20,7 @@ namespace EPR.PRN.Backend.API.UnitTests.Handlers
         }
 
         [TestMethod]
-        public async Task Handle_ShouldReturnTrue_WhenUpdateIsSuccessful()
+        public async Task Handle_ShouldCallUpdateStatusAsync_WhenCommandIsValid()
         {
             // Arrange
             var command = new UpdateRegulatorApplicationTaskCommand
@@ -38,7 +38,6 @@ namespace EPR.PRN.Backend.API.UnitTests.Handlers
             var result = await _handler.Handle(command, CancellationToken.None);
 
             // Assert
-            result.Should().BeTrue();
             _mockRepository.Verify(repo => repo.UpdateStatusAsync(command.Id, command.Status, command.Comment), Times.Once);
         }
 

@@ -1,4 +1,5 @@
-﻿using FluentValidation;
+﻿using EPR.PRN.Backend.API.Constants;
+using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.FeatureManagement.Mvc;
@@ -11,12 +12,14 @@ using Microsoft.FeatureManagement.Mvc;
 public class RegulatorApplicationTaskStatusController : ControllerBase
 {
     private readonly IMediator _mediator;
-    private readonly IValidator<UpdateRegulatorApplicationTaskCommand> _updateRegulatorApplicationTaskCommandValidator;
+    private readonly IValidator<UpdateRegulatorApplicationTaskCommand> _validator;
+    private readonly ILogger<RegulatorApplicationTaskStatusController> _logger;
 
-    public RegulatorApplicationTaskStatusController(IMediator mediator, IValidator<UpdateRegulatorApplicationTaskCommand> updateRegulatorApplicationTaskCommandValidator)
+    public RegulatorApplicationTaskStatusController(IMediator mediator, IValidator<UpdateRegulatorApplicationTaskCommand> validator, ILogger<RegulatorApplicationTaskStatusController> logger)
     {
         this._mediator = mediator;
-        this._updateRegulatorApplicationTaskCommandValidator = updateRegulatorApplicationTaskCommandValidator;
+        this._validator = validator;
+        this._logger = logger;
     }
 
     [HttpPatch("{Id}")]
@@ -25,24 +28,14 @@ public class RegulatorApplicationTaskStatusController : ControllerBase
     [ProducesResponseType(500)]
     public async Task<IActionResult> UpdateRegistrationTaskStatus(int Id, [FromBody] UpdateRegulatorApplicationTaskCommand command)
     {
+        _logger.LogInformation(LogMessages.UpdateRegulatorApplicationTask);
+
         command.Id = Id;
         
-        var validationResult = _updateRegulatorApplicationTaskCommandValidator.Validate(command);
+        await _validator.ValidateAndThrowAsync(command);
 
-        if (!validationResult.IsValid)
-        {
-            return new BadRequestObjectResult(validationResult.Errors);
-        }
+        await _mediator.Send(command);
 
-        try
-        {
-            var result = await _mediator.Send(command);
-
-            return result ? NoContent() : StatusCode(500, "Failed to process Status");
-        }
-        catch (KeyNotFoundException)
-        {
-            return NotFound();
-        }
+        return NoContent();
     }
 }

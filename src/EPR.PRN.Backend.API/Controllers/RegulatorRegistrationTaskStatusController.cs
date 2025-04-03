@@ -1,4 +1,5 @@
-﻿using FluentValidation;
+﻿using EPR.PRN.Backend.API.Constants;
+using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.FeatureManagement.Mvc;
@@ -11,42 +12,30 @@ using Microsoft.FeatureManagement.Mvc;
 public class RegulatorRegistrationTaskStatusController : ControllerBase
 {
     private readonly IMediator _mediator;
-    private readonly IValidator<UpdateRegulatorRegistrationTaskCommand> _updateRegulatorRegistrationTaskCommandValidator;
+    private readonly IValidator<UpdateRegulatorRegistrationTaskCommand> _validator;
+    private readonly ILogger<RegulatorRegistrationTaskStatusController> _logger;
 
-    public RegulatorRegistrationTaskStatusController(IMediator mediator, IValidator<UpdateRegulatorRegistrationTaskCommand> command)
+    public RegulatorRegistrationTaskStatusController(IMediator mediator, IValidator<UpdateRegulatorRegistrationTaskCommand> validator, ILogger<RegulatorRegistrationTaskStatusController> logger)
     {
         this._mediator = mediator;
-        this._updateRegulatorRegistrationTaskCommandValidator = command;
+        this._validator = validator;
+        this._logger = logger;
     }
 
-    #region Patch Methods
-
-    [HttpPatch("{registrationTaskStatusId}")]
+    [HttpPatch("{Id}")]
     [ProducesResponseType(204)]
     [ProducesResponseType(400)]
     [ProducesResponseType(500)]
-    public async Task<IActionResult> UpdateRegistrationTaskStatus(int registrationTaskStatusId,[FromBody] UpdateRegulatorRegistrationTaskCommand command)
+    public async Task<IActionResult> UpdateRegistrationTaskStatus(int Id, [FromBody] UpdateRegulatorRegistrationTaskCommand command)
     {
-        command.Id = registrationTaskStatusId;
+        _logger.LogInformation(LogMessages.UpdateRegulatorRegistrationTask);
 
-        var validationResult = _updateRegulatorRegistrationTaskCommandValidator.Validate(command);
+        command.Id = Id;
 
-        if (!validationResult.IsValid)
-        {
-            return new BadRequestObjectResult(validationResult.Errors);
-        }
+        await _validator.ValidateAndThrowAsync(command);
 
-        try
-        {
-            var result = await _mediator.Send(command);
+        await _mediator.Send(command);
 
-            return result ? NoContent() : StatusCode(500, "Failed to process Status");
-        }
-        catch (KeyNotFoundException)
-        {
-            return NotFound();
-        }
+        return NoContent();
     }
-
-    #endregion Patch Methods
 }
