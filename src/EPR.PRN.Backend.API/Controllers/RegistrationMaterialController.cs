@@ -10,13 +10,13 @@ using Microsoft.FeatureManagement.Mvc;
 [ApiVersion("1.0")]
 [Route("api/v{version:apiVersion}")]
 [FeatureGate(FeatureFlags.ReprocessorExporter)]
-public class RegisrationMaterialController : ControllerBase
+public class RegistrationMaterialController : ControllerBase
 {
     private readonly IMediator _mediator;
-    private readonly ILogger<RegisrationMaterialController> _logger;
+    private readonly ILogger<RegistrationMaterialController> _logger;
     
 
-    public RegisrationMaterialController(IMediator mediator, ILogger<RegisrationMaterialController> logger)
+    public RegistrationMaterialController(IMediator mediator, ILogger<RegistrationMaterialController> logger)
     {
         _mediator = mediator;
         _logger = logger;
