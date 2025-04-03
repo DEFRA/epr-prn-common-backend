@@ -2,7 +2,7 @@
 {
     public enum StatusTypes
     {
-        Complete = 1,
-        Queried = 2
+        Queried = 4,
+        Complete = 5
     }
 }
