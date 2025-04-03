@@ -59,7 +59,7 @@ namespace EPR.PRN.Backend.Data.UnitTests.Repositories.Regulator
             Func<Task> act = async () => await _repository.UpdateStatusAsync(id, status, comments);
 
             // Assert
-            await act.Should().ThrowAsync<Exception>().WithMessage("Regulator registration task status not found");
+            await act.Should().ThrowAsync<KeyNotFoundException>().WithMessage($"Regulator registration task status not found: {id}");
             _contextMock.Verify(c => c.SaveChangesAsync(default), Times.Never);
         }
     }
