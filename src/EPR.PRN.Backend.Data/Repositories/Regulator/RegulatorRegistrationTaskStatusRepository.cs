@@ -10,7 +10,7 @@ namespace EPR.PRN.Backend.Data.Repositories.Regulator
         {
             RegulatorRegistrationTaskStatus? regulatorRegistrationTaskStatus = await context.RegulatorRegistrationTaskStatus.FindAsync(id);
             if(regulatorRegistrationTaskStatus == null) {
-                throw new Exception("Regulator registration task status not found");
+                throw new KeyNotFoundException($"Regulator registration task status not found :{id}");
             }
 
             regulatorRegistrationTaskStatus.TaskStatusId = (int)status;

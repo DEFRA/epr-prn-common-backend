@@ -22,7 +22,7 @@ public class RegulatorRegistrationTaskStatusController : ControllerBase
     #region Patch Methods
 
     [HttpPatch("{registrationTaskStatusId}")]
-    [ProducesResponseType(200)]
+    [ProducesResponseType(204)]
     [ProducesResponseType(400)]
     [ProducesResponseType(500)]
     public async Task<IActionResult> UpdateRegistrationTaskStatus(int registrationTaskStatusId,[FromBody] UpdateRegulatorRegistrationTaskCommand command)
@@ -36,8 +36,16 @@ public class RegulatorRegistrationTaskStatusController : ControllerBase
             return new BadRequestObjectResult(validationResult.Errors);
         }
 
-        var result = await _mediator.Send(command);
-        return result ? Ok("Update RegistrationTaskStatus recorded successfully") : StatusCode(500, "Failed to process Status");
+        try
+        {
+            var result = await _mediator.Send(command);
+
+            return result ? NoContent() : StatusCode(500, "Failed to process Status");
+        }
+        catch (KeyNotFoundException)
+        {
+            return NotFound();
+        }
     }
 
     #endregion Patch Methods

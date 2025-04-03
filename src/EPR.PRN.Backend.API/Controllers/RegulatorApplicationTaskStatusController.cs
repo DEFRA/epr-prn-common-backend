@@ -20,7 +20,7 @@ public class RegulatorApplicationTaskStatusController : ControllerBase
     }
 
     [HttpPatch("{Id}")]
-    [ProducesResponseType(200)]
+    [ProducesResponseType(204)]
     [ProducesResponseType(400)]
     [ProducesResponseType(500)]
     public async Task<IActionResult> UpdateRegistrationTaskStatus(int Id, [FromBody] UpdateRegulatorApplicationTaskCommand command)
@@ -34,7 +34,15 @@ public class RegulatorApplicationTaskStatusController : ControllerBase
             return new BadRequestObjectResult(validationResult.Errors);
         }
 
-        var result = await _mediator.Send(command);
-        return result ? Ok("Update RegistrationTaskStatus recorded successfully") : StatusCode(500, "Failed to process Status");
+        try
+        {
+            var result = await _mediator.Send(command);
+
+            return result ? NoContent() : StatusCode(500, "Failed to process Status");
+        }
+        catch (KeyNotFoundException)
+        {
+            return NotFound();
+        }
     }
 }
