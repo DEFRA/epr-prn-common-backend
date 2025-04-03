@@ -1,14 +1,14 @@
 ﻿using EPR.PRN.Backend.API.Common.Enums;
 using EPR.PRN.Backend.Data.DataModels.Registrations;
-using EPR.PRN.Backend.Data.Interfaces;
+using EPR.PRN.Backend.Data.Interfaces.Regulator;
 
-namespace EPR.PRN.Backend.Data.Repositories
+namespace EPR.PRN.Backend.Data.Repositories.Regulator
 {
     public class RegulatorApplicationTaskStatusRepository(EprRegistrationsContext context) : IRegulatorApplicationTaskStatusRepository
     {
         public async Task UpdateStatusAsync(int id, StatusTypes status1, string? comments)
         {
-            RegulatorApplicationTaskStatus? regulatorApplicationTaskStatus = context.RegulatorApplicationTaskStatus.Find(id);
+            RegulatorApplicationTaskStatus? regulatorApplicationTaskStatus = await context.RegulatorApplicationTaskStatus.FindAsync(id);
             if(regulatorApplicationTaskStatus == null) {
                 throw new Exception("Regulator application task status not found");
             }
