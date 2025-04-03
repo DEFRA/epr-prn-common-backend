@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 namespace EPR.PRN.Backend.Data.DataModels.Registrations
 {
-    public class Registration
+    public class Registration //(PublicRegistration)
     {
         [Key]
         public int Id { get; set; }                           // Unique identifier for each registration record

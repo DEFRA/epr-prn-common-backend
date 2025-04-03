@@ -5,7 +5,7 @@ using FluentValidation;
 using Polly;
 namespace EPR.PRN.Backend.API.Validators;
 
-public class RegistrationOutcomeValidator : AbstractValidator<RegistrationOutcomeCommand>
+public class RegistrationOutcomeValidator : AbstractValidator<RegistrationMaterialsOutcomeCommand>
 {
     public RegistrationOutcomeValidator()
     {

@@ -3,16 +3,16 @@ using EPR.PRN.Backend.API.Common.Enums;
 using EPR.PRN.Backend.Data.Interfaces.Regulator;
 using MediatR;
 namespace EPR.PRN.Backend.API.Handlers;
-public class RegistrationOutComeHandler : IRequestHandler<RegistrationOutcomeCommand, HandlerResponse<bool>>
+public class RegistrationMaterialsOutcomeHandler : IRequestHandler<RegistrationMaterialsOutcomeCommand, HandlerResponse<bool>>
 {
     private readonly IRegistrationMaterialRepository _rmRepository;
 
-    public RegistrationOutComeHandler(IRegistrationMaterialRepository rmRepository)
+    public RegistrationMaterialsOutcomeHandler(IRegistrationMaterialRepository rmRepository)
     {
         _rmRepository = rmRepository;
     }
 
-    public async Task<HandlerResponse<bool>> Handle(RegistrationOutcomeCommand request, CancellationToken cancellationToken)
+    public async Task<HandlerResponse<bool>> Handle(RegistrationMaterialsOutcomeCommand request, CancellationToken cancellationToken)
     {
         var materialData = await _rmRepository.GetMaterialsById(request.Id);
         if (materialData == null)

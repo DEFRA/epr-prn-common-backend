@@ -12,17 +12,24 @@ public abstract class LookupBase
     public string Name { get; set; }
 }
 
-public class LookupMaterial : LookupBase
-{
-    public string MaterialCode { get; set; }
-}
+
 public class LookupRegistrationMaterialStatus : LookupBase{}
 
-public class LookupTask : LookupBase
-{
-    public bool IsMaterialSpecific { get; set; }
-}
+public class LookupTask : LookupBase{}
 
 public class LookupRegistrationStatus : LookupBase{}
 
-public class LookupTaskStatus : LookupBase{}
+public class LookupTaskStatus : LookupBase { public bool IsMaterialSpecific { get; set; } }
+public class LookupApplicationType : LookupBase { }
+public class LookupPrincipleType : LookupBase { }
+
+public class LookupMaterialPermit : LookupBase { }
+public class LookupPeriod : LookupBase { }
+
+
+
+
+
+
+
+

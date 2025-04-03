@@ -1,4 +1,5 @@
-﻿using EPR.PRN.Backend.API.Configs;
+﻿using EPR.PRN.Backend.API.Common.Constants;
+using EPR.PRN.Backend.API.Configs;
 using EPR.PRN.Backend.API.Helpers;
 using EPR.PRN.Backend.Data;
 using HealthChecks.UI.Client;
@@ -6,6 +7,8 @@ using MediatR;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Microsoft.Extensions.Options;
+using Microsoft.FeatureManagement;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Text.Json.Serialization;
@@ -37,7 +40,10 @@ namespace EPR.PRN.Backend.API
             services.AddSwaggerGen(config =>
             {
                 config.CustomSchemaIds(s => s.FullName);
+                config.DocumentFilter<FeatureEnabledDocumentFilter>();
+                config.OperationFilter<FeatureGateOperationFilter>();
             });
+            services.AddFeatureManagement();
 
             services.AddDbContext<EprContext>(options =>
                 options.UseSqlServer(_config.GetConnectionString("EprConnectionString"))
@@ -58,8 +64,12 @@ namespace EPR.PRN.Backend.API
         {
             using (var scope = app.ApplicationServices.CreateScope())
             {
-                var context = scope.ServiceProvider.GetRequiredService<EprRegistrationsContext>();
-                context.Database.EnsureCreated();
+                var featureManager = scope.ServiceProvider.GetRequiredService<IFeatureManager>();
+                if (featureManager.IsEnabledAsync(FeatureFlags.ReprocessorExporter).Result)
+                {
+                    var context = scope.ServiceProvider.GetRequiredService<EprRegistrationsContext>();
+                    context.Database.EnsureCreated();
+                }
             }
             if (env.IsDevelopment())
             {

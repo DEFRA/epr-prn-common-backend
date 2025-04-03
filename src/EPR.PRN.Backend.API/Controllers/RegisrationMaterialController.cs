@@ -1,16 +1,20 @@
 ﻿using EPR.PRN.Backend.API.Commands;
+using EPR.PRN.Backend.API.Common.Constants;
 using EPR.PRN.Backend.API.Common.Dto.Regulator;
 using EPR.PRN.Backend.API.Queries;
 using EPR.PRN.Backend.API.Validators;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.FeatureManagement.Mvc;
 [ApiController]
 [ApiVersion("1.0")]
 [Route("api/v{version:apiVersion}")]
+[FeatureGate(FeatureFlags.ReprocessorExporter)]
 public class RegisrationMaterialController : ControllerBase
 {
     private readonly IMediator _mediator;
     private readonly ILogger<RegisrationMaterialController> _logger;
+    
 
     public RegisrationMaterialController(IMediator mediator, ILogger<RegisrationMaterialController> logger)
     {
@@ -41,7 +45,7 @@ public class RegisrationMaterialController : ControllerBase
 
     #region Patch Methods
     [HttpPatch("registrationMaterials/{Id}/outcome")]
-     public async Task<IActionResult> UpdateRegistrationOutcome(int Id, [FromBody] RegistrationOutcomeCommand command)
+     public async Task<IActionResult> UpdateRegistrationOutcome(int Id, [FromBody] RegistrationMaterialsOutcomeCommand command)
     {
         _logger.LogInformation("UpdateRegistrationOutcome called with Id: {Id}", Id);
 
