@@ -12,7 +12,7 @@ public class UpdateRegulatorRegistrationTaskCommand: IRequest<Unit>
     public int Id { get; set; }
     [Required]
     public required StatusTypes Status { get; set; }
-    [MaxLength(200)]
+    [MaxLength(500)]
     public string? Comment { get; set; } = string.Empty;
 }
 

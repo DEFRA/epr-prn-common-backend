@@ -9,7 +9,7 @@ public class UpdateRegulatorApplicationTaskCommandValidator : AbstractValidator<
             .IsInEnum().WithMessage("Invalid Status value");
 
         RuleFor(x => x.Comment)
-            .MaximumLength(200).WithMessage("Comment must not exceed 200 characters");
+            .MaximumLength(500).WithMessage("Comment must not exceed 500 characters");
 
         RuleFor(x => x.Comment)
             .NotEmpty().When(x => x.Status == StatusTypes.Queried)
