@@ -1,4 +1,5 @@
-﻿using EPR.PRN.Backend.API.Common.Enums;
+﻿using EPR.PRN.Backend.API.Commands;
+using EPR.PRN.Backend.API.Common.Enums;
 using FluentValidation;
 
 namespace EPR.PRN.Backend.API.Validators;

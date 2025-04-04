@@ -7,6 +7,7 @@ using FluentAssertions;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using Moq;
+using EPR.PRN.Backend.API.Commands;
 
 namespace EPR.PRN.Backend.API.Tests.Handlers
 {

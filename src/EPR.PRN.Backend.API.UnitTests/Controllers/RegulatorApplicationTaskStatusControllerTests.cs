@@ -1,4 +1,5 @@
 ﻿using AutoFixture;
+using EPR.PRN.Backend.API.Commands;
 using EPR.PRN.Backend.API.Common.Enums;
 using EPR.PRN.Backend.Data.DataModels.Registrations;
 using FluentAssertions;
