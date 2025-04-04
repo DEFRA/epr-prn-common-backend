@@ -1,14 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using EPR.PRN.Backend.API.Common.Enums;
 using EPR.PRN.Backend.Data.DataModels.Registrations;
-using EPR.PRN.Backend.Data.Interfaces.Regulator;
 using EPR.PRN.Backend.Data.Repositories.Regulator;
 using FluentAssertions;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 
 namespace EPR.PRN.Backend.Data.Tests.Repositories.Regulator
@@ -26,6 +20,26 @@ namespace EPR.PRN.Backend.Data.Tests.Repositories.Regulator
             _contextMock = new Mock<EprRegistrationsContext>();
             _loggerMock = new Mock<ILogger<RegulatorApplicationTaskStatusRepository>>();
             _repository = new RegulatorApplicationTaskStatusRepository(_contextMock.Object, _loggerMock.Object);
+        }
+
+        [TestMethod]
+        public void Constructor_ShouldThrowArgumentNullException_WhenContextIsNull()
+        {
+            // Act
+            Action act = () => new RegulatorApplicationTaskStatusRepository(null, _loggerMock.Object);
+
+            // Assert
+            act.Should().Throw<ArgumentNullException>().WithMessage("Value cannot be null. (Parameter 'context')");
+        }
+
+        [TestMethod]
+        public void Constructor_ShouldThrowArgumentNullException_WhenLoggerIsNull()
+        {
+            // Act
+            Action act = () => new RegulatorApplicationTaskStatusRepository(_contextMock.Object, null);
+
+            // Assert
+            act.Should().Throw<ArgumentNullException>().WithMessage("Value cannot be null. (Parameter 'logger')");
         }
 
         [TestMethod]

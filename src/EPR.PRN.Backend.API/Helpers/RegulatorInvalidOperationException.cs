@@ -1,5 +1,8 @@
 ﻿namespace EPR.PRN.Backend.API.Helpers
 {
+    using System.Diagnostics.CodeAnalysis;
+
+    [ExcludeFromCodeCoverage]
     [Serializable]
     public class RegulatorInvalidOperationException : InvalidOperationException
     {
