@@ -1,4 +1,5 @@
 using EPR.PRN.Backend.API.Common.Enums;
+using EPR.PRN.Backend.API.Helpers;
 using EPR.PRN.Backend.Data.Interfaces.Regulator;
 using MediatR;
 using Microsoft.Extensions.Logging;
@@ -30,7 +31,7 @@ public class UpdateRegulatorRegistrationTaskHandler : IRequestHandler<UpdateRegu
             if (taskStatus.TaskStatusId == (int)StatusTypes.Complete)
             {
                 _logger.LogError("Cannot set task status to {Status} as it is already complete: {TaskId}", StatusTypes.Complete, command.Id);
-                throw new InvalidOperationException($"Cannot set task status to {StatusTypes.Complete} as it is already {StatusTypes.Complete}: {command.Id}");
+                throw new RegulatorInvalidOperationException($"Cannot set task status to {StatusTypes.Complete} as it is already {StatusTypes.Complete}: {command.Id}");
             }
         }
         else if (command.Status == StatusTypes.Queried)
@@ -38,18 +39,18 @@ public class UpdateRegulatorRegistrationTaskHandler : IRequestHandler<UpdateRegu
             if (taskStatus.TaskStatusId == (int)StatusTypes.Queried)
             {
                 _logger.LogError("Cannot set task status to {Status} as it is already queried: {TaskId}", StatusTypes.Queried, command.Id);
-                throw new InvalidOperationException($"Cannot set task status to {StatusTypes.Queried} as it is already {StatusTypes.Queried}: {command.Id}");
+                throw new RegulatorInvalidOperationException($"Cannot set task status to {StatusTypes.Queried} as it is already {StatusTypes.Queried}: {command.Id}");
             }
             else if (taskStatus.TaskStatusId == (int)StatusTypes.Complete)
             {
                 _logger.LogError("Cannot set task status to {Status} as it is complete: {TaskId}", StatusTypes.Queried, command.Id);
-                throw new InvalidOperationException($"Cannot set task status to {StatusTypes.Queried} as it is {StatusTypes.Complete}: {command.Id}");
+                throw new RegulatorInvalidOperationException($"Cannot set task status to {StatusTypes.Queried} as it is {StatusTypes.Complete}: {command.Id}");
             }
         }
         else
         {
             _logger.LogError("Invalid status type: {Status}", command.Status);
-            throw new InvalidOperationException($"Invalid status type: {command.Status}");
+            throw new RegulatorInvalidOperationException($"Invalid status type: {command.Status}");
         }
 
         await _repository.UpdateStatusAsync(command.Id, command.Status, command.Comment);

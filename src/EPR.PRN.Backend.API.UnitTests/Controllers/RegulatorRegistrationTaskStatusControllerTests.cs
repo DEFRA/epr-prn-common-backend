@@ -1,4 +1,5 @@
 ﻿using AutoFixture;
+using EPR.PRN.Backend.API.Common.Enums;
 using FluentAssertions;
 using FluentValidation;
 using FluentValidation.Results;
@@ -51,36 +52,26 @@ public class RegulatorRegistrationTaskStatusControllerTests
         (result as NoContentResult).StatusCode.Should().Be((int)HttpStatusCode.NoContent);
     }
 
-    //[TestMethod]
-    //public async Task Patch_RegulatorApplicationTaskStatus_ThrowsValidationException_WhenValidationFails()
-    //{
-    //    // Arrange
-    //    var expectedTaskStatus = new UpdateRegulatorRegistrationTaskCommand { Status = Common.Enums.StatusTypes.Complete };
+    [TestMethod]
+    public async Task Patch_RegulatorRegistrationTaskStatus_ThrowsValidationException_WhenValidationFails()
+    {
+        // Arrange
+        var validator = new InlineValidator<UpdateRegulatorRegistrationTaskCommand>();
+        validator.RuleFor(x => x.Status).Must(_ => false).WithMessage("Validation failed");
 
-    //    ValidationResult result = new ValidationResult(new List<ValidationFailure>
-    //                                {
-    //                                    new ValidationFailure("Status", "Status cannot be empty.")
-    //                                });
+        _systemUnderTest = new RegulatorRegistrationTaskStatusController(_mockMediator.Object, validator, _mockLogger.Object);
 
-    //    _updateRegulatorRegistrationTaskCommandValidatorMock
-    //        .Setup(v => v.Validate(It.IsAny<UpdateRegulatorRegistrationTaskCommand>()))
-    //        .Returns(result);
+        var registrationMaterialId = 1;
+        var requestDto = new UpdateRegulatorRegistrationTaskCommand
+        {
+            Status = (StatusTypes)999
+        };
 
-    //    //var validatorMock = Substitute.For<IValidator<SaleRequestData>>();
-    //    //ValidationResult result = new ValidationResult(new List<ValidationFailure>()
-    //    //                                                       {
-    //    //                                                           new ValidationFailure("TotalAmount",
-    //    //                                                               "Total Amount was invalid.")
-    //    //                                                       });
-
-    //    //validatorMock.Validate(Arg.Any<ValidationContext>()).Returns(result);
-
-    //    // Act
-    //    Func<Task> act = async () => await _systemUnderTest.UpdateRegistrationTaskStatus(TaskStatusId, expectedTaskStatus);
-
-    //    // Assert
-    //    await act.Should().ThrowAsync<ValidationException>().WithMessage("Validation failed");
-    //}
+        // Act & Assert
+        await FluentActions.Invoking(() =>
+            _systemUnderTest.UpdateRegistrationTaskStatus(registrationMaterialId, requestDto)
+        ).Should().ThrowAsync<ValidationException>();
+    }
 
     [TestMethod]
     public async Task Patch_RegulatorApplicationTaskStatus_ThrowsException_WhenMediatorThrowsException()

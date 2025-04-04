@@ -2,15 +2,11 @@ using EPR.PRN.Backend.API.Common.Enums;
 using EPR.PRN.Backend.API.Handlers;
 using EPR.PRN.Backend.Data.DataModels.Registrations;
 using EPR.PRN.Backend.Data.Interfaces.Regulator;
+using EPR.PRN.Backend.API.Helpers;
 using FluentAssertions;
 using MediatR;
 using Microsoft.Extensions.Logging;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace EPR.PRN.Backend.API.Tests.Handlers
 {
@@ -44,7 +40,7 @@ namespace EPR.PRN.Backend.API.Tests.Handlers
         }
 
         [TestMethod]
-        public async Task Handle_TaskStatusAlreadyComplete_ShouldThrowInvalidOperationException()
+        public async Task Handle_TaskStatusAlreadyComplete_ShouldThrowRegulatorInvalidOperationException()
         {
             // Arrange
             var command = new UpdateRegulatorApplicationTaskCommand { Id = 1, Status = StatusTypes.Complete };
@@ -55,11 +51,11 @@ namespace EPR.PRN.Backend.API.Tests.Handlers
             Func<Task> act = async () => await _handler.Handle(command, CancellationToken.None);
 
             // Assert
-            await act.Should().ThrowAsync<InvalidOperationException>().WithMessage($"Cannot set task status to {StatusTypes.Complete} as it is already {StatusTypes.Complete}: {command.Id}");
+            await act.Should().ThrowAsync<RegulatorInvalidOperationException>().WithMessage($"Cannot set task status to {StatusTypes.Complete} as it is already {StatusTypes.Complete}: {command.Id}");
         }
 
         [TestMethod]
-        public async Task Handle_TaskStatusAlreadyQueried_ShouldThrowInvalidOperationException()
+        public async Task Handle_TaskStatusAlreadyQueried_ShouldThrowRegulatorInvalidOperationException()
         {
             // Arrange
             var command = new UpdateRegulatorApplicationTaskCommand { Id = 1, Status = StatusTypes.Queried };
@@ -70,11 +66,11 @@ namespace EPR.PRN.Backend.API.Tests.Handlers
             Func<Task> act = async () => await _handler.Handle(command, CancellationToken.None);
 
             // Assert
-            await act.Should().ThrowAsync<InvalidOperationException>().WithMessage($"Cannot set task status to {StatusTypes.Queried} as it is already {StatusTypes.Queried}: {command.Id}");
+            await act.Should().ThrowAsync<RegulatorInvalidOperationException>().WithMessage($"Cannot set task status to {StatusTypes.Queried} as it is already {StatusTypes.Queried}: {command.Id}");
         }
 
         [TestMethod]
-        public async Task Handle_TaskStatusCompleteToQueried_ShouldThrowInvalidOperationException()
+        public async Task Handle_TaskStatusCompleteToQueried_ShouldThrowRegulatorInvalidOperationException()
         {
             // Arrange
             var command = new UpdateRegulatorApplicationTaskCommand { Id = 1, Status = StatusTypes.Queried };
@@ -85,11 +81,11 @@ namespace EPR.PRN.Backend.API.Tests.Handlers
             Func<Task> act = async () => await _handler.Handle(command, CancellationToken.None);
 
             // Assert
-            await act.Should().ThrowAsync<InvalidOperationException>().WithMessage($"Cannot set task status to {StatusTypes.Queried} as it is {StatusTypes.Complete}: {command.Id}");
+            await act.Should().ThrowAsync<RegulatorInvalidOperationException>().WithMessage($"Cannot set task status to {StatusTypes.Queried} as it is {StatusTypes.Complete}: {command.Id}");
         }
 
         [TestMethod]
-        public async Task Handle_InvalidStatusType_ShouldThrowInvalidOperationException()
+        public async Task Handle_InvalidStatusType_ShouldThrowRegulatorInvalidOperationException()
         {
             // Arrange
             var command = new UpdateRegulatorApplicationTaskCommand { Id = 1, Status = (StatusTypes)999 };
@@ -100,7 +96,7 @@ namespace EPR.PRN.Backend.API.Tests.Handlers
             Func<Task> act = async () => await _handler.Handle(command, CancellationToken.None);
 
             // Assert
-            await act.Should().ThrowAsync<InvalidOperationException>().WithMessage($"Invalid status type: {command.Status}");
+            await act.Should().ThrowAsync<RegulatorInvalidOperationException>().WithMessage($"Invalid status type: {command.Status}");
         }
 
         [TestMethod]

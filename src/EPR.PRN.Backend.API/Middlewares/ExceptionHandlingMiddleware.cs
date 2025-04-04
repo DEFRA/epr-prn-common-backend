@@ -1,6 +1,7 @@
 ﻿using System.Net;
 using FluentValidation;
 using System.Diagnostics.CodeAnalysis;
+using EPR.PRN.Backend.API.Helpers;
 
 namespace EPR.PRN.Backend.API.Middlewares;
 
@@ -42,7 +43,7 @@ public class ExceptionHandlingMiddleware(RequestDelegate next, ILogger<Exception
             HttpRequestException httpRequestException => (int)(httpRequestException.StatusCode ?? HttpStatusCode.InternalServerError),
             KeyNotFoundException => (int)HttpStatusCode.NotFound,
             ArgumentException => (int)HttpStatusCode.BadRequest,
-            InvalidOperationException => (int)HttpStatusCode.BadRequest,
+            RegulatorInvalidOperationException => (int)HttpStatusCode.BadRequest,
             ValidationException => (int)HttpStatusCode.BadRequest,
             _ => (int)HttpStatusCode.InternalServerError
         };
