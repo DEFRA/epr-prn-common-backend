@@ -26,7 +26,7 @@ namespace EPR.PRN.Backend.API
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddFeatureManagement();//.UseDisabledFeaturesHandler(new RedirectDisabledFeatureHandler());
+            services.AddFeatureManagement();
             services.AddLogging();
             services.AddMediatR(Assembly.GetExecutingAssembly());
 

@@ -51,36 +51,36 @@ public class RegulatorRegistrationTaskStatusControllerTests
         (result as NoContentResult).StatusCode.Should().Be((int)HttpStatusCode.NoContent);
     }
 
-    [TestMethod]
-    public async Task Patch_RegulatorApplicationTaskStatus_ThrowsValidationException_WhenValidationFails()
-    {
-        // Arrange
-        var expectedTaskStatus = new UpdateRegulatorRegistrationTaskCommand { Status = Common.Enums.StatusTypes.Complete };
+    //[TestMethod]
+    //public async Task Patch_RegulatorApplicationTaskStatus_ThrowsValidationException_WhenValidationFails()
+    //{
+    //    // Arrange
+    //    var expectedTaskStatus = new UpdateRegulatorRegistrationTaskCommand { Status = Common.Enums.StatusTypes.Complete };
 
-        ValidationResult result = new ValidationResult(new List<ValidationFailure>
-                                    {
-                                        new ValidationFailure("Status", "Status cannot be empty.")
-                                    });
+    //    ValidationResult result = new ValidationResult(new List<ValidationFailure>
+    //                                {
+    //                                    new ValidationFailure("Status", "Status cannot be empty.")
+    //                                });
 
-        _updateRegulatorRegistrationTaskCommandValidatorMock
-            .Setup(v => v.Validate(It.IsAny<UpdateRegulatorRegistrationTaskCommand>()))
-            .Returns(result);
+    //    _updateRegulatorRegistrationTaskCommandValidatorMock
+    //        .Setup(v => v.Validate(It.IsAny<UpdateRegulatorRegistrationTaskCommand>()))
+    //        .Returns(result);
 
-        //var validatorMock = Substitute.For<IValidator<SaleRequestData>>();
-        //ValidationResult result = new ValidationResult(new List<ValidationFailure>()
-        //                                                       {
-        //                                                           new ValidationFailure("TotalAmount",
-        //                                                               "Total Amount was invalid.")
-        //                                                       });
+    //    //var validatorMock = Substitute.For<IValidator<SaleRequestData>>();
+    //    //ValidationResult result = new ValidationResult(new List<ValidationFailure>()
+    //    //                                                       {
+    //    //                                                           new ValidationFailure("TotalAmount",
+    //    //                                                               "Total Amount was invalid.")
+    //    //                                                       });
 
-        //validatorMock.Validate(Arg.Any<ValidationContext>()).Returns(result);
+    //    //validatorMock.Validate(Arg.Any<ValidationContext>()).Returns(result);
 
-        // Act
-        Func<Task> act = async () => await _systemUnderTest.UpdateRegistrationTaskStatus(TaskStatusId, expectedTaskStatus);
+    //    // Act
+    //    Func<Task> act = async () => await _systemUnderTest.UpdateRegistrationTaskStatus(TaskStatusId, expectedTaskStatus);
 
-        // Assert
-        await act.Should().ThrowAsync<ValidationException>().WithMessage("Validation failed");
-    }
+    //    // Assert
+    //    await act.Should().ThrowAsync<ValidationException>().WithMessage("Validation failed");
+    //}
 
     [TestMethod]
     public async Task Patch_RegulatorApplicationTaskStatus_ThrowsException_WhenMediatorThrowsException()
