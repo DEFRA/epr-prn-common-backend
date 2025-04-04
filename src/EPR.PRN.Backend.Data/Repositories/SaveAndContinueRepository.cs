@@ -12,20 +12,22 @@ namespace EPR.PRN.Backend.Data.Repositories
             await context.SaveChangesAsync();
         }
 
-        public async Task<SaveAndContinue> GetAsync(int registrationId, string area)
+        public async Task<SaveAndContinue> GetAsync(int registrationId, string controller, string area)
         {
             return await context.SaveAndContinue
                 .OrderByDescending(x=>x.CreatedOn)
                 .Where(x=>x.RegistrationId == registrationId)
-                .Where(x=>x.Area.ToLower() == area.ToLower())
+                .Where(x => x.Controller == controller)
+                .Where(x => x.Area.ToLower() == area.ToLower())
                 .FirstOrDefaultAsync();
         }
 
-        public async Task<List<SaveAndContinue>> GetAllAsync(int registrationId, string area)
+        public async Task<List<SaveAndContinue>> GetAllAsync(int registrationId, string controller, string area)
         {
             return await context.SaveAndContinue
                 .OrderByDescending(x => x.CreatedOn)
                 .Where(x => x.RegistrationId == registrationId)
+                .Where(x=>x.Controller == controller)
                 .Where(x => x.Area.ToLower() == area.ToLower())
                 .ToListAsync();
         }

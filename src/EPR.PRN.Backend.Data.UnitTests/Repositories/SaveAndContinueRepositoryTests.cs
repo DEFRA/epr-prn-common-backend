@@ -55,7 +55,7 @@ namespace EPR.PRN.Backend.Data.UnitTests.Repositories
         public async Task GetAsync_ShouldReturnResult()
         {
             // Act
-            var result = await _repository.GetAsync(1, "Registration");
+            var result = await _repository.GetAsync(1, "Controller", "Registration");
 
             // Assert
             result.Should().NotBeNull();
@@ -68,7 +68,7 @@ namespace EPR.PRN.Backend.Data.UnitTests.Repositories
         public async Task GetAllAsync_ShouldReturnResult()
         {
             // Act
-            var result = await _repository.GetAllAsync(1, "Registration");
+            var result = await _repository.GetAllAsync(1, "Controller", "Registration");
 
             // Assert
             result.Should().NotBeNull();
@@ -79,7 +79,7 @@ namespace EPR.PRN.Backend.Data.UnitTests.Repositories
         public async Task GetAllAsync_ShouldReturnResultInDescendingOrder()
         {
             // Act
-            var result = await _repository.GetAllAsync(1, "Registration");
+            var result = await _repository.GetAllAsync(1, "Controller", "Registration");
 
             // Assert
             result.Should().NotBeNull();

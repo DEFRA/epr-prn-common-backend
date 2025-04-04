@@ -38,6 +38,14 @@ namespace EPR.PRN.Backend.API.UnitTests.Controllers
             result.StatusCode.Should().Be((int)HttpStatusCode.OK);
         }
 
+        [TestMethod]
+        public async Task Create_RequestObjectIsNull_ReturnsBadRequest()
+        {
+            var result = await _systemUnderTest.Create(null) as BadRequestResult;
+
+            result.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
+        }
+
 
         [TestMethod]
         public async Task Create_InternalServerError_ReturnsInternalServerStatusCode()
@@ -54,9 +62,9 @@ namespace EPR.PRN.Backend.API.UnitTests.Controllers
         public async Task Get_ReturnsOk()
         {
             var saveAndContinueData = new SaveAndContinueDto{ Action = "Action1", Controller = "Controller", Id = 1, Area = "Registration", RegistrationId = 1 } ;
-            _mockSaveAndContinueService.Setup(x => x.GetAsync(It.IsAny<int>(), It.IsAny<string>())).ReturnsAsync(saveAndContinueData);
+            _mockSaveAndContinueService.Setup(x => x.GetAsync(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(saveAndContinueData);
 
-            var result = await _systemUnderTest.Get(1, "Registration") as OkObjectResult;
+            var result = await _systemUnderTest.Get(1, "Controller", "Registration") as OkObjectResult;
             var modelResult = result.Value as SaveAndContinueDto;
 
             modelResult.Should().NotBeNull();
@@ -66,9 +74,9 @@ namespace EPR.PRN.Backend.API.UnitTests.Controllers
         [TestMethod]
         public async Task Get_InternalServerError_ReturnsInternalServerStatusCode()
         {
-            _mockSaveAndContinueService.Setup(x => x.GetAsync(It.IsAny<int>(), It.IsAny<string>())).Throws<ArgumentException>();
+            _mockSaveAndContinueService.Setup(x => x.GetAsync(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<string>())).Throws<ArgumentException>();
 
-            var result = await _systemUnderTest.Get(1,null) as ObjectResult;
+            var result = await _systemUnderTest.Get(1, null, null) as ObjectResult;
 
             result.Should().NotBeNull();
             result.StatusCode.Should().Be((int)HttpStatusCode.InternalServerError);
@@ -78,9 +86,9 @@ namespace EPR.PRN.Backend.API.UnitTests.Controllers
         public async Task GetAll_ReturnsOk()
         {
             var saveAndContinueData = new List<SaveAndContinueDto> { new() { Action = "Action1", Controller = "Controller", Id = 1, Area = "Registration", RegistrationId = 1 } };
-            _mockSaveAndContinueService.Setup(x => x.GetAllAsync(It.IsAny<int>(), It.IsAny<string>())).ReturnsAsync(saveAndContinueData);
+            _mockSaveAndContinueService.Setup(x => x.GetAllAsync(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(saveAndContinueData);
 
-            var result = await _systemUnderTest.GetAll(1, "Registration") as OkObjectResult;
+            var result = await _systemUnderTest.GetAll(1, "Controller", "Registration") as OkObjectResult;
             var modelResult = result.Value as List<SaveAndContinueDto>;
 
             modelResult.Should().NotBeNull();
@@ -90,9 +98,9 @@ namespace EPR.PRN.Backend.API.UnitTests.Controllers
         [TestMethod]
         public async Task GetAll_InternalServerError_ReturnsInternalServerStatusCode()
         {
-            _mockSaveAndContinueService.Setup(x => x.GetAllAsync(It.IsAny<int>(), It.IsAny<string>())).Throws<ArgumentException>();
+            _mockSaveAndContinueService.Setup(x => x.GetAllAsync(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<string>())).Throws<ArgumentException>();
 
-            var result = await _systemUnderTest.GetAll(1, null) as ObjectResult;
+            var result = await _systemUnderTest.GetAll(1,null, null) as ObjectResult;
 
             result.Should().NotBeNull();
             result.StatusCode.Should().Be((int)HttpStatusCode.InternalServerError);

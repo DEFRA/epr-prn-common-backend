@@ -19,6 +19,8 @@ namespace EPR.PRN.Backend.API.Controllers
         {
             try
             {
+                if (request is null) return BadRequest();
+
                 await saveAndContinueService.AddAsync(request.RegistrationId, request.Area, request.Action, request.Controller, request.Parameters);
 
                 return Ok();
@@ -31,15 +33,15 @@ namespace EPR.PRN.Backend.API.Controllers
         }
 
         [HttpGet]
-        [Route("getLatest/{registrationId}/{area}")]
+        [Route("getLatest/{registrationId}/{area}/{controller}")]
         [ProducesResponseType(typeof(SaveAndContinueDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        public async Task<IActionResult> Get(int registrationId, string area)
+        public async Task<IActionResult> Get(int registrationId, string controller, string area)
         {
             try
             {
-                var result = await saveAndContinueService.GetAsync(registrationId, area);
+                var result = await saveAndContinueService.GetAsync(registrationId, controller, area);
 
                 return Ok(result);
             }
@@ -51,15 +53,15 @@ namespace EPR.PRN.Backend.API.Controllers
         }
 
         [HttpGet]
-        [Route("getAll/{registrationId}/{area}")]
+        [Route("getAll/{registrationId}/{area}/{controller}")]
         [ProducesResponseType(typeof(SaveAndContinueDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        public async Task<IActionResult> GetAll(int registrationId, string area)
+        public async Task<IActionResult> GetAll(int registrationId, string controller, string area)
         {
             try
             {
-                var result = await saveAndContinueService.GetAllAsync(registrationId, area);
+                var result = await saveAndContinueService.GetAllAsync(registrationId,controller, area);
 
                 return Ok(result);
             }

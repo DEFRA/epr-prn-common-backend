@@ -14,11 +14,11 @@ namespace EPR.PRN.Backend.API.Services
            await repository.AddAsync(model);
         }
 
-        public async Task<List<SaveAndContinueDto>> GetAllAsync(int registrationId, string area)
+        public async Task<List<SaveAndContinueDto>> GetAllAsync(int registrationId, string controller, string area)
         {
             var responseModel = new List<SaveAndContinueDto>();
 
-            var model = await repository.GetAllAsync(registrationId, area);
+            var model = await repository.GetAllAsync(registrationId, controller, area);
 
             if (model == null)
             {
@@ -31,9 +31,9 @@ namespace EPR.PRN.Backend.API.Services
             return responseModel;
         }
 
-        public async Task<SaveAndContinueDto> GetAsync(int registrationId, string area)
+        public async Task<SaveAndContinueDto> GetAsync(int registrationId, string controller, string area)
         {
-            var model = await repository.GetAsync(registrationId, area);
+            var model = await repository.GetAsync(registrationId, controller, area);
 
             if (model == null)
             {

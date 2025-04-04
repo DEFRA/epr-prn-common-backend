@@ -47,11 +47,11 @@ namespace EPR.PRN.Backend.API.UnitTests.Services
         {
             var saveAndContinueData = new SaveAndContinue(){ Action = "Action1", Controller = "Controller", Id = 1, Area = "Registration", RegistrationId = 1 } ;
 
-            _mockRepository.Setup(x=>x.GetAsync(It.IsAny<int>(), It.IsAny<string>())).ReturnsAsync(saveAndContinueData);
+            _mockRepository.Setup(x=>x.GetAsync(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(saveAndContinueData);
 
-            var result = await _systemUnderTest.GetAsync(1, "Registration");
+            var result = await _systemUnderTest.GetAsync(1,"Controller", "Registration");
 
-            _mockRepository.Verify(r => r.GetAsync(It.IsAny<int>(), It.IsAny<string>()), Times.Once);
+            _mockRepository.Verify(r => r.GetAsync(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
             _mockRepository.VerifyNoOtherCalls();
         }
 
@@ -60,11 +60,12 @@ namespace EPR.PRN.Backend.API.UnitTests.Services
         {
             var registrationId = 1;
             var area = "Registration";
+            var controller = "Controller";
 
-            _mockRepository.Setup(r => r.GetAsync(It.IsAny<int>(), It.IsAny<string>())).ReturnsAsync((SaveAndContinue)null);
+            _mockRepository.Setup(r => r.GetAsync(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync((SaveAndContinue)null);
 
             await _systemUnderTest
-            .Invoking(x => x.GetAsync(registrationId, area))
+            .Invoking(x => x.GetAsync(registrationId,controller, area))
             .Should()
             .ThrowAsync<NotFoundException>();
         }
@@ -74,14 +75,14 @@ namespace EPR.PRN.Backend.API.UnitTests.Services
         {
             var saveAndContinueData = new List<SaveAndContinue>() { new(){ Action = "Action1", Controller = "Controller", Id = 1, Area = "Registration", RegistrationId = 1 } };
 
-            _mockRepository.Setup(x => x.GetAllAsync(It.IsAny<int>(), It.IsAny<string>())).ReturnsAsync(saveAndContinueData);
+            _mockRepository.Setup(x => x.GetAllAsync(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(saveAndContinueData);
 
-            var result = await _systemUnderTest.GetAllAsync(1, "Registration");
+            var result = await _systemUnderTest.GetAllAsync(1, "Controller", "Registration");
 
             result.Should().NotBeNull();
             result.Count.Should().Be(1);
 
-            _mockRepository.Verify(r => r.GetAllAsync(It.IsAny<int>(), It.IsAny<string>()), Times.Once);
+            _mockRepository.Verify(r => r.GetAllAsync(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
             _mockRepository.VerifyNoOtherCalls();
         }
 
@@ -90,11 +91,12 @@ namespace EPR.PRN.Backend.API.UnitTests.Services
         {
             var registrationId = 1;
             var area = "Registration";
+            var controller = "Controller";
 
-            _mockRepository.Setup(r => r.GetAllAsync(It.IsAny<int>(), It.IsAny<string>())).ReturnsAsync((List<SaveAndContinue>)null);
+            _mockRepository.Setup(r => r.GetAllAsync(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync((List<SaveAndContinue>)null);
 
             await _systemUnderTest
-            .Invoking(x => x.GetAsync(registrationId, area))
+            .Invoking(x => x.GetAsync(registrationId,controller, area))
             .Should()
             .ThrowAsync<NotFoundException>();
         }
