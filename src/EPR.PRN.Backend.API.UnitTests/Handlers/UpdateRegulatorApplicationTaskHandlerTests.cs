@@ -37,7 +37,7 @@ namespace EPR.PRN.Backend.API.Tests.Handlers
             Func<Task> act = async () => await _handler.Handle(command, CancellationToken.None);
 
             // Assert
-            await act.Should().ThrowAsync<KeyNotFoundException>().WithMessage($"Regulator application task status not found: {command.Id}");
+            await act.Should().ThrowAsync<KeyNotFoundException>().WithMessage($"Task status not found: {command.Id}");
         }
 
         [TestMethod]
