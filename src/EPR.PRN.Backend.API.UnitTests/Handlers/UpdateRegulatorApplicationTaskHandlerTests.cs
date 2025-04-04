@@ -54,6 +54,20 @@ namespace EPR.PRN.Backend.API.Tests.Handlers
             // Assert
             await act.Should().ThrowAsync<RegulatorInvalidOperationException>().WithMessage($"Cannot set task status to {StatusTypes.Complete} as it is already {StatusTypes.Complete}: {command.Id}");
         }
+        [TestMethod]
+        public async Task Handle_TaskStatusUnrecognised_ShouldThrowRegulatorInvalidOperationException()
+        {
+            // Arrange
+            var command = new UpdateRegulatorApplicationTaskCommand { Id = 1, Status = StatusTypes.Queried };
+            var taskStatus = new RegulatorApplicationTaskStatus { TaskStatusId = 999 };
+            _repositoryMock.Setup(r => r.GetTaskStatusByIdAsync(command.Id)).ReturnsAsync(taskStatus);
+
+            // Act
+            Func<Task> act = async () => await _handler.Handle(command, CancellationToken.None);
+
+            // Assert
+            await act.Should().ThrowAsync<RegulatorInvalidOperationException>().WithMessage($"Cannot set task status to {StatusTypes.Queried} as it is 999: {command.Id}");
+        }
 
         [TestMethod]
         public async Task Handle_TaskStatusAlreadyQueried_ShouldThrowRegulatorInvalidOperationException()

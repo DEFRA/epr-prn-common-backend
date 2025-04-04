@@ -28,6 +28,27 @@ namespace EPR.PRN.Backend.Data.Tests.Repositories.Regulator
             _repository = new RegulatorRegistrationTaskStatusRepository(_contextMock.Object, _loggerMock.Object);
         }
 
+
+        [TestMethod]
+        public void Constructor_ShouldThrowArgumentNullException_WhenContextIsNull()
+        {
+            // Act
+            Action act = () => new RegulatorRegistrationTaskStatusRepository(null, _loggerMock.Object);
+
+            // Assert
+            act.Should().Throw<ArgumentNullException>().WithMessage("Value cannot be null. (Parameter 'context')");
+        }
+
+        [TestMethod]
+        public void Constructor_ShouldThrowArgumentNullException_WhenLoggerIsNull()
+        {
+            // Act
+            Action act = () => new RegulatorRegistrationTaskStatusRepository(_contextMock.Object, null);
+
+            // Assert
+            act.Should().Throw<ArgumentNullException>().WithMessage("Value cannot be null. (Parameter 'logger')");
+        }
+
         [TestMethod]
         public async Task GetTaskStatusByIdAsync_ShouldReturnTaskStatus_WhenTaskStatusExists()
         {

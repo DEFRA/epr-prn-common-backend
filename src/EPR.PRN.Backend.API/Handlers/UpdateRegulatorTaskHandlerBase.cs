@@ -50,6 +50,11 @@ public abstract class UpdateRegulatorTaskHandlerBase<TCommand, TRepository, TTas
                 _logger.LogError("Cannot set task status to {Status} as it is complete: {TaskId}", StatusTypes.Queried, command.Id);
                 throw new RegulatorInvalidOperationException($"Cannot set task status to {StatusTypes.Queried} as it is {StatusTypes.Complete}: {command.Id}");
             }
+            else 
+            {
+                _logger.LogError($"Cannot set task status to {StatusTypes.Queried} as it is {(StatusTypes)taskStatus.TaskStatusId}: {command.Id}");
+                throw new RegulatorInvalidOperationException($"Cannot set task status to {StatusTypes.Queried} as it is {(StatusTypes)taskStatus.TaskStatusId}: {command.Id}");
+            }
         }
         else
         {
