@@ -1,6 +1,7 @@
 ﻿using EPR.PRN.Backend.API.Common.Enums;
 using FluentValidation;
 
+namespace EPR.PRN.Backend.API.Validators;
 public class UpdateRegulatorApplicationTaskCommandValidator : AbstractValidator<UpdateRegulatorApplicationTaskCommand>
 {
     public UpdateRegulatorApplicationTaskCommandValidator()
