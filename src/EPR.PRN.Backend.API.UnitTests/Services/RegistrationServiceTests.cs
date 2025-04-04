@@ -18,7 +18,6 @@ namespace EPR.PRN.Backend.API.UnitTests.Services
         private RegistrationService _systemUnderTest;
         private Mock<IRegistrationRepository> _mockRepository;
         private Mock<ILogger<RegistrationService>> _mockLogger;
-        private static readonly IFixture _fixture = new Fixture();
 
         [TestInitialize]
         public void Init()

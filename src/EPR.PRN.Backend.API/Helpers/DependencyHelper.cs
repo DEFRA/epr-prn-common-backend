@@ -35,7 +35,9 @@ namespace EPR.PRN.Backend.API.Helpers
                 .AddScoped<IValidator<SavePrnDetailsRequest>, SavePrnDetailsRequestValidator>()
                 .AddScoped<IDateTimeProvider, DateTimeProvider>()
                 .AddScoped<IRegistrationRepository, RegistrationRepository>()
-                .AddScoped<IRegistrationService, RegistrationService>();
+                .AddScoped<IRegistrationService, RegistrationService>()
+                .AddScoped<ISaveAndContinueRepository, SaveAndContinueRepository>()
+                .AddScoped<ISaveAndContinueService, SaveAndContinueService>();
 
 			return services;
         }
