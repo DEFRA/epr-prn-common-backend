@@ -1,7 +1,6 @@
 using EPR.PRN.Backend.API.Common.Enums;
-using FluentAssertions;
+using EPR.PRN.Backend.API.Validators;
 using FluentValidation.TestHelper;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace EPR.PRN.Backend.API.UnitTests.Validators
 {
