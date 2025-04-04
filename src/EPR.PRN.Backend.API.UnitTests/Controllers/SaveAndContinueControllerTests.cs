@@ -52,7 +52,7 @@ namespace EPR.PRN.Backend.API.UnitTests.Controllers
         {
             _mockSaveAndContinueService.Setup(s => s.AddAsync(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).Throws<ArgumentException>();
 
-            var result = await _systemUnderTest.Create(null) as ObjectResult;
+            var result = await _systemUnderTest.Create(new SaveAndContinueRequest()) as ObjectResult;
 
             result.Should().NotBeNull();
             result.StatusCode.Should().Be((int)HttpStatusCode.InternalServerError);
