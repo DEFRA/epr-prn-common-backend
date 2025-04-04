@@ -1,144 +1,123 @@
 ﻿namespace EPR.PRN.Backend.Data.Repositories;
 using EPR.PRN.Backend.API.Common.Dto.Regulator;
+using EPR.PRN.Backend.API.Common.Enums;
+using EPR.PRN.Backend.API.Common.Extensions;
 using EPR.PRN.Backend.Data;
-using EPR.PRN.Backend.Data.DataModels.Registrations;
 using EPR.PRN.Backend.Data.Interfaces.Regulator;
 using Microsoft.EntityFrameworkCore;
 
 public class RegistrationMaterialRepository(EprRegistrationsContext eprContext) : IRegistrationMaterialRepository
 {
     protected readonly EprRegistrationsContext _eprContext = eprContext;
-    public async Task<bool> UpdateRegistrationOutCome(int RegistrationMaterialId, int Outcome, string? OutComeComment)
+    public async Task<string> UpdateRegistrationOutCome(int RegistrationMaterialId, int StatusId, string? Comment,String RegistrationReferenceNumber)
     {
         await Task.Delay(50);
-        bool result = true;
-        return result;
+        
+        return RegistrationReferenceNumber;
     }
     public async Task<RegistrationOverviewDto> GetRegistrationOverviewDetailById(int RegistrationId)
     {
         await Task.Delay(50);
 
-
-
-
-
-
         return new RegistrationOverviewDto
         {
             Id = RegistrationId,
             OrganisationName = "Green Ltd",
-            OrganisationType = "Exporter",
+            OrganisationType = ApplicationOrganisationType.Exporter,
             Regulator = "EA",
             Tasks = new()
-                {
-                    new RegistrationTaskDto {
-                        Id =12,      // RegulatorRegistrationTaskStatus.Id                       
-                        TaskId=1,   // Task.Id (lookup)                             
-                        TaskName = "Business address",
-                        Status = "Complete" },
-
-                 },
+            {
+                new RegistrationTaskDto {
+                    Id = 12,      // RegulatorRegistrationTaskStatus.Id                       
+                    TaskId = 1,   // Task.Id (lookup)                             
+                    TaskName = RegulatorTaskType.BusinessAddress,
+                    Status = RegulatorTaskStatus.NotStarted
+                }
+            },
             Materials = new()
+            {
+                new RegistrationMaterialDto
                 {
-                    new RegistrationMaterialDto
+                    Id = 101,
+                    MaterialName = "Plastic",
+                    Status = RegistrationMaterialStatus.GRANTED,
+                    DeterminationDate = DateTime.UtcNow,
+                    RegistrationReferenceNumber = "ABC123",
+                    Tasks = new()
                     {
-                        Id = 101,
-                        MaterialName = "Plastic",
-                        Status = "Granted",
-                        DeterminationDate = DateTime.UtcNow,
-                        ReferenceNumber = "ABC123",
-                         Tasks = new()
-                        {
-                            new RegistrationTaskDto {
-                                Id = 45, // RegulatorRegistrationTaskStatus.Id
-                                TaskId= 5,  // Task.Id (lookup)
-                                TaskName = "Sampling plan",
-                                Status = "Approved" },
-                            new RegistrationTaskDto {
-                                 Id = 46, // RegulatorRegistrationTaskStatus.Id
-                                 TaskId= 6,  // Task.Id (lookup)                                
-                                 TaskName = "Sampling and inspection plan",
-                                 Status = "Approved" }
+                        new RegistrationTaskDto {
+                            Id = 45, // RegulatorRegistrationTaskStatus.Id
+                            TaskId = 5,  // Task.Id (lookup)
+                            TaskName = RegulatorTaskType.SamplingAndInspectionPlan,
+                            Status = RegulatorTaskStatus.Approved
+                        },
+                        new RegistrationTaskDto {
+                            Id = 46, // RegulatorRegistrationTaskStatus.Id
+                            TaskId = 6,  // Task.Id (lookup)
+                            TaskName = RegulatorTaskType.MaterialsAuthorisedOnSite,
+                            Status = RegulatorTaskStatus.Approved
                         }
                     },
-                    new RegistrationMaterialDto
+                },
+                new RegistrationMaterialDto
+                {
+                    Id = 102,
+                    MaterialName = "Steel",
+                    Status = RegistrationMaterialStatus.REFUSED,
+                    DeterminationDate = DateTime.UtcNow,
+                    RegistrationReferenceNumber = "DEF456",
+                    Comments = "Test description for Steel",
+                    Tasks = new()
                     {
-                        Id = 102,
-                        MaterialName = "Steel",
-                        Status = "Refused",
-                        DeterminationDate = DateTime.UtcNow,
-                        ReferenceNumber = "DEF456",
-                        Comments="Test description for Steel",
-                        Tasks = new()
-                        {
-                            new RegistrationTaskDto {
-                                Id = 47, // RegulatorRegistrationTaskStatus.Id
-                                TaskId= 7,  // Task.Id (lookup)                                
-                                TaskName = "Waste licences, permits or exemptions",
-                                Status = "Not Started"
-                            }
+                        new RegistrationTaskDto {
+                            Id = 47, // RegulatorRegistrationTaskStatus.Id
+                            TaskId = 7,  // Task.Id (lookup)                                
+                            TaskName = RegulatorTaskType.WasteLicensesPermitsAndExemptions,
+                            Status = RegulatorTaskStatus.NotStarted
                         }
                     }
                 }
+            }
         };
-
 
     }
     public async Task<RegistrationMaterialDto> GetMaterialsById(int RegistrationMetrialId)
     {
         await Task.Delay(50);
         var result = await _eprContext.RegistrationMaterials
-       .Where(rm => rm.Id == RegistrationMetrialId)
-       .Select(rm => new RegistrationMaterialDto
-       {
-           Id = rm.Id,
-           MaterialName = _eprContext.LookupMaterials
-                         .Where(m => m.Id == rm.MaterialId)
-           .Select(m => m.MaterialName)
-                         .FirstOrDefault(),
-           Status = _eprContext.LookupTaskStatuses
-                         .Where(s => s.Id == rm.StatusID)
-                         .Select(s => s.Name)
-                         .FirstOrDefault(),
-           DeterminationDate = rm.DeterminationDate,
-           ReferenceNumber = rm.ReferenceNumber,
-           Tasks = _eprContext.RegistrationTaskStatus
-               .Where(rt => rt.RegistrationId == rm.RegistrationId)
-               .Select(rt => new RegistrationTaskDto
-               {
-                   Id = rt.Id,
-                   TaskId = rt.TaskId,
-                   TaskName = _eprContext.LookupTasks
-                              .Where(t => t.Id == rt.TaskId)
-                   .Select(t => t.Name)
-                              .FirstOrDefault(),
-                   Status = _eprContext.LookupTaskStatuses
-                             .Where(ts => ts.Id == rt.Id)
-                             .Select(ts => ts.Name)
-                             .FirstOrDefault()
-               }).ToList()
-       })
-       .FirstOrDefaultAsync();
+            .Where(rm => rm.Id == RegistrationMetrialId)
+            .Select(rm => new RegistrationMaterialDto
+            {
+                Id = rm.Id,
+                MaterialName = _eprContext.LookupMaterials
+                                .Where(m => m.Id == rm.MaterialId)
+                                .Select(m => m.MaterialName)
+                                .FirstOrDefault()??string.Empty,
+                Status = (RegistrationMaterialStatus)_eprContext.LookupTaskStatuses
+                    .Where(s => s.Id == rm.StatusID)
+                    .Select(s => s.Id)
+                    .FirstOrDefault(),
+                DeterminationDate = rm.DeterminationDate,
+                RegistrationReferenceNumber = rm.ReferenceNumber,
+                Tasks = _eprContext.RegulatorRegistrationTaskStatus
+                    .Where(rt => rt.Id == rm.Id)
+                    .Select(rt => new RegistrationTaskDto
+                    {
+                        Id = rt.Id,
+                        TaskId = rt.TaskId ?? 0, // Provide a default value if TaskId is null
+                        TaskName = (RegulatorTaskType)_eprContext.LookupTasks
+                            .Where(t => t.Id == rt.TaskId.Value)
+                            .Select(t => t.Id)
+                            .FirstOrDefault(),
+                        Status = (RegulatorTaskStatus)_eprContext.LookupTaskStatuses
+                            .Where(ts => ts.Id == rt.Id)
+                            .Select(ts => ts.Id)
+                            .FirstOrDefault()
+                    }).ToList()
+            })
+            .FirstOrDefaultAsync();
 
         return result;
-        //return new RegistrationMaterialDto
-        //{
-        //    Id = RegistrationMetrialId,
-        //    MaterialName = "Plastic",
-        //    Status = "Granted",
-        //    DeterminationDate = DateTime.UtcNow,
-        //    ReferenceNumber = "ABC123",
-        //    Tasks = new()
-        //    {
-        //        new RegistrationTaskDto {
-        //            Id = 45, // RegulatorRegistrationTaskStatus.Id
-        //            TaskId= 5,  // Task.Id (lookup)
-        //            TaskName = "Sampling plan",
-        //            Status = "Approved"
-        //        }
-        //    }
-        //};
-
     }
 }
 

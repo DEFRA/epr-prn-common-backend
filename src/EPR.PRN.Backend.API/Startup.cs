@@ -48,6 +48,18 @@ namespace EPR.PRN.Backend.API
             services.AddDbContext<EprContext>(options =>
                 options.UseSqlServer(_config.GetConnectionString("EprConnectionString"))
             );
+            if (_config.GetValue<bool>($"FeatureManagement:{FeatureFlags.ReprocessorExporter}"))
+            {
+                services.AddDbContext<EprRegistrationsContext>(options =>
+                    options.UseInMemoryDatabase("EprRegistrationsDatabase")
+                );
+            }
+            else
+            {
+                services.AddDbContext<EprRegistrationsContext>();
+            }
+
+
             services.AddDbContext<EprRegistrationsContext>(options =>
                 options.UseInMemoryDatabase("EprRegistrationsDatabase")
             );
@@ -77,7 +89,7 @@ namespace EPR.PRN.Backend.API
                 app.UseSwaggerUI();
                 RunMigration(app);
             }
-
+            app.UseMiddleware<ExceptionHandlingMiddleware>();
             app.UseRouting();
             app.UseAuthorization();
             app.UseEndpoints(endpoints =>

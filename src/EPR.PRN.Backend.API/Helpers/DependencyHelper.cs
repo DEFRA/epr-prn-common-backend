@@ -33,8 +33,8 @@ namespace EPR.PRN.Backend.API.Helpers
                 .AddScoped<IMaterialRepository, MaterialRepository>()
                 .AddScoped<IPrnRepository, PrnRepository>()
                 .AddScoped<IValidator<SavePrnDetailsRequest>, SavePrnDetailsRequestValidator>()
-                .AddScoped<IRegistrationMaterialRepository, RegistrationMaterialRepository>();
-
+                .AddScoped<IRegistrationMaterialRepository, RegistrationMaterialRepository>();               
+           
             return services;
         }
     }

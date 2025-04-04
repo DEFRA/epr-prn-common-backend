@@ -95,29 +95,32 @@ namespace EPR.PRN.Backend.Data
                     ReferenceNumber = "DEF4569",
                     Comments = "Test description for Aluminium"
                 });
-            modelBuilder.Entity<RegistrationTaskStatus>().HasData(
-            new RegistrationTaskStatus
+            modelBuilder.Entity<RegulatorRegistrationTaskStatus>().HasData(
+            new RegulatorRegistrationTaskStatus
             {
                 Id = 1, 
                 TaskId = 1,
                 RegistrationId = 1,
-                StatusId =1
+                TaskStatusId =1,
+                Comments = "Test description for Task 1"
             });
-            modelBuilder.Entity<RegistrationTaskStatus>().HasData(
-            new RegistrationTaskStatus
+            modelBuilder.Entity<RegulatorRegistrationTaskStatus>().HasData(
+            new RegulatorRegistrationTaskStatus
             {
                 Id = 2, 
                 TaskId = 2,
                 RegistrationId = 2,
-                StatusId = 2
+                TaskStatusId = 2,
+                Comments = "Test description for Task 2"
             });
-            modelBuilder.Entity<RegistrationTaskStatus>().HasData(
-            new RegistrationTaskStatus
+            modelBuilder.Entity<RegulatorRegistrationTaskStatus>().HasData(
+            new RegulatorRegistrationTaskStatus
             {
                 Id = 3, 
                 TaskId = 3,
                 RegistrationId = 1,
-                StatusId = 3
+                TaskStatusId = 3,
+                Comments = "Test description for Task 3"
             });           
             base.OnModelCreating(modelBuilder);
         }
@@ -131,7 +134,7 @@ namespace EPR.PRN.Backend.Data
         public DbSet<LookupTask> LookupTasks { get; set; }
         public DbSet<LookupRegistrationStatus> LookupRegistrationStatuses { get; set; }
         public DbSet<LookupTaskStatus> LookupTaskStatuses { get; set; }
-        public virtual DbSet<RegistrationTaskStatus> RegistrationTaskStatus { get; set; }
+        //public virtual DbSet<RegistrationTaskStatus> RegistrationTaskStatus { get; set; }
 
     }
 }

@@ -1,10 +1,9 @@
-﻿namespace EPR.PRN.Backend.API.Common.Enums
+﻿namespace EPR.PRN.Backend.API.Common.Enums;
+
+public enum EprnStatus
 {
-    public enum EprnStatus
-    {
-        ACCEPTED = 1,
-        REJECTED,
-        CANCELLED,
-        AWAITINGACCEPTANCE
-    }   
-}
+    ACCEPTED = 1,
+    REJECTED,
+    CANCELLED,
+    AWAITINGACCEPTANCE
+}   

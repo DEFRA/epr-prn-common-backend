@@ -1,4 +1,5 @@
-﻿using EPR.PRN.Backend.API.Commands;
+﻿using Azure;
+using EPR.PRN.Backend.API.Commands;
 using EPR.PRN.Backend.API.Common.Constants;
 using EPR.PRN.Backend.API.Common.Dto.Regulator;
 using EPR.PRN.Backend.API.Queries;
@@ -48,34 +49,11 @@ public class RegistrationMaterialController : ControllerBase
      public async Task<IActionResult> UpdateRegistrationOutcome(int Id, [FromBody] RegistrationMaterialsOutcomeCommand command)
     {
         _logger.LogInformation("UpdateRegistrationOutcome called with Id: {Id}", Id);
-
-        if (command == null)
-        {
-            _logger.LogWarning("UpdateRegistrationOutcome received a null command.");
-            return BadRequest("Invalid request body.");
-        }
-
         command.Id = Id;
         var validator = new RegistrationOutcomeValidator();
         var result = await validator.ValidateAsync(command);
-
-        if (!result.IsValid)
-        {
-            _logger.LogWarning("Validation failed for Id: {Id}. Errors: {Errors}", Id, result.Errors);
-            return BadRequest(result.Errors);
-        }
-
-        try
-        {
-            var response = await _mediator.Send(command);
-            _logger.LogInformation("Registration outcome updated successfully for Id: {Id}", Id);
-            return StatusCode(response.StatusCode, response.Message ?? (object)response.Data);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "An error occurred while updating the registration outcome for Id: {Id}", Id);
-            return StatusCode(500, "An unexpected error occurred.");
-        }
-    }
+        var response = await _mediator.Send(command);
+        return StatusCode(response.StatusCode, response.Message ?? (object)response.Data);
+       }
     #endregion Patch Methods
 }

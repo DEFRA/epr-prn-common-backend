@@ -14,13 +14,13 @@ public class RegistrationOutcomeValidator : AbstractValidator<RegistrationMateri
             .GreaterThan(0).WithMessage("Id must be greater than zero.");
 
 
-        RuleFor(x => x.Outcome)
-            .NotEmpty().WithMessage("Outcome is required.")
-            .Must(outcome => Enum.TryParse(typeof(OutcomeStatus), outcome, true, out _))
+        RuleFor(x => x.RegistrationMaterialStatus)
+            .NotEmpty().WithMessage("RegistrationMaterial Status is required.")
+            .Must(status => Enum.TryParse(typeof(RegistrationMaterialStatus), status, true, out _))
             .WithMessage("Invalid outcome type.");
 
         RuleFor(x => x.Comments)
-            .MaximumLength(200).WithMessage("OutcomeComment cannot exceed 200 characters.");
+            .MaximumLength(200).WithMessage("RegistrationMaterial Comment cannot exceed 200 characters.");
 
         //RuleFor(x => x.Comments)
         //.NotEmpty()
