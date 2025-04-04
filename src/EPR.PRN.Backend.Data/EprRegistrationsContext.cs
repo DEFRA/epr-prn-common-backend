@@ -9,7 +9,7 @@ namespace EPR.PRN.Backend.Data
     public class EprRegistrationsContext : DbContext
     {
         private readonly IConfiguration _configuration;
-        private int numberOfRegistrations = 100;
+        private readonly int numberOfRegistrations = 100;
 
         public EprRegistrationsContext()
         {
