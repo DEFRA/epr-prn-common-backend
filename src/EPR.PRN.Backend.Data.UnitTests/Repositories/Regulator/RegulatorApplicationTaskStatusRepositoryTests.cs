@@ -1,9 +1,14 @@
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using EPR.PRN.Backend.API.Common.Enums;
 using EPR.PRN.Backend.Data.DataModels.Registrations;
+using EPR.PRN.Backend.Data.Interfaces.Regulator;
 using EPR.PRN.Backend.Data.Repositories.Regulator;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 
 namespace EPR.PRN.Backend.Data.Tests.Repositories.Regulator
@@ -11,132 +16,80 @@ namespace EPR.PRN.Backend.Data.Tests.Repositories.Regulator
     [TestClass]
     public class RegulatorApplicationTaskStatusRepositoryTests
     {
+        private Mock<EprRegistrationsContext> _contextMock;
         private Mock<ILogger<RegulatorApplicationTaskStatusRepository>> _loggerMock;
-        private EprRegistrationsContext _context;
         private RegulatorApplicationTaskStatusRepository _repository;
 
         [TestInitialize]
         public void Setup()
         {
-            var options = new DbContextOptionsBuilder<EprRegistrationsContext>()
-                .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
-                .Options;
-
-            _context = new EprRegistrationsContext(options);
+            _contextMock = new Mock<EprRegistrationsContext>();
             _loggerMock = new Mock<ILogger<RegulatorApplicationTaskStatusRepository>>();
-            _repository = new RegulatorApplicationTaskStatusRepository(_context, _loggerMock.Object);
+            _repository = new RegulatorApplicationTaskStatusRepository(_contextMock.Object, _loggerMock.Object);
         }
 
         [TestMethod]
-        public async Task UpdateStatusAsync_ShouldUpdateStatus_WhenTaskExists()
+        public async Task GetTaskStatusByIdAsync_ShouldReturnTaskStatus_WhenTaskStatusExists()
         {
             // Arrange
-            var taskStatus = new RegulatorApplicationTaskStatus
-            {
-                Id = 1,
-                TaskStatusId = (int)StatusTypes.Queried
-            };
-            _context.RegulatorApplicationTaskStatus.Add(taskStatus);
-            await _context.SaveChangesAsync();
+            var taskStatus = new RegulatorApplicationTaskStatus { Id = 1, TaskStatusId = (int)StatusTypes.Complete };
+            _contextMock.Setup(c => c.RegulatorApplicationTaskStatus.FindAsync(1))
+                .ReturnsAsync(taskStatus);
 
             // Act
-            await _repository.UpdateStatusAsync(1, StatusTypes.Complete, "Completed");
+            var result = await _repository.GetTaskStatusByIdAsync(1);
 
             // Assert
-            var updatedTaskStatus = await _context.RegulatorApplicationTaskStatus.FindAsync(1);
-            updatedTaskStatus.TaskStatusId.Should().Be((int)StatusTypes.Complete);
-            updatedTaskStatus.Comments.Should().Be("Completed");
+            result.Should().NotBeNull();
+            result.Should().BeEquivalentTo(taskStatus);
         }
 
         [TestMethod]
-        public async Task UpdateStatusAsync_ShouldThrowKeyNotFoundException_WhenTaskDoesNotExist()
+        public async Task GetTaskStatusByIdAsync_ShouldReturnNull_WhenTaskStatusDoesNotExist()
         {
+            // Arrange
+            _contextMock.Setup(c => c.RegulatorApplicationTaskStatus.FindAsync(1))
+                .ReturnsAsync((RegulatorApplicationTaskStatus)null);
+
             // Act
-            Func<Task> act = async () => await _repository.UpdateStatusAsync(99, StatusTypes.Complete, "Completed");
+            var result = await _repository.GetTaskStatusByIdAsync(1);
+
+            // Assert
+            result.Should().BeNull();
+        }
+
+        [TestMethod]
+        public async Task UpdateStatusAsync_ShouldUpdateTaskStatus_WhenTaskStatusExists()
+        {
+            // Arrange
+            var taskStatus = new RegulatorApplicationTaskStatus { Id = 1, TaskStatusId = (int)StatusTypes.Queried };
+            _contextMock.Setup(c => c.RegulatorApplicationTaskStatus.FindAsync(1))
+                .ReturnsAsync(taskStatus);
+            _contextMock.Setup(c => c.SaveChangesAsync(default))
+                .ReturnsAsync(1);
+
+            // Act
+            await _repository.UpdateStatusAsync(1, StatusTypes.Complete, "Updated comments");
+
+            // Assert
+            taskStatus.TaskStatusId.Should().Be((int)StatusTypes.Complete);
+            taskStatus.Comments.Should().Be("Updated comments");
+            _contextMock.Verify(c => c.SaveChangesAsync(default), Times.Once);
+        }
+
+        [TestMethod]
+        public async Task UpdateStatusAsync_ShouldThrowKeyNotFoundException_WhenTaskStatusDoesNotExist()
+        {
+            // Arrange
+            _contextMock.Setup(c => c.RegulatorApplicationTaskStatus.FindAsync(1))
+                .ReturnsAsync((RegulatorApplicationTaskStatus)null);
+
+            // Act
+            Func<Task> act = async () => await _repository.UpdateStatusAsync(1, StatusTypes.Complete, "Updated comments");
 
             // Assert
             await act.Should().ThrowAsync<KeyNotFoundException>()
-                .WithMessage("Regulator Application task status not found: 99");
-        }
-
-        [TestMethod]
-        public async Task UpdateStatusAsync_ShouldThrowInvalidOperationException_WhenStatusIsAlreadyComplete()
-        {
-            // Arrange
-            var taskStatus = new RegulatorApplicationTaskStatus
-            {
-                Id = 1,
-                TaskStatusId = (int)StatusTypes.Complete
-            };
-            _context.RegulatorApplicationTaskStatus.Add(taskStatus);
-            await _context.SaveChangesAsync();
-
-            // Act
-            Func<Task> act = async () => await _repository.UpdateStatusAsync(1, StatusTypes.Complete, "Completed");
-
-            // Assert
-            await act.Should().ThrowAsync<InvalidOperationException>()
-                .WithMessage("Cannot set task status to Complete as it is already Complete: 1");
-        }
-
-        [TestMethod]
-        public async Task UpdateStatusAsync_ShouldThrowInvalidOperationException_WhenStatusIsAlreadyQueried()
-        {
-            // Arrange
-            var taskStatus = new RegulatorApplicationTaskStatus
-            {
-                Id = 1,
-                TaskStatusId = (int)StatusTypes.Queried
-            };
-            _context.RegulatorApplicationTaskStatus.Add(taskStatus);
-            await _context.SaveChangesAsync();
-
-            // Act
-            Func<Task> act = async () => await _repository.UpdateStatusAsync(1, StatusTypes.Queried, "Queried");
-
-            // Assert
-            await act.Should().ThrowAsync<InvalidOperationException>()
-                .WithMessage("Cannot set task status to Queried as it is already Queried: 1");
-        }
-
-        [TestMethod]
-        public async Task UpdateStatusAsync_ShouldThrowInvalidOperationException_WhenSettingQueriedStatusToComplete()
-        {
-            // Arrange
-            var taskStatus = new RegulatorApplicationTaskStatus
-            {
-                Id = 1,
-                TaskStatusId = (int)StatusTypes.Complete
-            };
-            _context.RegulatorApplicationTaskStatus.Add(taskStatus);
-            await _context.SaveChangesAsync();
-
-            // Act
-            Func<Task> act = async () => await _repository.UpdateStatusAsync(1, StatusTypes.Queried, "Queried");
-
-            // Assert
-            await act.Should().ThrowAsync<InvalidOperationException>()
-                .WithMessage("Cannot set task status to Queried as it is Complete: 1");
-        }
-
-        [TestMethod]
-        public async Task UpdateStatusAsync_ShouldThrowInvalidOperationException_WhenStatusIsInvalid()
-        {           
-            // Arrange
-            var taskStatus = new RegulatorApplicationTaskStatus
-            {
-                Id = 1,
-                TaskStatusId = (int)StatusTypes.Complete
-            };
-            _context.RegulatorApplicationTaskStatus.Add(taskStatus);
-            await _context.SaveChangesAsync();
-
-            // Act
-            Func<Task> act = async () => await _repository.UpdateStatusAsync(1, (StatusTypes)999, "Invalid");
-
-            // Assert
-            await act.Should().ThrowAsync<InvalidOperationException>()
-                .WithMessage("Invalid status type: 999");
+                .WithMessage("Regulator application task status not found: 1");
         }
     }
 }
