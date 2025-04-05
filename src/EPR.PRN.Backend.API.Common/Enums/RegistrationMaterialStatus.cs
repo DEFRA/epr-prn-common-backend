@@ -8,21 +8,23 @@ public enum RegistrationMaterialStatus
 }
 public enum ApplicationOrganisationType
 {
-    Reprocessor,
-    Exporter
+    [Description("Reprocessor")]
+    Reprocessor = 1,
+    [Description("Exporter")]
+    Exporter=2
 }
 public enum RegulatorTaskStatus
 {
     [Description("Not Started")]
-    NotStarted,
+    NotStarted =1,
     [Description("Started")]
-    Started,
+    Started =2,
     [Description("Completed")]
-    Completed,
+    Completed=3,
     [Description("Can Not Start Yet")]
-    CannotStartYet,
+    CannotStartYet=4,
     [Description("Queried")]
-    Queried,
+    Queried=5,
     [Description("Approved")]
-    Approved
+    Approved=6
 }

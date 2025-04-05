@@ -5,6 +5,7 @@ using EPR.PRN.Backend.Data.Interfaces.Regulator;
 using MediatR;
 using System.Security.Cryptography;
 using System;
+using Azure.Core;
 namespace EPR.PRN.Backend.API.Handlers;
 public class RegistrationMaterialsOutcomeHandler : IRequestHandler<RegistrationMaterialsOutcomeCommand, HandlerResponse<string>>
 {
@@ -35,7 +36,7 @@ public class RegistrationMaterialsOutcomeHandler : IRequestHandler<RegistrationM
                 return new HandlerResponse<string>(400, string.Empty, "Invalid Outcome transition.");
             }
         }
-        string RegistrationReferenceNumber = GenerateRegistrationReferenceNumber(materialData);
+        string RegistrationReferenceNumber = GenerateRegistrationReferenceNumber(materialData.RegistrationId, request.Id);
         string ReferenceNumber = await _rmRepository.UpdateRegistrationOutCome(request.Id, (int)registrationmaterialEnum, request.Comments, RegistrationReferenceNumber);
         if (String.IsNullOrEmpty(ReferenceNumber))
         {
@@ -44,17 +45,13 @@ public class RegistrationMaterialsOutcomeHandler : IRequestHandler<RegistrationM
 
         return new HandlerResponse<string>(200, RegistrationReferenceNumber);
     }
-    private string GenerateRegistrationReferenceNumber(RegistrationMaterialDto RegistrationMaterial)
+    private string GenerateRegistrationReferenceNumber(int RegistrationId, int RegistrationMaterialid)
     {
-        // Generate a unique registration reference number
-        Random _random = new Random();
-        string firstLetter = "Registration".FirstOrDefault().ToString();
+        var ReferenceData = _rmRepository.GetRegistrationReferenceDataId(RegistrationId, RegistrationMaterialid).Result;
+        Random _random = new Random();        
         string yearCode = (DateTime.Now.Year % 100).ToString("D2");
-        string secondLetter = "Eng".FirstOrDefault().ToString();
-        string thirdLetter = "Exporter".FirstOrDefault().ToString();
-        string orgCode = 1.ToString("D6");
-        string randomDigits = _random.Next(1000, 9999).ToString();
-        string Materialcode = "PL";
-        return $"{firstLetter}{yearCode}{secondLetter}{thirdLetter}{orgCode}{randomDigits}{Materialcode}";
+        string orgCode = RegistrationId.ToString("D6");
+        string randomDigits = _random.Next(1000, 9999).ToString();        
+        return $"{ReferenceData.RegistrationType}{yearCode}{ReferenceData.CountryCode}{ReferenceData.OrganisationType}{orgCode}{randomDigits}{ReferenceData.MaterialCode}";
     }
 }
