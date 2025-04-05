@@ -1,4 +1,4 @@
-﻿using EPR.PRN.Backend.Data.DataModels.Registrations;
+﻿﻿using EPR.PRN.Backend.Data.DataModels.Registrations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using System.Diagnostics.CodeAnalysis;
@@ -252,6 +252,7 @@ namespace EPR.PRN.Backend.Data
         public DbSet<LookupTask> LookupTasks { get; set; }
         public DbSet<LookupRegistrationStatus> LookupRegistrationStatuses { get; set; }
         public DbSet<LookupTaskStatus> LookupTaskStatuses { get; set; }
+        public DbSet<LookupAddress> LookupAddresses { get; set; }
 
     }
 }

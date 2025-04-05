@@ -90,7 +90,7 @@ namespace EPR.PRN.Backend.API
                 app.UseSwaggerUI();
                 RunMigration(app);
             }
-
+            app.UseMiddleware<ExceptionHandlingMiddleware>();
             app.UseRouting();
             app.UseAuthorization();
             app.UseEndpoints(endpoints =>

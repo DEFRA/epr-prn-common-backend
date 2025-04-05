@@ -10,14 +10,14 @@ using System.Diagnostics.CodeAnalysis;
 namespace EPR.PRN.Backend.API.Commands;
 
 [ExcludeFromCodeCoverage]
-public class RegistrationMaterialsOutcomeCommand : IRequest<HandlerResponse<bool>>
+public class RegistrationMaterialsOutcomeCommand : IRequest<HandlerResponse<string>>
 {
     [Required]
     [BindNever]
     [SwaggerIgnore]
     public int Id { get; set; }
     [Required]
-    public required string Outcome { get; set; }
+    public required string RegistrationMaterialStatus { get; set; }
     [MaxLength(200)]
     public string? Comments { get; set; }   
 }
