@@ -20,7 +20,7 @@ public class RegistrationMaterialsOutcomeHandler(IRegistrationMaterialRepository
 
         if (!string.IsNullOrEmpty(materialData.Status.ToString()) && Enum.TryParse<RegistrationMaterialStatus>(materialData.Status.ToString(), true, out var currentStatus))
         {
-            if (registrationmaterialEnum == currentStatus || (currentStatus == RegistrationMaterialStatus.GRANTED && registrationmaterialEnum != RegistrationMaterialStatus.REFUSED))
+            if (registrationmaterialEnum == currentStatus || (currentStatus == RegistrationMaterialStatus.Granted && registrationmaterialEnum != RegistrationMaterialStatus.Refused))
             {
                 return new HandlerResponse<string>(400, string.Empty, "Invalid Outcome transition.");
             }

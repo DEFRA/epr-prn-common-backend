@@ -31,10 +31,11 @@ public class RegistrationMaterialController(IMediator mediator
     [SwaggerResponse(StatusCodes.Status200OK, "Returns registration with materials and tasks.", typeof(RegistrationOverviewDto))]
     [SwaggerResponse(StatusCodes.Status400BadRequest, "If the request is invalid or a validation error occurs.", typeof(ProblemDetails))]
     [SwaggerResponse(StatusCodes.Status500InternalServerError, "If an unexpected error occurs.", typeof(ContentResult))]
-    public async Task<RegistrationOverviewDto> GetRegistrationOverviewDetailById(int Id)
+    public async Task<IActionResult> GetRegistrationOverviewDetailById(int Id)
     {
         logger.LogInformation(LogMessages.RegistrationMaterialsTasks);
-        return await mediator.Send(new GetRegistrationOverviewDetailByIdQuery() { Id = Id });
+        var result = await mediator.Send(new GetRegistrationOverviewDetailByIdQuery() { Id = Id });
+        return Ok(result);
     }
     [HttpGet("registrationMaterials/{Id}")]
     [ProducesResponseType(typeof(RegistrationMaterialDto), 200)]
@@ -47,23 +48,24 @@ public class RegistrationMaterialController(IMediator mediator
     [SwaggerResponse(StatusCodes.Status200OK, "Returns summary info for a material.", typeof(RegistrationMaterialDto))]
     [SwaggerResponse(StatusCodes.Status400BadRequest, "If the request is invalid or a validation error occurs.", typeof(ProblemDetails))]
     [SwaggerResponse(StatusCodes.Status500InternalServerError, "If an unexpected error occurs.", typeof(ContentResult))]
-    public async Task<RegistrationMaterialDto> GetMaterialDetailById(int Id)
+    public async Task<IActionResult> GetMaterialDetailById(int Id)
     {
         logger.LogInformation(LogMessages.SummaryInfoMaterial);
-        return await mediator.Send(new GetMaterialDetailByIdQuery() { Id = Id });
+        var result = await mediator.Send(new GetMaterialDetailByIdQuery() { Id = Id });
+        return Ok(result);
     }
     #endregion Get Methods
 
     #region Patch Methods
     [HttpPatch("registrationMaterials/{Id}/outcome")]
-    [ProducesResponseType(StatusCodes.Status204NoContent, Type = typeof(NoContentResult))]
+    [ProducesResponseType(typeof(string), 200)]
     [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     [SwaggerOperation(
             Summary = "update the outcome of a material registration",
             Description = "attempting to update the outcome of a material registration."
         )]
-    [SwaggerResponse(StatusCodes.Status204NoContent, $"Returns No Content", typeof(NoContentResult))]
+    [SwaggerResponse(StatusCodes.Status200OK, "update the outcome of a material registration.", typeof(string))]
     [SwaggerResponse(StatusCodes.Status400BadRequest, "If the request is invalid or a validation error occurs.", typeof(ProblemDetails))]
     [SwaggerResponse(StatusCodes.Status500InternalServerError, "If an unexpected error occurs.", typeof(ContentResult))]
     public async Task<IActionResult> UpdateRegistrationOutcome(int Id, [FromBody] RegistrationMaterialsOutcomeCommand command)
