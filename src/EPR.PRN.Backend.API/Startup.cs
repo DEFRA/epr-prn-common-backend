@@ -1,13 +1,14 @@
 ﻿using EPR.PRN.Backend.API.Common.Constants;
 using EPR.PRN.Backend.API.Configs;
 using EPR.PRN.Backend.API.Helpers;
+using EPR.PRN.Backend.API.Validators;
 using EPR.PRN.Backend.Data;
+using FluentValidation.AspNetCore;
 using HealthChecks.UI.Client;
 using MediatR;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
-using Microsoft.Extensions.Options;
 using Microsoft.FeatureManagement;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
@@ -35,6 +36,11 @@ namespace EPR.PRN.Backend.API
             services.AddControllers(options =>
             {
                 options.ModelBinderProviders.Insert(0, new DateTimeModelBinderProvider());
+            });
+            services.AddFluentValidation(fv =>
+            {
+                fv.RegisterValidatorsFromAssemblyContaining<RegistrationOutcomeValidator>();
+                fv.AutomaticValidationEnabled = false;
             });
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen(config =>
@@ -89,7 +95,7 @@ namespace EPR.PRN.Backend.API
                 app.UseSwaggerUI();
                 RunMigration(app);
             }
-            app.UseMiddleware<ExceptionHandlingMiddleware>();
+            app.UseMiddleware<CustomExceptionHandlingMiddleware>();
             app.UseRouting();
             app.UseAuthorization();
             app.UseEndpoints(endpoints =>

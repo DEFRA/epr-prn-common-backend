@@ -3,8 +3,8 @@
 namespace EPR.PRN.Backend.API.Common.Enums;
 public enum RegistrationMaterialStatus
 {
-    GRANTED = 1,
-    REFUSED = 2
+    Granted = 1,
+    Refused = 2
 }
 public enum ApplicationOrganisationType
 {

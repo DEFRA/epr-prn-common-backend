@@ -1,8 +1,7 @@
-﻿
-using EPR.PRN.Backend.API.Commands;
+﻿using EPR.PRN.Backend.API.Commands;
 using EPR.PRN.Backend.API.Common.Enums;
 using FluentValidation;
-using Polly;
+
 namespace EPR.PRN.Backend.API.Validators;
 
 public class RegistrationOutcomeValidator : AbstractValidator<RegistrationMaterialsOutcomeCommand>
