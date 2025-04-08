@@ -30,7 +30,7 @@ namespace EPR.PRN.Backend.API
         public void ConfigureServices(IServiceCollection services)
         {
 
-            services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<RegistrationMaterialsOutcomeHandler>());
+            services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<Startup>());
             services.AddApiVersioning();
             services.AddControllers()
                 .AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));

@@ -88,7 +88,7 @@ public class RegistrationMaterialRepository(EprRegistrationsContext eprContext) 
 
         if (registration == null)
         {
-            throw new InvalidOperationException("Registration not found.");
+            throw new KeyNotFoundException("Registration not found.");
         }
 
         return registration;
@@ -135,7 +135,7 @@ public class RegistrationMaterialRepository(EprRegistrationsContext eprContext) 
 
         if (result == null)
         {
-            throw new InvalidOperationException("Registration Material not found.");
+            throw new KeyNotFoundException("Registration Material not found.");
         }
 
         return result;
@@ -188,7 +188,7 @@ public class RegistrationMaterialRepository(EprRegistrationsContext eprContext) 
 
         if (registrationReference == null)
         {
-            throw new InvalidOperationException("Registration Reference not found.");
+            throw new KeyNotFoundException("Registration Reference not found.");
         }
 
         return registrationReference;

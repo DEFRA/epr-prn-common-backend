@@ -12,9 +12,8 @@ public class RegistrationMaterialsOutcomeHandler(IRegistrationMaterialRepository
     {
         var materialData = await rmRepository.GetMaterialsById(request.Id);
 
-        if (Enum.TryParse<RegistrationMaterialStatus>(materialData.Status.ToString(), true, out var currentStatus) &&
-            (request.RegistrationMaterialStatus == currentStatus ||
-             (currentStatus == RegistrationMaterialStatus.Granted && request.RegistrationMaterialStatus != RegistrationMaterialStatus.Refused)))
+        if ( request.RegistrationMaterialStatus == materialData.Status ||
+             (materialData.Status == RegistrationMaterialStatus.Granted && request.RegistrationMaterialStatus != RegistrationMaterialStatus.Refused))
         {
             throw new InvalidOperationException("Invalid outcome transition.");
         }

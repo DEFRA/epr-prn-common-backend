@@ -1,5 +1,6 @@
 ﻿using EPR.PRN.Backend.API.Commands;
 using EPR.PRN.Backend.API.Common.Enums;
+using EPR.PRN.Backend.API.Constants;
 using FluentValidation;
 
 namespace EPR.PRN.Backend.API.Validators;
@@ -9,19 +10,19 @@ public class RegistrationOutcomeValidator : AbstractValidator<RegistrationMateri
     public RegistrationOutcomeValidator()
     {
         RuleFor(x => x.Id)
-            .NotEmpty().WithMessage("Id is required.")
-            .GreaterThan(0).WithMessage("Id must be greater than zero.");
+            .NotEmpty().WithMessage(ValidationMessages.RegistrationOutcomeIdRequired)
+            .GreaterThan(0).WithMessage(ValidationMessages.RegistrationOutcomeIdGreaterThanZero);
 
         RuleFor(x => x.RegistrationMaterialStatus)
             .IsInEnum()
-            .WithMessage("Invalid registration material status.");
+            .WithMessage(ValidationMessages.InvalidRegistrationOutcomeStatus);
 
         RuleFor(x => x.Comments)
-            .MaximumLength(500).WithMessage("RegistrationMaterial Comment cannot exceed 200 characters.");
+            .MaximumLength(500).WithMessage(ValidationMessages.RegistrationOutcomeCommentsMaxLength);
 
         RuleFor(x => x.Comments)
             .NotEmpty()
-            .WithMessage("Comments are required.")
+            .WithMessage(ValidationMessages.RegistrationOutcomeCommentsCommentsRequired)
             .When(x => x.RegistrationMaterialStatus == RegistrationMaterialStatus.Refused);
     }
 }
