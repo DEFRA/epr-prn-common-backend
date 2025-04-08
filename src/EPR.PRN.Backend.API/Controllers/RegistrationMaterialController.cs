@@ -58,14 +58,14 @@ public class RegistrationMaterialController(IMediator mediator
 
     #region Patch Methods
     [HttpPatch("registrationMaterials/{Id}/outcome")]
-    [ProducesResponseType(typeof(string), 200)]
+    [ProducesResponseType(StatusCodes.Status204NoContent, Type = typeof(NoContentResult))]
     [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     [SwaggerOperation(
             Summary = "update the outcome of a material registration",
             Description = "attempting to update the outcome of a material registration."
         )]
-    [SwaggerResponse(StatusCodes.Status200OK, "update the outcome of a material registration.", typeof(string))]
+    [SwaggerResponse(StatusCodes.Status204NoContent, $"Returns No Content", typeof(NoContentResult))]
     [SwaggerResponse(StatusCodes.Status400BadRequest, "If the request is invalid or a validation error occurs.", typeof(ProblemDetails))]
     [SwaggerResponse(StatusCodes.Status500InternalServerError, "If an unexpected error occurs.", typeof(ContentResult))]
     public async Task<IActionResult> UpdateRegistrationOutcome(int Id, [FromBody] RegistrationMaterialsOutcomeCommand command)
@@ -75,8 +75,9 @@ public class RegistrationMaterialController(IMediator mediator
 
         await registrationMaterialsOutcomeCommandValidator.ValidateAndThrowAsync(command);
 
-        var response = await mediator.Send(command);
-        return StatusCode(response.StatusCode, response.Message ?? (object)response.Data);
+        await mediator.Send(command);
+
+        return NoContent();
     }
     #endregion Patch Methods
 }

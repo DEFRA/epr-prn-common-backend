@@ -1,5 +1,6 @@
 ﻿using EPR.PRN.Backend.API.Common.Constants;
 using EPR.PRN.Backend.API.Configs;
+using EPR.PRN.Backend.API.Handlers;
 using EPR.PRN.Backend.API.Helpers;
 using EPR.PRN.Backend.API.Validators;
 using EPR.PRN.Backend.Data;
@@ -29,7 +30,7 @@ namespace EPR.PRN.Backend.API
         public void ConfigureServices(IServiceCollection services)
         {
 
-            services.AddMediatR(Assembly.GetExecutingAssembly());
+            services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<RegistrationMaterialsOutcomeHandler>());
             services.AddApiVersioning();
             services.AddControllers()
                 .AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));

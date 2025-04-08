@@ -3,7 +3,6 @@
 using EPR.PRN.Backend.API.Common.Dto;
 using EPR.PRN.Backend.API.Common.Dto.Regulator;
 using EPR.PRN.Backend.API.Common.Enums;
-using EPR.PRN.Backend.API.Common.Extensions;
 using EPR.PRN.Backend.Data;
 using EPR.PRN.Backend.Data.Interfaces.Regulator;
 using Microsoft.EntityFrameworkCore;
@@ -11,7 +10,7 @@ using Microsoft.EntityFrameworkCore;
 public class RegistrationMaterialRepository(EprRegistrationsContext eprContext) : IRegistrationMaterialRepository
 {
     protected readonly EprRegistrationsContext _eprContext = eprContext;
-    public async Task<string> UpdateRegistrationOutCome(int RegistrationMaterialId, int StatusId, string? Comment,String RegistrationReferenceNumber)
+    public async Task UpdateRegistrationOutCome(int RegistrationMaterialId, int StatusId, string? Comment,String RegistrationReferenceNumber)
     {
         var material = await _eprContext.RegistrationMaterials.FirstOrDefaultAsync(rm => rm.Id == RegistrationMaterialId);
 
@@ -24,7 +23,6 @@ public class RegistrationMaterialRepository(EprRegistrationsContext eprContext) 
             // No need to call Update explicitly if the entity is already tracked
             await _eprContext.SaveChangesAsync();
         }
-        return RegistrationReferenceNumber;
     }
     public async Task<RegistrationOverviewDto> GetRegistrationOverviewDetailById(int RegistrationId)
     {
