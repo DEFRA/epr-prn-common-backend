@@ -121,7 +121,7 @@ public class Repository(EprContext eprContext, ILogger<Repository> logger, IConf
             default:
                 throw new ArgumentException($"Unknown status: {status}");
         }
-    }
+    }  
 
     private static Expression<Func<Eprn, bool>> GetFilterByCondition(string? filterBy)
     {
@@ -294,7 +294,7 @@ public class Repository(EprContext eprContext, ILogger<Repository> logger, IConf
                     // put back status and status date in Prn
                     newPrn.PrnStatusId = existingPrn.PrnStatusId;
                     newPrn.StatusUpdatedOn = existingPrn.StatusUpdatedOn;
-
+       
                     // put back status in status history
                     statusHistory.PrnStatusIdFk = newPrn.PrnStatusId;
                     statusHistory.Comment = $"{incomingStatus} => {((EprnStatus)newPrn.PrnStatusId).ToString()}";

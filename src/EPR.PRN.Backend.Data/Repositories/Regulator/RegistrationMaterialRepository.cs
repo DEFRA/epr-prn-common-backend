@@ -86,6 +86,11 @@ public class RegistrationMaterialRepository(EprRegistrationsContext eprContext) 
             })
             .FirstOrDefaultAsync();
 
+        if (registration == null)
+        {
+            throw new InvalidOperationException("Registration not found.");
+        }
+
         return registration;
     
 
@@ -126,6 +131,12 @@ public class RegistrationMaterialRepository(EprRegistrationsContext eprContext) 
                     }).ToList()
             })
             .FirstOrDefaultAsync();
+
+
+        if (result == null)
+        {
+            throw new InvalidOperationException("Registration Material not found.");
+        }
 
         return result;
     }
@@ -175,8 +186,11 @@ public class RegistrationMaterialRepository(EprRegistrationsContext eprContext) 
             })
             .FirstOrDefault(); // Use FirstOrDefault on the list
 
+        if (registrationReference == null)
+        {
+            throw new InvalidOperationException("Registration Reference not found.");
+        }
+
         return registrationReference;
     }
 }
-
-

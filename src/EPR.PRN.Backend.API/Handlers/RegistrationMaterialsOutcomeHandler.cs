@@ -11,10 +11,6 @@ public class RegistrationMaterialsOutcomeHandler(IRegistrationMaterialRepository
     public async Task Handle(RegistrationMaterialsOutcomeCommand request, CancellationToken cancellationToken)
     {
         var materialData = await rmRepository.GetMaterialsById(request.Id);
-        if (materialData == null)
-        {
-            throw new InvalidOperationException("Material not found.");
-        }
 
         if (Enum.TryParse<RegistrationMaterialStatus>(materialData.Status.ToString(), true, out var currentStatus) &&
             (request.RegistrationMaterialStatus == currentStatus ||
