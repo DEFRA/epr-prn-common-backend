@@ -19,6 +19,5 @@ namespace EPR.PRN.Backend.API.Repositories.Interfaces
         Task SavePrnDetails(Eprn entity);
         Task InsertPeprNpwdSyncPrns(List<PEprNpwdSync> syncedPrns);
         Task<List<Eprn>> GetPrnsForPrnNumbers(List<string> prnNumbers);
-       
     }
 }
