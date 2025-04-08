@@ -1,19 +1,11 @@
-#nullable disable
 using System.Diagnostics.CodeAnalysis;
 
 namespace EPR.PRN.Backend.API.Handlers;
 
 [ExcludeFromCodeCoverage]
-public class HandlerResponse<T>
+public class HandlerResponse<T>(int statusCode, T data = default, string message = null)
 {
-    public int StatusCode { get; set; }
-    public T Data { get; set; }
-    public string Message { get; set; }
-
-    public HandlerResponse(int statusCode, T data = default, string message = null)
-    {
-        StatusCode = statusCode;
-        Data = data;
-        Message = message;
-    }
+    public int StatusCode { get; set; } = statusCode;
+    public T Data { get; set; } = data;
+    public string Message { get; set; } = message;
 }

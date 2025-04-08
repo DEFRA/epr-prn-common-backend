@@ -1,19 +1,19 @@
-﻿using EPR.PRN.Backend.API.Common.Constants;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Text.Json.Serialization;
+
+using EPR.PRN.Backend.API.Common.Constants;
 using EPR.PRN.Backend.API.Configs;
 using EPR.PRN.Backend.API.Handlers;
 using EPR.PRN.Backend.API.Helpers;
 using EPR.PRN.Backend.API.Validators;
 using EPR.PRN.Backend.Data;
+
 using FluentValidation.AspNetCore;
 using HealthChecks.UI.Client;
-using MediatR;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.FeatureManagement;
-using System.Diagnostics.CodeAnalysis;
-using System.Reflection;
-using System.Text.Json.Serialization;
 
 namespace EPR.PRN.Backend.API
 {
@@ -65,8 +65,7 @@ namespace EPR.PRN.Backend.API
             {
                 services.AddDbContext<EprRegistrationsContext>();
             }
-
-
+            
             services.AddDbContext<EprRegistrationsContext>(options =>
                 options.UseInMemoryDatabase("EprRegistrationsDatabase")
             );
@@ -74,7 +73,6 @@ namespace EPR.PRN.Backend.API
             services.AddDependencies();
 
             services.Configure<PrnObligationCalculationConfig>(_config.GetSection(PrnObligationCalculationConfig.SectionName));
-           
 
             AddHealthChecks(services);
         }
@@ -145,4 +143,3 @@ namespace EPR.PRN.Backend.API
         }
     }
 }
-

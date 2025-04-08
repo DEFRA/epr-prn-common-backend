@@ -12,7 +12,6 @@ public class RegistrationOutcomeValidator : AbstractValidator<RegistrationMateri
             .NotEmpty().WithMessage("Id is required.")
             .GreaterThan(0).WithMessage("Id must be greater than zero.");
 
-
         RuleFor(x => x.RegistrationMaterialStatus)
             .IsInEnum()
             .WithMessage("Invalid registration material status.");

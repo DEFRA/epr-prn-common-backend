@@ -12,5 +12,3 @@ public enum RegulatorTaskType
     OverseasReprocessorAndInterimSiteDetails = 9,
     BusinessAddress = 10
 }
-
-

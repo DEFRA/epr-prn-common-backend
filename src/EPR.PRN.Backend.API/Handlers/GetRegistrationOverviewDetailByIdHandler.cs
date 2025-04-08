@@ -4,6 +4,7 @@ using EPR.PRN.Backend.Data.Interfaces.Regulator;
 using MediatR;
 
 namespace EPR.PRN.Backend.API.Handlers;
+
 public class GetRegistrationOverviewDetailByIdHandler(IRegistrationMaterialRepository rmRepository) : IRequestHandler<GetRegistrationOverviewDetailByIdQuery, RegistrationOverviewDto>
 {
     public async Task<RegistrationOverviewDto> Handle(GetRegistrationOverviewDetailByIdQuery request, CancellationToken cancellationToken)
@@ -13,5 +14,4 @@ public class GetRegistrationOverviewDetailByIdHandler(IRegistrationMaterialRepos
 
         return result;
     }
-
 }

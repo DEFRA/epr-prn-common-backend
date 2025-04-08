@@ -1,8 +1,9 @@
-﻿using Microsoft.FeatureManagement.Mvc;
+﻿using System.Diagnostics.CodeAnalysis;
+
+using Microsoft.FeatureManagement.Mvc;
 using Microsoft.FeatureManagement;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
-using System.Diagnostics.CodeAnalysis;
 
 namespace EPR.PRN.Backend.API.Helpers;
 
