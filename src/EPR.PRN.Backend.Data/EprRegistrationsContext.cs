@@ -1,22 +1,22 @@
-﻿using System.Diagnostics.CodeAnalysis;
-
-using EPR.PRN.Backend.Data.DataModels.Registrations;
-
+﻿using EPR.PRN.Backend.Data.DataModels.Registrations;
 using Microsoft.EntityFrameworkCore;
+using System.Diagnostics.CodeAnalysis;
 
 namespace EPR.PRN.Backend.Data;
 
 [ExcludeFromCodeCoverage]
 public class EprRegistrationsContext : DbContext
 {
-    private const int NumberOfRegistrations = 100;
+    private readonly int numberOfRegistrations = 100;
 
     public EprRegistrationsContext()
     {
+
     }
 
     public EprRegistrationsContext(DbContextOptions<EprRegistrationsContext> options) : base(options)
     {
+
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -41,23 +41,27 @@ public class EprRegistrationsContext : DbContext
         modelBuilder.Entity<LookupTaskStatus>().HasData(
             new LookupTaskStatus { Id = 1, Name = "NotStarted" },
             new LookupTaskStatus { Id = 2, Name = "Started" },
-            new LookupTaskStatus { Id = 3, Name = "Completed" },
-            new LookupTaskStatus { Id = 4, Name = "CannotStartYet" },
-            new LookupTaskStatus { Id = 5, Name = "Queried" });
+            new LookupTaskStatus { Id = 3, Name = "CanNotStartYet" },
+            new LookupTaskStatus { Id = 4, Name = "Queried" },
+            new LookupTaskStatus { Id = 5, Name = "Completed" });
 
         modelBuilder.Entity<LookupApplicationType>().HasData(
             new LookupApplicationType { Id = 1, Name = "Reprocessor" },
             new LookupApplicationType { Id = 2, Name = "Exporter" });
 
         modelBuilder.Entity<LookupTask>().HasData(
-            new LookupTask { Id = 1, Name = "BusinessAddress" },
-            new LookupTask { Id = 2, Name = "MaterialsAuthorisedOnSite" },
-            new LookupTask { Id = 3, Name = "MaterialDetailsAndContact" },
-            new LookupTask { Id = 4, Name = "OverseasReprocessorAndInterimSiteDetails" },
-            new LookupTask { Id = 5, Name = "ReprocessingInputsAndOutputs" },
-            new LookupTask { Id = 6, Name = "SiteAddressAndContactDetails" },
-            new LookupTask { Id = 7, Name = "SamplingAndInspectionPlan" },
-            new LookupTask { Id = 8, Name = "WasteLicensesPermitsAndExemptions" });
+            new LookupTask { Id = 1, Name = "SiteAddressAndContactDetails" },
+            new LookupTask { Id = 2, Name = "WasteLicensesPermitsAndExemptions" },
+            new LookupTask { Id = 3, Name = "ReprocessingInputsAndOutputs" },
+            new LookupTask { Id = 4, Name = "SamplingAndInspectionPlan" },
+            new LookupTask { Id = 5, Name = "RegistrationDulyMade" },
+            new LookupTask { Id = 6, Name = "AssignOfficer" },
+            new LookupTask { Id = 7, Name = "MaterialsAuthorisedOnSite" },
+            new LookupTask { Id = 8, Name = "MaterialDetailsAndContact" },
+            new LookupTask { Id = 9, Name = "OverseasReprocessorAndInterimSiteDetails" },
+            new LookupTask { Id = 10, Name = "BusinessAddress" });
+
+
 
         var registrations = new List<Registration>();
         var lookupAddresses = new List<LookupAddress>();
@@ -65,10 +69,10 @@ public class EprRegistrationsContext : DbContext
         var registrationTaskStatuses = new List<RegulatorRegistrationTaskStatus>();
         var applicationTaskStatuses = new List<RegulatorApplicationTaskStatus>();
 
+
         var RegulatorApplicationTaskStatuscounter = 1;
         var RegulatorRegistrationTaskStatuscounter = 1;
-
-        for (int registrationcounter = 1; registrationcounter <= NumberOfRegistrations; registrationcounter++)
+        for (int registrationcounter = 1; registrationcounter <= numberOfRegistrations; registrationcounter++)
         {
             var ApplicationTypeId = registrationcounter % 2 + 1;
             registrations.Add(new Registration
