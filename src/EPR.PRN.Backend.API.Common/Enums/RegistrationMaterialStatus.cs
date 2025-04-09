@@ -1,6 +1,6 @@
 ﻿namespace EPR.PRN.Backend.API.Common.Enums;
 public enum RegistrationMaterialStatus
 {
-    Refused = 1,
-    Granted = 2
+    Granted = 1,
+    Refused = 2
 }

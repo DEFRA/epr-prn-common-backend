@@ -60,7 +60,7 @@ public class RegistrationMaterialRepository(EprRegistrationsContext eprContext) 
                                 .Where(m => m.Id == rm.MaterialId)
                                 .Select(m => m.MaterialName)
                                 .FirstOrDefault() ?? string.Empty,
-                Status = (RegistrationMaterialStatus)_eprContext.LookupTaskStatuses
+                Status = (RegistrationMaterialStatus)_eprContext.LookupRegistrationMaterialStatuses
                     .Where(s => s.Id == rm.StatusID)
                     .Select(s => s.Id)
                     .FirstOrDefault(),
@@ -108,7 +108,7 @@ public class RegistrationMaterialRepository(EprRegistrationsContext eprContext) 
                                 .Where(m => m.Id == rm.MaterialId)
                                 .Select(m => m.MaterialName)
                                 .FirstOrDefault()??string.Empty,
-                Status = (RegistrationMaterialStatus)_eprContext.LookupTaskStatuses
+                Status = (RegistrationMaterialStatus)_eprContext.LookupRegistrationMaterialStatuses
                     .Where(s => s.Id == rm.StatusID)
                     .Select(s => s.Id)
                     .FirstOrDefault(),
@@ -154,13 +154,12 @@ public class RegistrationMaterialRepository(EprRegistrationsContext eprContext) 
                                 .Where(m => m.Id == rm.MaterialId)
                                 .Select(m => m.MaterialName)
                                 .FirstOrDefault() ?? string.Empty,
-                Status = (RegistrationMaterialStatus)_eprContext.LookupTaskStatuses
+                Status = (RegistrationMaterialStatus)_eprContext.LookupRegistrationMaterialStatuses
                     .Where(s => s.Id == rm.StatusID)
                     .Select(s => s.Id)
                     .FirstOrDefault()
             })
             .FirstOrDefaultAsync();
-
 
         if (result == null)
         {
