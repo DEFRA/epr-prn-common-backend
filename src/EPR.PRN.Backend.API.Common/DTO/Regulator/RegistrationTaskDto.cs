@@ -1,8 +1,8 @@
 ﻿using EPR.PRN.Backend.API.Common.Enums;
-using EPR.PRN.Backend.API.Common.Extensions;
 using System.Diagnostics.CodeAnalysis;
 
 namespace EPR.PRN.Backend.API.Common.Dto.Regulator;
+
 [ExcludeFromCodeCoverage]
 public class RegistrationTaskDto
 {
@@ -10,9 +10,4 @@ public class RegistrationTaskDto
     public int TaskId { get; set; }    // Task.Id (lookup)
     public RegulatorTaskType TaskName { get; set; }
     public RegulatorTaskStatus Status { get; set; }
-    public string StatusDescription => Status.GetDescription();
 }
-    
-
-
-

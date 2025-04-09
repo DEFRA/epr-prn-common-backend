@@ -1,16 +1,20 @@
-﻿using EPR.PRN.Backend.API.Configs;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Text.Json.Serialization;
+
+using EPR.PRN.Backend.API.Common.Constants;
+using EPR.PRN.Backend.API.Configs;
+using EPR.PRN.Backend.API.Handlers;
 using EPR.PRN.Backend.API.Helpers;
+using EPR.PRN.Backend.API.Validators;
 using EPR.PRN.Backend.API.Middlewares;
 using EPR.PRN.Backend.Data;
+
+using FluentValidation.AspNetCore;
 using HealthChecks.UI.Client;
-using MediatR;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.FeatureManagement;
-using System.Diagnostics.CodeAnalysis;
-using System.Reflection;
-using System.Text.Json.Serialization;
 
 namespace EPR.PRN.Backend.API
 {
@@ -28,14 +32,19 @@ namespace EPR.PRN.Backend.API
         {
             services.AddFeatureManagement();
             services.AddLogging();
-            services.AddMediatR(Assembly.GetExecutingAssembly());
 
+            services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<Startup>());
             services.AddApiVersioning();
             services.AddControllers()
                 .AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
             services.AddControllers(options =>
             {
                 options.ModelBinderProviders.Insert(0, new DateTimeModelBinderProvider());
+            });
+            services.AddFluentValidation(fv =>
+            {
+                fv.RegisterValidatorsFromAssemblyContaining<RegistrationOutcomeValidator>();
+                fv.AutomaticValidationEnabled = false;
             });
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen(config =>
@@ -60,11 +69,14 @@ namespace EPR.PRN.Backend.API
             {
                 services.AddDbContext<EprRegistrationsContext>();                    
             }
+            
+            services.AddDbContext<EprRegistrationsContext>(options =>
+                options.UseInMemoryDatabase("EprRegistrationsDatabase")
+            );
 
-            services.AddDependencies(_config);
+            services.AddDependencies();
 
             services.Configure<PrnObligationCalculationConfig>(_config.GetSection(PrnObligationCalculationConfig.SectionName));
-           
 
             AddHealthChecks(services);
         }
@@ -90,7 +102,7 @@ namespace EPR.PRN.Backend.API
                 app.UseSwaggerUI();
                 RunMigration(app);
             }
-            app.UseMiddleware<ExceptionHandlingMiddleware>();
+            app.UseMiddleware<CustomExceptionHandlingMiddleware>();
             app.UseRouting();
             app.UseAuthorization();
             app.UseEndpoints(endpoints =>
@@ -139,4 +151,3 @@ namespace EPR.PRN.Backend.API
         }
     }
 }
-

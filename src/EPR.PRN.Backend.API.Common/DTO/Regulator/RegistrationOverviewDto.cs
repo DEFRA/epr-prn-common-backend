@@ -13,7 +13,4 @@ public class RegistrationOverviewDto
     public string Regulator { get; set; }
     public List<RegistrationTaskDto> Tasks { get; set; }
     public List<RegistrationMaterialDto> Materials { get; set; }
-}    
-
-
- 
+}

@@ -26,4 +26,6 @@ appsettings.Test.json
 /node_modules
 /bin/Debug
 /obj
-/src/EPR.PRN.Backend.API/appsettings.development.json
+
+**/appsettings.Development.json
+**/appsettings.development.json

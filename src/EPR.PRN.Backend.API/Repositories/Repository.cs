@@ -6,7 +6,6 @@ using EPR.PRN.Backend.API.Dto;
 using EPR.PRN.Backend.API.Repositories.Interfaces;
 using EPR.PRN.Backend.Data;
 using EPR.PRN.Backend.Data.DataModels;
-using EPR.PRN.Backend.Data.DataModels.Registrations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using Newtonsoft.Json;
@@ -122,7 +121,7 @@ public class Repository(EprContext eprContext, ILogger<Repository> logger, IConf
             default:
                 throw new ArgumentException($"Unknown status: {status}");
         }
-    }
+    }  
 
     private static Expression<Func<Eprn, bool>> GetFilterByCondition(string? filterBy)
     {
@@ -295,7 +294,7 @@ public class Repository(EprContext eprContext, ILogger<Repository> logger, IConf
                     // put back status and status date in Prn
                     newPrn.PrnStatusId = existingPrn.PrnStatusId;
                     newPrn.StatusUpdatedOn = existingPrn.StatusUpdatedOn;
-
+       
                     // put back status in status history
                     statusHistory.PrnStatusIdFk = newPrn.PrnStatusId;
                     statusHistory.Comment = $"{incomingStatus} => {((EprnStatus)newPrn.PrnStatusId).ToString()}";
@@ -339,5 +338,3 @@ public class Repository(EprContext eprContext, ILogger<Repository> logger, IConf
         await _eprContext.SaveChangesAsync();
     }
 }
-
-

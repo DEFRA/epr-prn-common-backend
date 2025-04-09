@@ -7,15 +7,8 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace EPR.PRN.Backend.API.Helpers;
 
-public  class FeatureEnabledDocumentFilter : IDocumentFilter
+public class FeatureEnabledDocumentFilter(IFeatureManager featureManager) : IDocumentFilter
 {
-    private readonly IFeatureManager _featureManager;
-
-    public FeatureEnabledDocumentFilter(IFeatureManager featureManager)
-    {
-        _featureManager = featureManager;
-    }
-
     public async void Apply(OpenApiDocument swaggerDoc, DocumentFilterContext context)
     {
         var pathsToRemove = new List<string>();
@@ -84,13 +77,12 @@ public  class FeatureEnabledDocumentFilter : IDocumentFilter
 
         return false;
     }
-
-
+    
     private async Task<bool> AreAllFeaturesEnabled(IEnumerable<string> features)
     {
         foreach (var feature in features)
         {
-            if (!await _featureManager.IsEnabledAsync(feature))
+            if (!await featureManager.IsEnabledAsync(feature))
             {
                 Console.WriteLine($"Feature '{feature}' is disabled.");
                 return false;

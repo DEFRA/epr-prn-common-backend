@@ -1,7 +1,8 @@
-﻿namespace EPR.PRN.Backend.Data.DataModels.Registrations
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace EPR.PRN.Backend.Data.DataModels.Registrations;
+
+public class RegulatorApplicationTaskStatus : RegulatorTaskStatusBase
 {
-    public class RegulatorApplicationTaskStatus: RegulatorTaskStatusBase
-    {
-        public int? RegistrationMaterialId { get; set; } // Identifier for the registration material associated with the task
-    }
+    public int? RegistrationMaterialId { get; set; } // Identifier for the registration material associated with the task
 }

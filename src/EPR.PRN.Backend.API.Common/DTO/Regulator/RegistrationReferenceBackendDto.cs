@@ -1,5 +1,4 @@
-﻿using System;
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics.CodeAnalysis;
 
 namespace EPR.PRN.Backend.API.Common.Dto;
 
@@ -11,4 +10,3 @@ public class RegistrationReferenceBackendDto
     public string OrganisationType { get; set; } = String.Empty;
     public string MaterialCode { get; set; } = String.Empty;
 }
-

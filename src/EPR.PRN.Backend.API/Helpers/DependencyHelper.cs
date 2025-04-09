@@ -20,7 +20,7 @@ namespace EPR.PRN.Backend.API.Helpers
     [ExcludeFromCodeCoverage]
     public static class DependencyHelper
     {
-        public static IServiceCollection AddDependencies(this IServiceCollection services, IConfiguration config)
+        public static IServiceCollection AddDependencies(this IServiceCollection services)
         {
             services.AddScoped<IRepository, Repository>()
                 .AddScoped<IPrnService, PrnService>()
