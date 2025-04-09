@@ -1,14 +1,12 @@
 ﻿namespace EPR.PRN.Backend.API.Common.Enums;
 public enum RegulatorTaskType
 {
-    SiteAddressAndContactDetails = 1,
-    WasteLicensesPermitsAndExemptions = 2,
-    ReprocessingInputsAndOutputs = 3,
-    SamplingAndInspectionPlan = 4,
-    RegistrationDulyMade = 5,
-    AssignOfficer = 6,
-    MaterialsAuthorisedOnSite = 7,
-    MaterialDetailsAndContact = 8,
-    OverseasReprocessorAndInterimSiteDetails = 9,
-    BusinessAddress = 10
+    BusinessAddress = 1,
+    MaterialsAuthorisedOnSite = 2,
+    MaterialDetailsAndContact = 3,
+    OverseasReprocessorAndInterimSiteDetails = 4,
+    ReprocessingInputsAndOutputs = 5,
+    SiteAddressAndContactDetails = 6,
+    SamplingAndInspectionPlan = 7,
+    WasteLicensesPermitsAndExemptions = 8
 }

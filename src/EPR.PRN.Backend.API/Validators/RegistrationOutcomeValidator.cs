@@ -13,7 +13,7 @@ public class RegistrationOutcomeValidator : AbstractValidator<RegistrationMateri
             .NotEmpty().WithMessage(ValidationMessages.RegistrationOutcomeIdRequired)
             .GreaterThan(0).WithMessage(ValidationMessages.RegistrationOutcomeIdGreaterThanZero);
 
-        RuleFor(x => x.RegistrationMaterialStatus)
+        RuleFor(x => x.Status)
             .IsInEnum()
             .WithMessage(ValidationMessages.InvalidRegistrationOutcomeStatus);
 
@@ -23,6 +23,6 @@ public class RegistrationOutcomeValidator : AbstractValidator<RegistrationMateri
         RuleFor(x => x.Comments)
             .NotEmpty()
             .WithMessage(ValidationMessages.RegistrationOutcomeCommentsCommentsRequired)
-            .When(x => x.RegistrationMaterialStatus == RegistrationMaterialStatus.Refused);
+            .When(x => x.Status == RegistrationMaterialStatus.Refused);
     }
 }

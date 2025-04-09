@@ -39,15 +39,16 @@ public class RegistrationMaterialController(IMediator mediator
         var result = await mediator.Send(new GetRegistrationOverviewDetailByIdQuery() { Id = Id });
         return Ok(result);
     }
+
     [HttpGet("registrationMaterials/{Id}")]
-    [ProducesResponseType(typeof(RegistrationMaterialDto), 200)]
+    [ProducesResponseType(typeof(RegistrationMaterialDetailsDto), 200)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [SwaggerOperation(
             Summary = "get summary info for a material",
             Description = "attempting to get summary info for a material."
         )]
-    [SwaggerResponse(StatusCodes.Status200OK, "Returns summary info for a material.", typeof(RegistrationMaterialDto))]
+    [SwaggerResponse(StatusCodes.Status200OK, "Returns summary info for a material.", typeof(RegistrationMaterialDetailsDto))]
     [SwaggerResponse(StatusCodes.Status400BadRequest, "If the request is invalid or a validation error occurs.", typeof(ProblemDetails))]
     [SwaggerResponse(StatusCodes.Status500InternalServerError, "If an unexpected error occurs.", typeof(ContentResult))]
     public async Task<IActionResult> GetMaterialDetailById(int Id)

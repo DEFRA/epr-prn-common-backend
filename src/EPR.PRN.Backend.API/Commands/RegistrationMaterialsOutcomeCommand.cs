@@ -14,6 +14,6 @@ public class RegistrationMaterialsOutcomeCommand : IRequest
     [BindNever]
     [SwaggerIgnore]
     public int Id { get; set; }
-    public RegistrationMaterialStatus RegistrationMaterialStatus { get; set; }
+    public RegistrationMaterialStatus Status { get; set; }
     public string? Comments { get; set; }   
 }

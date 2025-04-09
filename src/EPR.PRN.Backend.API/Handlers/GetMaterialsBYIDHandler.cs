@@ -5,12 +5,11 @@ using MediatR;
 
 namespace EPR.PRN.Backend.API.Handlers;
 
-public class GetMaterialsByIdHandler(IRegistrationMaterialRepository rmRepository) : IRequestHandler<GetMaterialDetailByIdQuery, RegistrationMaterialDto>
+public class GetMaterialsByIdHandler(IRegistrationMaterialRepository rmRepository) : IRequestHandler<GetMaterialDetailByIdQuery, RegistrationMaterialDetailsDto>
 {
-    public async Task<RegistrationMaterialDto> Handle(GetMaterialDetailByIdQuery request, CancellationToken cancellationToken)
+    public async Task<RegistrationMaterialDetailsDto> Handle(GetMaterialDetailByIdQuery request, CancellationToken cancellationToken)
     {
-
-        RegistrationMaterialDto result = await rmRepository.GetMaterialsById(request.Id);
+        RegistrationMaterialDetailsDto result = await rmRepository.GetRegistrationMaterialDetailsById(request.Id);
         return result;
     }
 }
