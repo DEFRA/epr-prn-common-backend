@@ -27,20 +27,6 @@ namespace EPR.PRN.Backend.API.Tests.Handlers
         }
 
         [TestMethod]
-        public async Task Handle_TaskStatusNotFound_ShouldThrowKeyNotFoundException()
-        {
-            // Arrange
-            var command = new UpdateRegulatorRegistrationTaskCommand { Id = 1, Status = StatusTypes.Complete };
-            _repositoryMock.Setup(r => r.GetTaskStatusByIdAsync(command.Id)).ReturnsAsync((RegulatorRegistrationTaskStatus)null);
-
-            // Act
-            Func<Task> act = async () => await _handler.Handle(command, CancellationToken.None);
-
-            // Assert
-            await act.Should().ThrowAsync<KeyNotFoundException>().WithMessage($"Task status not found: {command.Id}");
-        }
-
-        [TestMethod]
         public async Task Handle_TaskStatusAlreadyComplete_ShouldThrowRegulatorInvalidOperationException()
         {
             // Arrange

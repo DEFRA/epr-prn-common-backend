@@ -2,6 +2,7 @@
 using EPR.PRN.Backend.Data.DataModels.Registrations;
 using EPR.PRN.Backend.Data.Interfaces.Regulator;
 using Microsoft.Extensions.Logging;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace EPR.PRN.Backend.Data.Repositories.Regulator
 {
@@ -16,9 +17,11 @@ namespace EPR.PRN.Backend.Data.Repositories.Regulator
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        public async Task<RegulatorApplicationTaskStatus?> GetTaskStatusByIdAsync(int id)
+        public async Task<RegulatorApplicationTaskStatus> GetTaskStatusByIdAsync(int id)
         {
-            return await _context.RegulatorApplicationTaskStatus.FindAsync(id);
+            var taskStatus = await _context.RegulatorApplicationTaskStatus.FindAsync(id);
+
+            return taskStatus != null ? taskStatus : throw new KeyNotFoundException($"Task status not found: {id}");
         }
 
         public async Task UpdateStatusAsync(int id, StatusTypes status, string? comments)

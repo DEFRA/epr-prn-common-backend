@@ -66,10 +66,11 @@ namespace EPR.PRN.Backend.Data.Tests.Repositories.Regulator
                 .ReturnsAsync((RegulatorApplicationTaskStatus)null);
 
             // Act
-            var result = await _repository.GetTaskStatusByIdAsync(1);
+            Func<Task> act = async () => await _repository.GetTaskStatusByIdAsync(1);
 
             // Assert
-            result.Should().BeNull();
+            await act.Should().ThrowAsync<KeyNotFoundException>()
+                .WithMessage("Task status not found: 1");
         }
 
         [TestMethod]

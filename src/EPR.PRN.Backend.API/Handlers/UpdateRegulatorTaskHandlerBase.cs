@@ -24,11 +24,6 @@ public abstract class UpdateRegulatorTaskHandlerBase<TCommand, TRepository, TTas
     public async Task<Unit> Handle(TCommand command, CancellationToken cancellationToken)
     {
         var taskStatus = await _repository.GetTaskStatusByIdAsync(command.Id);
-        if (taskStatus == null)
-        {
-            _logger.LogWarning("Task status not found: {TaskId}", command.Id);
-            throw new KeyNotFoundException($"Task status not found: {command.Id}");
-        }
 
         if (command.Status == StatusTypes.Complete)
         {

@@ -16,9 +16,11 @@ namespace EPR.PRN.Backend.Data.Repositories.Regulator
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        public async Task<RegulatorRegistrationTaskStatus?> GetTaskStatusByIdAsync(int id)
+        public async Task<RegulatorRegistrationTaskStatus> GetTaskStatusByIdAsync(int id)
         {
-            return await _context.RegulatorRegistrationTaskStatus.FindAsync(id);
+            var taskStatus = await _context.RegulatorRegistrationTaskStatus.FindAsync(id);
+
+            return taskStatus != null ? taskStatus : throw new KeyNotFoundException($"Task status not found: {id}");
         }
 
         public async Task UpdateStatusAsync(int id, StatusTypes status, string? comments)
