@@ -1,6 +1,4 @@
-﻿using System.ComponentModel;
-
-namespace EPR.PRN.Backend.API.Common.Enums;
+﻿namespace EPR.PRN.Backend.API.Common.Enums;
 public enum ApplicationOrganisationType
 {
     Reprocessor = 1,

@@ -35,31 +35,29 @@ public class EprRegistrationsContext : DbContext
             new LookupMaterial { Id = 3, MaterialName = "Aluminium", MaterialCode = "AL" });
 
         modelBuilder.Entity<LookupRegistrationMaterialStatus>().HasData(
-            new LookupRegistrationMaterialStatus { Id = 1, Name = "Grant" },
-            new LookupRegistrationMaterialStatus { Id = 2, Name = "Refuse" });
+            new LookupRegistrationMaterialStatus { Id = 1, Name = "Granted" },
+            new LookupRegistrationMaterialStatus { Id = 2, Name = "Refused" });
 
         modelBuilder.Entity<LookupTaskStatus>().HasData(
             new LookupTaskStatus { Id = 1, Name = "NotStarted" },
             new LookupTaskStatus { Id = 2, Name = "Started" },
-            new LookupTaskStatus { Id = 3, Name = "CanNotStartYet" },
-            new LookupTaskStatus { Id = 4, Name = "Queried" },
-            new LookupTaskStatus { Id = 5, Name = "Completed" });
+            new LookupTaskStatus { Id = 3, Name = "Completed" },
+            new LookupTaskStatus { Id = 4, Name = "CannotStartYet" },
+            new LookupTaskStatus { Id = 5, Name = "Queried" });
 
         modelBuilder.Entity<LookupApplicationType>().HasData(
             new LookupApplicationType { Id = 1, Name = "Reprocessor" },
             new LookupApplicationType { Id = 2, Name = "Exporter" });
 
         modelBuilder.Entity<LookupTask>().HasData(
-            new LookupTask { Id = 1, Name = "SiteAddressAndContactDetails" },
-            new LookupTask { Id = 2, Name = "WasteLicensesPermitsAndExemptions" },
-            new LookupTask { Id = 3, Name = "ReprocessingInputsAndOutputs" },
-            new LookupTask { Id = 4, Name = "SamplingAndInspectionPlan" },
-            new LookupTask { Id = 5, Name = "RegistrationDulyMade" },
-            new LookupTask { Id = 6, Name = "AssignOfficer" },
-            new LookupTask { Id = 7, Name = "MaterialsAuthorisedOnSite" },
-            new LookupTask { Id = 8, Name = "MaterialDetailsAndContact" },
-            new LookupTask { Id = 9, Name = "OverseasReprocessorAndInterimSiteDetails" },
-            new LookupTask { Id = 10, Name = "BusinessAddress" });
+            new LookupTask { Id = 1, Name = "BusinessAddress" },
+            new LookupTask { Id = 2, Name = "MaterialsAuthorisedOnSite" },
+            new LookupTask { Id = 3, Name = "MaterialDetailsAndContact" },
+            new LookupTask { Id = 4, Name = "OverseasReprocessorAndInterimSiteDetails" },
+            new LookupTask { Id = 5, Name = "ReprocessingInputsAndOutputs" },
+            new LookupTask { Id = 6, Name = "SiteAddressAndContactDetails" },
+            new LookupTask { Id = 7, Name = "SamplingAndInspectionPlan" },
+            new LookupTask { Id = 8, Name = "WasteLicensesPermitsAndExemptions" });
 
         var registrations = new List<Registration>();
         var lookupAddresses = new List<LookupAddress>();
@@ -112,7 +110,7 @@ public class EprRegistrationsContext : DbContext
                 {
                     Id = registrationMaterialId,
                     MaterialId = j,
-                    //StatusID = 1,
+                    StatusID = 1,
                     RegistrationId = registrationcounter,
                     DeterminationDate = DateTime.UtcNow,
                     ReferenceNumber = $"REF{registrationcounter:D4}-{j:D2}",

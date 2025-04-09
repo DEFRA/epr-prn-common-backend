@@ -60,7 +60,7 @@ public class RegistrationMaterialRepository(EprRegistrationsContext eprContext) 
                                 .Where(m => m.Id == rm.MaterialId)
                                 .Select(m => m.MaterialName)
                                 .FirstOrDefault() ?? string.Empty,
-                Status = (RegistrationMaterialStatus)_eprContext.LookupTaskStatuses
+                Status = (RegistrationMaterialStatus)_eprContext.LookupRegistrationMaterialStatuses
                     .Where(s => s.Id == rm.StatusID)
                     .Select(s => s.Id)
                     .FirstOrDefault(),
@@ -108,7 +108,7 @@ public class RegistrationMaterialRepository(EprRegistrationsContext eprContext) 
                                 .Where(m => m.Id == rm.MaterialId)
                                 .Select(m => m.MaterialName)
                                 .FirstOrDefault()??string.Empty,
-                Status = (RegistrationMaterialStatus)_eprContext.LookupTaskStatuses
+                Status = (RegistrationMaterialStatus)_eprContext.LookupRegistrationMaterialStatuses
                     .Where(s => s.Id == rm.StatusID)
                     .Select(s => s.Id)
                     .FirstOrDefault(),
@@ -140,6 +140,35 @@ public class RegistrationMaterialRepository(EprRegistrationsContext eprContext) 
 
         return result;
     }
+
+    public async Task<RegistrationMaterialDetailsDto> GetRegistrationMaterialDetailsById(int RegistrationMetrialId)
+    {
+        await Task.Delay(50);
+        var result = await _eprContext.RegistrationMaterials
+            .Where(rm => rm.Id == RegistrationMetrialId)
+            .Select(rm => new RegistrationMaterialDetailsDto
+            {
+                Id = rm.Id,
+                RegistrationId = rm.RegistrationId,
+                MaterialName = _eprContext.LookupMaterials
+                                .Where(m => m.Id == rm.MaterialId)
+                                .Select(m => m.MaterialName)
+                                .FirstOrDefault() ?? string.Empty,
+                Status = (RegistrationMaterialStatus)_eprContext.LookupRegistrationMaterialStatuses
+                    .Where(s => s.Id == rm.StatusID)
+                    .Select(s => s.Id)
+                    .FirstOrDefault()
+            })
+            .FirstOrDefaultAsync();
+
+        if (result == null)
+        {
+            throw new KeyNotFoundException("Registration Material not found.");
+        }
+
+        return result;
+    }
+
     public async Task<RegistrationReferenceBackendDto> GetRegistrationReferenceDataId(int RegistrationId,int RegistrationMetrialId)
     {
         var result = await _eprContext.Registrations
