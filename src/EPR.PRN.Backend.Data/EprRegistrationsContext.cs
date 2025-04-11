@@ -53,23 +53,21 @@ public class EprRegistrationsContext : DbContext
             new LookupJourneyType { Id = 1, Name = "Registration" },
             new LookupJourneyType { Id = 2, Name = "Accreditation" });
 
-        modelBuilder.Entity<LookupTask>().HasData(
-            new LookupTask {IsMaterialSpecific = false, ApplicationTypeId = 1, JourneyTypeId = 1, IsRegulatorTask = true, Name = "SiteAddressAndContactDetails" },
-            new LookupTask {IsMaterialSpecific = false, ApplicationTypeId = 1, JourneyTypeId = 1, IsRegulatorTask = true, Name = "MaterialsAuthorisedOnSite" },
-            new LookupTask {IsMaterialSpecific = false, ApplicationTypeId = 1, JourneyTypeId = 1, IsRegulatorTask = true, Name = "RegistrationDulyMade" },
-            new LookupTask {IsMaterialSpecific = true, ApplicationTypeId = 1, JourneyTypeId = 1, IsRegulatorTask = true, Name = "WasteLicensesPermitsAndExemptions" },
-            new LookupTask {IsMaterialSpecific = true, ApplicationTypeId = 1, JourneyTypeId = 1, IsRegulatorTask = true, Name = "ReprocessingInputsAndOutputs" },
-            new LookupTask {IsMaterialSpecific = true, ApplicationTypeId = 1, JourneyTypeId = 1, IsRegulatorTask = true, Name = "SamplingAndInspectionPlan" },
-            new LookupTask {IsMaterialSpecific = true, ApplicationTypeId = 1, JourneyTypeId = 1, IsRegulatorTask = true, Name = "AssignOfficer" },
-            new LookupTask {IsMaterialSpecific = false, ApplicationTypeId = 2, JourneyTypeId = 1, IsRegulatorTask = true, Name = "BusinessAddress" },
-            new LookupTask {IsMaterialSpecific = false, ApplicationTypeId = 2, JourneyTypeId = 1, IsRegulatorTask = true, Name = "WasteLicensesPermitsAndExemptions" },
-            new LookupTask {IsMaterialSpecific = false, ApplicationTypeId = 2, JourneyTypeId = 1, IsRegulatorTask = true, Name = "RegistrationDulyMade" },
-            new LookupTask {IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 1, IsRegulatorTask = true, Name = "SamplingAndInspectionPlan" },
-            new LookupTask {IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 1, IsRegulatorTask = true, Name = "AssignOfficer" },
-            new LookupTask {IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 1, IsRegulatorTask = true, Name = "MaterialDetailsAndContact" },
-            new LookupTask {IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 1, IsRegulatorTask = true, Name = "OverseasReprocessorAndInterimSiteDetails" });
-
-
+        modelBuilder.Entity<LookupRegulatorTask>().HasData(
+            new LookupRegulatorTask { Id = 1,IsMaterialSpecific = false, ApplicationTypeId = 1, JourneyTypeId = 1, Name = "SiteAddressAndContactDetails" },
+            new LookupRegulatorTask { Id = 2,IsMaterialSpecific = false, ApplicationTypeId = 1, JourneyTypeId = 1, Name = "MaterialsAuthorisedOnSite" },
+            new LookupRegulatorTask { Id = 3,IsMaterialSpecific = false, ApplicationTypeId = 1, JourneyTypeId = 1, Name = "RegistrationDulyMade" },
+            new LookupRegulatorTask { Id = 4,IsMaterialSpecific = true, ApplicationTypeId = 1, JourneyTypeId = 1, Name = "WasteLicensesPermitsAndExemptions" },
+            new LookupRegulatorTask { Id = 5,IsMaterialSpecific = true, ApplicationTypeId = 1, JourneyTypeId = 1, Name = "ReprocessingInputsAndOutputs" },
+            new LookupRegulatorTask { Id = 6,IsMaterialSpecific = true, ApplicationTypeId = 1, JourneyTypeId = 1, Name = "SamplingAndInspectionPlan" },
+            new LookupRegulatorTask { Id = 7,IsMaterialSpecific = true, ApplicationTypeId = 1, JourneyTypeId = 1, Name = "AssignOfficer" },
+            new LookupRegulatorTask { Id = 8,IsMaterialSpecific = false, ApplicationTypeId = 2, JourneyTypeId = 1, Name = "BusinessAddress" },
+            new LookupRegulatorTask { Id = 9,IsMaterialSpecific = false, ApplicationTypeId = 2, JourneyTypeId = 1, Name = "WasteLicensesPermitsAndExemptions" },
+            new LookupRegulatorTask { Id = 10,IsMaterialSpecific = false, ApplicationTypeId = 2, JourneyTypeId = 1, Name = "RegistrationDulyMade" },
+            new LookupRegulatorTask { Id = 11,IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 1, Name = "SamplingAndInspectionPlan" },
+            new LookupRegulatorTask { Id = 12,IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 1, Name = "AssignOfficer" },
+            new LookupRegulatorTask { Id = 13, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 1, Name = "MaterialDetailsAndContact" },
+            new LookupRegulatorTask { Id = 14, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 1, Name = "OverseasReprocessorAndInterimSiteDetails" });
 
         var registrations = new List<Registration>();
         var lookupAddresses = new List<LookupAddress>();
@@ -134,7 +132,7 @@ public class EprRegistrationsContext : DbContext
     public virtual DbSet<RegulatorRegistrationTaskStatus> RegulatorRegistrationTaskStatus { get; set; }
     public DbSet<LookupMaterial> LookupMaterials { get; set; }
     public DbSet<LookupRegistrationMaterialStatus> LookupRegistrationMaterialStatuses { get; set; }
-    public DbSet<LookupTask> LookupTasks { get; set; }
+    public DbSet<LookupRegulatorTask> LookupTasks { get; set; }
     public DbSet<LookupRegistrationStatus> LookupRegistrationStatuses { get; set; }
     public DbSet<LookupTaskStatus> LookupTaskStatuses { get; set; }
     public DbSet<LookupAddress> LookupAddresses { get; set; }

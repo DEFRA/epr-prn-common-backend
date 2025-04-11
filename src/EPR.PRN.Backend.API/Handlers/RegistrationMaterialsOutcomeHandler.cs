@@ -10,7 +10,7 @@ public class RegistrationMaterialsOutcomeHandler(IRegistrationMaterialRepository
 {
     public async Task Handle(RegistrationMaterialsOutcomeCommand request, CancellationToken cancellationToken)
     {
-        var materialData = await rmRepository.GetMaterialsById(request.Id);
+        var materialData = await rmRepository.GetRegistrationMaterialDetailsById(request.Id);
 
         if ( request.Status == materialData.Status ||
              (materialData.Status == RegistrationMaterialStatus.Granted && request.Status != RegistrationMaterialStatus.Refused))

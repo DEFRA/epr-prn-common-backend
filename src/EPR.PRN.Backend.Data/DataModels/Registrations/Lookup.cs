@@ -14,15 +14,13 @@ public abstract class LookupBase
 
 public class LookupRegistrationMaterialStatus : LookupBase{}
 
-public class LookupTask : LookupBase
+public class LookupRegulatorTask : LookupBase
 {
     public bool IsMaterialSpecific { get; set; }
 
     public int ApplicationTypeId { get; set; }
 
     public int JourneyTypeId { get; set; }
-
-    public bool IsRegulatorTask { get; set; }
 }
 
 public class LookupRegistrationStatus : LookupBase{}
