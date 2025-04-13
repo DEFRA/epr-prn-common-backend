@@ -59,8 +59,8 @@ public class RegistrationMaterialController(IMediator mediator
     }
     #endregion Get Methods
 
-    #region Patch Methods
-    [HttpPatch("registrationMaterials/{Id}/outcome")]
+    #region Post Methods
+    [HttpPost("registrationMaterials/{Id}/outcome")]
     [ProducesResponseType(StatusCodes.Status204NoContent, Type = typeof(NoContentResult))]
     [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
@@ -82,5 +82,5 @@ public class RegistrationMaterialController(IMediator mediator
 
         return NoContent();
     }
-    #endregion Patch Methods
+    #endregion Post Methods
 }
