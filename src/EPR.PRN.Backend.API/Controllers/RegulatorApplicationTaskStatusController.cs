@@ -25,16 +25,14 @@ public class RegulatorApplicationTaskStatusController : ControllerBase
         this._logger = logger;
     }
 
-    [HttpPatch("{Id}")]
+    [HttpPost()]
     [ProducesResponseType(204)]
     [ProducesResponseType(400)]
     [ProducesResponseType(500)]
-    public async Task<IActionResult> UpdateRegistrationTaskStatus(int Id, [FromBody] UpdateRegulatorApplicationTaskCommand command)
+    public async Task<IActionResult> UpdateRegistrationTaskStatus([FromBody] UpdateRegulatorApplicationTaskCommand command)
     {
         _logger.LogInformation(LogMessages.UpdateRegulatorApplicationTask);
 
-        command.Id = Id;
-        
         await _validator.ValidateAndThrowAsync(command);
 
         await _mediator.Send(command);

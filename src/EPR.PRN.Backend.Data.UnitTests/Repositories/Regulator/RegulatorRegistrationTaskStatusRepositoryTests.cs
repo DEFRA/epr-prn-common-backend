@@ -53,7 +53,7 @@ namespace EPR.PRN.Backend.Data.Tests.Repositories.Regulator
         public async Task GetTaskStatusByIdAsync_ShouldReturnTaskStatus_WhenTaskStatusExists()
         {
             // Arrange
-            var taskStatus = new RegulatorRegistrationTaskStatus { Id = 1, TaskStatusId = (int)StatusTypes.Complete };
+            var taskStatus = new RegulatorRegistrationTaskStatus { Id = 1, TaskStatusId = (int)StatusTypes.Completed };
             _contextMock.Setup(c => c.RegulatorRegistrationTaskStatus.FindAsync(1))
                 .ReturnsAsync(taskStatus);
 
@@ -91,10 +91,10 @@ namespace EPR.PRN.Backend.Data.Tests.Repositories.Regulator
                 .ReturnsAsync(1);
 
             // Act
-            await _repository.UpdateStatusAsync(1, StatusTypes.Complete, "Updated comments");
+            await _repository.UpdateStatusAsync(1, StatusTypes.Completed, "Updated comments");
 
             // Assert
-            taskStatus.TaskStatusId.Should().Be((int)StatusTypes.Complete);
+            taskStatus.TaskStatusId.Should().Be((int)StatusTypes.Completed);
             taskStatus.Comments.Should().Be("Updated comments");
             _contextMock.Verify(c => c.SaveChangesAsync(default), Times.Once);
         }
@@ -107,7 +107,7 @@ namespace EPR.PRN.Backend.Data.Tests.Repositories.Regulator
                 .ReturnsAsync((RegulatorRegistrationTaskStatus)null);
 
             // Act
-            Func<Task> act = async () => await _repository.UpdateStatusAsync(1, StatusTypes.Complete, "Updated comments");
+            Func<Task> act = async () => await _repository.UpdateStatusAsync(1, StatusTypes.Completed, "Updated comments");
 
             // Assert
             await act.Should().ThrowAsync<KeyNotFoundException>()

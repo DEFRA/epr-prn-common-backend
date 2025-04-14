@@ -4,7 +4,7 @@ namespace EPR.PRN.Backend.Data.Interfaces.Regulator
 {
     public interface IRegulatorTaskStatusRepository<TTaskStatus>
     {
-        Task<TTaskStatus> GetTaskStatusByIdAsync(int id);
-        Task UpdateStatusAsync(int id, StatusTypes status, string? comments);
+        Task<TTaskStatus?> GetTaskStatusAsync(string TaskName, int TypeId);
+        Task UpdateStatusAsync(string TaskName, int RegistrationMaterialId, StatusTypes status, string? comments);
     }
 }

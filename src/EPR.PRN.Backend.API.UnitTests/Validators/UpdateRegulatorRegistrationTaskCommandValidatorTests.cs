@@ -28,7 +28,7 @@ namespace EPR.PRN.Backend.API.UnitTests.Validators
         [TestMethod]
         public void Should_Not_Have_Error_When_Status_Is_Valid()
         {
-            var model = new UpdateRegulatorRegistrationTaskCommand { Status = StatusTypes.Complete };
+            var model = new UpdateRegulatorRegistrationTaskCommand { Status = StatusTypes.Completed };
             var result = _validator.TestValidate(model);
             result.ShouldNotHaveValidationErrorFor(x => x.Status);
         }
@@ -70,7 +70,7 @@ namespace EPR.PRN.Backend.API.UnitTests.Validators
         [TestMethod]
         public void Should_Not_Have_Error_When_Comment_Is_Empty_And_Status_Is_Not_Queried()
         {
-            var model = new UpdateRegulatorRegistrationTaskCommand { Status = StatusTypes.Complete, Comment = string.Empty };
+            var model = new UpdateRegulatorRegistrationTaskCommand { Status = StatusTypes.Completed, Comment = string.Empty };
             var result = _validator.TestValidate(model);
             result.ShouldNotHaveValidationErrorFor(x => x.Comment);
         }

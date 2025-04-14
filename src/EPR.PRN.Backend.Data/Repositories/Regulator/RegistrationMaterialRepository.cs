@@ -4,11 +4,15 @@ using EPR.PRN.Backend.API.Common.Dto;
 using EPR.PRN.Backend.API.Common.Dto.Regulator;
 using EPR.PRN.Backend.API.Common.Enums;
 using EPR.PRN.Backend.Data;
+using EPR.PRN.Backend.Data.DataModels.Registrations;
 using EPR.PRN.Backend.Data.Interfaces.Regulator;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.Linq;
 
 public class RegistrationMaterialRepository(EprRegistrationsContext eprContext) : IRegistrationMaterialRepository
 {
+    private const string NotStarted = "NotStarted";
     protected readonly EprRegistrationsContext _eprContext = eprContext;
     public async Task UpdateRegistrationOutCome(int RegistrationMaterialId, int StatusId, string? Comment,String RegistrationReferenceNumber)
     {
@@ -35,52 +39,17 @@ public class RegistrationMaterialRepository(EprRegistrationsContext eprContext) 
                 OrganisationName = r.OrganisationId + "_Green Ltd", // Replace with actual organisation name if needed
                 OrganisationType = (ApplicationOrganisationType)r.ApplicationTypeId,
                 Regulator = "EA",
-                Tasks = _eprContext.RegulatorRegistrationTaskStatus
-                .Where(t => t.RegistrationId == RegistrationId)
-                .Select(t => new RegistrationTaskDto
-                {
-                    Id = t.Id,
-                    TaskId = t.TaskId ?? 0,
-                    TaskName = (RegulatorTaskType)_eprContext.LookupTasks
-                        .Where(tn => tn.Id == t.TaskId)
-                        .Select(tn => tn.Id)
-                        .FirstOrDefault(),
-                    Status = (RegulatorTaskStatus)_eprContext.LookupTaskStatuses
-                        .Where(ts => ts.Id == t.TaskStatusId)
-                        .Select(ts => ts.Id)
-                        .FirstOrDefault()
-                }).ToList(),          
-
+                Tasks = GetRegistrationTasks(r),
                 Materials = _eprContext.RegistrationMaterials
             .Where(rm => rm.RegistrationId == RegistrationId)
             .Select(rm => new RegistrationMaterialDto
             {
                 Id = rm.Id,
-                MaterialName = _eprContext.LookupMaterials
-                                .Where(m => m.Id == rm.MaterialId)
-                                .Select(m => m.MaterialName)
-                                .FirstOrDefault() ?? string.Empty,
-                Status = (RegistrationMaterialStatus)_eprContext.LookupRegistrationMaterialStatuses
-                    .Where(s => s.Id == rm.StatusID)
-                    .Select(s => s.Id)
-                    .FirstOrDefault(),
+                MaterialName = rm.Material.MaterialName,
+                Status = rm.Status.Name,
                 DeterminationDate = rm.DeterminationDate,
                 RegistrationReferenceNumber = rm.ReferenceNumber,
-                Tasks = _eprContext.RegulatorRegistrationTaskStatus
-                    .Where(rt => rt.Id == rm.Id)
-                    .Select(rt => new RegistrationTaskDto
-                    {
-                        Id = rt.Id,
-                        TaskId = rt.TaskId ?? 0, // Provide a default value if TaskId is null
-                        TaskName = (RegulatorTaskType)_eprContext.LookupTasks
-                            .Where(t => t.Id == rt.TaskId)
-                            .Select(t => t.Id)
-                            .FirstOrDefault(),
-                        Status = (RegulatorTaskStatus)_eprContext.LookupTaskStatuses
-                            .Where(ts => ts.Id == rt.TaskStatusId)
-                            .Select(ts => ts.Id)
-                            .FirstOrDefault()
-                    }).ToList()
+                Tasks = GetRegistrationMaterialTasks(rm)
             })
                     .ToList()
             })
@@ -92,53 +61,70 @@ public class RegistrationMaterialRepository(EprRegistrationsContext eprContext) 
         }
 
         return registration;
-    
-
     }
-    public async Task<RegistrationMaterialDto> GetMaterialsById(int RegistrationMetrialId)
+
+    private List<RegistrationTaskDto> GetRegistrationTasks(Registration registration)
     {
-        await Task.Delay(50);
-        var result = await _eprContext.RegistrationMaterials
-            .Where(rm => rm.Id == RegistrationMetrialId)
-            .Select(rm => new RegistrationMaterialDto
+        var requiredRegistrationTaskDto = _eprContext.LookupTasks
+            .Where(t => t.ApplicationTypeId == registration.ApplicationTypeId
+            && t.IsMaterialSpecific == false
+            && t.JourneyTypeId == 1).Select(t => new RegistrationTaskDto
             {
-                Id = rm.Id,
-                RegistrationId = rm.RegistrationId,
-                MaterialName = _eprContext.LookupMaterials
-                                .Where(m => m.Id == rm.MaterialId)
-                                .Select(m => m.MaterialName)
-                                .FirstOrDefault()??string.Empty,
-                Status = (RegistrationMaterialStatus)_eprContext.LookupRegistrationMaterialStatuses
-                    .Where(s => s.Id == rm.StatusID)
-                    .Select(s => s.Id)
-                    .FirstOrDefault(),
-                DeterminationDate = rm.DeterminationDate,
-                RegistrationReferenceNumber = rm.ReferenceNumber,
-                Tasks = _eprContext.RegulatorRegistrationTaskStatus
-                    .Where(rt => rt.Id == rm.Id)
-                    .Select(rt => new RegistrationTaskDto
-                    {
-                        Id = rt.Id,
-                        TaskId = rt.TaskId ?? 0, // Provide a default value if TaskId is null
-                        TaskName = (RegulatorTaskType)_eprContext.LookupTasks
-                            .Where(t => t.Id == rt.TaskId.Value)
-                            .Select(t => t.Id)
-                            .FirstOrDefault(),
-                        Status = (RegulatorTaskStatus)_eprContext.LookupTaskStatuses
-                            .Where(ts => ts.Id == rt.Id)
-                            .Select(ts => ts.Id)
-                            .FirstOrDefault()
-                    }).ToList()
+                Status = NotStarted,
+                TaskName = t.Name,
+                Id = null
             })
-            .FirstOrDefaultAsync();
+            .ToList();
 
+        var existingRegistrationTaskDto = _eprContext.RegulatorRegistrationTaskStatus
+            .Where(ts => ts.RegistrationId == registration.Id)
+            .Select(t => new RegistrationTaskDto
+            {
+                Id = t.Id,
+                TaskName = t.Task.Name,
+                Status = t.TaskStatus.Name
+            })
+            .ToList();
 
-        if (result == null)
-        {
-            throw new KeyNotFoundException("Registration Material not found.");
-        }
+        var mergedTasks = requiredRegistrationTaskDto
+            .Select(requiredTask =>
+                existingRegistrationTaskDto.FirstOrDefault(existingTask => existingTask.TaskName == requiredTask.TaskName)
+                ?? requiredTask) // Use the existing task if found, otherwise keep the required task
+            .ToList();
 
-        return result;
+        return mergedTasks;
+    }
+
+    private List<RegistrationTaskDto> GetRegistrationMaterialTasks(RegistrationMaterial registrationMaterial)
+    {
+        var requiredRegistrationTaskDto = _eprContext.LookupTasks
+            .Where(t => t.ApplicationTypeId == registrationMaterial.Registration.ApplicationTypeId
+            && t.IsMaterialSpecific == true
+            && t.JourneyTypeId == 1).Select(t => new RegistrationTaskDto
+            {
+                Status = NotStarted,
+                TaskName = t.Name,
+                Id = null
+            })
+            .ToList();
+
+        var existingRegistrationTaskDto = _eprContext.RegulatorApplicationTaskStatus
+            .Where(ts => ts.RegistrationMaterialId == registrationMaterial.Id)
+            .Select(t => new RegistrationTaskDto
+            {
+                Id = t.Id,
+                TaskName = t.Task.Name,
+                Status = t.TaskStatus.Name
+            })
+            .ToList();
+
+        var mergedTasks = requiredRegistrationTaskDto
+            .Select(requiredTask =>
+                existingRegistrationTaskDto.FirstOrDefault(existingTask => existingTask.TaskName == requiredTask.TaskName)
+                ?? requiredTask) // Use the existing task if found, otherwise keep the required task
+            .ToList();
+
+        return mergedTasks;
     }
 
     public async Task<RegistrationMaterialDetailsDto> GetRegistrationMaterialDetailsById(int RegistrationMetrialId)

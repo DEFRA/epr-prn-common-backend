@@ -41,7 +41,7 @@ public class EprRegistrationsContext : DbContext
         modelBuilder.Entity<LookupTaskStatus>().HasData(
             new LookupTaskStatus { Id = 1, Name = "NotStarted" },
             new LookupTaskStatus { Id = 2, Name = "Started" },
-            new LookupTaskStatus { Id = 3, Name = "CanNotStartYet" },
+            new LookupTaskStatus { Id = 3, Name = "CannotStartYet" },
             new LookupTaskStatus { Id = 4, Name = "Queried" },
             new LookupTaskStatus { Id = 5, Name = "Completed" });
 
@@ -49,19 +49,25 @@ public class EprRegistrationsContext : DbContext
             new LookupApplicationType { Id = 1, Name = "Reprocessor" },
             new LookupApplicationType { Id = 2, Name = "Exporter" });
 
-        modelBuilder.Entity<LookupTask>().HasData(
-            new LookupTask { Id = 1, Name = "SiteAddressAndContactDetails" },
-            new LookupTask { Id = 2, Name = "WasteLicensesPermitsAndExemptions" },
-            new LookupTask { Id = 3, Name = "ReprocessingInputsAndOutputs" },
-            new LookupTask { Id = 4, Name = "SamplingAndInspectionPlan" },
-            new LookupTask { Id = 5, Name = "RegistrationDulyMade" },
-            new LookupTask { Id = 6, Name = "AssignOfficer" },
-            new LookupTask { Id = 7, Name = "MaterialsAuthorisedOnSite" },
-            new LookupTask { Id = 8, Name = "MaterialDetailsAndContact" },
-            new LookupTask { Id = 9, Name = "OverseasReprocessorAndInterimSiteDetails" },
-            new LookupTask { Id = 10, Name = "BusinessAddress" });
+        modelBuilder.Entity<LookupJourneyType>().HasData(
+            new LookupJourneyType { Id = 1, Name = "Registration" },
+            new LookupJourneyType { Id = 2, Name = "Accreditation" });
 
-
+        modelBuilder.Entity<LookupRegulatorTask>().HasData(
+            new LookupRegulatorTask { Id = 1,IsMaterialSpecific = false, ApplicationTypeId = 1, JourneyTypeId = 1, Name = "SiteAddressAndContactDetails" },
+            new LookupRegulatorTask { Id = 2,IsMaterialSpecific = false, ApplicationTypeId = 1, JourneyTypeId = 1, Name = "MaterialsAuthorisedOnSite" },
+            new LookupRegulatorTask { Id = 3,IsMaterialSpecific = false, ApplicationTypeId = 1, JourneyTypeId = 1, Name = "RegistrationDulyMade" },
+            new LookupRegulatorTask { Id = 4,IsMaterialSpecific = true, ApplicationTypeId = 1, JourneyTypeId = 1, Name = "WasteLicensesPermitsAndExemptions" },
+            new LookupRegulatorTask { Id = 5,IsMaterialSpecific = true, ApplicationTypeId = 1, JourneyTypeId = 1, Name = "ReprocessingInputsAndOutputs" },
+            new LookupRegulatorTask { Id = 6,IsMaterialSpecific = true, ApplicationTypeId = 1, JourneyTypeId = 1, Name = "SamplingAndInspectionPlan" },
+            new LookupRegulatorTask { Id = 7,IsMaterialSpecific = true, ApplicationTypeId = 1, JourneyTypeId = 1, Name = "AssignOfficer" },
+            new LookupRegulatorTask { Id = 8,IsMaterialSpecific = false, ApplicationTypeId = 2, JourneyTypeId = 1, Name = "BusinessAddress" },
+            new LookupRegulatorTask { Id = 9,IsMaterialSpecific = false, ApplicationTypeId = 2, JourneyTypeId = 1, Name = "WasteLicensesPermitsAndExemptions" },
+            new LookupRegulatorTask { Id = 10,IsMaterialSpecific = false, ApplicationTypeId = 2, JourneyTypeId = 1, Name = "RegistrationDulyMade" },
+            new LookupRegulatorTask { Id = 11,IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 1, Name = "SamplingAndInspectionPlan" },
+            new LookupRegulatorTask { Id = 12,IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 1, Name = "AssignOfficer" },
+            new LookupRegulatorTask { Id = 13, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 1, Name = "MaterialDetailsAndContact" },
+            new LookupRegulatorTask { Id = 14, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 1, Name = "OverseasReprocessorAndInterimSiteDetails" });
 
         var registrations = new List<Registration>();
         var lookupAddresses = new List<LookupAddress>();
@@ -70,8 +76,6 @@ public class EprRegistrationsContext : DbContext
         var applicationTaskStatuses = new List<RegulatorApplicationTaskStatus>();
 
 
-        var RegulatorApplicationTaskStatuscounter = 1;
-        var RegulatorRegistrationTaskStatuscounter = 1;
         for (int registrationcounter = 1; registrationcounter <= numberOfRegistrations; registrationcounter++)
         {
             var ApplicationTypeId = registrationcounter % 2 + 1;
@@ -97,16 +101,6 @@ public class EprRegistrationsContext : DbContext
                 PostCode = "E12 3SE"
             });
 
-            if (ApplicationTypeId == 1)
-            {
-                RegulatorRegistrationTaskStatuscounter = AddReprocessorRegistrationTasks(registrationTaskStatuses, RegulatorRegistrationTaskStatuscounter, registrationcounter);
-            }
-            else
-            {
-                RegulatorRegistrationTaskStatuscounter = AddExporterRegistrationTasks(registrationTaskStatuses, RegulatorRegistrationTaskStatuscounter, registrationcounter);
-
-            }
-
             for (int j = 1; j <= 3; j++)
             {
                 var registrationMaterialId = (registrationcounter - 1) * 3 + j;
@@ -120,16 +114,6 @@ public class EprRegistrationsContext : DbContext
                     ReferenceNumber = $"REF{registrationcounter:D4}-{j:D2}",
                     Comments = $"Test description for material {j} in registration {registrationcounter}"
                 });
-
-                if (ApplicationTypeId == 1)
-                {
-                    RegulatorApplicationTaskStatuscounter = AddReprocessorRegistrationMaterialTasks(applicationTaskStatuses, RegulatorApplicationTaskStatuscounter, registrationMaterialId);
-                }
-                else
-                {
-                    RegulatorApplicationTaskStatuscounter = AddExporterRegistrationMaterialTasks(applicationTaskStatuses, RegulatorApplicationTaskStatuscounter, registrationMaterialId);
-
-                }
             }
         }
 
@@ -142,112 +126,13 @@ public class EprRegistrationsContext : DbContext
         base.OnModelCreating(modelBuilder);
     }
 
-    private static int AddReprocessorRegistrationMaterialTasks(List<RegulatorApplicationTaskStatus> applicationTaskStatuses, int RegulatorApplicationTaskStatuscounter, int registrationMaterialId)
-    {
-        applicationTaskStatuses.Add(new RegulatorApplicationTaskStatus
-        {
-            Id = RegulatorApplicationTaskStatuscounter,
-            TaskId = 2,
-            RegistrationMaterialId = registrationMaterialId,
-            TaskStatusId = 1
-        });
-        RegulatorApplicationTaskStatuscounter++;
-        applicationTaskStatuses.Add(new RegulatorApplicationTaskStatus
-        {
-            Id = RegulatorApplicationTaskStatuscounter,
-            TaskId = 3,
-            RegistrationMaterialId = registrationMaterialId,
-            TaskStatusId = 1
-        });
-        RegulatorApplicationTaskStatuscounter++;
-        applicationTaskStatuses.Add(new RegulatorApplicationTaskStatus
-        {
-            Id = RegulatorApplicationTaskStatuscounter,
-            TaskId = 4,
-            RegistrationMaterialId = registrationMaterialId,
-            TaskStatusId = 1
-        });
-        RegulatorApplicationTaskStatuscounter++;
-        return RegulatorApplicationTaskStatuscounter;
-    }
-
-    private static int AddExporterRegistrationMaterialTasks(List<RegulatorApplicationTaskStatus> applicationTaskStatuses, int RegulatorApplicationTaskStatuscounter, int registrationMaterialId)
-    {
-        applicationTaskStatuses.Add(new RegulatorApplicationTaskStatus
-        {
-            Id = RegulatorApplicationTaskStatuscounter,
-            TaskId = 8,
-            RegistrationMaterialId = registrationMaterialId,
-            TaskStatusId = 1
-        });
-        RegulatorApplicationTaskStatuscounter++;
-        applicationTaskStatuses.Add(new RegulatorApplicationTaskStatus
-        {
-            Id = RegulatorApplicationTaskStatuscounter,
-            TaskId = 9,
-            RegistrationMaterialId = registrationMaterialId,
-            TaskStatusId = 1
-        });
-        RegulatorApplicationTaskStatuscounter++;
-        applicationTaskStatuses.Add(new RegulatorApplicationTaskStatus
-        {
-            Id = RegulatorApplicationTaskStatuscounter,
-            TaskId = 4,
-            RegistrationMaterialId = registrationMaterialId,
-            TaskStatusId = 1
-        });
-        RegulatorApplicationTaskStatuscounter++;
-        return RegulatorApplicationTaskStatuscounter;
-    }
-
-    private static int AddReprocessorRegistrationTasks(List<RegulatorRegistrationTaskStatus> registrationTaskStatuses, int RegulatorRegistrationTaskStatuscounter, int registrationcounter)
-    {
-        registrationTaskStatuses.Add(new RegulatorRegistrationTaskStatus
-        {
-            Id = RegulatorRegistrationTaskStatuscounter,
-            TaskId = 1,
-            RegistrationId = registrationcounter,
-            TaskStatusId = 1
-        });
-        RegulatorRegistrationTaskStatuscounter++;
-        registrationTaskStatuses.Add(new RegulatorRegistrationTaskStatus
-        {
-            Id = RegulatorRegistrationTaskStatuscounter,
-            TaskId = 7,
-            RegistrationId = registrationcounter,
-            TaskStatusId = 1
-        });
-        RegulatorRegistrationTaskStatuscounter++;
-        return RegulatorRegistrationTaskStatuscounter;
-    }
-    private static int AddExporterRegistrationTasks(List<RegulatorRegistrationTaskStatus> registrationTaskStatuses, int RegulatorRegistrationTaskStatuscounter, int registrationcounter)
-    {
-        registrationTaskStatuses.Add(new RegulatorRegistrationTaskStatus
-        {
-            Id = RegulatorRegistrationTaskStatuscounter,
-            TaskId = 10,
-            RegistrationId = registrationcounter,
-            TaskStatusId = 1
-        });
-        RegulatorRegistrationTaskStatuscounter++;
-        registrationTaskStatuses.Add(new RegulatorRegistrationTaskStatus
-        {
-            Id = RegulatorRegistrationTaskStatuscounter,
-            TaskId = 2,
-            RegistrationId = registrationcounter,
-            TaskStatusId = 1
-        });
-        RegulatorRegistrationTaskStatuscounter++;
-        return RegulatorRegistrationTaskStatuscounter;
-    }
-
     public virtual DbSet<Registration> Registrations { get; set; }
     public virtual DbSet<RegistrationMaterial> RegistrationMaterials { get; set; }
     public virtual DbSet<RegulatorApplicationTaskStatus> RegulatorApplicationTaskStatus { get; set; }
     public virtual DbSet<RegulatorRegistrationTaskStatus> RegulatorRegistrationTaskStatus { get; set; }
     public DbSet<LookupMaterial> LookupMaterials { get; set; }
     public DbSet<LookupRegistrationMaterialStatus> LookupRegistrationMaterialStatuses { get; set; }
-    public DbSet<LookupTask> LookupTasks { get; set; }
+    public DbSet<LookupRegulatorTask> LookupTasks { get; set; }
     public DbSet<LookupRegistrationStatus> LookupRegistrationStatuses { get; set; }
     public DbSet<LookupTaskStatus> LookupTaskStatuses { get; set; }
     public DbSet<LookupAddress> LookupAddresses { get; set; }

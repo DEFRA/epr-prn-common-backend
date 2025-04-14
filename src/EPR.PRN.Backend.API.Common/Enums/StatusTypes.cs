@@ -2,7 +2,10 @@
 {
     public enum StatusTypes
     {
-        Queried = 4,
-        Complete = 5
+        NotStarted,
+        Started,
+        CannotStartYet,
+        Queried,
+        Completed
     }
 }
