@@ -74,6 +74,8 @@ namespace EPR.PRN.Backend.API
                 options.UseInMemoryDatabase("EprRegistrationsDatabase")
             );
 
+            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
             services.AddDependencies();
 
             services.Configure<PrnObligationCalculationConfig>(_config.GetSection(PrnObligationCalculationConfig.SectionName));
