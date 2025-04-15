@@ -1,4 +1,5 @@
 using EPR.PRN.Backend.API.Common.Enums;
+using EPR.PRN.Backend.API.Common.Exceptions;
 using EPR.PRN.Backend.Data.DataModels.Registrations;
 using EPR.PRN.Backend.Data.Repositories.Regulator;
 using FluentAssertions;
@@ -146,6 +147,55 @@ namespace EPR.PRN.Backend.Data.UnitTests.Repositories.Regulator
             taskStatus.Comments.Should().Be(comments);
             taskStatus.StatusCreatedBy.Should().Be(existingUserName);
             taskStatus.StatusUpdatedBy.Should().Be(userName);
+        }
+
+        [TestMethod]
+        public async Task UpdateStatusAsync_ShouldThrowKeyNotFoundException_WhenRegistrationMaterialNotFound()
+        {
+            // Arrange
+            var taskName = "NewTask";
+            var RegistrationMaterialId = 1;
+            var RegistrationId = 1;
+            var status = StatusTypes.Started;
+            var comments = "Task started";
+            var userName = "userName";
+
+            _context.LookupTaskStatuses.Add(new LookupTaskStatus { Id = 2, Name = "Started" });
+
+            _context.LookupTasks.Add(new LookupRegulatorTask { Id = 1, Name = taskName, IsMaterialSpecific = true, ApplicationTypeId = 1 });
+
+            _context.SaveChanges();
+
+            // Act
+            Func<Task> act = async () => await _repository.UpdateStatusAsync(taskName, RegistrationMaterialId, status, comments, userName);
+
+            // Assert
+            await act.Should().ThrowAsync<KeyNotFoundException>();
+        }
+
+        [TestMethod]
+        public async Task UpdateStatusAsync_ShouldThrowRegulatorInvalidOperationException_WhenTaskNotFound()
+        {
+            // Arrange
+            var taskName = "NewTask";
+            var RegistrationMaterialId = 1;
+            var RegistrationId = 1;
+            var status = StatusTypes.Started;
+            var comments = "Task started";
+            var userName = "userName";
+
+            _context.LookupTaskStatuses.Add(new LookupTaskStatus { Id = 2, Name = "Started" });
+
+            _context.Registrations.Add(new Registration { Id = RegistrationId, ExternalId = "", ApplicationTypeId = 1 });
+
+            _context.RegistrationMaterials.Add(new RegistrationMaterial { Id = RegistrationMaterialId, RegistrationId = RegistrationId });
+            _context.SaveChanges();
+
+            // Act
+            Func<Task> act = async () => await _repository.UpdateStatusAsync(taskName, RegistrationMaterialId, status, comments, userName);
+
+            // Assert
+            await act.Should().ThrowAsync<RegulatorInvalidOperationException>();
         }
     }
 }
