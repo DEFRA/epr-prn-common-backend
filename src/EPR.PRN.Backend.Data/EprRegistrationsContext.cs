@@ -104,7 +104,7 @@ public class EprRegistrationsContext : DbContext
                 {
                     Id = registrationMaterialId,
                     MaterialId = j,
-                    StatusID = 1,
+                    StatusID = null,
                     RegistrationId = registrationCounter,
                     DeterminationDate = DateTime.UtcNow,
                     ReferenceNumber = $"REF{registrationCounter:D4}-{j:D2}",
