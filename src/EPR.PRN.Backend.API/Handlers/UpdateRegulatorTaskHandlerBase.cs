@@ -13,12 +13,10 @@ public abstract class UpdateRegulatorTaskHandlerBase<TCommand, TRepository, TTas
     where TTaskStatus : RegulatorTaskStatusBase
 {
     protected readonly TRepository _repository;
-    protected readonly ILogger _logger;
 
-    protected UpdateRegulatorTaskHandlerBase(TRepository repository, ILogger logger)
+    protected UpdateRegulatorTaskHandlerBase(TRepository repository)
     {
         _repository = repository;
-        _logger = logger;
     }
 
     public async Task<Unit> Handle(TCommand command, CancellationToken cancellationToken)
@@ -31,7 +29,6 @@ public abstract class UpdateRegulatorTaskHandlerBase<TCommand, TRepository, TTas
             {
                 if (taskStatus.TaskStatusId == (int)StatusTypes.Completed)
                 {
-                    //_logger.LogError("Cannot set task status to {Status} as it is already complete: {TaskId}", StatusTypes.Complete, command.Id);
                     throw new RegulatorInvalidOperationException($"Cannot set task status to {StatusTypes.Completed} as it is already {StatusTypes.Completed}: {command.TaskName}:{command.TypeId}");
                 }
             }
@@ -39,28 +36,23 @@ public abstract class UpdateRegulatorTaskHandlerBase<TCommand, TRepository, TTas
             {
                 if (taskStatus.TaskStatusId == (int)StatusTypes.Queried)
                 {
-                    //_logger.LogError("Cannot set task status to {Status} as it is already queried: {TaskId}", StatusTypes.Queried, command.Id);
                     throw new RegulatorInvalidOperationException($"Cannot set task status to {StatusTypes.Queried} as it is already {StatusTypes.Queried}: {command.TaskName}:{command.TypeId}");
                 }
                 else if (taskStatus.TaskStatusId == (int)StatusTypes.Completed)
                 {
-                    //_logger.LogError("Cannot set task status to {Status} as it is complete: {TaskId}", StatusTypes.Queried, command.Id);
                     throw new RegulatorInvalidOperationException($"Cannot set task status to {StatusTypes.Queried} as it is {StatusTypes.Completed}: {command.TaskName}:{command.TypeId}");
                 }
                 else
                 {
-                    //_logger.LogError($"Cannot set task status to {StatusTypes.Queried} as it is {(StatusTypes)taskStatus.TaskStatusId}: {command.Id}");
                     throw new RegulatorInvalidOperationException($"Cannot set task status to {StatusTypes.Queried} as it is {(StatusTypes)taskStatus.TaskStatusId}: {command.TaskName}:{command.TypeId}");
                 }
             }
             else
             {
-                _logger.LogError("Invalid status type: {Status}", command.Status);
                 throw new RegulatorInvalidOperationException($"Invalid status type: {command.Status}");
             }
         }
         
-
         await _repository.UpdateStatusAsync(command.TaskName, command.TypeId, command.Status, command.Comment);
 
         return Unit.Value;

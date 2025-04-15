@@ -2,108 +2,134 @@ using EPR.PRN.Backend.API.Common.Enums;
 using EPR.PRN.Backend.Data.DataModels.Registrations;
 using EPR.PRN.Backend.Data.Repositories.Regulator;
 using FluentAssertions;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
 
-namespace EPR.PRN.Backend.Data.Tests.Repositories.Regulator
+namespace EPR.PRN.Backend.Data.UnitTests.Repositories.Regulator
 {
     [TestClass]
     public class RegulatorApplicationTaskStatusRepositoryTests
     {
-        private Mock<EprRegistrationsContext> _contextMock;
         private Mock<ILogger<RegulatorApplicationTaskStatusRepository>> _loggerMock;
+        private EprRegistrationsContext _context;
         private RegulatorApplicationTaskStatusRepository _repository;
 
         [TestInitialize]
         public void Setup()
         {
-            _contextMock = new Mock<EprRegistrationsContext>();
+            var options = new DbContextOptionsBuilder<EprRegistrationsContext>()
+                .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
+                .Options;
+
+            _context = new EprRegistrationsContext(options);
             _loggerMock = new Mock<ILogger<RegulatorApplicationTaskStatusRepository>>();
-            _repository = new RegulatorApplicationTaskStatusRepository(_contextMock.Object, _loggerMock.Object);
+            _repository = new RegulatorApplicationTaskStatusRepository(_context, _loggerMock.Object);
         }
 
         [TestMethod]
-        public void Constructor_ShouldThrowArgumentNullException_WhenContextIsNull()
-        {
-            // Act
-            Action act = () => new RegulatorApplicationTaskStatusRepository(null, _loggerMock.Object);
-
-            // Assert
-            act.Should().Throw<ArgumentNullException>().WithMessage("Value cannot be null. (Parameter 'context')");
-        }
-
-        [TestMethod]
-        public void Constructor_ShouldThrowArgumentNullException_WhenLoggerIsNull()
-        {
-            // Act
-            Action act = () => new RegulatorApplicationTaskStatusRepository(_contextMock.Object, null);
-
-            // Assert
-            act.Should().Throw<ArgumentNullException>().WithMessage("Value cannot be null. (Parameter 'logger')");
-        }
-
-        [TestMethod]
-        public async Task GetTaskStatusByIdAsync_ShouldReturnTaskStatus_WhenTaskStatusExists()
+        public async Task GetTaskStatusAsync_ShouldReturnTaskStatus_WhenTaskExists()
         {
             // Arrange
-            var taskStatus = new RegulatorApplicationTaskStatus { Id = 1, TaskStatusId = (int)StatusTypes.Completed };
-                .ReturnsAsync(taskStatus);
+            var taskName = "TestTask";
+            var RegistrationMaterialId = 1;
+
+            var taskStatus = new RegulatorApplicationTaskStatus
+            {
+                Task = new LookupRegulatorTask { Name = taskName },
+                RegistrationMaterialId = RegistrationMaterialId
+            };
+
+            _context.RegulatorApplicationTaskStatus.Add(taskStatus);
+            _context.SaveChanges();
 
             // Act
-            var result = await _repository.GetTaskStatusByIdAsync(1);
+            var result = await _repository.GetTaskStatusAsync(taskName, RegistrationMaterialId);
 
             // Assert
             result.Should().NotBeNull();
-            result.Should().BeEquivalentTo(taskStatus);
+            result!.Task.Name.Should().Be(taskName);
+            result.RegistrationMaterialId.Should().Be(RegistrationMaterialId);
         }
 
         [TestMethod]
-        public async Task GetTaskStatusByIdAsync_ShouldReturnNull_WhenTaskStatusDoesNotExist()
+        public async Task GetTaskStatusAsync_ShouldReturnNull_WhenTaskDoesNotExist()
         {
             // Arrange
-            _contextMock.Setup(c => c.RegulatorApplicationTaskStatus.FindAsync(1))
-                .ReturnsAsync((RegulatorApplicationTaskStatus)null);
+            var taskName = "NonExistentTask";
+            var ApplicationId = 1;
 
             // Act
-            Func<Task> act = async () => await _repository.GetTaskStatusByIdAsync(1);
+            var result = await _repository.GetTaskStatusAsync(taskName, ApplicationId);
 
             // Assert
-            await act.Should().ThrowAsync<KeyNotFoundException>()
-                .WithMessage("Task status not found: 1");
+            result.Should().BeNull();
         }
 
         [TestMethod]
-        public async Task UpdateStatusAsync_ShouldUpdateTaskStatus_WhenTaskStatusExists()
+        public async Task UpdateStatusAsync_ShouldAddNewTaskStatus_WhenTaskDoesNotExist()
         {
             // Arrange
-            var taskStatus = new RegulatorApplicationTaskStatus { Id = 1, TaskStatusId = (int)StatusTypes.Queried };
-            var registrationMaterialId = 1;
-                .ReturnsAsync(taskStatus);
-            _contextMock.Setup(c => c.SaveChangesAsync(default))
-                .ReturnsAsync(1);
+            var taskName = "NewTask";
+            var RegistrationMaterialId = 1;
+            var RegistrationId = 1;
+            var status = StatusTypes.Started;
+            var comments = "Task started";
+
+            _context.LookupTaskStatuses.Add(new LookupTaskStatus { Id = 2, Name = "Started" });
+
+            _context.LookupTasks.Add(new LookupRegulatorTask { Id = 1, Name = taskName, IsMaterialSpecific = false, ApplicationTypeId = 1 });
+
+            _context.Registrations.Add(new Registration{ Id = RegistrationId, ExternalId = "", ApplicationTypeId = 1 });
+
+            _context.RegistrationMaterials.Add(new RegistrationMaterial { Id = RegistrationMaterialId, RegistrationId = RegistrationId });
+
+            _context.SaveChanges();
 
             // Act
-            await _repository.UpdateStatusAsync(1, StatusTypes.Completed, "Updated comments");
+            await _repository.UpdateStatusAsync(taskName, RegistrationMaterialId, status, comments);
 
             // Assert
-            taskStatus.TaskStatusId.Should().Be((int)StatusTypes.Completed);
-            taskStatus.Comments.Should().Be("Updated comments");
-            _contextMock.Verify(c => c.SaveChangesAsync(default), Times.Once);
+            _context.RegulatorApplicationTaskStatus.First().Should().NotBeNull();
+            _context.RegulatorApplicationTaskStatus.First().Task.Name.Should().Be(taskName);
+            _context.RegulatorApplicationTaskStatus.First().RegistrationMaterialId.Should().Be(RegistrationMaterialId);
+            _context.RegulatorApplicationTaskStatus.First().TaskStatus.Name.Should().Be(status.ToString());
+            _context.RegulatorApplicationTaskStatus.First().Comments.Should().Be(comments);
         }
 
         [TestMethod]
-        public async Task UpdateStatusAsync_ShouldThrowKeyNotFoundException_WhenTaskStatusDoesNotExist()
+        public async Task UpdateStatusAsync_ShouldUpdateExistingTaskStatus_WhenTaskExists()
         {
             // Arrange
-            _contextMock.Setup(c => c.RegulatorApplicationTaskStatus.FindAsync(1))
-                .ReturnsAsync((RegulatorApplicationTaskStatus)null);
+            var taskName = "ExistingTask";
+            var RegistrationMaterialId = 1;
+            var RegistrationId = 1;
+            var status = StatusTypes.Completed;
+            var comments = "Task completed";
+
+            _context.RegulatorApplicationTaskStatus.Add(new RegulatorApplicationTaskStatus
+            {
+                Task = new LookupRegulatorTask { Name = taskName },
+                RegistrationMaterialId = RegistrationMaterialId,
+                TaskStatus = new LookupTaskStatus { Name = StatusTypes.Completed.ToString() },
+                Comments = "Task started"
+            });
+
+            _context.Registrations.Add(new Registration { Id = RegistrationId, ExternalId = "", ApplicationTypeId = 1 });
+
+            _context.RegistrationMaterials.Add(new RegistrationMaterial { Id = RegistrationMaterialId, RegistrationId = RegistrationId });
+
+            _context.SaveChanges();
 
             // Act
-            Func<Task> act = async () => await _repository.UpdateStatusAsync(1, StatusTypes.Completed, "Updated comments");
+            await _repository.UpdateStatusAsync(taskName, RegistrationMaterialId, status, comments);
 
             // Assert
-            await act.Should().ThrowAsync<KeyNotFoundException>()
-                .WithMessage("Regulator application task status not found: 1");
+            _context.RegulatorApplicationTaskStatus.First().Should().NotBeNull();
+            _context.RegulatorApplicationTaskStatus.First().Task.Name.Should().Be(taskName);
+            _context.RegulatorApplicationTaskStatus.First().RegistrationMaterialId.Should().Be(RegistrationMaterialId);
+            _context.RegulatorApplicationTaskStatus.First().TaskStatus.Name.Should().Be(status.ToString());
+            _context.RegulatorApplicationTaskStatus.First().Comments.Should().Be(comments);
         }
     }
 }

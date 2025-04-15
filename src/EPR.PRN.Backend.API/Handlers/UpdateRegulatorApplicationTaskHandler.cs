@@ -6,8 +6,8 @@ namespace EPR.PRN.Backend.API.Handlers;
 
 public class UpdateRegulatorApplicationTaskHandler : UpdateRegulatorTaskHandlerBase<UpdateRegulatorApplicationTaskCommand, IRegulatorApplicationTaskStatusRepository, RegulatorApplicationTaskStatus>
 {
-    public UpdateRegulatorApplicationTaskHandler(IRegulatorApplicationTaskStatusRepository repository, ILogger<UpdateRegulatorApplicationTaskHandler> logger)
-        : base(repository, logger)
+    public UpdateRegulatorApplicationTaskHandler(IRegulatorApplicationTaskStatusRepository repository)
+        : base(repository)
     {
     }
 }

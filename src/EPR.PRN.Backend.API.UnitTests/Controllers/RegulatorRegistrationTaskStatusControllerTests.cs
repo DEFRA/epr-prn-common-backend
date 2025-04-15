@@ -47,7 +47,7 @@ public class RegulatorRegistrationTaskStatusControllerTests
         _updateRegulatorRegistrationTaskCommandValidatorMock.Setup(x => x.Validate(It.IsAny<UpdateRegulatorRegistrationTaskCommand>())).Returns(validationResult);
 
         //Act
-        var result = await _systemUnderTest.UpdateRegistrationTaskStatus(TaskStatusId, expectedTaskStatus);
+        var result = await _systemUnderTest.UpdateRegistrationTaskStatus(expectedTaskStatus);
 
         //Assert
         result.Should().BeOfType<NoContentResult>();
@@ -66,12 +66,14 @@ public class RegulatorRegistrationTaskStatusControllerTests
         var registrationMaterialId = 1;
         var requestDto = new UpdateRegulatorRegistrationTaskCommand
         {
+            RegistrationId = registrationMaterialId,
+            TaskName = "Test Task",
             Status = (StatusTypes)999
         };
 
         // Act & Assert
         await FluentActions.Invoking(() =>
-            _systemUnderTest.UpdateRegistrationTaskStatus(registrationMaterialId, requestDto)
+            _systemUnderTest.UpdateRegistrationTaskStatus(requestDto)
         ).Should().ThrowAsync<ValidationException>();
     }
 
@@ -83,7 +85,7 @@ public class RegulatorRegistrationTaskStatusControllerTests
         _mockMediator.Setup(m => m.Send(It.IsAny<UpdateRegulatorRegistrationTaskCommand>(), It.IsAny<CancellationToken>())).ThrowsAsync(new Exception("Test exception"));
 
         // Act
-        Func<Task> act = async () => await _systemUnderTest.UpdateRegistrationTaskStatus(TaskStatusId, expectedTaskStatus);
+        Func<Task> act = async () => await _systemUnderTest.UpdateRegistrationTaskStatus(expectedTaskStatus);
 
         // Assert
         await act.Should().ThrowAsync<Exception>().WithMessage("Test exception");
