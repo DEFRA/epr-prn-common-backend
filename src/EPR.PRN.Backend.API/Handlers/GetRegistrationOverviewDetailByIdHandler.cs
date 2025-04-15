@@ -1,5 +1,7 @@
 using AutoMapper;
 using EPR.PRN.Backend.API.Common.Dto.Regulator;
+using EPR.PRN.Backend.API.Common.Enums;
+using EPR.PRN.Backend.API.Dto.Regulator;
 using EPR.PRN.Backend.API.Queries;
 using EPR.PRN.Backend.Data.Interfaces.Regulator;
 using MediatR;
@@ -16,34 +18,26 @@ public class GetRegistrationOverviewDetailByIdHandler(
         var registration = await repo.GetRegistrationById(request.Id);
         var registrationDto = mapper.Map<RegistrationOverviewDto>(registration);
 
-        var requiredTasks = await repo.GetRequiredTasks(registration.ApplicationTypeId, false);
-        var existingTasks = await repo.GetRegistrationTasks(request.Id);
-
-        registrationDto.Tasks = requiredTasks
-            .Select(rt => existingTasks.FirstOrDefault(et => et.Task.Name == rt.Name) is { } existing
-                ? mapper.Map<RegistrationTaskDto>(existing)
-                : new RegistrationTaskDto { TaskName = rt.Name, Status = "NotStarted" })
-            .ToList();
-
-        var materials = await repo.GetMaterialsByRegistrationId(request.Id);
-        registrationDto.Materials = new List<RegistrationMaterialDto>();
-
-        foreach (var material in materials)
+        var missingRegistrationTasks = await GetMissingTasks(registration.ApplicationTypeId, false, registrationDto.Tasks);
+        registrationDto.Tasks.AddRange(missingRegistrationTasks);
+        
+        foreach (var materialDto in registrationDto.Materials)
         {
-            var materialDto = mapper.Map<RegistrationMaterialDto>(material);
-
-            var requiredMaterialTasks = await repo.GetRequiredTasks(material.Registration.ApplicationTypeId, true);
-            var existingMaterialTasks = await repo.GetMaterialTasks(material.Id);
-
-            materialDto.Tasks = requiredMaterialTasks
-                .Select(rt => existingMaterialTasks.FirstOrDefault(et => et.Task.Name == rt.Name) is { } existing
-                    ? mapper.Map<RegistrationTaskDto>(existing)
-                    : new RegistrationTaskDto { TaskName = rt.Name, Status = "NotStarted" })
-                .ToList();
-
-            registrationDto.Materials.Add(materialDto);
+            var missingMaterialTasks = await GetMissingTasks(registration.ApplicationTypeId, true, materialDto.Tasks);
+            materialDto.Tasks.AddRange(missingMaterialTasks);
         }
 
         return registrationDto;
+    }
+    
+    private async Task<IEnumerable<RegistrationTaskDto>> GetMissingTasks(int applicationTypeId, bool isMaterialSpecific, List<RegistrationTaskDto> existingTasks)
+    {
+        var requiredTasks = await repo.GetRequiredTasks(applicationTypeId, isMaterialSpecific);
+
+        var missingTasks = requiredTasks
+            .Where(rt => existingTasks.All(r => r.TaskName != rt.Name))
+            .Select(t => new RegistrationTaskDto { TaskName = t.Name, Status = RegulatorTaskStatus.NotStarted.ToString() });
+
+        return missingTasks;
     }
 }

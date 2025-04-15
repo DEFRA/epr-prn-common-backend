@@ -7,16 +7,14 @@ namespace EPR.PRN.Backend.Data;
 [ExcludeFromCodeCoverage]
 public class EprRegistrationsContext : DbContext
 {
-    private readonly int numberOfRegistrations = 100;
+    private const int NumberOfRegistrations = 100;
 
     public EprRegistrationsContext()
     {
-
     }
 
     public EprRegistrationsContext(DbContextOptions<EprRegistrationsContext> options) : base(options)
     {
-
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -74,45 +72,43 @@ public class EprRegistrationsContext : DbContext
         var registrationMaterials = new List<RegistrationMaterial>();
         var registrationTaskStatuses = new List<RegulatorRegistrationTaskStatus>();
         var applicationTaskStatuses = new List<RegulatorApplicationTaskStatus>();
-
-
-        for (int registrationcounter = 1; registrationcounter <= numberOfRegistrations; registrationcounter++)
+        
+        for (var registrationCounter = 1; registrationCounter <= NumberOfRegistrations; registrationCounter++)
         {
-            var ApplicationTypeId = registrationcounter % 2 + 1;
+            var ApplicationTypeId = registrationCounter % 2 + 1;
             registrations.Add(new Registration
             {
-                Id = registrationcounter,
+                Id = registrationCounter,
                 ExternalId = Guid.NewGuid().ToString(),
                 ApplicationTypeId = ApplicationTypeId,
                 OrganisationId = 1,
-                //RegistrationStatusId = registrationcounter % 5 + 1,
-                BusinessAddressId = registrationcounter,
-                ReprocessingSiteAddressId = 2
+                BusinessAddressId = registrationCounter,
+                ReprocessingSiteAddressId = registrationCounter
             });
 
             lookupAddresses.Add(new LookupAddress
             {
-                Id = registrationcounter,
+                Id = registrationCounter,
                 AddressLine1 = "23",
                 AddressLine2 = "Ruby St",
                 TownCity = "London",
-                County = "Liverpool",
+                County = null,
                 Country = "England",
                 PostCode = "E12 3SE"
             });
 
             for (int j = 1; j <= 3; j++)
             {
-                var registrationMaterialId = (registrationcounter - 1) * 3 + j;
+                var registrationMaterialId = (registrationCounter - 1) * 3 + j;
                 registrationMaterials.Add(new RegistrationMaterial
                 {
                     Id = registrationMaterialId,
                     MaterialId = j,
                     StatusID = 1,
-                    RegistrationId = registrationcounter,
+                    RegistrationId = registrationCounter,
                     DeterminationDate = DateTime.UtcNow,
-                    ReferenceNumber = $"REF{registrationcounter:D4}-{j:D2}",
-                    Comments = $"Test description for material {j} in registration {registrationcounter}"
+                    ReferenceNumber = $"REF{registrationCounter:D4}-{j:D2}",
+                    Comments = $"Test description for material {j} in registration {registrationCounter}"
                 });
             }
         }
@@ -122,6 +118,17 @@ public class EprRegistrationsContext : DbContext
         modelBuilder.Entity<RegistrationMaterial>().HasData(registrationMaterials);
         modelBuilder.Entity<RegulatorRegistrationTaskStatus>().HasData(registrationTaskStatuses);
         modelBuilder.Entity<RegulatorApplicationTaskStatus>().HasData(applicationTaskStatuses);
+        
+        modelBuilder.Entity<Registration>()
+            .HasMany(r => r.Tasks);
+
+        modelBuilder.Entity<Registration>()
+            .HasMany(r => r.Materials);
+
+        modelBuilder.Entity<RegistrationMaterial>()
+            .HasMany(r => r.Tasks)
+            .WithOne()
+            .HasForeignKey(t => t.RegistrationMaterialId);
 
         base.OnModelCreating(modelBuilder);
     }

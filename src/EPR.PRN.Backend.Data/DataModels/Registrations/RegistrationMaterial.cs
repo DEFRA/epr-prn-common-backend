@@ -9,12 +9,17 @@ public class RegistrationMaterial
     [Key]
     public int Id { get; set; }
     public Guid ExternalId { get; set; }
-    public Registration Registration { get; set; }
+
     [ForeignKey("Registration")]
     public int RegistrationId { get; set; }
+
+    public Registration Registration { get; set; }
+    
     public LookupMaterial Material { get; set; }
+
     [ForeignKey("Material")]
     public int MaterialId { get; set; }
+    
     public int PermitId { get; set; }
     public LookupRegistrationMaterialStatus Status { get; set; }
     [ForeignKey("Status")]
@@ -26,4 +31,6 @@ public class RegistrationMaterial
     public DateTime ProcessingStartDate { get; set; }
     public DateTime ProcessingEndDate { get; set; }
     public DateTime StatusUpdatedDate { get; set; }
+
+    public List<RegulatorApplicationTaskStatus>? Tasks { get; set; }
 }

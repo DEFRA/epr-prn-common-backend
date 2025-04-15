@@ -1,6 +1,6 @@
 using EPR.PRN.Backend.API.Commands;
-using EPR.PRN.Backend.API.Common.Dto;
 using EPR.PRN.Backend.API.Common.Enums;
+using EPR.PRN.Backend.Data.DataModels.Registrations;
 using EPR.PRN.Backend.Data.Interfaces.Regulator;
 using MediatR;
 
@@ -13,35 +13,10 @@ public class RegistrationMaterialsOutcomeHandler(
     public async Task Handle(RegistrationMaterialsOutcomeCommand request, CancellationToken cancellationToken)
     {
         var materialEntity = await rmRepository.GetRegistrationMaterialById(request.Id);
-        var registration = await rmRepository.GetRegistrationById(materialEntity.RegistrationId);
+        
+        EnsureStatusTransitionIsValid(request, materialEntity);
 
-        var currentStatus = (RegistrationMaterialStatus?)materialEntity.StatusID;
-
-        if (request.Status == currentStatus ||
-            (currentStatus == RegistrationMaterialStatus.Granted && request.Status != RegistrationMaterialStatus.Refused))
-        {
-            throw new InvalidOperationException("Invalid outcome transition.");
-        }
-
-        var orgType = (ApplicationOrganisationType)registration.ApplicationTypeId;
-        var addressId = orgType == ApplicationOrganisationType.Exporter
-            ? registration.BusinessAddressId
-            : registration.ReprocessingSiteAddressId;
-
-        var address = await rmRepository.GetAddressById(addressId);
-        var countryCode = address?.Country?.Substring(0, 3).ToUpper() ?? "UNK";
-
-        var material = await rmRepository.GetMaterialById(materialEntity.MaterialId);
-        var materialCode = material?.MaterialCode ?? "UNKNOWN";
-
-        var referenceData = new RegistrationReferenceBackendDto
-        {
-            OrganisationType = orgType.ToString().First().ToString(),
-            CountryCode = countryCode,
-            MaterialCode = materialCode
-        };
-
-        var registrationReferenceNumber = GenerateRegistrationReferenceNumber(referenceData, materialEntity.RegistrationId);
+        var registrationReferenceNumber = GenerateRegistrationReferenceNumber(materialEntity);
 
         await rmRepository.UpdateRegistrationOutCome(
             request.Id,
@@ -51,12 +26,34 @@ public class RegistrationMaterialsOutcomeHandler(
         );
     }
 
-    private static string GenerateRegistrationReferenceNumber(RegistrationReferenceBackendDto referenceData, int registrationId)
+    private static void EnsureStatusTransitionIsValid(RegistrationMaterialsOutcomeCommand request, RegistrationMaterial materialEntity)
     {
+        var currentStatus = (RegistrationMaterialStatus?)materialEntity.StatusID;
+
+        if (request.Status == currentStatus ||
+            (currentStatus == RegistrationMaterialStatus.Granted &&
+             request.Status != RegistrationMaterialStatus.Refused))
+        {
+            throw new InvalidOperationException("Invalid outcome transition.");
+        }
+    }
+
+    private static string GenerateRegistrationReferenceNumber(RegistrationMaterial registrationMaterial)
+    {
+        const string registrationType = "R";
+
+        var orgType = (ApplicationOrganisationType)registrationMaterial.Registration.ApplicationTypeId;
+        var address = orgType == ApplicationOrganisationType.Exporter
+            ? registrationMaterial.Registration.BusinessAddress
+            : registrationMaterial.Registration.ReprocessingSiteAddress;
+
+        var countryCode = address?.Country?.Substring(0, 3).ToUpper() ?? "UNK";
+        var materialCode = registrationMaterial.Material.MaterialCode;
+        var orgTypeInitial = orgType.ToString().First().ToString();
         var yearCode = (DateTime.UtcNow.Year % 100).ToString("D2");
-        var orgCode = registrationId.ToString("D6");
+        var orgCode = registrationMaterial.RegistrationId.ToString("D6");
         var randomDigits = Random.Shared.Next(1000, 9999).ToString();
 
-        return $"{referenceData.RegistrationType}{yearCode}{referenceData.CountryCode}{referenceData.OrganisationType}{orgCode}{randomDigits}{referenceData.MaterialCode}";
+        return $"{registrationType}{yearCode}{countryCode}{orgTypeInitial}{orgCode}{randomDigits}{materialCode}";
     }
 }

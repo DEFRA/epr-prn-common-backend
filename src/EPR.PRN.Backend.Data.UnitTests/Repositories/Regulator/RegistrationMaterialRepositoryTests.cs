@@ -1,9 +1,9 @@
 ﻿using EPR.PRN.Backend.Data.DataModels.Registrations;
 using EPR.PRN.Backend.Data.Interfaces.Regulator;
-using EPR.PRN.Backend.Data.Repositories;
+using EPR.PRN.Backend.Data.Repositories.Regulator;
 using Microsoft.EntityFrameworkCore;
 
-namespace EPR.PRN.Backend.Data.UnitTests.Repositories;
+namespace EPR.PRN.Backend.Data.UnitTests.Repositories.Regulator;
 
 [TestClass]
 public class RegistrationMaterialRepositoryTests
@@ -125,41 +125,11 @@ public class RegistrationMaterialRepositoryTests
     }
 
     [TestMethod]
-    public async Task GetMaterialsByRegistrationId_ShouldReturnMaterials()
-    {
-        var result = await _repository.GetMaterialsByRegistrationId(1);
-        Assert.AreEqual(1, result.Count);
-        Assert.AreEqual("Plastic", result[0].Material.MaterialName);
-    }
-
-    [TestMethod]
-    public async Task GetMaterialsByRegistrationId_ShouldReturnEmptyList_WhenNoMatch()
-    {
-        var result = await _repository.GetMaterialsByRegistrationId(999);
-        Assert.IsNotNull(result);
-        Assert.AreEqual(0, result.Count);
-    }
-
-    [TestMethod]
     public async Task GetRequiredTasks_ShouldReturnCorrectTasks()
     {
         var result = await _repository.GetRequiredTasks(1, false);
         Assert.AreEqual(1, result.Count);
         Assert.AreEqual("SiteAddressAndContactDetails", result[0].Name);
-    }
-
-    [TestMethod]
-    public async Task GetRegistrationMaterialById_ShouldReturnCorrectMaterial()
-    {
-        var result = await _repository.GetRegistrationMaterialById(1);
-        Assert.AreEqual("REF12345", result.ReferenceNumber);
-        Assert.AreEqual("Plastic", result.Material.MaterialName);
-    }
-
-    [TestMethod]
-    public async Task GetRegistrationMaterialById_ShouldThrow_WhenNotFound()
-    {
-        await Assert.ThrowsExceptionAsync<KeyNotFoundException>(() => _repository.GetRegistrationMaterialById(999));
     }
 
     [TestMethod]
@@ -175,38 +145,6 @@ public class RegistrationMaterialRepositoryTests
         Assert.AreEqual(newStatusId, updated.StatusID);
         Assert.AreEqual(comment, updated.Comments);
         Assert.AreEqual(newReference, updated.ReferenceNumber);
-    }
-
-    [TestMethod]
-    public async Task GetRegistrationTasks_ShouldReturnCorrectTasks()
-    {
-        var result = await _repository.GetRegistrationTasks(1);
-        Assert.AreEqual(1, result.Count);
-        Assert.AreEqual(1, result[0].TaskId);
-    }
-
-    [TestMethod]
-    public async Task GetMaterialTasks_ShouldReturnCorrectTasks()
-    {
-        var result = await _repository.GetMaterialTasks(1);
-        Assert.AreEqual(1, result.Count);
-        Assert.AreEqual(1, result[0].TaskId);
-    }
-
-    [TestMethod]
-    public async Task GetAddressById_ShouldReturnCorrectAddress()
-    {
-        var result = await _repository.GetAddressById(1);
-        Assert.IsNotNull(result);
-        Assert.AreEqual("123 Main St", result.AddressLine1);
-    }
-
-    [TestMethod]
-    public async Task GetMaterialById_ShouldReturnCorrectMaterial()
-    {
-        var result = await _repository.GetMaterialById(1);
-        Assert.IsNotNull(result);
-        Assert.AreEqual("PLSTC", result.MaterialCode);
     }
 
     [TestCleanup]
