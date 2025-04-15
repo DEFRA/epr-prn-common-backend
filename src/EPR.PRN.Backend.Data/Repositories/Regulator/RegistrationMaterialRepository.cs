@@ -37,6 +37,8 @@ public class RegistrationMaterialRepository(EprRegistrationsContext eprContext) 
         material.StatusID = statusId;
         material.Comments = comment;
         material.ReferenceNumber = registrationReferenceNumber;
+        material.StatusUpdatedDate = DateTime.UtcNow;
+        material.StatusUpdatedBy = "Test User";
 
         await eprContext.SaveChangesAsync();
     }

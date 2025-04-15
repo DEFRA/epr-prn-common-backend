@@ -4,9 +4,12 @@ using Microsoft.FeatureManagement;
 using Microsoft.FeatureManagement.Mvc;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
+using System.Diagnostics.CodeAnalysis;
 
 namespace EPR.PRN.Backend.API.Helpers;
 
+
+[ExcludeFromCodeCoverage]
 public class FeatureEnabledDocumentFilter(IFeatureManager featureManager) : IDocumentFilter
 {
     public async void Apply(OpenApiDocument swaggerDoc, DocumentFilterContext context)
