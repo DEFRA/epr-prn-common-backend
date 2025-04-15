@@ -31,6 +31,7 @@ public class RegistrationMaterial
     public DateTime ProcessingStartDate { get; set; }
     public DateTime ProcessingEndDate { get; set; }
     public DateTime StatusUpdatedDate { get; set; }
+    public string? StatusUpdatedBy { get; set; }
 
     public List<RegulatorApplicationTaskStatus>? Tasks { get; set; }
 }

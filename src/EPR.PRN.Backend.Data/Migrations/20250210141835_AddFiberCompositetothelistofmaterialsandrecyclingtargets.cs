@@ -12,7 +12,7 @@ namespace EPR.PRN.Backend.Data.Migrations
         {
             migrationBuilder.InsertData(
             table: "RecyclingTargets",
-            columns: new[] { "Id", "MaterialNameRT", "Target", "Year" },
+            columns: ["Id", "MaterialNameRT", "Target", "Year"],
             values: new object[,]
             {
                 { 43, "FibreComposite", 0.75m, 2025 },
