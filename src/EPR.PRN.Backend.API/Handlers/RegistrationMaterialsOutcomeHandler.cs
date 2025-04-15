@@ -32,7 +32,7 @@ public class RegistrationMaterialsOutcomeHandler(
 
         if (request.Status == currentStatus ||
             (currentStatus == RegistrationMaterialStatus.Granted &&
-             request.Status != RegistrationMaterialStatus.Refused))
+             request.Status == RegistrationMaterialStatus.Refused))
         {
             throw new InvalidOperationException("Invalid outcome transition.");
         }
