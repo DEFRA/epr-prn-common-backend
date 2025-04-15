@@ -1,7 +1,7 @@
 ﻿using System.Net;
 using FluentValidation;
 using System.Diagnostics.CodeAnalysis;
-using EPR.PRN.Backend.API.Helpers;
+using EPR.PRN.Backend.API.Common.Exceptions;
 
 namespace EPR.PRN.Backend.API.Middlewares;
 
