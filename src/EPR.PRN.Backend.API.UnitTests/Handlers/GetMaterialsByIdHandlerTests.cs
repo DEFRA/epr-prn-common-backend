@@ -1,10 +1,10 @@
 ﻿using AutoMapper;
 using EPR.PRN.Backend.API.Common.Enums;
 using EPR.PRN.Backend.API.Handlers;
+using EPR.PRN.Backend.API.Profiles;
 using EPR.PRN.Backend.API.Queries;
 using EPR.PRN.Backend.Data.DataModels.Registrations;
 using EPR.PRN.Backend.Data.Interfaces.Regulator;
-using EPR.PRN.Backend.Data.Profiles;
 using FluentAssertions;
 using Moq;
 

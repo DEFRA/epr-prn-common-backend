@@ -30,28 +30,25 @@ public class RegistrationMaterialsOutcomeHandlerTests
             Id = 1,
             StatusID = (int)RegistrationMaterialStatus.Granted,
             MaterialId = 10,
-            RegistrationId = 123
+            Material = new LookupMaterial
+            {
+                Id = 10,
+                MaterialCode = "XYZ"
+            },
+            RegistrationId = 123,
+            Registration = new Registration
+            {
+                Id = 123,
+                ApplicationTypeId = (int)ApplicationOrganisationType.Exporter,
+                BusinessAddressId = 99,
+                BusinessAddress = new LookupAddress
+                {
+                    Id = 99,
+                    Country = "USA"
+                }
+            }
         };
-
-        var registration = new Registration
-        {
-            Id = 123,
-            ApplicationTypeId = (int)ApplicationOrganisationType.Exporter,
-            BusinessAddressId = 99
-        };
-
-        var address = new LookupAddress
-        {
-            Id = 99,
-            Country = "USA"
-        };
-
-        var lookupMaterial = new LookupMaterial
-        {
-            Id = 10,
-            MaterialCode = "XYZ"
-        };
-
+        
         var command = new RegistrationMaterialsOutcomeCommand
         {
             Id = 1,
@@ -60,9 +57,6 @@ public class RegistrationMaterialsOutcomeHandlerTests
         };
 
         _rmRepositoryMock.Setup(x => x.GetRegistrationMaterialById(command.Id)).ReturnsAsync(material);
-        _rmRepositoryMock.Setup(x => x.GetRegistrationById(material.RegistrationId)).ReturnsAsync(registration);
-        _rmRepositoryMock.Setup(x => x.GetAddressById(registration.BusinessAddressId)).ReturnsAsync(address);
-        _rmRepositoryMock.Setup(x => x.GetMaterialById(material.MaterialId)).ReturnsAsync(lookupMaterial);
         _rmRepositoryMock.Setup(x => x.UpdateRegistrationOutCome(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>(), It.IsAny<string>()))
                          .Returns(Task.CompletedTask);
 
@@ -91,14 +85,13 @@ public class RegistrationMaterialsOutcomeHandlerTests
         {
             Id = 1,
             StatusID = (int)RegistrationMaterialStatus.Granted,
-            RegistrationId = 123
-        };
-
-        var registration = new Registration
-        {
-            Id = 123,
-            ApplicationTypeId = (int)ApplicationOrganisationType.Exporter,
-            BusinessAddressId = 99
+            RegistrationId = 123,
+            Registration = new Registration
+            {
+                Id = 123,
+                ApplicationTypeId = (int)ApplicationOrganisationType.Exporter,
+                BusinessAddressId = 99
+            }
         };
 
         var command = new RegistrationMaterialsOutcomeCommand
@@ -109,8 +102,7 @@ public class RegistrationMaterialsOutcomeHandlerTests
         };
 
         _rmRepositoryMock.Setup(x => x.GetRegistrationMaterialById(command.Id)).ReturnsAsync(material);
-        _rmRepositoryMock.Setup(x => x.GetRegistrationById(material.RegistrationId)).ReturnsAsync(registration);
-
+        
         // Act
         Func<Task> act = async () => await _handler.Handle(command, CancellationToken.None);
 
@@ -126,28 +118,25 @@ public class RegistrationMaterialsOutcomeHandlerTests
         var material = new RegistrationMaterial
         {
             Id = 1,
+            RegistrationId = 456,
+            Registration = new Registration
+            {
+                Id = 456,
+                ApplicationTypeId = (int)ApplicationOrganisationType.Reprocessor,
+                ReprocessingSiteAddressId = 88,
+                ReprocessingSiteAddress = new LookupAddress
+                {
+                    Id = 88,
+                    Country = "Germany"
+                }
+            },
             StatusID = (int)RegistrationMaterialStatus.Granted,
             MaterialId = 10,
-            RegistrationId = 456
-        };
-
-        var registration = new Registration
-        {
-            Id = 456,
-            ApplicationTypeId = (int)ApplicationOrganisationType.Reprocessor,
-            ReprocessingSiteAddressId = 88
-        };
-
-        var address = new LookupAddress
-        {
-            Id = 88,
-            Country = "Germany"
-        };
-
-        var lookupMaterial = new LookupMaterial
-        {
-            Id = 10,
-            MaterialCode = "PLS"
+            Material = new LookupMaterial
+            {
+                Id = 10,
+                MaterialCode = "PLS"
+            }
         };
 
         var command = new RegistrationMaterialsOutcomeCommand
@@ -158,10 +147,7 @@ public class RegistrationMaterialsOutcomeHandlerTests
         };
 
         _rmRepositoryMock.Setup(x => x.GetRegistrationMaterialById(command.Id)).ReturnsAsync(material);
-        _rmRepositoryMock.Setup(x => x.GetRegistrationById(material.RegistrationId)).ReturnsAsync(registration);
-        _rmRepositoryMock.Setup(x => x.GetAddressById(registration.ReprocessingSiteAddressId)).ReturnsAsync(address);
-        _rmRepositoryMock.Setup(x => x.GetMaterialById(material.MaterialId)).ReturnsAsync(lookupMaterial);
-
+        
         string? generatedReference = null;
         _rmRepositoryMock.Setup(x => x.UpdateRegistrationOutCome(command.Id, (int)command.Status, command.Comments, It.IsAny<string>()))
                          .Callback<int, int, string?, string>((_, _, _, reference) => generatedReference = reference)
