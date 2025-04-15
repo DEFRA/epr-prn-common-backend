@@ -15,6 +15,7 @@ using Microsoft.Extensions.Logging;
 using Moq;
 
 namespace EPR.PRN.Backend.API.UnitTests.Controllers;
+
 [TestClass]
 public class RegistrationMaterialControllerTests
 {
@@ -124,5 +125,4 @@ public class RegistrationMaterialControllerTests
             controller.UpdateRegistrationOutcome(registrationId, command)
         ).Should().ThrowAsync<ValidationException>();
     }
-
 }

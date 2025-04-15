@@ -13,6 +13,7 @@ public class RegistrationMaterialsOutcomeHandler(
     public async Task Handle(RegistrationMaterialsOutcomeCommand request, CancellationToken cancellationToken)
     {
         var materialEntity = await rmRepository.GetRegistrationMaterialById(request.Id);
+        var registration = await rmRepository.GetRegistrationById(materialEntity.RegistrationId);
 
         var currentStatus = (RegistrationMaterialStatus?)materialEntity.StatusID;
 
@@ -22,8 +23,25 @@ public class RegistrationMaterialsOutcomeHandler(
             throw new InvalidOperationException("Invalid outcome transition.");
         }
 
-        var referenceData = await rmRepository.GetRegistrationReferenceDataId(materialEntity.RegistrationId, request.Id);
-        string registrationReferenceNumber = GenerateRegistrationReferenceNumber(referenceData, materialEntity.RegistrationId);
+        var orgType = (ApplicationOrganisationType)registration.ApplicationTypeId;
+        var addressId = orgType == ApplicationOrganisationType.Exporter
+            ? registration.BusinessAddressId
+            : registration.ReprocessingSiteAddressId;
+
+        var address = await rmRepository.GetAddressById(addressId);
+        var countryCode = address?.Country?.Substring(0, 3).ToUpper() ?? "UNK";
+
+        var material = await rmRepository.GetMaterialById(materialEntity.MaterialId);
+        var materialCode = material?.MaterialCode ?? "UNKNOWN";
+
+        var referenceData = new RegistrationReferenceBackendDto
+        {
+            OrganisationType = orgType.ToString().First().ToString(),
+            CountryCode = countryCode,
+            MaterialCode = materialCode
+        };
+
+        var registrationReferenceNumber = GenerateRegistrationReferenceNumber(referenceData, materialEntity.RegistrationId);
 
         await rmRepository.UpdateRegistrationOutCome(
             request.Id,

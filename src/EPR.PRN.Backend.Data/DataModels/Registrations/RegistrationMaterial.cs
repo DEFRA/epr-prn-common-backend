@@ -20,7 +20,7 @@ public class RegistrationMaterial
     [ForeignKey("Status")]
     public int StatusID { get; set; }
     public string ReferenceNumber { get; set; } = string.Empty;
-    public string Comments { get; set; } = string.Empty;        
+    public string? Comments { get; set; } = string.Empty;        
     public decimal MaximumProcessingCapacityTonnes { get; set; }
     public DateTime DeterminationDate { get; set; }
     public DateTime ProcessingStartDate { get; set; }

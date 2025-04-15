@@ -1,7 +1,5 @@
 ﻿namespace EPR.PRN.Backend.Data.Repositories;
 
-using EPR.PRN.Backend.API.Common.Dto;
-using EPR.PRN.Backend.API.Common.Enums;
 using EPR.PRN.Backend.Data;
 using EPR.PRN.Backend.Data.DataModels.Registrations;
 using EPR.PRN.Backend.Data.Interfaces.Regulator;
@@ -62,29 +60,9 @@ public class RegistrationMaterialRepository(EprRegistrationsContext eprContext) 
         await _eprContext.SaveChangesAsync();
     }
 
-    public async Task<RegistrationReferenceBackendDto> GetRegistrationReferenceDataId(int registrationId, int registrationMaterialId)
-    {
-        var registration = await _eprContext.Registrations.FirstOrDefaultAsync(r => r.Id == registrationId)
-            ?? throw new KeyNotFoundException("Registration not found.");
+    public async Task<LookupAddress?> GetAddressById(int addressId) =>
+    await _eprContext.LookupAddresses.FirstOrDefaultAsync(a => a.Id == addressId);
 
-        var material = await _eprContext.RegistrationMaterials.FirstOrDefaultAsync(rm => rm.Id == registrationMaterialId)
-            ?? throw new KeyNotFoundException("Material not found.");
-
-        var orgType = (ApplicationOrganisationType)registration.ApplicationTypeId;
-        var addressId = orgType == ApplicationOrganisationType.Exporter
-            ? registration.BusinessAddressId
-            : registration.ReprocessingSiteAddressId;
-
-        var address = await _eprContext.LookupAddresses.FirstOrDefaultAsync(a => a.Id == addressId);
-        var countryCode = address?.Country?.Substring(0, 3).ToUpper() ?? "UNK";
-
-        var materialCode = (await _eprContext.LookupMaterials.FirstOrDefaultAsync(m => m.Id == material.MaterialId))?.MaterialCode ?? "UNKNOWN";
-
-        return new RegistrationReferenceBackendDto
-        {
-            OrganisationType = orgType.ToString().First().ToString(),
-            CountryCode = countryCode,
-            MaterialCode = materialCode
-        };
-    }
+    public async Task<LookupMaterial?> GetMaterialById(int materialId) =>
+        await _eprContext.LookupMaterials.FirstOrDefaultAsync(m => m.Id == materialId);
 }

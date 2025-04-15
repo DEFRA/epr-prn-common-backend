@@ -1,5 +1,4 @@
 ﻿using EPR.PRN.Backend.API.Commands;
-using EPR.PRN.Backend.API.Common.Dto;
 using EPR.PRN.Backend.API.Common.Enums;
 using EPR.PRN.Backend.API.Handlers;
 using EPR.PRN.Backend.Data.DataModels.Registrations;
@@ -8,6 +7,7 @@ using FluentAssertions;
 using Moq;
 
 namespace EPR.PRN.Backend.API.UnitTests.Handlers;
+
 [TestClass]
 public class RegistrationMaterialsOutcomeHandlerTests
 {
@@ -15,7 +15,7 @@ public class RegistrationMaterialsOutcomeHandlerTests
     private RegistrationMaterialsOutcomeHandler _handler;
 
     [TestInitialize]
-    public void Setup()
+    public void TestInitialize()
     {
         _rmRepositoryMock = new Mock<IRegistrationMaterialRepository>();
         _handler = new RegistrationMaterialsOutcomeHandler(_rmRepositoryMock.Object);
@@ -29,26 +29,40 @@ public class RegistrationMaterialsOutcomeHandlerTests
         {
             Id = 1,
             StatusID = (int)RegistrationMaterialStatus.Granted,
+            MaterialId = 10,
             RegistrationId = 123
+        };
+
+        var registration = new Registration
+        {
+            Id = 123,
+            ApplicationTypeId = (int)ApplicationOrganisationType.Exporter,
+            BusinessAddressId = 99
+        };
+
+        var address = new LookupAddress
+        {
+            Id = 99,
+            Country = "USA"
+        };
+
+        var lookupMaterial = new LookupMaterial
+        {
+            Id = 10,
+            MaterialCode = "XYZ"
         };
 
         var command = new RegistrationMaterialsOutcomeCommand
         {
             Id = 1,
-            Status = RegistrationMaterialStatus.Refused, 
+            Status = RegistrationMaterialStatus.Refused,
             Comments = "Invalid outcome."
         };
 
-        var referenceData = new RegistrationReferenceBackendDto
-        {
-            RegistrationType = "R",
-            CountryCode = "US",
-            OrganisationType = "Corp",
-            MaterialCode = "XYZ"
-        };
-
         _rmRepositoryMock.Setup(x => x.GetRegistrationMaterialById(command.Id)).ReturnsAsync(material);
-        _rmRepositoryMock.Setup(x => x.GetRegistrationReferenceDataId(material.RegistrationId, command.Id)).ReturnsAsync(referenceData);
+        _rmRepositoryMock.Setup(x => x.GetRegistrationById(material.RegistrationId)).ReturnsAsync(registration);
+        _rmRepositoryMock.Setup(x => x.GetAddressById(registration.BusinessAddressId)).ReturnsAsync(address);
+        _rmRepositoryMock.Setup(x => x.GetMaterialById(material.MaterialId)).ReturnsAsync(lookupMaterial);
         _rmRepositoryMock.Setup(x => x.UpdateRegistrationOutCome(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>(), It.IsAny<string>()))
                          .Returns(Task.CompletedTask);
 
@@ -56,7 +70,17 @@ public class RegistrationMaterialsOutcomeHandlerTests
         await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        _rmRepositoryMock.Verify(x => x.UpdateRegistrationOutCome(command.Id, (int)command.Status, command.Comments, It.IsAny<string>()), Times.Once);
+        _rmRepositoryMock.Verify(x => x.UpdateRegistrationOutCome(
+            command.Id,
+            (int)command.Status,
+            command.Comments,
+            It.Is<string>(s =>
+                s.StartsWith("R") && 
+                s.Contains("USA") && 
+                s.Contains("E") &&  
+                s.Contains("XYZ")    
+            )
+        ), Times.Once);
     }
 
     [TestMethod]
@@ -70,60 +94,84 @@ public class RegistrationMaterialsOutcomeHandlerTests
             RegistrationId = 123
         };
 
+        var registration = new Registration
+        {
+            Id = 123,
+            ApplicationTypeId = (int)ApplicationOrganisationType.Exporter,
+            BusinessAddressId = 99
+        };
+
         var command = new RegistrationMaterialsOutcomeCommand
         {
             Id = 1,
             Status = RegistrationMaterialStatus.Granted,
-            Comments = "Invalid outcome."
+            Comments = "No change"
         };
 
         _rmRepositoryMock.Setup(x => x.GetRegistrationMaterialById(command.Id)).ReturnsAsync(material);
+        _rmRepositoryMock.Setup(x => x.GetRegistrationById(material.RegistrationId)).ReturnsAsync(registration);
 
-        // Act & Assert
+        // Act
         Func<Task> act = async () => await _handler.Handle(command, CancellationToken.None);
-        await act.Should().ThrowAsync<InvalidOperationException>().WithMessage("Invalid outcome transition.");
+
+        // Assert
+        await act.Should().ThrowAsync<InvalidOperationException>()
+            .WithMessage("Invalid outcome transition.");
     }
 
     [TestMethod]
-    public async Task Handle_ShouldGenerateCorrectRegistrationReferenceNumber()
+    public async Task Handle_ShouldGenerateValidReferenceNumber()
     {
         // Arrange
         var material = new RegistrationMaterial
         {
             Id = 1,
             StatusID = (int)RegistrationMaterialStatus.Granted,
-            RegistrationId = 123
+            MaterialId = 10,
+            RegistrationId = 456
+        };
+
+        var registration = new Registration
+        {
+            Id = 456,
+            ApplicationTypeId = (int)ApplicationOrganisationType.Reprocessor,
+            ReprocessingSiteAddressId = 88
+        };
+
+        var address = new LookupAddress
+        {
+            Id = 88,
+            Country = "Germany"
+        };
+
+        var lookupMaterial = new LookupMaterial
+        {
+            Id = 10,
+            MaterialCode = "PLS"
         };
 
         var command = new RegistrationMaterialsOutcomeCommand
         {
             Id = 1,
             Status = RegistrationMaterialStatus.Refused,
-            Comments = "Invalid outcome."
+            Comments = "Incorrect details"
         };
 
-        var referenceData = new RegistrationReferenceBackendDto
-        {
-            RegistrationType = "R",
-            CountryCode = "US",
-            OrganisationType = "Corp",
-            MaterialCode = "XYZ"
-        };
-
-        
         _rmRepositoryMock.Setup(x => x.GetRegistrationMaterialById(command.Id)).ReturnsAsync(material);
-        _rmRepositoryMock.Setup(x => x.GetRegistrationReferenceDataId(material.RegistrationId, command.Id)).ReturnsAsync(referenceData);
-        _rmRepositoryMock.Setup(x => x.UpdateRegistrationOutCome(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>(), It.IsAny<string>()))
+        _rmRepositoryMock.Setup(x => x.GetRegistrationById(material.RegistrationId)).ReturnsAsync(registration);
+        _rmRepositoryMock.Setup(x => x.GetAddressById(registration.ReprocessingSiteAddressId)).ReturnsAsync(address);
+        _rmRepositoryMock.Setup(x => x.GetMaterialById(material.MaterialId)).ReturnsAsync(lookupMaterial);
+
+        string? generatedReference = null;
+        _rmRepositoryMock.Setup(x => x.UpdateRegistrationOutCome(command.Id, (int)command.Status, command.Comments, It.IsAny<string>()))
+                         .Callback<int, int, string?, string>((_, _, _, reference) => generatedReference = reference)
                          .Returns(Task.CompletedTask);
 
         // Act
         await _handler.Handle(command, CancellationToken.None);
 
-        
-        _rmRepositoryMock.Verify(x => x.UpdateRegistrationOutCome(command.Id, (int)command.Status, command.Comments, It.Is<string>(s =>
-            s.Contains("23") &&
-            s.Contains("123") && 
-            s.Contains("XYZ") 
-        )), Times.Once);
+        // Assert
+        generatedReference.Should().NotBeNull();
+        generatedReference.Should().Contain("R").And.Contain("GER").And.Contain("P").And.Contain("PLS");
     }
 }

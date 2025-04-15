@@ -12,7 +12,7 @@ public class RegistrationMaterialRepositoryTests
     private IRegistrationMaterialRepository _repository;
 
     [TestInitialize]
-    public void Setup()
+    public void TestInitialize()
     {
         var options = new DbContextOptionsBuilder<EprRegistrationsContext>()
                         .UseInMemoryDatabase(databaseName: "TestDb")
@@ -30,10 +30,9 @@ public class RegistrationMaterialRepositoryTests
         {
             Id = 1,
             ApplicationTypeId = 1,
-            ExternalId = "TestExternalId" 
+            ExternalId = "TestExternalId"
         };
         _context.Registrations.Add(registration);
-
 
         var material = new RegistrationMaterial
         {
@@ -41,19 +40,18 @@ public class RegistrationMaterialRepositoryTests
             RegistrationId = 1,
             MaterialId = 1,
             StatusID = 1,
-            ReferenceNumber = "REF12345"
+            ReferenceNumber = "REF12345",
+            Comments = "Initial comment"
         };
         _context.RegistrationMaterials.Add(material);
-
 
         var lookupMaterial = new LookupMaterial
         {
             Id = 1,
             MaterialCode = "PLSTC",
-            MaterialName = "Plastic" 
+            MaterialName = "Plastic"
         };
         _context.LookupMaterials.Add(lookupMaterial);
-
 
         var status = new LookupRegistrationMaterialStatus
         {
@@ -62,130 +60,158 @@ public class RegistrationMaterialRepositoryTests
         };
         _context.LookupRegistrationMaterialStatuses.Add(status);
 
-
         var lookupTask = new LookupRegulatorTask
         {
             Id = 1,
             Name = "SiteAddressAndContactDetails",
             IsMaterialSpecific = false,
             ApplicationTypeId = 1,
-            JourneyTypeId =1
-
+            JourneyTypeId = 1
         };
         _context.LookupTasks.Add(lookupTask);
+
+        var taskStatus = new LookupTaskStatus
+        {
+            Id = 1,
+            Name = "Not Started"
+        };
+        _context.LookupTaskStatuses.Add(taskStatus);
+
+        var regTaskStatus = new RegulatorRegistrationTaskStatus
+        {
+            Id = 1,
+            RegistrationId = 1,
+            TaskId = 1,
+            TaskStatusId = 1
+        };
+        _context.RegulatorRegistrationTaskStatus.Add(regTaskStatus);
+
+        var appTaskStatus = new RegulatorApplicationTaskStatus
+        {
+            Id = 1,
+            RegistrationMaterialId = 1,
+            TaskId = 1,
+            TaskStatusId = 1
+        };
+        _context.RegulatorApplicationTaskStatus.Add(appTaskStatus);
+
+        var address = new LookupAddress
+        {
+            Id = 1,
+            AddressLine1 = "123 Main St",
+            AddressLine2 = "Suite 4B",
+            Country = "Germany",
+            County = "Bavaria",
+            PostCode = "12345",
+            TownCity = "Munich"
+        };
+        _context.LookupAddresses.Add(address);
 
         _context.SaveChanges();
     }
 
-
-
     [TestMethod]
     public async Task GetRegistrationById_ShouldReturnRegistration_WhenRegistrationExists()
     {
-        // Act
         var result = await _repository.GetRegistrationById(1);
-
-        // Assert
         Assert.IsNotNull(result);
         Assert.AreEqual(1, result.Id);
     }
 
     [TestMethod]
-    public async Task GetRegistrationById_ShouldThrowKeyNotFoundException_WhenRegistrationDoesNotExist()
+    public async Task GetRegistrationById_ShouldThrowKeyNotFoundException_WhenNotFound()
     {
-        // Act & Assert
-        await Assert.ThrowsExceptionAsync<KeyNotFoundException>(() => _repository.GetRegistrationById(99));
+        await Assert.ThrowsExceptionAsync<KeyNotFoundException>(() => _repository.GetRegistrationById(999));
     }
 
     [TestMethod]
-    public async Task GetMaterialsByRegistrationId_ShouldReturnMaterials_WhenMaterialsExist()
+    public async Task GetMaterialsByRegistrationId_ShouldReturnMaterials()
     {
-        // Act
         var result = await _repository.GetMaterialsByRegistrationId(1);
-
-        // Assert
-        Assert.IsNotNull(result);
         Assert.AreEqual(1, result.Count);
-        Assert.AreEqual(1, result[0].Id);
+        Assert.AreEqual("Plastic", result[0].Material.MaterialName);
     }
 
     [TestMethod]
-    public async Task GetMaterialsByRegistrationId_ShouldReturnEmptyList_WhenNoMaterialsExist()
+    public async Task GetMaterialsByRegistrationId_ShouldReturnEmptyList_WhenNoMatch()
     {
-        // Act
-        var result = await _repository.GetMaterialsByRegistrationId(2); 
-
-        // Assert
+        var result = await _repository.GetMaterialsByRegistrationId(999);
         Assert.IsNotNull(result);
         Assert.AreEqual(0, result.Count);
     }
 
     [TestMethod]
-    public async Task GetRequiredTasks_ShouldReturnTasks_WhenTasksExist()
+    public async Task GetRequiredTasks_ShouldReturnCorrectTasks()
     {
-        // Act
         var result = await _repository.GetRequiredTasks(1, false);
-
-        // Assert
-        Assert.IsNotNull(result);
         Assert.AreEqual(1, result.Count);
         Assert.AreEqual("SiteAddressAndContactDetails", result[0].Name);
     }
 
     [TestMethod]
-    public async Task GetRegistrationMaterialById_ShouldReturnMaterial_WhenMaterialExists()
+    public async Task GetRegistrationMaterialById_ShouldReturnCorrectMaterial()
     {
-        // Act
         var result = await _repository.GetRegistrationMaterialById(1);
+        Assert.AreEqual("REF12345", result.ReferenceNumber);
+        Assert.AreEqual("Plastic", result.Material.MaterialName);
+    }
 
-        // Assert
+    [TestMethod]
+    public async Task GetRegistrationMaterialById_ShouldThrow_WhenNotFound()
+    {
+        await Assert.ThrowsExceptionAsync<KeyNotFoundException>(() => _repository.GetRegistrationMaterialById(999));
+    }
+
+    [TestMethod]
+    public async Task UpdateRegistrationOutCome_ShouldUpdateFieldsCorrectly()
+    {
+        var newStatusId = 2;
+        var comment = "Updated";
+        var newReference = "REF99999";
+
+        await _repository.UpdateRegistrationOutCome(1, newStatusId, comment, newReference);
+        var updated = await _context.RegistrationMaterials.FindAsync(1);
+
+        Assert.AreEqual(newStatusId, updated.StatusID);
+        Assert.AreEqual(comment, updated.Comments);
+        Assert.AreEqual(newReference, updated.ReferenceNumber);
+    }
+
+    [TestMethod]
+    public async Task GetRegistrationTasks_ShouldReturnCorrectTasks()
+    {
+        var result = await _repository.GetRegistrationTasks(1);
+        Assert.AreEqual(1, result.Count);
+        Assert.AreEqual(1, result[0].TaskId);
+    }
+
+    [TestMethod]
+    public async Task GetMaterialTasks_ShouldReturnCorrectTasks()
+    {
+        var result = await _repository.GetMaterialTasks(1);
+        Assert.AreEqual(1, result.Count);
+        Assert.AreEqual(1, result[0].TaskId);
+    }
+
+    [TestMethod]
+    public async Task GetAddressById_ShouldReturnCorrectAddress()
+    {
+        var result = await _repository.GetAddressById(1);
         Assert.IsNotNull(result);
-        Assert.AreEqual(1, result.Id);
+        Assert.AreEqual("123 Main St", result.AddressLine1);
     }
 
     [TestMethod]
-    public async Task GetRegistrationMaterialById_ShouldThrowKeyNotFoundException_WhenMaterialDoesNotExist()
+    public async Task GetMaterialById_ShouldReturnCorrectMaterial()
     {
-        // Act & Assert
-        await Assert.ThrowsExceptionAsync<KeyNotFoundException>(() => _repository.GetRegistrationMaterialById(99));
-    }
-
-    [TestMethod]
-    public async Task UpdateRegistrationOutCome_ShouldUpdateMaterial_WhenValidDataProvided()
-    {
-        // Arrange
-        var statusId = 2;
-        var comment = "Updated comment";
-        var registrationReferenceNumber = "REF98765";
-
-        // Act
-        await _repository.UpdateRegistrationOutCome(1, statusId, comment, registrationReferenceNumber);
-        var updatedMaterial = await _context.RegistrationMaterials.FirstOrDefaultAsync(m => m.Id == 1);
-
-        // Assert
-        Assert.IsNotNull(updatedMaterial);
-        Assert.AreEqual(statusId, updatedMaterial.StatusID);
-        Assert.AreEqual(comment, updatedMaterial.Comments);
-        Assert.AreEqual(registrationReferenceNumber, updatedMaterial.ReferenceNumber);
-    }
-
-    [TestMethod]
-    public async Task GetRegistrationReferenceDataId_ShouldReturnCorrectData_WhenValidDataExists()
-    {
-        // Act
-        var result = await _repository.GetRegistrationReferenceDataId(1, 1);
-
-        // Assert
+        var result = await _repository.GetMaterialById(1);
         Assert.IsNotNull(result);
-        Assert.AreEqual("R", result.OrganisationType); 
-        Assert.AreEqual("UNK", result.CountryCode);
         Assert.AreEqual("PLSTC", result.MaterialCode);
     }
-
 
     [TestCleanup]
     public void Cleanup()
     {
-        _context.Database.EnsureDeleted();  
+        _context.Database.EnsureDeleted();
     }
 }

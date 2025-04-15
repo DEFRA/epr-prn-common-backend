@@ -11,7 +11,7 @@ public class RegistrationOutcomeValidatorTests
     private RegistrationOutcomeValidator _validator;
 
     [TestInitialize]
-    public void Setup()
+    public void TestInitialize()
     {
         _validator = new RegistrationOutcomeValidator();
     }
