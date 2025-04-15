@@ -21,8 +21,6 @@ public class RegulatorApplicationTaskStatusControllerTests
     private Mock<IMediator> _mockMediator;
     private Mock<ILogger<RegulatorApplicationTaskStatusController>> _mockLogger;
     private Mock<IValidator<UpdateRegulatorApplicationTaskCommand>> _updateRegulatorApplicationTaskCommandValidatorMock;
-    private int TaskStatusId = 1;
-
     private static readonly IFixture _fixture = new Fixture();
 
     [TestInitialize]
@@ -66,6 +64,7 @@ public class RegulatorApplicationTaskStatusControllerTests
         var registrationMaterialId = 1;
         var requestDto = new UpdateRegulatorApplicationTaskCommand
         {
+            registrationMaterialId = registrationMaterialId,
             TaskName = "Test Task",
             Status = (StatusTypes)999,
             UserName = "UserName"

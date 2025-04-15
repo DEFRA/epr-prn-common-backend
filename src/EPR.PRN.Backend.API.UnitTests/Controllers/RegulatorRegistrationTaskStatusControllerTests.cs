@@ -21,8 +21,6 @@ public class RegulatorRegistrationTaskStatusControllerTests
     private Mock<IMediator> _mockMediator;
     private Mock<ILogger<RegulatorRegistrationTaskStatusController>> _mockLogger;
     private Mock<IValidator<UpdateRegulatorRegistrationTaskCommand>> _updateRegulatorRegistrationTaskCommandValidatorMock;
-    private int TaskStatusId = 1;
-
     private static readonly IFixture _fixture = new Fixture();
 
     [TestInitialize]

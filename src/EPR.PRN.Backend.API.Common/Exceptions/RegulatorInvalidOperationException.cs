@@ -1,6 +1,7 @@
 ﻿namespace EPR.PRN.Backend.API.Common.Exceptions
 {
     using System.Diagnostics.CodeAnalysis;
+    using System.Runtime.Serialization;
 
     [ExcludeFromCodeCoverage]
     [Serializable]
@@ -15,6 +16,10 @@
         }
 
         public RegulatorInvalidOperationException(string? message, Exception? innerException) : base(message, innerException)
+        {
+        }
+
+        protected RegulatorInvalidOperationException(SerializationInfo info, StreamingContext context)
         {
         }
     }
