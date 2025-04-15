@@ -74,6 +74,7 @@ namespace EPR.PRN.Backend.Data.UnitTests.Repositories.Regulator
             var registrationId = 1;
             var status = StatusTypes.Started;
             var comments = "Task started";
+            var userName = "userName";
 
             _context.LookupTaskStatuses.Add(new LookupTaskStatus { Id = 2, Name = "Started" });
 
@@ -84,14 +85,18 @@ namespace EPR.PRN.Backend.Data.UnitTests.Repositories.Regulator
             _context.SaveChanges();
 
             // Act
-            await _repository.UpdateStatusAsync(taskName, registrationId, status, comments);
+            await _repository.UpdateStatusAsync(taskName, registrationId, status, comments, userName);
 
             // Assert
-            _context.RegulatorRegistrationTaskStatus.First().Should().NotBeNull();
-            _context.RegulatorRegistrationTaskStatus.First().Task.Name.Should().Be(taskName);
-            _context.RegulatorRegistrationTaskStatus.First().RegistrationId.Should().Be(registrationId);
-            _context.RegulatorRegistrationTaskStatus.First().TaskStatus.Name.Should().Be(status.ToString());
-            _context.RegulatorRegistrationTaskStatus.First().Comments.Should().Be(comments);
+            var taskStatus = _context.RegulatorRegistrationTaskStatus.FirstOrDefault();
+
+            taskStatus.Should().NotBeNull();
+            taskStatus.Task.Name.Should().Be(taskName);
+            taskStatus.RegistrationId.Should().Be(registrationId);
+            taskStatus.TaskStatus.Name.Should().Be(status.ToString());
+            taskStatus.Comments.Should().Be(comments);
+            taskStatus.StatusCreatedBy.Should().Be(userName);
+            taskStatus.StatusUpdatedBy.Should().Be(userName);
         }
 
         [TestMethod]
@@ -100,15 +105,22 @@ namespace EPR.PRN.Backend.Data.UnitTests.Repositories.Regulator
             // Arrange
             var taskName = "ExistingTask";
             var registrationId = 1;
+            var existingStatus = StatusTypes.Queried;
             var status = StatusTypes.Completed;
             var comments = "Task completed";
+            var existingUserName = "Existing userName";
+            var userName = "userName";
+
+            _context.LookupTaskStatuses.Add(new LookupTaskStatus { Id = 2, Name = status.ToString() });
 
             _context.RegulatorRegistrationTaskStatus.Add(new RegulatorRegistrationTaskStatus
             {
                 Task = new LookupRegulatorTask { Name = taskName },
                 RegistrationId = registrationId,
-                TaskStatus = new LookupTaskStatus { Name = StatusTypes.Completed.ToString() },
-                Comments = "Task started"
+                TaskStatus = new LookupTaskStatus { Name = existingStatus.ToString() },
+                Comments = "Task started",
+                StatusCreatedBy = existingUserName,
+                StatusUpdatedBy = existingUserName
             });
 
             _context.Registrations.Add(new Registration { Id = registrationId, ExternalId = "", ApplicationTypeId = 1 });
@@ -116,14 +128,18 @@ namespace EPR.PRN.Backend.Data.UnitTests.Repositories.Regulator
             _context.SaveChanges();
 
             // Act
-            await _repository.UpdateStatusAsync(taskName, registrationId, status, comments);
+            await _repository.UpdateStatusAsync(taskName, registrationId, status, comments, userName);
 
             // Assert
-            _context.RegulatorRegistrationTaskStatus.First().Should().NotBeNull();
-            _context.RegulatorRegistrationTaskStatus.First().Task.Name.Should().Be(taskName);
-            _context.RegulatorRegistrationTaskStatus.First().RegistrationId.Should().Be(registrationId);
-            _context.RegulatorRegistrationTaskStatus.First().TaskStatus.Name.Should().Be(status.ToString());
-            _context.RegulatorRegistrationTaskStatus.First().Comments.Should().Be(comments);
+            var taskStatus = _context.RegulatorRegistrationTaskStatus.FirstOrDefault();
+
+            taskStatus.Should().NotBeNull();
+            taskStatus.Task.Name.Should().Be(taskName);
+            taskStatus.RegistrationId.Should().Be(registrationId);
+            taskStatus.TaskStatus.Name.Should().Be(status.ToString());
+            taskStatus.Comments.Should().Be(comments);
+            taskStatus.StatusCreatedBy.Should().Be(existingUserName);
+            taskStatus.StatusUpdatedBy.Should().Be(userName);
         }
     }
 }

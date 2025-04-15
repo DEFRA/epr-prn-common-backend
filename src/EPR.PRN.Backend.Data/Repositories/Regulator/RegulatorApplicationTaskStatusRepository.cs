@@ -1,4 +1,5 @@
 ﻿using EPR.PRN.Backend.API.Common.Enums;
+using EPR.PRN.Backend.API.Common.Exceptions;
 using EPR.PRN.Backend.Data.DataModels.Registrations;
 using EPR.PRN.Backend.Data.Interfaces.Regulator;
 using Microsoft.EntityFrameworkCore;
@@ -23,7 +24,7 @@ namespace EPR.PRN.Backend.Data.Repositories.Regulator
             return await GetTaskStatus(TaskName, RegistrationMaterialId);
         }
 
-        public async Task UpdateStatusAsync(string TaskName, int RegistrationMaterialId, StatusTypes status, string? comments)
+        public async Task UpdateStatusAsync(string TaskName, int RegistrationMaterialId, StatusTypes status, string? comments, string userName)
         {
             _logger.LogInformation("Updating status for task with TaskName {TaskName} And RegistrationMaterialId {RegistrationMaterialId} to {Status}", TaskName, RegistrationMaterialId, status);
 
@@ -33,14 +34,29 @@ namespace EPR.PRN.Backend.Data.Repositories.Regulator
 
             if (taskStatus == null)
             {
-                var task = _context.LookupTasks.Single(t => t.Name == TaskName && t.ApplicationTypeId == _context.RegistrationMaterials.Include(r => r.Registration).Single(r => r.Id == RegistrationMaterialId).Registration.ApplicationTypeId);
+                var registrationMaterial = _context.RegistrationMaterials.Include(r => r.Registration).SingleOrDefault(r => r.Id == RegistrationMaterialId);
+                if (registrationMaterial == null)
+                {
+                    throw new KeyNotFoundException();
+                }
+
+                var task = _context.LookupTasks.SingleOrDefault(t => t.Name == TaskName && t.IsMaterialSpecific && t.ApplicationTypeId == registrationMaterial.Registration.ApplicationTypeId);
+                if (task == null)
+                {
+                    throw new RegulatorInvalidOperationException($"No Valid Task Exists: {TaskName}");
+                }
+
                 // Create a new entity if it doesn't exist
                 taskStatus = new RegulatorApplicationTaskStatus
                 {
                     Task = task,
                     RegistrationMaterialId = RegistrationMaterialId,
                     TaskStatus = statusEntity,
-                    Comments = comments
+                    Comments = comments,
+                    StatusCreatedBy = userName,
+                    StatusCreatedDate = DateTime.UtcNow,
+                    StatusUpdatedBy = userName,
+                    StatusUpdatedDate = DateTime.UtcNow,
                 };
 
                 await _context.RegulatorApplicationTaskStatus.AddAsync(taskStatus);
@@ -50,6 +66,8 @@ namespace EPR.PRN.Backend.Data.Repositories.Regulator
                 // Update the existing entity
                 taskStatus.TaskStatus = statusEntity;
                 taskStatus.Comments = comments;
+                taskStatus.StatusUpdatedBy = userName;
+                taskStatus.StatusUpdatedDate = DateTime.UtcNow;
 
                 _context.RegulatorApplicationTaskStatus.Update(taskStatus);
             }
@@ -59,7 +77,7 @@ namespace EPR.PRN.Backend.Data.Repositories.Regulator
         }
         private async Task<RegulatorApplicationTaskStatus?> GetTaskStatus(string TaskName, int RegistrationMaterialId)
         {
-            return await _context.RegulatorApplicationTaskStatus.FirstOrDefaultAsync(x => x.Task.Name == TaskName && x.RegistrationMaterialId == RegistrationMaterialId);
+            return await _context.RegulatorApplicationTaskStatus.Include(ts => ts.TaskStatus).FirstOrDefaultAsync(x => x.Task.Name == TaskName && x.RegistrationMaterialId == RegistrationMaterialId);
         }
     }
 }

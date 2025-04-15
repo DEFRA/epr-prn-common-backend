@@ -5,6 +5,7 @@ using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
+using System.Threading.Tasks;
 
 namespace EPR.PRN.Backend.Data.UnitTests.Repositories.Regulator
 {
@@ -75,10 +76,11 @@ namespace EPR.PRN.Backend.Data.UnitTests.Repositories.Regulator
             var RegistrationId = 1;
             var status = StatusTypes.Started;
             var comments = "Task started";
+            var userName = "userName";
 
             _context.LookupTaskStatuses.Add(new LookupTaskStatus { Id = 2, Name = "Started" });
 
-            _context.LookupTasks.Add(new LookupRegulatorTask { Id = 1, Name = taskName, IsMaterialSpecific = false, ApplicationTypeId = 1 });
+            _context.LookupTasks.Add(new LookupRegulatorTask { Id = 1, Name = taskName, IsMaterialSpecific = true, ApplicationTypeId = 1 });
 
             _context.Registrations.Add(new Registration{ Id = RegistrationId, ExternalId = "", ApplicationTypeId = 1 });
 
@@ -87,14 +89,18 @@ namespace EPR.PRN.Backend.Data.UnitTests.Repositories.Regulator
             _context.SaveChanges();
 
             // Act
-            await _repository.UpdateStatusAsync(taskName, RegistrationMaterialId, status, comments);
+            await _repository.UpdateStatusAsync(taskName, RegistrationMaterialId, status, comments, userName);
 
             // Assert
-            _context.RegulatorApplicationTaskStatus.First().Should().NotBeNull();
-            _context.RegulatorApplicationTaskStatus.First().Task.Name.Should().Be(taskName);
-            _context.RegulatorApplicationTaskStatus.First().RegistrationMaterialId.Should().Be(RegistrationMaterialId);
-            _context.RegulatorApplicationTaskStatus.First().TaskStatus.Name.Should().Be(status.ToString());
-            _context.RegulatorApplicationTaskStatus.First().Comments.Should().Be(comments);
+            var taskStatus = _context.RegulatorApplicationTaskStatus.FirstOrDefault();
+
+            taskStatus.Should().NotBeNull();
+            taskStatus.Task.Name.Should().Be(taskName);
+            taskStatus.RegistrationMaterialId.Should().Be(RegistrationMaterialId);
+            taskStatus.TaskStatus.Name.Should().Be(status.ToString());
+            taskStatus.Comments.Should().Be(comments);
+            taskStatus.StatusCreatedBy.Should().Be(userName);
+            taskStatus.StatusUpdatedBy.Should().Be(userName);
         }
 
         [TestMethod]
@@ -104,15 +110,21 @@ namespace EPR.PRN.Backend.Data.UnitTests.Repositories.Regulator
             var taskName = "ExistingTask";
             var RegistrationMaterialId = 1;
             var RegistrationId = 1;
+            var existingStatus = StatusTypes.Queried;
             var status = StatusTypes.Completed;
             var comments = "Task completed";
+            var existingUserName = "Existing userName";
+            var userName = "userName";
+
+            _context.LookupTaskStatuses.Add(new LookupTaskStatus { Id = 2, Name = status.ToString() });
 
             _context.RegulatorApplicationTaskStatus.Add(new RegulatorApplicationTaskStatus
             {
                 Task = new LookupRegulatorTask { Name = taskName },
                 RegistrationMaterialId = RegistrationMaterialId,
-                TaskStatus = new LookupTaskStatus { Name = StatusTypes.Completed.ToString() },
-                Comments = "Task started"
+                TaskStatus = new LookupTaskStatus { Name = existingStatus.ToString() },
+                Comments = "Task started",
+                StatusCreatedBy =  existingUserName
             });
 
             _context.Registrations.Add(new Registration { Id = RegistrationId, ExternalId = "", ApplicationTypeId = 1 });
@@ -122,14 +134,18 @@ namespace EPR.PRN.Backend.Data.UnitTests.Repositories.Regulator
             _context.SaveChanges();
 
             // Act
-            await _repository.UpdateStatusAsync(taskName, RegistrationMaterialId, status, comments);
+            await _repository.UpdateStatusAsync(taskName, RegistrationMaterialId, status, comments, userName);
 
             // Assert
-            _context.RegulatorApplicationTaskStatus.First().Should().NotBeNull();
-            _context.RegulatorApplicationTaskStatus.First().Task.Name.Should().Be(taskName);
-            _context.RegulatorApplicationTaskStatus.First().RegistrationMaterialId.Should().Be(RegistrationMaterialId);
-            _context.RegulatorApplicationTaskStatus.First().TaskStatus.Name.Should().Be(status.ToString());
-            _context.RegulatorApplicationTaskStatus.First().Comments.Should().Be(comments);
+            var taskStatus = _context.RegulatorApplicationTaskStatus.FirstOrDefault();
+
+            taskStatus.Should().NotBeNull();
+            taskStatus.Task.Name.Should().Be(taskName);
+            taskStatus.RegistrationMaterialId.Should().Be(RegistrationMaterialId);
+            taskStatus.TaskStatus.Name.Should().Be(status.ToString());
+            taskStatus.Comments.Should().Be(comments);
+            taskStatus.StatusCreatedBy.Should().Be(existingUserName);
+            taskStatus.StatusUpdatedBy.Should().Be(userName);
         }
     }
 }

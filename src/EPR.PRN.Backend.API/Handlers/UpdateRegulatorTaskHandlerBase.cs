@@ -27,24 +27,24 @@ public abstract class UpdateRegulatorTaskHandlerBase<TCommand, TRepository, TTas
         {
             if (command.Status == StatusTypes.Completed)
             {
-                if (taskStatus.TaskStatusId == (int)StatusTypes.Completed)
+                if (taskStatus.TaskStatus.Name == StatusTypes.Completed.ToString())
                 {
                     throw new RegulatorInvalidOperationException($"Cannot set task status to {StatusTypes.Completed} as it is already {StatusTypes.Completed}: {command.TaskName}:{command.TypeId}");
                 }
             }
             else if (command.Status == StatusTypes.Queried)
             {
-                if (taskStatus.TaskStatusId == (int)StatusTypes.Queried)
+                if (taskStatus.TaskStatus.Name == StatusTypes.Queried.ToString())
                 {
                     throw new RegulatorInvalidOperationException($"Cannot set task status to {StatusTypes.Queried} as it is already {StatusTypes.Queried}: {command.TaskName}:{command.TypeId}");
                 }
-                else if (taskStatus.TaskStatusId == (int)StatusTypes.Completed)
+                else if (taskStatus.TaskStatus.Name == StatusTypes.Completed.ToString())
                 {
                     throw new RegulatorInvalidOperationException($"Cannot set task status to {StatusTypes.Queried} as it is {StatusTypes.Completed}: {command.TaskName}:{command.TypeId}");
                 }
                 else
                 {
-                    throw new RegulatorInvalidOperationException($"Cannot set task status to {StatusTypes.Queried} as it is {(StatusTypes)taskStatus.TaskStatusId}: {command.TaskName}:{command.TypeId}");
+                    throw new RegulatorInvalidOperationException($"Cannot set task status to {StatusTypes.Queried} as it is {taskStatus.TaskStatus.Name}: {command.TaskName}:{command.TypeId}");
                 }
             }
             else
@@ -53,7 +53,7 @@ public abstract class UpdateRegulatorTaskHandlerBase<TCommand, TRepository, TTas
             }
         }
         
-        await _repository.UpdateStatusAsync(command.TaskName, command.TypeId, command.Status, command.Comment);
+        await _repository.UpdateStatusAsync(command.TaskName, command.TypeId, command.Status, command.Comment, command.UserName);
 
         return Unit.Value;
     }

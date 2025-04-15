@@ -15,4 +15,5 @@ public abstract class UpdateRegulatorTaskCommandBase : IRequest<Unit>
     public string? Comment { get; set; } = string.Empty;
 
     public abstract int TypeId { get; }
+    public required string UserName { get; set; }
 }

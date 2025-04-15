@@ -1,4 +1,4 @@
-﻿namespace EPR.PRN.Backend.API.Helpers
+﻿namespace EPR.PRN.Backend.API.Common.Exceptions
 {
     using System.Diagnostics.CodeAnalysis;
 
@@ -7,7 +7,7 @@
     public class RegulatorInvalidOperationException : InvalidOperationException
     {
         public RegulatorInvalidOperationException()
-        { 
+        {
         }
 
         public RegulatorInvalidOperationException(string? message) : base(message)
