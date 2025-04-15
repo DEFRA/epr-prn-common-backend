@@ -28,7 +28,7 @@ public class RegistrationMaterialsOutcomeHandlerTests
         var material = new RegistrationMaterial
         {
             Id = 1,
-            StatusID = (int)RegistrationMaterialStatus.Granted,
+            StatusID = (int)RegistrationMaterialStatus.Refused,
             MaterialId = 10,
             Material = new LookupMaterial
             {
@@ -52,8 +52,8 @@ public class RegistrationMaterialsOutcomeHandlerTests
         var command = new RegistrationMaterialsOutcomeCommand
         {
             Id = 1,
-            Status = RegistrationMaterialStatus.Refused,
-            Comments = "Invalid outcome."
+            Status = RegistrationMaterialStatus.Granted,
+            Comments = "Now granted."
         };
 
         _rmRepositoryMock.Setup(x => x.GetRegistrationMaterialById(command.Id)).ReturnsAsync(material);
@@ -61,7 +61,7 @@ public class RegistrationMaterialsOutcomeHandlerTests
                          .Returns(Task.CompletedTask);
 
         // Act
-        await _handler.Handle(command, CancellationToken.None);
+        _handler.Handle(command, CancellationToken.None);
 
         // Assert
         _rmRepositoryMock.Verify(x => x.UpdateRegistrationOutCome(
@@ -130,7 +130,7 @@ public class RegistrationMaterialsOutcomeHandlerTests
                     Country = "Germany"
                 }
             },
-            StatusID = (int)RegistrationMaterialStatus.Granted,
+            StatusID = null,
             MaterialId = 10,
             Material = new LookupMaterial
             {
@@ -142,7 +142,7 @@ public class RegistrationMaterialsOutcomeHandlerTests
         var command = new RegistrationMaterialsOutcomeCommand
         {
             Id = 1,
-            Status = RegistrationMaterialStatus.Refused,
+            Status = RegistrationMaterialStatus.Granted,
             Comments = "Incorrect details"
         };
 
