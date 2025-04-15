@@ -43,7 +43,10 @@ public class RegistrationMaterialRepository(EprRegistrationsContext eprContext) 
 
     private IIncludableQueryable<RegistrationMaterial, LookupRegistrationMaterialStatus> GetRegistrationMaterialsWithRelatedEntities()
     {
-        var registrationMaterials = eprContext.RegistrationMaterials
+        var registrationMaterials = 
+            eprContext.RegistrationMaterials
+            .AsNoTracking()
+            .AsSplitQuery()
             .Include(rm => rm.Registration)
                 .ThenInclude(r => r.ReprocessingSiteAddress)
             .Include(rm => rm.Registration)
@@ -51,14 +54,16 @@ public class RegistrationMaterialRepository(EprRegistrationsContext eprContext) 
             .Include(rm => rm.Material)
             .Include(rm => rm.Status);
 
-
         return registrationMaterials;
     }
 
-    private IIncludableQueryable<Registration, LookupRegulatorTask> GetRegistrationsWithRelatedEntities()
+    private IIncludableQueryable<Registration, LookupRegistrationMaterialStatus> GetRegistrationsWithRelatedEntities()
     {
-        var registrations = eprContext.Registrations
-            .Include(r=> r.ReprocessingSiteAddress)
+        var registrations = eprContext
+            .Registrations
+            .AsNoTracking()
+            .AsSplitQuery()
+            .Include(r => r.ReprocessingSiteAddress)
             .Include(r => r.Tasks)!
                 .ThenInclude(t => t.TaskStatus)
             .Include(r => r.Tasks)!
@@ -70,8 +75,10 @@ public class RegistrationMaterialRepository(EprRegistrationsContext eprContext) 
                 .ThenInclude(m => m.Material)
             .Include(r => r.Materials)!
                 .ThenInclude(m => m.Tasks)!
-                .ThenInclude(t => t.Task);
-
+                .ThenInclude(t => t.Task)
+            .Include(r => r.Materials)!
+                .ThenInclude(rm => rm.Status);
+                
         return registrations;
     }
 }
