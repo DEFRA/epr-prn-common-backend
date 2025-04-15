@@ -3,6 +3,6 @@
     public class ObligationModel
     {
         public int NumberOfPrnsAwaitingAcceptance { get; set; }
-        public List<ObligationData> ObligationData { get; set; } = new List<ObligationData>();
+        public List<ObligationData> ObligationData { get; set; } = [];
     }
 }

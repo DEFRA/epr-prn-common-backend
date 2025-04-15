@@ -8,6 +8,7 @@ using EPR.PRN.Backend.API.Helpers;
 using EPR.PRN.Backend.API.Models;
 using EPR.PRN.Backend.API.Services.Interfaces;
 using EPR.PRN.Backend.Data.DataModels;
+using EPR.PRN.Backend.Obligation.Constants;
 using EPR.PRN.Backend.Obligation.Dto;
 using EPR.PRN.Backend.Obligation.Interfaces;
 using EPR.PRN.Backend.Obligation.Models;
@@ -28,7 +29,7 @@ public class PrnController(IPrnService prnService,
     IValidator<SavePrnDetailsRequest> savePrnDetailsRequestValidator) : ControllerBase
 {
     private readonly PrnObligationCalculationConfig _config = config.Value;
-    private readonly string logPrefix = configuration["LogPrefix"];
+    private readonly string? logPrefix = string.IsNullOrEmpty(configuration["LogPrefix"]) ? "[EPR.PRN.Backend]" : configuration["LogPrefix"];
 
     #region Get methods
 
@@ -107,7 +108,7 @@ public class PrnController(IPrnService prnService,
         { return BadRequest(ModelState); }
 
         var statusList = await prnService.GetSyncStatuses(request.From, request.To);
-        return statusList == null || !statusList.Any()
+        return statusList == null || statusList.Count == 0
             ? StatusCode(StatusCodes.Status204NoContent)
             : Ok(statusList);
     }
@@ -124,12 +125,6 @@ public class PrnController(IPrnService prnService,
     {
         logger.LogInformation("{Logprefix}: PrnController - GetObligationCalculation: Api Route api/v1/prn/obligationcalculations/{Year}", logPrefix, year);
         logger.LogInformation("{Logprefix}: PrnController - GetObligationCalculation: request to get Obligation Calculation for organisations {Organisation} for {Year}", logPrefix, string.Join(", ", organisationIds), year);
-
-        if (organisationIds.Count == 0)
-        {
-            logger.LogError("{Logprefix}: PrnController - GetObligationCalculation: Organisation Ids list can't be empty. {Organisations}", logPrefix, organisationIds);
-            return BadRequest($"Organisation Ids list can't be empty.");
-        }
 
         if (year < _config.StartYear || year > _config.EndYear)
         {
