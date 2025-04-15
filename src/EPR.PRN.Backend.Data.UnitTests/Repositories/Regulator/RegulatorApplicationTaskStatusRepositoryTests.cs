@@ -47,7 +47,6 @@ namespace EPR.PRN.Backend.Data.Tests.Repositories.Regulator
         {
             // Arrange
             var taskStatus = new RegulatorApplicationTaskStatus { Id = 1, TaskStatusId = (int)StatusTypes.Completed };
-            _contextMock.Setup(c => c.RegulatorApplicationTaskStatus.FindAsync(1))
                 .ReturnsAsync(taskStatus);
 
             // Act
@@ -78,7 +77,7 @@ namespace EPR.PRN.Backend.Data.Tests.Repositories.Regulator
         {
             // Arrange
             var taskStatus = new RegulatorApplicationTaskStatus { Id = 1, TaskStatusId = (int)StatusTypes.Queried };
-            _contextMock.Setup(c => c.RegulatorApplicationTaskStatus.FindAsync(1))
+            var registrationMaterialId = 1;
                 .ReturnsAsync(taskStatus);
             _contextMock.Setup(c => c.SaveChangesAsync(default))
                 .ReturnsAsync(1);
