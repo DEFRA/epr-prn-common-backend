@@ -1,4 +1,5 @@
 ﻿namespace EPR.PRN.Backend.API.Common.Enums;
+
 public enum RegulatorTaskStatus
 {
     NotStarted = 1,
