@@ -3,6 +3,7 @@ using EPR.PRN.Backend.API.Common.Enums;
 using FluentValidation;
 
 namespace EPR.PRN.Backend.API.Validators;
+
 public class UpdateRegulatorRegistrationTaskCommandValidator : AbstractValidator<UpdateRegulatorRegistrationTaskCommand>
 {
     public UpdateRegulatorRegistrationTaskCommandValidator()
@@ -19,6 +20,5 @@ public class UpdateRegulatorRegistrationTaskCommandValidator : AbstractValidator
         RuleFor(x => x.Comments)
             .NotEmpty().When(x => x.Status == RegulatorTaskStatus.Queried)
             .WithMessage("Comment is required when status is Queried");
-
     }
 }

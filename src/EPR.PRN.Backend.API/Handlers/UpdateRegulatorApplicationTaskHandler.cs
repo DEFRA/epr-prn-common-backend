@@ -4,12 +4,6 @@ using EPR.PRN.Backend.Data.Interfaces.Regulator;
 
 namespace EPR.PRN.Backend.API.Handlers;
 
-public class UpdateRegulatorApplicationTaskHandler : UpdateRegulatorTaskHandlerBase<UpdateRegulatorApplicationTaskCommand, IRegulatorApplicationTaskStatusRepository, RegulatorApplicationTaskStatus>
-{
-    public UpdateRegulatorApplicationTaskHandler(IRegulatorApplicationTaskStatusRepository repository)
-        : base(repository)
-    {
-    }
-}
-
-
+public class UpdateRegulatorApplicationTaskHandler(IRegulatorApplicationTaskStatusRepository repository)
+    : UpdateRegulatorTaskHandlerBase<UpdateRegulatorApplicationTaskCommand, IRegulatorApplicationTaskStatusRepository,
+        RegulatorApplicationTaskStatus>(repository);

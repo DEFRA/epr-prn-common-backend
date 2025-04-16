@@ -4,10 +4,7 @@ using EPR.PRN.Backend.Data.Interfaces.Regulator;
 
 namespace EPR.PRN.Backend.API.Handlers;
 
-public class UpdateRegulatorRegistrationTaskHandler : UpdateRegulatorTaskHandlerBase<UpdateRegulatorRegistrationTaskCommand, IRegulatorRegistrationTaskStatusRepository, RegulatorRegistrationTaskStatus>
-{
-    public UpdateRegulatorRegistrationTaskHandler(IRegulatorRegistrationTaskStatusRepository repository)
-        : base(repository)
-    {
-    }
+public class UpdateRegulatorRegistrationTaskHandler(IRegulatorRegistrationTaskStatusRepository repository)
+    : UpdateRegulatorTaskHandlerBase<UpdateRegulatorRegistrationTaskCommand, IRegulatorRegistrationTaskStatusRepository,
+        RegulatorRegistrationTaskStatus>(repository);
 }
