@@ -1,5 +1,4 @@
-﻿
-using EPR.PRN.Backend.API.Commands;
+﻿using EPR.PRN.Backend.API.Commands;
 using EPR.PRN.Backend.API.Common.Constants;
 using EPR.PRN.Backend.API.Constants;
 using FluentValidation;
