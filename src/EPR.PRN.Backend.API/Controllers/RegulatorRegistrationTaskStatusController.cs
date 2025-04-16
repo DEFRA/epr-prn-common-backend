@@ -11,30 +11,23 @@ namespace EPR.PRN.Backend.API.Controllers;
 [ApiVersion("1.0")]
 [Route("api/v{version:apiVersion}/regulatorRegistrationTaskStatus")]
 
-public class RegulatorRegistrationTaskStatusController : ControllerBase
+public class RegulatorRegistrationTaskStatusController(
+    IMediator mediator,
+    IValidator<UpdateRegulatorRegistrationTaskCommand> validator,
+    ILogger<RegulatorRegistrationTaskStatusController> logger)
+    : ControllerBase
 {
-    private readonly IMediator _mediator;
-    private readonly IValidator<UpdateRegulatorRegistrationTaskCommand> _validator;
-    private readonly ILogger<RegulatorRegistrationTaskStatusController> _logger;
-
-    public RegulatorRegistrationTaskStatusController(IMediator mediator, IValidator<UpdateRegulatorRegistrationTaskCommand> validator, ILogger<RegulatorRegistrationTaskStatusController> logger)
-    {
-        this._mediator = mediator;
-        this._validator = validator;
-        this._logger = logger;
-    }
-
     [HttpPost()]
     [ProducesResponseType(204)]
     [ProducesResponseType(400)]
     [ProducesResponseType(500)]
     public async Task<IActionResult> UpdateRegistrationTaskStatus([FromBody] UpdateRegulatorRegistrationTaskCommand command)
     {
-        _logger.LogInformation(LogMessages.UpdateRegulatorRegistrationTask);
+        logger.LogInformation(LogMessages.UpdateRegulatorRegistrationTask);
 
-        await _validator.ValidateAndThrowAsync(command);
+        await validator.ValidateAndThrowAsync(command);
 
-        await _mediator.Send(command);
+        await mediator.Send(command);
 
         return NoContent();
     }
