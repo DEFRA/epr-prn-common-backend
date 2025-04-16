@@ -2,6 +2,5 @@
 
 namespace EPR.PRN.Backend.Data.Interfaces.Regulator
 {
-
     public interface IRegulatorApplicationTaskStatusRepository : IRegulatorTaskStatusRepository<RegulatorApplicationTaskStatus> { }
 }
