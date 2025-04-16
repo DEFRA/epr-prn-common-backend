@@ -5,7 +5,9 @@ using EPR.PRN.Backend.API.Services;
 using EPR.PRN.Backend.API.Services.Interfaces;
 using EPR.PRN.Backend.API.Validators;
 using EPR.PRN.Backend.Data.Interfaces;
+using EPR.PRN.Backend.Data.Interfaces.Regulator;
 using EPR.PRN.Backend.Data.Repositories;
+using EPR.PRN.Backend.Data.Repositories.Regulator;
 using EPR.PRN.Backend.Obligation.Interfaces;
 using EPR.PRN.Backend.Obligation.Providers;
 using EPR.PRN.Backend.Obligation.Services;
@@ -33,7 +35,8 @@ namespace EPR.PRN.Backend.API.Helpers
                 .AddScoped<IMaterialRepository, MaterialRepository>()
                 .AddScoped<IPrnRepository, PrnRepository>()
                 .AddScoped<IValidator<SavePrnDetailsRequest>, SavePrnDetailsRequestValidator>()
-                .AddScoped<IDateTimeProvider, DateTimeProvider>();
+                .AddScoped<IDateTimeProvider, DateTimeProvider>()
+                .AddScoped<IRegistrationMaterialRepository, RegistrationMaterialRepository>();
 
 			return services;
         }

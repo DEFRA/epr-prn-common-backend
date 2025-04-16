@@ -1,12 +1,19 @@
-﻿using EPR.PRN.Backend.API.Configs;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Text.Json.Serialization;
+
+using EPR.PRN.Backend.API.Common.Constants;
+using EPR.PRN.Backend.API.Configs;
+using EPR.PRN.Backend.API.Handlers;
 using EPR.PRN.Backend.API.Helpers;
+using EPR.PRN.Backend.API.Validators;
 using EPR.PRN.Backend.Data;
+
+using FluentValidation.AspNetCore;
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
-using System.Diagnostics.CodeAnalysis;
-using System.Text.Json.Serialization;
+using Microsoft.FeatureManagement;
 
 namespace EPR.PRN.Backend.API
 {
@@ -22,6 +29,8 @@ namespace EPR.PRN.Backend.API
 
         public void ConfigureServices(IServiceCollection services)
         {
+
+            services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<Startup>());
             services.AddApiVersioning();
             services.AddControllers()
                 .AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
@@ -29,15 +38,39 @@ namespace EPR.PRN.Backend.API
             {
                 options.ModelBinderProviders.Insert(0, new DateTimeModelBinderProvider());
             });
+            services.AddFluentValidation(fv =>
+            {
+                fv.RegisterValidatorsFromAssemblyContaining<RegistrationOutcomeValidator>();
+                fv.AutomaticValidationEnabled = false;
+            });
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen(config =>
             {
                 config.CustomSchemaIds(s => s.FullName);
+                config.DocumentFilter<FeatureEnabledDocumentFilter>();
+                config.OperationFilter<FeatureGateOperationFilter>();
             });
+            services.AddFeatureManagement();
 
             services.AddDbContext<EprContext>(options =>
                 options.UseSqlServer(_config.GetConnectionString("EprConnectionString"))
             );
+            if (_config.GetValue<bool>($"FeatureManagement:{FeatureFlags.ReprocessorExporter}"))
+            {
+                services.AddDbContext<EprRegistrationsContext>(options =>
+                    options.UseInMemoryDatabase("EprRegistrationsDatabase")
+                );
+            }
+            else
+            {
+                services.AddDbContext<EprRegistrationsContext>();
+            }
+            
+            services.AddDbContext<EprRegistrationsContext>(options =>
+                options.UseInMemoryDatabase("EprRegistrationsDatabase")
+            );
+
+            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
             services.AddDependencies();
 
@@ -48,13 +81,22 @@ namespace EPR.PRN.Backend.API
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            using (var scope = app.ApplicationServices.CreateScope())
+            {
+                var featureManager = scope.ServiceProvider.GetRequiredService<IFeatureManager>();
+                if (featureManager.IsEnabledAsync(FeatureFlags.ReprocessorExporter).Result)
+                {
+                    var context = scope.ServiceProvider.GetRequiredService<EprRegistrationsContext>();
+                    context.Database.EnsureCreated();
+                }
+            }
             if (env.IsDevelopment())
             {
                 app.UseSwagger();
                 app.UseSwaggerUI();
                 RunMigration(app);
             }
-
+            app.UseMiddleware<CustomExceptionHandlingMiddleware>();
             app.UseRouting();
             app.UseAuthorization();
             app.UseEndpoints(endpoints =>
@@ -103,4 +145,3 @@ namespace EPR.PRN.Backend.API
         }
     }
 }
-
