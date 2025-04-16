@@ -35,7 +35,7 @@ namespace EPR.PRN.Backend.API.Tests.Handlers
             Func<Task> act = async () => await _handler.Handle(command, CancellationToken.None);
 
             // Assert
-            await act.Should().ThrowAsync<RegulatorInvalidOperationException>().WithMessage($"Cannot set task status to {RegulatorTaskStatus.Completed} as it is already {RegulatorTaskStatus.Completed}: {command.TaskName}:{command.TypeId}");
+            await act.Should().ThrowAsync<RegulatorInvalidOperationException>().WithMessage($"Cannot set task status to {RegulatorTaskStatus.Completed} as it is already {RegulatorTaskStatus.Completed}");
         }
 
         [TestMethod]
@@ -50,7 +50,7 @@ namespace EPR.PRN.Backend.API.Tests.Handlers
             Func<Task> act = async () => await _handler.Handle(command, CancellationToken.None);
 
             // Assert
-            await act.Should().ThrowAsync<RegulatorInvalidOperationException>().WithMessage($"Cannot set task status to {RegulatorTaskStatus.Queried} as it is already {RegulatorTaskStatus.Queried}: {command.TaskName}:{command.TypeId}");
+            await act.Should().ThrowAsync<RegulatorInvalidOperationException>().WithMessage($"Cannot set task status to {RegulatorTaskStatus.Queried} as it is already {RegulatorTaskStatus.Queried}");
         }
 
         [TestMethod]
@@ -65,7 +65,7 @@ namespace EPR.PRN.Backend.API.Tests.Handlers
             Func<Task> act = async () => await _handler.Handle(command, CancellationToken.None);
 
             // Assert
-            await act.Should().ThrowAsync<RegulatorInvalidOperationException>().WithMessage($"Cannot set task status to {RegulatorTaskStatus.Queried} as it is {RegulatorTaskStatus.Completed}: {command.TaskName}:{command.TypeId}");
+            await act.Should().ThrowAsync<RegulatorInvalidOperationException>().WithMessage($"Cannot set task status to {RegulatorTaskStatus.Queried} as it is {RegulatorTaskStatus.Completed}");
         }
 
         [TestMethod]
@@ -73,7 +73,7 @@ namespace EPR.PRN.Backend.API.Tests.Handlers
         {
             // Arrange
             var command = new UpdateRegulatorRegistrationTaskCommand { TaskName = "Test Task", RegistrationId = 1, Status = (RegulatorTaskStatus)999, UserName = "UserName" };
-            var taskStatus = new RegulatorRegistrationTaskStatus { TaskStatusId = 1 };
+            var taskStatus = new RegulatorRegistrationTaskStatus { TaskStatus = new LookupTaskStatus { Name = RegulatorTaskStatus.Completed.ToString() } };
             _repositoryMock.Setup(r => r.GetTaskStatusAsync(command.TaskName, command.TypeId)).ReturnsAsync(taskStatus);
 
             // Act
