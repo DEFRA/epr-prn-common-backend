@@ -53,6 +53,6 @@ public abstract class UpdateRegulatorTaskHandlerBase<TCommand, TRepository, TTas
             }
         }
         
-        await _repository.UpdateStatusAsync(command.TaskName, command.TypeId, command.Status, command.Comment, command.UserName);
+        await _repository.UpdateStatusAsync(command.TaskName, command.TypeId, command.Status, command.Comments, command.UserName);
     }
 }

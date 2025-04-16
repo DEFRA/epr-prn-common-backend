@@ -13,10 +13,10 @@ public class UpdateRegulatorRegistrationTaskCommandValidator : AbstractValidator
             .Must(status => allowedStatuses.Contains(status))
             .WithMessage("Invalid Status value");
 
-        RuleFor(x => x.Comment)
+        RuleFor(x => x.Comments)
             .MaximumLength(500).WithMessage("Comment must not exceed 500 characters");
 
-        RuleFor(x => x.Comment)
+        RuleFor(x => x.Comments)
             .NotEmpty().When(x => x.Status == RegulatorTaskStatus.Queried)
             .WithMessage("Comment is required when status is Queried");
 

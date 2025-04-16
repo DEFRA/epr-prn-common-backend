@@ -101,16 +101,16 @@ namespace EPR.PRN.Backend.API.Tests.Handlers
         public async Task Handle_ValidStatusUpdate_ShouldUpdateStatus()
         {
             // Arrange
-            var command = new UpdateRegulatorApplicationTaskCommand { TaskName = "Test Task", RegistrationMaterialId = 1, Status = RegulatorTaskStatus.Completed, Comment = "Completed", UserName = "UserName" };
+            var command = new UpdateRegulatorApplicationTaskCommand { TaskName = "Test Task", RegistrationMaterialId = 1, Status = RegulatorTaskStatus.Completed, Comments = "Completed", UserName = "UserName" };
             var taskStatus = new RegulatorApplicationTaskStatus { TaskStatus = new LookupTaskStatus { Name = RegulatorTaskStatus.Queried.ToString() } };
             _repositoryMock.Setup(r => r.GetTaskStatusAsync(command.TaskName, command.TypeId)).ReturnsAsync(taskStatus);
-            _repositoryMock.Setup(r => r.UpdateStatusAsync(command.TaskName, command.TypeId, command.Status, command.Comment, command.UserName)).Returns(Task.CompletedTask);
+            _repositoryMock.Setup(r => r.UpdateStatusAsync(command.TaskName, command.TypeId, command.Status, command.Comments, command.UserName)).Returns(Task.CompletedTask);
 
             // Act
             await _handler.Handle(command, CancellationToken.None);
 
             // Assert
-            _repositoryMock.Verify(r => r.UpdateStatusAsync(command.TaskName, command.TypeId, command.Status, command.Comment, command.UserName), Times.Once);
+            _repositoryMock.Verify(r => r.UpdateStatusAsync(command.TaskName, command.TypeId, command.Status, command.Comments, command.UserName), Times.Once);
         }
     }
 }
