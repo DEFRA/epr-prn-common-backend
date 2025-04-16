@@ -155,7 +155,6 @@ namespace EPR.PRN.Backend.Data.UnitTests.Repositories.Regulator
             // Arrange
             var taskName = "NewTask";
             var RegistrationMaterialId = 1;
-            var RegistrationId = 1;
             var status = RegulatorTaskStatus.Started;
             var comments = "Task started";
             var userName = "userName";
