@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using EPR.PRN.Backend.API.Common.Dto.Regulator;
 using EPR.PRN.Backend.API.Common.Enums;
 using EPR.PRN.Backend.API.Dto.Regulator;
 using EPR.PRN.Backend.Data.DataModels.Registrations;

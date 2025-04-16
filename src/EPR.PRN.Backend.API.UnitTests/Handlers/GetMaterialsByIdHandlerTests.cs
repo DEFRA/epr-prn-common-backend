@@ -15,7 +15,7 @@ public class GetMaterialsByIdHandlerTests
 {
     private Mock<IRegistrationMaterialRepository> _rmRepositoryMock;
     private IMapper _mapper;
-    private GetMaterialsByIdHandler _handler;
+    private GetMaterialByIdHandler _handler;
 
     [TestInitialize]
     public void TestInitialize()
@@ -28,7 +28,7 @@ public class GetMaterialsByIdHandlerTests
         });
         _mapper = config.CreateMapper();
 
-        _handler = new GetMaterialsByIdHandler(_rmRepositoryMock.Object, _mapper);
+        _handler = new GetMaterialByIdHandler(_rmRepositoryMock.Object, _mapper);
     }
 
     [TestMethod]

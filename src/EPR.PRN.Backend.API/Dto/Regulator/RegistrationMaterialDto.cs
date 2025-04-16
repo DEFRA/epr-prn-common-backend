@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 
-namespace EPR.PRN.Backend.API.Common.Dto.Regulator;
+namespace EPR.PRN.Backend.API.Dto.Regulator;
 
 /// <summary>
 /// Material-level section inside a registration.
