@@ -24,7 +24,7 @@ namespace EPR.PRN.Backend.Data.Repositories.Regulator
             return await GetTaskStatus(TaskName, RegistrationMaterialId);
         }
 
-        public async Task UpdateStatusAsync(string TaskName, int RegistrationMaterialId, StatusTypes status, string? comments, string userName)
+        public async Task UpdateStatusAsync(string TaskName, int RegistrationMaterialId, RegulatorTaskStatus status, string? comments, string userName)
         {
             _logger.LogInformation("Updating status for task with TaskName {TaskName} And RegistrationMaterialId {RegistrationMaterialId} to {Status}", TaskName, RegistrationMaterialId, status);
 

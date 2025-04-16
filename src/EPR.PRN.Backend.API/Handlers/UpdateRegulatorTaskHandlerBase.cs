@@ -25,26 +25,26 @@ public abstract class UpdateRegulatorTaskHandlerBase<TCommand, TRepository, TTas
 
         if (taskStatus != null)
         {
-            if (command.Status == StatusTypes.Completed)
+            if (command.Status == RegulatorTaskStatus.Completed)
             {
-                if (taskStatus.TaskStatus.Name == StatusTypes.Completed.ToString())
+                if (taskStatus.TaskStatus.Name == RegulatorTaskStatus.Completed.ToString())
                 {
-                    throw new RegulatorInvalidOperationException($"Cannot set task status to {StatusTypes.Completed} as it is already {StatusTypes.Completed}: {command.TaskName}:{command.TypeId}");
+                    throw new RegulatorInvalidOperationException($"Cannot set task status to {RegulatorTaskStatus.Completed} as it is already {RegulatorTaskStatus.Completed}: {command.TaskName}:{command.TypeId}");
                 }
             }
-            else if (command.Status == StatusTypes.Queried)
+            else if (command.Status == RegulatorTaskStatus.Queried)
             {
-                if (taskStatus.TaskStatus.Name == StatusTypes.Queried.ToString())
+                if (taskStatus.TaskStatus.Name == RegulatorTaskStatus.Queried.ToString())
                 {
-                    throw new RegulatorInvalidOperationException($"Cannot set task status to {StatusTypes.Queried} as it is already {StatusTypes.Queried}: {command.TaskName}:{command.TypeId}");
+                    throw new RegulatorInvalidOperationException($"Cannot set task status to {RegulatorTaskStatus.Queried} as it is already {RegulatorTaskStatus.Queried}: {command.TaskName}:{command.TypeId}");
                 }
-                else if (taskStatus.TaskStatus.Name == StatusTypes.Completed.ToString())
+                else if (taskStatus.TaskStatus.Name == RegulatorTaskStatus.Completed.ToString())
                 {
-                    throw new RegulatorInvalidOperationException($"Cannot set task status to {StatusTypes.Queried} as it is {StatusTypes.Completed}: {command.TaskName}:{command.TypeId}");
+                    throw new RegulatorInvalidOperationException($"Cannot set task status to {RegulatorTaskStatus.Queried} as it is {RegulatorTaskStatus.Completed}: {command.TaskName}:{command.TypeId}");
                 }
                 else
                 {
-                    throw new RegulatorInvalidOperationException($"Cannot set task status to {StatusTypes.Queried} as it is {taskStatus.TaskStatus.Name}: {command.TaskName}:{command.TypeId}");
+                    throw new RegulatorInvalidOperationException($"Cannot set task status to {RegulatorTaskStatus.Queried} as it is {taskStatus.TaskStatus.Name}: {command.TaskName}:{command.TypeId}");
                 }
             }
             else

@@ -7,7 +7,7 @@ public class UpdateRegulatorRegistrationTaskCommandValidator : AbstractValidator
 {
     public UpdateRegulatorRegistrationTaskCommandValidator()
     {
-        var allowedStatuses = new[] { StatusTypes.Queried, StatusTypes.Completed };
+        var allowedStatuses = new[] { RegulatorTaskStatus.Queried, RegulatorTaskStatus.Completed };
 
         RuleFor(x => x.Status)
             .Must(status => allowedStatuses.Contains(status))
@@ -17,7 +17,7 @@ public class UpdateRegulatorRegistrationTaskCommandValidator : AbstractValidator
             .MaximumLength(500).WithMessage("Comment must not exceed 500 characters");
 
         RuleFor(x => x.Comment)
-            .NotEmpty().When(x => x.Status == StatusTypes.Queried)
+            .NotEmpty().When(x => x.Status == RegulatorTaskStatus.Queried)
             .WithMessage("Comment is required when status is Queried");
 
     }

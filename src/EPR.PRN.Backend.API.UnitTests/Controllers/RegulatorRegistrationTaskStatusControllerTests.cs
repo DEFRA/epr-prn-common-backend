@@ -65,7 +65,7 @@ public class RegulatorRegistrationTaskStatusControllerTests
         {
             RegistrationId = registrationMaterialId,
             TaskName = "Test Task",
-            Status = (StatusTypes)999,
+            Status = (RegulatorTaskStatus)999,
             UserName = "UserName"
         };
 

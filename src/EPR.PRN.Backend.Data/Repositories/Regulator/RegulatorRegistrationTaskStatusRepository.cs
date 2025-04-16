@@ -24,7 +24,7 @@ namespace EPR.PRN.Backend.Data.Repositories.Regulator
             return await _context.RegulatorRegistrationTaskStatus.FirstOrDefaultAsync(x => x.Task.Name == TaskName && x.RegistrationId == RegistrationId);
         }
 
-        public async Task UpdateStatusAsync(string TaskName, int RegistrationId, StatusTypes status, string? comments, string userName)
+        public async Task UpdateStatusAsync(string TaskName, int RegistrationId, RegulatorTaskStatus status, string? comments, string userName)
         {
             _logger.LogInformation("Updating status for task with TaskName {TaskName} And RegistrationId {RegistrationId} to {Status}", TaskName, RegistrationId, status);
 

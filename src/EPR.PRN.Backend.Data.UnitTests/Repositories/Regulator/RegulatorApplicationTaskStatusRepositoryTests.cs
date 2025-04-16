@@ -75,7 +75,7 @@ namespace EPR.PRN.Backend.Data.UnitTests.Repositories.Regulator
             var taskName = "NewTask";
             var RegistrationMaterialId = 1;
             var RegistrationId = 1;
-            var status = StatusTypes.Started;
+            var status = RegulatorTaskStatus.Started;
             var comments = "Task started";
             var userName = "userName";
 
@@ -111,8 +111,8 @@ namespace EPR.PRN.Backend.Data.UnitTests.Repositories.Regulator
             var taskName = "ExistingTask";
             var RegistrationMaterialId = 1;
             var RegistrationId = 1;
-            var existingStatus = StatusTypes.Queried;
-            var status = StatusTypes.Completed;
+            var existingStatus = RegulatorTaskStatus.Queried;
+            var status = RegulatorTaskStatus.Completed;
             var comments = "Task completed";
             var existingUserName = "Existing userName";
             var userName = "userName";
@@ -156,7 +156,7 @@ namespace EPR.PRN.Backend.Data.UnitTests.Repositories.Regulator
             var taskName = "NewTask";
             var RegistrationMaterialId = 1;
             var RegistrationId = 1;
-            var status = StatusTypes.Started;
+            var status = RegulatorTaskStatus.Started;
             var comments = "Task started";
             var userName = "userName";
 
@@ -180,7 +180,7 @@ namespace EPR.PRN.Backend.Data.UnitTests.Repositories.Regulator
             var taskName = "NewTask";
             var RegistrationMaterialId = 1;
             var RegistrationId = 1;
-            var status = StatusTypes.Started;
+            var status = RegulatorTaskStatus.Started;
             var comments = "Task started";
             var userName = "userName";
 

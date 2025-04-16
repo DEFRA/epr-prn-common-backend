@@ -10,7 +10,7 @@ public abstract class UpdateRegulatorTaskCommandBase : IRequest
     [Required]
     public required string TaskName { get; set; }
     [Required]
-    public required StatusTypes Status { get; set; }
+    public required RegulatorTaskStatus Status { get; set; }
     [MaxLength(500)]
     public string? Comment { get; set; } = string.Empty;
 
