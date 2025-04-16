@@ -29,7 +29,7 @@ public class RegistrationMaterialRepository(EprRegistrationsContext eprContext) 
                ?? throw new KeyNotFoundException("Material not found.");
     }
 
-    public async Task UpdateRegistrationOutCome(int registrationMaterialId, int statusId, string? comment, string registrationReferenceNumber)
+    public async Task UpdateRegistrationOutCome(int registrationMaterialId, int statusId, string? comment, string? registrationReferenceNumber)
     {
         var material = await eprContext.RegistrationMaterials.FirstOrDefaultAsync(rm => rm.Id == registrationMaterialId);
         if (material is null) throw new KeyNotFoundException("Material not found.");

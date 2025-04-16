@@ -10,5 +10,5 @@ public interface IRegistrationMaterialRepository
 
     Task<RegistrationMaterial> GetRegistrationMaterialById(int registrationMaterialId);
 
-    Task UpdateRegistrationOutCome(int registrationMaterialId, int statusId, string? comment, string registrationReferenceNumber);
+    Task UpdateRegistrationOutCome(int registrationMaterialId, int statusId, string? comment, string? registrationReferenceNumber);
 }
