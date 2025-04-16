@@ -4,7 +4,6 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace EPR.PRN.Backend.Data.DataModels.Registrations;
 
-
 [ExcludeFromCodeCoverage]
 public class RegulatorRegistrationTaskStatus
 {

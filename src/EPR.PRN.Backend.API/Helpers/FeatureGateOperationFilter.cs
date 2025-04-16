@@ -8,7 +8,6 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace EPR.PRN.Backend.API.Helpers;
 
-
 [ExcludeFromCodeCoverage]
 public class FeatureEnabledDocumentFilter(IFeatureManager featureManager) : IDocumentFilter
 {

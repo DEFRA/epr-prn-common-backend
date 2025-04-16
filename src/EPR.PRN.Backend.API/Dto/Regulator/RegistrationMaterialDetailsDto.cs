@@ -1,7 +1,7 @@
 ﻿using EPR.PRN.Backend.API.Common.Enums;
 using System.Diagnostics.CodeAnalysis;
 
-namespace EPR.PRN.Backend.API.Common.Dto.Regulator;
+namespace EPR.PRN.Backend.API.Dto.Regulator;
 
 [ExcludeFromCodeCoverage]
 public class RegistrationMaterialDetailsDto

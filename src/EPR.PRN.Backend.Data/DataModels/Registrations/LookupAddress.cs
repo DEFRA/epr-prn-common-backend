@@ -2,7 +2,6 @@
 
 namespace EPR.PRN.Backend.Data.DataModels.Registrations;
 
-
 [ExcludeFromCodeCoverage]
 public class LookupAddress
 {
