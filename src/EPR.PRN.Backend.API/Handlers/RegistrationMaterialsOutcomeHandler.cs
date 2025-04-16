@@ -16,7 +16,9 @@ public class RegistrationMaterialsOutcomeHandler(
         
         EnsureStatusTransitionIsValid(request, materialEntity);
 
-        var registrationReferenceNumber = GenerateRegistrationReferenceNumber(materialEntity);
+        var registrationReferenceNumber = request.Status == RegistrationMaterialStatus.Granted
+            ? GenerateRegistrationReferenceNumber(materialEntity)
+            : null;
 
         await rmRepository.UpdateRegistrationOutCome(
             request.Id,
