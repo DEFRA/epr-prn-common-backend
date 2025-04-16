@@ -63,7 +63,7 @@ public class RegulatorApplicationTaskStatusControllerTests
         var registrationMaterialId = 1;
         var requestDto = new UpdateRegulatorApplicationTaskCommand
         {
-            registrationMaterialId = registrationMaterialId,
+            RegistrationMaterialId = registrationMaterialId,
             TaskName = "Test Task",
             Status = (RegulatorTaskStatus)999,
             UserName = "UserName"
