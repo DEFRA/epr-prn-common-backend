@@ -7,7 +7,7 @@ using MediatR;
 
 namespace EPR.PRN.Backend.API.Handlers;
 
-public abstract class UpdateRegulatorTaskHandlerBase<TCommand, TRepository, TTaskStatus> : IRequestHandler<TCommand, Unit>
+public abstract class UpdateRegulatorTaskHandlerBase<TCommand, TRepository, TTaskStatus> : IRequestHandler<TCommand>
     where TCommand : UpdateRegulatorTaskCommandBase
     where TRepository : IRegulatorTaskStatusRepository<TTaskStatus>
     where TTaskStatus : RegulatorTaskStatusBase
@@ -19,7 +19,7 @@ public abstract class UpdateRegulatorTaskHandlerBase<TCommand, TRepository, TTas
         _repository = repository;
     }
 
-    public async Task<Unit> Handle(TCommand command, CancellationToken cancellationToken)
+    public async Task Handle(TCommand command, CancellationToken cancellationToken)
     {
         var taskStatus = await _repository.GetTaskStatusAsync(command.TaskName, command.TypeId);
 
@@ -54,7 +54,5 @@ public abstract class UpdateRegulatorTaskHandlerBase<TCommand, TRepository, TTas
         }
         
         await _repository.UpdateStatusAsync(command.TaskName, command.TypeId, command.Status, command.Comment, command.UserName);
-
-        return Unit.Value;
     }
 }

@@ -5,7 +5,7 @@ using Swashbuckle.AspNetCore.Annotations;
 using System.ComponentModel.DataAnnotations;
 
 namespace EPR.PRN.Backend.API.Commands;
-public abstract class UpdateRegulatorTaskCommandBase : IRequest<Unit>
+public abstract class UpdateRegulatorTaskCommandBase : IRequest
 {
     [Required]
     public required string TaskName { get; set; }

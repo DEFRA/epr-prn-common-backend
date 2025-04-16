@@ -39,7 +39,6 @@ public class RegulatorRegistrationTaskStatusControllerTests
     {
         //Arrange
         var expectedTaskStatus = _fixture.Create<UpdateRegulatorRegistrationTaskCommand>();
-        _mockMediator.Setup(m => m.Send(It.IsAny<UpdateRegulatorRegistrationTaskCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(Unit.Value);
 
         var validationResult = new ValidationResult();
         _updateRegulatorRegistrationTaskCommandValidatorMock.Setup(x => x.Validate(It.IsAny<UpdateRegulatorRegistrationTaskCommand>())).Returns(validationResult);
