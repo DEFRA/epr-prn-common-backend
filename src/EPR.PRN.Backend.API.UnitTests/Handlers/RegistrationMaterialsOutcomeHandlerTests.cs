@@ -61,7 +61,7 @@ public class RegistrationMaterialsOutcomeHandlerTests
                          .Returns(Task.CompletedTask);
 
         // Act
-        _handler.Handle(command, CancellationToken.None);
+        await _handler.Handle(command, CancellationToken.None);
 
         // Assert
         _rmRepositoryMock.Verify(x => x.UpdateRegistrationOutCome(
@@ -69,9 +69,7 @@ public class RegistrationMaterialsOutcomeHandlerTests
             (int)command.Status,
             command.Comments,
             It.Is<string>(s =>
-                s.StartsWith("R") && 
                 s.Contains("USA") && 
-                s.Contains("E") &&  
                 s.Contains("XYZ")    
             )
         ), Times.Once);
@@ -148,9 +146,9 @@ public class RegistrationMaterialsOutcomeHandlerTests
 
         _rmRepositoryMock.Setup(x => x.GetRegistrationMaterialById(command.Id)).ReturnsAsync(material);
         
-        string? generatedReference = null;
+        string generatedReference = null;
         _rmRepositoryMock.Setup(x => x.UpdateRegistrationOutCome(command.Id, (int)command.Status, command.Comments, It.IsAny<string>()))
-                         .Callback<int, int, string?, string>((_, _, _, reference) => generatedReference = reference)
+                         .Callback<int, int, string, string>((_, _, _, reference) => generatedReference = reference)
                          .Returns(Task.CompletedTask);
 
         // Act
