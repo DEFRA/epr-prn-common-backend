@@ -5,6 +5,5 @@ public class UpdateRegulatorRegistrationTaskCommand: UpdateRegulatorTaskCommandB
 {
     [Required]
     public required int RegistrationId { get; set; }
-    public override int TypeId { get { return RegistrationId; } }
 
 }

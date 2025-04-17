@@ -5,5 +5,4 @@ public class UpdateRegulatorApplicationTaskCommand : UpdateRegulatorTaskCommandB
 {
     [Required]
     public int RegistrationMaterialId { get; set; }
-    public override int TypeId { get { return RegistrationMaterialId; } }
 }

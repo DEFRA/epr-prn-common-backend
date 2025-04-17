@@ -13,6 +13,6 @@ public class UpdateRegulatorRegistrationTaskHandler(IRegulatorRegistrationTaskSt
 
         ValidateAndThrowIfInvalidStatus(command.Status, taskStatus);
 
-        await repository.UpdateStatusAsync(command.TaskName, command.TypeId, command.Status, command.Comments, command.UserName);
+        await repository.UpdateStatusAsync(command.TaskName, command.RegistrationId, command.Status, command.Comments, command.UserName);
     }
 }
