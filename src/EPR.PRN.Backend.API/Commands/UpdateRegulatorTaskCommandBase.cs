@@ -11,5 +11,5 @@ public abstract class UpdateRegulatorTaskCommandBase : IRequest
     public required RegulatorTaskStatus Status { get; set; }
     [MaxLength(500)]
     public string? Comments { get; set; } = string.Empty;
-    public  string UserName { get; set; }
+    public string? UserName { get; set; } = string.Empty;
 }
