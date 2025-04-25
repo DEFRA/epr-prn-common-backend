@@ -1,4 +1,5 @@
-﻿using EPR.PRN.Backend.Data.DataModels.Registrations;
+﻿using EPR.PRN.Backend.API.Common.Constants;
+using EPR.PRN.Backend.Data.DataModels.Registrations;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics.CodeAnalysis;
 
@@ -68,11 +69,11 @@ public class EprRegistrationsContext : DbContext
             new LookupRegulatorTask { Id = 14, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 1, Name = "OverseasReprocessorAndInterimSiteDetails" });
         
         modelBuilder.Entity<LookupMaterialPermit>().HasData(
-            new LookupMaterialPermit { Id = 1, Name = "Waste Exemption" },
-            new LookupMaterialPermit { Id = 2, Name = "Pollution, Prevention and Control (PPC) permit" },
-            new LookupMaterialPermit { Id = 3, Name = "Waste Management License" },
-            new LookupMaterialPermit { Id = 4, Name = "Installation Permit" },
-            new LookupMaterialPermit { Id = 5, Name = "Environmental permit or waste management license" });
+            new LookupMaterialPermit { Id = 1, Name = PermitTypes.WasteExemption },
+            new LookupMaterialPermit { Id = 2, Name = PermitTypes.PollutionPreventionAndControlPermit },
+            new LookupMaterialPermit { Id = 3, Name = PermitTypes.WasteManagementLicense },
+            new LookupMaterialPermit { Id = 4, Name = PermitTypes.InstallationPermit },
+            new LookupMaterialPermit { Id = 5, Name = PermitTypes.EnvironmentalPermitOrWasteManagementLicense });
 
         modelBuilder.Entity<LookupPeriod>().HasData(
            new LookupPeriod { Id = 1, Name = "Per Year" },
@@ -122,7 +123,7 @@ public class EprRegistrationsContext : DbContext
                     DeterminationDate = DateTime.UtcNow,
                     ReferenceNumber = $"REF{registrationCounter:D4}-{j:D2}",
                     Comments = $"Test description for material {j} in registration {registrationCounter}",
-                    PermitTypeId = 1,
+                    PermitTypeId = 2,
                     PPCPermitNumber = $"PPC{registrationCounter:D4}-{j:D2}",
                     WasteManagementLicenseNumber = $"WML{registrationCounter:D4}-{j:D2}",
                     EnvironmentalPermitWasteManagementNumber = $"EWM{registrationCounter:D4}-{j:D2}",

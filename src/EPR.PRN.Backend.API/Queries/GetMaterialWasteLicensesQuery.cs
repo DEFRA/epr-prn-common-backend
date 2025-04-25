@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace EPR.PRN.Backend.API.Queries
 {
-    public class GetMaterialWasteLicensesQuery : IRequest<MaterialWasteLicensesDto>
+    public class GetMaterialWasteLicensesQuery : IRequest<RegistrationMaterialWasteLicensesDto>
     {
         [Required]
         public int Id { get; set; }

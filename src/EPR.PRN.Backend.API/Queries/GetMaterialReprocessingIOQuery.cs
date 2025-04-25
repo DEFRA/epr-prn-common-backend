@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace EPR.PRN.Backend.API.Queries
 {
-    public class GetMaterialReprocessingIOQuery : IRequest<MaterialreprocessingIODto>
+    public class GetMaterialReprocessingIOQuery : IRequest<RegistrationMaterialReprocessingIODto>
     {
         [Required]
         public int Id { get; set; }

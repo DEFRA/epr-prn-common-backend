@@ -9,12 +9,12 @@ namespace EPR.PRN.Backend.API.Handlers;
 public class GetMaterialWasteLicensesQueryHandler(
     IRegistrationMaterialRepository rmRepository,
     IMapper mapper
-) : IRequestHandler<GetMaterialWasteLicensesQuery, MaterialWasteLicensesDto>
+) : IRequestHandler<GetMaterialWasteLicensesQuery, RegistrationMaterialWasteLicensesDto>
 {
-    public async Task<MaterialWasteLicensesDto> Handle(GetMaterialWasteLicensesQuery request, CancellationToken cancellationToken)
+    public async Task<RegistrationMaterialWasteLicensesDto> Handle(GetMaterialWasteLicensesQuery request, CancellationToken cancellationToken)
     {
         var materialEntity = await rmRepository.GetRegistrationMaterialById(request.Id);
-        var materialDto = mapper.Map<MaterialWasteLicensesDto>(materialEntity);
+        var materialDto = mapper.Map<RegistrationMaterialWasteLicensesDto>(materialEntity);
         return materialDto;
     }
 }

@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace EPR.PRN.Backend.API.Queries
 {
-    public class GetMaterialSamplingPlanQuery : IRequest<MaterialSamplingPlanDto>
+    public class GetMaterialSamplingPlanQuery : IRequest<RegistrationMaterialSamplingPlanDto>
     {
         [Required]
         public int Id { get; set; }

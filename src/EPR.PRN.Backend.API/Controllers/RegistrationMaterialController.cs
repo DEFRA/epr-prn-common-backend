@@ -59,7 +59,7 @@ public class RegistrationMaterialController(IMediator mediator
     }
 
     [HttpGet("registrationMaterials/{Id}/WasteLicenses")]
-    [ProducesResponseType(typeof(MaterialWasteLicensesDto), 200)]
+    [ProducesResponseType(typeof(RegistrationMaterialWasteLicensesDto), 200)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> WasteLicenses(int Id)
@@ -70,7 +70,7 @@ public class RegistrationMaterialController(IMediator mediator
     }
 
     [HttpGet("registrationMaterials/{Id}/reprocessingIO")]
-    [ProducesResponseType(typeof(MaterialreprocessingIODto), 200)]
+    [ProducesResponseType(typeof(RegistrationMaterialReprocessingIODto), 200)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> reprocessingIO(int Id)
@@ -81,7 +81,7 @@ public class RegistrationMaterialController(IMediator mediator
     }
 
     [HttpGet("registrationMaterials/{Id}/samplingPlan")]
-    [ProducesResponseType(typeof(MaterialSamplingPlanDto), 200)]
+    [ProducesResponseType(typeof(RegistrationMaterialSamplingPlanDto), 200)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> samplingPlan(int Id)
