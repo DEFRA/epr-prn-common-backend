@@ -43,9 +43,9 @@ public class RegistrationMaterialRepository(EprRegistrationsContext eprContext) 
         await eprContext.SaveChangesAsync();
     }
 
-    private IIncludableQueryable<RegistrationMaterial, LookupRegistrationMaterialStatus> GetRegistrationMaterialsWithRelatedEntities()
+    private IIncludableQueryable<RegistrationMaterial, LookupMaterialPermit> GetRegistrationMaterialsWithRelatedEntities()
     {
-        var registrationMaterials = 
+        var registrationMaterials =
             eprContext.RegistrationMaterials
             .AsNoTracking()
             .AsSplitQuery()
@@ -54,7 +54,15 @@ public class RegistrationMaterialRepository(EprRegistrationsContext eprContext) 
             .Include(rm => rm.Registration)
                 .ThenInclude(r => r.BusinessAddress)
             .Include(rm => rm.Material)
-            .Include(rm => rm.Status);
+            .Include(rm => rm.Status)
+            .Include(rm => rm.MaterialExemptionReferences)
+            .Include(rm => rm.PPCPeriod)
+            .Include(rm => rm.WasteManagementPeriod)
+            .Include(rm => rm.InstallationPeriod)
+            .Include(rm => rm.EnvironmentalPermitWasteManagementPeriod)
+            .Include(rm => rm.MaximumReprocessingPeriod)
+            .Include(rm => rm.PermitType);
+            
 
         return registrationMaterials;
     }
