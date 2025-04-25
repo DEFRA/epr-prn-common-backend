@@ -29,6 +29,14 @@ public class RegistrationMaterialRepository(EprRegistrationsContext eprContext) 
                ?? throw new KeyNotFoundException("Material not found.");
     }
 
+    public async Task<RegistrationMaterial> GetRegistrationMaterial_WasteLicensesById(int registrationMaterialId)
+    {
+        var registrationMaterials = GetRegistrationMaterialsWithRelatedEntities_WasteLicenses();
+
+        return await registrationMaterials.SingleOrDefaultAsync(rm => rm.Id == registrationMaterialId)
+               ?? throw new KeyNotFoundException("Material not found.");
+    }
+
     public async Task UpdateRegistrationOutCome(int registrationMaterialId, int statusId, string? comment, string? registrationReferenceNumber)
     {
         var material = await eprContext.RegistrationMaterials.FirstOrDefaultAsync(rm => rm.Id == registrationMaterialId);
@@ -43,7 +51,7 @@ public class RegistrationMaterialRepository(EprRegistrationsContext eprContext) 
         await eprContext.SaveChangesAsync();
     }
 
-    private IIncludableQueryable<RegistrationMaterial, LookupMaterialPermit> GetRegistrationMaterialsWithRelatedEntities()
+    private IIncludableQueryable<RegistrationMaterial, LookupRegistrationMaterialStatus> GetRegistrationMaterialsWithRelatedEntities()
     {
         var registrationMaterials =
             eprContext.RegistrationMaterials
@@ -54,7 +62,18 @@ public class RegistrationMaterialRepository(EprRegistrationsContext eprContext) 
             .Include(rm => rm.Registration)
                 .ThenInclude(r => r.BusinessAddress)
             .Include(rm => rm.Material)
-            .Include(rm => rm.Status)
+            .Include(rm => rm.Status);            
+
+        return registrationMaterials;
+    }
+
+    private IIncludableQueryable<RegistrationMaterial, LookupMaterialPermit> GetRegistrationMaterialsWithRelatedEntities_WasteLicenses()
+    {
+        var registrationMaterials =
+            eprContext.RegistrationMaterials
+            .AsNoTracking()
+            .AsSplitQuery()
+            .Include(rm => rm.Material)
             .Include(rm => rm.MaterialExemptionReferences)
             .Include(rm => rm.PPCPeriod)
             .Include(rm => rm.WasteManagementPeriod)
@@ -62,7 +81,7 @@ public class RegistrationMaterialRepository(EprRegistrationsContext eprContext) 
             .Include(rm => rm.EnvironmentalPermitWasteManagementPeriod)
             .Include(rm => rm.MaximumReprocessingPeriod)
             .Include(rm => rm.PermitType);
-            
+
 
         return registrationMaterials;
     }

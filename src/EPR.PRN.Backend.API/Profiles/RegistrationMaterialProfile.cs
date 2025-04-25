@@ -40,15 +40,15 @@ public class RegistrationMaterialProfile : Profile
         CreateMap<RegistrationMaterial, RegistrationMaterialWasteLicensesDto>()
             .ForMember(dest => dest.PermitType, opt => opt.MapFrom(src => src.PermitType.Name))
 
-            .ForMember(dest => dest.Number, opt => opt.MapFrom(src => GetReferenceNumber(src)))
+            .ForMember(dest => dest.LicenseNumbers, opt => opt.MapFrom(src => GetReferenceNumber(src)))
 
             .ForMember(dest => dest.CapacityTonne, opt => opt.MapFrom(src => GetAuthorisedCapacityTonne(src)))
-            .ForMember(dest => dest.Period, opt => opt.MapFrom(src => GetReferencePeriod(src)))
+            .ForMember(dest => dest.CapacityPeriod, opt => opt.MapFrom(src => GetReferencePeriod(src)))
 
             .ForMember(dest => dest.MaximumReprocessingCapacityTonne, opt => opt.MapFrom(src => src.MaximumReprocessingCapacityTonne))
             .ForMember(dest => dest.MaximumReprocessingPeriod, opt => opt.MapFrom(src => src.MaximumReprocessingPeriod.Name))
 
-            .ForMember(dest => dest.Material, opt => opt.MapFrom(src => src.Material.MaterialName));
+            .ForMember(dest => dest.MaterialName, opt => opt.MapFrom(src => src.Material.MaterialName));
     }
 
 
