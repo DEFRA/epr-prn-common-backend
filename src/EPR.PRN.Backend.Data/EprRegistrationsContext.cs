@@ -86,7 +86,8 @@ public class EprRegistrationsContext : DbContext
         var materialExemptionReferences = new List<MaterialExemptionReference>();
         var registrationTaskStatuses = new List<RegulatorRegistrationTaskStatus>();
         var applicationTaskStatuses = new List<RegulatorApplicationTaskStatus>();
-        
+        var registrationReprocessingIOs = new List<RegistrationReprocessingIO>();
+
         for (var registrationCounter = 1; registrationCounter <= NumberOfRegistrations; registrationCounter++)
         {
             var ApplicationTypeId = registrationCounter % 2 + 1;
@@ -157,13 +158,30 @@ public class EprRegistrationsContext : DbContext
                         RegistrationMaterialId = registrationMaterialId
                     }
                 });
+
+                registrationReprocessingIOs.Add(new RegistrationReprocessingIO
+                {
+                    Id = registrationMaterialId,
+                    RegistrationMaterialId = registrationMaterialId,
+                    ContaminantsTonne = 1,
+                    NonUKPackagingWasteTonne = 2,
+                    NotPackingWasteTonne= 3,
+                    ProcessLossTonne = 4,
+                    ReprocessingPackagingWasteLastYearFlag = true,
+                    SenttoOtherSiteTonne = 5,
+                    UKPackagingWasteTonne = 6,
+                    PlantEquipmentUsed = "shredder",
+                    TypeOfSupplier = "Shed"
+                });
             }
         }
 
+        
         modelBuilder.Entity<Registration>().HasData(registrations);
         modelBuilder.Entity<LookupAddress>().HasData(lookupAddresses);
         modelBuilder.Entity<RegistrationMaterial>().HasData(registrationMaterials);
         modelBuilder.Entity<MaterialExemptionReference>().HasData(materialExemptionReferences);
+        modelBuilder.Entity<RegistrationReprocessingIO>().HasData(registrationReprocessingIOs);
         modelBuilder.Entity<RegulatorRegistrationTaskStatus>().HasData(registrationTaskStatuses);
         modelBuilder.Entity<RegulatorApplicationTaskStatus>().HasData(applicationTaskStatuses);
         
@@ -184,6 +202,8 @@ public class EprRegistrationsContext : DbContext
     public virtual DbSet<Registration> Registrations { get; set; }
     public virtual DbSet<RegistrationMaterial> RegistrationMaterials { get; set; }
     public virtual DbSet<MaterialExemptionReference> MaterialExemptionReferences { get; set; }
+    public virtual DbSet<RegistrationReprocessingIO> RegistrationReprocessingIO { get; set; }
+    
     public virtual DbSet<RegulatorApplicationTaskStatus> RegulatorApplicationTaskStatus { get; set; }
     public virtual DbSet<RegulatorRegistrationTaskStatus> RegulatorRegistrationTaskStatus { get; set; }
     public DbSet<LookupMaterial> LookupMaterials { get; set; }

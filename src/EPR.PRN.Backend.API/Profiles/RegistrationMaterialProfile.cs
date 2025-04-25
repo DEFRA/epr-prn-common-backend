@@ -35,8 +35,19 @@ public class RegistrationMaterialProfile : Profile
             .ForMember(dest => dest.MaterialName, opt => opt.MapFrom(src => src.Material.MaterialName))
             .ForMember(dest => dest.Status, opt => opt.MapFrom(src => (RegistrationMaterialStatus?)src.StatusID));
 
-        CreateMap<RegistrationMaterial, RegistrationMaterialReprocessingIODto>();
+        CreateMap<RegistrationMaterial, RegistrationMaterialReprocessingIODto>()
+            .ForMember(dest => dest.SourcesOfPackagingWaste, opt => opt.MapFrom(src => src.RegistrationReprocessingIO.Single().TypeOfSupplier))
+            .ForMember(dest => dest.PlantEquipmentUsed, opt => opt.MapFrom(src => src.RegistrationReprocessingIO.Single().PlantEquipmentUsed))
+            .ForMember(dest => dest.ReprocessingPackagingWasteLastYearFlag, opt => opt.MapFrom(src => src.RegistrationReprocessingIO.Single().ReprocessingPackagingWasteLastYearFlag))
+            .ForMember(dest => dest.UKPackagingWasteTonne, opt => opt.MapFrom(src => src.RegistrationReprocessingIO.Single().UKPackagingWasteTonne))
+            .ForMember(dest => dest.NonUKPackagingWasteTonne, opt => opt.MapFrom(src => src.RegistrationReprocessingIO.Single().NonUKPackagingWasteTonne))
+            .ForMember(dest => dest.NotPackingWasteTonne, opt => opt.MapFrom(src => src.RegistrationReprocessingIO.Single().NotPackingWasteTonne))
+            .ForMember(dest => dest.SenttoOtherSiteTonne, opt => opt.MapFrom(src => src.RegistrationReprocessingIO.Single().SenttoOtherSiteTonne))
+            .ForMember(dest => dest.ContaminantsTonne, opt => opt.MapFrom(src => src.RegistrationReprocessingIO.Single().ContaminantsTonne))
+            .ForMember(dest => dest.ProcessLossTonne, opt => opt.MapFrom(src => src.RegistrationReprocessingIO.Single().ProcessLossTonne));
+
         CreateMap<RegistrationMaterial, RegistrationMaterialSamplingPlanDto>();
+
         CreateMap<RegistrationMaterial, RegistrationMaterialWasteLicensesDto>()
             .ForMember(dest => dest.PermitType, opt => opt.MapFrom(src => src.PermitType.Name))
 

@@ -1,4 +1,5 @@
-﻿using EPR.PRN.Backend.Data.DataModels.Registrations;
+﻿using EPR.PRN.Backend.Data.DataModels;
+using EPR.PRN.Backend.Data.DataModels.Registrations;
 using EPR.PRN.Backend.Data.Interfaces.Regulator;
 
 using Microsoft.EntityFrameworkCore;
@@ -32,6 +33,14 @@ public class RegistrationMaterialRepository(EprRegistrationsContext eprContext) 
     public async Task<RegistrationMaterial> GetRegistrationMaterial_WasteLicensesById(int registrationMaterialId)
     {
         var registrationMaterials = GetRegistrationMaterialsWithRelatedEntities_WasteLicenses();
+
+        return await registrationMaterials.SingleOrDefaultAsync(rm => rm.Id == registrationMaterialId)
+               ?? throw new KeyNotFoundException("Material not found.");
+    }
+
+    public async Task<RegistrationMaterial> GetRegistrationMaterial_RegistrationReprocessingIOById(int registrationMaterialId)
+    {
+        var registrationMaterials = GetRegistrationMaterialsWithRelatedEntities_RegistrationReprocessingIO();
 
         return await registrationMaterials.SingleOrDefaultAsync(rm => rm.Id == registrationMaterialId)
                ?? throw new KeyNotFoundException("Material not found.");
@@ -86,6 +95,18 @@ public class RegistrationMaterialRepository(EprRegistrationsContext eprContext) 
         return registrationMaterials;
     }
 
+    private IIncludableQueryable<RegistrationMaterial, LookupMaterial> GetRegistrationMaterialsWithRelatedEntities_RegistrationReprocessingIO()
+    {
+        var registrationMaterials =
+            eprContext.RegistrationMaterials
+            .AsNoTracking()
+            .AsSplitQuery()
+            .Include(rm => rm.RegistrationReprocessingIO)
+            .Include(rm => rm.Material);
+
+        return registrationMaterials;
+    }
+    
     private IIncludableQueryable<Registration, LookupRegistrationMaterialStatus> GetRegistrationsWithRelatedEntities()
     {
         var registrations = eprContext

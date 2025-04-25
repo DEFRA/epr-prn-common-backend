@@ -13,7 +13,7 @@ public class GetMaterialReprocessingIOQueryHandler(
 {
     public async Task<RegistrationMaterialReprocessingIODto> Handle(GetMaterialReprocessingIOQuery request, CancellationToken cancellationToken)
     {
-        var materialEntity = await rmRepository.GetRegistrationMaterialById(request.Id);
+        var materialEntity = await rmRepository.GetRegistrationMaterial_RegistrationReprocessingIOById(request.Id);
         var materialDto = mapper.Map<RegistrationMaterialReprocessingIODto>(materialEntity);
         return materialDto;
     }
