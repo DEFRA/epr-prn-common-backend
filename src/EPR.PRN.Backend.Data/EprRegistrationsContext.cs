@@ -2,6 +2,7 @@
 using EPR.PRN.Backend.Data.DataModels.Registrations;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics.CodeAnalysis;
+using System.Reflection.Metadata;
 
 namespace EPR.PRN.Backend.Data;
 
@@ -80,6 +81,16 @@ public class EprRegistrationsContext : DbContext
            new LookupPeriod { Id = 2, Name = "Per Month" },
            new LookupPeriod { Id = 3, Name = "Per Week" });
 
+        modelBuilder.Entity<LookupFileUploadType>().HasData(
+            new LookupFileUploadType { Id = 1, Name = "SamplingAndInspectionPlan" });
+
+        modelBuilder.Entity<LookupFileUploadStatus>().HasData(
+            new LookupFileUploadStatus { Id = 1, Name = "Virus check failed" },
+            new LookupFileUploadStatus { Id = 2, Name = "Virus check succeeded" },
+            new LookupFileUploadStatus { Id = 3, Name = "Upload complete" },
+            new LookupFileUploadStatus { Id = 4, Name = "Upload failed" },
+            new LookupFileUploadStatus { Id = 5, Name = "File deleted(Soft delete of record in database – will physically remove from blob storage)" });
+
         var registrations = new List<Registration>();
         var lookupAddresses = new List<LookupAddress>();
         var registrationMaterials = new List<RegistrationMaterial>();
@@ -87,6 +98,7 @@ public class EprRegistrationsContext : DbContext
         var registrationTaskStatuses = new List<RegulatorRegistrationTaskStatus>();
         var applicationTaskStatuses = new List<RegulatorApplicationTaskStatus>();
         var registrationReprocessingIOs = new List<RegistrationReprocessingIO>();
+        var fileUploads = new List<FileUpload>();
 
         for (var registrationCounter = 1; registrationCounter <= NumberOfRegistrations; registrationCounter++)
         {
@@ -173,6 +185,33 @@ public class EprRegistrationsContext : DbContext
                     PlantEquipmentUsed = "shredder",
                     TypeOfSupplier = "Shed"
                 });
+
+                fileUploads.AddRange(new List<FileUpload>{
+                    new FileUpload
+                    {
+                        Id = registrationMaterialId * 2 - 1,
+                        RegistrationMaterialId = registrationMaterialId,
+                        Filename = $"File{registrationCounter:D4}-{j:D2}-1.pdf",
+                        FileUploadTypeId = 1,
+                        FileUploadStatusId = 1,
+                        DateUploaded = DateTime.UtcNow,
+                        UpdatedBy = "Test User",
+                        Comments = "Test comment",
+                        FileId = Guid.NewGuid().ToString()
+                    },
+                    new FileUpload
+                    {
+                        Id = registrationMaterialId * 2,
+                        RegistrationMaterialId = registrationMaterialId,
+                        Filename = $"File{registrationCounter:D4}-{j:D2}-2.pdf",
+                        FileUploadTypeId = 1,
+                        FileUploadStatusId = 1,
+                        DateUploaded = DateTime.UtcNow,
+                        UpdatedBy = "Test User",
+                        Comments = "Test comment",
+                        FileId = Guid.NewGuid().ToString()
+                    }
+                });
             }
         }
 
@@ -182,6 +221,7 @@ public class EprRegistrationsContext : DbContext
         modelBuilder.Entity<RegistrationMaterial>().HasData(registrationMaterials);
         modelBuilder.Entity<MaterialExemptionReference>().HasData(materialExemptionReferences);
         modelBuilder.Entity<RegistrationReprocessingIO>().HasData(registrationReprocessingIOs);
+        modelBuilder.Entity<FileUpload>().HasData(fileUploads);
         modelBuilder.Entity<RegulatorRegistrationTaskStatus>().HasData(registrationTaskStatuses);
         modelBuilder.Entity<RegulatorApplicationTaskStatus>().HasData(applicationTaskStatuses);
         

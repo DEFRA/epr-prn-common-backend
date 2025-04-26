@@ -2,7 +2,7 @@
 {
     public class RegistrationMaterialReprocessingIODto
     {
-        public required string Material { get; set; }
+        public required string MaterialName { get; set; }
         public required string SourcesOfPackagingWaste { get; set; }
         public required string PlantEquipmentUsed { get; set; }
         public bool ReprocessingPackagingWasteLastYearFlag { get; set; }

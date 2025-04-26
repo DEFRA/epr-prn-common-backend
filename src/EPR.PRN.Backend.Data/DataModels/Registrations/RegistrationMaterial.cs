@@ -67,4 +67,5 @@ public class RegistrationMaterial
     public int MaximumReprocessingPeriodID { get; set; }
 
     public List<RegistrationReprocessingIO>? RegistrationReprocessingIO { get; set; }
+    public List<FileUpload>? FileUploads { get; set; }
 }

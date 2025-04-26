@@ -39,3 +39,5 @@ public class LookupMaterialPermit : LookupBase { }
 public class LookupPeriod : LookupBase { }
 
 public class LookupJourneyType : LookupBase { }
+public class LookupFileUploadType : LookupBase { }
+public class LookupFileUploadStatus : LookupBase { }

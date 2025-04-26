@@ -46,6 +46,14 @@ public class RegistrationMaterialRepository(EprRegistrationsContext eprContext) 
                ?? throw new KeyNotFoundException("Material not found.");
     }
 
+    public async Task<RegistrationMaterial> GetRegistrationMaterial_FileUploadById(int registrationMaterialId)
+    {
+        var registrationMaterials = GetRegistrationMaterial_FileUploadById();
+
+        return await registrationMaterials.SingleOrDefaultAsync(rm => rm.Id == registrationMaterialId)
+               ?? throw new KeyNotFoundException("Material not found.");
+    }
+
     public async Task UpdateRegistrationOutCome(int registrationMaterialId, int statusId, string? comment, string? registrationReferenceNumber)
     {
         var material = await eprContext.RegistrationMaterials.FirstOrDefaultAsync(rm => rm.Id == registrationMaterialId);
@@ -93,7 +101,7 @@ public class RegistrationMaterialRepository(EprRegistrationsContext eprContext) 
 
 
         return registrationMaterials;
-    }
+    }   
 
     private IIncludableQueryable<RegistrationMaterial, LookupMaterial> GetRegistrationMaterialsWithRelatedEntities_RegistrationReprocessingIO()
     {
@@ -106,7 +114,23 @@ public class RegistrationMaterialRepository(EprRegistrationsContext eprContext) 
 
         return registrationMaterials;
     }
+
+    private IIncludableQueryable<RegistrationMaterial, LookupMaterial> GetRegistrationMaterial_FileUploadById()
+    {
+        var registrationMaterials =
+            eprContext.RegistrationMaterials
+            .AsNoTracking()
+            .AsSplitQuery()
+            .Include(rm => rm.FileUploads)!
+            .ThenInclude(fu => fu.FileUploadType)
+            .Include(rm => rm.FileUploads)!
+            .ThenInclude(fu => fu.FileUploadStatus)
+            .Include(rm => rm.Material);
+
+        return registrationMaterials;
+    }
     
+
     private IIncludableQueryable<Registration, LookupRegistrationMaterialStatus> GetRegistrationsWithRelatedEntities()
     {
         var registrations = eprContext

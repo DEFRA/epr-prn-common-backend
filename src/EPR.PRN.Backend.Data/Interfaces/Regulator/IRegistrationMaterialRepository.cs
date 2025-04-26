@@ -11,7 +11,8 @@ public interface IRegistrationMaterialRepository
     Task<RegistrationMaterial> GetRegistrationMaterialById(int registrationMaterialId);
     Task<RegistrationMaterial> GetRegistrationMaterial_WasteLicensesById(int registrationMaterialId);
     Task<RegistrationMaterial> GetRegistrationMaterial_RegistrationReprocessingIOById(int registrationMaterialId);
-    
+    Task<RegistrationMaterial> GetRegistrationMaterial_FileUploadById(int registrationMaterialId);
+
 
     Task UpdateRegistrationOutCome(int registrationMaterialId, int statusId, string? comment, string? registrationReferenceNumber);
 }
