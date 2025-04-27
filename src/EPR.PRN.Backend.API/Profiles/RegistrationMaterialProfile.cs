@@ -24,7 +24,7 @@ public class RegistrationMaterialProfile : Profile
         CreateMap<RegulatorRegistrationTaskStatus, RegistrationTaskDto>()
             .ForMember(dest => dest.TaskName, opt => opt.MapFrom(src => src.Task.Name))
             .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.TaskStatus.Name));
-
+           
         CreateMap<RegulatorApplicationTaskStatus, RegistrationTaskDto>()
             .ForMember(dest => dest.TaskName, opt => opt.MapFrom(src => src.Task.Name))
             .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.TaskStatus.Name));
@@ -32,6 +32,8 @@ public class RegistrationMaterialProfile : Profile
         CreateMap<RegistrationMaterial, RegistrationMaterialDetailsDto>()
             .ForMember(dest => dest.MaterialName, opt => opt.MapFrom(src => src.Material.MaterialName))
             .ForMember(dest => dest.Status, opt => opt.MapFrom(src => (RegistrationMaterialStatus?)src.StatusID));
+       
+
     }
 
     private string CreateAddressString(LookupAddress reprocessingSiteAddress) =>

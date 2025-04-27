@@ -53,6 +53,8 @@ public class RegistrationMaterialRepository(EprRegistrationsContext eprContext) 
                 .ThenInclude(r => r.ReprocessingSiteAddress)
             .Include(rm => rm.Registration)
                 .ThenInclude(r => r.BusinessAddress)
+             .Include(rm => rm.Registration)
+                .ThenInclude(r => r.LegalDocumentAddress)
             .Include(rm => rm.Material)
             .Include(rm => rm.Status);
 
@@ -66,6 +68,7 @@ public class RegistrationMaterialRepository(EprRegistrationsContext eprContext) 
             .AsNoTracking()
             .AsSplitQuery()
             .Include(r => r.ReprocessingSiteAddress)
+            .Include(r => r.LegalDocumentAddress)
             .Include(r => r.Tasks)!
                 .ThenInclude(t => t.TaskStatus)
             .Include(r => r.Tasks)!

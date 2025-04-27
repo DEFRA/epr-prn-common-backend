@@ -31,7 +31,8 @@ public class RegistrationMaterial
     public DateTime ProcessingStartDate { get; set; }
     public DateTime ProcessingEndDate { get; set; }
     public DateTime StatusUpdatedDate { get; set; }
-    public string? StatusUpdatedBy { get; set; }
-
+    public string? StatusUpdatedBy { get; set; } 
+    public string? ReasonforNotreg { get; set; } = string.Empty;
+    public string Wastecarrierbrokerdealerregistration { get; set; } = string.Empty;
     public List<RegulatorApplicationTaskStatus>? Tasks { get; set; }
 }

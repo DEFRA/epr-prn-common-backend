@@ -52,6 +52,7 @@ public class EprRegistrationsContext : DbContext
             new LookupJourneyType { Id = 2, Name = "Accreditation" });
 
         modelBuilder.Entity<LookupRegulatorTask>().HasData(
+
             new LookupRegulatorTask { Id = 1,IsMaterialSpecific = false, ApplicationTypeId = 1, JourneyTypeId = 1, Name = "SiteAddressAndContactDetails" },
             new LookupRegulatorTask { Id = 2,IsMaterialSpecific = false, ApplicationTypeId = 1, JourneyTypeId = 1, Name = "MaterialsAuthorisedOnSite" },
             new LookupRegulatorTask { Id = 3,IsMaterialSpecific = false, ApplicationTypeId = 1, JourneyTypeId = 1, Name = "RegistrationDulyMade" },
@@ -83,7 +84,8 @@ public class EprRegistrationsContext : DbContext
                 ApplicationTypeId = ApplicationTypeId,
                 OrganisationId = 1,
                 BusinessAddressId = registrationCounter,
-                ReprocessingSiteAddressId = registrationCounter
+                ReprocessingSiteAddressId = registrationCounter,
+                LegalDocumentAddressId= registrationCounter
             });
 
             lookupAddresses.Add(new LookupAddress
@@ -94,7 +96,9 @@ public class EprRegistrationsContext : DbContext
                 TownCity = "London",
                 County = null,
                 Country = "England",
-                PostCode = "E12 3SE"
+                PostCode = "E12 3SE",
+                NationId = 1,
+                GridReference = "SJ 854 662",
             });
 
             for (int j = 1; j <= 3; j++)
@@ -108,8 +112,10 @@ public class EprRegistrationsContext : DbContext
                     RegistrationId = registrationCounter,
                     DeterminationDate = DateTime.UtcNow,
                     ReferenceNumber = $"REF{registrationCounter:D4}-{j:D2}",
-                    Comments = $"Test description for material {j} in registration {registrationCounter}"
-                });
+                    Comments = $"Test description for material {j} in registration {registrationCounter}",
+                    ReasonforNotreg= $"Lorem ipsum dolor sit amet, consectetur adipiscing{j} elit. Fusce vulputate aliquet ornare. Vestibulum dolor nunc, tincidunt a diam nec, mattis venenatis sem{registrationCounter}",
+                    Wastecarrierbrokerdealerregistration= $"DFG3457345{registrationCounter}"
+                    });
             }
         }
 

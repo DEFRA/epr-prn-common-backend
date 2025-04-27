@@ -11,6 +11,7 @@ using FluentValidation.Results;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using EPR.PRN.Backend.API.Dto;
 
 using Moq;
 
@@ -125,4 +126,149 @@ public class RegistrationMaterialControllerTests
             controller.UpdateRegistrationOutcome(registrationId, command)
         ).Should().ThrowAsync<ValidationException>();
     }
+
+    [TestMethod]
+    public async Task GetRegistrationOverviewDetailById_ReturnsOk_WithFullTasksAndMaterials()
+    {
+        // Arrange
+        int registrationId = 2;
+
+        var expectedDto = new RegistrationOverviewDto
+        {
+            Id = 2,
+            OrganisationName = "1_Green Ltd",
+            SiteAddress = "23, Ruby St, London, E12 3SE",
+            OrganisationType = ApplicationOrganisationType.Reprocessor,
+            Regulator = "EA",
+            Tasks = new List<RegistrationTaskDto>
+        {
+            new RegistrationTaskDto
+            {
+                Id = 0,
+                TaskName = "SiteAddressAndContactDetails",
+                Status = "NotStarted",
+                TaskData = new SiteAddressAndContactDetailsTaskDataDto
+                {
+                    NationId = 1,
+                    SiteAddress = "23, Ruby St, London, E12 3SE",
+                    GridReference = "SJ 854 662",
+                    LegalCorrespondenceAddress = "23, Ruby St, London, E12 3SE"
+                }
+            },
+            new RegistrationTaskDto
+            {
+                Id = 0,
+                TaskName = "MaterialsAuthorisedOnSite",
+                Status = "NotStarted",
+                TaskData = new MaterialsAuthorisedOnSiteTaskDataDto
+                {
+                    RegistrationNumber = "DFG34573452",
+                    MaterialsAuthorisation = new List<MaterialsAuthorisedOnSiteInfoDto>
+                    {
+                        new MaterialsAuthorisedOnSiteInfoDto
+                        {
+                            Material = "Plastic",
+                            RegistrationStatus = "NotStarted",
+                            Reason = "Lorem ipsum dolor sit amet, consectetur adipiscing1 elit. Fusce vulputate aliquet ornare. Vestibulum dolor nunc, tincidunt a diam nec, mattis venenatis sem2"
+                        },
+                        new MaterialsAuthorisedOnSiteInfoDto
+                        {
+                            Material = "Steel",
+                            RegistrationStatus = "NotStarted",
+                            Reason = "Lorem ipsum dolor sit amet, consectetur adipiscing2 elit. Fusce vulputate aliquet ornare. Vestibulum dolor nunc, tincidunt a diam nec, mattis venenatis sem2"
+                        },
+                        new MaterialsAuthorisedOnSiteInfoDto
+                        {
+                            Material = "Aluminium",
+                            RegistrationStatus = "NotStarted",
+                            Reason = "Lorem ipsum dolor sit amet, consectetur adipiscing3 elit. Fusce vulputate aliquet ornare. Vestibulum dolor nunc, tincidunt a diam nec, mattis venenatis sem2"
+                        }
+                    }
+                }
+            },
+            new RegistrationTaskDto
+            {
+                Id = 0,
+                TaskName = "RegistrationDulyMade",
+                Status = "NotStarted",
+                TaskData = null
+            }
+        },
+            Materials = new List<RegistrationMaterialDto>
+        {
+            new RegistrationMaterialDto
+            {
+                Id = 4,
+                RegistrationId = 2,
+                MaterialName = "Plastic",
+                Status = null,
+                StatusUpdatedBy = null,
+                StatusUpdatedDate = DateTime.MinValue,
+                RegistrationReferenceNumber = "REF0002-01",
+                Comments = "Test description for material 1 in registration 2",
+                DeterminationDate = DateTime.Parse("2025-04-27T08:03:19.4429901Z"),
+                Tasks = new List<RegistrationTaskDto>
+                {
+                    new RegistrationTaskDto { Id = 0, TaskName = "WasteLicensesPermitsAndExemptions", Status = "NotStarted" },
+                    new RegistrationTaskDto { Id = 0, TaskName = "ReprocessingInputsAndOutputs", Status = "NotStarted" },
+                    new RegistrationTaskDto { Id = 0, TaskName = "SamplingAndInspectionPlan", Status = "NotStarted" },
+                    new RegistrationTaskDto { Id = 0, TaskName = "AssignOfficer", Status = "NotStarted" }
+                }
+            },
+            new RegistrationMaterialDto
+            {
+                Id = 5,
+                RegistrationId = 2,
+                MaterialName = "Steel",
+                Status = null,
+                StatusUpdatedBy = null,
+                StatusUpdatedDate = DateTime.MinValue,
+                RegistrationReferenceNumber = "REF0002-02",
+                Comments = "Test description for material 2 in registration 2",
+                DeterminationDate = DateTime.Parse("2025-04-27T08:03:19.4429905Z"),
+                Tasks = new List<RegistrationTaskDto>
+                {
+                    new RegistrationTaskDto { Id = 0, TaskName = "WasteLicensesPermitsAndExemptions", Status = "NotStarted" },
+                    new RegistrationTaskDto { Id = 0, TaskName = "ReprocessingInputsAndOutputs", Status = "NotStarted" },
+                    new RegistrationTaskDto { Id = 0, TaskName = "SamplingAndInspectionPlan", Status = "NotStarted" },
+                    new RegistrationTaskDto { Id = 0, TaskName = "AssignOfficer", Status = "NotStarted" }
+                }
+            },
+            new RegistrationMaterialDto
+            {
+                Id = 6,
+                RegistrationId = 2,
+                MaterialName = "Aluminium",
+                Status = null,
+                StatusUpdatedBy = null,
+                StatusUpdatedDate = DateTime.MinValue,
+                RegistrationReferenceNumber = "REF0002-03",
+                Comments = "Test description for material 3 in registration 2",
+                DeterminationDate = DateTime.Parse("2025-04-27T08:03:19.442991Z"),
+                Tasks = new List<RegistrationTaskDto>
+                {
+                    new RegistrationTaskDto { Id = 0, TaskName = "WasteLicensesPermitsAndExemptions", Status = "NotStarted" },
+                    new RegistrationTaskDto { Id = 0, TaskName = "ReprocessingInputsAndOutputs", Status = "NotStarted" },
+                    new RegistrationTaskDto { Id = 0, TaskName = "SamplingAndInspectionPlan", Status = "NotStarted" },
+                    new RegistrationTaskDto { Id = 0, TaskName = "AssignOfficer", Status = "NotStarted" }
+                }
+            }
+        }
+        };
+
+        _mediatorMock
+            .Setup(m => m.Send(It.IsAny<GetRegistrationOverviewDetailByIdQuery>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(expectedDto);
+
+        // Act
+        var result = await _controller.GetRegistrationOverviewDetailById(registrationId);
+
+        // Assert
+        var okResult = result as OkObjectResult;
+        okResult.Should().NotBeNull();
+        okResult!.StatusCode.Should().Be(200);
+        okResult.Value.Should().BeEquivalentTo(expectedDto);
+    }
+
+
 }
