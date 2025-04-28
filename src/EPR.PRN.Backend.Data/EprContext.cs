@@ -17,7 +17,7 @@ namespace EPR.PRN.Backend.Data
 
         }
 
-        public EprContext(DbContextOptions options) : base(options)
+        public EprContext(DbContextOptions<EprContext> options) : base(options)
         {
 
         }
