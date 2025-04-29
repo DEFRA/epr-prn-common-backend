@@ -62,9 +62,9 @@ public class RegistrationMaterialProfile : Profile
             .ForMember(dest => dest.FileUploadStatus, opt => opt.MapFrom(src => src.FileUploadStatus.Name))
             .ForMember(dest => dest.Comments, opt => opt.MapFrom(src => src.Comments));
 
-        CreateMap<RegistrationMaterial, RegistrationMaterialWasteLicensesDto>()
+        CreateMap<RegistrationMaterial, RegistrationMaterialWasteLicencesDto>()
             .ForMember(dest => dest.PermitType, opt => opt.MapFrom(src => src.PermitType.Name))
-            .ForMember(dest => dest.LicenseNumbers, opt => opt.MapFrom(src => GetReferenceNumber(src)))
+            .ForMember(dest => dest.LicenceNumbers, opt => opt.MapFrom(src => GetReferenceNumber(src)))
             .ForMember(dest => dest.CapacityTonne, opt => opt.MapFrom(src => GetAuthorisedCapacityTonne(src)))
             .ForMember(dest => dest.CapacityPeriod, opt => opt.MapFrom(src => GetReferencePeriod(src)))
             .ForMember(dest => dest.MaximumReprocessingCapacityTonne, opt => opt.MapFrom(src => src.MaximumReprocessingCapacityTonne))
@@ -77,9 +77,9 @@ public class RegistrationMaterialProfile : Profile
     {
         PermitTypes.WasteExemption => src.MaterialExemptionReferences?.Select(x => x.ReferenceNo).ToArray(),
         PermitTypes.PollutionPreventionAndControlPermit => [src.PPCPermitNumber],
-        PermitTypes.WasteManagementLicense => [src.WasteManagementLicenseNumber],
+        PermitTypes.WasteManagementLicence => [src.WasteManagementLicenceNumber],
         PermitTypes.InstallationPermit => [src.InstallationPermitNumber],
-        PermitTypes.EnvironmentalPermitOrWasteManagementLicense => [src.EnvironmentalPermitWasteManagementNumber],
+        PermitTypes.EnvironmentalPermitOrWasteManagementLicence => [src.EnvironmentalPermitWasteManagementNumber],
         _ => null
     };
 
@@ -87,9 +87,9 @@ public class RegistrationMaterialProfile : Profile
     {
         PermitTypes.WasteExemption => null,
         PermitTypes.PollutionPreventionAndControlPermit => src.PPCReprocessingCapacityTonne,
-        PermitTypes.WasteManagementLicense => src.WasteManagementReprocessingCapacityTonne,
+        PermitTypes.WasteManagementLicence => src.WasteManagementReprocessingCapacityTonne,
         PermitTypes.InstallationPermit => src.InstallationReprocessingTonne,
-        PermitTypes.EnvironmentalPermitOrWasteManagementLicense => src.EnvironmentalPermitWasteManagementTonne,
+        PermitTypes.EnvironmentalPermitOrWasteManagementLicence => src.EnvironmentalPermitWasteManagementTonne,
         _ => null
     };
 
@@ -97,9 +97,9 @@ public class RegistrationMaterialProfile : Profile
     {
         PermitTypes.WasteExemption => null,
         PermitTypes.PollutionPreventionAndControlPermit => src.PPCPeriod?.Name,
-        PermitTypes.WasteManagementLicense => src.WasteManagementPeriod?.Name,
+        PermitTypes.WasteManagementLicence => src.WasteManagementPeriod?.Name,
         PermitTypes.InstallationPermit => src.InstallationPeriod?.Name,
-        PermitTypes.EnvironmentalPermitOrWasteManagementLicense => src.EnvironmentalPermitWasteManagementPeriod?.Name,
+        PermitTypes.EnvironmentalPermitOrWasteManagementLicence => src.EnvironmentalPermitWasteManagementPeriod?.Name,
         _ => null
     };
 

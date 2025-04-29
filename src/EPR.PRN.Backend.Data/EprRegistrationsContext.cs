@@ -76,9 +76,9 @@ public class EprRegistrationsContext : DbContext
         modelBuilder.Entity<LookupMaterialPermit>().HasData(
             new LookupMaterialPermit { Id = 1, Name = PermitTypes.WasteExemption },
             new LookupMaterialPermit { Id = 2, Name = PermitTypes.PollutionPreventionAndControlPermit },
-            new LookupMaterialPermit { Id = 3, Name = PermitTypes.WasteManagementLicense },
+            new LookupMaterialPermit { Id = 3, Name = PermitTypes.WasteManagementLicence },
             new LookupMaterialPermit { Id = 4, Name = PermitTypes.InstallationPermit },
-            new LookupMaterialPermit { Id = 5, Name = PermitTypes.EnvironmentalPermitOrWasteManagementLicense });
+            new LookupMaterialPermit { Id = 5, Name = PermitTypes.EnvironmentalPermitOrWasteManagementLicence });
 
         modelBuilder.Entity<LookupPeriod>().HasData(
            new LookupPeriod { Id = 1, Name = "Per Year" },
@@ -211,7 +211,7 @@ public class EprRegistrationsContext : DbContext
             Comments = $"Test description for material {j} in registration {registrationCounter}",
             PermitTypeId = permitTypeId,
             PPCPermitNumber = $"PPC{registrationCounter:D4}-{j:D2}",
-            WasteManagementLicenseNumber = $"WML{registrationCounter:D4}-{j:D2}",
+            WasteManagementLicenceNumber = $"WML{registrationCounter:D4}-{j:D2}",
             EnvironmentalPermitWasteManagementNumber = $"EWM{registrationCounter:D4}-{j:D2}",
             InstallationPermitNumber = $"IP{registrationCounter:D4}-{j:D2}",
             MaximumProcessingCapacityTonnes = 1000,

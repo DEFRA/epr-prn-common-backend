@@ -1,9 +1,9 @@
 ﻿namespace EPR.PRN.Backend.API.Dto.Regulator
 {
-    public class RegistrationMaterialWasteLicensesDto
+    public class RegistrationMaterialWasteLicencesDto
     {
         public required string PermitType { get; set; }
-        public required string[] LicenseNumbers { get; set; }
+        public required string[] LicenceNumbers { get; set; }
 
         public decimal? CapacityTonne { get; set; }
         public string? CapacityPeriod { get; set; }

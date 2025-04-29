@@ -6,15 +6,15 @@ using MediatR;
 
 namespace EPR.PRN.Backend.API.Handlers;
 
-public class GetMaterialWasteLicensesQueryHandler(
+public class GetMaterialWasteLicencesQueryHandler(
     IRegistrationMaterialRepository rmRepository,
     IMapper mapper
-) : IRequestHandler<GetMaterialWasteLicensesQuery, RegistrationMaterialWasteLicensesDto>
+) : IRequestHandler<GetMaterialWasteLicencesQuery, RegistrationMaterialWasteLicencesDto>
 {
-    public async Task<RegistrationMaterialWasteLicensesDto> Handle(GetMaterialWasteLicensesQuery request, CancellationToken cancellationToken)
+    public async Task<RegistrationMaterialWasteLicencesDto> Handle(GetMaterialWasteLicencesQuery request, CancellationToken cancellationToken)
     {
-        var materialEntity = await rmRepository.GetRegistrationMaterial_WasteLicensesById(request.Id);
-        var materialDto = mapper.Map<RegistrationMaterialWasteLicensesDto>(materialEntity);
+        var materialEntity = await rmRepository.GetRegistrationMaterial_WasteLicencesById(request.Id);
+        var materialDto = mapper.Map<RegistrationMaterialWasteLicencesDto>(materialEntity);
         return materialDto;
     }
 }

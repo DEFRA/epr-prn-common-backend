@@ -30,9 +30,9 @@ public class RegistrationMaterialRepository(EprRegistrationsContext eprContext) 
                ?? throw new KeyNotFoundException("Material not found.");
     }
 
-    public async Task<RegistrationMaterial> GetRegistrationMaterial_WasteLicensesById(int registrationMaterialId)
+    public async Task<RegistrationMaterial> GetRegistrationMaterial_WasteLicencesById(int registrationMaterialId)
     {
-        var registrationMaterials = GetRegistrationMaterialsWithRelatedEntities_WasteLicenses();
+        var registrationMaterials = GetRegistrationMaterialsWithRelatedEntities_WasteLicences();
 
         return await registrationMaterials.SingleOrDefaultAsync(rm => rm.Id == registrationMaterialId)
                ?? throw new KeyNotFoundException("Material not found.");
@@ -84,7 +84,7 @@ public class RegistrationMaterialRepository(EprRegistrationsContext eprContext) 
         return registrationMaterials;
     }
 
-    private IIncludableQueryable<RegistrationMaterial, LookupMaterialPermit> GetRegistrationMaterialsWithRelatedEntities_WasteLicenses()
+    private IIncludableQueryable<RegistrationMaterial, LookupMaterialPermit> GetRegistrationMaterialsWithRelatedEntities_WasteLicences()
     {
         var registrationMaterials =
             eprContext.RegistrationMaterials

@@ -9,7 +9,7 @@ public interface IRegistrationMaterialRepository
     Task<List<LookupRegulatorTask>> GetRequiredTasks(int applicationTypeId, bool isMaterialSpecific);
 
     Task<RegistrationMaterial> GetRegistrationMaterialById(int registrationMaterialId);
-    Task<RegistrationMaterial> GetRegistrationMaterial_WasteLicensesById(int registrationMaterialId);
+    Task<RegistrationMaterial> GetRegistrationMaterial_WasteLicencesById(int registrationMaterialId);
     Task<RegistrationMaterial> GetRegistrationMaterial_RegistrationReprocessingIOById(int registrationMaterialId);
     Task<RegistrationMaterial> GetRegistrationMaterial_FileUploadById(int registrationMaterialId);
 

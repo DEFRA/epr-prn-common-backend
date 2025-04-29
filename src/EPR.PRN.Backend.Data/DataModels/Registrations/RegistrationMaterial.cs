@@ -42,7 +42,7 @@ public class RegistrationMaterial
 
     public List<MaterialExemptionReference>? MaterialExemptionReferences { get; set; }
     public string? PPCPermitNumber { get; set; }
-    public string? WasteManagementLicenseNumber { get; set; }
+    public string? WasteManagementLicenceNumber { get; set; }
     public string? InstallationPermitNumber { get; set; }
     public string? EnvironmentalPermitWasteManagementNumber { get; set; }
     public decimal PPCReprocessingCapacityTonne { get; set; }

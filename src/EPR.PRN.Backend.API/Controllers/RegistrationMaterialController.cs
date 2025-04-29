@@ -58,14 +58,14 @@ public class RegistrationMaterialController(IMediator mediator
         return Ok(result);
     }
 
-    [HttpGet("registrationMaterials/{Id}/WasteLicenses")]
-    [ProducesResponseType(typeof(RegistrationMaterialWasteLicensesDto), 200)]
+    [HttpGet("registrationMaterials/{Id}/WasteLicences")]
+    [ProducesResponseType(typeof(RegistrationMaterialWasteLicencesDto), 200)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> WasteLicenses(int Id)
+    public async Task<IActionResult> WasteLicences(int Id)
     {
         logger.LogInformation(LogMessages.RegistrationMaterialsTasks);
-        var result = await mediator.Send(new GetMaterialWasteLicensesQuery() { Id = Id });
+        var result = await mediator.Send(new GetMaterialWasteLicencesQuery() { Id = Id });
         return Ok(result);
     }
 
