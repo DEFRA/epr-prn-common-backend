@@ -27,6 +27,10 @@ public class EprRegistrationsContext : DbContext
         }
     }
 
+    int registrationId;
+    int lookupAddressID;
+    int registrationMaterialId;
+    int materialExemptionReferenceId;
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<LookupMaterial>().HasData(
@@ -54,21 +58,21 @@ public class EprRegistrationsContext : DbContext
             new LookupJourneyType { Id = 2, Name = "Accreditation" });
 
         modelBuilder.Entity<LookupRegulatorTask>().HasData(
-            new LookupRegulatorTask { Id = 1,IsMaterialSpecific = false, ApplicationTypeId = 1, JourneyTypeId = 1, Name = "SiteAddressAndContactDetails" },
-            new LookupRegulatorTask { Id = 2,IsMaterialSpecific = false, ApplicationTypeId = 1, JourneyTypeId = 1, Name = "MaterialsAuthorisedOnSite" },
-            new LookupRegulatorTask { Id = 3,IsMaterialSpecific = false, ApplicationTypeId = 1, JourneyTypeId = 1, Name = "RegistrationDulyMade" },
-            new LookupRegulatorTask { Id = 4,IsMaterialSpecific = true, ApplicationTypeId = 1, JourneyTypeId = 1, Name = "WasteLicensesPermitsAndExemptions" },
-            new LookupRegulatorTask { Id = 5,IsMaterialSpecific = true, ApplicationTypeId = 1, JourneyTypeId = 1, Name = "ReprocessingInputsAndOutputs" },
-            new LookupRegulatorTask { Id = 6,IsMaterialSpecific = true, ApplicationTypeId = 1, JourneyTypeId = 1, Name = "SamplingAndInspectionPlan" },
-            new LookupRegulatorTask { Id = 7,IsMaterialSpecific = true, ApplicationTypeId = 1, JourneyTypeId = 1, Name = "AssignOfficer" },
-            new LookupRegulatorTask { Id = 8,IsMaterialSpecific = false, ApplicationTypeId = 2, JourneyTypeId = 1, Name = "BusinessAddress" },
-            new LookupRegulatorTask { Id = 9,IsMaterialSpecific = false, ApplicationTypeId = 2, JourneyTypeId = 1, Name = "WasteLicensesPermitsAndExemptions" },
-            new LookupRegulatorTask { Id = 10,IsMaterialSpecific = false, ApplicationTypeId = 2, JourneyTypeId = 1, Name = "RegistrationDulyMade" },
-            new LookupRegulatorTask { Id = 11,IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 1, Name = "SamplingAndInspectionPlan" },
-            new LookupRegulatorTask { Id = 12,IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 1, Name = "AssignOfficer" },
+            new LookupRegulatorTask { Id = 1, IsMaterialSpecific = false, ApplicationTypeId = 1, JourneyTypeId = 1, Name = "SiteAddressAndContactDetails" },
+            new LookupRegulatorTask { Id = 2, IsMaterialSpecific = false, ApplicationTypeId = 1, JourneyTypeId = 1, Name = "MaterialsAuthorisedOnSite" },
+            new LookupRegulatorTask { Id = 3, IsMaterialSpecific = false, ApplicationTypeId = 1, JourneyTypeId = 1, Name = "RegistrationDulyMade" },
+            new LookupRegulatorTask { Id = 4, IsMaterialSpecific = true, ApplicationTypeId = 1, JourneyTypeId = 1, Name = "WasteLicensesPermitsAndExemptions" },
+            new LookupRegulatorTask { Id = 5, IsMaterialSpecific = true, ApplicationTypeId = 1, JourneyTypeId = 1, Name = "ReprocessingInputsAndOutputs" },
+            new LookupRegulatorTask { Id = 6, IsMaterialSpecific = true, ApplicationTypeId = 1, JourneyTypeId = 1, Name = "SamplingAndInspectionPlan" },
+            new LookupRegulatorTask { Id = 7, IsMaterialSpecific = true, ApplicationTypeId = 1, JourneyTypeId = 1, Name = "AssignOfficer" },
+            new LookupRegulatorTask { Id = 8, IsMaterialSpecific = false, ApplicationTypeId = 2, JourneyTypeId = 1, Name = "BusinessAddress" },
+            new LookupRegulatorTask { Id = 9, IsMaterialSpecific = false, ApplicationTypeId = 2, JourneyTypeId = 1, Name = "WasteLicensesPermitsAndExemptions" },
+            new LookupRegulatorTask { Id = 10, IsMaterialSpecific = false, ApplicationTypeId = 2, JourneyTypeId = 1, Name = "RegistrationDulyMade" },
+            new LookupRegulatorTask { Id = 11, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 1, Name = "SamplingAndInspectionPlan" },
+            new LookupRegulatorTask { Id = 12, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 1, Name = "AssignOfficer" },
             new LookupRegulatorTask { Id = 13, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 1, Name = "MaterialDetailsAndContact" },
             new LookupRegulatorTask { Id = 14, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 1, Name = "OverseasReprocessorAndInterimSiteDetails" });
-        
+
         modelBuilder.Entity<LookupMaterialPermit>().HasData(
             new LookupMaterialPermit { Id = 1, Name = PermitTypes.WasteExemption },
             new LookupMaterialPermit { Id = 2, Name = PermitTypes.PollutionPreventionAndControlPermit },
@@ -100,22 +104,18 @@ public class EprRegistrationsContext : DbContext
         var registrationReprocessingIOs = new List<RegistrationReprocessingIO>();
         var fileUploads = new List<FileUpload>();
 
+        registrationId = 0;
+        lookupAddressID = 0;
+        registrationMaterialId = 0;
+        materialExemptionReferenceId = 0;
+
         for (var registrationCounter = 1; registrationCounter <= NumberOfRegistrations; registrationCounter++)
         {
             var ApplicationTypeId = registrationCounter % 2 + 1;
-            registrations.Add(new Registration
-            {
-                Id = registrationCounter,
-                ExternalId = Guid.NewGuid().ToString(),
-                ApplicationTypeId = ApplicationTypeId,
-                OrganisationId = 1,
-                BusinessAddressId = registrationCounter,
-                ReprocessingSiteAddressId = registrationCounter
-            });
 
             lookupAddresses.Add(new LookupAddress
             {
-                Id = registrationCounter,
+                Id = ++lookupAddressID,
                 AddressLine1 = "23",
                 AddressLine2 = "Ruby St",
                 TownCity = "London",
@@ -124,98 +124,27 @@ public class EprRegistrationsContext : DbContext
                 PostCode = "E12 3SE"
             });
 
+            registrations.Add(new Registration
+            {
+                Id = ++registrationId,
+                ExternalId = Guid.NewGuid().ToString(),
+                ApplicationTypeId = ApplicationTypeId,
+                OrganisationId = 1,
+                BusinessAddressId = lookupAddressID,
+                ReprocessingSiteAddressId = lookupAddressID
+            });
+
             for (int j = 1; j <= 3; j++)
             {
-                var registrationMaterialId = (registrationCounter - 1) * 3 + j;
-                registrationMaterials.Add(new RegistrationMaterial
-                {
-                    Id = registrationMaterialId,
-                    MaterialId = j,
-                    StatusID = null,
-                    RegistrationId = registrationCounter,
-                    DeterminationDate = DateTime.UtcNow,
-                    ReferenceNumber = $"REF{registrationCounter:D4}-{j:D2}",
-                    Comments = $"Test description for material {j} in registration {registrationCounter}",
-                    PermitTypeId = 2,
-                    PPCPermitNumber = $"PPC{registrationCounter:D4}-{j:D2}",
-                    WasteManagementLicenseNumber = $"WML{registrationCounter:D4}-{j:D2}",
-                    EnvironmentalPermitWasteManagementNumber = $"EWM{registrationCounter:D4}-{j:D2}",
-                    InstallationPermitNumber = $"IP{registrationCounter:D4}-{j:D2}",
-                    MaximumProcessingCapacityTonnes = 1000,
-                    PPCPeriodId = 1,
-                    WasteManagementPeriodId = 1,
-                    InstallationPeriodId = 1,
-                    EnvironmentalPermitWasteManagementPeriodId = 1,
-                    PPCReprocessingCapacityTonne = 2000,
-                    WasteManagementReprocessingCapacityTonne = 3000,
-                    InstallationReprocessingTonne = 4000,
-                    EnvironmentalPermitWasteManagementTonne = 5000,
-                    MaximumReprocessingCapacityTonne = 6000,
-                    MaximumReprocessingPeriodID = 1,
+                registrationMaterials.Add(GetRegistrationMaterial(registrationCounter, registrationId, j, materialExemptionReferences));
 
-                });
+                registrationReprocessingIOs.Add(GetReprocessionIos(registrationCounter, registrationMaterialId));
 
-                materialExemptionReferences.AddRange(new List<MaterialExemptionReference>
-                {
-                    new MaterialExemptionReference
-                    {
-                        Id = registrationMaterialId * 2 - 1,
-                        ReferenceNo = $"EXEMPT{registrationCounter:D4}-{j:D2}",
-                        RegistrationMaterialId = registrationMaterialId
-                    },
-                    new MaterialExemptionReference
-                    {
-                        Id = registrationMaterialId * 2,
-                        ReferenceNo = $"EXEMPT{registrationCounter:D4}-{j:D2}",
-                        RegistrationMaterialId = registrationMaterialId
-                    }
-                });
-
-                registrationReprocessingIOs.Add(new RegistrationReprocessingIO
-                {
-                    Id = registrationMaterialId,
-                    RegistrationMaterialId = registrationMaterialId,
-                    ContaminantsTonne = 1,
-                    NonUKPackagingWasteTonne = 2,
-                    NotPackingWasteTonne= 3,
-                    ProcessLossTonne = 4,
-                    ReprocessingPackagingWasteLastYearFlag = true,
-                    SenttoOtherSiteTonne = 5,
-                    UKPackagingWasteTonne = 6,
-                    PlantEquipmentUsed = "shredder",
-                    TypeOfSupplier = "Shed"
-                });
-
-                fileUploads.AddRange(new List<FileUpload>{
-                    new FileUpload
-                    {
-                        Id = registrationMaterialId * 2 - 1,
-                        RegistrationMaterialId = registrationMaterialId,
-                        Filename = $"File{registrationCounter:D4}-{j:D2}-1.pdf",
-                        FileUploadTypeId = 1,
-                        FileUploadStatusId = 1,
-                        DateUploaded = DateTime.UtcNow,
-                        UpdatedBy = "Test User",
-                        Comments = "Test comment",
-                        FileId = Guid.NewGuid().ToString()
-                    },
-                    new FileUpload
-                    {
-                        Id = registrationMaterialId * 2,
-                        RegistrationMaterialId = registrationMaterialId,
-                        Filename = $"File{registrationCounter:D4}-{j:D2}-2.pdf",
-                        FileUploadTypeId = 1,
-                        FileUploadStatusId = 1,
-                        DateUploaded = DateTime.UtcNow,
-                        UpdatedBy = "Test User",
-                        Comments = "Test comment",
-                        FileId = Guid.NewGuid().ToString()
-                    }
-                });
+                fileUploads.AddRange(GetFileUploads(registrationCounter, j, registrationMaterialId));
             }
         }
 
-        
+
         modelBuilder.Entity<Registration>().HasData(registrations);
         modelBuilder.Entity<LookupAddress>().HasData(lookupAddresses);
         modelBuilder.Entity<RegistrationMaterial>().HasData(registrationMaterials);
@@ -224,7 +153,7 @@ public class EprRegistrationsContext : DbContext
         modelBuilder.Entity<FileUpload>().HasData(fileUploads);
         modelBuilder.Entity<RegulatorRegistrationTaskStatus>().HasData(registrationTaskStatuses);
         modelBuilder.Entity<RegulatorApplicationTaskStatus>().HasData(applicationTaskStatuses);
-        
+
         modelBuilder.Entity<Registration>()
             .HasMany(r => r.Tasks);
 
@@ -239,11 +168,325 @@ public class EprRegistrationsContext : DbContext
         base.OnModelCreating(modelBuilder);
     }
 
+    private RegistrationMaterial GetRegistrationMaterial(int registrationCounter, int registrationId, int j, List<MaterialExemptionReference> materialExemptionReferences)
+    {
+        int permitTypeId = 1;
+        if (registrationCounter <= 10)
+        {
+            permitTypeId = 1;
+        }
+        else if (registrationCounter > 10 && registrationCounter <= 20)
+        {
+            permitTypeId = 1;
+        }
+        else if (registrationCounter > 20 && registrationCounter <= 30)
+        {
+            permitTypeId = 1;
+        }
+        else if (registrationCounter > 30 && registrationCounter <= 40)
+        {
+            permitTypeId = 2;
+        }
+        else if (registrationCounter > 40 && registrationCounter <= 50)
+        {
+            permitTypeId = 3;
+        }
+        else if (registrationCounter > 50 && registrationCounter <= 60)
+        {
+            permitTypeId = 4;
+        }
+        else if (registrationCounter > 60 && registrationCounter <= 70)
+        {
+            permitTypeId = 5;
+        }
+
+        var RegistrationMaterial = new RegistrationMaterial
+        {
+            Id = ++registrationMaterialId,
+            MaterialId = j,
+            StatusID = null,
+            RegistrationId = registrationId,
+            DeterminationDate = DateTime.UtcNow,
+            ReferenceNumber = $"REF{registrationCounter:D4}-{j:D2}",
+            Comments = $"Test description for material {j} in registration {registrationCounter}",
+            PermitTypeId = permitTypeId,
+            PPCPermitNumber = $"PPC{registrationCounter:D4}-{j:D2}",
+            WasteManagementLicenseNumber = $"WML{registrationCounter:D4}-{j:D2}",
+            EnvironmentalPermitWasteManagementNumber = $"EWM{registrationCounter:D4}-{j:D2}",
+            InstallationPermitNumber = $"IP{registrationCounter:D4}-{j:D2}",
+            MaximumProcessingCapacityTonnes = 1000,
+            PPCPeriodId = 1,
+            WasteManagementPeriodId = 1,
+            InstallationPeriodId = 1,
+            EnvironmentalPermitWasteManagementPeriodId = 1,
+            PPCReprocessingCapacityTonne = 2000,
+            WasteManagementReprocessingCapacityTonne = 3000,
+            InstallationReprocessingTonne = 4000,
+            EnvironmentalPermitWasteManagementTonne = 5000,
+            MaximumReprocessingCapacityTonne = 6000,
+            MaximumReprocessingPeriodID = 1
+        };
+
+        if (registrationCounter <= 10)
+        {
+            materialExemptionReferences.AddRange(new List<MaterialExemptionReference>
+                {
+                    new MaterialExemptionReference
+                    {
+                        Id = ++materialExemptionReferenceId,
+                        ReferenceNo = $"EXEMPT{registrationCounter:D4}-{materialExemptionReferenceId:D2}",
+                        RegistrationMaterialId = registrationMaterialId
+                    }
+                });
+        }
+        else if (registrationCounter > 10 && registrationCounter <= 20)
+        {
+            materialExemptionReferences.AddRange(new List<MaterialExemptionReference>
+            {
+                new MaterialExemptionReference
+                {
+                    Id = ++materialExemptionReferenceId,
+                    ReferenceNo = $"EXEMPT{registrationCounter:D4}-{materialExemptionReferenceId:D2}",
+                    RegistrationMaterialId = registrationMaterialId
+                },
+                new MaterialExemptionReference
+                {
+                    Id = ++materialExemptionReferenceId,
+                    ReferenceNo = $"EXEMPT{registrationCounter:D4}-{materialExemptionReferenceId:D2}",
+                    RegistrationMaterialId = registrationMaterialId
+                },
+                new MaterialExemptionReference
+                {
+                    Id = ++materialExemptionReferenceId,
+                    ReferenceNo = $"EXEMPT{registrationCounter:D4}-{materialExemptionReferenceId:D2}",
+                    RegistrationMaterialId = registrationMaterialId
+                },
+                new MaterialExemptionReference
+                {
+                    Id = ++materialExemptionReferenceId,
+                    ReferenceNo = $"EXEMPT{registrationCounter:D4}-{materialExemptionReferenceId:D2}",
+                    RegistrationMaterialId = registrationMaterialId
+                },
+                new MaterialExemptionReference
+                {
+                    Id = ++materialExemptionReferenceId,
+                    ReferenceNo = $"EXEMPT{registrationCounter:D4}-{materialExemptionReferenceId:D2}",
+                    RegistrationMaterialId = registrationMaterialId
+                },
+                new MaterialExemptionReference
+                {
+                    Id = ++materialExemptionReferenceId,
+                    ReferenceNo = $"EXEMPT{registrationCounter:D4}-{materialExemptionReferenceId:D2}",
+                    RegistrationMaterialId = registrationMaterialId
+                },
+                new MaterialExemptionReference
+                {
+                    Id = ++materialExemptionReferenceId,
+                    ReferenceNo = $"EXEMPT{registrationCounter:D4}-{materialExemptionReferenceId:D2}",
+                    RegistrationMaterialId = registrationMaterialId
+                },
+                new MaterialExemptionReference
+                {
+                    Id = ++materialExemptionReferenceId,
+                    ReferenceNo = $"EXEMPT{registrationCounter:D4}-{materialExemptionReferenceId:D2}",
+                    RegistrationMaterialId = registrationMaterialId
+                },
+                new MaterialExemptionReference
+                {
+                    Id = ++materialExemptionReferenceId,
+                    ReferenceNo = $"EXEMPT{registrationCounter:D4}-{materialExemptionReferenceId:D2}",
+                    RegistrationMaterialId = registrationMaterialId
+                },
+                new MaterialExemptionReference
+                {
+                    Id = ++materialExemptionReferenceId,
+                    ReferenceNo = $"EXEMPT{registrationCounter:D4}-{materialExemptionReferenceId:D2}",
+                    RegistrationMaterialId = registrationMaterialId
+                }
+            });
+        }
+
+        return RegistrationMaterial;
+    }
+
+    int FileUploadId = 1;
+    private List<FileUpload> GetFileUploads(int registrationCounter, int j, int registrationMaterialId)
+    {
+        if (registrationCounter <= 50)
+        {
+
+            return new List<FileUpload>{
+                    new FileUpload
+                    {
+                        Id = FileUploadId++,
+                        RegistrationMaterialId = registrationMaterialId,
+                        Filename = $"File{registrationCounter:D4}-{j:D2}-1.pdf",
+                        FileUploadTypeId = 1,
+                        FileUploadStatusId = 1,
+                        DateUploaded = DateTime.UtcNow,
+                        UpdatedBy = "Test User",
+                        Comments = "Test comment",
+                        FileId = Guid.NewGuid().ToString()
+                    }
+                };
+        }
+        else if (registrationCounter > 50 && registrationCounter <= 90)
+        {
+            return new List<FileUpload>
+            {
+            };
+        }
+        else
+        {
+            return new List<FileUpload>
+            {
+                new FileUpload
+                {
+                    Id = FileUploadId++,
+                    RegistrationMaterialId = registrationMaterialId,
+                    Filename = $"File{registrationCounter:D4}-{j:D2}-1.pdf",
+                    FileUploadTypeId = 1,
+                    FileUploadStatusId = 1,
+                    DateUploaded = DateTime.UtcNow,
+                    UpdatedBy = "Test User",
+                    Comments = "Test comment",
+                    FileId = Guid.NewGuid().ToString()
+                },
+                new FileUpload
+                {
+                    Id = FileUploadId++,
+                    RegistrationMaterialId = registrationMaterialId,
+                    Filename = $"File{registrationCounter:D4}-{j:D2}-1.pdf",
+                    FileUploadTypeId = 1,
+                    FileUploadStatusId = 1,
+                    DateUploaded = DateTime.UtcNow,
+                    UpdatedBy = "Test User",
+                    Comments = "Test comment",
+                    FileId = Guid.NewGuid().ToString()
+                },
+                new FileUpload
+                {
+                    Id = FileUploadId++,
+                    RegistrationMaterialId = registrationMaterialId,
+                    Filename = $"File{registrationCounter:D4}-{j:D2}-1.pdf",
+                    FileUploadTypeId = 1,
+                    FileUploadStatusId = 1,
+                    DateUploaded = DateTime.UtcNow,
+                    UpdatedBy = "Test User",
+                    Comments = "Test comment",
+                    FileId = Guid.NewGuid().ToString()
+                },
+                new FileUpload
+                {
+                    Id = FileUploadId++,
+                    RegistrationMaterialId = registrationMaterialId,
+                    Filename = $"File{registrationCounter:D4}-{j:D2}-1.pdf",
+                    FileUploadTypeId = 1,
+                    FileUploadStatusId = 1,
+                    DateUploaded = DateTime.UtcNow,
+                    UpdatedBy = "Test User",
+                    Comments = "Test comment",
+                    FileId = Guid.NewGuid().ToString()
+                },
+                new FileUpload
+                {
+                    Id = FileUploadId++,
+                    RegistrationMaterialId = registrationMaterialId,
+                    Filename = $"File{registrationCounter:D4}-{j:D2}-1.pdf",
+                    FileUploadTypeId = 1,
+                    FileUploadStatusId = 1,
+                    DateUploaded = DateTime.UtcNow,
+                    UpdatedBy = "Test User",
+                    Comments = "Test comment",
+                    FileId = Guid.NewGuid().ToString()
+                },
+                new FileUpload
+                {
+                    Id = FileUploadId++,
+                    RegistrationMaterialId = registrationMaterialId,
+                    Filename = $"File{registrationCounter:D4}-{j:D2}-1.pdf",
+                    FileUploadTypeId = 1,
+                    FileUploadStatusId = 1,
+                    DateUploaded = DateTime.UtcNow,
+                    UpdatedBy = "Test User",
+                    Comments = "Test comment",
+                    FileId = Guid.NewGuid().ToString()
+                },
+                new FileUpload
+                {
+                    Id = FileUploadId++,
+                    RegistrationMaterialId = registrationMaterialId,
+                    Filename = $"File{registrationCounter:D4}-{j:D2}-1.pdf",
+                    FileUploadTypeId = 1,
+                    FileUploadStatusId = 1,
+                    DateUploaded = DateTime.UtcNow,
+                    UpdatedBy = "Test User",
+                    Comments = "Test comment",
+                    FileId = Guid.NewGuid().ToString()
+                },
+                new FileUpload
+                {
+                    Id = FileUploadId++,
+                    RegistrationMaterialId = registrationMaterialId,
+                    Filename = $"File{registrationCounter:D4}-{j:D2}-1.pdf",
+                    FileUploadTypeId = 1,
+                    FileUploadStatusId = 1,
+                    DateUploaded = DateTime.UtcNow,
+                    UpdatedBy = "Test User",
+                    Comments = "Test comment",
+                    FileId = Guid.NewGuid().ToString()
+                },
+                new FileUpload
+                {
+                    Id = FileUploadId++,
+                    RegistrationMaterialId = registrationMaterialId,
+                    Filename = $"File{registrationCounter:D4}-{j:D2}-1.pdf",
+                    FileUploadTypeId = 1,
+                    FileUploadStatusId = 1,
+                    DateUploaded = DateTime.UtcNow,
+                    UpdatedBy = "Test User",
+                    Comments = "Test comment",
+                    FileId = Guid.NewGuid().ToString()
+                },
+                new FileUpload
+                {
+                    Id = FileUploadId++,
+                    RegistrationMaterialId = registrationMaterialId,
+                    Filename = $"File{registrationCounter:D4}-{j:D2}-1.pdf",
+                    FileUploadTypeId = 1,
+                    FileUploadStatusId = 1,
+                    DateUploaded = DateTime.UtcNow,
+                    UpdatedBy = "Test User",
+                    Comments = "Test comment",
+                    FileId = Guid.NewGuid().ToString()
+                }
+            };
+        }
+    }
+    int RegistrationReprocessingIOId = 1;
+    private RegistrationReprocessingIO GetReprocessionIos(int registrationCounter, int registrationMaterialId)
+    {
+        return new RegistrationReprocessingIO
+        {
+            Id = RegistrationReprocessingIOId++,
+            RegistrationMaterialId = registrationMaterialId,
+            ContaminantsTonne = 1,
+            NonUKPackagingWasteTonne = 2,
+            NotPackingWasteTonne = 3,
+            ProcessLossTonne = 4,
+            ReprocessingPackagingWasteLastYearFlag = registrationCounter <= 50,
+            SenttoOtherSiteTonne = 5,
+            UKPackagingWasteTonne = 6,
+            PlantEquipmentUsed = "shredder",
+            TypeOfSupplier = "Shed"
+        };
+    }
+
     public virtual DbSet<Registration> Registrations { get; set; }
     public virtual DbSet<RegistrationMaterial> RegistrationMaterials { get; set; }
     public virtual DbSet<MaterialExemptionReference> MaterialExemptionReferences { get; set; }
     public virtual DbSet<RegistrationReprocessingIO> RegistrationReprocessingIO { get; set; }
-    
+
     public virtual DbSet<RegulatorApplicationTaskStatus> RegulatorApplicationTaskStatus { get; set; }
     public virtual DbSet<RegulatorRegistrationTaskStatus> RegulatorRegistrationTaskStatus { get; set; }
     public DbSet<LookupMaterial> LookupMaterials { get; set; }
