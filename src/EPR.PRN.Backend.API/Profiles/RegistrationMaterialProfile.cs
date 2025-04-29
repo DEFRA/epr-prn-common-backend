@@ -32,8 +32,27 @@ public class RegistrationMaterialProfile : Profile
         CreateMap<RegistrationMaterial, RegistrationMaterialDetailsDto>()
             .ForMember(dest => dest.MaterialName, opt => opt.MapFrom(src => src.Material.MaterialName))
             .ForMember(dest => dest.Status, opt => opt.MapFrom(src => (RegistrationMaterialStatus?)src.StatusID));
-       
+        CreateMap<Registration, RegistrationSiteAddressDto>()
+            .ForMember(dest => dest.NationId, opt => opt.MapFrom(src => src.ReprocessingSiteAddress.NationId))
+            .ForMember(dest => dest.SiteAddress, opt => opt.MapFrom(src => CreateAddressString(src.ReprocessingSiteAddress)))
+            .ForMember(dest => dest.GridReference, opt => opt.MapFrom(src => src.ReprocessingSiteAddress.GridReference ?? ""))
+             .ForMember(dest => dest.SiteAddress, opt => opt.MapFrom(src => CreateAddressString(src.LegalDocumentAddress)));
+         CreateMap<Registration, RegistrationSiteAddressDto>()
+            .ForMember(dest => dest.NationId, opt => opt.MapFrom(src => src.ReprocessingSiteAddress != null ? src.ReprocessingSiteAddress.NationId : 0))
+            .ForMember(dest => dest.SiteAddress, opt => opt.MapFrom(src => src.ReprocessingSiteAddress != null ? CreateAddressString(src.ReprocessingSiteAddress) : string.Empty))
+            .ForMember(dest => dest.GridReference, opt => opt.MapFrom(src => src.ReprocessingSiteAddress != null ? src.ReprocessingSiteAddress.GridReference : string.Empty))
+            .ForMember(dest => dest.LegalCorrespondenceAddress, opt => opt.MapFrom(src => src.LegalDocumentAddress != null ? CreateAddressString(src.LegalDocumentAddress) : string.Empty));
 
+        CreateMap<Registration, MaterialsAuthorisedOnSiteDto>()
+            .ForMember(dest => dest.OrganisationName, opt => opt.MapFrom(src => src.OrganisationId + "_Green Ltd"))
+           .ForMember(dest => dest.SiteAddress, opt => opt.MapFrom(src => src.ReprocessingSiteAddress != null ? CreateAddressString(src.ReprocessingSiteAddress) : string.Empty))
+           .ForMember(dest => dest.MaterialsAuthorisation, opt => opt.MapFrom(src => src.Materials));
+
+        CreateMap<RegistrationMaterial, MaterialsAuthorisedOnSiteInfoDto>()
+           .ForMember(dest => dest.Material, opt => opt.MapFrom(src => src.Material.MaterialName))
+           .ForMember(dest => dest.RegistrationStatus, opt => opt.MapFrom(_ => RegulatorTaskStatus.NotStarted.ToString()))
+           .ForMember(dest => dest.Reason, opt => opt.MapFrom(src => src.ReasonforNotreg))
+           .ForMember(dest => dest.IsMaterialRegistered, opt => opt.MapFrom(src => src.IsMaterialRegistered));
     }
 
     private string CreateAddressString(LookupAddress reprocessingSiteAddress) =>

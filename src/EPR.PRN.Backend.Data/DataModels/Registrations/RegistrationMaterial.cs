@@ -35,4 +35,5 @@ public class RegistrationMaterial
     public string? ReasonforNotreg { get; set; } = string.Empty;
     public string Wastecarrierbrokerdealerregistration { get; set; } = string.Empty;
     public List<RegulatorApplicationTaskStatus>? Tasks { get; set; }
+    public bool IsMaterialRegistered { get; set; } = false;
 }

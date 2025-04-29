@@ -34,7 +34,10 @@ public class RegistrationMaterialRepositoryTests
             Country = "Germany",
             County = "Bavaria",
             PostCode = "12345",
-            TownCity = "Munich"
+            TownCity = "Munich",
+            GridReference = "123456",
+            NationId = 1
+
         };
 
         var taskStatus = new LookupTaskStatus { Id = 1, Name = "Not Started" };
@@ -58,6 +61,8 @@ public class RegistrationMaterialRepositoryTests
             Comments = "Initial comment",
             Status = materialStatus,
             Material = lookupMaterial,
+            IsMaterialRegistered = true,
+          
             Tasks = new List<RegulatorApplicationTaskStatus>
         {
             new RegulatorApplicationTaskStatus
@@ -78,6 +83,7 @@ public class RegistrationMaterialRepositoryTests
             ExternalId = "TestExternalId",
             ReprocessingSiteAddress = address,
             BusinessAddress = address,
+            LegalDocumentAddress = address,
             Tasks = new List<RegulatorRegistrationTaskStatus>
         {
             new RegulatorRegistrationTaskStatus

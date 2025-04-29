@@ -114,8 +114,9 @@ public class EprRegistrationsContext : DbContext
                     ReferenceNumber = $"REF{registrationCounter:D4}-{j:D2}",
                     Comments = $"Test description for material {j} in registration {registrationCounter}",
                     ReasonforNotreg= $"Lorem ipsum dolor sit amet, consectetur adipiscing{j} elit. Fusce vulputate aliquet ornare. Vestibulum dolor nunc, tincidunt a diam nec, mattis venenatis sem{registrationCounter}",
-                    Wastecarrierbrokerdealerregistration= $"DFG3457345{registrationCounter}"
-                    });
+                    Wastecarrierbrokerdealerregistration= $"DFG3457345{registrationCounter}",
+                    IsMaterialRegistered=false,
+                });
             }
         }
 
