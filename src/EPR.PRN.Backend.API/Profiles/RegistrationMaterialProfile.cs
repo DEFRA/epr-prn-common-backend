@@ -44,7 +44,9 @@ public class RegistrationMaterialProfile : Profile
             .ForMember(dest => dest.NotPackingWasteTonne, opt => opt.MapFrom(src => src.RegistrationReprocessingIO.Single().NotPackingWasteTonne))
             .ForMember(dest => dest.SenttoOtherSiteTonne, opt => opt.MapFrom(src => src.RegistrationReprocessingIO.Single().SenttoOtherSiteTonne))
             .ForMember(dest => dest.ContaminantsTonne, opt => opt.MapFrom(src => src.RegistrationReprocessingIO.Single().ContaminantsTonne))
-            .ForMember(dest => dest.ProcessLossTonne, opt => opt.MapFrom(src => src.RegistrationReprocessingIO.Single().ProcessLossTonne));
+            .ForMember(dest => dest.ProcessLossTonne, opt => opt.MapFrom(src => src.RegistrationReprocessingIO.Single().ProcessLossTonne))
+            .ForMember(dest => dest.TotalInput, opt => opt.MapFrom(src => src.RegistrationReprocessingIO.Single().TotalInput))
+            .ForMember(dest => dest.TotalOutput, opt => opt.MapFrom(src => src.RegistrationReprocessingIO.Single().TotalOutput));
 
         CreateMap<RegistrationMaterial, RegistrationMaterialSamplingPlanDto>()                        
             .ForMember(dest => dest.MaterialName, opt => opt.MapFrom(src => src.Material.MaterialName));
