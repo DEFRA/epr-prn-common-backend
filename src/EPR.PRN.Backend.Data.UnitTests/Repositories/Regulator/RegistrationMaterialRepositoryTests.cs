@@ -1,4 +1,5 @@
-﻿using EPR.PRN.Backend.Data.DataModels.Registrations;
+﻿using EPR.PRN.Backend.API.Common.Constants;
+using EPR.PRN.Backend.Data.DataModels.Registrations;
 using EPR.PRN.Backend.Data.Interfaces.Regulator;
 using EPR.PRN.Backend.Data.Repositories.Regulator;
 using Microsoft.EntityFrameworkCore;
@@ -48,6 +49,8 @@ public class RegistrationMaterialRepositoryTests
         };
         var materialStatus = new LookupRegistrationMaterialStatus { Id = 1, Name = "Completed" };
         var lookupMaterial = new LookupMaterial { Id = 1, MaterialCode = "PLSTC", MaterialName = "Plastic" };
+        var lookupPeriod = new LookupPeriod { Id = 1, Name = "Per Year" };
+        var lookupMaterialPermit = new LookupMaterialPermit { Id = 1, Name = PermitTypes.WasteManagementLicence };
 
         var material = new RegistrationMaterial
         {
@@ -68,7 +71,24 @@ public class RegistrationMaterialRepositoryTests
                 TaskStatus = taskStatus,
                 Task = task
             }
-        }
+        },
+            PermitType = lookupMaterialPermit,
+            EnvironmentalPermitWasteManagementPeriod = lookupPeriod,
+            EnvironmentalPermitWasteManagementTonne = 100,
+            InstallationPeriod = lookupPeriod,
+            InstallationReprocessingTonne = 200,
+            WasteManagementPeriod = lookupPeriod,
+            WasteManagementReprocessingCapacityTonne = 300,
+            PPCPeriod = lookupPeriod,
+            PPCReprocessingCapacityTonne = 400,
+            MaximumReprocessingCapacityTonne = 500,
+            MaximumReprocessingPeriod = lookupPeriod,
+            MaterialExemptionReferences = new List<MaterialExemptionReference> { new MaterialExemptionReference {
+                Id = 1,
+                ReferenceNo = "EXEMPT123",
+                RegistrationMaterialId = 1
+            }
+            }
         };
 
         var registration = new Registration
@@ -98,6 +118,9 @@ public class RegistrationMaterialRepositoryTests
         _context.LookupMaterials.Add(lookupMaterial);
         _context.LookupAddresses.Add(address);
         _context.Registrations.Add(registration);
+
+        _context.LookupPeriod.Add(lookupPeriod);
+        _context.LookupMaterialPermit.Add(lookupMaterialPermit);
 
         _context.SaveChanges();
     }
@@ -167,6 +190,51 @@ public class RegistrationMaterialRepositoryTests
     {
         await Assert.ThrowsExceptionAsync<KeyNotFoundException>(() => _repository.GetRegistrationMaterialById(999));
     }
+
+    [TestMethod]
+    public async Task GetRegistrationMaterial_WasteLicencesById_ShouldReturnMaterial_WhenExists()
+    {
+        var material = await _repository.GetRegistrationMaterial_WasteLicencesById(1);
+        Assert.IsNotNull(material);
+        Assert.AreEqual("REF12345", material.ReferenceNumber);
+        Assert.IsNotNull(material.Material);
+    }
+
+    [TestMethod]
+    public async Task GetRegistrationMaterial_WasteLicencesById_ShouldThrow_WhenNotFound()
+    {
+        await Assert.ThrowsExceptionAsync<KeyNotFoundException>(() => _repository.GetRegistrationMaterial_WasteLicencesById(999));
+    }
+
+    [TestMethod]
+    public async Task GetRegistrationMaterial_RegistrationReprocessingIOById_ShouldReturnMaterial_WhenExists()
+    {
+        var material = await _repository.GetRegistrationMaterial_RegistrationReprocessingIOById(1);
+        Assert.IsNotNull(material);
+        Assert.AreEqual("REF12345", material.ReferenceNumber);
+        Assert.IsNotNull(material.Material);
+    }
+
+    [TestMethod]
+    public async Task GetRegistrationMaterial_RegistrationReprocessingIOById_ShouldThrow_WhenNotFound()
+    {
+        await Assert.ThrowsExceptionAsync<KeyNotFoundException>(() => _repository.GetRegistrationMaterial_RegistrationReprocessingIOById(999));
+    }
+
+    [TestMethod]
+    public async Task GetRegistrationMaterial_FileUploadById_ShouldReturnMaterial_WhenExists()
+    {
+        var material = await _repository.GetRegistrationMaterial_FileUploadById(1);
+        Assert.IsNotNull(material);
+        Assert.AreEqual("REF12345", material.ReferenceNumber);
+    }
+
+    [TestMethod]
+    public async Task GetRegistrationMaterial_FileUploadById_ShouldThrow_WhenNotFound()
+    {
+        await Assert.ThrowsExceptionAsync<KeyNotFoundException>(() => _repository.GetRegistrationMaterial_FileUploadById(999));
+    }
+
 
     [TestCleanup]
     public void Cleanup()

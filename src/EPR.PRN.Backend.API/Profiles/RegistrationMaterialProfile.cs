@@ -36,6 +36,7 @@ public class RegistrationMaterialProfile : Profile
             .ForMember(dest => dest.Status, opt => opt.MapFrom(src => (RegistrationMaterialStatus?)src.StatusID));
 
         CreateMap<RegistrationMaterial, RegistrationMaterialReprocessingIODto>()
+            .ForMember(dest => dest.MaterialName, opt => opt.MapFrom(src => src.Material.MaterialName))
             .ForMember(dest => dest.SourcesOfPackagingWaste, opt => opt.MapFrom(src => src.RegistrationReprocessingIO.Single().TypeOfSupplier))
             .ForMember(dest => dest.PlantEquipmentUsed, opt => opt.MapFrom(src => src.RegistrationReprocessingIO.Single().PlantEquipmentUsed))
             .ForMember(dest => dest.ReprocessingPackagingWasteLastYearFlag, opt => opt.MapFrom(src => src.RegistrationReprocessingIO.Single().ReprocessingPackagingWasteLastYearFlag))

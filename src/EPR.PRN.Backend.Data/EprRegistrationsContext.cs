@@ -497,4 +497,6 @@ public class EprRegistrationsContext : DbContext
     public DbSet<LookupRegistrationStatus> LookupRegistrationStatuses { get; set; }
     public DbSet<LookupTaskStatus> LookupTaskStatuses { get; set; }
     public DbSet<LookupAddress> LookupAddresses { get; set; }
+    public DbSet<LookupPeriod> LookupPeriod { get; set; }
+    public DbSet<LookupMaterialPermit> LookupMaterialPermit { get; set; }
 }

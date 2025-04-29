@@ -125,4 +125,64 @@ public class RegistrationMaterialControllerTests
             controller.UpdateRegistrationOutcome(registrationId, command)
         ).Should().ThrowAsync<ValidationException>();
     }
+
+    [TestMethod]
+    public async Task GetWasteLicences_ReturnsOk_WithExpectedResult()
+    {
+        // Arrange
+        int materialId = 2;
+        var expectedDto = new RegistrationMaterialWasteLicencesDto() { PermitType = "", LicenceNumbers = [], MaterialName = "", MaximumReprocessingCapacityTonne = 1,  MaximumReprocessingPeriod = ""  };
+
+        _mediatorMock
+            .Setup(m => m.Send(It.IsAny<GetMaterialWasteLicencesQuery>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(expectedDto);
+
+        // Act
+        var result = await _controller.WasteLicences(materialId);
+
+        // Assert
+        var okResult = result as OkObjectResult;
+        okResult.Should().NotBeNull();
+        okResult!.Value.Should().BeEquivalentTo(expectedDto);
+    }
+
+    [TestMethod]
+    public async Task GetSamplingPlan_ReturnsOk_WithExpectedResult()
+    {
+        // Arrange
+        int materialId = 2;
+        var expectedDto = new RegistrationMaterialSamplingPlanDto() { MaterialName = "" };
+
+        _mediatorMock
+            .Setup(m => m.Send(It.IsAny<GetMaterialSamplingPlanQuery>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(expectedDto);
+
+        // Act
+        var result = await _controller.samplingPlan(materialId);
+
+        // Assert
+        var okResult = result as OkObjectResult;
+        okResult.Should().NotBeNull();
+        okResult!.Value.Should().BeEquivalentTo(expectedDto);
+    }
+
+    [TestMethod]
+    public async Task GetreprocessingIO_ReturnsOk_WithExpectedResult()
+    {
+        // Arrange
+        int materialId = 2;
+        var expectedDto = new RegistrationMaterialReprocessingIODto() { MaterialName = "", SourcesOfPackagingWaste = "", PlantEquipmentUsed = "" };
+
+        _mediatorMock
+            .Setup(m => m.Send(It.IsAny<GetMaterialReprocessingIOQuery>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(expectedDto);
+
+        // Act
+        var result = await _controller.reprocessingIO(materialId);
+
+        // Assert
+        var okResult = result as OkObjectResult;
+        okResult.Should().NotBeNull();
+        okResult!.Value.Should().BeEquivalentTo(expectedDto);
+    }
 }

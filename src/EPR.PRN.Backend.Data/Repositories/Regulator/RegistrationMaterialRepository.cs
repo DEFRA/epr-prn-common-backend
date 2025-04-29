@@ -84,21 +84,20 @@ public class RegistrationMaterialRepository(EprRegistrationsContext eprContext) 
         return registrationMaterials;
     }
 
-    private IIncludableQueryable<RegistrationMaterial, LookupMaterialPermit> GetRegistrationMaterialsWithRelatedEntities_WasteLicences()
+    private IIncludableQueryable<RegistrationMaterial, LookupMaterial> GetRegistrationMaterialsWithRelatedEntities_WasteLicences()
     {
         var registrationMaterials =
             eprContext.RegistrationMaterials
             .AsNoTracking()
             .AsSplitQuery()
-            .Include(rm => rm.Material)
             .Include(rm => rm.MaterialExemptionReferences)
             .Include(rm => rm.PPCPeriod)
             .Include(rm => rm.WasteManagementPeriod)
             .Include(rm => rm.InstallationPeriod)
             .Include(rm => rm.EnvironmentalPermitWasteManagementPeriod)
             .Include(rm => rm.MaximumReprocessingPeriod)
-            .Include(rm => rm.PermitType);
-
+            .Include(rm => rm.PermitType)
+            .Include(rm => rm.Material);
 
         return registrationMaterials;
     }   
