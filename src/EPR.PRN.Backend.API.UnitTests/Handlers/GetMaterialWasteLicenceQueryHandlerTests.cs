@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using EPR.PRN.Backend.API.Common.Constants;
 using EPR.PRN.Backend.API.Common.Enums;
+using EPR.PRN.Backend.API.Common.Exceptions;
 using EPR.PRN.Backend.API.Handlers;
 using EPR.PRN.Backend.API.Profiles;
 using EPR.PRN.Backend.API.Queries;
@@ -9,6 +10,7 @@ using EPR.PRN.Backend.Data.Interfaces.Regulator;
 using FluentAssertions;
 using FluentAssertions.Execution;
 using Moq;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace EPR.PRN.Backend.API.UnitTests.Handlers;
 
@@ -270,7 +272,7 @@ public class GetMaterialWasteLicenceQueryHandlerTests
     }
 
     [TestMethod]
-    public async Task Handle_ShouldReturnMappedDto_WhenMaterialNullPermitExists()
+    public async Task Handle_ShouldThrowRegulatorInvalidOperationException_WhenMaterialNullPermitExists()
     {
         // Arrange
         int materialId = 1;
@@ -305,19 +307,11 @@ public class GetMaterialWasteLicenceQueryHandlerTests
             .ReturnsAsync(materialEntity);
 
         // Act
-        var result = await _handler.Handle(query, CancellationToken.None);
+        Func<Task> act = async () => await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        using (new AssertionScope())
-        {
-            result.Should().NotBeNull();
-            result.MaterialName.Should().Be("Plastic");
-            result.PermitType.Should().BeNull();
-            result.LicenceNumbers.Length.Should().Be(0);
-            result.CapacityTonne.Should().BeNull();
-            result.CapacityPeriod.Should().BeNull();
-            result.MaximumReprocessingCapacityTonne.Should().Be(123);
-            result.MaximumReprocessingPeriod.Should().Be("Per Year");
-        }
+        await act.Should().ThrowAsync<AutoMapperMappingException>()
+            .WithInnerException(typeof(RegulatorInvalidOperationException))
+            .WithMessage("Permit Type Not Valid");
     }
 }

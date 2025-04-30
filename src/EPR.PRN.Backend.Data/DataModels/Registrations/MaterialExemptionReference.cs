@@ -11,6 +11,6 @@ namespace EPR.PRN.Backend.Data.DataModels.Registrations
         public RegistrationMaterial RegistrationMaterial { get; set; }
         [ForeignKey("RegistrationMaterial")]
         public int RegistrationMaterialId { get; set; }
-        public string? ReferenceNo { get; set; }
+        public required string ReferenceNo { get; set; }
     }
 }
