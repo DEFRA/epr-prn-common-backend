@@ -5,6 +5,7 @@ using EPR.PRN.Backend.API.Dto.Regulator;
 using EPR.PRN.Backend.API.Queries;
 
 using FluentAssertions;
+using FluentAssertions.Execution;
 using FluentValidation;
 using FluentValidation.Results;
 
@@ -53,9 +54,12 @@ public class RegistrationMaterialControllerTests
         var result = await _controller.GetRegistrationOverviewDetailById(registrationId);
 
         // Assert
-        var okResult = result as OkObjectResult;
-        okResult.Should().NotBeNull();
-        okResult!.Value.Should().BeEquivalentTo(expectedDto);
+        using (new AssertionScope())
+        {
+            var okResult = result as OkObjectResult;
+            okResult.Should().NotBeNull();
+            okResult!.Value.Should().BeEquivalentTo(expectedDto);
+        }
     }
 
     [TestMethod]
@@ -73,9 +77,12 @@ public class RegistrationMaterialControllerTests
         var result = await _controller.GetMaterialDetailById(materialId);
 
         // Assert
-        var okResult = result as OkObjectResult;
-        okResult.Should().NotBeNull();
-        okResult!.Value.Should().BeEquivalentTo(expectedDto);
+        using (new AssertionScope())
+        {
+            var okResult = result as OkObjectResult;
+            okResult.Should().NotBeNull();
+            okResult!.Value.Should().BeEquivalentTo(expectedDto);
+        }
     }
 
     [TestMethod]
@@ -97,8 +104,11 @@ public class RegistrationMaterialControllerTests
         var result = await _controller.UpdateRegistrationOutcome(materialId, command);
 
         // Assert
-        result.Should().BeOfType<NoContentResult>();
-        command.Id.Should().Be(materialId);
+        using (new AssertionScope())
+        {
+            result.Should().BeOfType<NoContentResult>();
+            command.Id.Should().Be(materialId);
+        }
     }
 
     [TestMethod]
@@ -141,9 +151,12 @@ public class RegistrationMaterialControllerTests
         var result = await _controller.WasteLicences(materialId);
 
         // Assert
-        var okResult = result as OkObjectResult;
-        okResult.Should().NotBeNull();
-        okResult!.Value.Should().BeEquivalentTo(expectedDto);
+        using (new AssertionScope())
+        {
+            var okResult = result as OkObjectResult;
+            okResult.Should().NotBeNull();
+            okResult!.Value.Should().BeEquivalentTo(expectedDto);
+        }
     }
 
     [TestMethod]
@@ -161,9 +174,12 @@ public class RegistrationMaterialControllerTests
         var result = await _controller.samplingPlan(materialId);
 
         // Assert
-        var okResult = result as OkObjectResult;
-        okResult.Should().NotBeNull();
-        okResult!.Value.Should().BeEquivalentTo(expectedDto);
+        using (new AssertionScope())
+        {
+            var okResult = result as OkObjectResult;
+            okResult.Should().NotBeNull();
+            okResult!.Value.Should().BeEquivalentTo(expectedDto);
+        }
     }
 
     [TestMethod]
@@ -181,8 +197,11 @@ public class RegistrationMaterialControllerTests
         var result = await _controller.reprocessingIO(materialId);
 
         // Assert
-        var okResult = result as OkObjectResult;
-        okResult.Should().NotBeNull();
-        okResult!.Value.Should().BeEquivalentTo(expectedDto);
+        using (new AssertionScope())
+        {
+            var okResult = result as OkObjectResult;
+            okResult.Should().NotBeNull();
+            okResult!.Value.Should().BeEquivalentTo(expectedDto);
+        }
     }
 }
