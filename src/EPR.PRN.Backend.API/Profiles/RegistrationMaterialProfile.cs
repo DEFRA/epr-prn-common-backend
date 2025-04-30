@@ -78,7 +78,7 @@ public class RegistrationMaterialProfile : Profile
 
     private static string?[]? GetReferenceNumber(RegistrationMaterial src) => src.PermitType?.Name switch
     {
-        PermitTypes.WasteExemption => src.MaterialExemptionReferences?.Select(x => x.ReferenceNo).ToArray(),
+        PermitTypes.WasteExemption => src.MaterialExemptionReferences.Select(x => x.ReferenceNo).ToArray(),
         PermitTypes.PollutionPreventionAndControlPermit => [src.PPCPermitNumber],
         PermitTypes.WasteManagementLicence => [src.WasteManagementLicenceNumber],
         PermitTypes.InstallationPermit => [src.InstallationPermitNumber],
@@ -99,10 +99,10 @@ public class RegistrationMaterialProfile : Profile
     private static string? GetReferencePeriod(RegistrationMaterial src) => src.PermitType?.Name switch
     {
         PermitTypes.WasteExemption => null,
-        PermitTypes.PollutionPreventionAndControlPermit => src.PPCPeriod?.Name,
-        PermitTypes.WasteManagementLicence => src.WasteManagementPeriod?.Name,
-        PermitTypes.InstallationPermit => src.InstallationPeriod?.Name,
-        PermitTypes.EnvironmentalPermitOrWasteManagementLicence => src.EnvironmentalPermitWasteManagementPeriod?.Name,
+        PermitTypes.PollutionPreventionAndControlPermit => src.PPCPeriod.Name,
+        PermitTypes.WasteManagementLicence => src.WasteManagementPeriod.Name,
+        PermitTypes.InstallationPermit => src.InstallationPeriod.Name,
+        PermitTypes.EnvironmentalPermitOrWasteManagementLicence => src.EnvironmentalPermitWasteManagementPeriod.Name,
         _ => null
     };
 
