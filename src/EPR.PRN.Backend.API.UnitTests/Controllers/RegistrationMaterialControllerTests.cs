@@ -148,7 +148,7 @@ public class RegistrationMaterialControllerTests
             .ReturnsAsync(expectedDto);
 
         // Act
-        var result = await _controller.WasteLicences(materialId);
+        var result = await _controller.GetWasteLicences(materialId);
 
         // Assert
         using (new AssertionScope())
@@ -171,7 +171,7 @@ public class RegistrationMaterialControllerTests
             .ReturnsAsync(expectedDto);
 
         // Act
-        var result = await _controller.samplingPlan(materialId);
+        var result = await _controller.GetSamplingPlan(materialId);
 
         // Assert
         using (new AssertionScope())
@@ -194,7 +194,7 @@ public class RegistrationMaterialControllerTests
             .ReturnsAsync(expectedDto);
 
         // Act
-        var result = await _controller.reprocessingIO(materialId);
+        var result = await _controller.GetReprocessingIO(materialId);
 
         // Assert
         using (new AssertionScope())
