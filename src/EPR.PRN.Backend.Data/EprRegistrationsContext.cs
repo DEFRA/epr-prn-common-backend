@@ -305,8 +305,8 @@ public class EprRegistrationsContext : DbContext
             ReprocessingPackagingWasteLastYearFlag = registrationCounter <= 50,
             SenttoOtherSiteTonne = 5,
             UKPackagingWasteTonne = 6,
-            TotalInput = 7,
-            TotalOutput = 8,
+            TotalInputs = 7,
+            TotalOutputs = 8,
             PlantEquipmentUsed = "shredder",
             TypeOfSupplier = "Shed"
         };

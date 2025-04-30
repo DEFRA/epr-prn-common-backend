@@ -56,8 +56,8 @@ public class GetMaterialReprocessingIOHandlerTests
                     ReprocessingPackagingWasteLastYearFlag = true,
                     SenttoOtherSiteTonne = 5,
                     UKPackagingWasteTonne = 6,
-                    TotalInput = 7,
-                    TotalOutput = 8,
+                    TotalInputs = 7,
+                    TotalOutputs = 8,
                     PlantEquipmentUsed = "shredder",
                     TypeOfSupplier = "Shed"
                 }
@@ -81,8 +81,8 @@ public class GetMaterialReprocessingIOHandlerTests
         result.ReprocessingPackagingWasteLastYearFlag.Should().Be(true);
         result.SenttoOtherSiteTonne.Should().Be(5);
         result.UKPackagingWasteTonne.Should().Be(6);
-        result.TotalInput.Should().Be(7);
-        result.TotalOutput.Should().Be(8);
+        result.TotalInputs.Should().Be(7);
+        result.TotalOutputs.Should().Be(8);
         result.PlantEquipmentUsed.Should().Be("shredder");
         result.SourcesOfPackagingWaste.Should().Be("Shed");
     }
