@@ -59,7 +59,7 @@ public class RegistrationMaterialController(IMediator mediator
         return Ok(result);
     }
 
-    [HttpGet("registration/{Id}/siteAddress")]
+    [HttpGet("registrations/{Id}/siteAddress")]
     [ProducesResponseType(typeof(RegistrationSiteAddressDto), 200)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -77,7 +77,7 @@ public class RegistrationMaterialController(IMediator mediator
         return Ok(result);
     }
     
-    [HttpGet("registration/{Id}/authorisedMaterial")]
+    [HttpGet("registrations/{Id}/authorisedMaterial")]
     [ProducesResponseType(typeof(MaterialsAuthorisedOnSiteDto), 200)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
