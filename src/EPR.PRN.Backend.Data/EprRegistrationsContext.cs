@@ -229,84 +229,28 @@ public class EprRegistrationsContext : DbContext
 
         if (registrationCounter <= 10)
         {
-            materialExemptionReferences.AddRange(new List<MaterialExemptionReference>
-                {
-                    new MaterialExemptionReference
-                    {
-                        Id = ++materialExemptionReferenceId,
-                        ReferenceNo = $"EXEMPT{registrationCounter:D4}-{materialExemptionReferenceId:D2}",
-                        RegistrationMaterialId = registrationMaterialId
-                    }
-                });
+            materialExemptionReferences.AddRange(GetMaterialExemptionReferences(registrationCounter, j, registrationMaterialId, 1));
         }
         else if (registrationCounter > 10 && registrationCounter <= 20)
         {
-            materialExemptionReferences.AddRange(new List<MaterialExemptionReference>
-            {
-                new MaterialExemptionReference
-                {
-                    Id = ++materialExemptionReferenceId,
-                    ReferenceNo = $"EXEMPT{registrationCounter:D4}-{materialExemptionReferenceId:D2}",
-                    RegistrationMaterialId = registrationMaterialId
-                },
-                new MaterialExemptionReference
-                {
-                    Id = ++materialExemptionReferenceId,
-                    ReferenceNo = $"EXEMPT{registrationCounter:D4}-{materialExemptionReferenceId:D2}",
-                    RegistrationMaterialId = registrationMaterialId
-                },
-                new MaterialExemptionReference
-                {
-                    Id = ++materialExemptionReferenceId,
-                    ReferenceNo = $"EXEMPT{registrationCounter:D4}-{materialExemptionReferenceId:D2}",
-                    RegistrationMaterialId = registrationMaterialId
-                },
-                new MaterialExemptionReference
-                {
-                    Id = ++materialExemptionReferenceId,
-                    ReferenceNo = $"EXEMPT{registrationCounter:D4}-{materialExemptionReferenceId:D2}",
-                    RegistrationMaterialId = registrationMaterialId
-                },
-                new MaterialExemptionReference
-                {
-                    Id = ++materialExemptionReferenceId,
-                    ReferenceNo = $"EXEMPT{registrationCounter:D4}-{materialExemptionReferenceId:D2}",
-                    RegistrationMaterialId = registrationMaterialId
-                },
-                new MaterialExemptionReference
-                {
-                    Id = ++materialExemptionReferenceId,
-                    ReferenceNo = $"EXEMPT{registrationCounter:D4}-{materialExemptionReferenceId:D2}",
-                    RegistrationMaterialId = registrationMaterialId
-                },
-                new MaterialExemptionReference
-                {
-                    Id = ++materialExemptionReferenceId,
-                    ReferenceNo = $"EXEMPT{registrationCounter:D4}-{materialExemptionReferenceId:D2}",
-                    RegistrationMaterialId = registrationMaterialId
-                },
-                new MaterialExemptionReference
-                {
-                    Id = ++materialExemptionReferenceId,
-                    ReferenceNo = $"EXEMPT{registrationCounter:D4}-{materialExemptionReferenceId:D2}",
-                    RegistrationMaterialId = registrationMaterialId
-                },
-                new MaterialExemptionReference
-                {
-                    Id = ++materialExemptionReferenceId,
-                    ReferenceNo = $"EXEMPT{registrationCounter:D4}-{materialExemptionReferenceId:D2}",
-                    RegistrationMaterialId = registrationMaterialId
-                },
-                new MaterialExemptionReference
-                {
-                    Id = ++materialExemptionReferenceId,
-                    ReferenceNo = $"EXEMPT{registrationCounter:D4}-{materialExemptionReferenceId:D2}",
-                    RegistrationMaterialId = registrationMaterialId
-                }
-            });
+            materialExemptionReferences.AddRange(GetMaterialExemptionReferences(registrationCounter, j, registrationMaterialId, 10));
         }
 
         return RegistrationMaterial;
+    }
+    private List<MaterialExemptionReference> GetMaterialExemptionReferences(int registrationCounter, int j, int registrationMaterialId, int NumberOfMaterialExemptionReferences)
+    {
+        var materialExemptionReferences = new List<MaterialExemptionReference>();
+        for (int i = 0; i < NumberOfMaterialExemptionReferences; i++)
+        {
+            materialExemptionReferences.Add(new MaterialExemptionReference
+            {
+                Id = ++materialExemptionReferenceId,
+                ReferenceNo = $"EXEMPT{registrationCounter:D4}-{materialExemptionReferenceId:D2}-{i}",
+                RegistrationMaterialId = registrationMaterialId
+            });
+        }
+        return materialExemptionReferences;
     }
 
     int FileUploadId = 1;
@@ -314,155 +258,39 @@ public class EprRegistrationsContext : DbContext
     {
         if (registrationCounter <= 50)
         {
-
-            return new List<FileUpload>{
-                    new FileUpload
-                    {
-                        Id = FileUploadId++,
-                        RegistrationMaterialId = registrationMaterialId,
-                        Filename = $"File{registrationCounter:D4}-{j:D2}-1.pdf",
-                        FileUploadTypeId = 1,
-                        FileUploadStatusId = 1,
-                        DateUploaded = DateTime.UtcNow,
-                        UpdatedBy = "Test User",
-                        Comments = "Test comment",
-                        FileId = Guid.NewGuid().ToString()
-                    }
-                };
+            return GetFileUploads(registrationCounter, j, registrationMaterialId, 1);
         }
         else if (registrationCounter > 50 && registrationCounter <= 90)
         {
-            return new List<FileUpload>
-            {
-            };
+            return new List<FileUpload>();
         }
         else
         {
-            return new List<FileUpload>
-            {
-                new FileUpload
-                {
-                    Id = FileUploadId++,
-                    RegistrationMaterialId = registrationMaterialId,
-                    Filename = $"File{registrationCounter:D4}-{j:D2}-1.pdf",
-                    FileUploadTypeId = 1,
-                    FileUploadStatusId = 1,
-                    DateUploaded = DateTime.UtcNow,
-                    UpdatedBy = "Test User",
-                    Comments = "Test comment",
-                    FileId = Guid.NewGuid().ToString()
-                },
-                new FileUpload
-                {
-                    Id = FileUploadId++,
-                    RegistrationMaterialId = registrationMaterialId,
-                    Filename = $"File{registrationCounter:D4}-{j:D2}-1.pdf",
-                    FileUploadTypeId = 1,
-                    FileUploadStatusId = 1,
-                    DateUploaded = DateTime.UtcNow,
-                    UpdatedBy = "Test User",
-                    Comments = "Test comment",
-                    FileId = Guid.NewGuid().ToString()
-                },
-                new FileUpload
-                {
-                    Id = FileUploadId++,
-                    RegistrationMaterialId = registrationMaterialId,
-                    Filename = $"File{registrationCounter:D4}-{j:D2}-1.pdf",
-                    FileUploadTypeId = 1,
-                    FileUploadStatusId = 1,
-                    DateUploaded = DateTime.UtcNow,
-                    UpdatedBy = "Test User",
-                    Comments = "Test comment",
-                    FileId = Guid.NewGuid().ToString()
-                },
-                new FileUpload
-                {
-                    Id = FileUploadId++,
-                    RegistrationMaterialId = registrationMaterialId,
-                    Filename = $"File{registrationCounter:D4}-{j:D2}-1.pdf",
-                    FileUploadTypeId = 1,
-                    FileUploadStatusId = 1,
-                    DateUploaded = DateTime.UtcNow,
-                    UpdatedBy = "Test User",
-                    Comments = "Test comment",
-                    FileId = Guid.NewGuid().ToString()
-                },
-                new FileUpload
-                {
-                    Id = FileUploadId++,
-                    RegistrationMaterialId = registrationMaterialId,
-                    Filename = $"File{registrationCounter:D4}-{j:D2}-1.pdf",
-                    FileUploadTypeId = 1,
-                    FileUploadStatusId = 1,
-                    DateUploaded = DateTime.UtcNow,
-                    UpdatedBy = "Test User",
-                    Comments = "Test comment",
-                    FileId = Guid.NewGuid().ToString()
-                },
-                new FileUpload
-                {
-                    Id = FileUploadId++,
-                    RegistrationMaterialId = registrationMaterialId,
-                    Filename = $"File{registrationCounter:D4}-{j:D2}-1.pdf",
-                    FileUploadTypeId = 1,
-                    FileUploadStatusId = 1,
-                    DateUploaded = DateTime.UtcNow,
-                    UpdatedBy = "Test User",
-                    Comments = "Test comment",
-                    FileId = Guid.NewGuid().ToString()
-                },
-                new FileUpload
-                {
-                    Id = FileUploadId++,
-                    RegistrationMaterialId = registrationMaterialId,
-                    Filename = $"File{registrationCounter:D4}-{j:D2}-1.pdf",
-                    FileUploadTypeId = 1,
-                    FileUploadStatusId = 1,
-                    DateUploaded = DateTime.UtcNow,
-                    UpdatedBy = "Test User",
-                    Comments = "Test comment",
-                    FileId = Guid.NewGuid().ToString()
-                },
-                new FileUpload
-                {
-                    Id = FileUploadId++,
-                    RegistrationMaterialId = registrationMaterialId,
-                    Filename = $"File{registrationCounter:D4}-{j:D2}-1.pdf",
-                    FileUploadTypeId = 1,
-                    FileUploadStatusId = 1,
-                    DateUploaded = DateTime.UtcNow,
-                    UpdatedBy = "Test User",
-                    Comments = "Test comment",
-                    FileId = Guid.NewGuid().ToString()
-                },
-                new FileUpload
-                {
-                    Id = FileUploadId++,
-                    RegistrationMaterialId = registrationMaterialId,
-                    Filename = $"File{registrationCounter:D4}-{j:D2}-1.pdf",
-                    FileUploadTypeId = 1,
-                    FileUploadStatusId = 1,
-                    DateUploaded = DateTime.UtcNow,
-                    UpdatedBy = "Test User",
-                    Comments = "Test comment",
-                    FileId = Guid.NewGuid().ToString()
-                },
-                new FileUpload
-                {
-                    Id = FileUploadId++,
-                    RegistrationMaterialId = registrationMaterialId,
-                    Filename = $"File{registrationCounter:D4}-{j:D2}-1.pdf",
-                    FileUploadTypeId = 1,
-                    FileUploadStatusId = 1,
-                    DateUploaded = DateTime.UtcNow,
-                    UpdatedBy = "Test User",
-                    Comments = "Test comment",
-                    FileId = Guid.NewGuid().ToString()
-                }
-            };
+            return GetFileUploads(registrationCounter, j, registrationMaterialId, 10);
         }
     }
+
+    private List<FileUpload> GetFileUploads(int registrationCounter, int j, int registrationMaterialId, int NumberOfFileUploads)
+    {
+        var fileUploads = new List<FileUpload>();
+        for (int i = 0; i < NumberOfFileUploads; i++)
+        {
+            fileUploads.Add(new FileUpload
+            {
+                Id = FileUploadId++,
+                RegistrationMaterialId = registrationMaterialId,
+                Filename = $"File{registrationCounter:D4}-{j:D2}-{i}.pdf",
+                FileUploadTypeId = 1,
+                FileUploadStatusId = 1,
+                DateUploaded = DateTime.UtcNow,
+                UpdatedBy = "Test User",
+                Comments = "Test comment",
+                FileId = Guid.NewGuid().ToString()
+            });
+        }
+        return fileUploads;
+    }
+
     int RegistrationReprocessingIOId = 1;
     private RegistrationReprocessingIO GetReprocessionIos(int registrationCounter, int registrationMaterialId)
     {
