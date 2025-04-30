@@ -48,7 +48,6 @@ public class RegistrationMaterialProfile : Profile
 
         CreateMap<RegistrationMaterial, MaterialsAuthorisedOnSiteInfoDto>()
            .ForMember(dest => dest.MaterialName, opt => opt.MapFrom(src => src.Material.MaterialName))
-           .ForMember(dest => dest.RegistrationStatus, opt => opt.MapFrom(_ => RegulatorTaskStatus.NotStarted.ToString()))
            .ForMember(dest => dest.Reason, opt => opt.MapFrom(src => src.ReasonforNotreg))
            .ForMember(dest => dest.IsMaterialRegistered, opt => opt.MapFrom(src => src.IsMaterialRegistered));
     }
