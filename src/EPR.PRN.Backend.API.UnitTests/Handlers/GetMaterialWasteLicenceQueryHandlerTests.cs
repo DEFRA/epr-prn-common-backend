@@ -76,7 +76,7 @@ public class GetMaterialWasteLicenceQueryHandlerTests
         result.PermitType.Should().Be(PermitTypes.WasteExemption);
         result.LicenceNumbers.First().Should().Be("1");
         result.LicenceNumbers.Skip(1).First().Should().Be("2");
-        result.LicenceNumbers.Count().Should().Be(2);
+        result.LicenceNumbers.Length.Should().Be(2);
         result.CapacityTonne.Should().BeNull();
         result.CapacityPeriod.Should().BeNull();
         result.MaximumReprocessingCapacityTonne.Should().Be(123);
@@ -119,7 +119,7 @@ public class GetMaterialWasteLicenceQueryHandlerTests
         result.MaterialName.Should().Be("Plastic");
         result.PermitType.Should().Be(PermitTypes.WasteManagementLicence);
         result.LicenceNumbers.First().Should().Be("1");
-        result.LicenceNumbers.Count().Should().Be(1);
+        result.LicenceNumbers.Length.Should().Be(1);
         result.CapacityTonne.Should().Be(456);
         result.CapacityPeriod.Should().Be("Per Year");
         result.MaximumReprocessingCapacityTonne.Should().Be(123);
@@ -162,7 +162,7 @@ public class GetMaterialWasteLicenceQueryHandlerTests
         result.MaterialName.Should().Be("Plastic");
         result.PermitType.Should().Be(PermitTypes.EnvironmentalPermitOrWasteManagementLicence);
         result.LicenceNumbers.First().Should().Be("1");
-        result.LicenceNumbers.Count().Should().Be(1);
+        result.LicenceNumbers.Length.Should().Be(1);
         result.CapacityTonne.Should().Be(456);
         result.CapacityPeriod.Should().Be("Per Year");
         result.MaximumReprocessingCapacityTonne.Should().Be(123);
@@ -205,7 +205,7 @@ public class GetMaterialWasteLicenceQueryHandlerTests
         result.MaterialName.Should().Be("Plastic");
         result.PermitType.Should().Be(PermitTypes.InstallationPermit);
         result.LicenceNumbers.First().Should().Be("1");
-        result.LicenceNumbers.Count().Should().Be(1);
+        result.LicenceNumbers.Length.Should().Be(1);
         result.CapacityTonne.Should().Be(456);
         result.CapacityPeriod.Should().Be("Per Year");
         result.MaximumReprocessingCapacityTonne.Should().Be(123);
@@ -248,7 +248,7 @@ public class GetMaterialWasteLicenceQueryHandlerTests
         result.MaterialName.Should().Be("Plastic");
         result.PermitType.Should().Be(PermitTypes.PollutionPreventionAndControlPermit);
         result.LicenceNumbers.First().Should().Be("1");
-        result.LicenceNumbers.Count().Should().Be(1);
+        result.LicenceNumbers.Length.Should().Be(1);
         result.CapacityTonne.Should().Be(456);
         result.CapacityPeriod.Should().Be("Per Year");
         result.MaximumReprocessingCapacityTonne.Should().Be(123);
@@ -298,7 +298,7 @@ public class GetMaterialWasteLicenceQueryHandlerTests
         result.Should().NotBeNull();
         result.MaterialName.Should().Be("Plastic");
         result.PermitType.Should().BeNull();
-        result.LicenceNumbers.Count().Should().Be(0);
+        result.LicenceNumbers.Length.Should().Be(0);
         result.CapacityTonne.Should().BeNull();
         result.CapacityPeriod.Should().BeNull();
         result.MaximumReprocessingCapacityTonne.Should().Be(123);
