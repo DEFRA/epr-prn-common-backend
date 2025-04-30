@@ -22,6 +22,5 @@ namespace EPR.PRN.Backend.Data.DataModels.Registrations
         public decimal ProcessLossTonne { get; set; }
         public decimal TotalInputs { get; set; }
         public decimal TotalOutputs { get; set; }
-
     }
 }
