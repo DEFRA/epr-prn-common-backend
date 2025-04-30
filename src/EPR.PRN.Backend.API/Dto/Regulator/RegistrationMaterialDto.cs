@@ -18,4 +18,5 @@ public class RegistrationMaterialDto
     public string? Comments { get; set; }
     public DateTime? DeterminationDate { get; set; }
     public List<RegistrationTaskDto> Tasks { get; set; } = [];
+    public bool IsMaterialRegistered { get; set; }
 }   

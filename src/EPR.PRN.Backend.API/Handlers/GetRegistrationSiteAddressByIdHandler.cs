@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using EPR.PRN.Backend.API.Dto.Regulator;
 using EPR.PRN.Backend.API.Queries;
 using EPR.PRN.Backend.Data.Interfaces.Regulator;
 using MediatR;
@@ -14,7 +13,9 @@ public class GetRegistrationSiteAddressByIdHandler(
     public async Task<RegistrationSiteAddressDto> Handle(GetRegistrationSiteAddressByIdQuery request, CancellationToken cancellationToken)
     {
         var registration = await rmRepository.GetRegistrationById(request.Id);
-        var siteAddressDto = mapper.Map<RegistrationSiteAddressDto>(registration);
+
+
+        var siteAddressDto = registration.ReprocessingSiteAddressId != null ? mapper.Map<RegistrationSiteAddressDto>(registration) : new RegistrationSiteAddressDto();
         return siteAddressDto;
     }
 }

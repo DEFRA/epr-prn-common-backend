@@ -1,6 +1,5 @@
 ﻿using EPR.PRN.Backend.Data.DataModels.Registrations;
 using EPR.PRN.Backend.Data.Interfaces.Regulator;
-
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
 
@@ -67,6 +66,7 @@ public class RegistrationMaterialRepository(EprRegistrationsContext eprContext) 
             .Registrations
             .AsNoTracking()
             .AsSplitQuery()
+            .Include(r => r.BusinessAddress)
             .Include(r => r.ReprocessingSiteAddress)
             .Include(r => r.LegalDocumentAddress)
             .Include(r => r.Tasks)!

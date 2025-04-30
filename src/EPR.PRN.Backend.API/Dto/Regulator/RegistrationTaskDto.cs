@@ -1,6 +1,4 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using System.Text.Json.Serialization;
-
 namespace EPR.PRN.Backend.API.Dto.Regulator;
 
 [ExcludeFromCodeCoverage]

@@ -54,6 +54,7 @@ public class GetRegistrationOverviewDetailByIdHandlerTests
                 {
                     Id = 10,
                     Material = new LookupMaterial { MaterialName = "Plastic" },
+                    IsMaterialRegistered = true,
                     Tasks =
                     [
                         new RegulatorApplicationTaskStatus
@@ -114,6 +115,7 @@ public class GetRegistrationOverviewDetailByIdHandlerTests
                 {
                     Id = 10,
                     Material = new LookupMaterial { MaterialName = "Plastic" },
+                    IsMaterialRegistered = true,
                     Tasks = []
                 }
             ]

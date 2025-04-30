@@ -20,8 +20,10 @@ public class GetRegistrationOverviewDetailByIdHandler(
         var missingRegistrationTasks = await GetMissingTasks(registration.ApplicationTypeId, false, registrationDto.Tasks);
         registrationDto.Tasks.AddRange(missingRegistrationTasks);
 
+        registrationDto.Materials = registrationDto.Materials.Where(m => m.IsMaterialRegistered).ToList();
         foreach (var materialDto in registrationDto.Materials)
         {
+
             var missingMaterialTasks = await GetMissingTasks(registration.ApplicationTypeId, true, materialDto.Tasks);
             materialDto.Tasks.AddRange(missingMaterialTasks);
         }

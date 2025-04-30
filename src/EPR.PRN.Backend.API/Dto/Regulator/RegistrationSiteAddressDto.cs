@@ -1,6 +1,5 @@
 using EPR.PRN.Backend.API.Dto.Regulator;
-
-public class RegistrationSiteAddressDto 
+public class RegistrationSiteAddressDto
 {
     public int RegistrationId { get; set; }
     public int NationId { get; set; }

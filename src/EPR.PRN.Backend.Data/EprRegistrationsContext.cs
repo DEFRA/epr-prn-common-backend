@@ -1,7 +1,6 @@
 ﻿using EPR.PRN.Backend.Data.DataModels.Registrations;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics.CodeAnalysis;
-
 namespace EPR.PRN.Backend.Data;
 
 [ExcludeFromCodeCoverage]
@@ -53,18 +52,18 @@ public class EprRegistrationsContext : DbContext
 
         modelBuilder.Entity<LookupRegulatorTask>().HasData(
 
-            new LookupRegulatorTask { Id = 1,IsMaterialSpecific = false, ApplicationTypeId = 1, JourneyTypeId = 1, Name = "SiteAddressAndContactDetails" },
-            new LookupRegulatorTask { Id = 2,IsMaterialSpecific = false, ApplicationTypeId = 1, JourneyTypeId = 1, Name = "MaterialsAuthorisedOnSite" },
-            new LookupRegulatorTask { Id = 3,IsMaterialSpecific = false, ApplicationTypeId = 1, JourneyTypeId = 1, Name = "RegistrationDulyMade" },
-            new LookupRegulatorTask { Id = 4,IsMaterialSpecific = true, ApplicationTypeId = 1, JourneyTypeId = 1, Name = "WasteLicensesPermitsAndExemptions" },
-            new LookupRegulatorTask { Id = 5,IsMaterialSpecific = true, ApplicationTypeId = 1, JourneyTypeId = 1, Name = "ReprocessingInputsAndOutputs" },
-            new LookupRegulatorTask { Id = 6,IsMaterialSpecific = true, ApplicationTypeId = 1, JourneyTypeId = 1, Name = "SamplingAndInspectionPlan" },
-            new LookupRegulatorTask { Id = 7,IsMaterialSpecific = true, ApplicationTypeId = 1, JourneyTypeId = 1, Name = "AssignOfficer" },
-            new LookupRegulatorTask { Id = 8,IsMaterialSpecific = false, ApplicationTypeId = 2, JourneyTypeId = 1, Name = "BusinessAddress" },
-            new LookupRegulatorTask { Id = 9,IsMaterialSpecific = false, ApplicationTypeId = 2, JourneyTypeId = 1, Name = "WasteLicensesPermitsAndExemptions" },
-            new LookupRegulatorTask { Id = 10,IsMaterialSpecific = false, ApplicationTypeId = 2, JourneyTypeId = 1, Name = "RegistrationDulyMade" },
-            new LookupRegulatorTask { Id = 11,IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 1, Name = "SamplingAndInspectionPlan" },
-            new LookupRegulatorTask { Id = 12,IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 1, Name = "AssignOfficer" },
+            new LookupRegulatorTask { Id = 1, IsMaterialSpecific = false, ApplicationTypeId = 1, JourneyTypeId = 1, Name = "SiteAddressAndContactDetails" },
+            new LookupRegulatorTask { Id = 2, IsMaterialSpecific = false, ApplicationTypeId = 1, JourneyTypeId = 1, Name = "MaterialsAuthorisedOnSite" },
+            new LookupRegulatorTask { Id = 3, IsMaterialSpecific = false, ApplicationTypeId = 1, JourneyTypeId = 1, Name = "RegistrationDulyMade" },
+            new LookupRegulatorTask { Id = 4, IsMaterialSpecific = true, ApplicationTypeId = 1, JourneyTypeId = 1, Name = "WasteLicensesPermitsAndExemptions" },
+            new LookupRegulatorTask { Id = 5, IsMaterialSpecific = true, ApplicationTypeId = 1, JourneyTypeId = 1, Name = "ReprocessingInputsAndOutputs" },
+            new LookupRegulatorTask { Id = 6, IsMaterialSpecific = true, ApplicationTypeId = 1, JourneyTypeId = 1, Name = "SamplingAndInspectionPlan" },
+            new LookupRegulatorTask { Id = 7, IsMaterialSpecific = true, ApplicationTypeId = 1, JourneyTypeId = 1, Name = "AssignOfficer" },
+            new LookupRegulatorTask { Id = 8, IsMaterialSpecific = false, ApplicationTypeId = 2, JourneyTypeId = 1, Name = "BusinessAddress" },
+            new LookupRegulatorTask { Id = 9, IsMaterialSpecific = false, ApplicationTypeId = 2, JourneyTypeId = 1, Name = "WasteLicensesPermitsAndExemptions" },
+            new LookupRegulatorTask { Id = 10, IsMaterialSpecific = false, ApplicationTypeId = 2, JourneyTypeId = 1, Name = "RegistrationDulyMade" },
+            new LookupRegulatorTask { Id = 11, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 1, Name = "SamplingAndInspectionPlan" },
+            new LookupRegulatorTask { Id = 12, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 1, Name = "AssignOfficer" },
             new LookupRegulatorTask { Id = 13, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 1, Name = "MaterialDetailsAndContact" },
             new LookupRegulatorTask { Id = 14, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 1, Name = "OverseasReprocessorAndInterimSiteDetails" });
 
@@ -73,7 +72,28 @@ public class EprRegistrationsContext : DbContext
         var registrationMaterials = new List<RegistrationMaterial>();
         var registrationTaskStatuses = new List<RegulatorRegistrationTaskStatus>();
         var applicationTaskStatuses = new List<RegulatorApplicationTaskStatus>();
-        
+
+        var addressTemplates = new[]
+        {
+            new {
+            AddressLine1 = "23", AddressLine2 = "Ruby St", TownCity = "London",
+            County = (string?)null, Country = "England", PostCode = "E12 3SE", NationId = 1
+            },
+            new {
+            AddressLine1 = "45", AddressLine2 = "Maple Ave", TownCity = "Edinburgh",
+            County = (string?)null, Country = "Scotland", PostCode = "EH3 5DN", NationId = 2
+            },
+            new {
+            AddressLine1 = "12", AddressLine2 = "Oak Rd", TownCity = "Cardiff",
+            County = (string?)null, Country = "Wales", PostCode = "CF10 1AA", NationId = 3
+            },
+            new {
+            AddressLine1 = "78", AddressLine2 = "Pine Ln", TownCity = "Belfast",
+            County = (string?)null, Country = "Northern Ireland", PostCode = "BT1 3FG", NationId = 4
+            }
+        };
+
+
         for (var registrationCounter = 1; registrationCounter <= NumberOfRegistrations; registrationCounter++)
         {
             var ApplicationTypeId = registrationCounter % 2 + 1;
@@ -83,27 +103,30 @@ public class EprRegistrationsContext : DbContext
                 ExternalId = Guid.NewGuid().ToString(),
                 ApplicationTypeId = ApplicationTypeId,
                 OrganisationId = 1,
-                BusinessAddressId = registrationCounter,
-                ReprocessingSiteAddressId = registrationCounter,
-                LegalDocumentAddressId= registrationCounter
+                BusinessAddressId = ApplicationTypeId == 2 ? registrationCounter : null,
+                ReprocessingSiteAddressId = ApplicationTypeId == 1 ? registrationCounter : null,
+                LegalDocumentAddressId = registrationCounter
             });
+
+            var template = addressTemplates[(registrationCounter - 1) % addressTemplates.Length];
 
             lookupAddresses.Add(new LookupAddress
             {
                 Id = registrationCounter,
-                AddressLine1 = "23",
-                AddressLine2 = "Ruby St",
-                TownCity = "London",
-                County = null,
-                Country = "England",
-                PostCode = "E12 3SE",
-                NationId = 1,
-                GridReference = "SJ 854 662",
+                AddressLine1 = template.AddressLine1,
+                AddressLine2 = template.AddressLine2,
+                TownCity = template.TownCity,
+                County = template.County,
+                Country = template.Country,
+                PostCode = template.PostCode,
+                NationId = template.NationId,
+                GridReference = $"SJ 854 66{registrationCounter}"
             });
 
             for (int j = 1; j <= 3; j++)
             {
                 var registrationMaterialId = (registrationCounter - 1) * 3 + j;
+                bool isRegistered = new Random().Next(2) == 0;
                 registrationMaterials.Add(new RegistrationMaterial
                 {
                     Id = registrationMaterialId,
@@ -113,19 +136,20 @@ public class EprRegistrationsContext : DbContext
                     DeterminationDate = DateTime.UtcNow,
                     ReferenceNumber = $"REF{registrationCounter:D4}-{j:D2}",
                     Comments = $"Test description for material {j} in registration {registrationCounter}",
-                    ReasonforNotreg= $"Lorem ipsum dolor sit amet, consectetur adipiscing{j} elit. Fusce vulputate aliquet ornare. Vestibulum dolor nunc, tincidunt a diam nec, mattis venenatis sem{registrationCounter}",
-                    Wastecarrierbrokerdealerregistration= $"DFG3457345{registrationCounter}",
-                    IsMaterialRegistered=false,
+                    ReasonforNotreg = isRegistered ? string.Empty : $"Lorem ipsum dolor sit amet, consectetur adipiscing{j} elit. Fusce vulputate aliquet ornare. Vestibulum dolor nunc, tincidunt a diam nec, mattis venenatis sem{registrationCounter}",
+                    Wastecarrierbrokerdealerregistration = $"DFG3457345{registrationCounter}",
+                    IsMaterialRegistered = isRegistered
                 });
             }
         }
+
 
         modelBuilder.Entity<Registration>().HasData(registrations);
         modelBuilder.Entity<LookupAddress>().HasData(lookupAddresses);
         modelBuilder.Entity<RegistrationMaterial>().HasData(registrationMaterials);
         modelBuilder.Entity<RegulatorRegistrationTaskStatus>().HasData(registrationTaskStatuses);
         modelBuilder.Entity<RegulatorApplicationTaskStatus>().HasData(applicationTaskStatuses);
-        
+
         modelBuilder.Entity<Registration>()
             .HasMany(r => r.Tasks);
 
