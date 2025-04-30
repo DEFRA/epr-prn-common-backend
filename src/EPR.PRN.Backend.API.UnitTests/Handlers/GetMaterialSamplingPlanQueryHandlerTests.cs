@@ -6,6 +6,7 @@ using EPR.PRN.Backend.API.Queries;
 using EPR.PRN.Backend.Data.DataModels.Registrations;
 using EPR.PRN.Backend.Data.Interfaces.Regulator;
 using FluentAssertions;
+using FluentAssertions.Execution;
 using Moq;
 
 namespace EPR.PRN.Backend.API.UnitTests.Handlers;
@@ -70,15 +71,18 @@ public class GetMaterialSamplingPlanQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.Should().NotBeNull();
-        result.MaterialName.Should().Be("Plastic");
-        result.Files.Should().NotBeNull();
-        result.Files.First().Filename.Should().Be("Filename");
-        result.Files.First().FileId.Should().Be("FileId");
-        result.Files.First().DateUploaded.Should().Be(dateUploaded);
-        result.Files.First().UpdatedBy.Should().Be("Test User");
-        result.Files.First().FileUploadType.Should().Be("Upload");
-        result.Files.First().FileUploadStatus.Should().Be("Uploaded");
-        result.Files.First().Comments.Should().Be("Test comment");
+        using (new AssertionScope())
+        {
+            result.Should().NotBeNull();
+            result.MaterialName.Should().Be("Plastic");
+            result.Files.Should().NotBeNull();
+            result.Files.First().Filename.Should().Be("Filename");
+            result.Files.First().FileId.Should().Be("FileId");
+            result.Files.First().DateUploaded.Should().Be(dateUploaded);
+            result.Files.First().UpdatedBy.Should().Be("Test User");
+            result.Files.First().FileUploadType.Should().Be("Upload");
+            result.Files.First().FileUploadStatus.Should().Be("Uploaded");
+            result.Files.First().Comments.Should().Be("Test comment");
+        }
     }
 }

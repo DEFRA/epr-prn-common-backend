@@ -6,6 +6,7 @@ using EPR.PRN.Backend.API.Queries;
 using EPR.PRN.Backend.Data.DataModels.Registrations;
 using EPR.PRN.Backend.Data.Interfaces.Regulator;
 using FluentAssertions;
+using FluentAssertions.Execution;
 using Moq;
 
 namespace EPR.PRN.Backend.API.UnitTests.Handlers;
@@ -72,18 +73,21 @@ public class GetMaterialReprocessingIOHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.Should().NotBeNull();
-        result.MaterialName.Should().Be("Plastic");
-        result.ContaminantsTonne.Should().Be(1);
-        result.NonUKPackagingWasteTonne.Should().Be(2);
-        result.NotPackingWasteTonne.Should().Be(3);
-        result.ProcessLossTonne.Should().Be(4);
-        result.ReprocessingPackagingWasteLastYearFlag.Should().Be(true);
-        result.SenttoOtherSiteTonne.Should().Be(5);
-        result.UKPackagingWasteTonne.Should().Be(6);
-        result.TotalInputs.Should().Be(7);
-        result.TotalOutputs.Should().Be(8);
-        result.PlantEquipmentUsed.Should().Be("shredder");
-        result.SourcesOfPackagingWaste.Should().Be("Shed");
+        using (new AssertionScope())
+        {
+            result.Should().NotBeNull();
+            result.MaterialName.Should().Be("Plastic");
+            result.ContaminantsTonne.Should().Be(1);
+            result.NonUKPackagingWasteTonne.Should().Be(2);
+            result.NotPackingWasteTonne.Should().Be(3);
+            result.ProcessLossTonne.Should().Be(4);
+            result.ReprocessingPackagingWasteLastYearFlag.Should().Be(true);
+            result.SenttoOtherSiteTonne.Should().Be(5);
+            result.UKPackagingWasteTonne.Should().Be(6);
+            result.TotalInputs.Should().Be(7);
+            result.TotalOutputs.Should().Be(8);
+            result.PlantEquipmentUsed.Should().Be("shredder");
+            result.SourcesOfPackagingWaste.Should().Be("Shed");
+        }
     }
 }

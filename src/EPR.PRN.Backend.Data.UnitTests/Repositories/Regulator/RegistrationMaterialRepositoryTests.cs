@@ -2,6 +2,7 @@
 using EPR.PRN.Backend.Data.DataModels.Registrations;
 using EPR.PRN.Backend.Data.Interfaces.Regulator;
 using EPR.PRN.Backend.Data.Repositories.Regulator;
+using FluentAssertions.Execution;
 using Microsoft.EntityFrameworkCore;
 
 namespace EPR.PRN.Backend.Data.UnitTests.Repositories.Regulator;
@@ -130,10 +131,13 @@ public class RegistrationMaterialRepositoryTests
     public async Task GetRegistrationById_ShouldReturnRegistration_WhenRegistrationExists()
     {
         var result = await _repository.GetRegistrationById(1);
-        Assert.IsNotNull(result);
-        Assert.AreEqual(1, result.Id);
-        Assert.IsNotNull(result.Materials);
-        Assert.IsNotNull(result.Tasks);
+        using (new AssertionScope())
+        {
+            Assert.IsNotNull(result);
+            Assert.AreEqual(1, result.Id);
+            Assert.IsNotNull(result.Materials);
+            Assert.IsNotNull(result.Tasks);
+        }
     }
 
     [TestMethod]
@@ -146,8 +150,11 @@ public class RegistrationMaterialRepositoryTests
     public async Task GetRequiredTasks_ShouldReturnCorrectTasks()
     {
         var result = await _repository.GetRequiredTasks(1, false);
-        Assert.AreEqual(1, result.Count);
-        Assert.AreEqual("SiteAddressAndContactDetails", result[0].Name);
+        using (new AssertionScope())
+        {
+            Assert.AreEqual(1, result.Count);
+            Assert.AreEqual("SiteAddressAndContactDetails", result[0].Name);
+        }
     }
 
     [TestMethod]
@@ -160,11 +167,14 @@ public class RegistrationMaterialRepositoryTests
         await _repository.UpdateRegistrationOutCome(1, newStatusId, comment, newReference);
         var updated = await _context.RegistrationMaterials.FindAsync(1);
 
-        Assert.AreEqual(newStatusId, updated.StatusID);
-        Assert.AreEqual(comment, updated.Comments);
-        Assert.AreEqual(newReference, updated.ReferenceNumber);
-        Assert.IsNotNull(updated.StatusUpdatedDate);
-        Assert.AreEqual("Test User", updated.StatusUpdatedBy);
+        using (new AssertionScope())
+        {
+            Assert.AreEqual(newStatusId, updated.StatusID);
+            Assert.AreEqual(comment, updated.Comments);
+            Assert.AreEqual(newReference, updated.ReferenceNumber);
+            Assert.IsNotNull(updated.StatusUpdatedDate);
+            Assert.AreEqual("Test User", updated.StatusUpdatedBy);
+        }
     }
 
     [TestMethod]
@@ -178,11 +188,14 @@ public class RegistrationMaterialRepositoryTests
     public async Task GetRegistrationMaterialById_ShouldReturnMaterial_WhenExists()
     {
         var material = await _repository.GetRegistrationMaterialById(1);
-        Assert.IsNotNull(material);
-        Assert.AreEqual("REF12345", material.ReferenceNumber);
-        Assert.IsNotNull(material.Material);
-        Assert.IsNotNull(material.Status);
-        Assert.IsNotNull(material.Registration);
+        using (new AssertionScope())
+        {
+            Assert.IsNotNull(material);
+            Assert.AreEqual("REF12345", material.ReferenceNumber);
+            Assert.IsNotNull(material.Material);
+            Assert.IsNotNull(material.Status);
+            Assert.IsNotNull(material.Registration);
+        }
     }
 
     [TestMethod]
@@ -195,9 +208,12 @@ public class RegistrationMaterialRepositoryTests
     public async Task GetRegistrationMaterial_WasteLicencesById_ShouldReturnMaterial_WhenExists()
     {
         var material = await _repository.GetRegistrationMaterial_WasteLicencesById(1);
-        Assert.IsNotNull(material);
-        Assert.AreEqual("REF12345", material.ReferenceNumber);
-        Assert.IsNotNull(material.Material);
+        using (new AssertionScope())
+        {
+            Assert.IsNotNull(material);
+            Assert.AreEqual("REF12345", material.ReferenceNumber);
+            Assert.IsNotNull(material.Material);
+        }
     }
 
     [TestMethod]
@@ -210,9 +226,12 @@ public class RegistrationMaterialRepositoryTests
     public async Task GetRegistrationMaterial_RegistrationReprocessingIOById_ShouldReturnMaterial_WhenExists()
     {
         var material = await _repository.GetRegistrationMaterial_RegistrationReprocessingIOById(1);
-        Assert.IsNotNull(material);
-        Assert.AreEqual("REF12345", material.ReferenceNumber);
-        Assert.IsNotNull(material.Material);
+        using (new AssertionScope())
+        {
+            Assert.IsNotNull(material);
+            Assert.AreEqual("REF12345", material.ReferenceNumber);
+            Assert.IsNotNull(material.Material);
+        }
     }
 
     [TestMethod]
@@ -225,8 +244,11 @@ public class RegistrationMaterialRepositoryTests
     public async Task GetRegistrationMaterial_FileUploadById_ShouldReturnMaterial_WhenExists()
     {
         var material = await _repository.GetRegistrationMaterial_FileUploadById(1);
-        Assert.IsNotNull(material);
-        Assert.AreEqual("REF12345", material.ReferenceNumber);
+        using (new AssertionScope())
+        {
+            Assert.IsNotNull(material);
+            Assert.AreEqual("REF12345", material.ReferenceNumber);
+        }
     }
 
     [TestMethod]
