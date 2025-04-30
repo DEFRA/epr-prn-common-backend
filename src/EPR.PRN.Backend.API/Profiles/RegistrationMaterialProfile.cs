@@ -49,7 +49,7 @@ public class RegistrationMaterialProfile : Profile
            .ForMember(dest => dest.MaterialsAuthorisation, opt => opt.MapFrom(src => src.Materials));
 
         CreateMap<RegistrationMaterial, MaterialsAuthorisedOnSiteInfoDto>()
-           .ForMember(dest => dest.Material, opt => opt.MapFrom(src => src.Material.MaterialName))
+           .ForMember(dest => dest.MaterialName, opt => opt.MapFrom(src => src.Material.MaterialName))
            .ForMember(dest => dest.RegistrationStatus, opt => opt.MapFrom(_ => RegulatorTaskStatus.NotStarted.ToString()))
            .ForMember(dest => dest.Reason, opt => opt.MapFrom(src => src.ReasonforNotreg))
            .ForMember(dest => dest.IsMaterialRegistered, opt => opt.MapFrom(src => src.IsMaterialRegistered));
