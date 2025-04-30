@@ -91,6 +91,50 @@ public class GetMaterialWasteLicenceQueryHandlerTests
     }
 
     [TestMethod]
+    public async Task Handle_ShouldReturnMappedDto_WhenMaterialWithExemptionsExistsNoReference()
+    {
+        // Arrange
+        int materialId = 1;
+        var query = new GetMaterialWasteLicencesQuery { Id = materialId };
+
+        var materialEntity = new RegistrationMaterial
+        {
+            Id = materialId,
+            RegistrationId = 10,
+            MaterialId = 2,
+            Material = new LookupMaterial { MaterialName = "Plastic" },
+            StatusID = 1,
+            Status = new LookupRegistrationMaterialStatus { Id = 1, Name = "Granted" },
+            PermitType = new LookupMaterialPermit { Name = PermitTypes.WasteExemption },
+            MaterialExemptionReferences = null,
+            MaximumReprocessingCapacityTonne = 123,
+            MaximumReprocessingPeriod = new LookupPeriod { Name = "Per Year" },
+        };
+
+        _rmRepositoryMock
+            .Setup(r => r.GetRegistrationMaterial_WasteLicencesById(materialId))
+            .ReturnsAsync(materialEntity);
+
+        // Act
+        var result = await _handler.Handle(query, CancellationToken.None);
+
+        // Assert
+        using (new AssertionScope())
+        {
+            result.Should().NotBeNull();
+            result.MaterialName.Should().Be("Plastic");
+            result.PermitType.Should().Be(PermitTypes.WasteExemption);
+            result.LicenceNumbers.Length.Should().Be(0);
+            result.CapacityTonne.Should().BeNull();
+            result.CapacityPeriod.Should().BeNull();
+            result.MaximumReprocessingCapacityTonne.Should().Be(123);
+            result.MaximumReprocessingPeriod.Should().Be("Per Year");
+        }
+
+    }
+
+
+    [TestMethod]
     public async Task Handle_ShouldReturnMappedDto_WhenMaterialWasteManagementLicenceExists()
     {
         // Arrange
@@ -128,6 +172,50 @@ public class GetMaterialWasteLicenceQueryHandlerTests
             result.PermitType.Should().Be(PermitTypes.WasteManagementLicence);
             result.LicenceNumbers.First().Should().Be("1");
             result.LicenceNumbers.Length.Should().Be(1);
+            result.CapacityTonne.Should().Be(456);
+            result.CapacityPeriod.Should().Be("Per Year");
+            result.MaximumReprocessingCapacityTonne.Should().Be(123);
+            result.MaximumReprocessingPeriod.Should().Be("Per Year");
+        }
+    }
+
+    [TestMethod]
+    public async Task Handle_ShouldReturnMappedDto_WhenMaterialWasteManagementLicenceExistsNoReference()
+    {
+        // Arrange
+        int materialId = 1;
+        var query = new GetMaterialWasteLicencesQuery { Id = materialId };
+
+        var materialEntity = new RegistrationMaterial
+        {
+            Id = materialId,
+            RegistrationId = 10,
+            MaterialId = 2,
+            Material = new LookupMaterial { MaterialName = "Plastic" },
+            StatusID = 1,
+            Status = new LookupRegistrationMaterialStatus { Id = 1, Name = "Granted" },
+            PermitType = new LookupMaterialPermit { Name = PermitTypes.WasteManagementLicence },
+            WasteManagementLicenceNumber = null,
+            WasteManagementReprocessingCapacityTonne = 456,
+            WasteManagementPeriod = new LookupPeriod { Name = "Per Year" },
+            MaximumReprocessingCapacityTonne = 123,
+            MaximumReprocessingPeriod = new LookupPeriod { Name = "Per Year" },
+        };
+
+        _rmRepositoryMock
+            .Setup(r => r.GetRegistrationMaterial_WasteLicencesById(materialId))
+            .ReturnsAsync(materialEntity);
+
+        // Act
+        var result = await _handler.Handle(query, CancellationToken.None);
+
+        // Assert
+        using (new AssertionScope())
+        {
+            result.Should().NotBeNull();
+            result.MaterialName.Should().Be("Plastic");
+            result.PermitType.Should().Be(PermitTypes.WasteManagementLicence);
+            result.LicenceNumbers.Length.Should().Be(0);
             result.CapacityTonne.Should().Be(456);
             result.CapacityPeriod.Should().Be("Per Year");
             result.MaximumReprocessingCapacityTonne.Should().Be(123);
@@ -182,6 +270,51 @@ public class GetMaterialWasteLicenceQueryHandlerTests
     }
 
     [TestMethod]
+    public async Task Handle_ShouldReturnMappedDto_WhenMaterialEnvironmentalPermitOrWasteManagementLicenceExistsNoReference()
+    {
+        // Arrange
+        int materialId = 1;
+        var query = new GetMaterialWasteLicencesQuery { Id = materialId };
+
+        var materialEntity = new RegistrationMaterial
+        {
+            Id = materialId,
+            RegistrationId = 10,
+            MaterialId = 2,
+            Material = new LookupMaterial { MaterialName = "Plastic" },
+            StatusID = 1,
+            Status = new LookupRegistrationMaterialStatus { Id = 1, Name = "Granted" },
+            PermitType = new LookupMaterialPermit { Name = PermitTypes.EnvironmentalPermitOrWasteManagementLicence },
+            EnvironmentalPermitWasteManagementNumber = null,
+            EnvironmentalPermitWasteManagementTonne = 456,
+            EnvironmentalPermitWasteManagementPeriod = new LookupPeriod { Name = "Per Year" },
+            MaximumReprocessingCapacityTonne = 123,
+
+            MaximumReprocessingPeriod = new LookupPeriod { Name = "Per Year" },
+        };
+
+        _rmRepositoryMock
+            .Setup(r => r.GetRegistrationMaterial_WasteLicencesById(materialId))
+            .ReturnsAsync(materialEntity);
+
+        // Act
+        var result = await _handler.Handle(query, CancellationToken.None);
+
+        // Assert
+        using (new AssertionScope())
+        {
+            result.Should().NotBeNull();
+            result.MaterialName.Should().Be("Plastic");
+            result.PermitType.Should().Be(PermitTypes.EnvironmentalPermitOrWasteManagementLicence);
+            result.LicenceNumbers.Length.Should().Be(0);
+            result.CapacityTonne.Should().Be(456);
+            result.CapacityPeriod.Should().Be("Per Year");
+            result.MaximumReprocessingCapacityTonne.Should().Be(123);
+            result.MaximumReprocessingPeriod.Should().Be("Per Year");
+        }
+    }
+
+    [TestMethod]
     public async Task Handle_ShouldReturnMappedDto_WhenMaterialInstallationPermitExists()
     {
         // Arrange
@@ -227,6 +360,50 @@ public class GetMaterialWasteLicenceQueryHandlerTests
     }
 
     [TestMethod]
+    public async Task Handle_ShouldReturnMappedDto_WhenMaterialInstallationPermitExistsNoReference()
+    {
+        // Arrange
+        int materialId = 1;
+        var query = new GetMaterialWasteLicencesQuery { Id = materialId };
+
+        var materialEntity = new RegistrationMaterial
+        {
+            Id = materialId,
+            RegistrationId = 10,
+            MaterialId = 2,
+            Material = new LookupMaterial { MaterialName = "Plastic" },
+            StatusID = 1,
+            Status = new LookupRegistrationMaterialStatus { Id = 1, Name = "Granted" },
+            PermitType = new LookupMaterialPermit { Name = PermitTypes.InstallationPermit },
+            InstallationPermitNumber = null,
+            InstallationReprocessingTonne = 456,
+            InstallationPeriod = new LookupPeriod { Name = "Per Year" },
+            MaximumReprocessingCapacityTonne = 123,
+            MaximumReprocessingPeriod = new LookupPeriod { Name = "Per Year" },
+        };
+
+        _rmRepositoryMock
+            .Setup(r => r.GetRegistrationMaterial_WasteLicencesById(materialId))
+            .ReturnsAsync(materialEntity);
+
+        // Act
+        var result = await _handler.Handle(query, CancellationToken.None);
+
+        // Assert
+        using (new AssertionScope())
+        {
+            result.Should().NotBeNull();
+            result.MaterialName.Should().Be("Plastic");
+            result.PermitType.Should().Be(PermitTypes.InstallationPermit);
+            result.LicenceNumbers.Length.Should().Be(0);
+            result.CapacityTonne.Should().Be(456);
+            result.CapacityPeriod.Should().Be("Per Year");
+            result.MaximumReprocessingCapacityTonne.Should().Be(123);
+            result.MaximumReprocessingPeriod.Should().Be("Per Year");
+        }
+    }
+
+    [TestMethod]
     public async Task Handle_ShouldReturnMappedDto_WhenMaterialPollutionPreventionAndControlPermitExists()
     {
         // Arrange
@@ -264,6 +441,50 @@ public class GetMaterialWasteLicenceQueryHandlerTests
             result.PermitType.Should().Be(PermitTypes.PollutionPreventionAndControlPermit);
             result.LicenceNumbers.First().Should().Be("1");
             result.LicenceNumbers.Length.Should().Be(1);
+            result.CapacityTonne.Should().Be(456);
+            result.CapacityPeriod.Should().Be("Per Year");
+            result.MaximumReprocessingCapacityTonne.Should().Be(123);
+            result.MaximumReprocessingPeriod.Should().Be("Per Year");
+        }
+    }
+
+    [TestMethod]
+    public async Task Handle_ShouldReturnMappedDto_WhenMaterialPollutionPreventionAndControlPermitExistsNoReference()
+    {
+        // Arrange
+        int materialId = 1;
+        var query = new GetMaterialWasteLicencesQuery { Id = materialId };
+
+        var materialEntity = new RegistrationMaterial
+        {
+            Id = materialId,
+            RegistrationId = 10,
+            MaterialId = 2,
+            Material = new LookupMaterial { MaterialName = "Plastic" },
+            StatusID = 1,
+            Status = new LookupRegistrationMaterialStatus { Id = 1, Name = "Granted" },
+            PermitType = new LookupMaterialPermit { Name = PermitTypes.PollutionPreventionAndControlPermit },
+            PPCPermitNumber = null,
+            PPCReprocessingCapacityTonne = 456,
+            PPCPeriod = new LookupPeriod { Name = "Per Year" },
+            MaximumReprocessingCapacityTonne = 123,
+            MaximumReprocessingPeriod = new LookupPeriod { Name = "Per Year" },
+        };
+
+        _rmRepositoryMock
+            .Setup(r => r.GetRegistrationMaterial_WasteLicencesById(materialId))
+            .ReturnsAsync(materialEntity);
+
+        // Act
+        var result = await _handler.Handle(query, CancellationToken.None);
+
+        // Assert
+        using (new AssertionScope())
+        {
+            result.Should().NotBeNull();
+            result.MaterialName.Should().Be("Plastic");
+            result.PermitType.Should().Be(PermitTypes.PollutionPreventionAndControlPermit);
+            result.LicenceNumbers.Length.Should().Be(0);
             result.CapacityTonne.Should().Be(456);
             result.CapacityPeriod.Should().Be("Per Year");
             result.MaximumReprocessingCapacityTonne.Should().Be(123);
