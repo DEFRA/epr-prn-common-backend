@@ -3,7 +3,6 @@ using EPR.PRN.Backend.API.Common.Constants;
 using EPR.PRN.Backend.API.Common.Enums;
 using EPR.PRN.Backend.API.Dto.Regulator;
 using EPR.PRN.Backend.Data.DataModels.Registrations;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace EPR.PRN.Backend.API.Profiles;
 
