@@ -128,7 +128,6 @@ public class RegistrationMaterialRepository(EprRegistrationsContext eprContext) 
 
         return registrationMaterials;
     }
-    
 
     private IIncludableQueryable<Registration, LookupRegistrationMaterialStatus> GetRegistrationsWithRelatedEntities()
     {
