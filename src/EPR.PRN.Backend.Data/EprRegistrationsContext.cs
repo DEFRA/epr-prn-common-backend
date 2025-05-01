@@ -81,16 +81,16 @@ public class EprRegistrationsContext : DbContext
             County = (string?)null, Country = "England", PostCode = "E12 3SE", NationId = 1
             },
             new {
+            AddressLine1 = "78", AddressLine2 = "Pine Ln", TownCity = "Belfast",
+            County = (string?)null, Country = "Northern Ireland", PostCode = "BT1 3FG", NationId = 2
+            },
+            new {
             AddressLine1 = "45", AddressLine2 = "Maple Ave", TownCity = "Edinburgh",
-            County = (string?)null, Country = "Scotland", PostCode = "EH3 5DN", NationId = 2
+            County = (string?)null, Country = "Scotland", PostCode = "EH3 5DN", NationId = 3
             },
             new {
             AddressLine1 = "12", AddressLine2 = "Oak Rd", TownCity = "Cardiff",
-            County = (string?)null, Country = "Wales", PostCode = "CF10 1AA", NationId = 3
-            },
-            new {
-            AddressLine1 = "78", AddressLine2 = "Pine Ln", TownCity = "Belfast",
-            County = (string?)null, Country = "Northern Ireland", PostCode = "BT1 3FG", NationId = 4
+            County = (string?)null, Country = "Wales", PostCode = "CF10 1AA", NationId = 4
             }
         };
 
@@ -98,6 +98,7 @@ public class EprRegistrationsContext : DbContext
         for (var registrationCounter = 1; registrationCounter <= NumberOfRegistrations; registrationCounter++)
         {
             var ApplicationTypeId = registrationCounter % 2 + 1;
+
             registrations.Add(new Registration
             {
                 Id = registrationCounter,
@@ -109,7 +110,8 @@ public class EprRegistrationsContext : DbContext
                 LegalDocumentAddressId = registrationCounter
             });
 
-            var template = addressTemplates[(registrationCounter - 1) % addressTemplates.Length];
+            var random = new Random(Guid.NewGuid().GetHashCode());
+            var template = addressTemplates[random.Next(addressTemplates.Length)];
 
             lookupAddresses.Add(new LookupAddress
             {
@@ -124,24 +126,34 @@ public class EprRegistrationsContext : DbContext
                 GridReference = $"SJ 854 66{registrationCounter}"
             });
 
+            var hasRegisteredMaterial = false;
+            var materials = new List<RegistrationMaterial>();
+
             for (int j = 1; j <= 3; j++)
             {
-                var registrationMaterialId = (registrationCounter - 1) * 3 + j;
-                bool isRegistered = new Random().Next(2) == 0;
-                registrationMaterials.Add(new RegistrationMaterial
+                bool isLast = j == 3;
+                bool isRegistered = isLast && !hasRegisteredMaterial || random.Next(2) == 1;
+
+                hasRegisteredMaterial |= isRegistered;
+
+                materials.Add(new RegistrationMaterial
                 {
-                    Id = registrationMaterialId,
+                    Id = (registrationCounter - 1) * 3 + j,
                     MaterialId = j,
                     StatusID = null,
                     RegistrationId = registrationCounter,
                     DeterminationDate = DateTime.UtcNow,
                     ReferenceNumber = $"REF{registrationCounter:D4}-{j:D2}",
                     Comments = $"Test description for material {j} in registration {registrationCounter}",
-                    ReasonforNotreg = isRegistered ? string.Empty : $"Lorem ipsum dolor sit amet, consectetur adipiscing{j} elit. Fusce vulputate aliquet ornare. Vestibulum dolor nunc, tincidunt a diam nec, mattis venenatis sem{registrationCounter}",
+                    ReasonforNotreg = isRegistered
+                        ? string.Empty
+                        : $"Lorem ipsum dolor sit amet, consectetur adipiscing{j} elit. Fusce vulputate aliquet ornare. Vestibulum dolor nunc, tincidunt a diam nec, mattis venenatis sem{registrationCounter}",
                     Wastecarrierbrokerdealerregistration = $"DFG3457345{registrationCounter}",
                     IsMaterialRegistered = isRegistered
                 });
             }
+
+            registrationMaterials.AddRange(materials);
         }
 
 
