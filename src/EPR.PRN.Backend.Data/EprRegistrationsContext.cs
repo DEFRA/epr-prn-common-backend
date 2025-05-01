@@ -76,24 +76,27 @@ public class EprRegistrationsContext : DbContext
 
         var addressTemplates = new[]
         {
-            new {
-            AddressLine1 = "23", AddressLine2 = "Ruby St", TownCity = "London",
-            County = (string?)null, Country = "England", PostCode = "E12 3SE", NationId = 1
-            },
-            new {
-            AddressLine1 = "78", AddressLine2 = "Pine Ln", TownCity = "Belfast",
-            County = (string?)null, Country = "Northern Ireland", PostCode = "BT1 3FG", NationId = 2
-            },
-            new {
-            AddressLine1 = "45", AddressLine2 = "Maple Ave", TownCity = "Edinburgh",
-            County = (string?)null, Country = "Scotland", PostCode = "EH3 5DN", NationId = 3
-            },
-            new {
-            AddressLine1 = "12", AddressLine2 = "Oak Rd", TownCity = "Cardiff",
-            County = (string?)null, Country = "Wales", PostCode = "CF10 1AA", NationId = 4
-            }
+            ("23", "Ruby St", "London", "England", "E12 3SE", 1),
+            ("78", "Pine Ln", "Belfast", "Northern Ireland", "BT1 3FG", 2),
+            ("45", "Maple Ave", "Edinburgh", "Scotland", "EH3 5DN", 3),
+            ("12", "Oak Rd", "Cardiff", "Wales", "CF10 1AA", 4)
         };
 
+        LookupAddress CreateAddressTemplate((string line1, string line2, string city, string country, string postCode, int nationId) tpl, int id)
+        {
+            return new LookupAddress
+            {
+                Id = id,
+                AddressLine1 = tpl.line1,
+                AddressLine2 = tpl.line2,
+                TownCity = tpl.city,
+                County = null,
+                Country = tpl.country,
+                PostCode = tpl.postCode,
+                NationId = tpl.nationId,
+                GridReference = $"SJ 854 66{id}"
+            };
+        }
 
         for (var registrationCounter = 1; registrationCounter <= NumberOfRegistrations; registrationCounter++)
         {
@@ -111,19 +114,7 @@ public class EprRegistrationsContext : DbContext
             });
 
             var template = addressTemplates[Random.Shared.Next(addressTemplates.Length)];
-
-            lookupAddresses.Add(new LookupAddress
-            {
-                Id = registrationCounter,
-                AddressLine1 = template.AddressLine1,
-                AddressLine2 = template.AddressLine2,
-                TownCity = template.TownCity,
-                County = template.County,
-                Country = template.Country,
-                PostCode = template.PostCode,
-                NationId = template.NationId,
-                GridReference = $"SJ 854 66{registrationCounter}"
-            });
+            lookupAddresses.Add(CreateAddressTemplate(template, registrationCounter));
 
             var hasRegisteredMaterial = false;
             var materials = new List<RegistrationMaterial>();
@@ -154,8 +145,6 @@ public class EprRegistrationsContext : DbContext
 
             registrationMaterials.AddRange(materials);
         }
-
-
 
         modelBuilder.Entity<Registration>().HasData(registrations);
         modelBuilder.Entity<LookupAddress>().HasData(lookupAddresses);
