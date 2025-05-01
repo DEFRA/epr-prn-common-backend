@@ -1,4 +1,6 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using Newtonsoft.Json;
+using Swashbuckle.AspNetCore.Annotations;
+using System.Diagnostics.CodeAnalysis;
 
 namespace EPR.PRN.Backend.API.Dto.Regulator;
 
@@ -18,5 +20,7 @@ public class RegistrationMaterialDto
     public string? Comments { get; set; }
     public DateTime? DeterminationDate { get; set; }
     public List<RegistrationTaskDto> Tasks { get; set; } = [];
+    [JsonIgnore]
+    [SwaggerSchema(ReadOnly = true, WriteOnly = true)] // Removed 'Hidden' as it is not a valid property
     public bool IsMaterialRegistered { get; set; }
-}   
+}

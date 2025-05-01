@@ -59,6 +59,39 @@ public class RegistrationMaterialController(IMediator mediator
         return Ok(result);
     }
 
+    [HttpGet("registrationMaterials/{Id}/wasteLicences")]
+    [ProducesResponseType(typeof(RegistrationMaterialWasteLicencesDto), 200)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> GetWasteLicences(int Id)
+    {
+        logger.LogInformation(LogMessages.RegistrationMaterialsTasks);
+        var result = await mediator.Send(new GetMaterialWasteLicencesQuery() { Id = Id });
+        return Ok(result);
+    }
+
+    [HttpGet("registrationMaterials/{Id}/reprocessingIO")]
+    [ProducesResponseType(typeof(RegistrationMaterialReprocessingIODto), 200)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> GetReprocessingIO(int Id)
+    {
+        logger.LogInformation(LogMessages.RegistrationMaterialsTasks);
+        var result = await mediator.Send(new GetMaterialReprocessingIOQuery() { Id = Id });
+        return Ok(result);
+    }
+
+    [HttpGet("registrationMaterials/{Id}/samplingPlan")]
+    [ProducesResponseType(typeof(RegistrationMaterialSamplingPlanDto), 200)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> GetSamplingPlan(int Id)
+    {
+        logger.LogInformation(LogMessages.RegistrationMaterialsTasks);
+        var result = await mediator.Send(new GetMaterialSamplingPlanQuery() { Id = Id });
+        return Ok(result);
+    }
+
     [HttpGet("registrations/{Id}/siteAddress")]
     [ProducesResponseType(typeof(RegistrationSiteAddressDto), 200)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]

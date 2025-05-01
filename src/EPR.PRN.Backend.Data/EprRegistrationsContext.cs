@@ -1,6 +1,8 @@
-﻿using EPR.PRN.Backend.Data.DataModels.Registrations;
+﻿using EPR.PRN.Backend.API.Common.Constants;
+using EPR.PRN.Backend.Data.DataModels.Registrations;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics.CodeAnalysis;
+using System.Reflection.Metadata;
 
 namespace EPR.PRN.Backend.Data;
 
@@ -25,6 +27,10 @@ public class EprRegistrationsContext : DbContext
         }
     }
 
+    int registrationId;
+    int lookupAddressID;
+    int registrationMaterialId;
+    int materialExemptionReferenceId;
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<LookupMaterial>().HasData(
@@ -52,7 +58,6 @@ public class EprRegistrationsContext : DbContext
             new LookupJourneyType { Id = 2, Name = "Accreditation" });
 
         modelBuilder.Entity<LookupRegulatorTask>().HasData(
-
             new LookupRegulatorTask { Id = 1, IsMaterialSpecific = false, ApplicationTypeId = 1, JourneyTypeId = 1, Name = "SiteAddressAndContactDetails" },
             new LookupRegulatorTask { Id = 2, IsMaterialSpecific = false, ApplicationTypeId = 1, JourneyTypeId = 1, Name = "MaterialsAuthorisedOnSite" },
             new LookupRegulatorTask { Id = 3, IsMaterialSpecific = false, ApplicationTypeId = 1, JourneyTypeId = 1, Name = "RegistrationDulyMade" },
@@ -68,21 +73,51 @@ public class EprRegistrationsContext : DbContext
             new LookupRegulatorTask { Id = 13, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 1, Name = "MaterialDetailsAndContact" },
             new LookupRegulatorTask { Id = 14, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 1, Name = "OverseasReprocessorAndInterimSiteDetails" });
 
+        modelBuilder.Entity<LookupMaterialPermit>().HasData(
+            new LookupMaterialPermit { Id = 1, Name = PermitTypes.WasteExemption },
+            new LookupMaterialPermit { Id = 2, Name = PermitTypes.PollutionPreventionAndControlPermit },
+            new LookupMaterialPermit { Id = 3, Name = PermitTypes.WasteManagementLicence },
+            new LookupMaterialPermit { Id = 4, Name = PermitTypes.InstallationPermit },
+            new LookupMaterialPermit { Id = 5, Name = PermitTypes.EnvironmentalPermitOrWasteManagementLicence });
+
+        modelBuilder.Entity<LookupPeriod>().HasData(
+           new LookupPeriod { Id = 1, Name = "Per Year" },
+           new LookupPeriod { Id = 2, Name = "Per Month" },
+           new LookupPeriod { Id = 3, Name = "Per Week" });
+
+        modelBuilder.Entity<LookupFileUploadType>().HasData(
+            new LookupFileUploadType { Id = 1, Name = "SamplingAndInspectionPlan" });
+
+        modelBuilder.Entity<LookupFileUploadStatus>().HasData(
+            new LookupFileUploadStatus { Id = 1, Name = "Virus check failed" },
+            new LookupFileUploadStatus { Id = 2, Name = "Virus check succeeded" },
+            new LookupFileUploadStatus { Id = 3, Name = "Upload complete" },
+            new LookupFileUploadStatus { Id = 4, Name = "Upload failed" },
+            new LookupFileUploadStatus { Id = 5, Name = "File deleted(Soft delete of record in database – will physically remove from blob storage)" });
+
         var registrations = new List<Registration>();
         var lookupAddresses = new List<LookupAddress>();
         var registrationMaterials = new List<RegistrationMaterial>();
+        var materialExemptionReferences = new List<MaterialExemptionReference>();
         var registrationTaskStatuses = new List<RegulatorRegistrationTaskStatus>();
         var applicationTaskStatuses = new List<RegulatorApplicationTaskStatus>();
+        var registrationReprocessingIOs = new List<RegistrationReprocessingIO>();
+        var fileUploads = new List<FileUpload>();
 
+        registrationId = 0;
+        lookupAddressID = 0;
+        registrationMaterialId = 0;
+        materialExemptionReferenceId = 0;
         var addressTemplates = new[]
-        {
-            new {
-            AddressLine1 = "23", AddressLine2 = "Ruby St", TownCity = "London",
-            County = (string?)null, Country = "England", PostCode = "E12 3SE", NationId = 1
-            },
+       {
+
             new {
             AddressLine1 = "45", AddressLine2 = "Maple Ave", TownCity = "Edinburgh",
-            County = (string?)null, Country = "Scotland", PostCode = "EH3 5DN", NationId = 2
+            County = (string?)null, Country = "Scotland", PostCode = "EH3 5DN", NationId = 1
+            },
+            new {
+            AddressLine1 = "23", AddressLine2 = "Ruby St", TownCity = "London",
+            County = (string?)null, Country = "England", PostCode = "E12 3SE", NationId = 2
             },
             new {
             AddressLine1 = "12", AddressLine2 = "Oak Rd", TownCity = "Cardiff",
@@ -94,26 +129,14 @@ public class EprRegistrationsContext : DbContext
             }
         };
 
-
         for (var registrationCounter = 1; registrationCounter <= NumberOfRegistrations; registrationCounter++)
         {
             var ApplicationTypeId = registrationCounter % 2 + 1;
-            registrations.Add(new Registration
-            {
-                Id = registrationCounter,
-                ExternalId = Guid.NewGuid().ToString(),
-                ApplicationTypeId = ApplicationTypeId,
-                OrganisationId = 1,
-                BusinessAddressId = ApplicationTypeId == 2 ? registrationCounter : null,
-                ReprocessingSiteAddressId = ApplicationTypeId == 1 ? registrationCounter : null,
-                LegalDocumentAddressId = registrationCounter
-            });
 
             var template = addressTemplates[(registrationCounter - 1) % addressTemplates.Length];
-
             lookupAddresses.Add(new LookupAddress
             {
-                Id = registrationCounter,
+                Id = ++lookupAddressID,
                 AddressLine1 = template.AddressLine1,
                 AddressLine2 = template.AddressLine2,
                 TownCity = template.TownCity,
@@ -124,23 +147,24 @@ public class EprRegistrationsContext : DbContext
                 GridReference = $"SJ 854 66{registrationCounter}"
             });
 
+            registrations.Add(new Registration
+            {
+                Id = ++registrationId,
+                ExternalId = Guid.NewGuid().ToString(),
+                ApplicationTypeId = ApplicationTypeId,
+                OrganisationId = 1,
+                BusinessAddressId = ApplicationTypeId == 2 ? lookupAddressID : null,
+                ReprocessingSiteAddressId = ApplicationTypeId == 1 ? lookupAddressID : null,
+                LegalDocumentAddressId = lookupAddressID,
+            });
+
             for (int j = 1; j <= 3; j++)
             {
-                var registrationMaterialId = (registrationCounter - 1) * 3 + j;
-                bool isRegistered = new Random().Next(2) == 0;
-                registrationMaterials.Add(new RegistrationMaterial
-                {
-                    Id = registrationMaterialId,
-                    MaterialId = j,
-                    StatusID = null,
-                    RegistrationId = registrationCounter,
-                    DeterminationDate = DateTime.UtcNow,
-                    ReferenceNumber = $"REF{registrationCounter:D4}-{j:D2}",
-                    Comments = $"Test description for material {j} in registration {registrationCounter}",
-                    ReasonforNotreg = isRegistered ? string.Empty : $"Lorem ipsum dolor sit amet, consectetur adipiscing{j} elit. Fusce vulputate aliquet ornare. Vestibulum dolor nunc, tincidunt a diam nec, mattis venenatis sem{registrationCounter}",
-                    Wastecarrierbrokerdealerregistration = $"DFG3457345{registrationCounter}",
-                    IsMaterialRegistered = isRegistered
-                });
+                registrationMaterials.Add(GetRegistrationMaterial(registrationCounter, registrationId, j, materialExemptionReferences));
+
+                registrationReprocessingIOs.Add(GetReprocessionIos(registrationCounter, registrationMaterialId));
+
+                fileUploads.AddRange(GetFileUploads(registrationCounter, j, registrationMaterialId));
             }
         }
 
@@ -148,6 +172,9 @@ public class EprRegistrationsContext : DbContext
         modelBuilder.Entity<Registration>().HasData(registrations);
         modelBuilder.Entity<LookupAddress>().HasData(lookupAddresses);
         modelBuilder.Entity<RegistrationMaterial>().HasData(registrationMaterials);
+        modelBuilder.Entity<MaterialExemptionReference>().HasData(materialExemptionReferences);
+        modelBuilder.Entity<RegistrationReprocessingIO>().HasData(registrationReprocessingIOs);
+        modelBuilder.Entity<FileUpload>().HasData(fileUploads);
         modelBuilder.Entity<RegulatorRegistrationTaskStatus>().HasData(registrationTaskStatuses);
         modelBuilder.Entity<RegulatorApplicationTaskStatus>().HasData(applicationTaskStatuses);
 
@@ -165,8 +192,212 @@ public class EprRegistrationsContext : DbContext
         base.OnModelCreating(modelBuilder);
     }
 
+    private RegistrationMaterial GetRegistrationMaterial(int registrationCounter, int registrationId, int j, List<MaterialExemptionReference> materialExemptionReferences)
+    {
+        int permitTypeId = 1;
+
+        if (registrationCounter <= 10)
+        {
+            permitTypeId = 1;
+        }
+        else if (registrationCounter > 10 && registrationCounter <= 20)
+        {
+            permitTypeId = 1;
+        }
+        else if (registrationCounter > 20 && registrationCounter <= 30)
+        {
+            permitTypeId = 1;
+        }
+        else if (registrationCounter > 30 && registrationCounter <= 40)
+        {
+            permitTypeId = 2;
+        }
+        else if (registrationCounter > 40 && registrationCounter <= 50)
+        {
+            permitTypeId = 3;
+        }
+        else if (registrationCounter > 50 && registrationCounter <= 60)
+        {
+            permitTypeId = 4;
+        }
+        else if (registrationCounter > 60 && registrationCounter <= 70)
+        {
+            permitTypeId = 5;
+        }
+
+        // bool isRegistered = new Random().Next(2) == 0;
+        bool isRegistered = false;
+
+        if (registrationCounter <= 10)
+        {
+            isRegistered = true;
+        }
+        else if (registrationCounter > 10 && registrationCounter <= 20)
+        {
+            if (j == 1 || j == 2)
+                isRegistered = true;
+            else if (j == 3)
+                isRegistered = false;
+        }
+        else if (registrationCounter > 20 && registrationCounter <= 40)
+        {
+            if (j == 1 || j == 3)
+                isRegistered = true;
+            else if (j == 2)
+                isRegistered = false;
+        }
+        else if (registrationCounter > 40 && registrationCounter <= 60)
+        {
+            if (j == 2 || j == 3)
+                isRegistered = true;
+            else if (j == 1)
+                isRegistered = false;
+        }
+        else if (registrationCounter > 70 && registrationCounter <= 80)
+        {
+            if (j == 2 || j == 3)
+                isRegistered = false;
+            else if (j == 1)
+                isRegistered = true;
+        }
+        else if (registrationCounter > 80 && registrationCounter <= 90)
+        {
+            if (j == 1 || j == 3)
+                isRegistered = false;
+            else if (j == 2)
+                isRegistered = true;
+        }
+        else if (registrationCounter > 90 && registrationCounter <= 99)
+        {
+            if (j == 1 || j == 2)
+                isRegistered = false;
+            else if (j == 3)
+                isRegistered = true;
+        }
+        else if (registrationCounter == 100)
+        {
+            isRegistered = false;
+        }
+        var RegistrationMaterial = new RegistrationMaterial
+        {
+            Id = ++registrationMaterialId,
+            MaterialId = j,
+            StatusID = null,
+            RegistrationId = registrationId,
+            DeterminationDate = DateTime.UtcNow,
+            ReferenceNumber = $"REF{registrationCounter:D4}-{j:D2}",
+            Comments = $"Test description for material {j} in registration {registrationCounter}",
+            PermitTypeId = permitTypeId,
+            PPCPermitNumber = $"PPC{registrationCounter:D4}-{j:D2}",
+            WasteManagementLicenceNumber = $"WML{registrationCounter:D4}-{j:D2}",
+            EnvironmentalPermitWasteManagementNumber = $"EWM{registrationCounter:D4}-{j:D2}",
+            InstallationPermitNumber = $"IP{registrationCounter:D4}-{j:D2}",
+            MaximumProcessingCapacityTonnes = 1000,
+            PPCPeriodId = 1,
+            WasteManagementPeriodId = 1,
+            InstallationPeriodId = 1,
+            EnvironmentalPermitWasteManagementPeriodId = 1,
+            PPCReprocessingCapacityTonne = 2000,
+            WasteManagementReprocessingCapacityTonne = 3000,
+            InstallationReprocessingTonne = 4000,
+            EnvironmentalPermitWasteManagementTonne = 5000,
+            MaximumReprocessingCapacityTonne = 6000,
+            MaximumReprocessingPeriodID = 1,
+            ReasonforNotreg = isRegistered ? string.Empty : $"Lorem ipsum dolor sit amet, consectetur adipiscing{j} elit. Fusce vulputate aliquet ornare. Vestibulum dolor nunc, tincidunt a diam nec, mattis venenatis sem{registrationCounter}",
+            Wastecarrierbrokerdealerregistration = $"DFG3457345{registrationCounter}",
+            IsMaterialRegistered = isRegistered
+        };
+
+        if (registrationCounter <= 10)
+        {
+            materialExemptionReferences.AddRange(GetMaterialExemptionReferences(registrationCounter, j, registrationMaterialId, 1));
+        }
+        else if (registrationCounter > 10 && registrationCounter <= 20)
+        {
+            materialExemptionReferences.AddRange(GetMaterialExemptionReferences(registrationCounter, j, registrationMaterialId, 10));
+        }
+
+        return RegistrationMaterial;
+    }
+    private List<MaterialExemptionReference> GetMaterialExemptionReferences(int registrationCounter, int j, int registrationMaterialId, int NumberOfMaterialExemptionReferences)
+    {
+        var materialExemptionReferences = new List<MaterialExemptionReference>();
+        for (int i = 0; i < NumberOfMaterialExemptionReferences; i++)
+        {
+            materialExemptionReferences.Add(new MaterialExemptionReference
+            {
+                Id = ++materialExemptionReferenceId,
+                ReferenceNo = $"EXEMPT{registrationCounter:D4}-{materialExemptionReferenceId:D2}-{i}",
+                RegistrationMaterialId = registrationMaterialId
+            });
+        }
+        return materialExemptionReferences;
+    }
+
+    int FileUploadId = 1;
+    private List<FileUpload> GetFileUploads(int registrationCounter, int j, int registrationMaterialId)
+    {
+        if (registrationCounter <= 50)
+        {
+            return GetFileUploads(registrationCounter, j, registrationMaterialId, 1);
+        }
+        else if (registrationCounter > 50 && registrationCounter <= 90)
+        {
+            return new List<FileUpload>();
+        }
+        else
+        {
+            return GetFileUploads(registrationCounter, j, registrationMaterialId, 10);
+        }
+    }
+
+    private List<FileUpload> GetFileUploads(int registrationCounter, int j, int registrationMaterialId, int NumberOfFileUploads)
+    {
+        var fileUploads = new List<FileUpload>();
+        for (int i = 0; i < NumberOfFileUploads; i++)
+        {
+            fileUploads.Add(new FileUpload
+            {
+                Id = FileUploadId++,
+                RegistrationMaterialId = registrationMaterialId,
+                Filename = $"File{registrationCounter:D4}-{j:D2}-{i}.pdf",
+                FileUploadTypeId = 1,
+                FileUploadStatusId = 1,
+                DateUploaded = DateTime.UtcNow,
+                UpdatedBy = "Test User",
+                Comments = "Test comment",
+                FileId = Guid.NewGuid().ToString()
+            });
+        }
+        return fileUploads;
+    }
+
+    int RegistrationReprocessingIOId = 1;
+    private RegistrationReprocessingIO GetReprocessionIos(int registrationCounter, int registrationMaterialId)
+    {
+        return new RegistrationReprocessingIO
+        {
+            Id = RegistrationReprocessingIOId++,
+            RegistrationMaterialId = registrationMaterialId,
+            ContaminantsTonne = 1,
+            NonUKPackagingWasteTonne = 2,
+            NotPackingWasteTonne = 3,
+            ProcessLossTonne = 4,
+            ReprocessingPackagingWasteLastYearFlag = registrationCounter <= 50,
+            SenttoOtherSiteTonne = 5,
+            UKPackagingWasteTonne = 6,
+            TotalInputs = 7,
+            TotalOutputs = 8,
+            PlantEquipmentUsed = "shredder",
+            TypeOfSupplier = "Shed"
+        };
+    }
+
     public virtual DbSet<Registration> Registrations { get; set; }
     public virtual DbSet<RegistrationMaterial> RegistrationMaterials { get; set; }
+    public virtual DbSet<MaterialExemptionReference> MaterialExemptionReferences { get; set; }
+    public virtual DbSet<RegistrationReprocessingIO> RegistrationReprocessingIO { get; set; }
+
     public virtual DbSet<RegulatorApplicationTaskStatus> RegulatorApplicationTaskStatus { get; set; }
     public virtual DbSet<RegulatorRegistrationTaskStatus> RegulatorRegistrationTaskStatus { get; set; }
     public DbSet<LookupMaterial> LookupMaterials { get; set; }
@@ -175,4 +406,6 @@ public class EprRegistrationsContext : DbContext
     public DbSet<LookupRegistrationStatus> LookupRegistrationStatuses { get; set; }
     public DbSet<LookupTaskStatus> LookupTaskStatuses { get; set; }
     public DbSet<LookupAddress> LookupAddresses { get; set; }
+    public DbSet<LookupPeriod> LookupPeriod { get; set; }
+    public DbSet<LookupMaterialPermit> LookupMaterialPermit { get; set; }
 }
