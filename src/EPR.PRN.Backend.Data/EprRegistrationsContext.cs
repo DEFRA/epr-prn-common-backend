@@ -110,8 +110,7 @@ public class EprRegistrationsContext : DbContext
                 LegalDocumentAddressId = registrationCounter
             });
 
-            var random = new Random(Guid.NewGuid().GetHashCode());
-            var template = addressTemplates[random.Next(addressTemplates.Length)];
+            var template = addressTemplates[Random.Shared.Next(addressTemplates.Length)];
 
             lookupAddresses.Add(new LookupAddress
             {
@@ -132,7 +131,7 @@ public class EprRegistrationsContext : DbContext
             for (int j = 1; j <= 3; j++)
             {
                 bool isLast = j == 3;
-                bool isRegistered = isLast && !hasRegisteredMaterial || random.Next(2) == 1;
+                bool isRegistered = isLast && !hasRegisteredMaterial || Random.Shared.Next(2) == 1;
 
                 hasRegisteredMaterial |= isRegistered;
 
@@ -155,6 +154,7 @@ public class EprRegistrationsContext : DbContext
 
             registrationMaterials.AddRange(materials);
         }
+
 
 
         modelBuilder.Entity<Registration>().HasData(registrations);
