@@ -1,6 +1,7 @@
 ﻿using EPR.PRN.Backend.Data.DataModels.Registrations;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics.CodeAnalysis;
+
 namespace EPR.PRN.Backend.Data;
 
 [ExcludeFromCodeCoverage]
