@@ -109,43 +109,49 @@ public class EprRegistrationsContext : DbContext
         registrationMaterialId = 0;
         materialExemptionReferenceId = 0;
         var addressTemplates = new[]
-       {
+            {
+                new {
+                    AddressLine1 = "23", AddressLine2 = "Ruby St", TownCity = "London",
+                    County = (string?)null, Country = "England", PostCode = "E12 3SE", NationId = 1
+                },
+                new {
+                    AddressLine1 = "78", AddressLine2 = "Pine Ln", TownCity = "Belfast",
+                    County = (string?)null, Country = "Northern Ireland", PostCode = "BT1 3FG", NationId = 2
+                },
+                new {
+                    AddressLine1 = "45", AddressLine2 = "Maple Ave", TownCity = "Edinburgh",
+                    County = (string?)null, Country = "Scotland", PostCode = "EH3 5DN", NationId = 3
+                },
+                new {
+                    AddressLine1 = "12", AddressLine2 = "Oak Rd", TownCity = "Cardiff",
+                    County = (string?)null, Country = "Wales", PostCode = "CF10 1AA", NationId = 4
+                }
+            };
 
-            new {
-            AddressLine1 = "45", AddressLine2 = "Maple Ave", TownCity = "Edinburgh",
-            County = (string?)null, Country = "Scotland", PostCode = "EH3 5DN", NationId = 1
-            },
-            new {
-            AddressLine1 = "23", AddressLine2 = "Ruby St", TownCity = "London",
-            County = (string?)null, Country = "England", PostCode = "E12 3SE", NationId = 2
-            },
-            new {
-            AddressLine1 = "12", AddressLine2 = "Oak Rd", TownCity = "Cardiff",
-            County = (string?)null, Country = "Wales", PostCode = "CF10 1AA", NationId = 3
-            },
-            new {
-            AddressLine1 = "78", AddressLine2 = "Pine Ln", TownCity = "Belfast",
-            County = (string?)null, Country = "Northern Ireland", PostCode = "BT1 3FG", NationId = 4
-            }
-        };
+        var countryId = 0;
 
         for (var registrationCounter = 1; registrationCounter <= NumberOfRegistrations; registrationCounter++)
         {
             var ApplicationTypeId = registrationCounter % 2 + 1;
 
-            var template = addressTemplates[(registrationCounter - 1) % addressTemplates.Length];
-            lookupAddresses.Add(new LookupAddress
+            if(ApplicationTypeId == 2)
             {
-                Id = ++lookupAddressID,
-                AddressLine1 = template.AddressLine1,
-                AddressLine2 = template.AddressLine2,
-                TownCity = template.TownCity,
-                County = template.County,
-                Country = template.Country,
-                PostCode = template.PostCode,
-                NationId = template.NationId,
-                GridReference = $"SJ 854 66{registrationCounter}"
-            });
+                var template = addressTemplates[countryId];
+                lookupAddresses.Add(new LookupAddress
+                {
+                    Id = ++lookupAddressID,
+                    AddressLine1 = template.AddressLine1,
+                    AddressLine2 = template.AddressLine2,
+                    TownCity = template.TownCity,
+                    County = template.County,
+                    Country = template.Country,
+                    PostCode = template.PostCode,
+                    NationId = template.NationId,
+                    GridReference = $"SJ 854 66{registrationCounter}"
+                });
+                countryId = countryId == 3 ? 0 : countryId + 1;
+            }
+
 
             registrations.Add(new Registration
             {
