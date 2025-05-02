@@ -34,4 +34,38 @@ public class RegistrationMaterial
     public string? StatusUpdatedBy { get; set; }
 
     public List<RegulatorApplicationTaskStatus>? Tasks { get; set; }
+
+    public LookupMaterialPermit? PermitType { get; set; }
+    
+    [ForeignKey("PermitType")]
+    public int PermitTypeId { get; set; }
+
+    public List<MaterialExemptionReference>? MaterialExemptionReferences { get; set; }
+    public string? PPCPermitNumber { get; set; }
+    public string? WasteManagementLicenceNumber { get; set; }
+    public string? InstallationPermitNumber { get; set; }
+    public string? EnvironmentalPermitWasteManagementNumber { get; set; }
+    public decimal PPCReprocessingCapacityTonne { get; set; }
+    public decimal WasteManagementReprocessingCapacityTonne { get; set; }
+    public decimal InstallationReprocessingTonne { get; set; }
+    public decimal EnvironmentalPermitWasteManagementTonne { get; set; }
+    public LookupPeriod? PPCPeriod { get; set; }
+    [ForeignKey("PPCPeriod")]
+    public int PPCPeriodId { get; set; }
+    public LookupPeriod? WasteManagementPeriod { get; set; }
+    [ForeignKey("WasteManagementPeriod")]
+    public int WasteManagementPeriodId { get; set; }
+    public LookupPeriod? InstallationPeriod { get; set; }
+    [ForeignKey("InstallationPeriod")]
+    public int InstallationPeriodId { get; set; }
+    public LookupPeriod? EnvironmentalPermitWasteManagementPeriod { get; set; }
+    [ForeignKey("EnvironmentalPermitWasteManagementPeriod")]
+    public int EnvironmentalPermitWasteManagementPeriodId { get; set; }
+    public decimal MaximumReprocessingCapacityTonne { get; set; }
+    public LookupPeriod? MaximumReprocessingPeriod { get; set; }
+    [ForeignKey("MaximumReprocessingPeriod")]
+    public int MaximumReprocessingPeriodID { get; set; }
+
+    public List<RegistrationReprocessingIO>? RegistrationReprocessingIO { get; set; }
+    public List<FileUpload>? FileUploads { get; set; }
 }

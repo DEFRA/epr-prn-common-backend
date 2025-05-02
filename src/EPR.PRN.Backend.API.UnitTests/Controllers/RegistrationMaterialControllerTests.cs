@@ -5,6 +5,7 @@ using EPR.PRN.Backend.API.Dto.Regulator;
 using EPR.PRN.Backend.API.Queries;
 
 using FluentAssertions;
+using FluentAssertions.Execution;
 using FluentValidation;
 using FluentValidation.Results;
 
@@ -53,9 +54,12 @@ public class RegistrationMaterialControllerTests
         var result = await _controller.GetRegistrationOverviewDetailById(registrationId);
 
         // Assert
-        var okResult = result as OkObjectResult;
-        okResult.Should().NotBeNull();
-        okResult!.Value.Should().BeEquivalentTo(expectedDto);
+        using (new AssertionScope())
+        {
+            var okResult = result as OkObjectResult;
+            okResult.Should().NotBeNull();
+            okResult!.Value.Should().BeEquivalentTo(expectedDto);
+        }
     }
 
     [TestMethod]
@@ -73,9 +77,12 @@ public class RegistrationMaterialControllerTests
         var result = await _controller.GetMaterialDetailById(materialId);
 
         // Assert
-        var okResult = result as OkObjectResult;
-        okResult.Should().NotBeNull();
-        okResult!.Value.Should().BeEquivalentTo(expectedDto);
+        using (new AssertionScope())
+        {
+            var okResult = result as OkObjectResult;
+            okResult.Should().NotBeNull();
+            okResult!.Value.Should().BeEquivalentTo(expectedDto);
+        }
     }
 
     [TestMethod]
@@ -97,8 +104,11 @@ public class RegistrationMaterialControllerTests
         var result = await _controller.UpdateRegistrationOutcome(materialId, command);
 
         // Assert
-        result.Should().BeOfType<NoContentResult>();
-        command.Id.Should().Be(materialId);
+        using (new AssertionScope())
+        {
+            result.Should().BeOfType<NoContentResult>();
+            command.Id.Should().Be(materialId);
+        }
     }
 
     [TestMethod]
@@ -124,5 +134,74 @@ public class RegistrationMaterialControllerTests
         await FluentActions.Invoking(() =>
             controller.UpdateRegistrationOutcome(registrationId, command)
         ).Should().ThrowAsync<ValidationException>();
+    }
+
+    [TestMethod]
+    public async Task GetWasteLicences_ReturnsOk_WithExpectedResult()
+    {
+        // Arrange
+        int materialId = 2;
+        var expectedDto = new RegistrationMaterialWasteLicencesDto() { PermitType = "", LicenceNumbers = [], MaterialName = "", MaximumReprocessingCapacityTonne = 1,  MaximumReprocessingPeriod = ""  };
+
+        _mediatorMock
+            .Setup(m => m.Send(It.IsAny<GetMaterialWasteLicencesQuery>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(expectedDto);
+
+        // Act
+        var result = await _controller.GetWasteLicences(materialId);
+
+        // Assert
+        using (new AssertionScope())
+        {
+            var okResult = result as OkObjectResult;
+            okResult.Should().NotBeNull();
+            okResult!.Value.Should().BeEquivalentTo(expectedDto);
+        }
+    }
+
+    [TestMethod]
+    public async Task GetSamplingPlan_ReturnsOk_WithExpectedResult()
+    {
+        // Arrange
+        int materialId = 2;
+        var expectedDto = new RegistrationMaterialSamplingPlanDto() { MaterialName = "" };
+
+        _mediatorMock
+            .Setup(m => m.Send(It.IsAny<GetMaterialSamplingPlanQuery>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(expectedDto);
+
+        // Act
+        var result = await _controller.GetSamplingPlan(materialId);
+
+        // Assert
+        using (new AssertionScope())
+        {
+            var okResult = result as OkObjectResult;
+            okResult.Should().NotBeNull();
+            okResult!.Value.Should().BeEquivalentTo(expectedDto);
+        }
+    }
+
+    [TestMethod]
+    public async Task GetreprocessingIO_ReturnsOk_WithExpectedResult()
+    {
+        // Arrange
+        int materialId = 2;
+        var expectedDto = new RegistrationMaterialReprocessingIODto() { MaterialName = "", SourcesOfPackagingWaste = "", PlantEquipmentUsed = "" };
+
+        _mediatorMock
+            .Setup(m => m.Send(It.IsAny<GetMaterialReprocessingIOQuery>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(expectedDto);
+
+        // Act
+        var result = await _controller.GetReprocessingIO(materialId);
+
+        // Assert
+        using (new AssertionScope())
+        {
+            var okResult = result as OkObjectResult;
+            okResult.Should().NotBeNull();
+            okResult!.Value.Should().BeEquivalentTo(expectedDto);
+        }
     }
 }

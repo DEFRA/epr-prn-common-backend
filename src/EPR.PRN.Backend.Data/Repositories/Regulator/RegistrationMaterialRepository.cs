@@ -1,4 +1,5 @@
-﻿using EPR.PRN.Backend.Data.DataModels.Registrations;
+﻿using EPR.PRN.Backend.Data.DataModels;
+using EPR.PRN.Backend.Data.DataModels.Registrations;
 using EPR.PRN.Backend.Data.Interfaces.Regulator;
 
 using Microsoft.EntityFrameworkCore;
@@ -29,6 +30,30 @@ public class RegistrationMaterialRepository(EprRegistrationsContext eprContext) 
                ?? throw new KeyNotFoundException("Material not found.");
     }
 
+    public async Task<RegistrationMaterial> GetRegistrationMaterial_WasteLicencesById(int registrationMaterialId)
+    {
+        var registrationMaterials = GetRegistrationMaterialsWithRelatedEntities_WasteLicences();
+
+        return await registrationMaterials.SingleOrDefaultAsync(rm => rm.Id == registrationMaterialId)
+               ?? throw new KeyNotFoundException("Material not found.");
+    }
+
+    public async Task<RegistrationMaterial> GetRegistrationMaterial_RegistrationReprocessingIOById(int registrationMaterialId)
+    {
+        var registrationMaterials = GetRegistrationMaterialsWithRelatedEntities_RegistrationReprocessingIO();
+
+        return await registrationMaterials.SingleOrDefaultAsync(rm => rm.Id == registrationMaterialId)
+               ?? throw new KeyNotFoundException("Material not found.");
+    }
+
+    public async Task<RegistrationMaterial> GetRegistrationMaterial_FileUploadById(int registrationMaterialId)
+    {
+        var registrationMaterials = GetRegistrationMaterial_FileUploadById();
+
+        return await registrationMaterials.SingleOrDefaultAsync(rm => rm.Id == registrationMaterialId)
+               ?? throw new KeyNotFoundException("Material not found.");
+    }
+
     public async Task UpdateRegistrationOutCome(int registrationMaterialId, int statusId, string? comment, string? registrationReferenceNumber)
     {
         var material = await eprContext.RegistrationMaterials.FirstOrDefaultAsync(rm => rm.Id == registrationMaterialId);
@@ -45,7 +70,7 @@ public class RegistrationMaterialRepository(EprRegistrationsContext eprContext) 
 
     private IIncludableQueryable<RegistrationMaterial, LookupRegistrationMaterialStatus> GetRegistrationMaterialsWithRelatedEntities()
     {
-        var registrationMaterials = 
+        var registrationMaterials =
             eprContext.RegistrationMaterials
             .AsNoTracking()
             .AsSplitQuery()
@@ -54,7 +79,52 @@ public class RegistrationMaterialRepository(EprRegistrationsContext eprContext) 
             .Include(rm => rm.Registration)
                 .ThenInclude(r => r.BusinessAddress)
             .Include(rm => rm.Material)
-            .Include(rm => rm.Status);
+            .Include(rm => rm.Status);            
+
+        return registrationMaterials;
+    }
+
+    private IIncludableQueryable<RegistrationMaterial, LookupMaterial> GetRegistrationMaterialsWithRelatedEntities_WasteLicences()
+    {
+        var registrationMaterials =
+            eprContext.RegistrationMaterials
+            .AsNoTracking()
+            .AsSplitQuery()
+            .Include(rm => rm.MaterialExemptionReferences)
+            .Include(rm => rm.PPCPeriod)
+            .Include(rm => rm.WasteManagementPeriod)
+            .Include(rm => rm.InstallationPeriod)
+            .Include(rm => rm.EnvironmentalPermitWasteManagementPeriod)
+            .Include(rm => rm.MaximumReprocessingPeriod)
+            .Include(rm => rm.PermitType)
+            .Include(rm => rm.Material);
+
+        return registrationMaterials;
+    }   
+
+    private IIncludableQueryable<RegistrationMaterial, LookupMaterial> GetRegistrationMaterialsWithRelatedEntities_RegistrationReprocessingIO()
+    {
+        var registrationMaterials =
+            eprContext.RegistrationMaterials
+            .AsNoTracking()
+            .AsSplitQuery()
+            .Include(rm => rm.RegistrationReprocessingIO)
+            .Include(rm => rm.Material);
+
+        return registrationMaterials;
+    }
+
+    private IIncludableQueryable<RegistrationMaterial, LookupMaterial> GetRegistrationMaterial_FileUploadById()
+    {
+        var registrationMaterials =
+            eprContext.RegistrationMaterials
+            .AsNoTracking()
+            .AsSplitQuery()
+            .Include(rm => rm.FileUploads)!
+            .ThenInclude(fu => fu.FileUploadType)
+            .Include(rm => rm.FileUploads)!
+            .ThenInclude(fu => fu.FileUploadStatus)
+            .Include(rm => rm.Material);
 
         return registrationMaterials;
     }
