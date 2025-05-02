@@ -66,7 +66,6 @@ public class RegistrationMaterial
     public LookupPeriod? MaximumReprocessingPeriod { get; set; }
     [ForeignKey("MaximumReprocessingPeriod")]
     public int MaximumReprocessingPeriodID { get; set; }
-
     public List<RegistrationReprocessingIO>? RegistrationReprocessingIO { get; set; }
     public List<FileUpload>? FileUploads { get; set; }
     public bool IsMaterialRegistered { get; set; } = false;
