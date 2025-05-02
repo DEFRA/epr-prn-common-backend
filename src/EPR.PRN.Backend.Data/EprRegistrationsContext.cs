@@ -108,8 +108,9 @@ public class EprRegistrationsContext : DbContext
         lookupAddressID = 0;
         registrationMaterialId = 0;
         materialExemptionReferenceId = 0;
+
         var addressTemplates = new[]
-            {
+        {
                 new {
                     AddressLine1 = "23", AddressLine2 = "Ruby St", TownCity = "London",
                     County = (string?)null, Country = "England", PostCode = "E12 3SE", NationId = 1
@@ -128,15 +129,18 @@ public class EprRegistrationsContext : DbContext
                 }
             };
 
-        var countryId = 0;
-
         for (var registrationCounter = 1; registrationCounter <= NumberOfRegistrations; registrationCounter++)
         {
             var ApplicationTypeId = registrationCounter % 2 + 1;
+            int currentAddressId = 0;
 
-            if(ApplicationTypeId == 2)
+            int currentRegId = ++registrationId;
+
+            if (currentRegId % 2 == 0)
             {
-                var template = addressTemplates[countryId];
+                var templateIndex = ((currentRegId / 2) - 1) % addressTemplates.Length;
+                var template = addressTemplates[templateIndex];
+
                 lookupAddresses.Add(new LookupAddress
                 {
                     Id = ++lookupAddressID,
@@ -149,31 +153,28 @@ public class EprRegistrationsContext : DbContext
                     NationId = template.NationId,
                     GridReference = $"SJ 854 66{registrationCounter}"
                 });
-                countryId = countryId == 3 ? 0 : countryId + 1;
-            }
 
+                currentAddressId = lookupAddressID;
+            }
 
             registrations.Add(new Registration
             {
-                Id = ++registrationId,
+                Id = currentRegId,
                 ExternalId = Guid.NewGuid().ToString(),
                 ApplicationTypeId = ApplicationTypeId,
                 OrganisationId = 1,
-                BusinessAddressId = ApplicationTypeId == 2 ? lookupAddressID : null,
-                ReprocessingSiteAddressId = ApplicationTypeId == 1 ? lookupAddressID : null,
-                LegalDocumentAddressId = lookupAddressID,
+                BusinessAddressId = ApplicationTypeId == 2 ? currentAddressId : null,
+                ReprocessingSiteAddressId = ApplicationTypeId == 1 ? currentAddressId : null,
+                LegalDocumentAddressId = currentAddressId,
             });
 
             for (int j = 1; j <= 3; j++)
             {
-                registrationMaterials.Add(GetRegistrationMaterial(registrationCounter, registrationId, j, materialExemptionReferences));
-
+                registrationMaterials.Add(GetRegistrationMaterial(registrationCounter, currentRegId, j, materialExemptionReferences));
                 registrationReprocessingIOs.Add(GetReprocessionIos(registrationCounter, registrationMaterialId));
-
                 fileUploads.AddRange(GetFileUploads(registrationCounter, j, registrationMaterialId));
             }
         }
-
 
         modelBuilder.Entity<Registration>().HasData(registrations);
         modelBuilder.Entity<LookupAddress>().HasData(lookupAddresses);
