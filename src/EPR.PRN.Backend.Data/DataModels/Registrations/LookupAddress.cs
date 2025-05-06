@@ -12,4 +12,6 @@ public class LookupAddress
     public string? County { get; set; }
     public string Country { get; set; }
     public string PostCode { get; set; }
+    public int NationId { get; set; }
+    public string GridReference { get; set; }
 }

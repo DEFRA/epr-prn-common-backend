@@ -31,8 +31,9 @@ public class RegistrationMaterial
     public DateTime ProcessingStartDate { get; set; }
     public DateTime ProcessingEndDate { get; set; }
     public DateTime StatusUpdatedDate { get; set; }
-    public string? StatusUpdatedBy { get; set; }
-
+    public string? StatusUpdatedBy { get; set; } 
+    public string? ReasonforNotreg { get; set; } = string.Empty;
+    public string Wastecarrierbrokerdealerregistration { get; set; } = string.Empty;
     public List<RegulatorApplicationTaskStatus>? Tasks { get; set; }
 
     public LookupMaterialPermit? PermitType { get; set; }
@@ -65,7 +66,7 @@ public class RegistrationMaterial
     public LookupPeriod? MaximumReprocessingPeriod { get; set; }
     [ForeignKey("MaximumReprocessingPeriod")]
     public int MaximumReprocessingPeriodID { get; set; }
-
     public List<RegistrationReprocessingIO>? RegistrationReprocessingIO { get; set; }
     public List<FileUpload>? FileUploads { get; set; }
+    public bool IsMaterialRegistered { get; set; } = false;
 }

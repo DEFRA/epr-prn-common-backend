@@ -109,41 +109,60 @@ public class EprRegistrationsContext : DbContext
         registrationMaterialId = 0;
         materialExemptionReferenceId = 0;
 
+        var addressTemplates = new[]
+        {
+            new { AddressLine1 = "23", AddressLine2 = "Ruby St", TownCity = "London", Country = "England",        PostCode = "E12 3SE", NationId = 1, County = (string?)null },
+            new { AddressLine1 = "78", AddressLine2 = "Pine Ln", TownCity = "Belfast", Country = "Northern Ireland", PostCode = "BT1 3FG", NationId = 2, County = (string?)null },
+            new { AddressLine1 = "45", AddressLine2 = "Maple Ave", TownCity = "Edinburgh", Country = "Scotland",     PostCode = "EH3 5DN", NationId = 3, County = (string?)null },
+            new { AddressLine1 = "12", AddressLine2 = "Oak Rd", TownCity = "Cardiff", Country = "Wales",         PostCode = "CF10 1AA", NationId = 4, County = (string?)null }
+        };
+
         for (var registrationCounter = 1; registrationCounter <= NumberOfRegistrations; registrationCounter++)
         {
             var ApplicationTypeId = registrationCounter % 2 + 1;
+            int currentAddressId = 0;
 
-            lookupAddresses.Add(new LookupAddress
+            int currentRegId = ++registrationId;
+
+            if (currentRegId % 2 == 0)
             {
-                Id = ++lookupAddressID,
-                AddressLine1 = "23",
-                AddressLine2 = "Ruby St",
-                TownCity = "London",
-                County = null,
-                Country = "England",
-                PostCode = "E12 3SE"
-            });
+                var templateIndex = ((currentRegId / 2) - 1) % addressTemplates.Length;
+                var template = addressTemplates[templateIndex];
+
+                lookupAddresses.Add(new LookupAddress
+                {
+                    Id = ++lookupAddressID,
+                    AddressLine1 = template.AddressLine1,
+                    AddressLine2 = template.AddressLine2,
+                    TownCity = template.TownCity,
+                    County = template.County,
+                    Country = template.Country,
+                    PostCode = template.PostCode,
+                    NationId = template.NationId,
+                    GridReference = $"SJ 854 66{registrationCounter}"
+                });
+
+                currentAddressId = lookupAddressID;
+            }
 
             registrations.Add(new Registration
             {
-                Id = ++registrationId,
+                Id = currentRegId,
                 ExternalId = Guid.NewGuid().ToString(),
                 ApplicationTypeId = ApplicationTypeId,
                 OrganisationId = 1,
-                BusinessAddressId = lookupAddressID,
-                ReprocessingSiteAddressId = lookupAddressID
+                BusinessAddressId = ApplicationTypeId == 2 ? currentAddressId : null,
+                ReprocessingSiteAddressId = ApplicationTypeId == 1 ? currentAddressId : null,
+                LegalDocumentAddressId = currentAddressId,
             });
 
             for (int j = 1; j <= 3; j++)
             {
-                registrationMaterials.Add(GetRegistrationMaterial(registrationCounter, registrationId, j, materialExemptionReferences));
-
+                registrationMaterials.Add(GetRegistrationMaterial(registrationCounter, currentRegId, j, materialExemptionReferences));
                 registrationReprocessingIOs.Add(GetReprocessionIos(registrationCounter, registrationMaterialId));
-
                 fileUploads.AddRange(GetFileUploads(registrationCounter, j, registrationMaterialId));
             }
         }
-
 
         modelBuilder.Entity<Registration>().HasData(registrations);
         modelBuilder.Entity<LookupAddress>().HasData(lookupAddresses);
@@ -171,6 +190,7 @@ public class EprRegistrationsContext : DbContext
     private RegistrationMaterial GetRegistrationMaterial(int registrationCounter, int registrationId, int j, List<MaterialExemptionReference> materialExemptionReferences)
     {
         int permitTypeId = 1;
+
         if (registrationCounter <= 10)
         {
             permitTypeId = 1;
@@ -200,6 +220,66 @@ public class EprRegistrationsContext : DbContext
             permitTypeId = 5;
         }
 
+        // bool isRegistered = new Random().Next(2) == 0;
+        bool isRegistered = false;
+
+        if (registrationCounter <= 10)
+        {
+            isRegistered = true;
+        }
+        else if (registrationCounter > 10 && registrationCounter <= 20)
+        {
+            if (j == 1 || j == 2)
+                isRegistered = true;
+            else if (j == 3)
+                isRegistered = false;
+        }
+        else if (registrationCounter > 20 && registrationCounter <= 40)
+        {
+            if (j == 1 || j == 3)
+                isRegistered = true;
+            else if (j == 2)
+                isRegistered = false;
+        }
+        else if (registrationCounter > 40 && registrationCounter <= 60)
+        {
+            if (j == 2 || j == 3)
+                isRegistered = true;
+            else if (j == 1)
+                isRegistered = false;
+        }
+        else if (registrationCounter > 60 && registrationCounter <= 70)
+        {
+            if (j == 1 || j == 3)
+                isRegistered = true;
+            else if (j == 2)
+                isRegistered = false;
+        }
+        else if (registrationCounter > 70 && registrationCounter <= 80)
+        {
+            if (j == 2 || j == 3)
+                isRegistered = false;
+            else if (j == 1)
+                isRegistered = true;
+        }
+        else if (registrationCounter > 80 && registrationCounter <= 90)
+        {
+            if (j == 1 || j == 3)
+                isRegistered = false;
+            else if (j == 2)
+                isRegistered = true;
+        }
+        else if (registrationCounter > 90 && registrationCounter <= 99)
+        {
+            if (j == 1 || j == 2)
+                isRegistered = false;
+            else if (j == 3)
+                isRegistered = true;
+        }
+        else if (registrationCounter == 100)
+        {
+            isRegistered = false;
+        }
         var RegistrationMaterial = new RegistrationMaterial
         {
             Id = ++registrationMaterialId,
@@ -224,7 +304,10 @@ public class EprRegistrationsContext : DbContext
             InstallationReprocessingTonne = 4000,
             EnvironmentalPermitWasteManagementTonne = 5000,
             MaximumReprocessingCapacityTonne = 6000,
-            MaximumReprocessingPeriodID = 1
+            MaximumReprocessingPeriodID = 1,
+            ReasonforNotreg = isRegistered ? string.Empty : $"Lorem ipsum dolor sit amet, consectetur adipiscing{j} elit. Fusce vulputate aliquet ornare. Vestibulum dolor nunc, tincidunt a diam nec, mattis venenatis sem{registrationCounter}",
+            Wastecarrierbrokerdealerregistration = $"DFG3457345{registrationCounter}",
+            IsMaterialRegistered = isRegistered
         };
 
         if (registrationCounter <= 10)

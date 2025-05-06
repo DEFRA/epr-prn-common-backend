@@ -12,8 +12,11 @@ using FluentValidation.Results;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using EPR.PRN.Backend.API.Dto;
 
 using Moq;
+using EPR.PRN.Backend.Data.DataModels.Registrations;
+using EPR.PRN.Backend.API.Handlers;
 
 namespace EPR.PRN.Backend.API.UnitTests.Controllers;
 
@@ -204,4 +207,50 @@ public class RegistrationMaterialControllerTests
             okResult!.Value.Should().BeEquivalentTo(expectedDto);
         }
     }
+
+    [TestMethod]
+    public async Task GetSiteAddressByRegistrationId_ReturnsOk_WithExpectedResult()
+    {
+        // Arrange
+        int registrationId = 2;
+
+       
+        var expectedDto = new RegistrationSiteAddressDto();
+
+        _mediatorMock
+            .Setup(m => m.Send(It.IsAny<GetRegistrationSiteAddressByIdQuery>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(expectedDto);
+
+        // Act
+        var result = await _controller.GetRegistrationSiteAddressById(registrationId);
+
+        // Assert
+        var okResult = result as OkObjectResult;
+        okResult.Should().NotBeNull();
+        okResult!.Value.Should().BeEquivalentTo(expectedDto);
+    }
+    [TestMethod]
+    public async Task GetMaterialsAuthorisedOnSiteId_ReturnsOk_WithExpectedResult()
+    {
+        // Arrange
+        int registrationId = 2;
+
+
+        var expectedDto = new MaterialsAuthorisedOnSiteDto();
+
+        _mediatorMock
+            .Setup(m => m.Send(It.IsAny<GetMaterialsAuthorisedOnSiteByIdQuery>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(expectedDto);
+
+        // Act
+        var result = await _controller.GetAuthorisedMaterial(registrationId);
+
+        // Assert
+        var okResult = result as OkObjectResult;
+        okResult.Should().NotBeNull();
+        okResult!.Value.Should().BeEquivalentTo(expectedDto);
+    }
+
+
+
 }
