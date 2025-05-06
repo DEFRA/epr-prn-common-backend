@@ -260,6 +260,13 @@ public class EprRegistrationsContext : DbContext
             else if (j == 1)
                 isRegistered = false;
         }
+        else if (registrationCounter > 60 && registrationCounter <= 70)
+        {
+            if (j == 1 || j == 3)
+                isRegistered = true;
+            else if (j == 2)
+                isRegistered = false;
+        }
         else if (registrationCounter > 70 && registrationCounter <= 80)
         {
             if (j == 2 || j == 3)
