@@ -111,23 +111,11 @@ public class EprRegistrationsContext : DbContext
 
         var addressTemplates = new[]
         {
-                new {
-                    AddressLine1 = "23", AddressLine2 = "Ruby St", TownCity = "London",
-                    County = (string?)null, Country = "England", PostCode = "E12 3SE", NationId = 1
-                },
-                new {
-                    AddressLine1 = "78", AddressLine2 = "Pine Ln", TownCity = "Belfast",
-                    County = (string?)null, Country = "Northern Ireland", PostCode = "BT1 3FG", NationId = 2
-                },
-                new {
-                    AddressLine1 = "45", AddressLine2 = "Maple Ave", TownCity = "Edinburgh",
-                    County = (string?)null, Country = "Scotland", PostCode = "EH3 5DN", NationId = 3
-                },
-                new {
-                    AddressLine1 = "12", AddressLine2 = "Oak Rd", TownCity = "Cardiff",
-                    County = (string?)null, Country = "Wales", PostCode = "CF10 1AA", NationId = 4
-                }
-            };
+            new { AddressLine1 = "23", AddressLine2 = "Ruby St", TownCity = "London", Country = "England",        PostCode = "E12 3SE", NationId = 1, County = (string?)null },
+            new { AddressLine1 = "78", AddressLine2 = "Pine Ln", TownCity = "Belfast", Country = "Northern Ireland", PostCode = "BT1 3FG", NationId = 2, County = (string?)null },
+            new { AddressLine1 = "45", AddressLine2 = "Maple Ave", TownCity = "Edinburgh", Country = "Scotland",     PostCode = "EH3 5DN", NationId = 3, County = (string?)null },
+            new { AddressLine1 = "12", AddressLine2 = "Oak Rd", TownCity = "Cardiff", Country = "Wales",         PostCode = "CF10 1AA", NationId = 4, County = (string?)null }
+        };
 
         for (var registrationCounter = 1; registrationCounter <= NumberOfRegistrations; registrationCounter++)
         {
