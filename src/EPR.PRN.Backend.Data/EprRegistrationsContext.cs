@@ -221,65 +221,9 @@ public class EprRegistrationsContext : DbContext
         }
 
         // bool isRegistered = new Random().Next(2) == 0;
-        bool isRegistered = false;
-
-        if (registrationCounter <= 10)
-        {
-            isRegistered = true;
-        }
-        else if (registrationCounter > 10 && registrationCounter <= 20)
-        {
-            if (j == 1 || j == 2)
-                isRegistered = true;
-            else if (j == 3)
-                isRegistered = false;
-        }
-        else if (registrationCounter > 20 && registrationCounter <= 40)
-        {
-            if (j == 1 || j == 3)
-                isRegistered = true;
-            else if (j == 2)
-                isRegistered = false;
-        }
-        else if (registrationCounter > 40 && registrationCounter <= 60)
-        {
-            if (j == 2 || j == 3)
-                isRegistered = true;
-            else if (j == 1)
-                isRegistered = false;
-        }
-        else if (registrationCounter > 60 && registrationCounter <= 70)
-        {
-            if (j == 1 || j == 3)
-                isRegistered = true;
-            else if (j == 2)
-                isRegistered = false;
-        }
-        else if (registrationCounter > 70 && registrationCounter <= 80)
-        {
-            if (j == 2 || j == 3)
-                isRegistered = false;
-            else if (j == 1)
-                isRegistered = true;
-        }
-        else if (registrationCounter > 80 && registrationCounter <= 90)
-        {
-            if (j == 1 || j == 3)
-                isRegistered = false;
-            else if (j == 2)
-                isRegistered = true;
-        }
-        else if (registrationCounter > 90 && registrationCounter <= 99)
-        {
-            if (j == 1 || j == 2)
-                isRegistered = false;
-            else if (j == 3)
-                isRegistered = true;
-        }
-        else if (registrationCounter == 100)
-        {
-            isRegistered = false;
-        }
+        
+        bool isRegistered = GetIsRegistered(registrationCounter, j);
+        
         var RegistrationMaterial = new RegistrationMaterial
         {
             Id = ++registrationMaterialId,
@@ -321,6 +265,41 @@ public class EprRegistrationsContext : DbContext
 
         return RegistrationMaterial;
     }
+    private bool GetIsRegistered(int registrationCounter, int j)
+    {
+        if (registrationCounter <= 10)
+        {
+            return true;
+        }
+         var registrationRules = new List<(int min, int max, HashSet<int> allowed)>
+        {
+            (11, 20, new HashSet<int> {1, 2}),
+            (21, 40, new HashSet<int> {1, 3}),
+            (41, 60, new HashSet<int> {2, 3}),
+            (61, 70, new HashSet<int> {1, 3}),
+            (71, 80, new HashSet<int> {1}), 
+            (81, 90, new HashSet<int> {2}),
+            (91, 99, new HashSet<int> {3}),
+        };
+        foreach (var rule in registrationRules)
+        {
+            if (registrationCounter >= rule.min && registrationCounter <= rule.max)
+            {
+                return rule.allowed.Contains(j);
+            }
+        }
+
+        if (registrationCounter == 100)
+        {
+            return false;
+        }
+        return false;
+    }
+    
+
+
+
+
     private List<MaterialExemptionReference> GetMaterialExemptionReferences(int registrationCounter, int j, int registrationMaterialId, int NumberOfMaterialExemptionReferences)
     {
         var materialExemptionReferences = new List<MaterialExemptionReference>();
