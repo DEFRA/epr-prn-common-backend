@@ -1,7 +1,6 @@
 ﻿using EPR.PRN.Backend.Data.DataModels;
 using EPR.PRN.Backend.Data.DataModels.Registrations;
 using EPR.PRN.Backend.Data.Interfaces.Regulator;
-
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
 
@@ -78,6 +77,8 @@ public class RegistrationMaterialRepository(EprRegistrationsContext eprContext) 
                 .ThenInclude(r => r.ReprocessingSiteAddress)
             .Include(rm => rm.Registration)
                 .ThenInclude(r => r.BusinessAddress)
+             .Include(rm => rm.Registration)
+                .ThenInclude(r => r.LegalDocumentAddress)
             .Include(rm => rm.Material)
             .Include(rm => rm.Status);            
 
@@ -135,7 +136,9 @@ public class RegistrationMaterialRepository(EprRegistrationsContext eprContext) 
             .Registrations
             .AsNoTracking()
             .AsSplitQuery()
+            .Include(r => r.BusinessAddress)
             .Include(r => r.ReprocessingSiteAddress)
+            .Include(r => r.LegalDocumentAddress)
             .Include(r => r.Tasks)!
                 .ThenInclude(t => t.TaskStatus)
             .Include(r => r.Tasks)!

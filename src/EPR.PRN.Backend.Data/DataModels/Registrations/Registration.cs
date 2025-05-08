@@ -22,7 +22,12 @@ public class Registration //(PublicRegistration)
 
     public LookupAddress? ReprocessingSiteAddress { get; set; }
 
-    public int LegalDocumentAddressId { get; set; }       // Identifier for the legal document address
+    // Identifier for the legal document address
+    [ForeignKey("LegalDocumentAddress")]
+    public int? LegalDocumentAddressId { get; set; }
+
+    public LookupAddress? LegalDocumentAddress { get; set; }
+    
     public int AssignedOfficerId { get; set; }            // Identifier for the officer assigned to the registration
     public Guid CreatedBy { get; set; }                    // User who created the registration record
     public DateTime CreatedDate { get; set; }              // Date and time when the record was created

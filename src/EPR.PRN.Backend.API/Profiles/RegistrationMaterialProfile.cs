@@ -12,11 +12,13 @@ public class RegistrationMaterialProfile : Profile
     public RegistrationMaterialProfile()
     {
         CreateMap<Registration, RegistrationOverviewDto>()
-            .ForMember(dest => dest.OrganisationName, opt => opt.MapFrom(src => src.OrganisationId + "_Green Ltd"))
-            .ForMember(dest => dest.Regulator, opt => opt.MapFrom(_ => "EA"))
-            .ForMember(dest => dest.OrganisationType,
-                opt => opt.MapFrom(src => (ApplicationOrganisationType)src.ApplicationTypeId))
-            .ForMember(dest => dest.SiteAddress, opt => opt.MapFrom(src => CreateAddressString(src.ReprocessingSiteAddress)));
+        .ForMember(dest => dest.OrganisationName, opt => opt.MapFrom(src => src.OrganisationId + "_Green Ltd"))
+        .ForMember(dest => dest.Regulator, opt => opt.MapFrom(_ => "EA"))
+        .ForMember(dest => dest.OrganisationType,
+            opt => opt.MapFrom(src => (ApplicationOrganisationType)src.ApplicationTypeId))
+        .ForMember(dest => dest.SiteAddress, opt => opt.MapFrom(src =>
+             src.ReprocessingSiteAddress != null ? CreateAddressString(src.ReprocessingSiteAddress)
+                : string.Empty));
 
         CreateMap<RegistrationMaterial, RegistrationMaterialDto>()
             .ForMember(dest => dest.MaterialName, opt => opt.MapFrom(src => src.Material.MaterialName))
@@ -49,7 +51,7 @@ public class RegistrationMaterialProfile : Profile
             .ForMember(dest => dest.TotalInputs, opt => opt.MapFrom(src => src.RegistrationReprocessingIO!.Single().TotalInputs))
             .ForMember(dest => dest.TotalOutputs, opt => opt.MapFrom(src => src.RegistrationReprocessingIO!.Single().TotalOutputs));
 
-        CreateMap<RegistrationMaterial, RegistrationMaterialSamplingPlanDto>()                        
+        CreateMap<RegistrationMaterial, RegistrationMaterialSamplingPlanDto>()
             .ForMember(dest => dest.MaterialName, opt => opt.MapFrom(src => src.Material.MaterialName));
 
         CreateMap<RegistrationMaterial, RegistrationMaterialSamplingPlanDto>()
@@ -72,14 +74,31 @@ public class RegistrationMaterialProfile : Profile
             .ForMember(dest => dest.CapacityPeriod, opt => opt.MapFrom(src => GetReferencePeriod(src)))
             .ForMember(dest => dest.MaximumReprocessingCapacityTonne, opt => opt.MapFrom(src => src.MaximumReprocessingCapacityTonne))
             .ForMember(dest => dest.MaximumReprocessingPeriod, opt => opt.MapFrom(src => src.MaximumReprocessingPeriod!.Name))
-            .ForMember(dest => dest.MaterialName, opt => opt.MapFrom(src => src.Material.MaterialName))
-            .ForMember(dest => dest.RegistrationMaterialId, opt => opt.MapFrom(src => src.Id));
+            .ForMember(dest => dest.MaterialName, opt => opt.MapFrom(src => src.Material.MaterialName));
+
+        CreateMap<Registration, RegistrationSiteAddressDto>()
+           .ForMember(dest => dest.RegistrationId, opt => opt.MapFrom(src => src.Id))
+           .ForMember(dest => dest.NationId, opt => opt.MapFrom(src => src.ReprocessingSiteAddress != null ? src.ReprocessingSiteAddress.NationId : 0))
+           .ForMember(dest => dest.SiteAddress, opt => opt.MapFrom(src => src.ReprocessingSiteAddress != null ? CreateAddressString(src.ReprocessingSiteAddress) : string.Empty))
+           .ForMember(dest => dest.GridReference, opt => opt.MapFrom(src => src.ReprocessingSiteAddress != null ? src.ReprocessingSiteAddress.GridReference : string.Empty))
+           .ForMember(dest => dest.LegalCorrespondenceAddress, opt => opt.MapFrom(src => src.LegalDocumentAddress != null ? CreateAddressString(src.LegalDocumentAddress) : string.Empty));
+
+        CreateMap<Registration, MaterialsAuthorisedOnSiteDto>()
+            .ForMember(dest => dest.RegistrationId, opt => opt.MapFrom(src => src.Id))
+            .ForMember(dest => dest.OrganisationName, opt => opt.MapFrom(src => src.OrganisationId + "_Green Ltd"))
+            .ForMember(dest => dest.SiteAddress, opt => opt.MapFrom(src => src.ReprocessingSiteAddress != null ? CreateAddressString(src.ReprocessingSiteAddress) : string.Empty))
+            .ForMember(dest => dest.MaterialsAuthorisation, opt => opt.MapFrom(src => src.Materials));
+
+        CreateMap<RegistrationMaterial, MaterialsAuthorisedOnSiteInfoDto>()
+           .ForMember(dest => dest.MaterialName, opt => opt.MapFrom(src => src.Material.MaterialName))
+           .ForMember(dest => dest.Reason, opt => opt.MapFrom(src => src.ReasonforNotreg))
+           .ForMember(dest => dest.IsMaterialRegistered, opt => opt.MapFrom(src => src.IsMaterialRegistered));
     }
 
     private static string[] GetReferenceNumber(RegistrationMaterial src) => src.PermitType?.Name switch
     {
-        PermitTypes.WasteExemption => src.MaterialExemptionReferences!= null?src.MaterialExemptionReferences.Select(x => x.ReferenceNo).ToArray() : [],
-        PermitTypes.PollutionPreventionAndControlPermit => src.PPCPermitNumber != null?[src.PPCPermitNumber] :[],
+        PermitTypes.WasteExemption => src.MaterialExemptionReferences != null ? src.MaterialExemptionReferences.Select(x => x.ReferenceNo).ToArray() : [],
+        PermitTypes.PollutionPreventionAndControlPermit => src.PPCPermitNumber != null ? [src.PPCPermitNumber] : [],
         PermitTypes.WasteManagementLicence => src.WasteManagementLicenceNumber != null ? [src.WasteManagementLicenceNumber] : [],
         PermitTypes.InstallationPermit => src.InstallationPermitNumber != null ? [src.InstallationPermitNumber] : [],
         PermitTypes.EnvironmentalPermitOrWasteManagementLicence => src.EnvironmentalPermitWasteManagementNumber != null ? [src.EnvironmentalPermitWasteManagementNumber] : [],
