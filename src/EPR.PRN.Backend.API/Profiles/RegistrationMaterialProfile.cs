@@ -74,7 +74,8 @@ public class RegistrationMaterialProfile : Profile
             .ForMember(dest => dest.CapacityPeriod, opt => opt.MapFrom(src => GetReferencePeriod(src)))
             .ForMember(dest => dest.MaximumReprocessingCapacityTonne, opt => opt.MapFrom(src => src.MaximumReprocessingCapacityTonne))
             .ForMember(dest => dest.MaximumReprocessingPeriod, opt => opt.MapFrom(src => src.MaximumReprocessingPeriod!.Name))
-            .ForMember(dest => dest.MaterialName, opt => opt.MapFrom(src => src.Material.MaterialName));
+            .ForMember(dest => dest.MaterialName, opt => opt.MapFrom(src => src.Material.MaterialName))
+            .ForMember(dest => dest.RegistrationMaterialId, opt => opt.MapFrom(src => src.Id));
 
         CreateMap<Registration, RegistrationSiteAddressDto>()
            .ForMember(dest => dest.RegistrationId, opt => opt.MapFrom(src => src.Id))
