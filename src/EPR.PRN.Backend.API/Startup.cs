@@ -73,6 +73,9 @@ namespace EPR.PRN.Backend.API
             services.AddDbContext<EprRegistrationsContext>(options =>
                 options.UseInMemoryDatabase("EprRegistrationsDatabase")
             );
+            services.AddDbContext<EprAccreditationContext>(options =>
+                options.UseInMemoryDatabase("EprAccreditationDatabase")
+            );
 
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
@@ -93,6 +96,9 @@ namespace EPR.PRN.Backend.API
                 {
                     var context = scope.ServiceProvider.GetRequiredService<EprRegistrationsContext>();
                     context.Database.EnsureCreated();
+
+                    var accreditationContext = scope.ServiceProvider.GetRequiredService<EprAccreditationContext>();
+                    accreditationContext.Database.EnsureCreated();
 
                     app.UseExceptionHandler(env.IsDevelopment() ? "/error-development" : "/error");
                     app.UseMiddleware<ExceptionHandlingMiddleware>();
