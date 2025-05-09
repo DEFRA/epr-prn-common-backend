@@ -71,7 +71,9 @@ public class EprRegistrationsContext : DbContext
             new LookupRegulatorTask { Id = 11, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 1, Name = "SamplingAndInspectionPlan" },
             new LookupRegulatorTask { Id = 12, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 1, Name = "AssignOfficer" },
             new LookupRegulatorTask { Id = 13, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 1, Name = "MaterialDetailsAndContact" },
-            new LookupRegulatorTask { Id = 14, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 1, Name = "OverseasReprocessorAndInterimSiteDetails" });
+            new LookupRegulatorTask { Id = 14, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 1, Name = "OverseasReprocessorAndInterimSiteDetails" },
+            new LookupRegulatorTask { Id = 15, IsMaterialSpecific = true, ApplicationTypeId = 1, JourneyTypeId = 1, Name = "CheckRegistrationStatus" },
+            new LookupRegulatorTask { Id = 16, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 1, Name = "CheckRegistrationStatus" });
 
         modelBuilder.Entity<LookupMaterialPermit>().HasData(
             new LookupMaterialPermit { Id = 1, Name = PermitTypes.WasteExemption },
@@ -220,8 +222,7 @@ public class EprRegistrationsContext : DbContext
             permitTypeId = 5;
         }
 
-        // bool isRegistered = new Random().Next(2) == 0;
-        
+                
         bool isRegistered = GetIsRegistered(registrationCounter, j);
         
         var RegistrationMaterial = new RegistrationMaterial
@@ -251,7 +252,8 @@ public class EprRegistrationsContext : DbContext
             MaximumReprocessingPeriodID = 1,
             ReasonforNotreg = isRegistered ? string.Empty : $"Lorem ipsum dolor sit amet, consectetur adipiscing{j} elit. Fusce vulputate aliquet ornare. Vestibulum dolor nunc, tincidunt a diam nec, mattis venenatis sem{registrationCounter}",
             Wastecarrierbrokerdealerregistration = $"DFG3457345{registrationCounter}",
-            IsMaterialRegistered = isRegistered
+            IsMaterialRegistered = isRegistered,
+            CreatedDate= DateTime.UtcNow
         };
 
         if (registrationCounter <= 10)

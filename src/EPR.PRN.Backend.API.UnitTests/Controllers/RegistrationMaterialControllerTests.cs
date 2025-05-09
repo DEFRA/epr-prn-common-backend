@@ -252,5 +252,29 @@ public class RegistrationMaterialControllerTests
     }
 
 
+    [TestMethod]
+    public async Task GetMaterialPaymentFeeById_ReturnsOk_WithExpectedResult()
+    {
+        // Arrange
+        int materialId = 12;
+        var expectedDto = new MaterialPaymentFeeDto();
+
+        _mediatorMock
+            .Setup(m => m.Send(It.IsAny<GetMaterialPaymentFeeByIdQuery>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(expectedDto);
+
+        // Act
+        var result = await _controller.GetRegistrationMeterialpaymentFeesById(materialId);
+
+        // Assert
+        using (new AssertionScope())
+        {
+            var okResult = result as OkObjectResult;
+            okResult.Should().NotBeNull();
+            okResult!.Value.Should().BeEquivalentTo(expectedDto);
+        }
+    }
+
+
 
 }

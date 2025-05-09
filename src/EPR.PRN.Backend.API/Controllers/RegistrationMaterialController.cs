@@ -127,10 +127,29 @@ public class RegistrationMaterialController(IMediator mediator
         var result = await mediator.Send(new GetMaterialsAuthorisedOnSiteByIdQuery() { Id = Id });
         return Ok(result);
     }
+    [HttpGet("registrationMaterials/{Id}/paymentFees")]
+    [ProducesResponseType(typeof(MaterialPaymentFeeDto), 200)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [SwaggerOperation(
+          Summary = "get payment fee of registration material",
+          Description = "attempting to get payment fee of registration material."
+      )]
+    [SwaggerResponse(StatusCodes.Status200OK, "Returns payment fee detail with other information.", typeof(MaterialPaymentFeeDto))]
+    [SwaggerResponse(StatusCodes.Status400BadRequest, "If the request is invalid or a validation error occurs.", typeof(ProblemDetails))]
+    [SwaggerResponse(StatusCodes.Status500InternalServerError, "If an unexpected error occurs.", typeof(ContentResult))]
+    public async Task<IActionResult> GetRegistrationMeterialpaymentFeesById(int Id)
+    {
+        logger.LogInformation(LogMessages.RegistrationMeterialpaymentFees, Id); 
+        var result = await mediator.Send(new GetMaterialPaymentFeeByIdQuery() { Id = Id });
+        return Ok(result);
+    }
 
-    #endregion Get Methods
+   
 
-    #region Post Methods
+#endregion Get Methods
+
+#region Post Methods
     [HttpPost("registrationMaterials/{Id}/outcome")]
     [ProducesResponseType(StatusCodes.Status204NoContent, Type = typeof(NoContentResult))]
     [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]

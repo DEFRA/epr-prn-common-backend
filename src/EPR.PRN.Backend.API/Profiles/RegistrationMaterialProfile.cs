@@ -93,6 +93,13 @@ public class RegistrationMaterialProfile : Profile
            .ForMember(dest => dest.MaterialName, opt => opt.MapFrom(src => src.Material.MaterialName))
            .ForMember(dest => dest.Reason, opt => opt.MapFrom(src => src.ReasonforNotreg))
            .ForMember(dest => dest.IsMaterialRegistered, opt => opt.MapFrom(src => src.IsMaterialRegistered));
+
+        CreateMap<RegistrationMaterial, MaterialPaymentFeeDto>()
+           .ForMember(dest => dest.OrganisationId, opt => opt.MapFrom(src => src.Registration.OrganisationId))
+           .ForMember(dest => dest.OrganisationName, opt => opt.MapFrom(src => src.Registration.OrganisationId + "_Green Ltd"))
+           .ForMember(dest => dest.CreatedDate, opt => opt.MapFrom(src => src.CreatedDate))
+           .ForMember(dest => dest.PaymentReference, opt => opt.MapFrom(src => src.ReferenceNumber??string.Empty))           
+           .ForMember(dest => dest.SiteAddress, opt => opt.MapFrom(src => src.Registration.ReprocessingSiteAddress != null ? CreateAddressString(src.Registration.ReprocessingSiteAddress) : string.Empty));
     }
 
     private static string[] GetReferenceNumber(RegistrationMaterial src) => src.PermitType?.Name switch

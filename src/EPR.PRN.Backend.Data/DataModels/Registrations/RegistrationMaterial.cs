@@ -34,6 +34,7 @@ public class RegistrationMaterial
     public string? StatusUpdatedBy { get; set; } 
     public string? ReasonforNotreg { get; set; } = string.Empty;
     public string Wastecarrierbrokerdealerregistration { get; set; } = string.Empty;
+    public DateTime CreatedDate { get; set; }
     public List<RegulatorApplicationTaskStatus>? Tasks { get; set; }
 
     public LookupMaterialPermit? PermitType { get; set; }

@@ -80,7 +80,7 @@ public class RegistrationMaterialRepository(EprRegistrationsContext eprContext) 
              .Include(rm => rm.Registration)
                 .ThenInclude(r => r.LegalDocumentAddress)
             .Include(rm => rm.Material)
-            .Include(rm => rm.Status);            
+            .Include(rm => rm.Status);       
 
         return registrationMaterials;
     }
