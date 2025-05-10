@@ -35,7 +35,7 @@ public class RegistrationMaterialProfile : Profile
 
         CreateMap<RegistrationMaterial, RegistrationMaterialDetailsDto>()
             .ForMember(dest => dest.MaterialName, opt => opt.MapFrom(src => src.Material.MaterialName))
-            .ForMember(dest => dest.Status, opt => opt.MapFrom(src => (RegistrationMaterialStatus?)src.StatusID));
+            .ForMember(dest => dest.Status, opt => opt.MapFrom(src => (RegistrationMaterialStatus?)src.StatusId));
 
         CreateMap<RegistrationMaterial, RegistrationMaterialReprocessingIODto>()
             .ForMember(dest => dest.MaterialName, opt => opt.MapFrom(src => src.Material.MaterialName))
@@ -126,7 +126,7 @@ public class RegistrationMaterialProfile : Profile
     };
 
 
-    private string CreateAddressString(LookupAddress reprocessingSiteAddress) =>
+    private string CreateAddressString(Address reprocessingSiteAddress) =>
         string.Join(
             ", ",
             new[]

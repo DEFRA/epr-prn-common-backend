@@ -3,15 +3,20 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EPR.PRN.Backend.Data.DataModels.Registrations
 {
+    [Table("Public.RegistrationReprocessingIO")]
     public class RegistrationReprocessingIO
     {
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Key]
         public int Id { get; set; }
-        public string? ExternalId { get; set; }
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public Guid ExternalId { get; set; }
         public RegistrationMaterial RegistrationMaterial { get; set; }
         [ForeignKey("RegistrationMaterial")]
         public int RegistrationMaterialId { get; set; }
+        [MaxLength(2000)]
         public string? TypeOfSupplier { get; set; }
+        [MaxLength(2000)]
         public string? PlantEquipmentUsed { get; set; }
         public bool ReprocessingPackagingWasteLastYearFlag { get; set; }
         public decimal UKPackagingWasteTonne { get; set; }

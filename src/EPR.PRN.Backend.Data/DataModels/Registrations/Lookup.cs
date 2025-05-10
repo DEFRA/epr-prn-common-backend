@@ -11,12 +11,14 @@ public abstract class LookupBase
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int Id { get; set; }
     [Required]
-    [MaxLength(255)]
-    public required string Name { get; set; }
+    [MaxLength(200)]
+    public virtual required string Name { get; set; }
 }
 
+[Table("Lookup.RegistrationMaterialStatus")]
 public class LookupRegistrationMaterialStatus : LookupBase{}
 
+[Table("Lookup.RegulatorTask")]
 public class LookupRegulatorTask : LookupBase
 {
     public bool IsMaterialSpecific { get; set; }
@@ -26,18 +28,37 @@ public class LookupRegulatorTask : LookupBase
     public int JourneyTypeId { get; set; }
 }
 
-public class LookupRegistrationStatus : LookupBase{}
+[Table("Lookup.TaskStatus")]
+public class LookupTaskStatus : LookupBase {
+    [MaxLength(100)]
+    public override required string Name { get; set; }
+}
 
-public class LookupTaskStatus : LookupBase { public bool IsMaterialSpecific { get; set; } }
-
-public class LookupApplicationType : LookupBase { }
-
-public class LookupPrincipleType : LookupBase { }
-
+[Table("Lookup.MaterialPermit")]
 public class LookupMaterialPermit : LookupBase { }
 
-public class LookupPeriod : LookupBase { }
+[Table("Lookup.ApplicationType")]
+public class LookupApplicationType : LookupBase { 
+    [MaxLength(100)]
+    public override required string Name { get; set; }
+}
 
-public class LookupJourneyType : LookupBase { }
+[Table("Lookup.Period")]
+public class LookupPeriod : LookupBase
+{
+    [MaxLength(100)]
+    public override required string Name { get; set; }
+}
+
+[Table("Lookup.JourneyType")]
+public class LookupJourneyType : LookupBase
+{
+    [MaxLength(30)]
+    public override required string Name { get; set; }
+}
+
+[Table("Lookup.FileUploadType")]
 public class LookupFileUploadType : LookupBase { }
+
+[Table("Lookup.FileUploadStatus")]
 public class LookupFileUploadStatus : LookupBase { }

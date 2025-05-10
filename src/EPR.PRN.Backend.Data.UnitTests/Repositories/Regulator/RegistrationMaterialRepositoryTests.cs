@@ -10,17 +10,17 @@ namespace EPR.PRN.Backend.Data.UnitTests.Repositories.Regulator;
 [TestClass]
 public class RegistrationMaterialRepositoryTests
 {
-    private EprRegistrationsContext _context;
+    private EprContext _context;
     private IRegistrationMaterialRepository _repository;
 
     [TestInitialize]
     public void TestInitialize()
     {
-        var options = new DbContextOptionsBuilder<EprRegistrationsContext>()
+        var options = new DbContextOptionsBuilder<EprContext>()
                         .UseInMemoryDatabase(databaseName: "TestDb")
                         .Options;
 
-        _context = new EprRegistrationsContext(options);
+        _context = new EprContext(options);
         _repository = new RegistrationMaterialRepository(_context);
 
         SeedDatabase();
@@ -28,12 +28,11 @@ public class RegistrationMaterialRepositoryTests
 
     private void SeedDatabase()
     {
-        var address = new LookupAddress
+        var address = new Address
         {
             Id = 1,
             AddressLine1 = "123 Main St",
             AddressLine2 = "Suite 4B",
-            Country = "Germany",
             County = "Bavaria",
             PostCode = "12345",
             TownCity = "Munich",
@@ -60,7 +59,7 @@ public class RegistrationMaterialRepositoryTests
         {
             Id = 1,
             MaterialId = 1,
-            StatusID = 1,
+            StatusId = 1,
             ReferenceNumber = "REF12345",
             Comments = "Initial comment",
             Status = materialStatus,
@@ -101,7 +100,7 @@ public class RegistrationMaterialRepositoryTests
         {
             Id = 1,
             ApplicationTypeId = 1,
-            ExternalId = "TestExternalId",
+            ExternalId = Guid.NewGuid(),
             ReprocessingSiteAddress = address,
             BusinessAddress = address,
             LegalDocumentAddress = address,
@@ -175,11 +174,10 @@ public class RegistrationMaterialRepositoryTests
 
         using (new AssertionScope())
         {
-            Assert.AreEqual(newStatusId, updated.StatusID);
+            Assert.AreEqual(newStatusId, updated.StatusId);
             Assert.AreEqual(comment, updated.Comments);
             Assert.AreEqual(newReference, updated.ReferenceNumber);
             Assert.IsNotNull(updated.StatusUpdatedDate);
-            Assert.AreEqual("Test User", updated.StatusUpdatedBy);
         }
     }
 

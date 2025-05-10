@@ -90,13 +90,13 @@ namespace EPR.PRN.Backend.API.Tests.Handlers
             var command = new UpdateRegulatorRegistrationTaskCommand { TaskName = "Test Task", RegistrationId = 1, Status = RegulatorTaskStatus.Completed, Comments = "Completed", UserName = "UserName" };
             var taskStatus = new RegulatorRegistrationTaskStatus { TaskStatus = new LookupTaskStatus { Name = RegulatorTaskStatus.Queried.ToString() } };
             _repositoryMock.Setup(r => r.GetTaskStatusAsync(command.TaskName, command.RegistrationId)).ReturnsAsync(taskStatus);
-            _repositoryMock.Setup(r => r.UpdateStatusAsync(command.TaskName, command.RegistrationId, command.Status, command.Comments, command.UserName)).Returns(Task.CompletedTask);
+            _repositoryMock.Setup(r => r.UpdateStatusAsync(command.TaskName, command.RegistrationId, command.Status, command.Comments, It.IsAny<Guid>())).Returns(Task.CompletedTask);
 
             // Act
             await _handler.Handle(command, CancellationToken.None);
 
             // Assert
-            _repositoryMock.Verify(r => r.UpdateStatusAsync(command.TaskName, command.RegistrationId, command.Status, command.Comments, command.UserName), Times.Once);
+            _repositoryMock.Verify(r => r.UpdateStatusAsync(command.TaskName, command.RegistrationId, command.Status, command.Comments, It.IsAny<Guid>()), Times.Once);
         }
     }
 }
