@@ -38,11 +38,15 @@ namespace EPR.PRN.Backend.Data.UnitTests.Repositories.Regulator
             var taskStatus = new RegulatorRegistrationTaskStatus
             {
                 Task = new LookupRegulatorTask { Name = taskName },
-                RegistrationId = registrationId
+                RegistrationId = registrationId,
+                TaskStatus = new LookupTaskStatus { Name = RegulatorTaskStatus.Started.ToString() },
             };
 
             _context.RegulatorRegistrationTaskStatus.Add(taskStatus);
-            _context.SaveChanges();
+
+            await _context.SaveChangesAsync();
+
+            _context.ChangeTracker.Clear();
 
             // Act
             var result = await _repository.GetTaskStatusAsync(taskName, registrationId);
@@ -50,6 +54,7 @@ namespace EPR.PRN.Backend.Data.UnitTests.Repositories.Regulator
             // Assert
             result.Should().NotBeNull();
             result!.Task.Name.Should().Be(taskName);
+            result!.TaskStatus.Name.Should().Be(RegulatorTaskStatus.Started.ToString());
             result.RegistrationId.Should().Be(registrationId);
         }
 
@@ -83,7 +88,9 @@ namespace EPR.PRN.Backend.Data.UnitTests.Repositories.Regulator
 
             _context.Registrations.Add(new Registration { Id = registrationId, ExternalId="", ApplicationTypeId = 1 });
 
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
+
+            _context.ChangeTracker.Clear();
 
             // Act
             await _repository.UpdateStatusAsync(taskName, registrationId, status, comments, userName);
@@ -126,7 +133,9 @@ namespace EPR.PRN.Backend.Data.UnitTests.Repositories.Regulator
 
             _context.Registrations.Add(new Registration { Id = registrationId, ExternalId = "", ApplicationTypeId = 1 });
 
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
+
+            _context.ChangeTracker.Clear();
 
             // Act
             await _repository.UpdateStatusAsync(taskName, registrationId, status, comments, userName);
@@ -157,7 +166,10 @@ namespace EPR.PRN.Backend.Data.UnitTests.Repositories.Regulator
 
             _context.LookupTasks.Add(new LookupRegulatorTask { Id = 1, Name = taskName, IsMaterialSpecific = true, ApplicationTypeId = 1 });
 
-            _context.SaveChanges();
+
+            await _context.SaveChangesAsync();
+
+            _context.ChangeTracker.Clear();
 
             // Act
             Func<Task> act = async () => await _repository.UpdateStatusAsync(taskName, RegistrationId, status, comments, userName);
@@ -180,7 +192,9 @@ namespace EPR.PRN.Backend.Data.UnitTests.Repositories.Regulator
 
             _context.Registrations.Add(new Registration { Id = RegistrationId, ExternalId = "", ApplicationTypeId = 1 });
 
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
+
+            _context.ChangeTracker.Clear();
 
             // Act
             Func<Task> act = async () => await _repository.UpdateStatusAsync(taskName, RegistrationId, status, comments, userName);
