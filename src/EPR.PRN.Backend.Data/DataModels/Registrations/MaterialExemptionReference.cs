@@ -1,9 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Diagnostics.CodeAnalysis;
 
 namespace EPR.PRN.Backend.Data.DataModels.Registrations
 {
     [Table("Public.MaterialExemptionReference")]
+    [ExcludeFromCodeCoverage]
     public class MaterialExemptionReference
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]

@@ -1,10 +1,12 @@
 ﻿using EPR.PRN.Backend.API.Common.Enums;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Diagnostics.CodeAnalysis;
 
 namespace EPR.PRN.Backend.Data.DataModels.Registrations;
 
 [Table("Public.RegistrationMaterial")]
+[ExcludeFromCodeCoverage]
 public class RegistrationMaterial
 {
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]

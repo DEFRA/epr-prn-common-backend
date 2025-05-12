@@ -16,9 +16,11 @@ public abstract class LookupBase
 }
 
 [Table("Lookup.RegistrationMaterialStatus")]
+[ExcludeFromCodeCoverage]
 public class LookupRegistrationMaterialStatus : LookupBase{}
 
 [Table("Lookup.RegulatorTask")]
+[ExcludeFromCodeCoverage]
 public class LookupRegulatorTask : LookupBase
 {
     public bool IsMaterialSpecific { get; set; }
@@ -29,21 +31,25 @@ public class LookupRegulatorTask : LookupBase
 }
 
 [Table("Lookup.TaskStatus")]
+[ExcludeFromCodeCoverage]
 public class LookupTaskStatus : LookupBase {
     [MaxLength(100)]
     public override required string Name { get; set; }
 }
 
 [Table("Lookup.MaterialPermit")]
+[ExcludeFromCodeCoverage]
 public class LookupMaterialPermit : LookupBase { }
 
 [Table("Lookup.ApplicationType")]
+[ExcludeFromCodeCoverage]
 public class LookupApplicationType : LookupBase { 
     [MaxLength(100)]
     public override required string Name { get; set; }
 }
 
 [Table("Lookup.Period")]
+[ExcludeFromCodeCoverage]
 public class LookupPeriod : LookupBase
 {
     [MaxLength(100)]
@@ -51,6 +57,7 @@ public class LookupPeriod : LookupBase
 }
 
 [Table("Lookup.JourneyType")]
+[ExcludeFromCodeCoverage]
 public class LookupJourneyType : LookupBase
 {
     [MaxLength(30)]
@@ -58,7 +65,9 @@ public class LookupJourneyType : LookupBase
 }
 
 [Table("Lookup.FileUploadType")]
+[ExcludeFromCodeCoverage]
 public class LookupFileUploadType : LookupBase { }
 
 [Table("Lookup.FileUploadStatus")]
+[ExcludeFromCodeCoverage]
 public class LookupFileUploadStatus : LookupBase { }
