@@ -1,25 +1,28 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Diagnostics.CodeAnalysis;
 
 namespace EPR.PRN.Backend.Data.DataModels.Registrations
 {
+    [ExcludeFromCodeCoverage]
     public class RegulatorTaskStatusBase
     {
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Key]
-        public int Id { get; set; } // Unique identifier for each record
-        public string? ExternalId { get; set; } // External reference identifier
-        public LookupRegulatorTask Task { get; set; } = null!; // Navigation property to the task lookup table
+        public int Id { get; set; }
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public Guid ExternalId { get; set; }
+        public LookupRegulatorTask Task { get; set; } = null!;
         [ForeignKey("Task")]
-        public int? TaskId { get; set; } // Identifier for the specific task
-
+        public int? TaskId { get; set; }
         public LookupTaskStatus TaskStatus { get; set; } = null!;
         [ForeignKey("TaskStatus")]
-        public int? TaskStatusId { get; set; } // Identifier for the status of the task
-
-        public string? Comments { get; set; } // Field for storing comments (max length 200)
-        public string? StatusCreatedBy { get; set; } // Identifier for the user who created the status
-        public DateTime? StatusCreatedDate { get; set; } // Date and time when the status was created
-        public string? StatusUpdatedBy { get; set; } // Identifier for the user who updated the status
-        public DateTime? StatusUpdatedDate { get; set; } // Date and time when the status was updated
+        public int? TaskStatusId { get; set; }
+        [MaxLength(500)]
+        public string? Comments { get; set; } 
+        public Guid StatusCreatedBy { get; set; }
+        public DateTime StatusCreatedDate { get; set; }
+        public Guid? StatusUpdatedBy { get; set; }
+        public DateTime? StatusUpdatedDate { get; set; }
     }
 }

@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Query;
 
 namespace EPR.PRN.Backend.Data.Repositories.Regulator;
 
-public class RegistrationMaterialRepository(EprRegistrationsContext eprContext) : IRegistrationMaterialRepository
+public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrationMaterialRepository
 {
     public async Task<Registration> GetRegistrationById(int registrationId)
     {
@@ -57,11 +57,11 @@ public class RegistrationMaterialRepository(EprRegistrationsContext eprContext) 
         var material = await eprContext.RegistrationMaterials.FirstOrDefaultAsync(rm => rm.Id == registrationMaterialId);
         if (material is null) throw new KeyNotFoundException("Material not found.");
 
-        material.StatusID = statusId;
+        material.StatusId = statusId;
         material.Comments = comment;
         material.ReferenceNumber = registrationReferenceNumber;
         material.StatusUpdatedDate = DateTime.UtcNow;
-        material.StatusUpdatedBy = "Test User";
+        material.StatusUpdatedBy = Guid.NewGuid();
 
         await eprContext.SaveChangesAsync();
     }
@@ -69,7 +69,7 @@ public class RegistrationMaterialRepository(EprRegistrationsContext eprContext) 
     {
         var material = await eprContext.RegistrationMaterials.FirstOrDefaultAsync(rm => rm.Id == registrationMaterialId);
         if (material is null) throw new KeyNotFoundException("Material not found.");
-        var dualmode = await eprContext.DulyMades
+        var dualmode = await eprContext.DulyMade
             .FirstOrDefaultAsync(rm => rm.RegistrationMaterialId == registrationMaterialId)
             ?? new DulyMade
             {
@@ -86,7 +86,7 @@ public class RegistrationMaterialRepository(EprRegistrationsContext eprContext) 
         // If this is a new entity, add it to the context
         if (dualmode.Id == 0)
         {
-            await eprContext.DulyMades.AddAsync(dualmode);
+            await eprContext.DulyMade.AddAsync(dualmode);
         }
 
         await eprContext.SaveChangesAsync();
@@ -105,7 +105,6 @@ public class RegistrationMaterialRepository(EprRegistrationsContext eprContext) 
              .Include(rm => rm.Registration)
                 .ThenInclude(r => r.LegalDocumentAddress)
             .Include(rm => rm.Material)
-            .Include(rm => rm.DulyMade)
             .Include(rm => rm.Status);
 
         return registrationMaterials;
@@ -178,8 +177,6 @@ public class RegistrationMaterialRepository(EprRegistrationsContext eprContext) 
                 .ThenInclude(m => m.Tasks)!
                 .ThenInclude(t => t.Task)
              .Include(r => r.Materials)!
-             .ThenInclude(d=>d.DulyMade)
-            .Include(r => r.Materials)!
                 .ThenInclude(rm => rm.Status);
                 
         return registrations;

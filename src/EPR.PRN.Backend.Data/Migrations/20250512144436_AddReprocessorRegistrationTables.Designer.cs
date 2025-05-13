@@ -4,6 +4,7 @@ using EPR.PRN.Backend.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EPR.PRN.Backend.Data.Migrations
 {
     [DbContext(typeof(EprContext))]
-    partial class EprContextModelSnapshot : ModelSnapshot
+    [Migration("20250512144436_AddReprocessorRegistrationTables")]
+    partial class AddReprocessorRegistrationTables
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -855,41 +858,6 @@ namespace EPR.PRN.Backend.Data.Migrations
                     b.ToTable("Public.Address");
                 });
 
-            modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.DulyMade", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime?>("DeterminationDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid?>("DulyMadeBy")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime?>("DulyMadeDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid>("ExternalId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("RegistrationMaterialId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("TaskStatusId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("RegistrationMaterialId");
-
-                    b.HasIndex("TaskStatusId");
-
-                    b.ToTable("Public.DulyMade");
-                });
-
             modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.FileUpload", b =>
                 {
                     b.Property<int>("Id")
@@ -1360,22 +1328,6 @@ namespace EPR.PRN.Backend.Data.Migrations
                             IsMaterialSpecific = true,
                             JourneyTypeId = 1,
                             Name = "OverseasReprocessorAndInterimSiteDetails"
-                        },
-                        new
-                        {
-                            Id = 15,
-                            ApplicationTypeId = 1,
-                            IsMaterialSpecific = true,
-                            JourneyTypeId = 1,
-                            Name = "CheckRegistrationStatus"
-                        },
-                        new
-                        {
-                            Id = 16,
-                            ApplicationTypeId = 2,
-                            IsMaterialSpecific = true,
-                            JourneyTypeId = 1,
-                            Name = "CheckRegistrationStatus"
                         });
                 });
 
@@ -1515,15 +1467,8 @@ namespace EPR.PRN.Backend.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("ApplicationReferenceNumber")
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
-
                     b.Property<string>("Comments")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime2");
 
                     b.Property<string>("EnvironmentalPermitWasteManagementNumber")
                         .HasMaxLength(20)
@@ -1805,25 +1750,6 @@ namespace EPR.PRN.Backend.Data.Migrations
                         .HasForeignKey("PrnIdFk")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.DulyMade", b =>
-                {
-                    b.HasOne("EPR.PRN.Backend.Data.DataModels.Registrations.RegistrationMaterial", "RegistrationMaterial")
-                        .WithMany()
-                        .HasForeignKey("RegistrationMaterialId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("EPR.PRN.Backend.Data.DataModels.Registrations.LookupTaskStatus", "TaskStatus")
-                        .WithMany()
-                        .HasForeignKey("TaskStatusId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("RegistrationMaterial");
-
-                    b.Navigation("TaskStatus");
                 });
 
             modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.FileUpload", b =>

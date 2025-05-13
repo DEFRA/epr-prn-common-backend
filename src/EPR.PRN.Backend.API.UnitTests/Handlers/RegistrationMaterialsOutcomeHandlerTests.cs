@@ -25,7 +25,7 @@ public class RegistrationMaterialsOutcomeHandlerTests
     public async Task Handle_Exporter_Granted_GeneratesReference()
     {
         // Arrange
-        var material = CreateMaterial(RegistrationMaterialStatus.Refused, ApplicationOrganisationType.Exporter, "USA", "XYZ");
+        var material = CreateMaterial(RegistrationMaterialStatus.Refused, ApplicationOrganisationType.Exporter, 1, "XYZ");
 
         var command = new RegistrationMaterialsOutcomeCommand
         {
@@ -46,14 +46,14 @@ public class RegistrationMaterialsOutcomeHandlerTests
 
         // Assert
         capturedRef.Should().NotBeNull();
-        capturedRef.Should().Contain("USA").And.Contain("E").And.Contain("XYZ");
+        capturedRef.Should().Contain("ENG").And.Contain("E").And.Contain("XYZ");
     }
 
     [TestMethod]
     public async Task Handle_Reprocessor_Granted_GeneratesReference()
     {
         // Arrange
-        var material = CreateMaterial(RegistrationMaterialStatus.Refused, ApplicationOrganisationType.Reprocessor, "DEU", "ALU");
+        var material = CreateMaterial(RegistrationMaterialStatus.Refused, ApplicationOrganisationType.Reprocessor, 2, "ALU");
 
         var command = new RegistrationMaterialsOutcomeCommand
         {
@@ -73,14 +73,14 @@ public class RegistrationMaterialsOutcomeHandlerTests
         await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        capturedRef.Should().Contain("DEU").And.Contain("R").And.Contain("ALU");
+        capturedRef.Should().Contain("SCO").And.Contain("R").And.Contain("ALU");
     }
 
     [TestMethod]
     public async Task Handle_RefusedStatus_DoesNotGenerateReference()
     {
         // Arrange
-        var material = CreateMaterial(null, ApplicationOrganisationType.Exporter, "GBR", "COP");
+        var material = CreateMaterial(null, ApplicationOrganisationType.Exporter, 1, "COP");
 
         var command = new RegistrationMaterialsOutcomeCommand
         {
@@ -107,7 +107,7 @@ public class RegistrationMaterialsOutcomeHandlerTests
     public async Task Handle_InvalidTransition_Throws()
     {
         // Arrange
-        var material = CreateMaterial(RegistrationMaterialStatus.Granted, ApplicationOrganisationType.Exporter, "USA", "XYZ");
+        var material = CreateMaterial(RegistrationMaterialStatus.Granted, ApplicationOrganisationType.Exporter, 1, "XYZ");
 
         var command = new RegistrationMaterialsOutcomeCommand
         {
@@ -130,7 +130,7 @@ public class RegistrationMaterialsOutcomeHandlerTests
     public async Task Handle_InvalidTransition_RevertFromGranted_Throws()
     {
         // Arrange
-        var material = CreateMaterial(RegistrationMaterialStatus.Granted, ApplicationOrganisationType.Exporter, "USA", "XYZ");
+        var material = CreateMaterial(RegistrationMaterialStatus.Granted, ApplicationOrganisationType.Exporter, 1, "XYZ");
 
         var command = new RegistrationMaterialsOutcomeCommand
         {
@@ -176,12 +176,12 @@ public class RegistrationMaterialsOutcomeHandlerTests
         capturedRef.Should().Contain("UNK").And.Contain("R").And.Contain("GLS");
     }
 
-    private RegistrationMaterial CreateMaterial(RegistrationMaterialStatus? status, ApplicationOrganisationType orgType, string country, string materialCode)
+    private RegistrationMaterial CreateMaterial(RegistrationMaterialStatus? status, ApplicationOrganisationType orgType, int? nationId, string materialCode)
     {
         return new RegistrationMaterial
         {
             Id = 1,
-            StatusID = status.HasValue ? (int)status : null,
+            StatusId = status.HasValue ? (int)status : null,
             MaterialId = 10,
             Material = new LookupMaterial { Id = 10, MaterialCode = materialCode },
             RegistrationId = 456,
@@ -189,8 +189,8 @@ public class RegistrationMaterialsOutcomeHandlerTests
             {
                 Id = 456,
                 ApplicationTypeId = (int)orgType,
-                BusinessAddress = orgType == ApplicationOrganisationType.Exporter ? new LookupAddress { Country = country } : null,
-                ReprocessingSiteAddress = orgType == ApplicationOrganisationType.Reprocessor ? new LookupAddress { Country = country } : null
+                BusinessAddress = orgType == ApplicationOrganisationType.Exporter ? new Address { NationId = nationId } : null,
+                ReprocessingSiteAddress = orgType == ApplicationOrganisationType.Reprocessor ? new Address { NationId = nationId } : null
             }
         };
     }

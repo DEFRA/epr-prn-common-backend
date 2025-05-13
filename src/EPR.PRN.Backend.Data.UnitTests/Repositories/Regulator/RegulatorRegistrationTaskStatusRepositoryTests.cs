@@ -13,17 +13,17 @@ namespace EPR.PRN.Backend.Data.UnitTests.Repositories.Regulator
     public class RegulatorRegistrationTaskStatusRepositoryTests
     {
         private Mock<ILogger<RegulatorRegistrationTaskStatusRepository>> _loggerMock;
-        private EprRegistrationsContext _context;
+        private EprContext _context;
         private RegulatorRegistrationTaskStatusRepository _repository;
 
         [TestInitialize]
         public void Setup()
         {
-            var options = new DbContextOptionsBuilder<EprRegistrationsContext>()
+            var options = new DbContextOptionsBuilder<EprContext>()
                 .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
                 .Options;
 
-            _context = new EprRegistrationsContext(options);
+            _context = new EprContext(options);
             _loggerMock = new Mock<ILogger<RegulatorRegistrationTaskStatusRepository>>();
             _repository = new RegulatorRegistrationTaskStatusRepository(_context, _loggerMock.Object);
         }
@@ -75,18 +75,18 @@ namespace EPR.PRN.Backend.Data.UnitTests.Repositories.Regulator
             var registrationId = 1;
             var status = RegulatorTaskStatus.Started;
             var comments = "Task started";
-            var userName = "userName";
+            var user = Guid.NewGuid();
 
             _context.LookupTaskStatuses.Add(new LookupTaskStatus { Id = 2, Name = "Started" });
 
             _context.LookupTasks.Add(new LookupRegulatorTask { Id = 1, Name = taskName, IsMaterialSpecific = false, ApplicationTypeId = 1 });
 
-            _context.Registrations.Add(new Registration { Id = registrationId, ExternalId="", ApplicationTypeId = 1 });
+            _context.Registrations.Add(new Registration { Id = registrationId, ExternalId=Guid.NewGuid(), ApplicationTypeId = 1 });
 
             _context.SaveChanges();
 
             // Act
-            await _repository.UpdateStatusAsync(taskName, registrationId, status, comments, userName);
+            await _repository.UpdateStatusAsync(taskName, registrationId, status, comments, user);
 
             // Assert
             var taskStatus = _context.RegulatorRegistrationTaskStatus.FirstOrDefault();
@@ -96,8 +96,8 @@ namespace EPR.PRN.Backend.Data.UnitTests.Repositories.Regulator
             taskStatus.RegistrationId.Should().Be(registrationId);
             taskStatus.TaskStatus.Name.Should().Be(status.ToString());
             taskStatus.Comments.Should().Be(comments);
-            taskStatus.StatusCreatedBy.Should().Be(userName);
-            taskStatus.StatusUpdatedBy.Should().Be(userName);
+            taskStatus.StatusCreatedBy.Should().Be(user);
+            taskStatus.StatusUpdatedBy.Should().Be(user);
         }
 
         [TestMethod]
@@ -109,8 +109,8 @@ namespace EPR.PRN.Backend.Data.UnitTests.Repositories.Regulator
             var existingStatus = RegulatorTaskStatus.Queried;
             var status = RegulatorTaskStatus.Completed;
             var comments = "Task completed";
-            var existingUserName = "Existing userName";
-            var userName = "userName";
+            var existingUser = Guid.NewGuid();
+            var user = Guid.NewGuid();
 
             _context.LookupTaskStatuses.Add(new LookupTaskStatus { Id = 2, Name = status.ToString() });
 
@@ -120,16 +120,16 @@ namespace EPR.PRN.Backend.Data.UnitTests.Repositories.Regulator
                 RegistrationId = registrationId,
                 TaskStatus = new LookupTaskStatus { Name = existingStatus.ToString() },
                 Comments = "Task started",
-                StatusCreatedBy = existingUserName,
-                StatusUpdatedBy = existingUserName
+                StatusCreatedBy = existingUser,
+                StatusUpdatedBy = existingUser
             });
 
-            _context.Registrations.Add(new Registration { Id = registrationId, ExternalId = "", ApplicationTypeId = 1 });
+            _context.Registrations.Add(new Registration { Id = registrationId, ExternalId = Guid.NewGuid(), ApplicationTypeId = 1 });
 
             _context.SaveChanges();
 
             // Act
-            await _repository.UpdateStatusAsync(taskName, registrationId, status, comments, userName);
+            await _repository.UpdateStatusAsync(taskName, registrationId, status, comments, user);
 
             // Assert
             var taskStatus = _context.RegulatorRegistrationTaskStatus.FirstOrDefault();
@@ -139,8 +139,8 @@ namespace EPR.PRN.Backend.Data.UnitTests.Repositories.Regulator
             taskStatus.RegistrationId.Should().Be(registrationId);
             taskStatus.TaskStatus.Name.Should().Be(status.ToString());
             taskStatus.Comments.Should().Be(comments);
-            taskStatus.StatusCreatedBy.Should().Be(existingUserName);
-            taskStatus.StatusUpdatedBy.Should().Be(userName);
+            taskStatus.StatusCreatedBy.Should().Be(existingUser);
+            taskStatus.StatusUpdatedBy.Should().Be(user);
         }
 
         [TestMethod]
@@ -151,7 +151,7 @@ namespace EPR.PRN.Backend.Data.UnitTests.Repositories.Regulator
             var RegistrationId = 1;
             var status = RegulatorTaskStatus.Started;
             var comments = "Task started";
-            var userName = "userName";
+            var user = Guid.NewGuid();
 
             _context.LookupTaskStatuses.Add(new LookupTaskStatus { Id = 2, Name = "Started" });
 
@@ -160,7 +160,7 @@ namespace EPR.PRN.Backend.Data.UnitTests.Repositories.Regulator
             _context.SaveChanges();
 
             // Act
-            Func<Task> act = async () => await _repository.UpdateStatusAsync(taskName, RegistrationId, status, comments, userName);
+            Func<Task> act = async () => await _repository.UpdateStatusAsync(taskName, RegistrationId, status, comments, user);
 
             // Assert
             await act.Should().ThrowAsync<KeyNotFoundException>();
@@ -174,16 +174,16 @@ namespace EPR.PRN.Backend.Data.UnitTests.Repositories.Regulator
             var RegistrationId = 1;
             var status = RegulatorTaskStatus.Started;
             var comments = "Task started";
-            var userName = "userName";
+            var user = Guid.NewGuid();
 
             _context.LookupTaskStatuses.Add(new LookupTaskStatus { Id = 2, Name = "Started" });
 
-            _context.Registrations.Add(new Registration { Id = RegistrationId, ExternalId = "", ApplicationTypeId = 1 });
+            _context.Registrations.Add(new Registration { Id = RegistrationId, ExternalId = Guid.NewGuid(), ApplicationTypeId = 1 });
 
             _context.SaveChanges();
 
             // Act
-            Func<Task> act = async () => await _repository.UpdateStatusAsync(taskName, RegistrationId, status, comments, userName);
+            Func<Task> act = async () => await _repository.UpdateStatusAsync(taskName, RegistrationId, status, comments, user);
 
             // Assert
             await act.Should().ThrowAsync<RegulatorInvalidOperationException>();

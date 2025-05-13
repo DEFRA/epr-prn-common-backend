@@ -35,7 +35,7 @@ public class RegistrationMaterialProfile : Profile
 
         CreateMap<RegistrationMaterial, RegistrationMaterialDetailsDto>()
             .ForMember(dest => dest.MaterialName, opt => opt.MapFrom(src => src.Material.MaterialName))
-            .ForMember(dest => dest.Status, opt => opt.MapFrom(src => (RegistrationMaterialStatus?)src.StatusID));
+            .ForMember(dest => dest.Status, opt => opt.MapFrom(src => (RegistrationMaterialStatus?)src.StatusId));
 
         CreateMap<RegistrationMaterial, RegistrationMaterialReprocessingIODto>()
             .ForMember(dest => dest.MaterialName, opt => opt.MapFrom(src => src.Material.MaterialName))
@@ -74,7 +74,8 @@ public class RegistrationMaterialProfile : Profile
             .ForMember(dest => dest.CapacityPeriod, opt => opt.MapFrom(src => GetReferencePeriod(src)))
             .ForMember(dest => dest.MaximumReprocessingCapacityTonne, opt => opt.MapFrom(src => src.MaximumReprocessingCapacityTonne))
             .ForMember(dest => dest.MaximumReprocessingPeriod, opt => opt.MapFrom(src => src.MaximumReprocessingPeriod!.Name))
-            .ForMember(dest => dest.MaterialName, opt => opt.MapFrom(src => src.Material.MaterialName));
+            .ForMember(dest => dest.MaterialName, opt => opt.MapFrom(src => src.Material.MaterialName))
+            .ForMember(dest => dest.RegistrationMaterialId, opt => opt.MapFrom(src => src.Id));
 
         CreateMap<Registration, RegistrationSiteAddressDto>()
            .ForMember(dest => dest.RegistrationId, opt => opt.MapFrom(src => src.Id))
@@ -97,7 +98,7 @@ public class RegistrationMaterialProfile : Profile
         CreateMap<RegistrationMaterial, MaterialPaymentFeeDto>()
            .ForMember(dest => dest.OrganisationId, opt => opt.MapFrom(src => src.Registration.OrganisationId))
            .ForMember(dest => dest.OrganisationName, opt => opt.MapFrom(src => src.Registration.OrganisationId + "_Green Ltd"))
-           .ForMember(dest => dest.CreatedDate, opt => opt.MapFrom(src => src.CreatedDate))
+          // .ForMember(dest => dest.CreatedDate, opt => opt.MapFrom(src => src.CreatedDate))
            .ForMember(dest => dest.PaymentReference, opt => opt.MapFrom(src => src.ReferenceNumber??string.Empty))           
            .ForMember(dest => dest.SiteAddress, opt => opt.MapFrom(src => src.Registration.ReprocessingSiteAddress != null ? CreateAddressString(src.Registration.ReprocessingSiteAddress) : string.Empty));
     }
@@ -133,7 +134,7 @@ public class RegistrationMaterialProfile : Profile
     };
 
 
-    private string CreateAddressString(LookupAddress reprocessingSiteAddress) =>
+    private string CreateAddressString(Address reprocessingSiteAddress) =>
         string.Join(
             ", ",
             new[]

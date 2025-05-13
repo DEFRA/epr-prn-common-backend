@@ -146,7 +146,7 @@ public class RegistrationMaterialControllerTests
     {
         // Arrange
         int materialId = 2;
-        var expectedDto = new RegistrationMaterialWasteLicencesDto() { PermitType = "", LicenceNumbers = [], MaterialName = "", MaximumReprocessingCapacityTonne = 1,  MaximumReprocessingPeriod = ""  };
+        var expectedDto = new RegistrationMaterialWasteLicencesDto() { PermitType = "", LicenceNumbers = [], MaterialName = "", MaximumReprocessingCapacityTonne = 1,  MaximumReprocessingPeriod = "", RegistrationMaterialId = 1  };
 
         _mediatorMock
             .Setup(m => m.Send(It.IsAny<GetMaterialWasteLicencesQuery>(), It.IsAny<CancellationToken>()))

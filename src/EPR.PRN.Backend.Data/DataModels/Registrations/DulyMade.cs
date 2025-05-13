@@ -1,15 +1,19 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics.CodeAnalysis;
 
 namespace EPR.PRN.Backend.Data.DataModels.Registrations;
-
+[Table("Public.DulyMade")]
 [ExcludeFromCodeCoverage]
 public class DulyMade
 {
-    public int Id { get; set; }   
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+    [Key]
+    public int Id { get; set; }
+    public Guid ExternalId { get; set; }
     [ForeignKey("RegistrationMaterial")]
-    public int RegistrationMaterialId { get; set; }
-    public required RegistrationMaterial RegistrationMaterial { get; set; }   
+    public int RegistrationMaterialId { get; set; }   
+    public RegistrationMaterial? RegistrationMaterial { get; set; }     
     [ForeignKey("TaskStatus")]
     public int TaskStatusId { get; set; }
     public LookupTaskStatus? TaskStatus { get; set; }

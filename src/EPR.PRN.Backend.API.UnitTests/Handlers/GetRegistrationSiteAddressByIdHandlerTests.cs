@@ -41,7 +41,7 @@ public class GetRegistrationSiteAddressByIdHandlerTests
         {
             Id = registrationId,
             ReprocessingSiteAddressId = 99,
-            ReprocessingSiteAddress = new LookupAddress
+            ReprocessingSiteAddress = new Address
             {
                 AddressLine1 = "42 Recycle Road",
                 TownCity = "EcoTown",
