@@ -11,8 +11,7 @@ using Microsoft.FeatureManagement.Mvc;
 [ApiVersion("1.0")]
 [Route("api/v{version:apiVersion}/AccreditationPRNIssueAuth")]
 [FeatureGate(FeatureFlags.EnableAccreditation)]
-public class AccreditationPrnIssueAuthController(IAccreditationPrnIssueAuthService accreditationPrnIssueAuthService, 
-    ILogger<AccreditationPrnIssueAuthController> logger) : ControllerBase
+public class AccreditationPrnIssueAuthController(IAccreditationPrnIssueAuthService accreditationPrnIssueAuthService) : ControllerBase
 {
     [HttpGet("{accreditationId}")]
     [ProducesResponseType(typeof(AccreditationPrnIssueAuthDto), 200)]

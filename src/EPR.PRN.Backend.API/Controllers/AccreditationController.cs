@@ -10,8 +10,7 @@ using Microsoft.FeatureManagement.Mvc;
 [ApiVersion("1.0")]
 [Route("api/v{version:apiVersion}/Accreditation")]
 [FeatureGate(FeatureFlags.EnableAccreditation)]
-public class AccreditationController(IAccreditationService accreditationService, 
-    ILogger<AccreditationController> logger) : ControllerBase
+public class AccreditationController(IAccreditationService accreditationService) : ControllerBase
 {
     [HttpGet("{accreditationId}")]
     [ProducesResponseType(typeof(AccreditationDto), 200)]

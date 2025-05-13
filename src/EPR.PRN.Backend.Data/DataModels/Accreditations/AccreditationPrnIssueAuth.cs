@@ -8,5 +8,5 @@ public class AccreditationPrnIssueAuth
     public int AccreditationId { get; set; }
     public int PersonId { get; set; }
 
-    public Accreditation Accreditation { get; set; }
+    public Accreditation? Accreditation { get; set; }
 }

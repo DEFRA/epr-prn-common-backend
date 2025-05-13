@@ -22,7 +22,7 @@ public class AccreditationPrnIssueAuthService(
     {
         logger.LogInformation("{Logprefix}: AccreditationPrnIssueAuthService - GetByAccreditationId: request for accreditation {AccreditationId}", logPrefix, accreditationId);
 
-        List<AccreditationPrnIssueAuth> entities = await repository.GetByAccreditationId(accreditationId);
+        List<AccreditationPrnIssueAuth>? entities = await repository.GetByAccreditationId(accreditationId);
         var dtos = mapper.Map<List<AccreditationPrnIssueAuthDto>>(entities);
 
         return dtos;

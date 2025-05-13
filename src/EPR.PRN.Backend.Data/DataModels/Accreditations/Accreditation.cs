@@ -66,11 +66,11 @@ public class Accreditation
     public Guid UpdatedBy { get; set; }
     public DateTime UpdatedDate { get; set; }
 
-    public ApplicationType ApplicationType { get; set; }
+    public ApplicationType? ApplicationType { get; set; }
 
-    public AccreditationStatus AccreditationStatus { get; set; }
+    public AccreditationStatus? AccreditationStatus { get; set; }
 
-    public RegistrationMaterial RegistrationMaterial { get; set; }
+    public RegistrationMaterial? RegistrationMaterial { get; set; }
 
     public List<AccreditationPrnIssueAuth>? AccreditationPrnIssueAuths { get; set; }
 }
