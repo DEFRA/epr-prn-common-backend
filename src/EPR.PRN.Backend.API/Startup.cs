@@ -73,9 +73,13 @@ namespace EPR.PRN.Backend.API
             services.AddDbContext<EprRegistrationsContext>(options =>
                 options.UseInMemoryDatabase("EprRegistrationsDatabase")
             );
-            services.AddDbContext<EprAccreditationContext>(options =>
-                options.UseInMemoryDatabase("EprAccreditationDatabase")
-            );
+
+            if (_config.GetValue<bool>($"FeatureManagement:{FeatureFlags.EnableAccreditation}"))
+            {
+                services.AddDbContext<EprAccreditationContext>(options =>
+                    options.UseInMemoryDatabase("EprAccreditationDatabase")
+                );
+            }
 
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 

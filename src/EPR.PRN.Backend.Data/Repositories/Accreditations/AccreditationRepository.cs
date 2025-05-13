@@ -6,7 +6,7 @@ namespace EPR.PRN.Backend.Data.Repositories.Accreditations;
 
 public class AccreditationRepository(EprAccreditationContext eprContext) : IAccreditationRepository
 {
-    public async Task<Accreditation?> GetById(int accreditationId)
+    public async Task<Accreditation?> GetById(Guid accreditationId)
     {
         return await eprContext.Accreditations
             .AsNoTracking()
@@ -14,17 +14,49 @@ public class AccreditationRepository(EprAccreditationContext eprContext) : IAccr
             .Include(x => x.AccreditationStatus)
             .Include(x => x.RegistrationMaterial)
                 .ThenInclude(x => x.Material)
-            .SingleOrDefaultAsync(x => x.Id == accreditationId);
+            .SingleOrDefaultAsync(x => x.ExternalId.Equals(accreditationId));
     }
 
     public async Task Create(Accreditation accreditation)
     {
+        var currentTimestamp = DateTime.UtcNow;
+        accreditation.CreatedDate = currentTimestamp;
+        accreditation.UpdatedDate = currentTimestamp;
+        accreditation.ExternalId = Guid.NewGuid();
+
         eprContext.Accreditations.Add(accreditation);
         await eprContext.SaveChangesAsync();
     }
+
     public async Task Update(Accreditation accreditation)
     {
-        eprContext.Entry(accreditation).State = EntityState.Modified;
+        var existingAccreditation = await eprContext.Accreditations.SingleAsync(x => x.ExternalId.Equals(accreditation.ExternalId));
+
+        existingAccreditation.OrganisationId = accreditation.OrganisationId;
+        existingAccreditation.RegistrationMaterialId = accreditation.RegistrationMaterialId;
+        existingAccreditation.ApplicationTypeId = accreditation.ApplicationTypeId;
+        existingAccreditation.AccreditationStatusId = accreditation.AccreditationStatusId;
+        existingAccreditation.DecFullName = accreditation.DecFullName;
+        existingAccreditation.DecJobTitle = accreditation.DecJobTitle;
+        existingAccreditation.AccreferenceNumber = accreditation.AccreferenceNumber;
+        existingAccreditation.AccreditationYear = accreditation.AccreditationYear;
+        existingAccreditation.PrnTonnage = accreditation.PrnTonnage;
+        existingAccreditation.InfrastructurePercentage = accreditation.InfrastructurePercentage;
+        existingAccreditation.PackagingWastePercentage = accreditation.PackagingWastePercentage;
+        existingAccreditation.BusinessCollectionsPercentage = accreditation.BusinessCollectionsPercentage;
+        existingAccreditation.NewUsesPercentage = accreditation.NewUsesPercentage;
+        existingAccreditation.NewMarketsPercentage = accreditation.NewMarketsPercentage;
+        existingAccreditation.CommunicationsPercentage = accreditation.CommunicationsPercentage;
+        existingAccreditation.InfrastructureNotes = accreditation.InfrastructureNotes;
+        existingAccreditation.PackagingWasteNotes = accreditation.PackagingWasteNotes;
+        existingAccreditation.BusinessCollectionsNotes = accreditation.BusinessCollectionsNotes;
+        existingAccreditation.NewUsesNotes = accreditation.NewUsesNotes;
+        existingAccreditation.NewMarketsNotes = accreditation.NewMarketsNotes;
+        existingAccreditation.CommunicationsNotes = accreditation.CommunicationsNotes;
+        existingAccreditation.UpdatedBy = accreditation.UpdatedBy;
+        existingAccreditation.UpdatedDate = DateTime.UtcNow;
+
+        eprContext.Entry(existingAccreditation).State = EntityState.Modified;
         await eprContext.SaveChangesAsync();
     }
 }

@@ -1,5 +1,7 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System.Data;
+using System.Diagnostics.CodeAnalysis;
 using EPR.PRN.Backend.Data.DataModels.Accreditations;
+using EPR.PRN.Backend.Data.DataModels.Registrations;
 using Microsoft.EntityFrameworkCore;
 
 namespace EPR.PRN.Backend.Data;
@@ -66,8 +68,20 @@ public class EprAccreditationContext : DbContext
         modelBuilder.Entity<ApplicationType>().HasData(
             new ApplicationType { Id = 1, Name = "Reprocessor" },
             new ApplicationType { Id = 2, Name = "Exporter" });
+
+        // TEMP:
+        modelBuilder.Entity<LookupMaterial>().HasData(
+            new LookupMaterial { Id = 1, MaterialName = "Plastic", MaterialCode = "PL" },
+            new LookupMaterial { Id = 2, MaterialName = "Steel", MaterialCode = "GL" },
+            new LookupMaterial { Id = 3, MaterialName = "Aluminium", MaterialCode = "AL" });
+        modelBuilder.Entity<RegistrationMaterial>().HasData(
+            new RegistrationMaterial { Id = 1, MaterialId = 1 },
+            new RegistrationMaterial { Id = 2, MaterialId = 2 },
+            new RegistrationMaterial { Id = 3, MaterialId = 3 });
     }
 
+    public DbSet<ApplicationType> ApplicationTypes { get; set; }
+    public DbSet<AccreditationStatus> AccreditationStatuses { get; set; }
     public DbSet<Accreditation> Accreditations { get; set; }
     public DbSet<AccreditationPrnIssueAuth> AccreditationPrnIssueAuths { get; set; }
 }
