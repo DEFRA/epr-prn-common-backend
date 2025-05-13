@@ -70,4 +70,5 @@ public class RegistrationMaterial
     public List<RegistrationReprocessingIO>? RegistrationReprocessingIO { get; set; }
     public List<FileUpload>? FileUploads { get; set; }
     public bool IsMaterialRegistered { get; set; } = false;
+    public DulyMade DulyMade { get; set; }
 }

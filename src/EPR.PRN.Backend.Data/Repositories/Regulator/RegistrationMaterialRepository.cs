@@ -1,5 +1,4 @@
-﻿using EPR.PRN.Backend.Data.DataModels;
-using EPR.PRN.Backend.Data.DataModels.Registrations;
+﻿using EPR.PRN.Backend.Data.DataModels.Registrations;
 using EPR.PRN.Backend.Data.Interfaces.Regulator;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
@@ -66,7 +65,33 @@ public class RegistrationMaterialRepository(EprRegistrationsContext eprContext) 
 
         await eprContext.SaveChangesAsync();
     }
+    public async Task RegistrationMaterialsMarkAsDulyMade(int registrationMaterialId, int statusId, DateTime DeterminationDate, DateTime DulyMadeDate, Guid DulyMadeBy)
+    {
+        var material = await eprContext.RegistrationMaterials.FirstOrDefaultAsync(rm => rm.Id == registrationMaterialId);
+        if (material is null) throw new KeyNotFoundException("Material not found.");
+        var dualmode = await eprContext.DulyMades
+            .FirstOrDefaultAsync(rm => rm.RegistrationMaterialId == registrationMaterialId)
+            ?? new DulyMade
+            {
+                RegistrationMaterialId = registrationMaterialId,
+                RegistrationMaterial = material // Initialize the required member
+            };
 
+        // Set/update the fields
+        dualmode.TaskStatusId = statusId;
+        dualmode.DeterminationDate = DeterminationDate;
+        dualmode.DulyMadeDate = DulyMadeDate;
+        dualmode.DulyMadeBy = DulyMadeBy;
+
+        // If this is a new entity, add it to the context
+        if (dualmode.Id == 0)
+        {
+            await eprContext.DulyMades.AddAsync(dualmode);
+        }
+
+        await eprContext.SaveChangesAsync();
+    }
+       
     private IIncludableQueryable<RegistrationMaterial, LookupRegistrationMaterialStatus> GetRegistrationMaterialsWithRelatedEntities()
     {
         var registrationMaterials =
@@ -80,7 +105,8 @@ public class RegistrationMaterialRepository(EprRegistrationsContext eprContext) 
              .Include(rm => rm.Registration)
                 .ThenInclude(r => r.LegalDocumentAddress)
             .Include(rm => rm.Material)
-            .Include(rm => rm.Status);       
+            .Include(rm => rm.DulyMade)
+            .Include(rm => rm.Status);
 
         return registrationMaterials;
     }
@@ -151,6 +177,8 @@ public class RegistrationMaterialRepository(EprRegistrationsContext eprContext) 
             .Include(r => r.Materials)!
                 .ThenInclude(m => m.Tasks)!
                 .ThenInclude(t => t.Task)
+             .Include(r => r.Materials)!
+             .ThenInclude(d=>d.DulyMade)
             .Include(r => r.Materials)!
                 .ThenInclude(rm => rm.Status);
                 

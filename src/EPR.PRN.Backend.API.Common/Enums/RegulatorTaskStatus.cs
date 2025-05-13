@@ -6,5 +6,6 @@ public enum RegulatorTaskStatus
     Started = 2,
     CannotStartYet = 3,
     Queried = 4,
-    Completed = 5
+    Completed = 5,
+    DulyMade=6
 }

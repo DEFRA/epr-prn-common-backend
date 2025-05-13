@@ -25,6 +25,7 @@ public class RegistrationMaterialControllerTests
 {
     private Mock<IMediator> _mediatorMock;
     private Mock<IValidator<RegistrationMaterialsOutcomeCommand>> _validatorMock;
+    private Mock<IValidator<RegistrationMaterialsMarkAsDulyMadeCommand>> _validatorMockdual;
     private Mock<ILogger<RegistrationMaterialController>> _loggerMock;
     private RegistrationMaterialController _controller;
 
@@ -33,9 +34,9 @@ public class RegistrationMaterialControllerTests
     {
         _mediatorMock = new Mock<IMediator>();
         _validatorMock = new Mock<IValidator<RegistrationMaterialsOutcomeCommand>>();
+        _validatorMockdual = new Mock<IValidator<RegistrationMaterialsMarkAsDulyMadeCommand>>();
         _loggerMock = new Mock<ILogger<RegistrationMaterialController>>();
-
-        _controller = new RegistrationMaterialController(_mediatorMock.Object, _validatorMock.Object, _loggerMock.Object);
+        _controller = new RegistrationMaterialController(_mediatorMock.Object, _validatorMock.Object, _validatorMockdual.Object, _loggerMock.Object);
     }
 
     [TestMethod]
@@ -130,6 +131,7 @@ public class RegistrationMaterialControllerTests
         var controller = new RegistrationMaterialController(
             _mediatorMock.Object,
             validator,
+            _validatorMockdual.Object,
             _loggerMock.Object
         );
 
@@ -275,6 +277,34 @@ public class RegistrationMaterialControllerTests
         }
     }
 
+    [TestMethod]
+    public async Task MarkAsDulyMode_ShouldThrowValidationException_WhenValidationFails()
+    {
+        // Arrange
+        var validator = new InlineValidator<RegistrationMaterialsMarkAsDulyMadeCommand>();
+        validator.RuleFor(x => x.DeterminationDate).Must((model, determinationDate) =>
+                determinationDate >= model.DulyMadeDate.AddDays(7 * 12))
+            .WithMessage("DeterminationDate must be at least 12 weeks after DulyMadeDate.");
 
+        var registrationMaterialId = 12;
+        var command = new RegistrationMaterialsMarkAsDulyMadeCommand
+        {
+            DulyMadeDate= new DateTime(2025, 5, 12),
+            DeterminationDate = new DateTime(2025, 7, 12),
+            DulyMadeBy= new Guid("3fa85f64-5717-4562-b3fc-2c963f66afa6")
+        };
+
+        var controller = new RegistrationMaterialController(
+            _mediatorMock.Object,
+            _validatorMock.Object,
+            validator,            
+            _loggerMock.Object
+        );
+
+        // Act & Assert
+        await FluentActions.Invoking(() =>
+            controller.RegistrationMaterialsMarkAsDulyMade(registrationMaterialId, command)
+        ).Should().ThrowAsync<ValidationException>();
+    }
 
 }

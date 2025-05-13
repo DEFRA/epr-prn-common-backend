@@ -10,4 +10,5 @@ public static class LogMessages
     public const string RegistrationMeterialpaymentFees = "Attempting to get registration material payment fee by id :{Id}";
     public const string UpdateRegulatorApplicationTask = "UpdateRegulatorApplicationTask";
     public const string UpdateRegulatorRegistrationTask = "UpdateRegulatorRegistrationTask";
-} 
+    public const string MarkAsDulyMade = "MarkAsDulyMadeby id :{Id}";
+}

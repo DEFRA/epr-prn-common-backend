@@ -391,4 +391,5 @@ public class EprRegistrationsContext : DbContext
     public DbSet<LookupAddress> LookupAddresses { get; set; }
     public DbSet<LookupPeriod> LookupPeriod { get; set; }
     public DbSet<LookupMaterialPermit> LookupMaterialPermit { get; set; }
+    public DbSet<DulyMade> DulyMades { get; set; }
 }

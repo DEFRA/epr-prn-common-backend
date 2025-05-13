@@ -1,16 +1,13 @@
-﻿using System.Net;
-
-using EPR.PRN.Backend.API.Commands;
+﻿using EPR.PRN.Backend.API.Commands;
 using EPR.PRN.Backend.API.Common.Constants;
 using EPR.PRN.Backend.API.Dto.Regulator;
 using EPR.PRN.Backend.API.Queries;
-
 using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.FeatureManagement.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
-using static EPR.PRN.Backend.API.Common.Constants.PrnConstants;
+using System.Net;
 
 namespace EPR.PRN.Backend.API.Controllers;
 
@@ -20,6 +17,7 @@ namespace EPR.PRN.Backend.API.Controllers;
 [FeatureGate(FeatureFlags.ReprocessorExporter)]
 public class RegistrationMaterialController(IMediator mediator
     , IValidator<RegistrationMaterialsOutcomeCommand> registrationMaterialsOutcomeCommandValidator
+    ,IValidator<RegistrationMaterialsMarkAsDulyMadeCommand> registrationMaterialmarkasdulymadecommandvalidator
     , ILogger<RegistrationMaterialController> logger) : ControllerBase
 {
     #region Get methods
@@ -167,6 +165,29 @@ public class RegistrationMaterialController(IMediator mediator
         command.Id = Id;
 
         await registrationMaterialsOutcomeCommandValidator.ValidateAndThrowAsync(command);
+
+        await mediator.Send(command);
+
+        return NoContent();
+    }
+
+    [HttpPost("registrationMaterials/{Id}/markAsDulyMade")]
+    [ProducesResponseType(StatusCodes.Status204NoContent, Type = typeof(NoContentResult))]
+    [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
+    [SwaggerOperation(
+           Summary = "Mark as dualy mode material registration",
+           Description = "Mark as dualy mode material registration."
+       )]
+    [SwaggerResponse(StatusCodes.Status204NoContent, $"Returns No Content", typeof(NoContentResult))]
+    [SwaggerResponse(StatusCodes.Status400BadRequest, "If the request is invalid or a validation error occurs.", typeof(ProblemDetails))]
+    [SwaggerResponse(StatusCodes.Status500InternalServerError, "If an unexpected error occurs.", typeof(ContentResult))]
+    public async Task<IActionResult> RegistrationMaterialsMarkAsDulyMade(int Id, [FromBody] RegistrationMaterialsMarkAsDulyMadeCommand command)
+    {
+        logger.LogInformation(LogMessages.MarkAsDulyMade, Id);
+        command.RegistrationMaterialId = Id;
+
+        await registrationMaterialmarkasdulymadecommandvalidator.ValidateAndThrowAsync(command);
 
         await mediator.Send(command);
 
