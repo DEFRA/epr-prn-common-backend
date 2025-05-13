@@ -1013,10 +1013,6 @@ SET IDENTITY_INSERT [dbo].[Public.RegistrationMaterial] OFF
 GO
 SET IDENTITY_INSERT [dbo].[Public.RegulatorRegistrationTaskStatus] ON 
 GO
-INSERT [dbo].[Public.RegulatorRegistrationTaskStatus] ([Id], [RegistrationId], [ExternalId], [TaskId], [TaskStatusId], [Comments], [StatusCreatedBy], [StatusCreatedDate], [StatusUpdatedBy], [StatusUpdatedDate]) VALUES (2, 2, N'bb855dac-3c30-4555-9421-2383f04445d5', 2, 5, N'string', N'4b38a03f-f4a6-41ae-a3a8-7ba5608b9a79', CAST(N'2025-05-09T20:52:48.9627447' AS DateTime2), N'6bc1e0f8-6ba9-48b8-94bf-63e538174afe', CAST(N'2025-05-10T09:20:57.5982575' AS DateTime2))
-GO
-INSERT [dbo].[Public.RegulatorRegistrationTaskStatus] ([Id], [RegistrationId], [ExternalId], [TaskId], [TaskStatusId], [Comments], [StatusCreatedBy], [StatusCreatedDate], [StatusUpdatedBy], [StatusUpdatedDate]) VALUES (3, 4, N'19596664-ebea-4e93-b3a4-eb57dc9cea53', 2, 5, N'string', N'96fbc53d-6359-41ae-a061-dd4b7afbe467', CAST(N'2025-05-10T09:25:11.2644251' AS DateTime2), N'e688c39b-f803-4a9d-bea7-da64d9dbcd50', CAST(N'2025-05-10T09:26:12.8170754' AS DateTime2))
-GO
 SET IDENTITY_INSERT [dbo].[Public.RegulatorRegistrationTaskStatus] OFF
 GO
 SET IDENTITY_INSERT [dbo].[public.FileUpload] ON 
