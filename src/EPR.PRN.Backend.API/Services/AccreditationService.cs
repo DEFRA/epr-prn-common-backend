@@ -26,7 +26,7 @@ public class AccreditationService(
         return accreditationDto;
     }
 
-    public async Task CreateAccreditation(AccreditationRequestDto accreditationDto, Guid orgId, Guid userId)
+    public async Task<Guid> CreateAccreditation(AccreditationRequestDto accreditationDto, Guid orgId, Guid userId)
     {
         logger.LogInformation("{Logprefix}: AccreditationService - CreateAccreditation: request to create accreditation {Accreditation}", logPrefix, JsonConvert.SerializeObject(accreditationDto));
 
@@ -36,6 +36,8 @@ public class AccreditationService(
         entity.UpdatedBy = userId;
 
         await repository.Create(entity);
+
+        return entity.ExternalId;
     }
 
     public async Task UpdateAccreditation(AccreditationRequestDto accreditationDto, Guid userId)

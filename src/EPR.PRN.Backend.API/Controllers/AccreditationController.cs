@@ -34,15 +34,19 @@ public class AccreditationController(IAccreditationService accreditationService)
         [FromHeader(Name = "X-EPR-USER")] Guid userId,
         [FromBody]AccreditationRequestDto request)
     {
+        Guid externalId;
         if (request.ExternalId == null)
         {
-            await accreditationService.CreateAccreditation(request, orgId, userId);
+            externalId = await accreditationService.CreateAccreditation(request, orgId, userId);
         }
         else
         {
+            externalId = request.ExternalId.Value;
             await accreditationService.UpdateAccreditation(request, userId);
         }
 
-        return NoContent();
+        var accreditation = await accreditationService.GetAccreditationById(externalId);
+
+        return Ok(accreditation);
     }
 }
