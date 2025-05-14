@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace EPR.PRN.Backend.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class Adddulymadetable2 : Migration
+    public partial class AddDulyMadeTableAndUpdatedLookUpMaterial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -57,6 +57,23 @@ namespace EPR.PRN.Backend.Data.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.UpdateData(
+                table: "Lookup.Material",
+                keyColumn: "Id",
+                keyValue: 2,
+                column: "MaterialCode",
+                value: "ST");
+
+            migrationBuilder.InsertData(
+                table: "Lookup.Material",
+                columns: new[] { "Id", "MaterialCode", "MaterialName" },
+                values: new object[,]
+                {
+                    { 4, "GL", "Glass" },
+                    { 5, "PA", "Paper/Board" },
+                    { 6, "WO", "Wood" }
+                });
+
             migrationBuilder.InsertData(
                 table: "Lookup.RegulatorTask",
                 columns: new[] { "Id", "ApplicationTypeId", "IsMaterialSpecific", "JourneyTypeId", "Name" },
@@ -84,6 +101,21 @@ namespace EPR.PRN.Backend.Data.Migrations
                 name: "Public.DulyMade");
 
             migrationBuilder.DeleteData(
+                table: "Lookup.Material",
+                keyColumn: "Id",
+                keyValue: 4);
+
+            migrationBuilder.DeleteData(
+                table: "Lookup.Material",
+                keyColumn: "Id",
+                keyValue: 5);
+
+            migrationBuilder.DeleteData(
+                table: "Lookup.Material",
+                keyColumn: "Id",
+                keyValue: 6);
+
+            migrationBuilder.DeleteData(
                 table: "Lookup.RegulatorTask",
                 keyColumn: "Id",
                 keyValue: 15);
@@ -100,6 +132,13 @@ namespace EPR.PRN.Backend.Data.Migrations
             migrationBuilder.DropColumn(
                 name: "CreatedDate",
                 table: "Public.RegistrationMaterial");
+
+            migrationBuilder.UpdateData(
+                table: "Lookup.Material",
+                keyColumn: "Id",
+                keyValue: 2,
+                column: "MaterialCode",
+                value: "GL");
         }
     }
 }

@@ -23,7 +23,7 @@ public class RegistrationMaterialProfile : Profile
         CreateMap<RegistrationMaterial, RegistrationMaterialDto>()
             .ForMember(dest => dest.MaterialName, opt => opt.MapFrom(src => src.Material.MaterialName))
             .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.Name))
-            .ForMember(dest => dest.RegistrationReferenceNumber, opt => opt.MapFrom(src => src.ReferenceNumber));
+            .ForMember(dest => dest.ApplicationReferenceNumber, opt => opt.MapFrom(src => src.ApplicationReferenceNumber));
 
         CreateMap<RegulatorRegistrationTaskStatus, RegistrationTaskDto>()
             .ForMember(dest => dest.TaskName, opt => opt.MapFrom(src => src.Task.Name))
@@ -98,7 +98,7 @@ public class RegistrationMaterialProfile : Profile
         CreateMap<RegistrationMaterial, MaterialPaymentFeeDto>()
            .ForMember(dest => dest.OrganisationId, opt => opt.MapFrom(src => src.Registration.OrganisationId))
            .ForMember(dest => dest.OrganisationName, opt => opt.MapFrom(src => src.Registration.OrganisationId + "_Green Ltd"))
-          // .ForMember(dest => dest.CreatedDate, opt => opt.MapFrom(src => src.CreatedDate))
+           .ForMember(dest => dest.CreatedDate, opt => opt.MapFrom(src => src.CreatedDate))
            .ForMember(dest => dest.PaymentReference, opt => opt.MapFrom(src => src.ReferenceNumber??string.Empty))           
            .ForMember(dest => dest.SiteAddress, opt => opt.MapFrom(src => src.Registration.ReprocessingSiteAddress != null ? CreateAddressString(src.Registration.ReprocessingSiteAddress) : string.Empty));
     }

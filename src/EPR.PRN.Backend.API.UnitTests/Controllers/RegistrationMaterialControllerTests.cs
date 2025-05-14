@@ -94,9 +94,13 @@ public class RegistrationMaterialControllerTests
     {
         // Arrange
         int materialId = 3;
-        var command = new RegistrationMaterialsOutcomeCommand();
+        var command = new RegistrationMaterialsOutcomeCommand
+        {
+            RegistrationReferenceNumber = "R25ER2475638626AL" // Ensure the required property is set
+        };
+        
 
-        _validatorMock
+        _validatorMock 
             .Setup(v => v.ValidateAsync(command, default))
             .ReturnsAsync(new ValidationResult());
 
@@ -125,7 +129,7 @@ public class RegistrationMaterialControllerTests
         var registrationId = 10;
         var command = new RegistrationMaterialsOutcomeCommand
         {
-            Status = (RegistrationMaterialStatus)999
+            RegistrationReferenceNumber = "R26ER2375628626PL" // Ensure the required property is set
         };
 
         var controller = new RegistrationMaterialController(
@@ -252,8 +256,7 @@ public class RegistrationMaterialControllerTests
         okResult.Should().NotBeNull();
         okResult!.Value.Should().BeEquivalentTo(expectedDto);
     }
-
-
+    
     [TestMethod]
     public async Task GetMaterialPaymentFeeById_ReturnsOk_WithExpectedResult()
     {
@@ -305,6 +308,28 @@ public class RegistrationMaterialControllerTests
         await FluentActions.Invoking(() =>
             controller.RegistrationMaterialsMarkAsDulyMade(registrationMaterialId, command)
         ).Should().ThrowAsync<ValidationException>();
+    }
+    [TestMethod]
+    public async Task GetRegistrationAccreditationReferenceById_ReturnsOk_WithExpectedResult()
+    {
+        // Arrange
+        int materialId = 12;
+        var expectedDto = new RegistrationAccreditationReferenceDto();
+
+        _mediatorMock
+            .Setup(m => m.Send(It.IsAny<GetRegistrationAccreditationReferenceByIdQuery>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(expectedDto);
+
+        // Act
+        var result = await _controller.GetRegistrationMeterialpaymentFeesById(materialId);
+
+        // Assert
+        using (new AssertionScope())
+        {
+            var okResult = result as OkObjectResult;
+            okResult.Should().NotBeNull();
+            okResult!.Value.Should().BeEquivalentTo(expectedDto);
+        }
     }
 
 }

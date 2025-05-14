@@ -20,7 +20,7 @@ public class RegistrationMaterialsMarkAsDulyMadeHandler(
        
         await rmRepository.RegistrationMaterialsMarkAsDulyMade(
             request.RegistrationMaterialId,
-            (int)RegulatorTaskStatus.DulyMade,
+            (int)RegulatorTaskStatus.Completed,
             request.DeterminationDate,
             request.DulyMadeDate,
              request.DulyMadeBy

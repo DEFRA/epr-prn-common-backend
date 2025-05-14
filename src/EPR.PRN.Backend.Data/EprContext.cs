@@ -15,12 +15,13 @@ namespace EPR.PRN.Backend.Data
 
         public EprContext()
         {
-
+           
         }
 
-        public EprContext(DbContextOptions<EprContext> options) : base(options)
+        public EprContext(DbContextOptions<EprContext> options)
+            : base(options)
         {
-
+           
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -165,8 +166,11 @@ namespace EPR.PRN.Backend.Data
 
             modelBuilder.Entity<LookupMaterial>().HasData(
                 new LookupMaterial { Id = 1, MaterialName = "Plastic", MaterialCode = "PL" },
-                new LookupMaterial { Id = 2, MaterialName = "Steel", MaterialCode = "GL" },
-                new LookupMaterial { Id = 3, MaterialName = "Aluminium", MaterialCode = "AL" });
+                new LookupMaterial { Id = 2, MaterialName = "Steel", MaterialCode = "ST" },
+                new LookupMaterial { Id = 3, MaterialName = "Aluminium", MaterialCode = "AL" },
+                new LookupMaterial { Id = 4, MaterialName = "Glass", MaterialCode = "GL" },
+                new LookupMaterial { Id = 5, MaterialName = "Paper/Board", MaterialCode = "PA" },
+                new LookupMaterial { Id = 6, MaterialName = "Wood", MaterialCode = "WO" });
             
 
             modelBuilder.Entity<LookupRegistrationMaterialStatus>().HasData(

@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EPR.PRN.Backend.Data.Migrations
 {
     [DbContext(typeof(EprContext))]
-    [Migration("20250513183016_Adddulymadetable2")]
-    partial class Adddulymadetable2
+    [Migration("20250514185141_AddDulyMadeTableAndUpdatedLookUpMaterial")]
+    partial class AddDulyMadeTableAndUpdatedLookUpMaterial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -1104,7 +1104,7 @@ namespace EPR.PRN.Backend.Data.Migrations
                         new
                         {
                             Id = 2,
-                            MaterialCode = "GL",
+                            MaterialCode = "ST",
                             MaterialName = "Steel"
                         },
                         new
@@ -1112,6 +1112,24 @@ namespace EPR.PRN.Backend.Data.Migrations
                             Id = 3,
                             MaterialCode = "AL",
                             MaterialName = "Aluminium"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            MaterialCode = "GL",
+                            MaterialName = "Glass"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            MaterialCode = "PA",
+                            MaterialName = "Paper/Board"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            MaterialCode = "WO",
+                            MaterialName = "Wood"
                         });
                 });
 

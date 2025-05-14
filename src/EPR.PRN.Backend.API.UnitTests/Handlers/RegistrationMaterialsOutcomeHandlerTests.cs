@@ -31,7 +31,8 @@ public class RegistrationMaterialsOutcomeHandlerTests
         {
             Id = material.Id,
             Status = RegistrationMaterialStatus.Granted,
-            Comments = "Valid update"
+            Comments = "Valid update",
+            RegistrationReferenceNumber = "REF0005-03"
         };
 
         _rmRepositoryMock.Setup(r => r.GetRegistrationMaterialById(command.Id)).ReturnsAsync(material);
@@ -59,14 +60,14 @@ public class RegistrationMaterialsOutcomeHandlerTests
         {
             Id = material.Id,
             Status = RegistrationMaterialStatus.Granted,
-            Comments = "Reprocess granted"
+            Comments = "Reprocess granted",
+            RegistrationReferenceNumber= "REF0004-03"
         };
 
         _rmRepositoryMock.Setup(r => r.GetRegistrationMaterialById(command.Id)).ReturnsAsync(material);
 
         string capturedRef = null;
-        _rmRepositoryMock.Setup(r => r.UpdateRegistrationOutCome(command.Id, (int)command.Status, command.Comments, It.IsAny<string>()))
-                         .Callback<int, int, string, string>((_, _, _, reference) => capturedRef = reference)
+        _rmRepositoryMock.Setup(r => r.UpdateRegistrationOutCome(command.Id, (int)command.Status, command.Comments, command.RegistrationReferenceNumber))
                          .Returns(Task.CompletedTask);
 
         // Act
@@ -86,7 +87,8 @@ public class RegistrationMaterialsOutcomeHandlerTests
         {
             Id = material.Id,
             Status = RegistrationMaterialStatus.Refused,
-            Comments = "Refused on check"
+            Comments = "Refused on check",
+            RegistrationReferenceNumber = "REF0005-03"
         };
 
         _rmRepositoryMock.Setup(r => r.GetRegistrationMaterialById(command.Id)).ReturnsAsync(material);
@@ -113,7 +115,8 @@ public class RegistrationMaterialsOutcomeHandlerTests
         {
             Id = material.Id,
             Status = RegistrationMaterialStatus.Granted,
-            Comments = "No change"
+            Comments = "No change",
+            RegistrationReferenceNumber = "REF0005-03"
         };
 
         _rmRepositoryMock.Setup(r => r.GetRegistrationMaterialById(command.Id)).ReturnsAsync(material);
@@ -136,7 +139,8 @@ public class RegistrationMaterialsOutcomeHandlerTests
         {
             Id = material.Id,
             Status = RegistrationMaterialStatus.Refused,
-            Comments = "Trying to revert"
+            Comments = "Trying to revert",
+            RegistrationReferenceNumber = "REF0005-03"
         };
 
         _rmRepositoryMock.Setup(r => r.GetRegistrationMaterialById(command.Id)).ReturnsAsync(material);
@@ -159,7 +163,8 @@ public class RegistrationMaterialsOutcomeHandlerTests
         {
             Id = material.Id,
             Status = RegistrationMaterialStatus.Granted,
-            Comments = "Testing null country"
+            Comments = "Testing null country",
+            RegistrationReferenceNumber = "REF0005-03"
         };
 
         _rmRepositoryMock.Setup(r => r.GetRegistrationMaterialById(command.Id)).ReturnsAsync(material);
