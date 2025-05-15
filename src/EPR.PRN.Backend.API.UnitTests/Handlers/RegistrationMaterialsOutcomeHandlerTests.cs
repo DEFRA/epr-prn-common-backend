@@ -46,12 +46,11 @@ public class RegistrationMaterialsOutcomeHandlerTests
         await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        capturedRef.Should().NotBeNull();
-        capturedRef.Should().Contain("ENG").And.Contain("E").And.Contain("XYZ");
+        capturedRef.Should().Be(command.RegistrationReferenceNumber);
     }
 
     [TestMethod]
-    public async Task Handle_Reprocessor_Granted_GeneratesReference()
+    public async Task Handle_Reprocessor_Granted_UsesProvidedReference()
     {
         // Arrange
         var material = CreateMaterial(RegistrationMaterialStatus.Refused, ApplicationOrganisationType.Reprocessor, 2, "ALU");
@@ -61,20 +60,24 @@ public class RegistrationMaterialsOutcomeHandlerTests
             Id = material.Id,
             Status = RegistrationMaterialStatus.Granted,
             Comments = "Reprocess granted",
-            RegistrationReferenceNumber= "REF0004-03"
+            RegistrationReferenceNumber = "REF0005-03"
         };
 
-        _rmRepositoryMock.Setup(r => r.GetRegistrationMaterialById(command.Id)).ReturnsAsync(material);
+        _rmRepositoryMock
+            .Setup(r => r.GetRegistrationMaterialById(command.Id))
+            .ReturnsAsync(material);
 
         string capturedRef = null;
-        _rmRepositoryMock.Setup(r => r.UpdateRegistrationOutCome(command.Id, (int)command.Status, command.Comments, command.RegistrationReferenceNumber))
-                         .Returns(Task.CompletedTask);
+        _rmRepositoryMock
+            .Setup(r => r.UpdateRegistrationOutCome(command.Id, (int)command.Status, command.Comments, It.IsAny<string>()))
+            .Callback<int, int, string, string>((_, _, _, reference) => capturedRef = reference)
+            .Returns(Task.CompletedTask);
 
         // Act
         await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        capturedRef.Should().Contain("SCO").And.Contain("R").And.Contain("ALU");
+        capturedRef.Should().Be(command.RegistrationReferenceNumber);
     }
 
     [TestMethod]
@@ -102,7 +105,7 @@ public class RegistrationMaterialsOutcomeHandlerTests
         await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        capturedRef.Should().BeNull();
+        capturedRef.Should().Be(command.RegistrationReferenceNumber);
     }
 
     [TestMethod]
@@ -178,7 +181,7 @@ public class RegistrationMaterialsOutcomeHandlerTests
         await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        capturedRef.Should().Contain("UNK").And.Contain("R").And.Contain("GLS");
+        capturedRef.Should().Be(command.RegistrationReferenceNumber);
     }
 
     private RegistrationMaterial CreateMaterial(RegistrationMaterialStatus? status, ApplicationOrganisationType orgType, int? nationId, string materialCode)
