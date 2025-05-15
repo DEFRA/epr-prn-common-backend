@@ -321,7 +321,7 @@ public class RegistrationMaterialControllerTests
             .ReturnsAsync(expectedDto);
 
         // Act
-        var result = await _controller.GetRegistrationMeterialpaymentFeesById(materialId);
+        var result = await _controller.GetRegistrationAccreditationReference(materialId);
 
         // Assert
         using (new AssertionScope())
