@@ -96,6 +96,7 @@ namespace EPR.PRN.Backend.Data.UnitTests.Repositories.Regulator
             var taskStatus = _context.RegulatorApplicationTaskStatus.FirstOrDefault();
 
             taskStatus.Should().NotBeNull();
+            taskStatus.ExternalId.Should().NotBe(Guid.Empty);
             taskStatus.Task.Name.Should().Be(taskName);
             taskStatus.RegistrationMaterialId.Should().Be(RegistrationMaterialId);
             taskStatus.TaskStatus.Name.Should().Be(status.ToString());

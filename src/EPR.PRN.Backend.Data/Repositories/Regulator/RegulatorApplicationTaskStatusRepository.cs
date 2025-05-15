@@ -51,6 +51,7 @@ namespace EPR.PRN.Backend.Data.Repositories.Regulator
                 {
                     Task = task,
                     RegistrationMaterialId = RegistrationMaterialId,
+                    ExternalId = Guid.NewGuid(),
                     TaskStatus = statusEntity,
                     Comments = comments,
                     StatusCreatedBy = user,
