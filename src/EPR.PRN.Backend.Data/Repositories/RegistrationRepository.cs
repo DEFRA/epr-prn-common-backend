@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace EPR.PRN.Backend.Data.Repositories;
 
-public class RegistrationRepository(EprRegistrationsContext context) : IRegistrationRepository
+public class RegistrationRepository(EprContext context) : IRegistrationRepository
 {
     public async Task UpdateSiteAddress(int registrationId, AddressDto reprocessingSiteAddress, AddressDto legalDocumentAddress)
     {
@@ -19,17 +19,14 @@ public class RegistrationRepository(EprRegistrationsContext context) : IRegistra
         // Reprocessing Site Address
         if (reprocessingSiteAddress.Id.GetValueOrDefault() == 0)
         {
-            var address = new LookupAddress
+            var address = new Address
             {
                 AddressLine1 = reprocessingSiteAddress.AddressLine1,
                 AddressLine2 = reprocessingSiteAddress.AddressLine2,
                 TownCity = reprocessingSiteAddress.TownCity,
                 County = reprocessingSiteAddress.County,
-                Country = reprocessingSiteAddress.Country,
                 PostCode = reprocessingSiteAddress.PostCode,
-                
                 NationId = reprocessingSiteAddress.NationId,
-                
                 GridReference = reprocessingSiteAddress.GridReference
             };
 
@@ -41,17 +38,14 @@ public class RegistrationRepository(EprRegistrationsContext context) : IRegistra
         // Legal Document Address
         if (legalDocumentAddress.Id.GetValueOrDefault() == 0)
         {
-            var address = new LookupAddress
+            var address = new Address
             {
                 AddressLine1 = legalDocumentAddress.AddressLine1,
                 AddressLine2 = legalDocumentAddress.AddressLine2,
                 TownCity = legalDocumentAddress.TownCity,
                 County = legalDocumentAddress.County,
-                Country = legalDocumentAddress.Country,
                 PostCode = legalDocumentAddress.PostCode,
-
-                NationId = legalDocumentAddress.NationId,
-                
+                NationId = legalDocumentAddress.NationId, 
                 GridReference = legalDocumentAddress.GridReference
             };
 

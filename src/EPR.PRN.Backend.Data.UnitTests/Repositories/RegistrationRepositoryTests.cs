@@ -9,17 +9,17 @@ namespace EPR.PRN.Backend.Data.UnitTests.Repositories;
 [TestClass]
 public class RegistrationRepositoryTests
 {
-    private EprRegistrationsContext _context;
+    private EprContext _context;
     private RegistrationRepository _repository;
 
     [TestInitialize]
     public void Setup()
     {
-        var options = new DbContextOptionsBuilder<EprRegistrationsContext>()
+        var options = new DbContextOptionsBuilder<EprContext>()
             .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
             .Options;
 
-        _context = new EprRegistrationsContext(options);
+        _context = new EprContext(options);
 
         _repository = new RegistrationRepository(_context);
     }
@@ -28,7 +28,7 @@ public class RegistrationRepositoryTests
     public async Task UpdateSiteAddress_ShouldUpdateRegistrationWithNewAddresses_WhenAddressesHaveNoId()
     {
         // Arrange
-        var registration = new Registration { Id = 1, ExternalId = "ExternalID-1" };
+        var registration = new Registration { Id = 1, ExternalId = Guid.NewGuid() };
         _context.Registrations.Add(registration);
         await _context.SaveChangesAsync();
 
@@ -90,27 +90,25 @@ public class RegistrationRepositoryTests
     public async Task UpdateSiteAddress_ShouldReuseAddressIds_WhenAddressDtosContainIds()
     {
         // Arrange
-        var registration = new Registration { Id = 2, ExternalId = "ExternalID-2" };
-        var lookupAddress1 = new LookupAddress
+        var registration = new Registration { Id = 2, ExternalId = Guid.NewGuid() };
+        var lookupAddress1 = new Address
         {
             Id = 101,
             AddressLine1 = "123 Test St",
             AddressLine2 = "Test Area",
             TownCity = "Testville",
-            Country = "Testland",
             PostCode = "TST 123",
             GridReference = "GB1234567890",
             County = "UK",
             NationId = 1,
         };
 
-        var lookupAddress2 = new LookupAddress
+        var lookupAddress2 = new Address
         {
             Id = 102,
             AddressLine1 = "456 Doc Rd",
             AddressLine2 = "Doc Area",
             TownCity = "DocCity",
-            Country = "Docland",
             PostCode = "DOC 456",
             GridReference = "GB1234567890",
             County = "UK",
