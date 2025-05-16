@@ -40,6 +40,9 @@ public class RegistrationMaterial
     public string? InstallationPermitNumber { get; set; }
     [MaxLength(20)]
     public string? EnvironmentalPermitWasteManagementNumber { get; set; }
+    [MaxLength(20)]
+    public string? ApplicationReferenceNumber { get; set; }
+    public DateTime CreatedDate { get; set; }
     public decimal PPCReprocessingCapacityTonne { get; set; }
     public decimal WasteManagementReprocessingCapacityTonne { get; set; }
     public decimal InstallationReprocessingTonne { get; set; }
@@ -61,7 +64,6 @@ public class RegistrationMaterial
     public int? MaximumReprocessingPeriodId { get; set; }
     public LookupPeriod? MaximumReprocessingPeriod { get; set; }
     public bool IsMaterialRegistered { get; set; } = false;
-
     public List<RegistrationReprocessingIO>? RegistrationReprocessingIO { get; set; }
     public List<FileUpload>? FileUploads { get; set; }
     public List<MaterialExemptionReference>? MaterialExemptionReferences { get; set; }

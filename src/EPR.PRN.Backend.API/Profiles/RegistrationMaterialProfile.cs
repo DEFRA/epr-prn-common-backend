@@ -18,11 +18,13 @@ public class RegistrationMaterialProfile : Profile
             opt => opt.MapFrom(src => (ApplicationOrganisationType)src.ApplicationTypeId))
         .ForMember(dest => dest.SiteAddress, opt => opt.MapFrom(src =>
              src.ReprocessingSiteAddress != null ? CreateAddressString(src.ReprocessingSiteAddress)
-                : string.Empty));
+                : string.Empty))
+        .ForMember(dest => dest.Materials, opt => opt.MapFrom(src =>src.Materials.Where(m => m.IsMaterialRegistered))); 
 
         CreateMap<RegistrationMaterial, RegistrationMaterialDto>()
             .ForMember(dest => dest.MaterialName, opt => opt.MapFrom(src => src.Material.MaterialName))
             .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.Name))
+            .ForMember(dest => dest.ApplicationReferenceNumber, opt => opt.MapFrom(src => src.ApplicationReferenceNumber))
             .ForMember(dest => dest.RegistrationReferenceNumber, opt => opt.MapFrom(src => src.ReferenceNumber));
 
         CreateMap<RegulatorRegistrationTaskStatus, RegistrationTaskDto>()
@@ -94,6 +96,15 @@ public class RegistrationMaterialProfile : Profile
            .ForMember(dest => dest.MaterialName, opt => opt.MapFrom(src => src.Material.MaterialName))
            .ForMember(dest => dest.Reason, opt => opt.MapFrom(src => src.ReasonforNotreg))
            .ForMember(dest => dest.IsMaterialRegistered, opt => opt.MapFrom(src => src.IsMaterialRegistered));
+
+        CreateMap<RegistrationMaterial, MaterialPaymentFeeDto>()
+           .ForMember(dest => dest.OrganisationId, opt => opt.MapFrom(src => src.Registration.OrganisationId))
+           .ForMember(dest => dest.ApplicationType, opt => opt.MapFrom(src =>(ApplicationOrganisationType) src.Registration.ApplicationTypeId))
+           .ForMember(dest => dest.CreatedDate, opt => opt.MapFrom(src => src.CreatedDate))
+           .ForMember(dest => dest.PaymentReference, opt => opt.MapFrom(src => src.ReferenceNumber??string.Empty))           
+           .ForMember(dest => dest.SiteAddress, opt => opt.MapFrom(src => src.Registration.ReprocessingSiteAddress != null ? CreateAddressString(src.Registration.ReprocessingSiteAddress) : string.Empty))
+           .ForMember(dest => dest.NationId, opt => opt.MapFrom(src => src.Registration.ReprocessingSiteAddress != null ? src.Registration.ReprocessingSiteAddress.NationId : 0))
+            .ForMember(dest => dest.MaterialName, opt => opt.MapFrom(src => src.Material.MaterialName));
     }
 
     private static string[] GetReferenceNumber(RegistrationMaterial src) => src.PermitType?.Name switch
