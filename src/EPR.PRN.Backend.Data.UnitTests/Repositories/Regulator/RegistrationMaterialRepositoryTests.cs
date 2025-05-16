@@ -2,6 +2,7 @@
 using EPR.PRN.Backend.Data.DataModels.Registrations;
 using EPR.PRN.Backend.Data.Interfaces.Regulator;
 using EPR.PRN.Backend.Data.Repositories.Regulator;
+using FluentAssertions;
 using FluentAssertions.Execution;
 using Microsoft.EntityFrameworkCore;
 
@@ -260,9 +261,53 @@ public class RegistrationMaterialRepositoryTests
     {
         await Assert.ThrowsExceptionAsync<KeyNotFoundException>(() => _repository.GetRegistrationMaterial_FileUploadById(999));
     }
+    [TestMethod]
+    public async Task RegistrationMaterialsMarkAsDulyMade_ShouldSetDulyMadeCorrectly()
+    {
+        // Arrange
+        var registrationMaterialId = 1;
+        var statusId = 3;
+        var dulyMadeDate = DateTime.UtcNow.Date;
+        var determinationDate = dulyMadeDate.AddDays(84);
+        var userId = Guid.NewGuid();
+        // Seed required LookupTask for the CheckRegistrationStatus task
+        _context.LookupTasks.Add(new LookupRegulatorTask
+        {
+            Id = 2,
+            Name = "CheckRegistrationStatus",
+            ApplicationTypeId = 1,
+            JourneyTypeId = 1,
+            IsMaterialSpecific = true
+        });
 
+        await _context.SaveChangesAsync();
 
-    [TestCleanup]
+        // Act
+        await _repository.RegistrationMaterialsMarkAsDulyMade(registrationMaterialId, statusId, determinationDate, dulyMadeDate, userId);
+
+        // Assert
+        var dulyMadeEntry = await _context.DulyMade
+            .FirstOrDefaultAsync(x => x.RegistrationMaterialId == registrationMaterialId);
+        var taskStatusEntry = await _context.RegulatorApplicationTaskStatus
+            .FirstOrDefaultAsync(x => x.RegistrationMaterialId == registrationMaterialId && x.TaskStatusId == statusId);
+
+        using (new AssertionScope())
+        {
+            dulyMadeEntry.Should().NotBeNull();
+            dulyMadeEntry!.DulyMadeBy.Should().Be(userId);
+            dulyMadeEntry.DulyMadeDate.Should().Be(dulyMadeDate);
+            dulyMadeEntry.DeterminationDate.Should().Be(determinationDate);
+            dulyMadeEntry.TaskStatusId.Should().Be(statusId);
+
+            taskStatusEntry.Should().NotBeNull();
+            taskStatusEntry!.TaskStatusId.Should().Be(statusId);
+            taskStatusEntry.TaskId.Should().Be(2);
+            taskStatusEntry.StatusUpdatedBy.Should().Be(userId);
+            taskStatusEntry.StatusCreatedDate.Date.Should().Be(DateTime.UtcNow.Date);
+        }
+    }
+
+        [TestCleanup]
     public void Cleanup()
     {
         _context.Database.EnsureDeleted();

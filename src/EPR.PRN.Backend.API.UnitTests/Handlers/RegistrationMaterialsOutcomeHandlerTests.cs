@@ -69,7 +69,77 @@ public class RegistrationMaterialsOutcomeHandlerTests
             .WithMessage("Invalid outcome transition.");
     }
 
-  
+    [TestMethod]
+    public async Task Handle_TransitionFromNullStatus_AllowsAnyValidChange()
+    {
+        // Arrange
+        var material = CreateMaterial(null, ApplicationOrganisationType.Exporter, 1, "PLST");
+
+        var command = new RegistrationMaterialsOutcomeCommand
+        {
+            Id = material.Id,
+            Status = RegistrationMaterialStatus.Refused,
+            Comments = "Initial setting",
+            RegistrationReferenceNumber = "REF-NULL"
+        };
+
+        _rmRepositoryMock.Setup(r => r.GetRegistrationMaterialById(command.Id)).ReturnsAsync(material);
+        _rmRepositoryMock.Setup(r => r.UpdateRegistrationOutCome(command.Id, (int)command.Status, command.Comments, command.RegistrationReferenceNumber)).Returns(Task.CompletedTask);
+
+        // Act
+        await _handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        _rmRepositoryMock.Verify(r => r.UpdateRegistrationOutCome(command.Id, (int)command.Status, command.Comments, "REF-NULL"), Times.Once);
+    }
+    [TestMethod]
+    public async Task Handle_TransitionToGranted_SetsRegistrationReferenceNumber()
+    {
+        // Arrange
+        var material = CreateMaterial(null, ApplicationOrganisationType.Reprocessor, 1, "ALUM");
+
+        var command = new RegistrationMaterialsOutcomeCommand
+        {
+            Id = material.Id,
+            Status = RegistrationMaterialStatus.Granted,
+            Comments = "All good",
+            RegistrationReferenceNumber = "REF-GRANTED"
+        };
+
+        _rmRepositoryMock.Setup(r => r.GetRegistrationMaterialById(command.Id)).ReturnsAsync(material);
+        _rmRepositoryMock.Setup(r => r.UpdateRegistrationOutCome(command.Id, (int)command.Status, command.Comments, command.RegistrationReferenceNumber)).Returns(Task.CompletedTask);
+
+        // Act
+        await _handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        _rmRepositoryMock.Verify(r => r.UpdateRegistrationOutCome(command.Id, (int)command.Status, command.Comments, "REF-GRANTED"), Times.Once);
+    }
+    [TestMethod]
+    public async Task Handle_ValidTransition_CallsUpdateRegistrationOutCome()
+    {
+        // Arrange
+        var material = CreateMaterial(null, ApplicationOrganisationType.Exporter, 1, "PLST");
+
+        var command = new RegistrationMaterialsOutcomeCommand
+        {
+            Id = material.Id,
+            Status = RegistrationMaterialStatus.Refused,
+            Comments = "Valid update",
+            RegistrationReferenceNumber = "REF0001"
+        };
+
+        _rmRepositoryMock.Setup(r => r.GetRegistrationMaterialById(command.Id)).ReturnsAsync(material);
+        _rmRepositoryMock.Setup(r => r.UpdateRegistrationOutCome(command.Id, (int)command.Status, command.Comments, command.RegistrationReferenceNumber)).Returns(Task.CompletedTask);
+
+        // Act
+        await _handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        _rmRepositoryMock.Verify(r => r.UpdateRegistrationOutCome(command.Id, (int)command.Status, command.Comments, command.RegistrationReferenceNumber), Times.Once);
+    }
+
+
 
     private RegistrationMaterial CreateMaterial(RegistrationMaterialStatus? status, ApplicationOrganisationType orgType, int? nationId, string materialCode)
     {
