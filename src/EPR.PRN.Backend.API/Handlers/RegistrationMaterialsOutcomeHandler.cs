@@ -30,7 +30,7 @@ public class RegistrationMaterialsOutcomeHandler(
 
     private static void EnsureStatusTransitionIsValid(RegistrationMaterialsOutcomeCommand request, RegistrationMaterial materialEntity)
     {
-        var currentStatus = (RegistrationMaterialStatus?)materialEntity.StatusID;
+        var currentStatus = (RegistrationMaterialStatus?)materialEntity.StatusId;
 
         if (request.Status == currentStatus ||
             (currentStatus == RegistrationMaterialStatus.Granted &&
@@ -49,7 +49,7 @@ public class RegistrationMaterialsOutcomeHandler(
             ? registrationMaterial.Registration.BusinessAddress
             : registrationMaterial.Registration.ReprocessingSiteAddress;
 
-        var countryCode = address?.Country?.Substring(0, 3).ToUpper() ?? "UNK";
+        var countryCode = address?.Nation?.Substring(0, 3).ToUpper() ?? "UNK";
         var materialCode = registrationMaterial.Material.MaterialCode;
         var orgTypeInitial = orgType.ToString().First().ToString();
         var yearCode = (DateTime.UtcNow.Year % 100).ToString("D2");

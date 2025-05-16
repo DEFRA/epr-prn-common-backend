@@ -59,21 +59,6 @@ namespace EPR.PRN.Backend.API
                 options.UseSqlServer(_config.GetConnectionString("EprConnectionString"))
             );
 
-            if (_config.GetValue<bool>($"FeatureManagement:{FeatureFlags.ReprocessorExporter}"))
-            {
-                services.AddDbContext<EprRegistrationsContext>(options =>
-                    options.UseInMemoryDatabase("EprRegistrationsDatabase")
-                );
-            }
-            else
-            {
-                services.AddDbContext<EprRegistrationsContext>();                    
-            }
-            
-            services.AddDbContext<EprRegistrationsContext>(options =>
-                options.UseInMemoryDatabase("EprRegistrationsDatabase")
-            );
-
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
             services.AddDependencies();
@@ -91,9 +76,6 @@ namespace EPR.PRN.Backend.API
                 var featureManager = scope.ServiceProvider.GetRequiredService<IFeatureManager>();
                 if (featureManager.IsEnabledAsync(FeatureFlags.ReprocessorExporter).Result)
                 {
-                    var context = scope.ServiceProvider.GetRequiredService<EprRegistrationsContext>();
-                    context.Database.EnsureCreated();
-
                     app.UseExceptionHandler(env.IsDevelopment() ? "/error-development" : "/error");
                     app.UseMiddleware<ExceptionHandlingMiddleware>();
                 }
