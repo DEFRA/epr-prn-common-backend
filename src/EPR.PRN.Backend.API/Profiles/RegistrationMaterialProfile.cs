@@ -24,7 +24,8 @@ public class RegistrationMaterialProfile : Profile
         CreateMap<RegistrationMaterial, RegistrationMaterialDto>()
             .ForMember(dest => dest.MaterialName, opt => opt.MapFrom(src => src.Material.MaterialName))
             .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.Name))
-            .ForMember(dest => dest.ApplicationReferenceNumber, opt => opt.MapFrom(src => src.ApplicationReferenceNumber));
+            .ForMember(dest => dest.ApplicationReferenceNumber, opt => opt.MapFrom(src => src.ApplicationReferenceNumber))
+            .ForMember(dest => dest.RegistrationReferenceNumber, opt => opt.MapFrom(src => src.ReferenceNumber));
 
         CreateMap<RegulatorRegistrationTaskStatus, RegistrationTaskDto>()
             .ForMember(dest => dest.TaskName, opt => opt.MapFrom(src => src.Task.Name))
