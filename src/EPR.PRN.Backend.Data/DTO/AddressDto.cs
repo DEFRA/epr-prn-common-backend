@@ -1,5 +1,8 @@
-﻿namespace EPR.PRN.Backend.Data.DTO;
+﻿using System.Diagnostics.CodeAnalysis;
 
+namespace EPR.PRN.Backend.Data.DTO;
+
+[ExcludeFromCodeCoverage]
 public class AddressDto
 {
     public int? Id { get; set; }
