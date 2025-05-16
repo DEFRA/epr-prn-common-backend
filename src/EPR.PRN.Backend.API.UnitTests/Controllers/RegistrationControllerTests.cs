@@ -9,6 +9,7 @@ using Moq;
 
 namespace EPR.PRN.Backend.API.UnitTests.Controllers;
 
+[TestClass]
 public class RegistrationControllerTests
 {
     private Mock<IMediator> _mediatorMock;
