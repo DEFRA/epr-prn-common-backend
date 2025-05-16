@@ -39,6 +39,8 @@ public class GetMaterialSamplingPlanQueryHandlerTests
         int materialId = 1;
         DateTime dateUploaded = DateTime.UtcNow;
         var query = new GetMaterialSamplingPlanQuery { Id = materialId };
+        var updatedBy = Guid.NewGuid();
+        var fileId = Guid.NewGuid();
 
         var materialEntity = new RegistrationMaterial
         {
@@ -46,7 +48,7 @@ public class GetMaterialSamplingPlanQueryHandlerTests
             RegistrationId = 10,
             MaterialId = 2,
             Material = new LookupMaterial { MaterialName = "Plastic" },
-            StatusID = 1,
+            StatusId = 1,
             Status = new LookupRegistrationMaterialStatus { Id = 1, Name = "Granted" },
             FileUploads = new List<FileUpload>{
                 new FileUpload
@@ -56,9 +58,9 @@ public class GetMaterialSamplingPlanQueryHandlerTests
                     FileUploadType = new LookupFileUploadType{ Name = "Upload" },
                     FileUploadStatus = new LookupFileUploadStatus{ Name = "Uploaded"},
                     DateUploaded = dateUploaded,
-                    UpdatedBy = "Test User",
+                    UpdatedBy = updatedBy,
                     Comments = "Test comment",
-                    FileId = "FileId"
+                    FileId = fileId
                 }
             }
         };
@@ -77,9 +79,9 @@ public class GetMaterialSamplingPlanQueryHandlerTests
             result.MaterialName.Should().Be("Plastic");
             result.Files.Should().NotBeNull();
             result.Files.First().Filename.Should().Be("Filename");
-            result.Files.First().FileId.Should().Be("FileId");
+            result.Files.First().FileId.Should().Be(fileId.ToString());
             result.Files.First().DateUploaded.Should().Be(dateUploaded);
-            result.Files.First().UpdatedBy.Should().Be("Test User");
+            result.Files.First().UpdatedBy.Should().Be(updatedBy.ToString());
             result.Files.First().FileUploadType.Should().Be("Upload");
             result.Files.First().FileUploadStatus.Should().Be("Uploaded");
             result.Files.First().Comments.Should().Be("Test comment");

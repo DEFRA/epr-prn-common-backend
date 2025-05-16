@@ -10,10 +10,10 @@ namespace EPR.PRN.Backend.Data.Repositories.Regulator
 {
     public class RegulatorApplicationTaskStatusRepository : IRegulatorApplicationTaskStatusRepository
     {
-        private readonly EprRegistrationsContext _context;
+        private readonly EprContext _context;
         private readonly ILogger<RegulatorApplicationTaskStatusRepository> _logger;
 
-        public RegulatorApplicationTaskStatusRepository(EprRegistrationsContext context, ILogger<RegulatorApplicationTaskStatusRepository> logger)
+        public RegulatorApplicationTaskStatusRepository(EprContext context, ILogger<RegulatorApplicationTaskStatusRepository> logger)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -24,7 +24,7 @@ namespace EPR.PRN.Backend.Data.Repositories.Regulator
             return await GetTaskStatus(TaskName, RegistrationMaterialId);
         }
 
-        public async Task UpdateStatusAsync(string TaskName, int RegistrationMaterialId, RegulatorTaskStatus status, string? comments, string userName)
+        public async Task UpdateStatusAsync(string TaskName, int RegistrationMaterialId, RegulatorTaskStatus status, string? comments, Guid user)
         {
             _logger.LogInformation("Updating status for task with TaskName {TaskName} And RegistrationMaterialId {RegistrationMaterialId} to {Status}", TaskName, RegistrationMaterialId, status);
 
@@ -51,11 +51,12 @@ namespace EPR.PRN.Backend.Data.Repositories.Regulator
                 {
                     Task = task,
                     RegistrationMaterialId = RegistrationMaterialId,
+                    ExternalId = Guid.NewGuid(),
                     TaskStatus = statusEntity,
                     Comments = comments,
-                    StatusCreatedBy = userName,
+                    StatusCreatedBy = user,
                     StatusCreatedDate = DateTime.UtcNow,
-                    StatusUpdatedBy = userName,
+                    StatusUpdatedBy = user,
                     StatusUpdatedDate = DateTime.UtcNow,
                 };
 
@@ -66,7 +67,7 @@ namespace EPR.PRN.Backend.Data.Repositories.Regulator
                 // Update the existing entity
                 taskStatus.TaskStatus = statusEntity;
                 taskStatus.Comments = comments;
-                taskStatus.StatusUpdatedBy = userName;
+                taskStatus.StatusUpdatedBy = user;
                 taskStatus.StatusUpdatedDate = DateTime.UtcNow;
 
                 _context.RegulatorApplicationTaskStatus.Update(taskStatus);

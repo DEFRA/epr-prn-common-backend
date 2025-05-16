@@ -42,7 +42,7 @@
 
 	<ItemGroup>
 		<SonarQubeSetting Include="sonar.exclusions">
-			<Value>Scripts/*</Value>
+			<Value>Scripts/*,SeedData/**</Value>
 		</SonarQubeSetting>
 	</ItemGroup>
 </Project>
