@@ -1,5 +1,6 @@
 ﻿using EPR.PRN.Backend.API.Commands;
 using EPR.PRN.Backend.API.Controllers;
+using EPR.PRN.Backend.API.Services.Interfaces;
 using FluentAssertions;
 using FluentAssertions.Execution;
 using MediatR;
@@ -13,6 +14,7 @@ namespace EPR.PRN.Backend.API.UnitTests.Controllers;
 public class RegistrationControllerTests
 {
     private Mock<IMediator> _mediatorMock;
+    private Mock<IValidationService> _validationServiceMock;
     private Mock<ILogger<RegistrationController>> _loggerMock;
     private RegistrationController _controller;
 
@@ -20,9 +22,10 @@ public class RegistrationControllerTests
     public void TestInitialize()
     {
         _mediatorMock = new Mock<IMediator>();
+        _validationServiceMock = new Mock<IValidationService>();
         _loggerMock = new Mock<ILogger<RegistrationController>>();
 
-        _controller = new RegistrationController(_mediatorMock.Object, _loggerMock.Object);
+        _controller = new RegistrationController(_mediatorMock.Object, _validationServiceMock.Object, _loggerMock.Object);
     }
 
     [TestMethod]

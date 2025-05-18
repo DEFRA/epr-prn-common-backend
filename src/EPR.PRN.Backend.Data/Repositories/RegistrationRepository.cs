@@ -1,13 +1,75 @@
-﻿using EPR.PRN.Backend.Data.DataModels.Registrations;
+﻿using EPR.PRN.Backend.API.Common.Enums;
+using EPR.PRN.Backend.API.Common.Exceptions;
+using EPR.PRN.Backend.Data.DataModels.Registrations;
 using EPR.PRN.Backend.Data.DTO;
 using EPR.PRN.Backend.Data.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace EPR.PRN.Backend.Data.Repositories;
 
-public class RegistrationRepository(EprContext context) : IRegistrationRepository
+public class RegistrationRepository(EprContext context, ILogger<RegistrationRepository> logger) : IRegistrationRepository
 {
-    public async Task UpdateSiteAddress(int registrationId, AddressDto reprocessingSiteAddress, AddressDto legalDocumentAddress)
+    public async Task<RegistrationTaskStatus?> GetTaskStatusAsync(string taskName, int registrationId)
+    {
+        var taskStatus = await context
+            .RegistrationTaskStatus
+            .Include(ts => ts.TaskStatus)
+            .FirstOrDefaultAsync(x => x.Task.Name == taskName && x.RegistrationId == registrationId);
+
+        return taskStatus;
+    }
+
+    public async Task UpdateRegistrationTaskStatusAsync(string taskName, int registrationId, TaskStatuses status)
+    {
+        logger.LogInformation("Updating status for task with TaskName {TaskName} And RegistrationId {RegistrationId} to {Status}", taskName, registrationId, status);
+
+        var statusEntity = await context.LookupTaskStatuses.SingleAsync(lts => lts.Name == status.ToString());
+
+        var taskStatus = await GetTaskStatusAsync(taskName, registrationId);
+        if (taskStatus is null)
+        {
+            var registration = await context.Registrations.FindAsync(registrationId);
+            if (registration is null)
+            {
+                throw new KeyNotFoundException();
+            }
+
+            var task = await context
+                .LookupTasks
+                .SingleOrDefaultAsync(t => t.Name == taskName && !t.IsMaterialSpecific && t.ApplicationTypeId == registration.ApplicationTypeId);
+
+            if (task is null)
+            {
+                throw new RegulatorInvalidOperationException($"No Valid Task Exists: {taskName}");
+            }
+
+            // Create a new entity if it doesn't exist
+            taskStatus = new RegistrationTaskStatus
+            {
+                ExternalId = Guid.NewGuid(),
+                RegistrationId = registrationId,
+                Task = task,
+                TaskStatus = statusEntity,
+            };
+
+            await context.RegistrationTaskStatus.AddAsync(taskStatus);
+        }
+        else
+        {
+            // Update the existing entity
+            taskStatus.TaskStatus = statusEntity;
+
+            context.RegistrationTaskStatus.Update(taskStatus);
+        }
+
+        await context.SaveChangesAsync();
+
+        logger.LogInformation("Successfully updated status for task with TaskName {TaskName} And RegistrationId {RegistrationId} to {Status}", taskName, registrationId, status);
+    }
+
+
+    public async Task UpdateSiteAddressAsync(int registrationId, AddressDto reprocessingSiteAddress, AddressDto legalDocumentAddress)
     {
         var registration = await context.Registrations.FirstOrDefaultAsync(x => x.Id == registrationId);
 
@@ -45,7 +107,7 @@ public class RegistrationRepository(EprContext context) : IRegistrationRepositor
                 TownCity = legalDocumentAddress.TownCity,
                 County = legalDocumentAddress.County,
                 PostCode = legalDocumentAddress.PostCode,
-                NationId = legalDocumentAddress.NationId, 
+                NationId = legalDocumentAddress.NationId,
                 GridReference = legalDocumentAddress.GridReference
             };
 
