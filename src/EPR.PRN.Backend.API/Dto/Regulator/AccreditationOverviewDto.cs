@@ -4,7 +4,7 @@ using EPR.PRN.Backend.API.Common.Enums;
 namespace EPR.PRN.Backend.API.Dto.Regulator;
 
 [ExcludeFromCodeCoverage]
-public class RegistrationOverviewDto
+public class RegistrationAccreditationsOverviewDto
 {
     public int Id { get; set; }
 
@@ -16,9 +16,8 @@ public class RegistrationOverviewDto
 
     public required string Regulator { get; set; }
 
-    public List<RegistrationTaskDto> Tasks { get; set; } = [];
-
-    public List<AccreditationRegistrationTaskDto> AccreditationTasks { get; set; } = [];
+    public List<AccreditationTaskDto> Tasks { get; set; } = [];
 
     public List<RegistrationMaterialDto> Materials { get; set; } = [];
+
 }

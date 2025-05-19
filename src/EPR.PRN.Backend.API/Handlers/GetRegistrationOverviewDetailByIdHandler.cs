@@ -33,7 +33,7 @@ public class GetRegistrationOverviewDetailByIdHandler(
 
     private async Task<IEnumerable<RegistrationTaskDto>> GetMissingTasks(int applicationTypeId, bool isMaterialSpecific, List<RegistrationTaskDto> existingTasks)
     {
-        var requiredTasks = await repo.GetRequiredTasks(applicationTypeId, isMaterialSpecific);
+        var requiredTasks = await repo.GetRequiredTasks(applicationTypeId, isMaterialSpecific, 1);
 
         var missingTasks = requiredTasks
             .Where(rt => existingTasks.All(r => r.TaskName != rt.Name))

@@ -23,4 +23,5 @@ public class RegistrationMaterialDto
     [JsonIgnore]
     [SwaggerSchema(ReadOnly = true, WriteOnly = true)] // Removed 'Hidden' as it is not a valid property
     public bool IsMaterialRegistered { get; set; }
+    public List<AccreditationDto> Accreditations { get; set; } = [];
 }
