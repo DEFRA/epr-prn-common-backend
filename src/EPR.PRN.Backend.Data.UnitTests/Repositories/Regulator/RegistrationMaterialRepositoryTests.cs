@@ -307,7 +307,7 @@ public class RegistrationMaterialRepositoryTests
         }
     }
 
-        [TestCleanup]
+    [TestCleanup]
     public void Cleanup()
     {
         _context.Database.EnsureDeleted();
