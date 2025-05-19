@@ -17,14 +17,14 @@ namespace EPR.PRN.Backend.API.UnitTests.Handlers
     {
         private Mock<IRegistrationMaterialRepository> _rmRepositoryMock;
         private Mock<IMapper> _mapperMock;
-        private GetMaterialPaymentFeeByIdHandler _handler;
+        private GetMaterialPaymentInfoByIdHandler _handler;
 
         [TestInitialize]
         public void Setup()
         {
             _rmRepositoryMock = new Mock<IRegistrationMaterialRepository>();
             _mapperMock = new Mock<IMapper>();
-            _handler = new GetMaterialPaymentFeeByIdHandler(_rmRepositoryMock.Object, _mapperMock.Object);
+            _handler = new GetMaterialPaymentInfoByIdHandler(_rmRepositoryMock.Object, _mapperMock.Object);
         }
 
         [TestMethod]

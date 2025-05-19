@@ -6,7 +6,7 @@ using MediatR;
 
 namespace EPR.PRN.Backend.API.Handlers;
 
-public class GetMaterialPaymentFeeByIdHandler(
+public class GetMaterialPaymentInfoByIdHandler(
     IRegistrationMaterialRepository rmRepository,
     IMapper mapper
 ) : IRequestHandler<GetMaterialPaymentFeeByIdQuery, MaterialPaymentFeeDto>
