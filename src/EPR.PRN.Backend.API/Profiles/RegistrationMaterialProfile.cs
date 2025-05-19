@@ -12,7 +12,7 @@ public class RegistrationMaterialProfile : Profile
     public RegistrationMaterialProfile()
     {
         CreateMap<Registration, RegistrationOverviewDto>()
-        .ForMember(dest => dest.OrganisationName, opt => opt.MapFrom(src => src.OrganisationId + "_Green Ltd"))
+        .ForMember(dest => dest.OrganisationName, opt => opt.MapFrom(src => "Green Ltd"))
         .ForMember(dest => dest.Regulator, opt => opt.MapFrom(_ => "EA"))
         .ForMember(dest => dest.OrganisationType,
             opt => opt.MapFrom(src => (ApplicationOrganisationType)src.ApplicationTypeId))
@@ -88,7 +88,7 @@ public class RegistrationMaterialProfile : Profile
 
         CreateMap<Registration, MaterialsAuthorisedOnSiteDto>()
             .ForMember(dest => dest.RegistrationId, opt => opt.MapFrom(src => src.Id))
-            .ForMember(dest => dest.OrganisationName, opt => opt.MapFrom(src => src.OrganisationId + "_Green Ltd"))
+            .ForMember(dest => dest.OrganisationName, opt => opt.MapFrom(src => "Green Ltd"))
             .ForMember(dest => dest.SiteAddress, opt => opt.MapFrom(src => src.ReprocessingSiteAddress != null ? CreateAddressString(src.ReprocessingSiteAddress) : string.Empty))
             .ForMember(dest => dest.MaterialsAuthorisation, opt => opt.MapFrom(src => src.Materials));
 
