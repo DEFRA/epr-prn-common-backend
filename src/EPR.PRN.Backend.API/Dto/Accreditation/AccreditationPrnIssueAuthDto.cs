@@ -7,6 +7,6 @@ namespace EPR.PRN.Backend.API.Dto.Accreditation
     {
         public Guid ExternalId { get; set; }
         public Guid AccreditationExternalId { get; set; }
-        public int PersonId { get; set; }
+        public Guid PersonExternalId { get; set; }
     }
 }
