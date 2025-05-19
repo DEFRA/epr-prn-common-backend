@@ -12,6 +12,6 @@ public class MaterialPaymentFeeDto
     public ApplicationOrganisationType ApplicationType { get; init; }
     public string MaterialName { get; set; }
     public string SiteAddress { get; set; } = string.Empty;
-    public string PaymentReference { get; set; } = string.Empty;
+    public string ApplicationReferenceNumber { get; set; } = string.Empty;
     public DateTime CreatedDate { get; set; }
 }
