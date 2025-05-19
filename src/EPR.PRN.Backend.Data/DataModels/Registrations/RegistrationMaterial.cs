@@ -24,7 +24,7 @@ public class RegistrationMaterial
     public LookupRegistrationMaterialStatus? Status { get; set; }
     [ForeignKey("Status")]
     public int? StatusId { get; set; }
-    public string? ReferenceNumber { get; set; } = null;
+    public string? RegistrationReferenceNumber { get; set; } = null;
     public string? Comments { get; set; } = string.Empty;        
     public DateTime StatusUpdatedDate { get; set; }
     public Guid? StatusUpdatedBy { get; set; } 

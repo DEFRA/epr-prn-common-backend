@@ -59,7 +59,7 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
 
         material.StatusId = statusId;
         material.Comments = comment;
-        material.ReferenceNumber = registrationReferenceNumber;
+        material.RegistrationReferenceNumber = registrationReferenceNumber;
         material.StatusUpdatedDate = DateTime.UtcNow;
         material.StatusUpdatedBy = Guid.NewGuid();
 
@@ -69,7 +69,7 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
     {
         var material = await eprContext.RegistrationMaterials.FirstOrDefaultAsync(rm => rm.Id == registrationMaterialId);
         if (material is null) throw new KeyNotFoundException("Material not found.");
-        var dualmode = await eprContext.DulyMade
+        var dulyMade = await eprContext.DulyMade
             .FirstOrDefaultAsync(rm => rm.RegistrationMaterialId == registrationMaterialId)
             ?? new DulyMade
             {
@@ -90,7 +90,7 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
             .Where(t => t.Name == "CheckRegistrationStatus" && t.ApplicationTypeId == applicationTypeId)
             .Select(t => t.Id)
             .FirstOrDefaultAsync();
-        var reulatRegulatorApplicationTaskStatus = new RegulatorApplicationTaskStatus
+        var regulatorApplicationTaskStatus = new RegulatorApplicationTaskStatus
         {
             RegistrationMaterialId = registrationMaterialId,
             TaskStatusId = statusId,
@@ -102,17 +102,17 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
         };
 
         // Set/update the fields
-        dualmode.TaskStatusId = statusId;
-        dualmode.DeterminationDate = DeterminationDate;
-        dualmode.DulyMadeDate = DulyMadeDate;
-        dualmode.DulyMadeBy = DulyMadeBy;
-        dualmode.ExternalId = material.ExternalId;
+        dulyMade.TaskStatusId = statusId;
+        dulyMade.DeterminationDate = DeterminationDate;
+        dulyMade.DulyMadeDate = DulyMadeDate;
+        dulyMade.DulyMadeBy = DulyMadeBy;
+        dulyMade.ExternalId = material.ExternalId;
 
         // If this is a new entity, add it to the context
-        if (dualmode.Id == 0)
+        if (dulyMade.Id == 0)
         {
-            await eprContext.DulyMade.AddAsync(dualmode);
-            await eprContext.RegulatorApplicationTaskStatus.AddAsync(reulatRegulatorApplicationTaskStatus);
+            await eprContext.DulyMade.AddAsync(dulyMade);
+            await eprContext.RegulatorApplicationTaskStatus.AddAsync(regulatorApplicationTaskStatus);
         }
 
         await eprContext.SaveChangesAsync();
@@ -152,7 +152,7 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
             .Include(rm => rm.Material);
 
         return registrationMaterials;
-    }   
+    }
 
     private IIncludableQueryable<RegistrationMaterial, LookupMaterial> GetRegistrationMaterialsWithRelatedEntities_RegistrationReprocessingIO()
     {
@@ -204,7 +204,7 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
                 .ThenInclude(t => t.Task)
              .Include(r => r.Materials)!
                 .ThenInclude(rm => rm.Status);
-                
+
         return registrations;
     }
 }

@@ -61,7 +61,7 @@ public class RegistrationMaterialRepositoryTests
             Id = 1,
             MaterialId = 1,
             StatusId = 1,
-            ReferenceNumber = "REF12345",
+            RegistrationReferenceNumber = "REF12345",
             Comments = "Initial comment",
             Status = materialStatus,
             Material = lookupMaterial,
@@ -177,7 +177,7 @@ public class RegistrationMaterialRepositoryTests
         {
             Assert.AreEqual(newStatusId, updated.StatusId);
             Assert.AreEqual(comment, updated.Comments);
-            Assert.AreEqual(newReference, updated.ReferenceNumber);
+            Assert.AreEqual(newReference, updated.RegistrationReferenceNumber);
             Assert.IsNotNull(updated.StatusUpdatedDate);
         }
     }
@@ -196,7 +196,7 @@ public class RegistrationMaterialRepositoryTests
         using (new AssertionScope())
         {
             Assert.IsNotNull(material);
-            Assert.AreEqual("REF12345", material.ReferenceNumber);
+            Assert.AreEqual("REF12345", material.RegistrationReferenceNumber);
             Assert.IsNotNull(material.Material);
             Assert.IsNotNull(material.Status);
             Assert.IsNotNull(material.Registration);
@@ -216,7 +216,7 @@ public class RegistrationMaterialRepositoryTests
         using (new AssertionScope())
         {
             Assert.IsNotNull(material);
-            Assert.AreEqual("REF12345", material.ReferenceNumber);
+            Assert.AreEqual("REF12345", material.RegistrationReferenceNumber);
             Assert.IsNotNull(material.Material);
         }
     }
@@ -234,7 +234,7 @@ public class RegistrationMaterialRepositoryTests
         using (new AssertionScope())
         {
             Assert.IsNotNull(material);
-            Assert.AreEqual("REF12345", material.ReferenceNumber);
+            Assert.AreEqual("REF12345", material.RegistrationReferenceNumber);
             Assert.IsNotNull(material.Material);
         }
     }
@@ -252,7 +252,7 @@ public class RegistrationMaterialRepositoryTests
         using (new AssertionScope())
         {
             Assert.IsNotNull(material);
-            Assert.AreEqual("REF12345", material.ReferenceNumber);
+            Assert.AreEqual("REF12345", material.RegistrationReferenceNumber);
         }
     }
 

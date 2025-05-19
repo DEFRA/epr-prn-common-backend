@@ -20,4 +20,11 @@ public class DulyMade
     public DateTime? DulyMadeDate { get; set; }
     public Guid? DulyMadeBy { get; set; }
     public DateTime? DeterminationDate { get; set; }
+    [MaxLength(500)]
+    public string? DulyMadeNote { get; set; }
+    [MaxLength(500)]
+    public string? DeterminationNote { get; set; }
+    public Guid? DeterminationUpdatedBy { get; set; }
+    public DateTime? DeterminationUpdatedDate { get; set; }  
+
   }

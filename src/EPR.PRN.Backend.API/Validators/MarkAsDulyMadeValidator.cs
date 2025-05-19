@@ -27,7 +27,6 @@ public class MarkAsDulyMadeValidator : AbstractValidator<RegistrationMaterialsMa
         RuleFor(x => x.DulyMadeBy)
             .NotEmpty()
             .NotEqual(Guid.Empty)
-            .WithMessage(ValidationMessages.DulyMadeByRequired);
-            
+            .WithMessage(ValidationMessages.DulyMadeByRequired);            
     }
 }

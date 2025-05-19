@@ -2,7 +2,6 @@ using AutoMapper;
 using EPR.PRN.Backend.API.Common.Enums;
 using EPR.PRN.Backend.API.Dto.Regulator;
 using EPR.PRN.Backend.API.Queries;
-using EPR.PRN.Backend.Data.DataModels.Registrations;
 using EPR.PRN.Backend.Data.Interfaces.Regulator;
 using MediatR;
 
@@ -51,7 +50,5 @@ public class GetRegistrationAccreditationReferenceByIdHandler(
         };
 
         return referenceRawData;
-    }
-
-    
+    }    
 }

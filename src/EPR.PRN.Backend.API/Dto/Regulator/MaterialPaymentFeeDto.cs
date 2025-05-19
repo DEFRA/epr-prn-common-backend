@@ -14,7 +14,4 @@ public class MaterialPaymentFeeDto
     public string SiteAddress { get; set; } = string.Empty;
     public string PaymentReference { get; set; } = string.Empty;
     public DateTime CreatedDate { get; set; }
-
-
-
 }

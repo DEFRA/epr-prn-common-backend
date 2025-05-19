@@ -1,6 +1,5 @@
 using EPR.PRN.Backend.API.Commands;
 using EPR.PRN.Backend.API.Common.Enums;
-using EPR.PRN.Backend.Data.DataModels.Registrations;
 using EPR.PRN.Backend.Data.Interfaces.Regulator;
 using MediatR;
 
@@ -16,8 +15,7 @@ public class RegistrationMaterialsMarkAsDulyMadeHandler(
         if(materialEntity == null)
         {
             throw new KeyNotFoundException("Material not found.");
-        }
-       
+        }       
         await rmRepository.RegistrationMaterialsMarkAsDulyMade(
             request.RegistrationMaterialId,
             (int)RegulatorTaskStatus.Completed,
@@ -25,6 +23,5 @@ public class RegistrationMaterialsMarkAsDulyMadeHandler(
             request.DulyMadeDate,
              request.DulyMadeBy
         );
-    }
-   
+    }   
 }

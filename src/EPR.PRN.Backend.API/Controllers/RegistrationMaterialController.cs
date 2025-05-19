@@ -121,7 +121,7 @@ public class RegistrationMaterialController(IMediator mediator
     [SwaggerResponse(StatusCodes.Status500InternalServerError, "If an unexpected error occurs.", typeof(ContentResult))]
     public async Task<IActionResult> GetAuthorisedMaterial(int Id)
     {
-        logger.LogInformation(LogMessages.MeterialAuthorization, Id); // Added the 
+        logger.LogInformation(LogMessages.MaterialAuthorization, Id); // Added the 
         var result = await mediator.Send(new GetMaterialsAuthorisedOnSiteByIdQuery() { Id = Id });
         return Ok(result);
     }
@@ -136,9 +136,9 @@ public class RegistrationMaterialController(IMediator mediator
     [SwaggerResponse(StatusCodes.Status200OK, "Returns payment fee detail with other information.", typeof(MaterialPaymentFeeDto))]
     [SwaggerResponse(StatusCodes.Status400BadRequest, "If the request is invalid or a validation error occurs.", typeof(ProblemDetails))]
     [SwaggerResponse(StatusCodes.Status500InternalServerError, "If an unexpected error occurs.", typeof(ContentResult))]
-    public async Task<IActionResult> GetRegistrationMeterialpaymentFeesById(int Id)
+    public async Task<IActionResult> GetRegistrationMaterialpaymentFeesById(int Id)
     {
-        logger.LogInformation(LogMessages.RegistrationMeterialpaymentFees, Id); 
+        logger.LogInformation(LogMessages.RegistrationMaterialpaymentFees, Id); 
         var result = await mediator.Send(new GetMaterialPaymentFeeByIdQuery() { Id = Id });
         return Ok(result);
     }
@@ -155,7 +155,7 @@ public class RegistrationMaterialController(IMediator mediator
     [SwaggerResponse(StatusCodes.Status500InternalServerError, "If an unexpected error occurs.", typeof(ContentResult))]
     public async Task<IActionResult> GetRegistrationAccreditationReference(int Id)
     {
-        logger.LogInformation(LogMessages.RegistrationMeterialReference, Id);
+        logger.LogInformation(LogMessages.RegistrationMaterialReference, Id);
         var result = await mediator.Send(new GetRegistrationAccreditationReferenceByIdQuery() { Id = Id });
         return Ok(result);
     }
