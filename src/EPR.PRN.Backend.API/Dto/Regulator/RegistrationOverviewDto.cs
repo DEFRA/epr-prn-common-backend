@@ -18,7 +18,5 @@ public class RegistrationOverviewDto
 
     public List<RegistrationTaskDto> Tasks { get; set; } = [];
 
-    public List<AccreditationRegistrationTaskDto> AccreditationTasks { get; set; } = [];
-
     public List<RegistrationMaterialDto> Materials { get; set; } = [];
 }

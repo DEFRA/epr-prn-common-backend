@@ -6,6 +6,6 @@
         public int RegistrationMaterialId { get; set; }
         public string? Status { get; set; }
         public int AccreditationYear { get; init; }
-        public List<AccreditationTaskDto> Tasks { get; set; } = [];
+        public List<RegistrationTaskDto> Tasks { get; set; } = [];
     }
 }

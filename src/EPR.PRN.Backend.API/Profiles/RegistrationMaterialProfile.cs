@@ -16,6 +16,7 @@ public class RegistrationMaterialProfile : Profile
         .ForMember(dest => dest.Regulator, opt => opt.MapFrom(_ => "EA"))
         .ForMember(dest => dest.OrganisationType,
             opt => opt.MapFrom(src => (ApplicationOrganisationType)src.ApplicationTypeId))
+        .ForMember(dest => dest.Tasks, opt => opt.MapFrom(src => src.AccreditationTasks))
         .ForMember(dest => dest.SiteAddress, opt => opt.MapFrom(src =>
              src.ReprocessingSiteAddress != null ? CreateAddressString(src.ReprocessingSiteAddress)
                 : string.Empty));
@@ -28,11 +29,11 @@ public class RegistrationMaterialProfile : Profile
         CreateMap<Accreditation, AccreditationDto>()
             .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.AccreditationStatus.Name));
 
-        CreateMap<RegulatorAccreditationRegistrationTaskStatus, AccreditationRegistrationTaskDto>()
+        CreateMap<RegulatorAccreditationRegistrationTaskStatus, RegistrationTaskDto>()
             .ForMember(dest => dest.TaskName, opt => opt.MapFrom(src => src.Task.Name))
             .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.TaskStatus.Name));
 
-        CreateMap<RegulatorAccreditationTaskStatus, AccreditationTaskDto>()
+        CreateMap<RegulatorAccreditationTaskStatus, RegistrationTaskDto>()
             .ForMember(dest => dest.TaskName, opt => opt.MapFrom(src => src.Task.Name))
             .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.TaskStatus.Name));
 
