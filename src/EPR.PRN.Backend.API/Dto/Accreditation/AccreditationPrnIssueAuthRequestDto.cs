@@ -5,6 +5,6 @@ namespace EPR.PRN.Backend.API.Dto.Accreditation
     [ExcludeFromCodeCoverage]
     public class AccreditationPrnIssueAuthRequestDto
     {
-        public int PersonId { get; set; }
+        public Guid PersonExternalId { get; set; }
     }
 }
