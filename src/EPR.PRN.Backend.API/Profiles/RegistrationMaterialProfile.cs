@@ -102,10 +102,17 @@ public class RegistrationMaterialProfile : Profile
            .ForMember(dest => dest.ApplicationType, opt => opt.MapFrom(src =>(ApplicationOrganisationType) src.Registration.ApplicationTypeId))
            .ForMember(dest => dest.CreatedDate, opt => opt.MapFrom(src => src.CreatedDate))
            .ForMember(dest => dest.SiteAddress, opt => opt.MapFrom(src => src.Registration.ReprocessingSiteAddress != null ? CreateAddressString(src.Registration.ReprocessingSiteAddress) : string.Empty))
-           .ForMember(dest => dest.NationId, opt => opt.MapFrom(src => src.Registration.ReprocessingSiteAddress != null ? src.Registration.ReprocessingSiteAddress.NationId : 0))
-            .ForMember(dest => dest.MaterialName, opt => opt.MapFrom(src => src.Material.MaterialName));
+           .ForMember(dest => dest.NationId, opt => opt.MapFrom(src => GetNationId(src.Registration)))
+           .ForMember(dest => dest.MaterialName, opt => opt.MapFrom(src => src.Material.MaterialName));
     }
-
+    private int GetNationId(Registration registration)
+    {
+        if (registration.ApplicationTypeId == (int)ApplicationOrganisationType.Reprocessor)
+        {
+            return registration.ReprocessingSiteAddress?.NationId ?? 0;
+        }
+         return registration.BusinessAddress?.NationId ?? 0;
+    }
     private static string[] GetReferenceNumber(RegistrationMaterial src) => src.PermitType?.Name switch
     {
         PermitTypes.WasteExemption => src.MaterialExemptionReferences != null ? src.MaterialExemptionReferences.Select(x => x.ReferenceNo).ToArray() : [],
