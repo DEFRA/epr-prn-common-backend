@@ -25,6 +25,7 @@ public class RegistrationMaterialControllerTests
 {
     private Mock<IMediator> _mediatorMock;
     private Mock<IValidator<RegistrationMaterialsOutcomeCommand>> _validatorMock;
+    private Mock<IValidator<RegistrationMaterialsMarkAsDulyMadeCommand>> _validatorMockdual;
     private Mock<ILogger<RegistrationMaterialController>> _loggerMock;
     private RegistrationMaterialController _controller;
 
@@ -33,9 +34,9 @@ public class RegistrationMaterialControllerTests
     {
         _mediatorMock = new Mock<IMediator>();
         _validatorMock = new Mock<IValidator<RegistrationMaterialsOutcomeCommand>>();
+        _validatorMockdual = new Mock<IValidator<RegistrationMaterialsMarkAsDulyMadeCommand>>();
         _loggerMock = new Mock<ILogger<RegistrationMaterialController>>();
-
-        _controller = new RegistrationMaterialController(_mediatorMock.Object, _validatorMock.Object, _loggerMock.Object);
+        _controller = new RegistrationMaterialController(_mediatorMock.Object, _validatorMock.Object, _validatorMockdual.Object, _loggerMock.Object);
     }
 
     [TestMethod]
@@ -93,9 +94,13 @@ public class RegistrationMaterialControllerTests
     {
         // Arrange
         int materialId = 3;
-        var command = new RegistrationMaterialsOutcomeCommand();
+        var command = new RegistrationMaterialsOutcomeCommand
+        {
+            RegistrationReferenceNumber = "R25ER2475638626AL" // Ensure the required property is set
+        };
+        
 
-        _validatorMock
+        _validatorMock 
             .Setup(v => v.ValidateAsync(command, default))
             .ReturnsAsync(new ValidationResult());
 
@@ -124,12 +129,13 @@ public class RegistrationMaterialControllerTests
         var registrationId = 10;
         var command = new RegistrationMaterialsOutcomeCommand
         {
-            Status = (RegistrationMaterialStatus)999
+            RegistrationReferenceNumber = "R26ER2375628626PL" // Ensure the required property is set
         };
 
         var controller = new RegistrationMaterialController(
             _mediatorMock.Object,
             validator,
+            _validatorMockdual.Object,
             _loggerMock.Object
         );
 
@@ -250,7 +256,158 @@ public class RegistrationMaterialControllerTests
         okResult.Should().NotBeNull();
         okResult!.Value.Should().BeEquivalentTo(expectedDto);
     }
+    
+    [TestMethod]
+    public async Task GetMaterialPaymentFeeById_ReturnsOk_WithExpectedResult()
+    {
+        // Arrange
+        int materialId = 12;
+        var expectedDto = new MaterialPaymentFeeDto();
 
+        _mediatorMock
+            .Setup(m => m.Send(It.IsAny<GetMaterialPaymentFeeByIdQuery>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(expectedDto);
+
+        // Act
+        var result = await _controller.GetRegistrationMaterialpaymentFeesById(materialId);
+
+        // Assert
+        using (new AssertionScope())
+        {
+            var okResult = result as OkObjectResult;
+            okResult.Should().NotBeNull();
+            okResult!.Value.Should().BeEquivalentTo(expectedDto);
+        }
+    }
+
+    [TestMethod]
+    public async Task MarkAsDulyMode_ShouldThrowValidationException_WhenValidationFails()
+    {
+        // Arrange
+        var validator = new InlineValidator<RegistrationMaterialsMarkAsDulyMadeCommand>();
+        validator.RuleFor(x => x.DeterminationDate).Must((model, determinationDate) =>
+                determinationDate >= model.DulyMadeDate.AddDays(7 * 12))
+            .WithMessage("DeterminationDate must be at least 12 weeks after DulyMadeDate.");
+
+        var registrationMaterialId = 12;
+        var command = new RegistrationMaterialsMarkAsDulyMadeCommand
+        {
+            DulyMadeDate= new DateTime(2025, 5, 12),
+            DeterminationDate = new DateTime(2025, 7, 12),
+            DulyMadeBy= new Guid("3fa85f64-5717-4562-b3fc-2c963f66afa6")
+        };
+
+        var controller = new RegistrationMaterialController(
+            _mediatorMock.Object,
+            _validatorMock.Object,
+            validator,            
+            _loggerMock.Object
+        );
+
+        // Act & Assert
+        await FluentActions.Invoking(() =>
+            controller.RegistrationMaterialsMarkAsDulyMade(registrationMaterialId, command)
+        ).Should().ThrowAsync<ValidationException>();
+    }
+    [TestMethod]
+    public async Task GetRegistrationAccreditationReferenceById_ReturnsOk_WithExpectedResult()
+    {
+        // Arrange
+        int materialId = 12;
+        var expectedDto = new RegistrationAccreditationReferenceDto();
+
+        _mediatorMock
+            .Setup(m => m.Send(It.IsAny<GetRegistrationAccreditationReferenceByIdQuery>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(expectedDto);
+
+        // Act
+        var result = await _controller.GetRegistrationAccreditationReference(materialId);
+
+        // Assert
+        using (new AssertionScope())
+        {
+            var okResult = result as OkObjectResult;
+            okResult.Should().NotBeNull();
+            okResult!.Value.Should().BeEquivalentTo(expectedDto);
+        }
+    }
+    [TestMethod]
+    public async Task GetRegistrationAccreditationReference_ReturnsOk_WithExpectedResult()
+    {
+        // Arrange
+        int materialId = 10;
+        var expectedDto = new RegistrationAccreditationReferenceDto();
+
+        _mediatorMock
+            .Setup(m => m.Send(It.IsAny<GetRegistrationAccreditationReferenceByIdQuery>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(expectedDto);
+
+        // Act
+        var result = await _controller.GetRegistrationAccreditationReference(materialId);
+
+        // Assert
+        using (new AssertionScope())
+        {
+            var okResult = result as OkObjectResult;
+            okResult.Should().NotBeNull();
+            okResult!.Value.Should().BeEquivalentTo(expectedDto);
+        }
+    }
+    [TestMethod]
+    public async Task RegistrationMaterialsMarkAsDulyMade_ValidCommand_ReturnsNoContent()
+    {
+        // Arrange
+        int materialId = 5;
+        var command = new RegistrationMaterialsMarkAsDulyMadeCommand
+        {
+            DulyMadeDate = DateTime.UtcNow.AddMonths(-1),
+            DeterminationDate = DateTime.UtcNow
+        };
+
+        _validatorMockdual
+            .Setup(v => v.ValidateAsync(command, default))
+            .ReturnsAsync(new ValidationResult());
+
+        _mediatorMock
+            .Setup(m => m.Send(It.IsAny<RegistrationMaterialsMarkAsDulyMadeCommand>(), It.IsAny<CancellationToken>()))
+            .Returns(Task.FromResult(Unit.Value));
+
+        // Act
+        var result = await _controller.RegistrationMaterialsMarkAsDulyMade(materialId, command);
+
+        // Assert
+        using (new AssertionScope())
+        {
+            result.Should().BeOfType<NoContentResult>();
+            command.RegistrationMaterialId.Should().Be(materialId);
+        }
+    }
+    [TestMethod]
+    public async Task RegistrationMaterialsMarkAsDulyMade_ShouldThrowValidationException_WhenValidationFails()
+    {
+        // Arrange
+        var validator = new InlineValidator<RegistrationMaterialsMarkAsDulyMadeCommand>();
+        validator.RuleFor(x => x.DulyMadeDate).Must(_ => false).WithMessage("Validation failed");
+
+        int materialId = 9;
+        var command = new RegistrationMaterialsMarkAsDulyMadeCommand
+        {
+            DulyMadeDate = DateTime.UtcNow,
+            DeterminationDate = DateTime.UtcNow.AddMonths(1)
+        };
+
+        var controller = new RegistrationMaterialController(
+            _mediatorMock.Object,
+            _validatorMock.Object,
+            validator,
+            _loggerMock.Object
+        );
+
+        // Act & Assert
+        await FluentActions.Invoking(() =>
+            controller.RegistrationMaterialsMarkAsDulyMade(materialId, command)
+        ).Should().ThrowAsync<ValidationException>();
+    }
 
 
 }

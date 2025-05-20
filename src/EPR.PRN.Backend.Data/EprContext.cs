@@ -15,12 +15,13 @@ namespace EPR.PRN.Backend.Data
 
         public EprContext()
         {
-
+           
         }
 
-        public EprContext(DbContextOptions<EprContext> options) : base(options)
+        public EprContext(DbContextOptions<EprContext> options)
+            : base(options)
         {
-
+           
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -165,8 +166,11 @@ namespace EPR.PRN.Backend.Data
 
             modelBuilder.Entity<LookupMaterial>().HasData(
                 new LookupMaterial { Id = 1, MaterialName = "Plastic", MaterialCode = "PL" },
-                new LookupMaterial { Id = 2, MaterialName = "Steel", MaterialCode = "GL" },
-                new LookupMaterial { Id = 3, MaterialName = "Aluminium", MaterialCode = "AL" });
+                new LookupMaterial { Id = 2, MaterialName = "Steel", MaterialCode = "ST" },
+                new LookupMaterial { Id = 3, MaterialName = "Aluminium", MaterialCode = "AL" },
+                new LookupMaterial { Id = 4, MaterialName = "Glass", MaterialCode = "GL" },
+                new LookupMaterial { Id = 5, MaterialName = "Paper/Board", MaterialCode = "PA" },
+                new LookupMaterial { Id = 6, MaterialName = "Wood", MaterialCode = "WO" });
             
 
             modelBuilder.Entity<LookupRegistrationMaterialStatus>().HasData(
@@ -202,7 +206,9 @@ namespace EPR.PRN.Backend.Data
                 new LookupRegulatorTask { Id = 11, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 1, Name = "SamplingAndInspectionPlan" },
                 new LookupRegulatorTask { Id = 12, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 1, Name = "AssignOfficer" },
                 new LookupRegulatorTask { Id = 13, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 1, Name = "MaterialDetailsAndContact" },
-                new LookupRegulatorTask { Id = 14, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 1, Name = "OverseasReprocessorAndInterimSiteDetails" });
+                new LookupRegulatorTask { Id = 14, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 1, Name = "OverseasReprocessorAndInterimSiteDetails" },
+                new LookupRegulatorTask { Id = 15, IsMaterialSpecific = true, ApplicationTypeId = 1, JourneyTypeId = 1, Name = "CheckRegistrationStatus" },
+                new LookupRegulatorTask { Id = 16, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 1, Name = "CheckRegistrationStatus" });
 
             modelBuilder.Entity<LookupMaterialPermit>().HasData(
                 new LookupMaterialPermit { Id = 1, Name = PermitTypes.WasteExemption },
@@ -249,7 +255,7 @@ namespace EPR.PRN.Backend.Data
         public virtual DbSet<RegistrationMaterial> RegistrationMaterials { get; set; }
         public virtual DbSet<MaterialExemptionReference> MaterialExemptionReferences { get; set; }
         public virtual DbSet<RegistrationReprocessingIO> RegistrationReprocessingIO { get; set; }
-
+        public virtual DbSet<DulyMade> DulyMade { get; set; }
         public virtual DbSet<RegulatorApplicationTaskStatus> RegulatorApplicationTaskStatus { get; set; }
         public virtual DbSet<RegulatorRegistrationTaskStatus> RegulatorRegistrationTaskStatus { get; set; }
         public virtual DbSet<RegistrationTaskStatus> RegistrationTaskStatus { get; set; }

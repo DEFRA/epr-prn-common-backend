@@ -19,111 +19,128 @@ public class RegistrationOutcomeValidatorTests
     [TestMethod]
     public void Should_Have_Validation_Error_When_Id_Is_Empty()
     {
-        // Arrange
-        var command = new RegistrationMaterialsOutcomeCommand { Id = 0 };
+        // Arrange  
+        var command = new RegistrationMaterialsOutcomeCommand
+        {
+            Id = 0,
+            RegistrationReferenceNumber = "TestReference"
+        };
 
-        // Act
+        // Act  
         var result = _validator.Validate(command);
 
-        // Assert
+        // Assert  
         Assert.IsTrue(result.Errors.Any(e => e.PropertyName == "Id" && e.ErrorMessage == ValidationMessages.RegistrationOutcomeIdGreaterThanZero));
     }
 
     [TestMethod]
     public void Should_Have_Validation_Error_When_Id_Is_Negative()
     {
-        // Arrange
-        var command = new RegistrationMaterialsOutcomeCommand { Id = -1 };
+        // Arrange  
+        var command = new RegistrationMaterialsOutcomeCommand
+        {
+            Id = -1,
+            RegistrationReferenceNumber = "REF0005-03"
+        };
 
-        // Act
+        // Act  
         var result = _validator.Validate(command);
 
-        // Assert
+        // Assert  
         Assert.IsTrue(result.Errors.Any(e => e.PropertyName == "Id" && e.ErrorMessage == ValidationMessages.RegistrationOutcomeIdGreaterThanZero));
     }
 
     [TestMethod]
     public void Should_Have_Validation_Error_When_Status_Is_Invalid()
     {
-        // Arrange
-        var command = new RegistrationMaterialsOutcomeCommand { Id = 1, Status = (RegistrationMaterialStatus)999 };
+        // Arrange  
+        var command = new RegistrationMaterialsOutcomeCommand
+        {
+            Id = 1,
+            Status = (RegistrationMaterialStatus)999,
+            RegistrationReferenceNumber = "TestReference"
+        };
 
-        // Act
+        // Act  
         var result = _validator.Validate(command);
 
-        // Assert
+        // Assert  
         Assert.IsTrue(result.Errors.Any(e => e.PropertyName == "Status" && e.ErrorMessage == ValidationMessages.InvalidRegistrationOutcomeStatus));
     }
 
     [TestMethod]
     public void Should_Have_Validation_Error_When_Comments_Exceed_Max_Length()
     {
-        // Arrange
+        // Arrange  
         var command = new RegistrationMaterialsOutcomeCommand
         {
             Id = 1,
             Status = RegistrationMaterialStatus.Refused,
-            Comments = new string('A', 501) 
+            Comments = new string('A', 501),
+            RegistrationReferenceNumber = "TestReference"
         };
 
-        // Act
+        // Act  
         var result = _validator.Validate(command);
 
-        // Assert
+        // Assert  
         Assert.IsTrue(result.Errors.Any(e => e.PropertyName == "Comments" && e.ErrorMessage == ValidationMessages.RegistrationOutcomeCommentsMaxLength));
     }
 
     [TestMethod]
     public void Should_Have_Validation_Error_When_Comments_Are_Empty_And_Status_Is_Refused()
     {
-        // Arrange
+        // Arrange  
         var command = new RegistrationMaterialsOutcomeCommand
         {
             Id = 1,
             Status = RegistrationMaterialStatus.Refused,
-            Comments = string.Empty
+            Comments = string.Empty,
+            RegistrationReferenceNumber = "TestReference"
         };
 
-        // Act
+        // Act  
         var result = _validator.Validate(command);
 
-        // Assert
+        // Assert  
         Assert.IsTrue(result.Errors.Any(e => e.PropertyName == "Comments" && e.ErrorMessage == ValidationMessages.RegistrationOutcomeCommentsCommentsRequired));
     }
 
     [TestMethod]
     public void Should_Not_Have_Validation_Error_When_Comments_Are_Filled_And_Status_Is_Refused()
     {
-        // Arrange
+        // Arrange  
         var command = new RegistrationMaterialsOutcomeCommand
         {
             Id = 1,
             Status = RegistrationMaterialStatus.Refused,
-            Comments = "Some comments"
+            Comments = "Some comments",
+            RegistrationReferenceNumber = "TestReference"
         };
 
-        // Act
+        // Act  
         var result = _validator.Validate(command);
 
-        // Assert
+        // Assert  
         Assert.IsFalse(result.Errors.Any(e => e.PropertyName == "Comments"));
     }
 
     [TestMethod]
     public void Should_Not_Have_Validation_Error_When_Command_Is_Valid()
     {
-        // Arrange
+        // Arrange  
         var command = new RegistrationMaterialsOutcomeCommand
         {
             Id = 1,
             Status = RegistrationMaterialStatus.Granted,
-            Comments = "Some comments"
+            Comments = "Some comments",
+            RegistrationReferenceNumber = "TestReference"
         };
 
-        // Act
+        // Act  
         var result = _validator.Validate(command);
 
-        // Assert
+        // Assert  
         Assert.IsFalse(result.Errors.Any(e => e.PropertyName == "Id"));
         Assert.IsFalse(result.Errors.Any(e => e.PropertyName == "Status"));
         Assert.IsFalse(result.Errors.Any(e => e.PropertyName == "Comments"));
