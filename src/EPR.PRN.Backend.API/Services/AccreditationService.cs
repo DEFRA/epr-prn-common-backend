@@ -26,26 +26,22 @@ public class AccreditationService(
         return accreditationDto;
     }
 
-    public async Task<Guid> CreateAccreditation(AccreditationRequestDto accreditationDto, Guid orgId, Guid userId)
+    public async Task<Guid> CreateAccreditation(AccreditationRequestDto accreditationDto)
     {
         logger.LogInformation("{Logprefix}: AccreditationService - CreateAccreditation: request to create accreditation {Accreditation}", logPrefix, JsonConvert.SerializeObject(accreditationDto));
 
         var entity = mapper.Map<Accreditation>(accreditationDto);
-        entity.OrganisationId = orgId;
-        entity.CreatedBy = userId;
-        entity.UpdatedBy = userId;
 
         await repository.Create(entity);
 
         return entity.ExternalId;
     }
 
-    public async Task UpdateAccreditation(AccreditationRequestDto accreditationDto, Guid userId)
+    public async Task UpdateAccreditation(AccreditationRequestDto accreditationDto)
     {
         logger.LogInformation("{Logprefix}: AccreditationService - UpdateAccreditation: request to update accreditation {Accreditation}", logPrefix, JsonConvert.SerializeObject(accreditationDto));
 
         var entity = mapper.Map<Accreditation>(accreditationDto);
-        entity.UpdatedBy = userId;
 
         await repository.Update(entity);
     }
