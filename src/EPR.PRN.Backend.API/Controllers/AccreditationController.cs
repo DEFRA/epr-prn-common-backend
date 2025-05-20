@@ -29,20 +29,17 @@ public class AccreditationController(IAccreditationService accreditationService)
 
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<IActionResult> Post(
-        [FromHeader(Name = "X-EPR-ORGANISATION")] Guid orgId,
-        [FromHeader(Name = "X-EPR-USER")] Guid userId,
-        [FromBody]AccreditationRequestDto request)
+    public async Task<IActionResult> Post([FromBody]AccreditationRequestDto request)
     {
         Guid externalId;
         if (request.ExternalId == null)
         {
-            externalId = await accreditationService.CreateAccreditation(request, orgId, userId);
+            externalId = await accreditationService.CreateAccreditation(request);
         }
         else
         {
             externalId = request.ExternalId.Value;
-            await accreditationService.UpdateAccreditation(request, userId);
+            await accreditationService.UpdateAccreditation(request);
         }
 
         var accreditation = await accreditationService.GetAccreditationById(externalId);
