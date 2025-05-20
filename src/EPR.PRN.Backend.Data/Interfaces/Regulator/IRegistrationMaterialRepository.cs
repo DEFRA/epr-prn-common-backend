@@ -12,7 +12,8 @@ public interface IRegistrationMaterialRepository
     Task<RegistrationMaterial> GetRegistrationMaterial_WasteLicencesById(int registrationMaterialId);
     Task<RegistrationMaterial> GetRegistrationMaterial_RegistrationReprocessingIOById(int registrationMaterialId);
     Task<RegistrationMaterial> GetRegistrationMaterial_FileUploadById(int registrationMaterialId);
-
-
     Task UpdateRegistrationOutCome(int registrationMaterialId, int statusId, string? comment, string? registrationReferenceNumber);
+    Task RegistrationMaterialsMarkAsDulyMade(int registrationMaterialId, int statusId, DateTime DeterminationDate,
+            DateTime DulyMadeDate,Guid DulyMadeBy);
+    
 }

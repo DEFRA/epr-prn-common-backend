@@ -12,18 +12,20 @@ public class RegistrationMaterialProfile : Profile
     public RegistrationMaterialProfile()
     {
         CreateMap<Registration, RegistrationOverviewDto>()
-        .ForMember(dest => dest.OrganisationName, opt => opt.MapFrom(src => src.OrganisationId + "_Green Ltd"))
+        .ForMember(dest => dest.OrganisationName, opt => opt.MapFrom(src => "Green Ltd"))
         .ForMember(dest => dest.Regulator, opt => opt.MapFrom(_ => "EA"))
         .ForMember(dest => dest.OrganisationType,
             opt => opt.MapFrom(src => (ApplicationOrganisationType)src.ApplicationTypeId))
         .ForMember(dest => dest.SiteAddress, opt => opt.MapFrom(src =>
              src.ReprocessingSiteAddress != null ? CreateAddressString(src.ReprocessingSiteAddress)
-                : string.Empty));
+                : string.Empty))
+        .ForMember(dest => dest.Materials, opt => opt.MapFrom(src =>src.Materials.Where(m => m.IsMaterialRegistered))); 
 
         CreateMap<RegistrationMaterial, RegistrationMaterialDto>()
             .ForMember(dest => dest.MaterialName, opt => opt.MapFrom(src => src.Material.MaterialName))
             .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.Name))
-            .ForMember(dest => dest.RegistrationReferenceNumber, opt => opt.MapFrom(src => src.ReferenceNumber));
+            .ForMember(dest => dest.ApplicationReferenceNumber, opt => opt.MapFrom(src => src.ApplicationReferenceNumber))
+            .ForMember(dest => dest.RegistrationReferenceNumber, opt => opt.MapFrom(src => src.RegistrationReferenceNumber));
 
         CreateMap<RegulatorRegistrationTaskStatus, RegistrationTaskDto>()
             .ForMember(dest => dest.TaskName, opt => opt.MapFrom(src => src.Task.Name))
@@ -86,7 +88,7 @@ public class RegistrationMaterialProfile : Profile
 
         CreateMap<Registration, MaterialsAuthorisedOnSiteDto>()
             .ForMember(dest => dest.RegistrationId, opt => opt.MapFrom(src => src.Id))
-            .ForMember(dest => dest.OrganisationName, opt => opt.MapFrom(src => src.OrganisationId + "_Green Ltd"))
+            .ForMember(dest => dest.OrganisationName, opt => opt.MapFrom(src => "Green Ltd"))
             .ForMember(dest => dest.SiteAddress, opt => opt.MapFrom(src => src.ReprocessingSiteAddress != null ? CreateAddressString(src.ReprocessingSiteAddress) : string.Empty))
             .ForMember(dest => dest.MaterialsAuthorisation, opt => opt.MapFrom(src => src.Materials));
 
@@ -94,8 +96,23 @@ public class RegistrationMaterialProfile : Profile
            .ForMember(dest => dest.MaterialName, opt => opt.MapFrom(src => src.Material.MaterialName))
            .ForMember(dest => dest.Reason, opt => opt.MapFrom(src => src.ReasonforNotreg))
            .ForMember(dest => dest.IsMaterialRegistered, opt => opt.MapFrom(src => src.IsMaterialRegistered));
-    }
 
+        CreateMap<RegistrationMaterial, MaterialPaymentFeeDto>()
+           .ForMember(dest => dest.OrganisationId, opt => opt.MapFrom(src => src.Registration.OrganisationId))
+           .ForMember(dest => dest.ApplicationType, opt => opt.MapFrom(src =>(ApplicationOrganisationType) src.Registration.ApplicationTypeId))
+           .ForMember(dest => dest.CreatedDate, opt => opt.MapFrom(src => src.CreatedDate))
+           .ForMember(dest => dest.SiteAddress, opt => opt.MapFrom(src => src.Registration.ReprocessingSiteAddress != null ? CreateAddressString(src.Registration.ReprocessingSiteAddress) : string.Empty))
+           .ForMember(dest => dest.NationId, opt => opt.MapFrom(src => GetNationId(src.Registration)))
+           .ForMember(dest => dest.MaterialName, opt => opt.MapFrom(src => src.Material.MaterialName));
+    }
+    private int GetNationId(Registration registration)
+    {
+        if (registration.ApplicationTypeId == (int)ApplicationOrganisationType.Reprocessor)
+        {
+            return registration.ReprocessingSiteAddress?.NationId ?? 0;
+        }
+         return registration.BusinessAddress?.NationId ?? 0;
+    }
     private static string[] GetReferenceNumber(RegistrationMaterial src) => src.PermitType?.Name switch
     {
         PermitTypes.WasteExemption => src.MaterialExemptionReferences != null ? src.MaterialExemptionReferences.Select(x => x.ReferenceNo).ToArray() : [],
