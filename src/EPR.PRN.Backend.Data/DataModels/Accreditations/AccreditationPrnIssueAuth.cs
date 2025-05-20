@@ -6,7 +6,6 @@ public class AccreditationPrnIssueAuth
     public Guid ExternalId { get; set; }
     public Guid AccreditationExternalId { get; set; }
     public int AccreditationId { get; set; }
-    public int PersonId { get; set; }
-
+    public Guid PersonExternalId { get; set; }
     public Accreditation? Accreditation { get; set; }
 }

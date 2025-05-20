@@ -28,6 +28,7 @@ public class AccreditationPrnIssueAuthRepository(EprAccreditationContext eprCont
             accreditationPrnIssueAuth.ExternalId = Guid.NewGuid();
             accreditationPrnIssueAuth.AccreditationExternalId = accreditationId;
             accreditationPrnIssueAuth.AccreditationId = accreditationIdInt;
+            accreditationPrnIssueAuth.PersonExternalId = accreditationPrnIssueAuth.PersonExternalId; 
             eprContext.AccreditationPrnIssueAuths.Add(accreditationPrnIssueAuth);
         }
 
