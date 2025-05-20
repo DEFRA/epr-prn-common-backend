@@ -173,31 +173,16 @@ public class RegistrationRepositoryTests
             NationId = 1,
         };
 
-        var legalDocAddress = new AddressDto
-        {
-            AddressLine1 = "456 Doc Rd",
-            AddressLine2 = "Doc Area",
-            TownCity = "DocCity",
-            Country = "Docland",
-            PostCode = "DOC 456",
-            GridReference = "GB1234567890",
-            County = "UK",
-            NationId = 1,
-        };
-
         // Act
-        await _repository.UpdateSiteAddressAsync(registration.Id, reprocessingAddress, legalDocAddress);
+        await _repository.UpdateSiteAddressAsync(registration.Id, reprocessingAddress);
 
         // Assert
         var updatedRegistration = await _context.Registrations.FirstAsync(r => r.Id == registration.Id);
         updatedRegistration.ReprocessingSiteAddressId.Should().NotBeNull();
-        updatedRegistration.LegalDocumentAddressId.Should().NotBeNull();
 
         var reprocAddress = await _context.LookupAddresses.FindAsync(updatedRegistration.ReprocessingSiteAddressId);
-        var legalAddress = await _context.LookupAddresses.FindAsync(updatedRegistration.LegalDocumentAddressId);
 
         reprocAddress.AddressLine1.Should().Be("123 Test St");
-        legalAddress.AddressLine1.Should().Be("456 Doc Rd");
     }
 
     [TestMethod]
@@ -205,10 +190,9 @@ public class RegistrationRepositoryTests
     {
         // Arrange
         var reprocessingAddress = new AddressDto();
-        var legalDocAddress = new AddressDto();
 
         // Act
-        Func<Task> act = async () => await _repository.UpdateSiteAddressAsync(999, reprocessingAddress, legalDocAddress);
+        Func<Task> act = async () => await _repository.UpdateSiteAddressAsync(999, reprocessingAddress);
 
         // Assert
         await act.Should().ThrowAsync<KeyNotFoundException>()
@@ -220,7 +204,7 @@ public class RegistrationRepositoryTests
     {
         // Arrange
         var registration = new Registration { Id = 2, ExternalId = Guid.NewGuid() };
-        var lookupAddress1 = new Address
+        var lookupAddress = new Address
         {
             Id = 101,
             AddressLine1 = "123 Test St",
@@ -232,32 +216,17 @@ public class RegistrationRepositoryTests
             NationId = 1,
         };
 
-        var lookupAddress2 = new Address
-        {
-            Id = 102,
-            AddressLine1 = "456 Doc Rd",
-            AddressLine2 = "Doc Area",
-            TownCity = "DocCity",
-            PostCode = "DOC 456",
-            GridReference = "GB1234567890",
-            County = "UK",
-            NationId = 1,
-        };
-
-
         _context.Registrations.Add(registration);
-        _context.LookupAddresses.AddRange(lookupAddress1, lookupAddress2);
+        _context.LookupAddresses.Add(lookupAddress);
         await _context.SaveChangesAsync();
 
         var reprocessingAddress = new AddressDto { Id = 101 };
-        var legalDocAddress = new AddressDto { Id = 102 };
 
         // Act
-        await _repository.UpdateSiteAddressAsync(registration.Id, reprocessingAddress, legalDocAddress);
+        await _repository.UpdateSiteAddressAsync(registration.Id, reprocessingAddress);
 
         // Assert
         var updatedRegistration = await _context.Registrations.FindAsync(registration.Id);
         updatedRegistration.ReprocessingSiteAddressId.Should().Be(101);
-        updatedRegistration.LegalDocumentAddressId.Should().Be(102);
     }
 }

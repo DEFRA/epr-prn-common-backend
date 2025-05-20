@@ -46,7 +46,7 @@ public class RegistrationControllerTests
         using (new AssertionScope())
         {
             result.Should().BeOfType<NoContentResult>();
-            command.Id.Should().Be(registrationId);
+            command.RegistrationId.Should().Be(registrationId);
         }
     }
 }

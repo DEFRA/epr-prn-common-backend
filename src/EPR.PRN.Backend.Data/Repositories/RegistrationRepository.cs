@@ -1,4 +1,5 @@
-﻿using EPR.PRN.Backend.API.Common.Enums;
+﻿using System.Diagnostics.CodeAnalysis;
+using EPR.PRN.Backend.API.Common.Enums;
 using EPR.PRN.Backend.API.Common.Exceptions;
 using EPR.PRN.Backend.Data.DataModels.Registrations;
 using EPR.PRN.Backend.Data.DTO;
@@ -10,6 +11,33 @@ namespace EPR.PRN.Backend.Data.Repositories;
 
 public class RegistrationRepository(EprContext context, ILogger<RegistrationRepository> logger) : IRegistrationRepository
 {
+    [ExcludeFromCodeCoverage(Justification = "TODO: To be done as part of create registration user story")]
+    public async Task<int> CreateRegistrationAsync(int applicationTypeId, int organisationId)
+    {
+        logger.LogInformation("Creating registration for ApplicationTypeId: {ApplicationTypeId} and OrganisationId: {OrganisationId}", applicationTypeId, organisationId);
+
+        var registration = new Registration
+        {
+            ApplicationTypeId = applicationTypeId,
+            OrganisationId = organisationId,
+            CreatedBy = Guid.NewGuid(),
+            ExternalId = Guid.NewGuid(),
+            BusinessAddressId = null,
+            LegalDocumentAddressId = null,
+            AssignedOfficerId = 0,
+            CreatedDate = DateTime.UtcNow,
+            RegistrationStatusId = 1,
+            UpdatedBy = Guid.NewGuid(),
+        };
+
+        context.Registrations.Add(registration);
+        await context.SaveChangesAsync();
+
+        logger.LogInformation("Successfully created registration for ApplicationTypeId: {ApplicationTypeId} and OrganisationId: {OrganisationId}", applicationTypeId, organisationId);
+
+        return registration.Id;
+    }
+
     public async Task<RegistrationTaskStatus?> GetTaskStatusAsync(string taskName, int registrationId)
     {
         var taskStatus = await context
@@ -69,7 +97,7 @@ public class RegistrationRepository(EprContext context, ILogger<RegistrationRepo
     }
 
 
-    public async Task UpdateSiteAddressAsync(int registrationId, AddressDto reprocessingSiteAddress, AddressDto legalDocumentAddress)
+    public async Task UpdateSiteAddressAsync(int registrationId, AddressDto reprocessingSiteAddress)
     {
         var registration = await context.Registrations.FirstOrDefaultAsync(x => x.Id == registrationId);
 
@@ -93,32 +121,12 @@ public class RegistrationRepository(EprContext context, ILogger<RegistrationRepo
             };
 
             await context.LookupAddresses.AddAsync(address);
+            await context.SaveChangesAsync();
 
             reprocessingSiteAddress.Id = address.Id;
         }
 
-        // Legal Document Address
-        if (legalDocumentAddress.Id.GetValueOrDefault() == 0)
-        {
-            var address = new Address
-            {
-                AddressLine1 = legalDocumentAddress.AddressLine1,
-                AddressLine2 = legalDocumentAddress.AddressLine2,
-                TownCity = legalDocumentAddress.TownCity,
-                County = legalDocumentAddress.County,
-                PostCode = legalDocumentAddress.PostCode,
-                NationId = legalDocumentAddress.NationId,
-                GridReference = legalDocumentAddress.GridReference
-            };
-
-            await context.LookupAddresses.AddAsync(address);
-
-            legalDocumentAddress.Id = address.Id;
-        }
-
         registration.ReprocessingSiteAddressId = reprocessingSiteAddress.Id;
-        registration.LegalDocumentAddressId = legalDocumentAddress.Id;
-
         await context.SaveChangesAsync();
     }
 }
