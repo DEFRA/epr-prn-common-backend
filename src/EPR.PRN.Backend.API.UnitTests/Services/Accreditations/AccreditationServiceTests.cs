@@ -1,0 +1,142 @@
+﻿using EPR.PRN.Backend.API.Dto.Accreditation;
+using EPR.PRN.Backend.API.Services;
+using EPR.PRN.Backend.Data.DataModels.Accreditations;
+using EPR.PRN.Backend.Data.Interfaces.Accreditations;
+using FluentAssertions;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using Moq;
+using AutoMapper;
+using EPR.PRN.Backend.API.Profiles;
+
+namespace EPR.PRN.Backend.API.UnitTests.Services.Accreditations;
+
+[TestClass]
+public class AccreditationServiceTests
+{
+    private Mock<IAccreditationRepository> _repositoryMock;
+    private Mock<ILogger<AccreditationService>> _loggerMock;
+    private Mock<IConfiguration> _configurationMock;
+    private AccreditationService _service;
+
+    [TestInitialize]
+    public void Setup()
+    {
+        _repositoryMock = new Mock<IAccreditationRepository>();
+        _loggerMock = new Mock<ILogger<AccreditationService>>();
+        _configurationMock = new Mock<IConfiguration>();
+        _configurationMock.Setup(c => c["LogPrefix"]).Returns("[EPR.PRN.Backend]");
+
+        var config = new MapperConfiguration(cfg =>
+        {
+            cfg.AddProfile<AccreditationProfile>();
+        });
+        var mapper = config.CreateMapper();
+
+        _service = new AccreditationService(
+            _repositoryMock.Object,
+            mapper,
+            _loggerMock.Object,
+            _configurationMock.Object
+        );
+    }
+
+    [TestMethod]
+    public async Task GetAccreditationById_ReturnsMappedDto_WhenEntityExists()
+    {
+        // Arrange
+        var id = Guid.NewGuid();
+        var entity = new Accreditation
+        {
+            ExternalId = id,
+            OrganisationId = Guid.NewGuid(),
+            RegistrationMaterialId = 1,
+            ApplicationTypeId = 2,
+            AccreditationStatusId = 3
+        };
+        var dto = new AccreditationDto
+        {
+            ExternalId = id,
+            OrganisationId = entity.OrganisationId,
+            RegistrationMaterialId = entity.RegistrationMaterialId,
+            ApplicationTypeId = entity.ApplicationTypeId,
+            AccreditationStatusId = entity.AccreditationStatusId
+        };
+
+        _repositoryMock.Setup(r => r.GetById(id)).ReturnsAsync(entity);
+
+        // Act
+        var result = await _service.GetAccreditationById(id);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.ExternalId.Should().Be(id);
+        _repositoryMock.Verify(r => r.GetById(id), Times.Once);
+        result.Should().BeEquivalentTo(dto);
+    }
+
+    [TestMethod]
+    public async Task GetAccreditationById_ReturnsNull_WhenEntityIsNull()
+    {
+        // Arrange
+        var id = Guid.NewGuid();
+        _repositoryMock.Setup(r => r.GetById(id)).ReturnsAsync((Accreditation)null);
+
+        // Act
+        var result = await _service.GetAccreditationById(id);
+
+        // Assert
+        result.Should().BeNull();
+        _repositoryMock.Verify(r => r.GetById(id), Times.Once);
+    }
+
+    [TestMethod]
+    public async Task CreateAccreditation_CallsRepositoryWithCorrectParameters()
+    {
+        // Arrange
+        var requestDto = new AccreditationRequestDto
+        {
+            OrganisationId = Guid.NewGuid(),
+            RegistrationMaterialId = 1,
+            ApplicationTypeId = 2,
+            AccreditationStatusId = 3
+        };
+        
+        // Act
+        await _service.CreateAccreditation(requestDto);
+
+        // Assert
+        _repositoryMock.Verify(r => r.Create(It.Is<Accreditation>(x => 
+            x.OrganisationId == requestDto.OrganisationId &&
+            x.RegistrationMaterialId == requestDto.RegistrationMaterialId &&
+            x.ApplicationTypeId == requestDto.ApplicationTypeId &&
+            x.AccreditationStatusId == requestDto.AccreditationStatusId
+            )), Times.Once);
+    }
+
+    [TestMethod]
+    public async Task UpdateAccreditation_CallsRepositoryWithCorrectParameters()
+    {
+        // Arrange
+        var requestDto = new AccreditationRequestDto
+        {
+            ExternalId = Guid.NewGuid(),
+            OrganisationId = Guid.NewGuid(),
+            RegistrationMaterialId = 1,
+            ApplicationTypeId = 2,
+            AccreditationStatusId = 3
+        };
+        
+        // Act
+        await _service.UpdateAccreditation(requestDto);
+
+        // Assert
+        _repositoryMock.Verify(r => r.Update(It.Is<Accreditation>(x =>
+            x.ExternalId == requestDto.ExternalId &&
+            x.OrganisationId == requestDto.OrganisationId &&
+            x.RegistrationMaterialId == requestDto.RegistrationMaterialId &&
+            x.ApplicationTypeId == requestDto.ApplicationTypeId &&
+            x.AccreditationStatusId == requestDto.AccreditationStatusId
+            )), Times.Once);
+    }
+}

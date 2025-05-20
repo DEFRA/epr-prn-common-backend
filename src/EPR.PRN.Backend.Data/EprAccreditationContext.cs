@@ -80,9 +80,9 @@ public class EprAccreditationContext : DbContext
             new RegistrationMaterial { Id = 3, MaterialId = 3 });
     }
 
-    public DbSet<ApplicationType> ApplicationTypes { get; set; }
-    public DbSet<AccreditationStatus> AccreditationStatuses { get; set; }
-    public DbSet<Accreditation> Accreditations { get; set; }
-    public DbSet<AccreditationPrnIssueAuth> AccreditationPrnIssueAuths { get; set; }
+    public virtual DbSet<ApplicationType> ApplicationTypes { get; set; }
+    public virtual DbSet<AccreditationStatus> AccreditationStatuses { get; set; }
+    public virtual DbSet<Accreditation> Accreditations { get; set; }
+    public virtual DbSet<AccreditationPrnIssueAuth> AccreditationPrnIssueAuths { get; set; }
 }
 
