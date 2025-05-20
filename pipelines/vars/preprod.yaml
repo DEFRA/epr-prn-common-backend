@@ -1,10 +1,6 @@
 variables:
   azureSubscription: 'AZR-RWD-PRE1'
-  docker.imageName: 'eprprncommonbackend'
+  docker.imageName: 'epraccreditationbackend'
   acr.azureContainerRegistryName: 'prerwdinfac1401'
-  acr.repositoryName: 'eprprncommonbackendrepository'
+  acr.repositoryName: 'epraccreditationbackendrepository'
   serviceName: 'prerwdwebwa1418'
-  kvName: PRERWDINFKV1401
-  sqlDBserver: 'prerwddbssq1401.database.windows.net'
-  sqlDB: 'pre1_prn'
-  acr.Subscription: 'AZR-RWD-PRE1'

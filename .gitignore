@@ -26,6 +26,3 @@ appsettings.Test.json
 /node_modules
 /bin/Debug
 /obj
-
-**/appsettings.Development.json
-**/appsettings.development.json
