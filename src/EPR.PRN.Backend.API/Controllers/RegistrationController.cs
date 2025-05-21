@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Net;
 
 using EPR.PRN.Backend.API.Commands;
 using EPR.PRN.Backend.API.Common.Constants;
@@ -19,6 +20,27 @@ public class RegistrationController(IMediator mediator
     , ILogger<RegistrationController> logger) : ControllerBase
 {
     #region Post Methods
+    [HttpPost("registrations")]
+    [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(int))]
+    [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
+    [SwaggerOperation(
+            Summary = "create the registration application",
+            Description = "attempting to create the registration application."
+        )]
+    [SwaggerResponse(StatusCodes.Status204NoContent, $"Returns No Content", typeof(int))]
+    [SwaggerResponse(StatusCodes.Status400BadRequest, "If the request is invalid or a validation error occurs.", typeof(ProblemDetails))]
+    [SwaggerResponse(StatusCodes.Status500InternalServerError, "If an unexpected error occurs.", typeof(ContentResult))]
+    [ExcludeFromCodeCoverage(Justification = "TODO: To be done as part of create registration user story")]
+    public async Task<IActionResult> CreateRegistration([FromBody] CreateRegistrationCommand command)
+    {
+        logger.LogInformation(LogMessages.CreateRegistration);
+
+        var registrationId = await mediator.Send(command);
+
+        return new CreatedResult(string.Empty, registrationId);
+    }
+
     [HttpPost("registrations/{registrationId:int}/taskStatus")]
     [ProducesResponseType(StatusCodes.Status204NoContent, Type = typeof(NoContentResult))]
     [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
@@ -48,8 +70,8 @@ public class RegistrationController(IMediator mediator
     [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     [SwaggerOperation(
-            Summary = "update the site address and contact details of an application registration",
-            Description = "attempting to update the site address and contact details of an application registration."
+            Summary = "update the site address of an application registration",
+            Description = "attempting to update the site address of an application registration."
         )]
     [SwaggerResponse(StatusCodes.Status204NoContent, $"Returns No Content", typeof(NoContentResult))]
     [SwaggerResponse(StatusCodes.Status400BadRequest, "If the request is invalid or a validation error occurs.", typeof(ProblemDetails))]
@@ -57,7 +79,9 @@ public class RegistrationController(IMediator mediator
     public async Task<IActionResult> UpdateSiteAddress([FromRoute] int registrationId, [FromBody] UpdateRegistrationSiteAddressCommand command)
     {
         logger.LogInformation(LogMessages.UpdateRegistrationSiteAddress);
-        command.Id = registrationId;
+        command.RegistrationId = registrationId;
+
+        await validationService.ValidateAndThrowAsync(command);
 
         await mediator.Send(command);
 

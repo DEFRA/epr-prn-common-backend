@@ -26,20 +26,13 @@ public class UpdateRegistrationSiteAddressHandlerTests
         // Arrange
         var command = new UpdateRegistrationSiteAddressCommand
         {
-            Id = 1,
+            RegistrationId = 1,
             ReprocessingSiteAddress = new AddressDto
             {
                 AddressLine1 = "123 Main St",
                 TownCity = "Testville",
                 Country = "UK",
                 PostCode = "AB12 3CD"
-            },
-            LegalDocumentAddress = new AddressDto
-            {
-                AddressLine1 = "456 Legal Rd",
-                TownCity = "Lawtown",
-                Country = "UK",
-                PostCode = "XY98 7ZT"
             }
         };
 
@@ -48,9 +41,8 @@ public class UpdateRegistrationSiteAddressHandlerTests
 
         // Assert
         _repositoryMock.Verify(r => r.UpdateSiteAddressAsync(
-            command.Id,
-            command.ReprocessingSiteAddress,
-            command.LegalDocumentAddress),
+            command.RegistrationId,
+            command.ReprocessingSiteAddress),
             Times.Once);
     }
 
@@ -60,14 +52,13 @@ public class UpdateRegistrationSiteAddressHandlerTests
         // Arrange
         var command = new UpdateRegistrationSiteAddressCommand
         {
-            Id = 1,
+            RegistrationId = 1,
             ReprocessingSiteAddress = new AddressDto() { Id = 101 },
-            LegalDocumentAddress = new AddressDto()
         };
 
         int? reprocessingSiteAddressId = 0;
-        _repositoryMock.Setup(r => r.UpdateSiteAddressAsync(It.IsAny<int>(), It.IsAny<AddressDto>(), It.IsAny<AddressDto>()))
-            .Callback<int, AddressDto, AddressDto>((_, reprocessingSiteAddress, legalDocumentAddress) => reprocessingSiteAddressId = reprocessingSiteAddress.Id)
+        _repositoryMock.Setup(r => r.UpdateSiteAddressAsync(It.IsAny<int>(), It.IsAny<AddressDto>()))
+            .Callback<int, AddressDto>((_, reprocessingSiteAddress) => reprocessingSiteAddressId = reprocessingSiteAddress.Id)
             .Returns(Task.CompletedTask);
 
         // Act
@@ -83,12 +74,11 @@ public class UpdateRegistrationSiteAddressHandlerTests
         // Arrange
         var command = new UpdateRegistrationSiteAddressCommand
         {
-            Id = 1,
+            RegistrationId = 1,
             ReprocessingSiteAddress = new AddressDto(),
-            LegalDocumentAddress = new AddressDto()
         };
 
-        _repositoryMock.Setup(r => r.UpdateSiteAddressAsync(It.IsAny<int>(), It.IsAny<AddressDto>(), It.IsAny<AddressDto>()))
+        _repositoryMock.Setup(r => r.UpdateSiteAddressAsync(It.IsAny<int>(), It.IsAny<AddressDto>()))
                        .ThrowsAsync(new KeyNotFoundException("Registration not found."));
 
         // Act

@@ -11,15 +11,10 @@ public class UpdateRegistrationSiteAddressCommand : IRequest
 {
     [BindNever]
     [SwaggerIgnore]
-    public int Id { get; set; }
+    public int RegistrationId { get; set; }
 
     /// <summary>
     /// Gets or sets the identifier for the reprocessing site address
     /// </summary>
     public AddressDto ReprocessingSiteAddress { get; set; } = new AddressDto();
-
-    /// <summary>
-    /// Gets or sets the identifier for the legal document address
-    /// </summary>
-    public AddressDto LegalDocumentAddress { get; set; } = new AddressDto();
 }

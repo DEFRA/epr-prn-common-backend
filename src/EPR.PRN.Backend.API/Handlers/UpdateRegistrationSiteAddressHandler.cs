@@ -8,6 +8,6 @@ public class UpdateRegistrationSiteAddressHandler(IRegistrationRepository reposi
 {
     public async Task Handle(UpdateRegistrationSiteAddressCommand command, CancellationToken cancellationToken)
     {
-        await repository.UpdateSiteAddressAsync(command.Id, command.ReprocessingSiteAddress, command.LegalDocumentAddress);
+        await repository.UpdateSiteAddressAsync(command.RegistrationId, command.ReprocessingSiteAddress);
     }
 }
