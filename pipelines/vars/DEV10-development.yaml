@@ -1,10 +1,10 @@
 variables:
   azureSubscription: 'AZD-RWD-DEV10'
-  docker.imageName: 'epraccreditationbackend'
+  docker.imageName: 'eprprncommonbackend'
   acr.azureContainerRegistryName: 'devrwdinfac1401'
-  acr.repositoryName: 'epraccreditationbackendrepository'
+  acr.repositoryName: 'eprprncommonbackendrepository'
   serviceName: 'devrwdwebwaa418'
   kvName: DEVRWDINFKV1401
-  sqlDBserver: 'devrwddbssqa402.database.windows.net'
-  sqlDB: 'Accreditation'
+  sqlDBserver: 'devrwddbssq1401.database.windows.net'
+  sqlDB: 'dev10_prn'
   acr.Subscription: 'AZD-RWD-DEV1'
