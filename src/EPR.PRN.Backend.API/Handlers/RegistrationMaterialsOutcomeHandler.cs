@@ -17,20 +17,20 @@ public class RegistrationMaterialsOutcomeHandler(
         EnsureStatusTransitionIsValid(request, materialEntity);
 
         var registrationReferenceNumber = request.Status == RegistrationMaterialStatus.Granted
-            ? GenerateRegistrationReferenceNumber(materialEntity)
+            ? request.RegistrationReferenceNumber
             : null;
 
         await rmRepository.UpdateRegistrationOutCome(
             request.Id,
             (int)request.Status,
             request.Comments,
-            registrationReferenceNumber
+            request.RegistrationReferenceNumber
         );
     }
 
     private static void EnsureStatusTransitionIsValid(RegistrationMaterialsOutcomeCommand request, RegistrationMaterial materialEntity)
     {
-        var currentStatus = (RegistrationMaterialStatus?)materialEntity.StatusID;
+        var currentStatus = (RegistrationMaterialStatus?)materialEntity.StatusId;
 
         if (request.Status == currentStatus ||
             (currentStatus == RegistrationMaterialStatus.Granted &&
@@ -39,23 +39,5 @@ public class RegistrationMaterialsOutcomeHandler(
             throw new InvalidOperationException("Invalid outcome transition.");
         }
     }
-
-    private static string GenerateRegistrationReferenceNumber(RegistrationMaterial registrationMaterial)
-    {
-        const string registrationType = "R";
-
-        var orgType = (ApplicationOrganisationType)registrationMaterial.Registration.ApplicationTypeId;
-        var address = orgType == ApplicationOrganisationType.Exporter
-            ? registrationMaterial.Registration.BusinessAddress
-            : registrationMaterial.Registration.ReprocessingSiteAddress;
-
-        var countryCode = address?.Country?.Substring(0, 3).ToUpper() ?? "UNK";
-        var materialCode = registrationMaterial.Material.MaterialCode;
-        var orgTypeInitial = orgType.ToString().First().ToString();
-        var yearCode = (DateTime.UtcNow.Year % 100).ToString("D2");
-        var orgCode = registrationMaterial.RegistrationId.ToString("D6");
-        var randomDigits = Random.Shared.Next(1000, 9999).ToString();
-
-        return $"{registrationType}{yearCode}{countryCode}{orgTypeInitial}{orgCode}{randomDigits}{materialCode}";
-    }
+   
 }

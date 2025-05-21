@@ -12,6 +12,7 @@ public abstract class UpdateRegulatorTaskHandlerBase
         {
             if (commandStatus == RegulatorTaskStatus.Completed)
             {
+                
                 if (task.TaskStatus.Name == RegulatorTaskStatus.Completed.ToString())
                 {
                     throw new RegulatorInvalidOperationException($"Cannot set task status to {RegulatorTaskStatus.Completed} as it is already {RegulatorTaskStatus.Completed}");

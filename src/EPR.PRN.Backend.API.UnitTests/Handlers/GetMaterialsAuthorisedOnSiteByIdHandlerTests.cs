@@ -41,7 +41,7 @@ public class GetMaterialsAuthorisedOnSiteByIdHandlerTests
         {
             Id = registrationId,
             OrganisationId = 10,
-            ReprocessingSiteAddress = new LookupAddress
+            ReprocessingSiteAddress = new Address
             {
                 AddressLine1 = "Unit 7",
                 TownCity = "Greenwich",

@@ -27,6 +27,7 @@ namespace EPR.PRN.Backend.API.Helpers
         {
             services.AddScoped<IRepository, Repository>()
                 .AddScoped<IPrnService, PrnService>()
+                .AddScoped<IValidationService, ValidationService>()
                 .AddScoped<IObligationCalculatorService, ObligationCalculatorService>()
                 .AddScoped<IObligationCalculationRepository, ObligationCalculationRepository>()
                 .AddScoped<IRecyclingTargetDataService, RecyclingTargetDataService>()
@@ -49,6 +50,8 @@ namespace EPR.PRN.Backend.API.Helpers
                 .AddScoped<IAccreditationPrnIssueAuthService, AccreditationPrnIssueAuthService>()
                 .AddScoped<IAccreditationRepository, AccreditationRepository>()
                 .AddScoped<IAccreditationPrnIssueAuthRepository, AccreditationPrnIssueAuthRepository>();
+                .AddScoped<IRegistrationRepository, RegistrationRepository>()
+                .AddScoped<IDateTimeProvider, DateTimeProvider>();
 
             return services;
         }

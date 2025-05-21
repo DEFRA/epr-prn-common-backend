@@ -2,6 +2,7 @@
 using EPR.PRN.Backend.Data.DataModels.Registrations;
 using EPR.PRN.Backend.Data.Interfaces.Regulator;
 using EPR.PRN.Backend.Data.Repositories.Regulator;
+using FluentAssertions;
 using FluentAssertions.Execution;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,17 +11,17 @@ namespace EPR.PRN.Backend.Data.UnitTests.Repositories.Regulator;
 [TestClass]
 public class RegistrationMaterialRepositoryTests
 {
-    private EprRegistrationsContext _context;
+    private EprContext _context;
     private IRegistrationMaterialRepository _repository;
 
     [TestInitialize]
     public void TestInitialize()
     {
-        var options = new DbContextOptionsBuilder<EprRegistrationsContext>()
+        var options = new DbContextOptionsBuilder<EprContext>()
                         .UseInMemoryDatabase(databaseName: "TestDb")
                         .Options;
 
-        _context = new EprRegistrationsContext(options);
+        _context = new EprContext(options);
         _repository = new RegistrationMaterialRepository(_context);
 
         SeedDatabase();
@@ -28,12 +29,11 @@ public class RegistrationMaterialRepositoryTests
 
     private void SeedDatabase()
     {
-        var address = new LookupAddress
+        var address = new Address
         {
             Id = 1,
             AddressLine1 = "123 Main St",
             AddressLine2 = "Suite 4B",
-            Country = "Germany",
             County = "Bavaria",
             PostCode = "12345",
             TownCity = "Munich",
@@ -60,8 +60,8 @@ public class RegistrationMaterialRepositoryTests
         {
             Id = 1,
             MaterialId = 1,
-            StatusID = 1,
-            ReferenceNumber = "REF12345",
+            StatusId = 1,
+            RegistrationReferenceNumber = "REF12345",
             Comments = "Initial comment",
             Status = materialStatus,
             Material = lookupMaterial,
@@ -101,7 +101,7 @@ public class RegistrationMaterialRepositoryTests
         {
             Id = 1,
             ApplicationTypeId = 1,
-            ExternalId = "TestExternalId",
+            ExternalId = Guid.NewGuid(),
             ReprocessingSiteAddress = address,
             BusinessAddress = address,
             LegalDocumentAddress = address,
@@ -175,11 +175,10 @@ public class RegistrationMaterialRepositoryTests
 
         using (new AssertionScope())
         {
-            Assert.AreEqual(newStatusId, updated.StatusID);
+            Assert.AreEqual(newStatusId, updated.StatusId);
             Assert.AreEqual(comment, updated.Comments);
-            Assert.AreEqual(newReference, updated.ReferenceNumber);
+            Assert.AreEqual(newReference, updated.RegistrationReferenceNumber);
             Assert.IsNotNull(updated.StatusUpdatedDate);
-            Assert.AreEqual("Test User", updated.StatusUpdatedBy);
         }
     }
 
@@ -197,7 +196,7 @@ public class RegistrationMaterialRepositoryTests
         using (new AssertionScope())
         {
             Assert.IsNotNull(material);
-            Assert.AreEqual("REF12345", material.ReferenceNumber);
+            Assert.AreEqual("REF12345", material.RegistrationReferenceNumber);
             Assert.IsNotNull(material.Material);
             Assert.IsNotNull(material.Status);
             Assert.IsNotNull(material.Registration);
@@ -217,7 +216,7 @@ public class RegistrationMaterialRepositoryTests
         using (new AssertionScope())
         {
             Assert.IsNotNull(material);
-            Assert.AreEqual("REF12345", material.ReferenceNumber);
+            Assert.AreEqual("REF12345", material.RegistrationReferenceNumber);
             Assert.IsNotNull(material.Material);
         }
     }
@@ -235,7 +234,7 @@ public class RegistrationMaterialRepositoryTests
         using (new AssertionScope())
         {
             Assert.IsNotNull(material);
-            Assert.AreEqual("REF12345", material.ReferenceNumber);
+            Assert.AreEqual("REF12345", material.RegistrationReferenceNumber);
             Assert.IsNotNull(material.Material);
         }
     }
@@ -253,7 +252,7 @@ public class RegistrationMaterialRepositoryTests
         using (new AssertionScope())
         {
             Assert.IsNotNull(material);
-            Assert.AreEqual("REF12345", material.ReferenceNumber);
+            Assert.AreEqual("REF12345", material.RegistrationReferenceNumber);
         }
     }
 
@@ -262,7 +261,51 @@ public class RegistrationMaterialRepositoryTests
     {
         await Assert.ThrowsExceptionAsync<KeyNotFoundException>(() => _repository.GetRegistrationMaterial_FileUploadById(999));
     }
+    [TestMethod]
+    public async Task RegistrationMaterialsMarkAsDulyMade_ShouldSetDulyMadeCorrectly()
+    {
+        // Arrange
+        var registrationMaterialId = 1;
+        var statusId = 3;
+        var dulyMadeDate = DateTime.UtcNow.Date;
+        var determinationDate = dulyMadeDate.AddDays(84);
+        var userId = Guid.NewGuid();
+        // Seed required LookupTask for the CheckRegistrationStatus task
+        _context.LookupTasks.Add(new LookupRegulatorTask
+        {
+            Id = 2,
+            Name = "CheckRegistrationStatus",
+            ApplicationTypeId = 1,
+            JourneyTypeId = 1,
+            IsMaterialSpecific = true
+        });
 
+        await _context.SaveChangesAsync();
+
+        // Act
+        await _repository.RegistrationMaterialsMarkAsDulyMade(registrationMaterialId, statusId, determinationDate, dulyMadeDate, userId);
+
+        // Assert
+        var dulyMadeEntry = await _context.DulyMade
+            .FirstOrDefaultAsync(x => x.RegistrationMaterialId == registrationMaterialId);
+        var taskStatusEntry = await _context.RegulatorApplicationTaskStatus
+            .FirstOrDefaultAsync(x => x.RegistrationMaterialId == registrationMaterialId && x.TaskStatusId == statusId);
+
+        using (new AssertionScope())
+        {
+            dulyMadeEntry.Should().NotBeNull();
+            dulyMadeEntry!.DulyMadeBy.Should().Be(userId);
+            dulyMadeEntry.DulyMadeDate.Should().Be(dulyMadeDate);
+            dulyMadeEntry.DeterminationDate.Should().Be(determinationDate);
+            dulyMadeEntry.TaskStatusId.Should().Be(statusId);
+
+            taskStatusEntry.Should().NotBeNull();
+            taskStatusEntry!.TaskStatusId.Should().Be(statusId);
+            taskStatusEntry.TaskId.Should().Be(2);
+            taskStatusEntry.StatusUpdatedBy.Should().Be(userId);
+            taskStatusEntry.StatusCreatedDate.Date.Should().Be(DateTime.UtcNow.Date);
+        }
+    }
 
     [TestCleanup]
     public void Cleanup()

@@ -45,7 +45,7 @@ public class GetMaterialReprocessingIOHandlerTests
             RegistrationId = 10,
             MaterialId = 2,
             Material = new LookupMaterial { MaterialName = "Plastic" },
-            StatusID = 1,
+            StatusId = 1,
             Status = new LookupRegistrationMaterialStatus { Id = 1, Name = "Granted" },
             RegistrationReprocessingIO = new List<RegistrationReprocessingIO> {
                 new RegistrationReprocessingIO

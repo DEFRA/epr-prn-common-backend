@@ -1,12 +1,11 @@
-﻿using EPR.PRN.Backend.Data.DataModels;
-using EPR.PRN.Backend.Data.DataModels.Registrations;
+﻿using EPR.PRN.Backend.Data.DataModels.Registrations;
 using EPR.PRN.Backend.Data.Interfaces.Regulator;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
 
 namespace EPR.PRN.Backend.Data.Repositories.Regulator;
 
-public class RegistrationMaterialRepository(EprRegistrationsContext eprContext) : IRegistrationMaterialRepository
+public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrationMaterialRepository
 {
     public async Task<Registration> GetRegistrationById(int registrationId)
     {
@@ -53,16 +52,68 @@ public class RegistrationMaterialRepository(EprRegistrationsContext eprContext) 
                ?? throw new KeyNotFoundException("Material not found.");
     }
 
-    public async Task UpdateRegistrationOutCome(int registrationMaterialId, int statusId, string? comment, string? registrationReferenceNumber)
+    public async Task UpdateRegistrationOutCome(int registrationMaterialId, int statusId, string? comment, string registrationReferenceNumber)
     {
         var material = await eprContext.RegistrationMaterials.FirstOrDefaultAsync(rm => rm.Id == registrationMaterialId);
         if (material is null) throw new KeyNotFoundException("Material not found.");
 
-        material.StatusID = statusId;
+        material.StatusId = statusId;
         material.Comments = comment;
-        material.ReferenceNumber = registrationReferenceNumber;
+        material.RegistrationReferenceNumber = registrationReferenceNumber;
         material.StatusUpdatedDate = DateTime.UtcNow;
-        material.StatusUpdatedBy = "Test User";
+        material.StatusUpdatedBy = Guid.NewGuid();
+
+        await eprContext.SaveChangesAsync();
+    }
+    public async Task RegistrationMaterialsMarkAsDulyMade(int registrationMaterialId, int statusId, DateTime DeterminationDate, DateTime DulyMadeDate, Guid DulyMadeBy)
+    {
+        var material = await eprContext.RegistrationMaterials.FirstOrDefaultAsync(rm => rm.Id == registrationMaterialId);
+        if (material is null) throw new KeyNotFoundException("Material not found.");
+        var dulyMade = await eprContext.DulyMade
+            .FirstOrDefaultAsync(rm => rm.RegistrationMaterialId == registrationMaterialId)
+            ?? new DulyMade
+            {
+                RegistrationMaterialId = registrationMaterialId,
+                RegistrationMaterial = material // Initialize the required member
+            };
+
+        var registration = await eprContext.Registrations
+     .FirstOrDefaultAsync(x => x.Id == material.RegistrationId);
+
+        if (registration == null)
+            throw new KeyNotFoundException("Registration not found.");
+
+        var applicationTypeId = registration.ApplicationTypeId;
+
+
+        var taskid = await eprContext.LookupTasks
+            .Where(t => t.Name == "CheckRegistrationStatus" && t.ApplicationTypeId == applicationTypeId)
+            .Select(t => t.Id)
+            .FirstOrDefaultAsync();
+        var regulatorApplicationTaskStatus = new RegulatorApplicationTaskStatus
+        {
+            RegistrationMaterialId = registrationMaterialId,
+            TaskStatusId = statusId,
+            ExternalId = material.ExternalId,
+            TaskId = taskid,
+            StatusCreatedDate = DateTime.UtcNow,
+            StatusUpdatedBy = DulyMadeBy
+
+        };
+
+        // Set/update the fields
+        dulyMade.TaskStatusId = statusId;
+        dulyMade.DeterminationDate = DeterminationDate;
+        dulyMade.DulyMadeDate = DulyMadeDate;
+        dulyMade.DulyMadeBy = DulyMadeBy;
+        dulyMade.ExternalId = material.ExternalId;
+
+        // If this is a new entity, add it to the context
+        if (dulyMade.Id == 0)
+        {
+            await eprContext.DulyMade.AddAsync(dulyMade);
+            await eprContext.RegulatorApplicationTaskStatus.AddAsync(regulatorApplicationTaskStatus);
+        }
 
         await eprContext.SaveChangesAsync();
     }
@@ -80,7 +131,7 @@ public class RegistrationMaterialRepository(EprRegistrationsContext eprContext) 
              .Include(rm => rm.Registration)
                 .ThenInclude(r => r.LegalDocumentAddress)
             .Include(rm => rm.Material)
-            .Include(rm => rm.Status);            
+            .Include(rm => rm.Status);
 
         return registrationMaterials;
     }
@@ -101,7 +152,7 @@ public class RegistrationMaterialRepository(EprRegistrationsContext eprContext) 
             .Include(rm => rm.Material);
 
         return registrationMaterials;
-    }   
+    }
 
     private IIncludableQueryable<RegistrationMaterial, LookupMaterial> GetRegistrationMaterialsWithRelatedEntities_RegistrationReprocessingIO()
     {
@@ -151,9 +202,9 @@ public class RegistrationMaterialRepository(EprRegistrationsContext eprContext) 
             .Include(r => r.Materials)!
                 .ThenInclude(m => m.Tasks)!
                 .ThenInclude(t => t.Task)
-            .Include(r => r.Materials)!
+             .Include(r => r.Materials)!
                 .ThenInclude(rm => rm.Status);
-                
+
         return registrations;
     }
 }
