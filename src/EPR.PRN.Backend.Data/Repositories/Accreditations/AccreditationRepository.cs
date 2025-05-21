@@ -17,6 +17,24 @@ public class AccreditationRepository(EprAccreditationContext eprContext) : IAccr
             .SingleOrDefaultAsync(x => x.ExternalId.Equals(accreditationId));
     }
 
+    public async Task<Accreditation?> GetAccreditationDetails(
+        Guid organisationId,
+        int materialId,
+        int applicationTypeId)
+    {
+        return await eprContext.Accreditations
+            .AsNoTracking()
+            .Where(x =>
+                x.OrganisationId == organisationId &&
+                x.RegistrationMaterialId == materialId &&
+                x.ApplicationTypeId == applicationTypeId)
+            .Include(x => x.ApplicationType)
+            .Include(x => x.AccreditationStatus)
+            .Include(x => x.RegistrationMaterial)
+                .ThenInclude(x => x.Material)
+            .SingleOrDefaultAsync();
+    }
+
     public async Task Create(Accreditation accreditation)
     {
         var currentTimestamp = DateTime.UtcNow;

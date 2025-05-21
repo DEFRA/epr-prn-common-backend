@@ -12,6 +12,21 @@ using Microsoft.FeatureManagement.Mvc;
 [FeatureGate(FeatureFlags.EnableAccreditation)]
 public class AccreditationController(IAccreditationService accreditationService) : ControllerBase
 {
+    [HttpGet("{organisationId}/{materialId}/{applicationTypeId}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> Get(
+        [FromRoute] Guid organisationId,
+        [FromRoute] int materialId,
+        [FromRoute] int applicationTypeId)
+    {
+        var accreditation = await accreditationService.GetOrCreateAccreditation(
+            organisationId,
+            materialId,
+            applicationTypeId);
+
+        return Ok(accreditation);
+    }
+
     [HttpGet("{accreditationId}")]
     [ProducesResponseType(typeof(AccreditationDto), 200)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]

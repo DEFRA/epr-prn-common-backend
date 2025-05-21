@@ -42,6 +42,72 @@ public class AccreditationServiceTests
     }
 
     [TestMethod]
+    public async Task GetOrCreateAccreditation_Should_Create_WhenAccreditation_NotExists()
+    {
+        // Arrange
+        var organisationId = Guid.NewGuid();
+        var materialId = 2;
+        var applicationTypeId = 1;
+        var accreditationStatusId = 1;
+        Accreditation accreditation = null!;
+
+        _repositoryMock
+            .Setup(r => r.GetAccreditationDetails(organisationId,materialId,applicationTypeId))
+            .ReturnsAsync(accreditation);
+
+        // Act
+        await _service.GetOrCreateAccreditation(
+            organisationId,
+            materialId,
+            applicationTypeId);
+
+        // Assert
+        _repositoryMock.Verify(r => r.Create(It.Is<Accreditation>(x =>
+            x.OrganisationId == organisationId &&
+            x.RegistrationMaterialId == materialId &&
+            x.ApplicationTypeId == applicationTypeId &&
+            x.AccreditationStatusId == accreditationStatusId
+            )), Times.Once);
+
+    }
+
+    [TestMethod]
+    public async Task GetOrCreateAccreditation_Should_Get_WhenAccreditation_Exists()
+    {
+        // Arrange
+        var id = Guid.NewGuid();
+        var organisationId = Guid.NewGuid();
+        var materialId = 2;
+        var applicationTypeId = 1;
+        var accreditationStatusId = 1;
+
+        var accreditation = new Accreditation
+        {
+            ExternalId = id,
+            OrganisationId = organisationId,
+            RegistrationMaterialId = materialId,
+            ApplicationTypeId = applicationTypeId,
+            AccreditationStatusId = accreditationStatusId
+        };
+
+        _repositoryMock
+            .Setup(r => r.GetAccreditationDetails(organisationId, materialId, applicationTypeId))
+            .ReturnsAsync(accreditation);
+
+        // Act
+        var result = await _service.GetOrCreateAccreditation(
+            organisationId,
+            materialId,
+            applicationTypeId);
+
+        // Assert
+        _repositoryMock.Verify(r => r.GetAccreditationDetails(organisationId, materialId, applicationTypeId), Times.Once);
+        result.Should().Be(id);
+
+        _repositoryMock.Verify(r => r.Create(It.IsAny<Accreditation>()), Times.Never);
+    }
+
+    [TestMethod]
     public async Task GetAccreditationById_ReturnsMappedDto_WhenEntityExists()
     {
         // Arrange

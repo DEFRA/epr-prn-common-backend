@@ -1,9 +1,9 @@
 ﻿using EPR.PRN.Backend.API.Controllers;
 using EPR.PRN.Backend.API.Dto.Accreditation;
 using EPR.PRN.Backend.API.Services.Interfaces;
+using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
-using FluentAssertions;
 
 namespace EPR.PRN.Backend.API.UnitTests.Controllers;
 
@@ -18,6 +18,29 @@ public class AccreditationControllerTests
     {
         _serviceMock = new Mock<IAccreditationService>();
         _controller = new AccreditationController(_serviceMock.Object);
+    }
+
+    [TestMethod]
+    public async Task GetOrCreateAccreditation_ShouldReturnOk()
+    {
+        // Arrange
+        var accreditationId = Guid.NewGuid();
+        var organisationId = Guid.NewGuid();
+        var materialId = 2;
+        var applicationTypeId = 1;
+        var accreditation = new AccreditationDto { ExternalId = accreditationId };
+
+        _serviceMock.Setup(s => s.GetOrCreateAccreditation(organisationId, materialId, applicationTypeId))
+            .ReturnsAsync(accreditationId);
+
+        // Act
+        var result = await _controller.Get(organisationId, materialId, applicationTypeId);
+
+        // Assert
+        result.Should().BeOfType<OkObjectResult>();
+        var okResult = result as OkObjectResult;
+        okResult!.Value.Should().Be(accreditationId);
+        _serviceMock.Verify(s => s.GetOrCreateAccreditation(organisationId, materialId, applicationTypeId), Times.Once);
     }
 
     [TestMethod]
