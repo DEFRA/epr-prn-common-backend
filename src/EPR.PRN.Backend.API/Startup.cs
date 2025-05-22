@@ -86,6 +86,12 @@ namespace EPR.PRN.Backend.API
                     app.UseExceptionHandler(env.IsDevelopment() ? "/error-development" : "/error");
                     app.UseMiddleware<ExceptionHandlingMiddleware>();
                 }
+
+                if (featureManager.IsEnabledAsync(FeatureFlags.EnableAccreditation).Result)
+                {
+                    var accreditationContext = scope.ServiceProvider.GetRequiredService<EprAccreditationContext>();
+                    accreditationContext.Database.EnsureCreated();
+                }
             }
             if (env.IsDevelopment())
             {
