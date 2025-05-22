@@ -32,7 +32,7 @@ public class RegistrationMaterialController(IMediator mediator
     [SwaggerResponse(StatusCodes.Status200OK, "Returns registration with materials and tasks.", typeof(RegistrationOverviewDto))]
     [SwaggerResponse(StatusCodes.Status400BadRequest, "If the request is invalid or a validation error occurs.", typeof(ProblemDetails))]
     [SwaggerResponse(StatusCodes.Status500InternalServerError, "If an unexpected error occurs.", typeof(ContentResult))]
-    public async Task<IActionResult> GetRegistrationOverviewDetailById(int Id)
+    public async Task<IActionResult> GetRegistrationOverviewDetailById(Guid Id)
     {
         logger.LogInformation(LogMessages.RegistrationMaterialsTasks);
         var result = await mediator.Send(new GetRegistrationOverviewDetailByIdQuery() { Id = Id });
@@ -50,7 +50,7 @@ public class RegistrationMaterialController(IMediator mediator
     [SwaggerResponse(StatusCodes.Status200OK, "Returns summary info for a material.", typeof(RegistrationMaterialDetailsDto))]
     [SwaggerResponse(StatusCodes.Status400BadRequest, "If the request is invalid or a validation error occurs.", typeof(ProblemDetails))]
     [SwaggerResponse(StatusCodes.Status500InternalServerError, "If an unexpected error occurs.", typeof(ContentResult))]
-    public async Task<IActionResult> GetMaterialDetailById(int Id)
+    public async Task<IActionResult> GetMaterialDetailById(Guid Id)
     {
         logger.LogInformation(LogMessages.SummaryInfoMaterial);
         var result = await mediator.Send(new GetMaterialDetailByIdQuery() { Id = Id });
@@ -61,7 +61,7 @@ public class RegistrationMaterialController(IMediator mediator
     [ProducesResponseType(typeof(RegistrationMaterialWasteLicencesDto), 200)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> GetWasteLicences(int Id)
+    public async Task<IActionResult> GetWasteLicences(Guid Id)
     {
         logger.LogInformation(LogMessages.RegistrationMaterialsTasks);
         var result = await mediator.Send(new GetMaterialWasteLicencesQuery() { Id = Id });
@@ -72,7 +72,7 @@ public class RegistrationMaterialController(IMediator mediator
     [ProducesResponseType(typeof(RegistrationMaterialReprocessingIODto), 200)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> GetReprocessingIO(int Id)
+    public async Task<IActionResult> GetReprocessingIO(Guid Id)
     {
         logger.LogInformation(LogMessages.RegistrationMaterialsTasks);
         var result = await mediator.Send(new GetMaterialReprocessingIOQuery() { Id = Id });
@@ -83,7 +83,7 @@ public class RegistrationMaterialController(IMediator mediator
     [ProducesResponseType(typeof(RegistrationMaterialSamplingPlanDto), 200)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> GetSamplingPlan(int Id)
+    public async Task<IActionResult> GetSamplingPlan(Guid Id)
     {
         logger.LogInformation(LogMessages.RegistrationMaterialsTasks);
         var result = await mediator.Send(new GetMaterialSamplingPlanQuery() { Id = Id });
@@ -101,7 +101,7 @@ public class RegistrationMaterialController(IMediator mediator
     [SwaggerResponse(StatusCodes.Status200OK, "Returns site address summary for registration.", typeof(RegistrationSiteAddressDto))]
     [SwaggerResponse(StatusCodes.Status400BadRequest, "If the request is invalid or a validation error occurs.", typeof(ProblemDetails))]
     [SwaggerResponse(StatusCodes.Status500InternalServerError, "If an unexpected error occurs.", typeof(ContentResult))]
-    public async Task<IActionResult> GetRegistrationSiteAddressById(int Id)
+    public async Task<IActionResult> GetRegistrationSiteAddressById(Guid Id)
     {
         logger.LogInformation(LogMessages.RegistrationSiteAddress, Id); // Added the missing parameter {Id} to match the placeholder in the log message.
         var result = await mediator.Send(new GetRegistrationSiteAddressByIdQuery() { Id = Id });
@@ -119,7 +119,7 @@ public class RegistrationMaterialController(IMediator mediator
     [SwaggerResponse(StatusCodes.Status200OK, "Returns authorise material for site.", typeof(MaterialsAuthorisedOnSiteDto))]
     [SwaggerResponse(StatusCodes.Status400BadRequest, "If the request is invalid or a validation error occurs.", typeof(ProblemDetails))]
     [SwaggerResponse(StatusCodes.Status500InternalServerError, "If an unexpected error occurs.", typeof(ContentResult))]
-    public async Task<IActionResult> GetAuthorisedMaterial(int Id)
+    public async Task<IActionResult> GetAuthorisedMaterial(Guid Id)
     {
         logger.LogInformation(LogMessages.MaterialAuthorization, Id); // Added the 
         var result = await mediator.Send(new GetMaterialsAuthorisedOnSiteByIdQuery() { Id = Id });
@@ -136,7 +136,7 @@ public class RegistrationMaterialController(IMediator mediator
     [SwaggerResponse(StatusCodes.Status200OK, "Returns payment fee detail with other information.", typeof(MaterialPaymentFeeDto))]
     [SwaggerResponse(StatusCodes.Status400BadRequest, "If the request is invalid or a validation error occurs.", typeof(ProblemDetails))]
     [SwaggerResponse(StatusCodes.Status500InternalServerError, "If an unexpected error occurs.", typeof(ContentResult))]
-    public async Task<IActionResult> GetRegistrationMaterialpaymentFeesById(int Id)
+    public async Task<IActionResult> GetRegistrationMaterialpaymentFeesById(Guid Id)
     {
         logger.LogInformation(LogMessages.RegistrationMaterialpaymentFees, Id); 
         var result = await mediator.Send(new GetMaterialPaymentFeeByIdQuery() { Id = Id });
@@ -153,7 +153,7 @@ public class RegistrationMaterialController(IMediator mediator
     [SwaggerResponse(StatusCodes.Status200OK, "Returns Registration Accreditation Reference row number.", typeof(RegistrationAccreditationReferenceDto))]
     [SwaggerResponse(StatusCodes.Status400BadRequest, "If the request is invalid or a validation error occurs.", typeof(ProblemDetails))]
     [SwaggerResponse(StatusCodes.Status500InternalServerError, "If an unexpected error occurs.", typeof(ContentResult))]
-    public async Task<IActionResult> GetRegistrationAccreditationReference(int Id)
+    public async Task<IActionResult> GetRegistrationAccreditationReference(Guid Id)
     {
         logger.LogInformation(LogMessages.RegistrationMaterialReference, Id);
         var result = await mediator.Send(new GetRegistrationAccreditationReferenceByIdQuery() { Id = Id });
@@ -175,7 +175,7 @@ public class RegistrationMaterialController(IMediator mediator
     [SwaggerResponse(StatusCodes.Status204NoContent, $"Returns No Content", typeof(NoContentResult))]
     [SwaggerResponse(StatusCodes.Status400BadRequest, "If the request is invalid or a validation error occurs.", typeof(ProblemDetails))]
     [SwaggerResponse(StatusCodes.Status500InternalServerError, "If an unexpected error occurs.", typeof(ContentResult))]
-    public async Task<IActionResult> UpdateRegistrationOutcome(int Id, [FromBody] RegistrationMaterialsOutcomeCommand command)
+    public async Task<IActionResult> UpdateRegistrationOutcome(Guid Id, [FromBody] RegistrationMaterialsOutcomeCommand command)
     {
         logger.LogInformation(LogMessages.OutcomeMaterialRegistration, Id);
         command.Id = Id;
@@ -198,7 +198,7 @@ public class RegistrationMaterialController(IMediator mediator
     [SwaggerResponse(StatusCodes.Status204NoContent, $"Returns No Content", typeof(NoContentResult))]
     [SwaggerResponse(StatusCodes.Status400BadRequest, "If the request is invalid or a validation error occurs.", typeof(ProblemDetails))]
     [SwaggerResponse(StatusCodes.Status500InternalServerError, "If an unexpected error occurs.", typeof(ContentResult))]
-    public async Task<IActionResult> RegistrationMaterialsMarkAsDulyMade(int Id, [FromBody] RegistrationMaterialsMarkAsDulyMadeCommand command)
+    public async Task<IActionResult> RegistrationMaterialsMarkAsDulyMade(Guid Id, [FromBody] RegistrationMaterialsMarkAsDulyMadeCommand command)
     {
         logger.LogInformation(LogMessages.MarkAsDulyMade, Id);
         command.RegistrationMaterialId = Id;

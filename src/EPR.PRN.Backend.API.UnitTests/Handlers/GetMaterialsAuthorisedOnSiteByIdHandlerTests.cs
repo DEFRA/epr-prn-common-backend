@@ -34,12 +34,12 @@ public class GetMaterialsAuthorisedOnSiteByIdHandlerTests
     public async Task Handle_ShouldMapRegistrationAndMaterialsCorrectly()
     {
         // Arrange
-        int registrationId = 101;
+        var registrationId = Guid.Parse("4bac12f7-f7a9-4df4-b7b5-9c4221860c4d");
         var query = new GetMaterialsAuthorisedOnSiteByIdQuery { Id = registrationId };
 
         var registration = new Registration
         {
-            Id = registrationId,
+            ExternalId = registrationId,
             OrganisationId = 10,
             ReprocessingSiteAddress = new Address
             {

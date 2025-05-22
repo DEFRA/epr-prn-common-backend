@@ -6,7 +6,7 @@ namespace EPR.PRN.Backend.API.Dto.Regulator;
 [ExcludeFromCodeCoverage]
 public class MaterialPaymentFeeDto
 {
-    public int RegistrationId { get; set; }
+    public Guid RegistrationId { get; set; }
     public int OrganisationId { get; set; }
     public int NationId { get; set; }
     public ApplicationOrganisationType ApplicationType { get; init; }

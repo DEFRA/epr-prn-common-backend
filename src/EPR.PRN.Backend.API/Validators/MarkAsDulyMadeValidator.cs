@@ -10,8 +10,7 @@ public class MarkAsDulyMadeValidator : AbstractValidator<RegistrationMaterialsMa
     public MarkAsDulyMadeValidator()
     {
         RuleFor(x => x.RegistrationMaterialId)
-            .NotEmpty().WithMessage(ValidationMessages.RegistrationMaterialIdRequired)
-            .GreaterThan(0).WithMessage(ValidationMessages.RegistrationMaterialIdGreaterThanZero);
+            .NotEmpty().WithMessage(ValidationMessages.RegistrationMaterialIdRequired);
 
         RuleFor(x => x.DulyMadeDate)
             .Must(date => date != DateTime.MinValue)

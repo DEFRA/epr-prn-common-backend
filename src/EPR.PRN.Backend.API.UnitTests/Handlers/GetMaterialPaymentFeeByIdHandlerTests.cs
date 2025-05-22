@@ -31,8 +31,8 @@ namespace EPR.PRN.Backend.API.UnitTests.Handlers
         public async Task Handle_ShouldReturnMappedDto_WhenMaterialExists()
         {
             // Arrange
-            var materialId = 1;
-            var registrationMaterial = new RegistrationMaterial { Id = materialId };
+            var materialId = Guid.Parse("a9421fc1-a912-42ee-85a5-3e06408759a9");
+            var registrationMaterial = new RegistrationMaterial { ExternalId = materialId };
             var mappedDto = new MaterialPaymentFeeDto(); // empty or with default values
 
             _rmRepositoryMock.Setup(r => r.GetRegistrationMaterialById(materialId))
@@ -55,7 +55,7 @@ namespace EPR.PRN.Backend.API.UnitTests.Handlers
         public async Task Handle_ShouldReturnDefaultDto_WhenMaterialDoesNotExist()
         {
             // Arrange
-            var materialId = 999; // Non-existent
+            var materialId = Guid.Parse("55f67e4b-aba3-4247-97af-c0baba961618"); // Non-existent
             _rmRepositoryMock.Setup(r => r.GetRegistrationMaterialById(materialId))
                              .ReturnsAsync((RegistrationMaterial)null);
 
@@ -74,7 +74,7 @@ namespace EPR.PRN.Backend.API.UnitTests.Handlers
         public async Task Handle_ShouldNotCallMapper_WhenMaterialIsNull()
         {
             // Arrange
-            var materialId = 42;
+            var materialId = Guid.Parse("db22649f-bcca-4187-9b95-0bc2a7159017");
             _rmRepositoryMock.Setup(r => r.GetRegistrationMaterialById(materialId))
                              .ReturnsAsync((RegistrationMaterial)null);
 

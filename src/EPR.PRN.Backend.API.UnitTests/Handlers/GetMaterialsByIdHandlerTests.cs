@@ -35,13 +35,13 @@ public class GetMaterialsByIdHandlerTests
     public async Task Handle_ShouldReturnMappedDto_WhenMaterialExists()
     {
         // Arrange
-        int materialId = 1;
+        var materialId = Guid.Parse("a9421fc1-a912-42ee-85a5-3e06408759a9");
         var query = new GetMaterialDetailByIdQuery { Id = materialId };
 
         var materialEntity = new RegistrationMaterial
         {
-            Id = materialId,
-            RegistrationId = 10,
+            ExternalId = materialId,
+            Registration = new Registration { ExternalId = Guid.Parse("4bac12f7-f7a9-4df4-b7b5-9c4221860c4d") },
             MaterialId = 2,
             Material = new LookupMaterial { MaterialName = "Plastic" },
             StatusId = 1,
@@ -57,8 +57,8 @@ public class GetMaterialsByIdHandlerTests
 
         // Assert
         result.Should().NotBeNull();
-        result.Id.Should().Be(materialEntity.Id);
-        result.RegistrationId.Should().Be(materialEntity.RegistrationId);
+        result.Id.Should().Be(materialEntity.ExternalId);
+        result.RegistrationId.Should().Be(materialEntity.Registration.ExternalId);
         result.MaterialName.Should().Be("Plastic");
         result.Status.Should().Be((RegistrationMaterialStatus)1);
     }

@@ -10,8 +10,7 @@ public class RegistrationOutcomeValidator : AbstractValidator<RegistrationMateri
     public RegistrationOutcomeValidator()
     {
         RuleFor(x => x.Id)
-            .NotEmpty().WithMessage(ValidationMessages.RegistrationOutcomeIdRequired)
-            .GreaterThan(0).WithMessage(ValidationMessages.RegistrationOutcomeIdGreaterThanZero);
+            .NotEmpty().WithMessage(ValidationMessages.RegistrationOutcomeIdRequired);
 
         RuleFor(x => x.Status)
             .IsInEnum()

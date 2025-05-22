@@ -27,14 +27,14 @@ public class RegistrationMaterialsMarkAsDulyMadeHandlerTests
         // Arrange
         var command = new RegistrationMaterialsMarkAsDulyMadeCommand
         {
-            RegistrationMaterialId = 1,
+            RegistrationMaterialId = Guid.Parse("a9421fc1-a912-42ee-85a5-3e06408759a9"),
             DeterminationDate = DateTime.UtcNow,
             DulyMadeDate = DateTime.UtcNow.AddDays(-1),
             DulyMadeBy = new Guid("CE564609-4455-4C29-818B-497F06567A6C")
         };
 
-        var material = new RegistrationMaterial { Id = 1 };
-        _rmRepositoryMock.Setup(x => x.GetRegistrationMaterialById(1)).ReturnsAsync(material);
+        var material = new RegistrationMaterial { ExternalId = Guid.Parse("a9421fc1-a912-42ee-85a5-3e06408759a9") };
+        _rmRepositoryMock.Setup(x => x.GetRegistrationMaterialById(Guid.Parse("a9421fc1-a912-42ee-85a5-3e06408759a9"))).ReturnsAsync(material);
 
         // Act
         Func<Task> act = async () => await _handler.Handle(command, CancellationToken.None);
@@ -42,7 +42,7 @@ public class RegistrationMaterialsMarkAsDulyMadeHandlerTests
         // Assert
         await act.Should().NotThrowAsync();
         _rmRepositoryMock.Verify(x => x.RegistrationMaterialsMarkAsDulyMade(
-            1,
+            Guid.Parse("a9421fc1-a912-42ee-85a5-3e06408759a9"),
             (int)RegulatorTaskStatus.Completed,
             command.DeterminationDate,
             command.DulyMadeDate,
@@ -56,7 +56,7 @@ public class RegistrationMaterialsMarkAsDulyMadeHandlerTests
         // Arrange
         var command = new RegistrationMaterialsMarkAsDulyMadeCommand
         {
-            RegistrationMaterialId = 99,
+            RegistrationMaterialId = Guid.Parse("a9421fc1-a912-42ee-85a5-3e06408759a9"),
             DeterminationDate = DateTime.UtcNow,
             DulyMadeDate = DateTime.UtcNow.AddDays(-1),
             DulyMadeBy =new Guid("CE564609-4455-4C29-818B-497F06567A6C")

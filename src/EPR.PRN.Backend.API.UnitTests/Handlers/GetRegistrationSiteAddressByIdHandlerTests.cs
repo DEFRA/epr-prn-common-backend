@@ -34,12 +34,12 @@ public class GetRegistrationSiteAddressByIdHandlerTests
     public async Task Handle_ShouldReturnMappedDto_WhenReprocessingSiteAddressExists()
     {
         // Arrange
-        int registrationId = 55;
+        var registrationId = Guid.Parse("4bac12f7-f7a9-4df4-b7b5-9c4221860c4d");
         var query = new GetRegistrationSiteAddressByIdQuery { Id = registrationId };
 
         var registration = new Registration
         {
-            Id = registrationId,
+            ExternalId = registrationId,
             ReprocessingSiteAddressId = 99,
             ReprocessingSiteAddress = new Address
             {
@@ -65,12 +65,12 @@ public class GetRegistrationSiteAddressByIdHandlerTests
     public async Task Handle_ShouldReturnEmptyDto_WhenReprocessingSiteAddressIsNull()
     {
         // Arrange
-        int registrationId = 56;
+        var registrationId = Guid.Parse("4bac12f7-f7a9-4df4-b7b5-9c4221860c4d");
         var query = new GetRegistrationSiteAddressByIdQuery { Id = registrationId };
 
         var registration = new Registration
         {
-            Id = registrationId,
+            ExternalId = registrationId,
             ReprocessingSiteAddressId = null
         };
 

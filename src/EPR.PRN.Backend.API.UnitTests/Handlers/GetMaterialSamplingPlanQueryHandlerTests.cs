@@ -36,7 +36,7 @@ public class GetMaterialSamplingPlanQueryHandlerTests
     public async Task Handle_ShouldReturnMappedDto_WhenMaterialExists()
     {
         // Arrange
-        int materialId = 1;
+        var materialId = Guid.Parse("a9421fc1-a912-42ee-85a5-3e06408759a9");
         DateTime dateUploaded = DateTime.UtcNow;
         var query = new GetMaterialSamplingPlanQuery { Id = materialId };
         var updatedBy = Guid.NewGuid();
@@ -44,7 +44,7 @@ public class GetMaterialSamplingPlanQueryHandlerTests
 
         var materialEntity = new RegistrationMaterial
         {
-            Id = materialId,
+            ExternalId = materialId,
             RegistrationId = 10,
             MaterialId = 2,
             Material = new LookupMaterial { MaterialName = "Plastic" },

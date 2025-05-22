@@ -60,7 +60,7 @@ public class RegulatorApplicationTaskStatusControllerTests
 
         _systemUnderTest = new RegulatorApplicationTaskStatusController(_mockMediator.Object, validator, _mockLogger.Object);
 
-        var registrationMaterialId = 1;
+        var registrationMaterialId = Guid.Parse("a9421fc1-a912-42ee-85a5-3e06408759a9");
         var requestDto = new UpdateRegulatorApplicationTaskCommand
         {
             RegistrationMaterialId = registrationMaterialId,

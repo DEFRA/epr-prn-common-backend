@@ -20,7 +20,7 @@ namespace EPR.PRN.Backend.API.UnitTests.Validators
         {
             var command = new RegistrationMaterialsMarkAsDulyMadeCommand
             {
-                RegistrationMaterialId = 1,
+                RegistrationMaterialId = Guid.Parse("a9421fc1-a912-42ee-85a5-3e06408759a9"),
                 DulyMadeDate = DateTime.UtcNow.Date,
                 DeterminationDate = DateTime.UtcNow.Date.AddDays(84),
                 DulyMadeBy = Guid.NewGuid()
@@ -29,21 +29,6 @@ namespace EPR.PRN.Backend.API.UnitTests.Validators
             var result = _validator.Validate(command);
 
             Assert.IsTrue(result.IsValid);
-        }
-
-        [TestMethod]
-        public void Should_Have_Error_When_RegistrationMaterialId_Is_Zero()
-        {
-            var command = new RegistrationMaterialsMarkAsDulyMadeCommand
-            {
-                RegistrationMaterialId = 0
-            };
-
-            var result = _validator.Validate(command);
-
-            Assert.IsTrue(result.Errors.Any(e =>
-                e.PropertyName == "RegistrationMaterialId" &&
-                e.ErrorMessage == ValidationMessages.RegistrationMaterialIdGreaterThanZero));
         }
 
         [TestMethod]

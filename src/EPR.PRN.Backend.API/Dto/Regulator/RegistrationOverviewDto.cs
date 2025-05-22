@@ -6,7 +6,7 @@ namespace EPR.PRN.Backend.API.Dto.Regulator;
 [ExcludeFromCodeCoverage]
 public class RegistrationOverviewDto
 {
-    public int Id { get; set; }
+    public Guid Id { get; set; }
 
     public required string OrganisationName { get; set; } = string.Empty;
 

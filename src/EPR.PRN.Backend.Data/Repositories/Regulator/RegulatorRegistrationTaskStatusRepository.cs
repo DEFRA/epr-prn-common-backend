@@ -19,12 +19,12 @@ namespace EPR.PRN.Backend.Data.Repositories.Regulator
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        public async Task<RegulatorRegistrationTaskStatus?> GetTaskStatusAsync(string TaskName, int RegistrationId)
+        public async Task<RegulatorRegistrationTaskStatus?> GetTaskStatusAsync(string TaskName, Guid RegistrationId)
         {
             return await GetTaskStatus(TaskName, RegistrationId);
         }
 
-        public async Task UpdateStatusAsync(string TaskName, int RegistrationId, RegulatorTaskStatus status, string? comments, Guid user)
+        public async Task UpdateStatusAsync(string TaskName, Guid RegistrationId, RegulatorTaskStatus status, string? comments, Guid user)
         {
             _logger.LogInformation("Updating status for task with TaskName {TaskName} And RegistrationId {RegistrationId} to {Status}", TaskName, RegistrationId, status);
 
@@ -33,7 +33,7 @@ namespace EPR.PRN.Backend.Data.Repositories.Regulator
             var statusEntity = _context.LookupTaskStatuses.Single(lts => lts.Name == status.ToString());
             if (taskStatus == null)
             {
-                var registration = _context.Registrations.Find(RegistrationId);
+                var registration = _context.Registrations.SingleOrDefault(x => x.ExternalId == RegistrationId);
                 if (registration == null)
                 {
                     throw new KeyNotFoundException();
@@ -48,7 +48,7 @@ namespace EPR.PRN.Backend.Data.Repositories.Regulator
                 // Create a new entity if it doesn't exist
                 taskStatus = new RegulatorRegistrationTaskStatus
                 {
-                    RegistrationId = RegistrationId,
+                    RegistrationId = registration.Id,
                     ExternalId = Guid.NewGuid(),
                     Task = task,
                     TaskStatus = statusEntity,
@@ -75,9 +75,9 @@ namespace EPR.PRN.Backend.Data.Repositories.Regulator
             await _context.SaveChangesAsync();
             _logger.LogInformation("Successfully updated status for task with TaskName {TaskName} And RegistrationId {RegistrationId} to {Status}", TaskName, RegistrationId, status);
         }
-        private async Task<RegulatorRegistrationTaskStatus?> GetTaskStatus(string TaskName, int RegistrationId)
+        private async Task<RegulatorRegistrationTaskStatus?> GetTaskStatus(string TaskName, Guid RegistrationId)
         {
-            return await _context.RegulatorRegistrationTaskStatus.Include(ts => ts.TaskStatus).FirstOrDefaultAsync(x => x.Task.Name == TaskName && x.RegistrationId == RegistrationId);
+            return await _context.RegulatorRegistrationTaskStatus.Include(ts => ts.TaskStatus).Include(y => y.Registration).FirstOrDefaultAsync(x => x.Task.Name == TaskName && x.Registration.ExternalId == RegistrationId);
         }
     }
 }

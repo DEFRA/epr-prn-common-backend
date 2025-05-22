@@ -27,7 +27,7 @@ namespace EPR.PRN.Backend.API.Tests.Handlers
         public async Task Handle_TaskStatusAlreadyComplete_ShouldThrowRegulatorInvalidOperationException()
         {
             // Arrange
-            var command = new UpdateRegulatorRegistrationTaskCommand { TaskName = "Test Task", RegistrationId = 1, Status = RegulatorTaskStatus.Completed, UserName = "UserName" };
+            var command = new UpdateRegulatorRegistrationTaskCommand { TaskName = "Test Task", RegistrationId = Guid.Parse("4bac12f7-f7a9-4df4-b7b5-9c4221860c4d"), Status = RegulatorTaskStatus.Completed, UserName = "UserName" };
             var taskStatus = new RegulatorRegistrationTaskStatus { TaskStatus = new LookupTaskStatus { Name = RegulatorTaskStatus.Completed.ToString() } };
             _repositoryMock.Setup(r => r.GetTaskStatusAsync(command.TaskName, command.RegistrationId)).ReturnsAsync(taskStatus);
 
@@ -42,7 +42,7 @@ namespace EPR.PRN.Backend.API.Tests.Handlers
         public async Task Handle_TaskStatusAlreadyQueried_ShouldThrowRegulatorInvalidOperationException()
         {
             // Arrange
-            var command = new UpdateRegulatorRegistrationTaskCommand { TaskName = "Test Task", RegistrationId = 1, Status = RegulatorTaskStatus.Queried, UserName = "UserName" };
+            var command = new UpdateRegulatorRegistrationTaskCommand { TaskName = "Test Task", RegistrationId = Guid.Parse("4bac12f7-f7a9-4df4-b7b5-9c4221860c4d"), Status = RegulatorTaskStatus.Queried, UserName = "UserName" };
             var taskStatus = new RegulatorRegistrationTaskStatus { TaskStatus = new LookupTaskStatus { Name = RegulatorTaskStatus.Queried.ToString() } };
             _repositoryMock.Setup(r => r.GetTaskStatusAsync(command.TaskName, command.RegistrationId)).ReturnsAsync(taskStatus);
 
@@ -57,7 +57,7 @@ namespace EPR.PRN.Backend.API.Tests.Handlers
         public async Task Handle_TaskStatusCompleteToQueried_ShouldThrowRegulatorInvalidOperationException()
         {
             // Arrange
-            var command = new UpdateRegulatorRegistrationTaskCommand { TaskName = "Test Task", RegistrationId = 1, Status = RegulatorTaskStatus.Queried, UserName = "UserName" };
+            var command = new UpdateRegulatorRegistrationTaskCommand { TaskName = "Test Task", RegistrationId = Guid.Parse("4bac12f7-f7a9-4df4-b7b5-9c4221860c4d"), Status = RegulatorTaskStatus.Queried, UserName = "UserName" };
             var taskStatus = new RegulatorRegistrationTaskStatus { TaskStatus = new LookupTaskStatus { Name = RegulatorTaskStatus.Completed.ToString() } };
             _repositoryMock.Setup(r => r.GetTaskStatusAsync(command.TaskName, command.RegistrationId)).ReturnsAsync(taskStatus);
 
@@ -72,7 +72,7 @@ namespace EPR.PRN.Backend.API.Tests.Handlers
         public async Task Handle_InvalidStatusType_ShouldThrowRegulatorInvalidOperationException()
         {
             // Arrange
-            var command = new UpdateRegulatorRegistrationTaskCommand { TaskName = "Test Task", RegistrationId = 1, Status = (RegulatorTaskStatus)999, UserName = "UserName" };
+            var command = new UpdateRegulatorRegistrationTaskCommand { TaskName = "Test Task", RegistrationId = Guid.Parse("4bac12f7-f7a9-4df4-b7b5-9c4221860c4d"), Status = (RegulatorTaskStatus)999, UserName = "UserName" };
             var taskStatus = new RegulatorRegistrationTaskStatus { TaskStatus = new LookupTaskStatus { Name = RegulatorTaskStatus.Completed.ToString() } };
             _repositoryMock.Setup(r => r.GetTaskStatusAsync(command.TaskName, command.RegistrationId)).ReturnsAsync(taskStatus);
 
@@ -87,7 +87,7 @@ namespace EPR.PRN.Backend.API.Tests.Handlers
         public async Task Handle_ValidStatusUpdate_ShouldUpdateStatus()
         {
             // Arrange
-            var command = new UpdateRegulatorRegistrationTaskCommand { TaskName = "Test Task", RegistrationId = 1, Status = RegulatorTaskStatus.Completed, Comments = "Completed", UserName = "UserName" };
+            var command = new UpdateRegulatorRegistrationTaskCommand { TaskName = "Test Task", RegistrationId = Guid.Parse("4bac12f7-f7a9-4df4-b7b5-9c4221860c4d"), Status = RegulatorTaskStatus.Completed, Comments = "Completed", UserName = "UserName" };
             var taskStatus = new RegulatorRegistrationTaskStatus { TaskStatus = new LookupTaskStatus { Name = RegulatorTaskStatus.Queried.ToString() } };
             _repositoryMock.Setup(r => r.GetTaskStatusAsync(command.TaskName, command.RegistrationId)).ReturnsAsync(taskStatus);
             _repositoryMock.Setup(r => r.UpdateStatusAsync(command.TaskName, command.RegistrationId, command.Status, command.Comments, It.IsAny<Guid>())).Returns(Task.CompletedTask);

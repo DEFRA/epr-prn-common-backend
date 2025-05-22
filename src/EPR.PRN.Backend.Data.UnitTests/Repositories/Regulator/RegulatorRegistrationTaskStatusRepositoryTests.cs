@@ -33,12 +33,12 @@ namespace EPR.PRN.Backend.Data.UnitTests.Repositories.Regulator
         {
             // Arrange
             var taskName = "TestTask";
-            var registrationId = 1;
+            var registrationId = Guid.Parse("4bac12f7-f7a9-4df4-b7b5-9c4221860c4d");
 
             var taskStatus = new RegulatorRegistrationTaskStatus
             {
                 Task = new LookupRegulatorTask { Name = taskName },
-                RegistrationId = registrationId
+                Registration = new Registration { ExternalId = registrationId }
             };
 
             _context.RegulatorRegistrationTaskStatus.Add(taskStatus);
@@ -50,7 +50,7 @@ namespace EPR.PRN.Backend.Data.UnitTests.Repositories.Regulator
             // Assert
             result.Should().NotBeNull();
             result!.Task.Name.Should().Be(taskName);
-            result.RegistrationId.Should().Be(registrationId);
+            result.Registration.ExternalId.Should().Be(registrationId);
         }
 
         [TestMethod]
@@ -58,7 +58,7 @@ namespace EPR.PRN.Backend.Data.UnitTests.Repositories.Regulator
         {
             // Arrange
             var taskName = "NonExistentTask";
-            var registrationId = 1;
+            var registrationId = Guid.Parse("4bac12f7-f7a9-4df4-b7b5-9c4221860c4d");
 
             // Act
             var result = await _repository.GetTaskStatusAsync(taskName, registrationId);
@@ -72,7 +72,7 @@ namespace EPR.PRN.Backend.Data.UnitTests.Repositories.Regulator
         {
             // Arrange
             var taskName = "NewTask";
-            var registrationId = 1;
+            var registrationId = Guid.Parse("4bac12f7-f7a9-4df4-b7b5-9c4221860c4d");
             var status = RegulatorTaskStatus.Started;
             var comments = "Task started";
             var user = Guid.NewGuid();
@@ -81,7 +81,7 @@ namespace EPR.PRN.Backend.Data.UnitTests.Repositories.Regulator
 
             _context.LookupTasks.Add(new LookupRegulatorTask { Id = 1, Name = taskName, IsMaterialSpecific = false, ApplicationTypeId = 1 });
 
-            _context.Registrations.Add(new Registration { Id = registrationId, ExternalId=Guid.NewGuid(), ApplicationTypeId = 1 });
+            _context.Registrations.Add(new Registration { ExternalId = registrationId, ApplicationTypeId = 1 });
 
             _context.SaveChanges();
 
@@ -93,7 +93,7 @@ namespace EPR.PRN.Backend.Data.UnitTests.Repositories.Regulator
 
             taskStatus.Should().NotBeNull();
             taskStatus.Task.Name.Should().Be(taskName);
-            taskStatus.RegistrationId.Should().Be(registrationId);
+            taskStatus.Registration.ExternalId.Should().Be(registrationId);
             taskStatus.TaskStatus.Name.Should().Be(status.ToString());
             taskStatus.Comments.Should().Be(comments);
             taskStatus.StatusCreatedBy.Should().Be(user);
@@ -105,7 +105,7 @@ namespace EPR.PRN.Backend.Data.UnitTests.Repositories.Regulator
         {
             // Arrange
             var taskName = "ExistingTask";
-            var registrationId = 1;
+            var registrationId = Guid.Parse("4bac12f7-f7a9-4df4-b7b5-9c4221860c4d");
             var existingStatus = RegulatorTaskStatus.Queried;
             var status = RegulatorTaskStatus.Completed;
             var comments = "Task completed";
@@ -117,14 +117,14 @@ namespace EPR.PRN.Backend.Data.UnitTests.Repositories.Regulator
             _context.RegulatorRegistrationTaskStatus.Add(new RegulatorRegistrationTaskStatus
             {
                 Task = new LookupRegulatorTask { Name = taskName },
-                RegistrationId = registrationId,
+                Registration = new Registration { ExternalId = registrationId },
                 TaskStatus = new LookupTaskStatus { Name = existingStatus.ToString() },
                 Comments = "Task started",
                 StatusCreatedBy = existingUser,
                 StatusUpdatedBy = existingUser
             });
 
-            _context.Registrations.Add(new Registration { Id = registrationId, ExternalId = Guid.NewGuid(), ApplicationTypeId = 1 });
+            _context.Registrations.Add(new Registration { ExternalId = registrationId, ApplicationTypeId = 1 });
 
             _context.SaveChanges();
 
@@ -136,7 +136,7 @@ namespace EPR.PRN.Backend.Data.UnitTests.Repositories.Regulator
 
             taskStatus.Should().NotBeNull();
             taskStatus.Task.Name.Should().Be(taskName);
-            taskStatus.RegistrationId.Should().Be(registrationId);
+            taskStatus.Registration.ExternalId.Should().Be(registrationId);
             taskStatus.TaskStatus.Name.Should().Be(status.ToString());
             taskStatus.Comments.Should().Be(comments);
             taskStatus.StatusCreatedBy.Should().Be(existingUser);
@@ -148,7 +148,7 @@ namespace EPR.PRN.Backend.Data.UnitTests.Repositories.Regulator
         {
             // Arrange
             var taskName = "NewTask";
-            var RegistrationId = 1;
+            var registrationId = Guid.Parse("4bac12f7-f7a9-4df4-b7b5-9c4221860c4d");
             var status = RegulatorTaskStatus.Started;
             var comments = "Task started";
             var user = Guid.NewGuid();
@@ -160,7 +160,7 @@ namespace EPR.PRN.Backend.Data.UnitTests.Repositories.Regulator
             _context.SaveChanges();
 
             // Act
-            Func<Task> act = async () => await _repository.UpdateStatusAsync(taskName, RegistrationId, status, comments, user);
+            Func<Task> act = async () => await _repository.UpdateStatusAsync(taskName, registrationId, status, comments, user);
 
             // Assert
             await act.Should().ThrowAsync<KeyNotFoundException>();
@@ -171,19 +171,19 @@ namespace EPR.PRN.Backend.Data.UnitTests.Repositories.Regulator
         {
             // Arrange
             var taskName = "NewTask";
-            var RegistrationId = 1;
+            var registrationId = Guid.Parse("4bac12f7-f7a9-4df4-b7b5-9c4221860c4d");
             var status = RegulatorTaskStatus.Started;
             var comments = "Task started";
             var user = Guid.NewGuid();
 
             _context.LookupTaskStatuses.Add(new LookupTaskStatus { Id = 2, Name = "Started" });
 
-            _context.Registrations.Add(new Registration { Id = RegistrationId, ExternalId = Guid.NewGuid(), ApplicationTypeId = 1 });
+            _context.Registrations.Add(new Registration { ExternalId = registrationId, ApplicationTypeId = 1 });
 
             _context.SaveChanges();
 
             // Act
-            Func<Task> act = async () => await _repository.UpdateStatusAsync(taskName, RegistrationId, status, comments, user);
+            Func<Task> act = async () => await _repository.UpdateStatusAsync(taskName, registrationId, status, comments, user);
 
             // Assert
             await act.Should().ThrowAsync<RegulatorInvalidOperationException>();
