@@ -27,11 +27,7 @@ public class AccreditationRepository(EprAccreditationContext eprContext) : IAccr
             .Where(x =>
                 x.OrganisationId == organisationId &&
                 x.RegistrationMaterialId == materialId &&
-                x.ApplicationTypeId == applicationTypeId)
-            .Include(x => x.ApplicationType)
-            .Include(x => x.AccreditationStatus)
-            .Include(x => x.RegistrationMaterial)
-                .ThenInclude(x => x.Material)
+                x.ApplicationTypeId == applicationTypeId)            
             .SingleOrDefaultAsync();
     }
 
