@@ -3,7 +3,7 @@ using EPR.PRN.Backend.API.Commands;
 using EPR.PRN.Backend.Data.Interfaces;
 using MediatR;
 
-namespace EPR.PRN.Backend.API.Handlers;
+namespace EPR.PRN.Backend.API.Handlers.Regulator;
 
 [ExcludeFromCodeCoverage(Justification = "TODO: To be done as part of create registration user story")]
 public class CreateRegistrationHandler(IRegistrationRepository repository)

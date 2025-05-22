@@ -5,7 +5,6 @@ using EPR.PRN.Backend.API.Common.Constants;
 using EPR.PRN.Backend.API.Configs;
 using EPR.PRN.Backend.API.Handlers;
 using EPR.PRN.Backend.API.Helpers;
-using EPR.PRN.Backend.API.Validators;
 using EPR.PRN.Backend.API.Middlewares;
 using EPR.PRN.Backend.Data;
 
@@ -15,6 +14,7 @@ using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.FeatureManagement;
+using EPR.PRN.Backend.API.Validators.Regulator;
 
 namespace EPR.PRN.Backend.API
 {

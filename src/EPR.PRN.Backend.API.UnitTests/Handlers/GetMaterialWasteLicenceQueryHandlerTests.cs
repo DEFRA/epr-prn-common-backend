@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
 using EPR.PRN.Backend.API.Common.Constants;
 using EPR.PRN.Backend.API.Common.Exceptions;
-using EPR.PRN.Backend.API.Handlers;
-using EPR.PRN.Backend.API.Profiles;
+using EPR.PRN.Backend.API.Handlers.Regulator;
+using EPR.PRN.Backend.API.Profiles.Regulator;
 using EPR.PRN.Backend.API.Queries;
 using EPR.PRN.Backend.Data.DataModels.Registrations;
 using EPR.PRN.Backend.Data.Interfaces.Regulator;

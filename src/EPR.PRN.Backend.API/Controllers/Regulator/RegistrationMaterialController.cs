@@ -9,7 +9,7 @@ using Microsoft.FeatureManagement.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 using System.Net;
 
-namespace EPR.PRN.Backend.API.Controllers;
+namespace EPR.PRN.Backend.API.Controllers.Regulator;
 
 [ApiController]
 [ApiVersion("1.0")]
@@ -17,7 +17,7 @@ namespace EPR.PRN.Backend.API.Controllers;
 [FeatureGate(FeatureFlags.ReprocessorExporter)]
 public class RegistrationMaterialController(IMediator mediator
     , IValidator<RegistrationMaterialsOutcomeCommand> registrationMaterialsOutcomeCommandValidator
-    ,IValidator<RegistrationMaterialsMarkAsDulyMadeCommand> registrationMaterialmarkasdulymadecommandvalidator
+    , IValidator<RegistrationMaterialsMarkAsDulyMadeCommand> registrationMaterialmarkasdulymadecommandvalidator
     , ILogger<RegistrationMaterialController> logger) : ControllerBase
 {
     #region Get methods
@@ -107,7 +107,7 @@ public class RegistrationMaterialController(IMediator mediator
         var result = await mediator.Send(new GetRegistrationSiteAddressByIdQuery() { Id = Id });
         return Ok(result);
     }
-    
+
     [HttpGet("registrations/{Id}/authorisedMaterials")]
     [ProducesResponseType(typeof(MaterialsAuthorisedOnSiteDto), 200)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -138,7 +138,7 @@ public class RegistrationMaterialController(IMediator mediator
     [SwaggerResponse(StatusCodes.Status500InternalServerError, "If an unexpected error occurs.", typeof(ContentResult))]
     public async Task<IActionResult> GetRegistrationMaterialpaymentFeesById(Guid Id)
     {
-        logger.LogInformation(LogMessages.RegistrationMaterialpaymentFees, Id); 
+        logger.LogInformation(LogMessages.RegistrationMaterialpaymentFees, Id);
         var result = await mediator.Send(new GetMaterialPaymentFeeByIdQuery() { Id = Id });
         return Ok(result);
     }

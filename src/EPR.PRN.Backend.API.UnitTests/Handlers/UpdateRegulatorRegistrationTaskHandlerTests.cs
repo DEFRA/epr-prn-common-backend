@@ -1,7 +1,7 @@
 using EPR.PRN.Backend.API.Commands;
 using EPR.PRN.Backend.API.Common.Enums;
 using EPR.PRN.Backend.API.Common.Exceptions;
-using EPR.PRN.Backend.API.Handlers;
+using EPR.PRN.Backend.API.Handlers.Regulator;
 using EPR.PRN.Backend.Data.DataModels.Registrations;
 using EPR.PRN.Backend.Data.Interfaces.Regulator;
 using FluentAssertions;

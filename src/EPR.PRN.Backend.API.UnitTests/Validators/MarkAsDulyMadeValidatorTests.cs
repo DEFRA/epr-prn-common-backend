@@ -1,6 +1,6 @@
 ﻿using EPR.PRN.Backend.API.Commands;
 using EPR.PRN.Backend.API.Constants;
-using EPR.PRN.Backend.API.Validators;
+using EPR.PRN.Backend.API.Validators.Regulator;
 
 namespace EPR.PRN.Backend.API.UnitTests.Validators
 {

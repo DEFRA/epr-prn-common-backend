@@ -1,7 +1,7 @@
 ﻿using AutoFixture;
 using EPR.PRN.Backend.API.Commands;
 using EPR.PRN.Backend.API.Common.Enums;
-using EPR.PRN.Backend.API.Controllers;
+using EPR.PRN.Backend.API.Controllers.Regulator;
 using FluentAssertions;
 using FluentValidation;
 using FluentValidation.Results;

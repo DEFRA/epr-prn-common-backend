@@ -3,7 +3,7 @@ using EPR.PRN.Backend.API.Common.Enums;
 using EPR.PRN.Backend.API.Constants;
 using FluentValidation;
 
-namespace EPR.PRN.Backend.API.Validators;
+namespace EPR.PRN.Backend.API.Validators.Regulator;
 
 public class RegistrationOutcomeValidator : AbstractValidator<RegistrationMaterialsOutcomeCommand>
 {

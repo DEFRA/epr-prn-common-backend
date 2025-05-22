@@ -3,7 +3,7 @@ using EPR.PRN.Backend.API.Common.Enums;
 using EPR.PRN.Backend.API.Constants;
 using FluentValidation;
 
-namespace EPR.PRN.Backend.API.Validators;
+namespace EPR.PRN.Backend.API.Validators.Regulator;
 
 public class MarkAsDulyMadeValidator : AbstractValidator<RegistrationMaterialsMarkAsDulyMadeCommand>
 {
@@ -26,6 +26,6 @@ public class MarkAsDulyMadeValidator : AbstractValidator<RegistrationMaterialsMa
         RuleFor(x => x.DulyMadeBy)
             .NotEmpty()
             .NotEqual(Guid.Empty)
-            .WithMessage(ValidationMessages.DulyMadeByRequired);            
+            .WithMessage(ValidationMessages.DulyMadeByRequired);
     }
 }

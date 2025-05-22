@@ -5,7 +5,7 @@ using EPR.PRN.Backend.API.Common.Exceptions;
 using EPR.PRN.Backend.API.Dto.Regulator;
 using EPR.PRN.Backend.Data.DataModels.Registrations;
 
-namespace EPR.PRN.Backend.API.Profiles;
+namespace EPR.PRN.Backend.API.Profiles.Regulator;
 
 public class RegistrationMaterialProfile : Profile
 {
@@ -20,7 +20,7 @@ public class RegistrationMaterialProfile : Profile
         .ForMember(dest => dest.SiteAddress, opt => opt.MapFrom(src =>
              src.ReprocessingSiteAddress != null ? CreateAddressString(src.ReprocessingSiteAddress)
                 : string.Empty))
-        .ForMember(dest => dest.Materials, opt => opt.MapFrom(src =>src.Materials.Where(m => m.IsMaterialRegistered))); 
+        .ForMember(dest => dest.Materials, opt => opt.MapFrom(src => src.Materials.Where(m => m.IsMaterialRegistered)));
 
         CreateMap<RegistrationMaterial, RegistrationMaterialDto>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.ExternalId))
@@ -107,7 +107,7 @@ public class RegistrationMaterialProfile : Profile
         CreateMap<RegistrationMaterial, MaterialPaymentFeeDto>()
            .ForMember(dest => dest.RegistrationId, opt => opt.MapFrom(src => src.Registration.ExternalId))
            .ForMember(dest => dest.OrganisationId, opt => opt.MapFrom(src => src.Registration.OrganisationId))
-           .ForMember(dest => dest.ApplicationType, opt => opt.MapFrom(src =>(ApplicationOrganisationType) src.Registration.ApplicationTypeId))
+           .ForMember(dest => dest.ApplicationType, opt => opt.MapFrom(src => (ApplicationOrganisationType)src.Registration.ApplicationTypeId))
            .ForMember(dest => dest.CreatedDate, opt => opt.MapFrom(src => src.CreatedDate))
            .ForMember(dest => dest.SiteAddress, opt => opt.MapFrom(src => src.Registration.ReprocessingSiteAddress != null ? CreateAddressString(src.Registration.ReprocessingSiteAddress) : string.Empty))
            .ForMember(dest => dest.NationId, opt => opt.MapFrom(src => GetNationId(src.Registration)))
@@ -119,7 +119,7 @@ public class RegistrationMaterialProfile : Profile
         {
             return registration.ReprocessingSiteAddress?.NationId ?? 0;
         }
-         return registration.BusinessAddress?.NationId ?? 0;
+        return registration.BusinessAddress?.NationId ?? 0;
     }
     private static string[] GetReferenceNumber(RegistrationMaterial src) => src.PermitType?.Name switch
     {
