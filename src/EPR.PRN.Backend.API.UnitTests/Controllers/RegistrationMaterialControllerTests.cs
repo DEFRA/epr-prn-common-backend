@@ -42,7 +42,7 @@ public class RegistrationMaterialControllerTests
         var registrationId = Guid.Parse("4bac12f7-f7a9-4df4-b7b5-9c4221860c4d");
         var expectedDto = new RegistrationOverviewDto
         {
-            OrganisationName = "Test Organisation",
+            OrganisationId = Guid.NewGuid(),
             Regulator = "Test Regulator"
         };
 
