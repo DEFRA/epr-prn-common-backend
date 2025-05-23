@@ -13,7 +13,6 @@ public class RegistrationMaterialProfile : Profile
     {
         CreateMap<Registration, RegistrationOverviewDto>()
         .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.ExternalId))
-        .ForMember(dest => dest.OrganisationName, opt => opt.MapFrom(src => "Green Ltd"))
         .ForMember(dest => dest.Regulator, opt => opt.MapFrom(_ => "EA"))
         .ForMember(dest => dest.OrganisationType,
             opt => opt.MapFrom(src => (ApplicationOrganisationType)src.ApplicationTypeId))

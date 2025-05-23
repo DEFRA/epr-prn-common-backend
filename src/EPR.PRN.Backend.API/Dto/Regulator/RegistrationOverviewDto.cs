@@ -8,7 +8,7 @@ public class RegistrationOverviewDto
 {
     public Guid Id { get; set; }
 
-    public required string OrganisationName { get; set; } = string.Empty;
+    public Guid OrganisationId { get; set; }
 
     public string? SiteAddress { get; init; }
 
