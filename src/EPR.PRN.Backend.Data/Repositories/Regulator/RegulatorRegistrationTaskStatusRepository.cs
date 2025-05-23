@@ -75,9 +75,10 @@ namespace EPR.PRN.Backend.Data.Repositories.Regulator
             await _context.SaveChangesAsync();
             _logger.LogInformation("Successfully updated status for task with TaskName {TaskName} And RegistrationId {RegistrationId} to {Status}", TaskName, RegistrationId, status);
         }
+
         private async Task<RegulatorRegistrationTaskStatus?> GetTaskStatus(string TaskName, int RegistrationId)
         {
-            return await _context.RegulatorRegistrationTaskStatus.Include(ts => ts.TaskStatus).FirstOrDefaultAsync(x => x.Task.Name == TaskName && x.RegistrationId == RegistrationId);
+            return await _context.RegulatorRegistrationTaskStatus.Include(ts => ts.TaskStatus).Include(ts => ts.Task).FirstOrDefaultAsync(x => x.Task.Name == TaskName && x.RegistrationId == RegistrationId);
         }
     }
 }
