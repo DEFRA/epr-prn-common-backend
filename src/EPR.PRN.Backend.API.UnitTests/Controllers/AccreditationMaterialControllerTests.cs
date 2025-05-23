@@ -36,7 +36,7 @@ public class AccreditationMaterialControllerTests
         int year = 1;
         var expectedDto = new RegistrationOverviewDto
         {
-            OrganisationName = "Test Organisation",
+            OrganisationId = Guid.NewGuid(),
             Regulator = "Test Regulator"
         };
 

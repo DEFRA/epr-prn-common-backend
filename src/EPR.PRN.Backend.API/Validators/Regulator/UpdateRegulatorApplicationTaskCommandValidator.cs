@@ -2,11 +2,11 @@
 using EPR.PRN.Backend.API.Common.Enums;
 using FluentValidation;
 
-namespace EPR.PRN.Backend.API.Validators;
+namespace EPR.PRN.Backend.API.Validators.Regulator;
 
-public class UpdateRegulatorRegistrationTaskCommandValidator : AbstractValidator<UpdateRegulatorRegistrationTaskCommand>
+public class UpdateRegulatorApplicationTaskCommandValidator : AbstractValidator<UpdateRegulatorApplicationTaskCommand>
 {
-    public UpdateRegulatorRegistrationTaskCommandValidator()
+    public UpdateRegulatorApplicationTaskCommandValidator()
     {
         var allowedStatuses = new[] { RegulatorTaskStatus.Queried, RegulatorTaskStatus.Completed };
 

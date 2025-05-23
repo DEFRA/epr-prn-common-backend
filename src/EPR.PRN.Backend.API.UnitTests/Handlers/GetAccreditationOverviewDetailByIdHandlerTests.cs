@@ -6,7 +6,7 @@ using EPR.PRN.Backend.Data.Interfaces.Regulator;
 using FluentAssertions;
 using Moq;
 using EPR.PRN.Backend.API.Common.Enums;
-using EPR.PRN.Backend.API.Profiles;
+using EPR.PRN.Backend.API.Profiles.Regulator;
 
 namespace EPR.PRN.Backend.API.UnitTests.Handlers;
 
