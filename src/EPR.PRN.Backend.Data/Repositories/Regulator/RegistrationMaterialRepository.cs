@@ -83,6 +83,9 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
         if (registration == null)
             throw new KeyNotFoundException("Registration not found.");
 
+        var determinationDate = await eprContext.DeterminationDate
+    .FirstOrDefaultAsync(x => x.RegistrationMaterialId == material.RegistrationId);
+
         var applicationTypeId = registration.ApplicationTypeId;
 
 
@@ -103,7 +106,7 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
 
         // Set/update the fields
         dulyMade.TaskStatusId = statusId;
-        dulyMade.DeterminationDate = DeterminationDate;
+        determinationDate.DeterminateDate = DeterminationDate;
         dulyMade.DulyMadeDate = DulyMadeDate;
         dulyMade.DulyMadeBy = DulyMadeBy;
         dulyMade.ExternalId = material.ExternalId;
@@ -113,6 +116,12 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
         {
             await eprContext.DulyMade.AddAsync(dulyMade);
             await eprContext.RegulatorApplicationTaskStatus.AddAsync(regulatorApplicationTaskStatus);
+        }
+
+        if (determinationDate.Id == 0)
+        {
+            determinationDate.RegistrationMaterialId = material.Id;
+            await eprContext.DeterminationDate.AddAsync(determinationDate);
         }
 
         await eprContext.SaveChangesAsync();

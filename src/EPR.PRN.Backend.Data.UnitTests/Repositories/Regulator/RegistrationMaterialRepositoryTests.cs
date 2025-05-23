@@ -289,6 +289,8 @@ public class RegistrationMaterialRepositoryTests
         // Assert
         var dulyMadeEntry = await _context.DulyMade
             .FirstOrDefaultAsync(x => x.RegistrationMaterial.ExternalId == registrationMaterialId);
+        var savedDeterminationDate = await _context.DeterminationDate
+            .FirstOrDefaultAsync(x => x.RegistrationMaterialId == 1);
         var taskStatusEntry = await _context.RegulatorApplicationTaskStatus
             .FirstOrDefaultAsync(x => x.RegistrationMaterial.ExternalId == registrationMaterialId && x.TaskStatusId == statusId);
 
@@ -297,7 +299,7 @@ public class RegistrationMaterialRepositoryTests
             dulyMadeEntry.Should().NotBeNull();
             dulyMadeEntry!.DulyMadeBy.Should().Be(userId);
             dulyMadeEntry.DulyMadeDate.Should().Be(dulyMadeDate);
-            dulyMadeEntry.DeterminationDate.Should().Be(determinationDate);
+            savedDeterminationDate.DeterminateDate.Should().Be(determinationDate);
             dulyMadeEntry.TaskStatusId.Should().Be(statusId);
 
             taskStatusEntry.Should().NotBeNull();
