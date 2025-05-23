@@ -5,7 +5,7 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.FeatureManagement.Mvc;
 
-namespace EPR.PRN.Backend.API.Controllers;
+namespace EPR.PRN.Backend.API.Controllers.Regulator;
 [FeatureGate(FeatureFlags.ReprocessorExporter)]
 [ApiController]
 [ApiVersion("1.0")]

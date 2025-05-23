@@ -4,7 +4,7 @@ using EPR.PRN.Backend.Data.DataModels.Registrations;
 using EPR.PRN.Backend.Data.Interfaces.Regulator;
 using MediatR;
 
-namespace EPR.PRN.Backend.API.Handlers;
+namespace EPR.PRN.Backend.API.Handlers.Regulator;
 
 public class RegistrationMaterialsOutcomeHandler(
     IRegistrationMaterialRepository rmRepository
@@ -13,12 +13,8 @@ public class RegistrationMaterialsOutcomeHandler(
     public async Task Handle(RegistrationMaterialsOutcomeCommand request, CancellationToken cancellationToken)
     {
         var materialEntity = await rmRepository.GetRegistrationMaterialById(request.Id);
-        
-        EnsureStatusTransitionIsValid(request, materialEntity);
 
-        var registrationReferenceNumber = request.Status == RegistrationMaterialStatus.Granted
-            ? request.RegistrationReferenceNumber
-            : null;
+        EnsureStatusTransitionIsValid(request, materialEntity);
 
         await rmRepository.UpdateRegistrationOutCome(
             request.Id,
@@ -33,11 +29,11 @@ public class RegistrationMaterialsOutcomeHandler(
         var currentStatus = (RegistrationMaterialStatus?)materialEntity.StatusId;
 
         if (request.Status == currentStatus ||
-            (currentStatus == RegistrationMaterialStatus.Granted &&
-             request.Status == RegistrationMaterialStatus.Refused))
+            currentStatus == RegistrationMaterialStatus.Granted &&
+             request.Status == RegistrationMaterialStatus.Refused)
         {
             throw new InvalidOperationException("Invalid outcome transition.");
         }
     }
-   
+
 }

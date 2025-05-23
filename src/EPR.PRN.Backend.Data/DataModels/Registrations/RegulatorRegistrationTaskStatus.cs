@@ -7,5 +7,7 @@ namespace EPR.PRN.Backend.Data.DataModels.Registrations;
 [ExcludeFromCodeCoverage]
 public class RegulatorRegistrationTaskStatus: RegulatorTaskStatusBase
 {
+    public Registration Registration { get; set; }
+    [ForeignKey("Registration")]
     public int? RegistrationId { get; set; }
 }

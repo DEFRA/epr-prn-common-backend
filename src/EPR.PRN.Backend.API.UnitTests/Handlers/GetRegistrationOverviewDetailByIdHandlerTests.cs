@@ -1,12 +1,12 @@
 ﻿using AutoMapper;
-using EPR.PRN.Backend.API.Handlers;
 using EPR.PRN.Backend.API.Queries;
 using EPR.PRN.Backend.Data.DataModels.Registrations;
 using EPR.PRN.Backend.Data.Interfaces.Regulator;
 using FluentAssertions;
 using Moq;
 using EPR.PRN.Backend.API.Common.Enums;
-using EPR.PRN.Backend.API.Profiles;
+using EPR.PRN.Backend.API.Handlers.Regulator;
+using EPR.PRN.Backend.API.Profiles.Regulator;
 
 namespace EPR.PRN.Backend.API.UnitTests.Handlers;
 
@@ -35,11 +35,11 @@ public class GetRegistrationOverviewDetailByIdHandlerTests
     public async Task Handle_WhenTasksAndMaterialsExist_ShouldReturnMappedDto()
     {
         // Arrange
-        const int registrationId = 1;
+        Guid registrationId = Guid.Parse("4bac12f7-f7a9-4df4-b7b5-9c4221860c4d");
 
         var registration = new Registration
         {
-            Id = registrationId,
+            ExternalId = registrationId,
             ApplicationTypeId = 101,
             Tasks = [
                 new RegulatorRegistrationTaskStatus
@@ -102,11 +102,11 @@ public class GetRegistrationOverviewDetailByIdHandlerTests
     public async Task Handle_WhenNoTasksExist_ShouldCreateNotStartedEntriesForRequiredTasks()
     {
         // Arrange
-        const int registrationId = 1;
+        Guid registrationId = Guid.Parse("4bac12f7-f7a9-4df4-b7b5-9c4221860c4d");
 
         var registration = new Registration
         {
-            Id = registrationId,
+            ExternalId = registrationId,
             ApplicationTypeId = 101,
             Tasks = [],
             Materials =
@@ -156,11 +156,11 @@ public class GetRegistrationOverviewDetailByIdHandlerTests
     public async Task Handle_ShouldReturnEmptyMaterials_WhenNoMaterialsFound()
     {
         // Arrange
-        int registrationId = 1;
+        Guid registrationId = Guid.Parse("4bac12f7-f7a9-4df4-b7b5-9c4221860c4d");
 
         var registration = new Registration
         {
-            Id = registrationId,
+            ExternalId = registrationId,
             ApplicationTypeId = 101
         };
 

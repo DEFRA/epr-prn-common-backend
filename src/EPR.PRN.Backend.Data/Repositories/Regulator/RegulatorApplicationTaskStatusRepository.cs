@@ -4,7 +4,6 @@ using EPR.PRN.Backend.Data.DataModels.Registrations;
 using EPR.PRN.Backend.Data.Interfaces.Regulator;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace EPR.PRN.Backend.Data.Repositories.Regulator
 {
@@ -19,12 +18,12 @@ namespace EPR.PRN.Backend.Data.Repositories.Regulator
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        public async Task<RegulatorApplicationTaskStatus?> GetTaskStatusAsync(string TaskName, int RegistrationMaterialId)
+        public async Task<RegulatorApplicationTaskStatus?> GetTaskStatusAsync(string TaskName, Guid RegistrationMaterialId)
         {
             return await GetTaskStatus(TaskName, RegistrationMaterialId);
         }
 
-        public async Task UpdateStatusAsync(string TaskName, int RegistrationMaterialId, RegulatorTaskStatus status, string? comments, Guid user)
+        public async Task UpdateStatusAsync(string TaskName, Guid RegistrationMaterialId, RegulatorTaskStatus status, string? comments, Guid user)
         {
             _logger.LogInformation("Updating status for task with TaskName {TaskName} And RegistrationMaterialId {RegistrationMaterialId} to {Status}", TaskName, RegistrationMaterialId, status);
 
@@ -34,7 +33,7 @@ namespace EPR.PRN.Backend.Data.Repositories.Regulator
 
             if (taskStatus == null)
             {
-                var registrationMaterial = _context.RegistrationMaterials.Include(r => r.Registration).SingleOrDefault(r => r.Id == RegistrationMaterialId);
+                var registrationMaterial = _context.RegistrationMaterials.Include(r => r.Registration).SingleOrDefault(r => r.ExternalId == RegistrationMaterialId);
                 if (registrationMaterial == null)
                 {
                     throw new KeyNotFoundException();
@@ -50,7 +49,7 @@ namespace EPR.PRN.Backend.Data.Repositories.Regulator
                 taskStatus = new RegulatorApplicationTaskStatus
                 {
                     Task = task,
-                    RegistrationMaterialId = RegistrationMaterialId,
+                    RegistrationMaterialId = registrationMaterial.Id,
                     ExternalId = Guid.NewGuid(),
                     TaskStatus = statusEntity,
                     Comments = comments,
@@ -76,9 +75,9 @@ namespace EPR.PRN.Backend.Data.Repositories.Regulator
             await _context.SaveChangesAsync();
             _logger.LogInformation("Successfully updated status for task with TaskName {TaskName} And RegistrationMaterialId {RegistrationMaterialId} to {Status}", TaskName, RegistrationMaterialId, status);
         }
-        private async Task<RegulatorApplicationTaskStatus?> GetTaskStatus(string TaskName, int RegistrationMaterialId)
+        private async Task<RegulatorApplicationTaskStatus?> GetTaskStatus(string TaskName, Guid RegistrationMaterialId)
         {
-            return await _context.RegulatorApplicationTaskStatus.Include(ts => ts.TaskStatus).FirstOrDefaultAsync(x => x.Task.Name == TaskName && x.RegistrationMaterialId == RegistrationMaterialId);
+            return await _context.RegulatorApplicationTaskStatus.Include(ts => ts.TaskStatus).Include(y => y.RegistrationMaterial).FirstOrDefaultAsync(x => x.Task.Name == TaskName && x.RegistrationMaterial.ExternalId == RegistrationMaterialId);
         }
     }
 }

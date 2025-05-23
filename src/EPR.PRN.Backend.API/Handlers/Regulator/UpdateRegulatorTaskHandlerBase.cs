@@ -2,7 +2,7 @@ using EPR.PRN.Backend.API.Common.Enums;
 using EPR.PRN.Backend.API.Common.Exceptions;
 using EPR.PRN.Backend.Data.DataModels.Registrations;
 
-namespace EPR.PRN.Backend.API.Handlers;
+namespace EPR.PRN.Backend.API.Handlers.Regulator;
 
 public abstract class UpdateRegulatorTaskHandlerBase
 {
@@ -12,7 +12,7 @@ public abstract class UpdateRegulatorTaskHandlerBase
         {
             if (commandStatus == RegulatorTaskStatus.Completed)
             {
-                
+
                 if (task.TaskStatus.Name == RegulatorTaskStatus.Completed.ToString())
                 {
                     throw new RegulatorInvalidOperationException($"Cannot set task status to {RegulatorTaskStatus.Completed} as it is already {RegulatorTaskStatus.Completed}");

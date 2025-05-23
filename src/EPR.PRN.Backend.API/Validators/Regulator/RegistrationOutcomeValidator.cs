@@ -3,15 +3,14 @@ using EPR.PRN.Backend.API.Common.Enums;
 using EPR.PRN.Backend.API.Constants;
 using FluentValidation;
 
-namespace EPR.PRN.Backend.API.Validators;
+namespace EPR.PRN.Backend.API.Validators.Regulator;
 
 public class RegistrationOutcomeValidator : AbstractValidator<RegistrationMaterialsOutcomeCommand>
 {
     public RegistrationOutcomeValidator()
     {
         RuleFor(x => x.Id)
-            .NotEmpty().WithMessage(ValidationMessages.RegistrationOutcomeIdRequired)
-            .GreaterThan(0).WithMessage(ValidationMessages.RegistrationOutcomeIdGreaterThanZero);
+            .NotEmpty().WithMessage(ValidationMessages.RegistrationOutcomeIdRequired);
 
         RuleFor(x => x.Status)
             .IsInEnum()
