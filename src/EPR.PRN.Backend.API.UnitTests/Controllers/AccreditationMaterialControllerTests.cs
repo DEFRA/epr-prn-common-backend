@@ -1,4 +1,4 @@
-﻿using EPR.PRN.Backend.API.Controllers;
+﻿using EPR.PRN.Backend.API.Controllers.Regulator;
 using EPR.PRN.Backend.API.Dto.Regulator;
 using EPR.PRN.Backend.API.Queries;
 

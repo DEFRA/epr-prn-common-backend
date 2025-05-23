@@ -13,6 +13,5 @@ public class GetAccreditationOverviewDetailByIdQuery : IRequest<RegistrationOver
 {
     [Required]
     public Guid Id { get; set; }
-    [Required]
-    public int Year { get; set; }
+    public int? Year { get; set; }
 }

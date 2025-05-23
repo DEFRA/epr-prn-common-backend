@@ -1,5 +1,4 @@
 ﻿using System.Net;
-
 using EPR.PRN.Backend.API.Commands;
 using EPR.PRN.Backend.API.Common.Constants;
 using EPR.PRN.Backend.API.Dto.Regulator;
@@ -12,7 +11,7 @@ using Microsoft.FeatureManagement.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 using static EPR.PRN.Backend.API.Common.Constants.PrnConstants;
 
-namespace EPR.PRN.Backend.API.Controllers;
+namespace EPR.PRN.Backend.API.Controllers.Regulator;
 
 [ApiController]
 [ApiVersion("1.0")]
@@ -22,7 +21,7 @@ public class AccreditationController(IMediator mediator
     , ILogger<AccreditationController> logger) : ControllerBase
 {
     #region Get methods
-    [HttpGet("registrations/{id}/accreditations/{year}")]
+    [HttpGet("registrations/{id}/accreditations")]
     [ProducesResponseType(typeof(RegistrationOverviewDto), 200)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -33,7 +32,7 @@ public class AccreditationController(IMediator mediator
     [SwaggerResponse(StatusCodes.Status200OK, "Returns registration with materials, accreditations and tasks.", typeof(RegistrationOverviewDto))]
     [SwaggerResponse(StatusCodes.Status400BadRequest, "If the request is invalid or a validation error occurs.", typeof(ProblemDetails))]
     [SwaggerResponse(StatusCodes.Status500InternalServerError, "If an unexpected error occurs.", typeof(ContentResult))]
-    public async Task<IActionResult> GetAccreditationOverviewDetailById(Guid id, int year)
+    public async Task<IActionResult> GetAccreditationOverviewDetailById(Guid id, [FromQuery] int? year)
     {
         logger.LogInformation(LogMessages.AccreditationMaterialsTasks);
         var result = await mediator.Send(new GetAccreditationOverviewDetailByIdQuery() { Id = id, Year = year });

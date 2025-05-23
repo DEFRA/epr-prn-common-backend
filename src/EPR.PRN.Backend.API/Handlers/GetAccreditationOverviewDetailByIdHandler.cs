@@ -33,7 +33,7 @@ public class GetAccreditationOverviewDetailByIdHandler(
         return registrationDto;
     }
 
-    private async Task<IEnumerable<RegistrationTaskDto>> GetMissingTasks(int applicationTypeId, bool isMaterialSpecific, int journeyTypeId, List<RegistrationTaskDto> existingTasks, int year)
+    private async Task<IEnumerable<RegistrationTaskDto>> GetMissingTasks(int applicationTypeId, bool isMaterialSpecific, int journeyTypeId, List<RegistrationTaskDto> existingTasks, int? year)
     {
         var requiredTasks = await repo.GetRequiredTasks(applicationTypeId, isMaterialSpecific, journeyTypeId);
 

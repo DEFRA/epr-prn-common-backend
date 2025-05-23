@@ -120,12 +120,138 @@ public class RegistrationMaterialRepositoryTests
             Materials = new List<RegistrationMaterial> { material }
         };
 
+        var Accreditation_registration = new Registration
+        {
+            Id = 2,
+            ApplicationTypeId = 1,
+            ExternalId = Guid.Parse("4bac12f7-f7a9-4df4-b7b5-9c4221860c5d"),
+            ReprocessingSiteAddress = address,
+            BusinessAddress = address,
+            LegalDocumentAddress = address,
+            AccreditationTasks = new List<RegulatorAccreditationRegistrationTaskStatus>
+            {
+                new RegulatorAccreditationRegistrationTaskStatus
+                {
+                    Id = 2,
+                    TaskId = 1,
+                    TaskStatusId = 1,
+                    TaskStatus = taskStatus,
+                    Task = task,
+                    AccreditationYear = 2025,
+
+                },
+                new RegulatorAccreditationRegistrationTaskStatus
+                {
+                    Id = 3,
+                    TaskId = 1,
+                    TaskStatusId = 1,
+                    TaskStatus = taskStatus,
+                    Task = task,
+                    AccreditationYear = 2026,
+                }
+            },
+            Materials = new List<RegistrationMaterial> {
+                new RegistrationMaterial {
+                    Id = 2,
+                    ExternalId = Guid.Parse("a9421fc1-a912-42ee-85a5-3e06408754a9"),
+                    MaterialId = 1,
+                    StatusId = 1,
+                    RegistrationReferenceNumber = "REF12345",
+                    Comments = "Initial comment",
+                    Status = materialStatus,
+                    Material = lookupMaterial,
+                    IsMaterialRegistered = true,
+
+                    Tasks = new List<RegulatorApplicationTaskStatus>
+                    {
+                        new RegulatorApplicationTaskStatus
+                        {
+                            Id = 3,
+                            TaskId = 1,
+                            TaskStatusId = 1,
+                            TaskStatus = taskStatus,
+                            Task = task
+                        }
+                    },
+                    PermitType = lookupMaterialPermit,
+                    EnvironmentalPermitWasteManagementPeriod = lookupPeriod,
+                    EnvironmentalPermitWasteManagementTonne = 100,
+                    InstallationPeriod = lookupPeriod,
+                    InstallationReprocessingTonne = 200,
+                    WasteManagementPeriod = lookupPeriod,
+                    WasteManagementReprocessingCapacityTonne = 300,
+                    PPCPeriod = lookupPeriod,
+                    PPCReprocessingCapacityTonne = 400,
+                    MaximumReprocessingCapacityTonne = 500,
+                    MaximumReprocessingPeriod = lookupPeriod,
+                    MaterialExemptionReferences = new List<MaterialExemptionReference> { new MaterialExemptionReference {
+                                Id = 2,
+                                ReferenceNo = "EXEMPT123",
+                                RegistrationMaterialId = 2
+                            }
+                        },
+                    Accreditations = new List<Accreditation>{
+                        new Accreditation
+                        {
+                            Id = 1,
+                            RegistrationMaterialId = 2,
+                            AccreditationStatusId = 1,
+                            ApplicationReference = "ACC12345",
+                            AccreditationYear = 2025,
+                            AccreditationStatus = new LookupAccreditationStatus
+                            {
+                                Id = 1,
+                                Name = "Pending"
+                            },
+                            Tasks = new List<RegulatorAccreditationTaskStatus>
+                            {
+                                new RegulatorAccreditationTaskStatus
+                                {
+                                    Id = 1,
+                                    TaskId = 1,
+                                    TaskStatusId = 1,
+                                    TaskStatus = taskStatus,
+                                    Task = task
+                                }
+                            }
+                        },
+                                                new Accreditation
+                        {
+                            Id = 2,
+                            RegistrationMaterialId = 2,
+                            AccreditationStatusId = 1,
+                            ApplicationReference = "ACC12345",
+                            AccreditationYear = 2026,
+                            AccreditationStatus = new LookupAccreditationStatus
+                            {
+                                Id = 2,
+                                Name = "Granted"
+                            },
+                            Tasks = new List<RegulatorAccreditationTaskStatus>
+                            {
+                                new RegulatorAccreditationTaskStatus
+                                {
+                                    Id = 2,
+                                    TaskId = 1,
+                                    TaskStatusId = 1,
+                                    TaskStatus = taskStatus,
+                                    Task = task
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        };
+
         _context.LookupTasks.Add(task);
         _context.LookupTaskStatuses.Add(taskStatus);
         _context.LookupRegistrationMaterialStatuses.Add(materialStatus);
         _context.LookupMaterials.Add(lookupMaterial);
         _context.LookupAddresses.Add(address);
         _context.Registrations.Add(registration);
+
+        _context.Registrations.Add(Accreditation_registration);
 
         _context.LookupPeriod.Add(lookupPeriod);
         _context.LookupMaterialPermit.Add(lookupMaterialPermit);
@@ -152,6 +278,41 @@ public class RegistrationMaterialRepositoryTests
     {
         await Assert.ThrowsExceptionAsync<KeyNotFoundException>(() => _repository.GetRegistrationById(Guid.Parse("cd9dcc80-fcf5-4f46-addd-b8a256f735a3")));
     }
+
+    [TestMethod]
+    public async Task GetRegistrationByExternalIdAndYear_ShouldReturnRegistration_WhenRegistrationExists()
+    {
+        var result = await _repository.GetRegistrationByExternalIdAndYear(Guid.Parse("4bac12f7-f7a9-4df4-b7b5-9c4221860c5d"), 2025);
+        using (new AssertionScope())
+        {
+            Assert.IsNotNull(result);
+            Assert.AreEqual(2, result.Id);
+            Assert.IsNotNull(result.Materials);
+            Assert.IsNotNull(result.AccreditationTasks);
+            Assert.AreEqual(1, result.AccreditationTasks.Count);
+        }
+    }
+
+    [TestMethod]
+    public async Task GetRegistrationByExternalIdAndNullYear_ShouldReturnRegistration_WhenRegistrationExists()
+    {
+        var result = await _repository.GetRegistrationByExternalIdAndYear(Guid.Parse("4bac12f7-f7a9-4df4-b7b5-9c4221860c5d"), null);
+        using (new AssertionScope())
+        {
+            Assert.IsNotNull(result);
+            Assert.AreEqual(2, result.Id);
+            Assert.IsNotNull(result.Materials);
+            Assert.IsNotNull(result.AccreditationTasks);
+            Assert.AreEqual(2, result.AccreditationTasks.Count);
+        }
+    }
+
+    [TestMethod]
+    public async Task GetRegistrationByExternalIdAndYear_ShouldThrowKeyNotFoundException_WhenNotFound()
+    {
+        await Assert.ThrowsExceptionAsync<KeyNotFoundException>(() => _repository.GetRegistrationByExternalIdAndYear(Guid.Parse("cd9dcc80-fcf5-4f46-addd-b8a256f735a3"), 2025));
+    }
+
 
     [TestMethod]
     public async Task GetRequiredTasks_ShouldReturnCorrectTasks()

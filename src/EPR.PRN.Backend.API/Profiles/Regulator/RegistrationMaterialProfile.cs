@@ -128,7 +128,8 @@ public class RegistrationMaterialProfile : Profile
            .ForMember(dest => dest.NationId, opt => opt.MapFrom(src => GetNationId(src.Registration)))
            .ForMember(dest => dest.MaterialName, opt => opt.MapFrom(src => src.Material.MaterialName));
     }
-    private List<RegistrationTaskDto> MapTasks(List<RegulatorRegistrationTaskStatus>? registrationTasks, List<RegulatorAccreditationRegistrationTaskStatus>? accreditationTasks, ResolutionContext context)
+
+    private static List<RegistrationTaskDto> MapTasks(List<RegulatorRegistrationTaskStatus>? registrationTasks, List<RegulatorAccreditationRegistrationTaskStatus>? accreditationTasks, ResolutionContext context)
     {
         var registrationTasksDto = context.Mapper.Map<List<RegistrationTaskDto>>(registrationTasks);
         var accreditationTasksDto = context.Mapper.Map<List<RegistrationTaskDto>>(accreditationTasks);
@@ -138,7 +139,7 @@ public class RegistrationMaterialProfile : Profile
         return registrationTasksDto;
     }
 
-    private int GetNationId(Registration registration)
+    private static int GetNationId(Registration registration)
     {
         if (registration.ApplicationTypeId == (int)ApplicationOrganisationType.Reprocessor)
         {

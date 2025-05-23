@@ -1,5 +1,8 @@
-﻿namespace EPR.PRN.Backend.API.Dto.Regulator
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace EPR.PRN.Backend.API.Dto.Regulator
 {
+    [ExcludeFromCodeCoverage]
     public class AccreditationDto
     {
         public Guid Id { get; set; } 
