@@ -78,8 +78,8 @@ public class GetRegistrationOverviewDetailByIdHandlerTests
         };
         
         _repoMock.Setup(x => x.GetRegistrationById(registrationId)).ReturnsAsync(registration);
-        _repoMock.Setup(x => x.GetRequiredTasks(101, false)).ReturnsAsync(requiredTasks);
-        _repoMock.Setup(x => x.GetRequiredTasks(101, true)).ReturnsAsync(requiredMaterialTasks);
+        _repoMock.Setup(x => x.GetRequiredTasks(101, false, 1)).ReturnsAsync(requiredTasks);
+        _repoMock.Setup(x => x.GetRequiredTasks(101, true, 1)).ReturnsAsync(requiredMaterialTasks);
         
         var query = new GetRegistrationOverviewDetailByIdQuery { Id = registrationId };
 
@@ -132,8 +132,8 @@ public class GetRegistrationOverviewDetailByIdHandlerTests
         };
 
         _repoMock.Setup(x => x.GetRegistrationById(registrationId)).ReturnsAsync(registration);
-        _repoMock.Setup(x => x.GetRequiredTasks(101, false)).ReturnsAsync(requiredTasks);
-        _repoMock.Setup(x => x.GetRequiredTasks(101, true)).ReturnsAsync(requiredMaterialTasks);
+        _repoMock.Setup(x => x.GetRequiredTasks(101, false, 1)).ReturnsAsync(requiredTasks);
+        _repoMock.Setup(x => x.GetRequiredTasks(101, true, 1)).ReturnsAsync(requiredMaterialTasks);
 
         var query = new GetRegistrationOverviewDetailByIdQuery { Id = registrationId };
 
@@ -179,7 +179,7 @@ public class GetRegistrationOverviewDetailByIdHandlerTests
         };
 
         _repoMock.Setup(x => x.GetRegistrationById(registrationId)).ReturnsAsync(registration);
-        _repoMock.Setup(x => x.GetRequiredTasks(101, false)).ReturnsAsync(requiredTasks);
+        _repoMock.Setup(x => x.GetRequiredTasks(101, false, 1)).ReturnsAsync(requiredTasks);
         
         var query = new GetRegistrationOverviewDetailByIdQuery { Id = registrationId };
 

@@ -68,4 +68,5 @@ public class RegistrationMaterial
     public List<FileUpload>? FileUploads { get; set; }
     public List<MaterialExemptionReference>? MaterialExemptionReferences { get; set; }
     public List<RegulatorApplicationTaskStatus>? Tasks { get; set; }
+    public List<Accreditation>? Accreditations { get; set; }
 }

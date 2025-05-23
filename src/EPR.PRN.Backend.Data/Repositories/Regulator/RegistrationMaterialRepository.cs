@@ -15,9 +15,17 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
                ?? throw new KeyNotFoundException("Registration not found.");
     }
 
-    public async Task<List<LookupRegulatorTask>> GetRequiredTasks(int applicationTypeId, bool isMaterialSpecific) =>
+    public async Task<Registration> GetRegistrationByExternalIdAndYear(Guid externalId, int year)
+    {
+        var registrations = GetRegistrationsWithRelatedEntitiesAndAccreditations(year);
+
+        return await registrations.SingleOrDefaultAsync(r => r.ExternalId == externalId)
+              ?? throw new KeyNotFoundException("Registration not found.");
+    }
+
+    public async Task<List<LookupRegulatorTask>> GetRequiredTasks(int applicationTypeId, bool isMaterialSpecific, int journeyTypeId) =>
         await eprContext.LookupTasks
-            .Where(t => t.ApplicationTypeId == applicationTypeId && t.IsMaterialSpecific == isMaterialSpecific && t.JourneyTypeId == 1)
+            .Where(t => t.ApplicationTypeId == applicationTypeId && t.IsMaterialSpecific == isMaterialSpecific && t.JourneyTypeId == journeyTypeId)
             .ToListAsync();
 
     public async Task<RegistrationMaterial> GetRegistrationMaterialById(int registrationMaterialId)
@@ -204,6 +212,44 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
                 .ThenInclude(t => t.Task)
              .Include(r => r.Materials)!
                 .ThenInclude(rm => rm.Status);
+
+        return registrations;
+    }
+
+    private IIncludableQueryable<Registration, LookupAccreditationStatus> GetRegistrationsWithRelatedEntitiesAndAccreditations(int year)
+    {
+        var registrations = eprContext
+            .Registrations
+            .AsNoTracking()
+            .AsSplitQuery()
+            .Include(r => r.BusinessAddress)
+            .Include(r => r.ReprocessingSiteAddress)
+            .Include(r => r.LegalDocumentAddress)
+            .Include(r => r.AccreditationTasks!.Where(at => at.AccreditationYear == year))!
+                .ThenInclude(t => t.TaskStatus)
+            .Include(r => r.AccreditationTasks!.Where(at => at.AccreditationYear == year))!
+                .ThenInclude(t => t.Task)
+
+            .Include(r => r.Materials)!
+                .ThenInclude(m => m.Material)
+            .Include(r => r.Materials)!
+                .ThenInclude(rm => rm.Status)
+
+            .Include(r => r.Materials)!
+                .ThenInclude(rm => rm.Accreditations!.Where(at => at.AccreditationYear == year))!
+                    .ThenInclude(a => a.AccreditationDulyMade)
+
+            .Include(r => r.Materials)!
+                .ThenInclude(rm => rm.Accreditations!.Where(at => at.AccreditationYear == year))!
+                    .ThenInclude(a => a.Tasks)!
+                        .ThenInclude(t => t.Task)
+            .Include(r => r.Materials)!
+                .ThenInclude(rm => rm.Accreditations!.Where(at => at.AccreditationYear == year))!
+                    .ThenInclude(a => a.Tasks)!
+                        .ThenInclude(t => t.TaskStatus)
+            .Include(r => r.Materials)!
+                .ThenInclude(rm => rm.Accreditations!.Where(at => at.AccreditationYear == year))!
+                    .ThenInclude(a => a.AccreditationStatus);
 
         return registrations;
     }

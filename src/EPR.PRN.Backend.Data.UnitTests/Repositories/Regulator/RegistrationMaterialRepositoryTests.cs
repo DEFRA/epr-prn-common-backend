@@ -155,7 +155,7 @@ public class RegistrationMaterialRepositoryTests
     [TestMethod]
     public async Task GetRequiredTasks_ShouldReturnCorrectTasks()
     {
-        var result = await _repository.GetRequiredTasks(1, false);
+        var result = await _repository.GetRequiredTasks(1, false, 1);
         using (new AssertionScope())
         {
             Assert.AreEqual(1, result.Count);
