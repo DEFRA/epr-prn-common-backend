@@ -40,7 +40,7 @@ public class GetMaterialsAuthorisedOnSiteByIdHandlerTests
         var registration = new Registration
         {
             ExternalId = registrationId,
-            OrganisationId = 10,
+            OrganisationId = Guid.NewGuid(),
             ReprocessingSiteAddress = new Address
             {
                 AddressLine1 = "Unit 7",

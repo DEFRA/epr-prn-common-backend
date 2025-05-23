@@ -32,6 +32,21 @@ namespace EPR.PRN.Backend.API.UnitTests.Validators
         }
 
         [TestMethod]
+        public void Should_Have_Error_When_RegistrationMaterialId_Is_Empty()
+        {
+            var command = new RegistrationMaterialsMarkAsDulyMadeCommand
+            {
+                RegistrationMaterialId = Guid.Empty
+            };
+
+            var result = _validator.Validate(command);
+
+            Assert.IsTrue(result.Errors.Any(e =>
+                e.PropertyName == "RegistrationMaterialId" &&
+                e.ErrorMessage == ValidationMessages.RegistrationMaterialIdRequired));
+        }
+
+        [TestMethod]
         public void Should_Have_Error_When_DulyMadeDate_Is_MinValue()
         {
             var command = new RegistrationMaterialsMarkAsDulyMadeCommand
