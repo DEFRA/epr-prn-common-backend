@@ -1906,3 +1906,65 @@ GO
 COMMIT;
 GO
 
+BEGIN TRANSACTION;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250522135103_AddRegistrationTaskStatus'
+)
+BEGIN
+    CREATE TABLE [Public.RegistrationTaskStatus] (
+        [Id] int NOT NULL IDENTITY,
+        [ExternalId] uniqueidentifier NOT NULL,
+        [TaskId] int NULL,
+        [TaskStatusId] int NULL,
+        [RegistrationId] int NULL,
+        CONSTRAINT [PK_Public.RegistrationTaskStatus] PRIMARY KEY ([Id]),
+        CONSTRAINT [FK_Public.RegistrationTaskStatus_Lookup.RegulatorTask_TaskId] FOREIGN KEY ([TaskId]) REFERENCES [Lookup.RegulatorTask] ([Id]),
+        CONSTRAINT [FK_Public.RegistrationTaskStatus_Lookup.TaskStatus_TaskStatusId] FOREIGN KEY ([TaskStatusId]) REFERENCES [Lookup.TaskStatus] ([Id]),
+        CONSTRAINT [FK_Public.RegistrationTaskStatus_Public.Registration_RegistrationId] FOREIGN KEY ([RegistrationId]) REFERENCES [Public.Registration] ([Id])
+    );
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250522135103_AddRegistrationTaskStatus'
+)
+BEGIN
+    CREATE INDEX [IX_Public.RegistrationTaskStatus_RegistrationId] ON [Public.RegistrationTaskStatus] ([RegistrationId]);
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250522135103_AddRegistrationTaskStatus'
+)
+BEGIN
+    CREATE INDEX [IX_Public.RegistrationTaskStatus_TaskId] ON [Public.RegistrationTaskStatus] ([TaskId]);
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250522135103_AddRegistrationTaskStatus'
+)
+BEGIN
+    CREATE INDEX [IX_Public.RegistrationTaskStatus_TaskStatusId] ON [Public.RegistrationTaskStatus] ([TaskStatusId]);
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250522135103_AddRegistrationTaskStatus'
+)
+BEGIN
+    INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+    VALUES (N'20250522135103_AddRegistrationTaskStatus', N'8.0.8');
+END;
+GO
+
+COMMIT;
+GO
+
