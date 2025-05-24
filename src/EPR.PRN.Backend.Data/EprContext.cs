@@ -177,6 +177,18 @@ namespace EPR.PRN.Backend.Data
                 new LookupRegistrationMaterialStatus { Id = 1, Name = "Granted" },
                 new LookupRegistrationMaterialStatus { Id = 2, Name = "Refused" });
 
+            modelBuilder.Entity<LookupAccreditationStatus>().HasData(
+                new LookupAccreditationStatus { Id = 1, Name = "Started" },
+                new LookupAccreditationStatus { Id = 2, Name = "Submitted" },
+                new LookupAccreditationStatus { Id = 3, Name = "Accepted" },
+                new LookupAccreditationStatus { Id = 4, Name = "Queried" },
+                new LookupAccreditationStatus { Id = 5, Name = "Updated" },
+                new LookupAccreditationStatus { Id = 6, Name = "Granted" },
+                new LookupAccreditationStatus { Id = 7, Name = "Refused" },
+                new LookupAccreditationStatus { Id = 8, Name = "Withdrawn" },
+                new LookupAccreditationStatus { Id = 9, Name = "Suspended" },
+                new LookupAccreditationStatus { Id = 10, Name = "Cancelled" });
+
             modelBuilder.Entity<LookupTaskStatus>().HasData(
                 new LookupTaskStatus { Id = 1, Name = "NotStarted" },
                 new LookupTaskStatus { Id = 2, Name = "Started" },
@@ -208,7 +220,18 @@ namespace EPR.PRN.Backend.Data
                 new LookupRegulatorTask { Id = 13, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 1, Name = "MaterialDetailsAndContact" },
                 new LookupRegulatorTask { Id = 14, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 1, Name = "OverseasReprocessorAndInterimSiteDetails" },
                 new LookupRegulatorTask { Id = 15, IsMaterialSpecific = true, ApplicationTypeId = 1, JourneyTypeId = 1, Name = "CheckRegistrationStatus" },
-                new LookupRegulatorTask { Id = 16, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 1, Name = "CheckRegistrationStatus" });
+                new LookupRegulatorTask { Id = 16, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 1, Name = "CheckRegistrationStatus" },
+                new LookupRegulatorTask { Id = 17, IsMaterialSpecific = false, ApplicationTypeId = 1, JourneyTypeId = 2, Name = "AssignOfficer" },
+                new LookupRegulatorTask { Id = 18, IsMaterialSpecific = true, ApplicationTypeId = 1, JourneyTypeId = 2, Name = "PRNs tonnage and authority to issue PRNs" },
+                new LookupRegulatorTask { Id = 19, IsMaterialSpecific = true, ApplicationTypeId = 1, JourneyTypeId = 2, Name = "Business Plan" },
+                new LookupRegulatorTask { Id = 20, IsMaterialSpecific = true, ApplicationTypeId = 1, JourneyTypeId = 2, Name = "Accreditation sampling and inspection plan" },
+                new LookupRegulatorTask { Id = 21, IsMaterialSpecific = true, ApplicationTypeId = 1, JourneyTypeId = 2, Name = "Overseas reprocessing sites and broadly equivalent evidence" },
+
+                new LookupRegulatorTask { Id = 22, IsMaterialSpecific = false, ApplicationTypeId = 2, JourneyTypeId = 2, Name = "AssignOfficer" },
+                new LookupRegulatorTask { Id = 23, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 2, Name = "PRNs tonnage and authority to issue PRNs" },
+                new LookupRegulatorTask { Id = 24, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 2, Name = "Business Plan" },
+                new LookupRegulatorTask { Id = 25, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 2, Name = "Accreditation sampling and inspection plan" },
+                new LookupRegulatorTask { Id = 26, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 2, Name = "Overseas reprocessing sites and broadly equivalent evidence" });
 
             modelBuilder.Entity<LookupMaterialPermit>().HasData(
                 new LookupMaterialPermit { Id = 1, Name = PermitTypes.WasteExemption },

@@ -4,6 +4,7 @@ using EPR.PRN.Backend.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EPR.PRN.Backend.Data.Migrations
 {
     [DbContext(typeof(EprContext))]
-    partial class EprContextModelSnapshot : ModelSnapshot
+    [Migration("20250523122716_Accreditation")]
+    partial class Accreditation
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1721,8 +1724,8 @@ namespace EPR.PRN.Backend.Data.Migrations
                     b.Property<int?>("LegalDocumentAddressId")
                         .HasColumnType("int");
 
-                    b.Property<Guid>("OrganisationId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int>("OrganisationId")
+                        .HasColumnType("int");
 
                     b.Property<int>("RegistrationStatusId")
                         .HasColumnType("int");
@@ -2398,7 +2401,7 @@ namespace EPR.PRN.Backend.Data.Migrations
 
             modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.RegulatorAccreditationTaskStatus", b =>
                 {
-                    b.HasOne("EPR.PRN.Backend.Data.DataModels.Registrations.Accreditation", "Accreditation")
+                    b.HasOne("EPR.PRN.Backend.Data.DataModels.Registrations.Accreditation", null)
                         .WithMany("Tasks")
                         .HasForeignKey("AccreditationId");
 
@@ -2410,8 +2413,6 @@ namespace EPR.PRN.Backend.Data.Migrations
                         .WithMany()
                         .HasForeignKey("TaskStatusId");
 
-                    b.Navigation("Accreditation");
-
                     b.Navigation("Task");
 
                     b.Navigation("TaskStatus");
@@ -2419,7 +2420,7 @@ namespace EPR.PRN.Backend.Data.Migrations
 
             modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.RegulatorApplicationTaskStatus", b =>
                 {
-                    b.HasOne("EPR.PRN.Backend.Data.DataModels.Registrations.RegistrationMaterial", "RegistrationMaterial")
+                    b.HasOne("EPR.PRN.Backend.Data.DataModels.Registrations.RegistrationMaterial", null)
                         .WithMany("Tasks")
                         .HasForeignKey("RegistrationMaterialId");
 
@@ -2431,8 +2432,6 @@ namespace EPR.PRN.Backend.Data.Migrations
                         .WithMany()
                         .HasForeignKey("TaskStatusId");
 
-                    b.Navigation("RegistrationMaterial");
-
                     b.Navigation("Task");
 
                     b.Navigation("TaskStatus");
@@ -2440,7 +2439,7 @@ namespace EPR.PRN.Backend.Data.Migrations
 
             modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.RegulatorRegistrationTaskStatus", b =>
                 {
-                    b.HasOne("EPR.PRN.Backend.Data.DataModels.Registrations.Registration", "Registration")
+                    b.HasOne("EPR.PRN.Backend.Data.DataModels.Registrations.Registration", null)
                         .WithMany("Tasks")
                         .HasForeignKey("RegistrationId");
 
@@ -2451,8 +2450,6 @@ namespace EPR.PRN.Backend.Data.Migrations
                     b.HasOne("EPR.PRN.Backend.Data.DataModels.Registrations.LookupTaskStatus", "TaskStatus")
                         .WithMany()
                         .HasForeignKey("TaskStatusId");
-
-                    b.Navigation("Registration");
 
                     b.Navigation("Task");
 

@@ -11,6 +11,7 @@ public class RegistrationOverviewDto
     public Guid OrganisationId { get; set; }
 
     public string? SiteAddress { get; init; }
+    public string? SiteGridReference { get; init; }
 
     public ApplicationOrganisationType OrganisationType { get; set; }
 

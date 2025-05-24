@@ -5,8 +5,9 @@ namespace EPR.PRN.Backend.Data.Interfaces.Regulator;
 public interface IRegistrationMaterialRepository
 {
     Task<Registration> GetRegistrationById(Guid registrationId);
-    
-    Task<List<LookupRegulatorTask>> GetRequiredTasks(int applicationTypeId, bool isMaterialSpecific);
+    Task<Registration> GetRegistrationByExternalIdAndYear(Guid externalId, int? year);
+
+    Task<List<LookupRegulatorTask>> GetRequiredTasks(int applicationTypeId, bool isMaterialSpecific, int journeyTypeId);
 
     Task<RegistrationMaterial> GetRegistrationMaterialById(Guid registrationMaterialId);
     Task<RegistrationMaterial> GetRegistrationMaterial_WasteLicencesById(Guid registrationMaterialId);
