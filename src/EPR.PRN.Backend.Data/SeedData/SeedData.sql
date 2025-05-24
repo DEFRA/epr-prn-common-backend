@@ -1,4 +1,38 @@
-GO
+
+BEGIN TRY
+
+    BEGIN TRANSACTION;
+ 
+	DELETE FROM dbo.[Public.RegulatorApplicationTaskStatus]
+	DELETE FROM dbo.[Public.RegulatorRegistrationTaskStatus]
+    DELETE FROM [dbo].[Public.FileUpload]
+    DELETE FROM [dbo].[Public.RegistrationReprocessingIO]
+    DELETE FROM [dbo].[Public.RegistrationMaterial]
+    DELETE FROM [dbo].[Public.Registration]
+    DELETE FROM [dbo].[Public.MaterialExemptionReference]
+    DELETE FROM [dbo].[Public.Address]
+    DELETE FROM [dbo].[Public.Accreditation]
+    DELETE FROM [dbo].[Public.AccreditationDeterminationDate]
+     
+    DELETE FROM [dbo].[Public.RegulatorAccreditationRegistrationTaskStatus]
+    DELETE FROM [dbo].[Public.RegulatorAccreditationTaskStatus]
+    DELETE FROM [dbo].[Public.RegulatorApplicationTaskStatus]
+    DELETE FROM [dbo].[Public.RegulatorRegistrationTaskStatus]
+
+	
+    COMMIT TRANSACTION;
+
+END TRY
+
+BEGIN CATCH
+
+    PRINT 'An error occurred. Rolling back transaction.';
+
+    ROLLBACK TRANSACTION;
+
+END CATCH
+
+GO   	 
 SET IDENTITY_INSERT [dbo].[Public.Address] ON 
 GO
 INSERT [dbo].[Public.Address] ([Id], [AddressLine1], [AddressLine2], [TownCity], [County], [PostCode], [NationId], [GridReference]) VALUES (1, N'23', N'Ruby St', N'London', NULL, N'E12 3SE', 1, N'SJ 854 661')
@@ -3213,3 +3247,22 @@ INSERT [dbo].[Public.Accreditation] ([Id], [ExternalId], [RegistrationMaterialId
 GO
 SET IDENTITY_INSERT [dbo].[Public.Accreditation] OFF
 GO
+
+
+
+
+
+GO
+SET IDENTITY_INSERT [dbo].[Public.AccreditationDeterminationDate] ON 
+GO
+INSERT [dbo].[Public.AccreditationDeterminationDate] ([Id], [ExternalId], [AccreditationId], [DeterminationDate]) VALUES (1, N'a4fbff72-0966-4a5c-8aaf-01bba11da842', 2, CAST(N'2025-01-01T00:00:00.0000000' AS DateTime2))
+GO
+SET IDENTITY_INSERT [dbo].[Public.AccreditationDeterminationDate] OFF
+GO
+
+
+
+
+
+
+ 
