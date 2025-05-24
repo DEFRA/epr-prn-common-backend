@@ -48,6 +48,7 @@ public class GetAccreditationOverviewDetailByIdHandlerTests
                 {
                     Task = new LookupRegulatorTask { Name = "SiteAddressAndContactDetails" },
                     TaskStatus = new LookupTaskStatus { Name = "Completed" },
+                    AccreditationYear = year,
                 }
             ],
             Materials =
@@ -67,17 +68,23 @@ public class GetAccreditationOverviewDetailByIdHandlerTests
                             Id = 1,
                             AccreditationYear = year,
                             Tasks = [
-                                new RegulatorAccreditationTaskStatus
-                                {
-                                    Task = new LookupRegulatorTask { Name = "BusinessAddress" },
-                                    TaskStatus = new LookupTaskStatus { Name = "Started" }
-                                }
+
                             ]
                         }
                     ]
                 }
             ]
         };
+
+        var task = new RegulatorAccreditationTaskStatus
+        {
+            AccreditationId = 1,
+            Accreditation = registration.Materials[0].Accreditations[0],
+            Task = new LookupRegulatorTask { Name = "BusinessAddress" },
+            TaskStatus = new LookupTaskStatus { Name = "Started" }
+        };
+
+        registration.Materials[0].Accreditations[0].Tasks.Add(task);
 
         var requiredTasks = new List<LookupRegulatorTask>
         {

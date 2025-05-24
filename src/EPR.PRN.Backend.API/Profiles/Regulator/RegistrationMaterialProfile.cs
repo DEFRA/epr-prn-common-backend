@@ -39,12 +39,14 @@ public class RegistrationMaterialProfile : Profile
         CreateMap<RegulatorAccreditationRegistrationTaskStatus, RegistrationTaskDto>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.ExternalId))
             .ForMember(dest => dest.TaskName, opt => opt.MapFrom(src => src.Task.Name))
-            .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.TaskStatus.Name));
+            .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.TaskStatus.Name))
+            .ForMember(dest => dest.Year, opt => opt.MapFrom(src => src.AccreditationYear));
 
         CreateMap<RegulatorAccreditationTaskStatus, RegistrationTaskDto>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.ExternalId))
             .ForMember(dest => dest.TaskName, opt => opt.MapFrom(src => src.Task.Name))
-            .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.TaskStatus.Name));
+            .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.TaskStatus.Name))
+            .ForMember(dest => dest.Year, opt => opt.MapFrom(src => src.Accreditation.AccreditationYear));
 
         CreateMap<RegulatorRegistrationTaskStatus, RegistrationTaskDto>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.ExternalId))

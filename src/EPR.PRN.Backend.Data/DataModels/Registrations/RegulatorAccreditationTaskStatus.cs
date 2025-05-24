@@ -7,5 +7,7 @@ namespace EPR.PRN.Backend.Data.DataModels.Registrations;
 [ExcludeFromCodeCoverage]
 public class RegulatorAccreditationTaskStatus : RegulatorTaskStatusBase
 {
+    public Accreditation Accreditation { get; set; }
+    [ForeignKey("Accreditation")]
     public int? AccreditationId { get; set; }
 }
