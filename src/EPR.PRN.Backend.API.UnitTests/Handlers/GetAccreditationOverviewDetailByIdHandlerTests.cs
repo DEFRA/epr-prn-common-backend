@@ -15,7 +15,7 @@ public class GetAccreditationOverviewDetailByIdHandlerTests
 {
     private Mock<IRegistrationMaterialRepository> _repoMock;
     private IMapper _mapper;
-    private GetAccreditationOverviewDetailByIdHandler _handler;
+    private GetRegistrationOverviewDetailWithAccreditationsByIdHandler _handler;
 
     [TestInitialize]
     public void TestInitialize()
@@ -28,7 +28,7 @@ public class GetAccreditationOverviewDetailByIdHandlerTests
         });
         _mapper = config.CreateMapper();
 
-        _handler = new GetAccreditationOverviewDetailByIdHandler(_repoMock.Object, _mapper);
+        _handler = new GetRegistrationOverviewDetailWithAccreditationsByIdHandler(_repoMock.Object, _mapper);
     }
 
     [TestMethod]
@@ -67,6 +67,7 @@ public class GetAccreditationOverviewDetailByIdHandlerTests
                         {
                             Id = 1,
                             AccreditationYear = year,
+                            ApplicationReferenceNumber = "APP-12345",
                             Tasks = [
 
                             ]
@@ -100,7 +101,7 @@ public class GetAccreditationOverviewDetailByIdHandlerTests
         _repoMock.Setup(x => x.GetRequiredTasks(101, false, 2)).ReturnsAsync(requiredTasks);
         _repoMock.Setup(x => x.GetRequiredTasks(101, true, 2)).ReturnsAsync(requiredMaterialTasks);
         
-        var query = new GetAccreditationOverviewDetailByIdQuery { Id = registrationId, Year = year };
+        var query = new GetRegistrationOverviewDetailWithAccreditationsByIdQuery { Id = registrationId, Year = year };
 
         // Act
         var result = await _handler.Handle(query, CancellationToken.None);
@@ -144,6 +145,7 @@ public class GetAccreditationOverviewDetailByIdHandlerTests
                     Accreditations = new List<Accreditation>{ 
                         new Accreditation{ 
                         AccreditationYear = year,
+                        ApplicationReferenceNumber = "APP-12345",
                         }
                     }
                 }
@@ -163,7 +165,7 @@ public class GetAccreditationOverviewDetailByIdHandlerTests
         _repoMock.Setup(x => x.GetRequiredTasks(101, false, 2)).ReturnsAsync(requiredTasks);
         _repoMock.Setup(x => x.GetRequiredTasks(101, true, 2)).ReturnsAsync(requiredMaterialTasks);
 
-        var query = new GetAccreditationOverviewDetailByIdQuery { Id = registrationId, Year = year };
+        var query = new GetRegistrationOverviewDetailWithAccreditationsByIdQuery { Id = registrationId, Year = year };
 
         // Act
         var result = await _handler.Handle(query, CancellationToken.None);
@@ -208,7 +210,7 @@ public class GetAccreditationOverviewDetailByIdHandlerTests
         _repoMock.Setup(x => x.GetRegistrationByExternalIdAndYear(registrationId, year)).ReturnsAsync(accreditation_registration);
         _repoMock.Setup(x => x.GetRequiredTasks(101, false, 1)).ReturnsAsync(requiredTasks);
 
-        var query = new GetAccreditationOverviewDetailByIdQuery { Id = registrationId, Year = year };
+        var query = new GetRegistrationOverviewDetailWithAccreditationsByIdQuery { Id = registrationId, Year = year };
 
         // Act
         var result = await _handler.Handle(query, CancellationToken.None);

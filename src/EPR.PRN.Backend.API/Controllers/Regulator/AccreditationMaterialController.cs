@@ -32,10 +32,10 @@ public class AccreditationController(IMediator mediator
     [SwaggerResponse(StatusCodes.Status200OK, "Returns registration with materials, accreditations and tasks.", typeof(RegistrationOverviewDto))]
     [SwaggerResponse(StatusCodes.Status400BadRequest, "If the request is invalid or a validation error occurs.", typeof(ProblemDetails))]
     [SwaggerResponse(StatusCodes.Status500InternalServerError, "If an unexpected error occurs.", typeof(ContentResult))]
-    public async Task<IActionResult> GetAccreditationOverviewDetailById(Guid id, [FromQuery] int? year)
+    public async Task<IActionResult> GetRegistrationByIdWithAccreditationsAsync(Guid id, [FromQuery] int? year)
     {
         logger.LogInformation(LogMessages.AccreditationMaterialsTasks);
-        var result = await mediator.Send(new GetAccreditationOverviewDetailByIdQuery() { Id = id, Year = year });
+        var result = await mediator.Send(new GetRegistrationOverviewDetailWithAccreditationsByIdQuery() { Id = id, Year = year });
         return Ok(result);
     }
 

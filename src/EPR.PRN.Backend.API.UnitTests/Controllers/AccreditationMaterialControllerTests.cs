@@ -41,11 +41,11 @@ public class AccreditationMaterialControllerTests
         };
 
         _mediatorMock
-            .Setup(m => m.Send(It.IsAny<GetAccreditationOverviewDetailByIdQuery>(), It.IsAny<CancellationToken>()))
+            .Setup(m => m.Send(It.IsAny<GetRegistrationOverviewDetailWithAccreditationsByIdQuery>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(expectedDto);
 
         // Act
-        var result = await _controller.GetAccreditationOverviewDetailById(registrationId, year);
+        var result = await _controller.GetRegistrationByIdWithAccreditationsAsync(registrationId, year);
 
         // Assert
         using (new AssertionScope())

@@ -18,8 +18,8 @@ public class Accreditation
     public int RegistrationMaterialId { get; set; }
     public RegistrationMaterial RegistrationMaterial { get; set; }
     public int AccreditationYear { get; set; }
-    [MaxLength(20)]
-    public string? ApplicationReference { get; set; }
+    [MaxLength(12)]
+    public required string ApplicationReferenceNumber { get; set; }
     public List<RegulatorAccreditationTaskStatus>? Tasks { get; set; }
 
     [ForeignKey("AccreditationStatus")]

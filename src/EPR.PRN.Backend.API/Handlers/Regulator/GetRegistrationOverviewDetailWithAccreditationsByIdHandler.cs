@@ -7,12 +7,12 @@ using MediatR;
 
 namespace EPR.PRN.Backend.API.Handlers.Regulator;
 
-public class GetAccreditationOverviewDetailByIdHandler(
+public class GetRegistrationOverviewDetailWithAccreditationsByIdHandler(
     IRegistrationMaterialRepository repo,
     IMapper mapper
-) : IRequestHandler<GetAccreditationOverviewDetailByIdQuery, RegistrationOverviewDto>
+) : IRequestHandler<GetRegistrationOverviewDetailWithAccreditationsByIdQuery, RegistrationOverviewDto>
 {
-    public async Task<RegistrationOverviewDto> Handle(GetAccreditationOverviewDetailByIdQuery request, CancellationToken cancellationToken)
+    public async Task<RegistrationOverviewDto> Handle(GetRegistrationOverviewDetailWithAccreditationsByIdQuery request, CancellationToken cancellationToken)
     {
         var registration = await repo.GetRegistrationByExternalIdAndYear(request.Id, request.Year);
         var registrationDto = mapper.Map<RegistrationOverviewDto>(registration);

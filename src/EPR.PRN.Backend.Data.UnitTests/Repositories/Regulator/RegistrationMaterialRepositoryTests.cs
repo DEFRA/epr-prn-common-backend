@@ -196,7 +196,7 @@ public class RegistrationMaterialRepositoryTests
                             Id = 1,
                             RegistrationMaterialId = 2,
                             AccreditationStatusId = 1,
-                            ApplicationReference = "ACC12345",
+                            ApplicationReferenceNumber = "ACC12345",
                             AccreditationYear = 2025,
                             AccreditationStatus = new LookupAccreditationStatus
                             {
@@ -220,7 +220,7 @@ public class RegistrationMaterialRepositoryTests
                             Id = 2,
                             RegistrationMaterialId = 2,
                             AccreditationStatusId = 1,
-                            ApplicationReference = "ACC12345",
+                            ApplicationReferenceNumber = "ACC12345",
                             AccreditationYear = 2026,
                             AccreditationStatus = new LookupAccreditationStatus
                             {

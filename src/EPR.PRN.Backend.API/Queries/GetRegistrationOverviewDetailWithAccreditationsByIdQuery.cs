@@ -9,7 +9,7 @@ using MediatR;
 namespace EPR.PRN.Backend.API.Queries;
 
 [ExcludeFromCodeCoverage]
-public class GetAccreditationOverviewDetailByIdQuery : IRequest<RegistrationOverviewDto>
+public class GetRegistrationOverviewDetailWithAccreditationsByIdQuery : IRequest<RegistrationOverviewDto>
 {
     [Required]
     public Guid Id { get; set; }
