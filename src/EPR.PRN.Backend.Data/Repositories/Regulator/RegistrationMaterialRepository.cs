@@ -112,7 +112,6 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
         // Set/update the fields
         dulyMade.TaskStatusId = statusId;
         determinationDate.DeterminateDate = DeterminationDate;
-        dulyMade.DulyMadeDate = DulyMadeDate;
         dulyMade.DulyMadeBy = DulyMadeBy;
         dulyMade.ExternalId = material.ExternalId;
 
