@@ -5,6 +5,7 @@ using EPR.PRN.Backend.Data.DataModels;
 using EPR.PRN.Backend.Data.DataModels.Registrations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace EPR.PRN.Backend.Data
 {
@@ -175,7 +176,15 @@ namespace EPR.PRN.Backend.Data
 
             modelBuilder.Entity<LookupRegistrationMaterialStatus>().HasData(
                 new LookupRegistrationMaterialStatus { Id = 1, Name = "Granted" },
-                new LookupRegistrationMaterialStatus { Id = 2, Name = "Refused" });
+                new LookupRegistrationMaterialStatus { Id = 2, Name = "Refused" },
+                new LookupRegistrationMaterialStatus { Id = 3, Name = "Started" },
+                new LookupRegistrationMaterialStatus { Id = 4, Name = "Submitted" },
+                new LookupRegistrationMaterialStatus { Id = 5, Name = "RegulatorReviewing" },
+                new LookupRegistrationMaterialStatus { Id = 6, Name = "Queried" },
+                new LookupRegistrationMaterialStatus { Id = 7, Name = "Updated" },
+                new LookupRegistrationMaterialStatus { Id = 8, Name = "Withdrawn" },
+                new LookupRegistrationMaterialStatus { Id = 9, Name = "Suspended" },
+                new LookupRegistrationMaterialStatus { Id = 10, Name = "Cancelled" });
 
             modelBuilder.Entity<LookupAccreditationStatus>().HasData(
                 new LookupAccreditationStatus { Id = 1, Name = "Started" },
