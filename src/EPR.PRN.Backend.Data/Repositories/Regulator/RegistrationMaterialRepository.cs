@@ -84,7 +84,12 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
             throw new KeyNotFoundException("Registration not found.");
 
         var determinationDate = await eprContext.DeterminationDate
-    .FirstOrDefaultAsync(x => x.RegistrationMaterialId == material.RegistrationId);
+    .FirstOrDefaultAsync(x => x.RegistrationMaterialId == material.RegistrationId) 
+    ?? new DeterminationDate
+    {
+        RegistrationMaterialId = material.RegistrationId,
+        ExternalId = registration.ExternalId,
+    };
 
         var applicationTypeId = registration.ApplicationTypeId;
 
