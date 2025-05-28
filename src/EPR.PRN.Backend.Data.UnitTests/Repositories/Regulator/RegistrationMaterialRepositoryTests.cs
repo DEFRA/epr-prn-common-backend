@@ -194,6 +194,7 @@ public class RegistrationMaterialRepositoryTests
                         new Accreditation
                         {
                             Id = 1,
+                            ExternalId = Guid.Parse("4c632765-7652-42ae-8527-23f10a971c28"),
                             RegistrationMaterialId = 2,
                             AccreditationStatusId = 1,
                             ApplicationReferenceNumber = "ACC12345",
@@ -423,6 +424,24 @@ public class RegistrationMaterialRepositoryTests
     {
         await Assert.ThrowsExceptionAsync<KeyNotFoundException>(() => _repository.GetRegistrationMaterial_FileUploadById(Guid.Parse("cd9dcc80-fcf5-4f46-addd-b8a256f735a3")));
     }
+
+    [TestMethod]
+    public async Task GetAccreditation_FileUploadById_ShouldReturnMaterial_WhenExists()
+    {
+        var accreditation = await _repository.GetAccreditation_FileUploadById(Guid.Parse("4c632765-7652-42ae-8527-23f10a971c28"));
+        using (new AssertionScope())
+        {
+            Assert.IsNotNull(accreditation);
+            Assert.AreEqual("ACC12345", accreditation.ApplicationReferenceNumber);
+        }
+    }
+
+    [TestMethod]
+    public async Task GetAccreditation_FileUploadById_ShouldThrow_WhenNotFound()
+    {
+        await Assert.ThrowsExceptionAsync<KeyNotFoundException>(() => _repository.GetAccreditation_FileUploadById(Guid.Parse("cd9dcc80-fcf5-4f46-addd-b8a256f735a3")));
+    }
+   
     [TestMethod]
     public async Task RegistrationMaterialsMarkAsDulyMade_ShouldSetDulyMadeCorrectly()
     {

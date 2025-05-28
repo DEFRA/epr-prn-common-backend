@@ -95,6 +95,9 @@ public class RegistrationMaterialProfile : Profile
             .ForMember(dest => dest.FileUploadStatus, opt => opt.MapFrom(src => src.FileUploadStatus!.Name))
             .ForMember(dest => dest.Comments, opt => opt.MapFrom(src => src.Comments));
 
+        CreateMap<RegistrationMaterial, AccreditationSamplingPlanDto>()
+            .ForMember(dest => dest.MaterialName, opt => opt.MapFrom(src => src.Material.MaterialName));
+
         CreateMap<AccreditationFileUpload, AccreditationSamplingPlanFileDto>()
             .ForMember(dest => dest.Filename, opt => opt.MapFrom(src => src.Filename))
             .ForMember(dest => dest.FileId, opt => opt.MapFrom(src => src.FileId))
@@ -104,7 +107,7 @@ public class RegistrationMaterialProfile : Profile
             .ForMember(dest => dest.FileUploadStatus, opt => opt.MapFrom(src => src.FileUploadStatus!.Name));
 
         CreateMap<Accreditation, AccreditationSamplingPlanDto>()
-            .ForMember(dest => dest.AccreditationId, opt => opt.MapFrom(src => src.AccreditationStatusId))
+            .ForMember(dest => dest.MaterialName, opt => opt.MapFrom(src => src.RegistrationMaterial.Material.MaterialName))
             .ForMember(dest => dest.Files, opt => opt.MapFrom(src => src.FileUploads));
 
         CreateMap<RegistrationMaterial, RegistrationMaterialWasteLicencesDto>()

@@ -197,7 +197,7 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
         return registrationMaterials;
     }
 
-    private IIncludableQueryable<Accreditation, RegistrationMaterial> GetAccreditation_FileUploadById()
+    private IIncludableQueryable<Accreditation, LookupMaterial> GetAccreditation_FileUploadById()
     {
         var accreditations =
             eprContext.Accreditations
@@ -207,7 +207,8 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
             .ThenInclude(fu => fu.FileUploadType)
             .Include(rm => rm.FileUploads)!
             .ThenInclude(fu => fu.FileUploadStatus)
-            .Include(rm => rm.RegistrationMaterial);        
+            .Include(rm => rm.RegistrationMaterial)
+            .ThenInclude(rm => rm.Material);
 
         return accreditations;
     }

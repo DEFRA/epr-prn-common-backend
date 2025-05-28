@@ -15,7 +15,9 @@ namespace EPR.PRN.Backend.Data.DataModels.Registrations
         public string? Filename { get; set; }
         public Guid FileId { get; set; }
         public DateTime? DateUploaded { get; set; }
-        public Guid UpdatedBy { get; set; }
+        [Required]
+        [MaxLength(50)]
+        public required string UpdatedBy { get; set; }
         public LookupFileUploadType? FileUploadType { get; set; }
         [ForeignKey("FileUploadType")]
         public int? FileUploadTypeId { get; set; } 

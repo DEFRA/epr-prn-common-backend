@@ -61,7 +61,7 @@ public class AccreditationMaterialControllerTests
     {
         // Arrange
         var materialId = Guid.Parse("a9421fc1-a912-42ee-85a5-3e06408759a9");
-        var expectedDto = new AccreditationSamplingPlanDto() { };
+        var expectedDto = new AccreditationSamplingPlanDto() { MaterialName = "plastic" };
 
         _mediatorMock
             .Setup(m => m.Send(It.IsAny<GetAccreditationSamplingPlanQuery>(), It.IsAny<CancellationToken>()))

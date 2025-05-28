@@ -39,7 +39,7 @@ public class GetMaterialSamplingPlanQueryHandlerTests
         var materialId = Guid.Parse("a9421fc1-a912-42ee-85a5-3e06408759a9");
         DateTime dateUploaded = DateTime.UtcNow;
         var query = new GetMaterialSamplingPlanQuery { Id = materialId };
-        var updatedBy = Guid.NewGuid();
+        var updatedBy = "Test user";
         var fileId = Guid.NewGuid();
 
         var materialEntity = new RegistrationMaterial
