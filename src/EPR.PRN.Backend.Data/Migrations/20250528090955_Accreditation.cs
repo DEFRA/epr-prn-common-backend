@@ -73,7 +73,7 @@ namespace EPR.PRN.Backend.Data.Migrations
                     ExternalId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     RegistrationMaterialId = table.Column<int>(type: "int", nullable: false),
                     AccreditationYear = table.Column<int>(type: "int", nullable: false),
-                    ApplicationReference = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
+                    ApplicationReferenceNumber = table.Column<string>(type: "nvarchar(12)", maxLength: 12, nullable: false),
                     AccreditationStatusId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -157,14 +157,30 @@ namespace EPR.PRN.Backend.Data.Migrations
                 {
                     { 1, "Started" },
                     { 2, "Submitted" },
-                    { 3, "Accepted" },
+                    { 3, "RegulatorReviewing" },
                     { 4, "Queried" },
                     { 5, "Updated" },
                     { 6, "Granted" },
                     { 7, "Refused" },
                     { 8, "Withdrawn" },
                     { 9, "Suspended" },
-                    { 10, "Cancelled" }
+                    { 10, "Cancelled" },
+                    { 11, "ReadyToSubmit" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Lookup.RegistrationMaterialStatus",
+                columns: new[] { "Id", "Name" },
+                values: new object[,]
+                {
+                    { 3, "Started" },
+                    { 4, "Submitted" },
+                    { 5, "RegulatorReviewing" },
+                    { 6, "Queried" },
+                    { 8, "Withdrawn" },
+                    { 9, "Suspended" },
+                    { 10, "Cancelled" },
+                    { 11, "ReadyToSubmit" }
                 });
 
             migrationBuilder.InsertData(
@@ -247,6 +263,46 @@ namespace EPR.PRN.Backend.Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "Lookup.AccreditationStatus");
+
+            migrationBuilder.DeleteData(
+                table: "Lookup.RegistrationMaterialStatus",
+                keyColumn: "Id",
+                keyValue: 3);
+
+            migrationBuilder.DeleteData(
+                table: "Lookup.RegistrationMaterialStatus",
+                keyColumn: "Id",
+                keyValue: 4);
+
+            migrationBuilder.DeleteData(
+                table: "Lookup.RegistrationMaterialStatus",
+                keyColumn: "Id",
+                keyValue: 5);
+
+            migrationBuilder.DeleteData(
+                table: "Lookup.RegistrationMaterialStatus",
+                keyColumn: "Id",
+                keyValue: 6);
+
+            migrationBuilder.DeleteData(
+                table: "Lookup.RegistrationMaterialStatus",
+                keyColumn: "Id",
+                keyValue: 8);
+
+            migrationBuilder.DeleteData(
+                table: "Lookup.RegistrationMaterialStatus",
+                keyColumn: "Id",
+                keyValue: 9);
+
+            migrationBuilder.DeleteData(
+                table: "Lookup.RegistrationMaterialStatus",
+                keyColumn: "Id",
+                keyValue: 10);
+
+            migrationBuilder.DeleteData(
+                table: "Lookup.RegistrationMaterialStatus",
+                keyColumn: "Id",
+                keyValue: 11);
 
             migrationBuilder.DeleteData(
                 table: "Lookup.RegulatorTask",

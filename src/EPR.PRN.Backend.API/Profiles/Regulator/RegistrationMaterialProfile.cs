@@ -34,7 +34,8 @@ public class RegistrationMaterialProfile : Profile
         CreateMap<Accreditation, AccreditationDto>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.ExternalId))
             .ForMember(dest => dest.DeterminationDate, opt => opt.MapFrom(src => src.AccreditationDulyMade.FirstOrDefault().DeterminationDate))
-            .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.AccreditationStatus.Name));
+            .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.AccreditationStatus.Name))
+            .ForMember(dest => dest.ApplicationReference, opt => opt.MapFrom(src => src.ApplicationReferenceNumber));
 
         CreateMap<RegulatorAccreditationRegistrationTaskStatus, RegistrationTaskDto>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.ExternalId))
