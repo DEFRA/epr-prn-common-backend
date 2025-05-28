@@ -11,6 +11,7 @@ public static class LogMessages
     public const string RegistrationMaterialpaymentFees = "Attempting to get registration material payment fee by id :{Id}";
     public const string UpdateRegulatorApplicationTask = "UpdateRegulatorApplicationTask";
     public const string UpdateRegulatorRegistrationTask = "UpdateRegulatorRegistrationTask";
+    public const string AccreditationSamplingPlan = "Attempting to get file uploads relating to an accreditation";
 
     public const string CreateRegistration = "Attempting to create new registration";
     public const string UpdateRegistrationSiteAddress = "Attempting to update registration site address";

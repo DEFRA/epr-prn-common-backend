@@ -55,4 +55,27 @@ public class AccreditationMaterialControllerTests
             okResult!.Value.Should().BeEquivalentTo(expectedDto);
         }
     }
+
+    [TestMethod]
+    public async Task GetSamplingPlan_ReturnsOk_WithExpectedResult()
+    {
+        // Arrange
+        var materialId = Guid.Parse("a9421fc1-a912-42ee-85a5-3e06408759a9");
+        var expectedDto = new AccreditationSamplingPlanDto() { };
+
+        _mediatorMock
+            .Setup(m => m.Send(It.IsAny<GetAccreditationSamplingPlanQuery>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(expectedDto);
+
+        // Act
+        var result = await _controller.GetSamplingPlan(materialId);
+
+        // Assert
+        using (new AssertionScope())
+        {
+            var okResult = result as OkObjectResult;
+            okResult.Should().NotBeNull();
+            okResult!.Value.Should().BeEquivalentTo(expectedDto);
+        }
+    }
 }

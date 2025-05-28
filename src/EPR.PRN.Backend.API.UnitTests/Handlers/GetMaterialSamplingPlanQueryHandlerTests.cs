@@ -50,8 +50,8 @@ public class GetMaterialSamplingPlanQueryHandlerTests
             Material = new LookupMaterial { MaterialName = "Plastic" },
             StatusId = 1,
             Status = new LookupRegistrationMaterialStatus { Id = 1, Name = "Granted" },
-            FileUploads = new List<FileUpload>{
-                new FileUpload
+            FileUploads = new List<RegistrationFileUpload>{
+                new RegistrationFileUpload
                 {
                     
                     Filename = "Filename",

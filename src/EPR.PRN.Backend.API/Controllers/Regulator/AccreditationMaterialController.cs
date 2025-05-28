@@ -39,5 +39,23 @@ public class AccreditationController(IMediator mediator
         return Ok(result);
     }
 
+    [HttpGet("accreditations/{Id}/samplingPlan")]
+    [ProducesResponseType(typeof(AccreditationSamplingPlanDto), 200)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [SwaggerOperation(
+            Summary = "get file uploads relating to an accreditation",
+            Description = "attempting to get file uploads relating to an accreditation."
+        )]
+    [SwaggerResponse(StatusCodes.Status200OK, "Returns file uploads relating to an accreditation.", typeof(AccreditationSamplingPlanDto))]
+    [SwaggerResponse(StatusCodes.Status400BadRequest, "If the request is invalid or a validation error occurs.", typeof(ProblemDetails))]
+    [SwaggerResponse(StatusCodes.Status500InternalServerError, "If an unexpected error occurs.", typeof(ContentResult))]
+    public async Task<IActionResult> GetSamplingPlan(Guid Id)
+    {
+        logger.LogInformation(LogMessages.AccreditationSamplingPlan);
+        var result = await mediator.Send(new GetAccreditationSamplingPlanQuery() { Id = Id });
+        return Ok(result);
+    }
+
     #endregion Get Methods
 }

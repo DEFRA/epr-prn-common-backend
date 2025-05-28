@@ -254,7 +254,7 @@ public class RegistrationMaterialRepositoryTests
         _context.Registrations.Add(Accreditation_registration);
 
         _context.LookupPeriod.Add(lookupPeriod);
-        _context.LookupMaterialPermit.Add(lookupMaterialPermit);
+        //_context.LookupMaterialPermit.Add(lookupMaterialPermit);
 
         _context.SaveChanges();
     }

@@ -60,6 +60,14 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
                ?? throw new KeyNotFoundException("Material not found.");
     }
 
+    public async Task<Accreditation> GetAccreditation_FileUploadById(Guid accreditationId)
+    {
+        var accreditations = GetAccreditation_FileUploadById();
+
+        return await accreditations.SingleOrDefaultAsync(rm => rm.ExternalId == accreditationId)
+               ?? throw new KeyNotFoundException("Accreditation not found.");
+    }
+
     public async Task UpdateRegistrationOutCome(Guid registrationMaterialId, int statusId, string? comment, string registrationReferenceNumber)
     {
         var material = await eprContext.RegistrationMaterials.FirstOrDefaultAsync(rm => rm.ExternalId == registrationMaterialId);
@@ -189,6 +197,21 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
         return registrationMaterials;
     }
 
+    private IIncludableQueryable<Accreditation, RegistrationMaterial> GetAccreditation_FileUploadById()
+    {
+        var accreditations =
+            eprContext.Accreditations
+            .AsNoTracking()
+            .AsSplitQuery()
+            .Include(rm => rm.FileUploads)!
+            .ThenInclude(fu => fu.FileUploadType)
+            .Include(rm => rm.FileUploads)!
+            .ThenInclude(fu => fu.FileUploadStatus)
+            .Include(rm => rm.RegistrationMaterial);        
+
+        return accreditations;
+    }
+
     private IIncludableQueryable<Registration, LookupRegistrationMaterialStatus> GetRegistrationsWithRelatedEntities()
     {
         var registrations = eprContext
@@ -294,4 +317,6 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
         }
             
     }
+
+ 
 }
