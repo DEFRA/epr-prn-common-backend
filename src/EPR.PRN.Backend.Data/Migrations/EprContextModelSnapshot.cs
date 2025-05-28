@@ -1085,6 +1085,81 @@ namespace EPR.PRN.Backend.Data.Migrations
                         });
                 });
 
+            modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.LookupAccreditationStatus", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Lookup.AccreditationStatus");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "Started"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "Submitted"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Name = "RegulatorReviewing"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Name = "Queried"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Name = "Updated"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Name = "Granted"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            Name = "Refused"
+                        },
+                        new
+                        {
+                            Id = 8,
+                            Name = "Withdrawn"
+                        },
+                        new
+                        {
+                            Id = 9,
+                            Name = "Suspended"
+                        },
+                        new
+                        {
+                            Id = 10,
+                            Name = "Cancelled"
+                        },
+                        new
+                        {
+                            Id = 11,
+                            Name = "ReadyToSubmit"
+                        });
+                });
+
             modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.LookupApplicationType", b =>
                 {
                     b.Property<int>("Id")
@@ -2271,6 +2346,36 @@ namespace EPR.PRN.Backend.Data.Migrations
                         .HasForeignKey("PrnIdFk")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.Accreditation", b =>
+                {
+                    b.HasOne("EPR.PRN.Backend.Data.DataModels.Registrations.LookupAccreditationStatus", "AccreditationStatus")
+                        .WithMany()
+                        .HasForeignKey("AccreditationStatusId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("EPR.PRN.Backend.Data.DataModels.Registrations.RegistrationMaterial", "RegistrationMaterial")
+                        .WithMany("Accreditations")
+                        .HasForeignKey("RegistrationMaterialId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("AccreditationStatus");
+
+                    b.Navigation("RegistrationMaterial");
+                });
+
+            modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.AccreditationDeterminationDate", b =>
+                {
+                    b.HasOne("EPR.PRN.Backend.Data.DataModels.Registrations.Accreditation", "Accreditation")
+                        .WithMany("AccreditationDulyMade")
+                        .HasForeignKey("AccreditationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Accreditation");
                 });
 
             modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.Accreditation", b =>
