@@ -2045,7 +2045,7 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250523122716_Accreditation'
+    WHERE [MigrationId] = N'20250528074330_Accreditation'
 )
 BEGIN
     CREATE TABLE [Lookup.AccreditationStatus] (
@@ -2058,7 +2058,7 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250523122716_Accreditation'
+    WHERE [MigrationId] = N'20250528074330_Accreditation'
 )
 BEGIN
     CREATE TABLE [Public.RegulatorAccreditationRegistrationTaskStatus] (
@@ -2083,7 +2083,7 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250523122716_Accreditation'
+    WHERE [MigrationId] = N'20250528074330_Accreditation'
 )
 BEGIN
     CREATE TABLE [Public.Accreditation] (
@@ -2091,7 +2091,7 @@ BEGIN
         [ExternalId] uniqueidentifier NOT NULL,
         [RegistrationMaterialId] int NOT NULL,
         [AccreditationYear] int NOT NULL,
-        [ApplicationReference] nvarchar(20) NULL,
+        [ApplicationReferenceNumber] nvarchar(12) NOT NULL,
         [AccreditationStatusId] int NOT NULL,
         CONSTRAINT [PK_Public.Accreditation] PRIMARY KEY ([Id]),
         CONSTRAINT [FK_Public.Accreditation_Lookup.AccreditationStatus_AccreditationStatusId] FOREIGN KEY ([AccreditationStatusId]) REFERENCES [Lookup.AccreditationStatus] ([Id]) ON DELETE CASCADE,
@@ -2102,7 +2102,7 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250523122716_Accreditation'
+    WHERE [MigrationId] = N'20250528074330_Accreditation'
 )
 BEGIN
     CREATE TABLE [Public.AccreditationDeterminationDate] (
@@ -2118,7 +2118,7 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250523122716_Accreditation'
+    WHERE [MigrationId] = N'20250528074330_Accreditation'
 )
 BEGIN
     CREATE TABLE [Public.RegulatorAccreditationTaskStatus] (
@@ -2142,7 +2142,7 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250523122716_Accreditation'
+    WHERE [MigrationId] = N'20250528074330_Accreditation'
 )
 BEGIN
     IF EXISTS (SELECT * FROM [sys].[identity_columns] WHERE [name] IN (N'Id', N'Name') AND [object_id] = OBJECT_ID(N'[Lookup.AccreditationStatus]'))
@@ -2165,7 +2165,28 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250523122716_Accreditation'
+    WHERE [MigrationId] = N'20250528074330_Accreditation'
+)
+BEGIN
+    IF EXISTS (SELECT * FROM [sys].[identity_columns] WHERE [name] IN (N'Id', N'Name') AND [object_id] = OBJECT_ID(N'[Lookup.RegistrationMaterialStatus]'))
+        SET IDENTITY_INSERT [Lookup.RegistrationMaterialStatus] ON;
+    EXEC(N'INSERT INTO [Lookup.RegistrationMaterialStatus] ([Id], [Name])
+    VALUES (3, N''Started''),
+    (4, N''Submitted''),
+    (5, N''RegulatorReviewing''),
+    (6, N''Queried''),
+    (7, N''Updated''),
+    (8, N''Withdrawn''),
+    (9, N''Suspended''),
+    (10, N''Cancelled'')');
+    IF EXISTS (SELECT * FROM [sys].[identity_columns] WHERE [name] IN (N'Id', N'Name') AND [object_id] = OBJECT_ID(N'[Lookup.RegistrationMaterialStatus]'))
+        SET IDENTITY_INSERT [Lookup.RegistrationMaterialStatus] OFF;
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250528074330_Accreditation'
 )
 BEGIN
     IF EXISTS (SELECT * FROM [sys].[identity_columns] WHERE [name] IN (N'Id', N'ApplicationTypeId', N'IsMaterialSpecific', N'JourneyTypeId', N'Name') AND [object_id] = OBJECT_ID(N'[Lookup.RegulatorTask]'))
@@ -2188,7 +2209,7 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250523122716_Accreditation'
+    WHERE [MigrationId] = N'20250528074330_Accreditation'
 )
 BEGIN
     CREATE INDEX [IX_Public.Accreditation_AccreditationStatusId] ON [Public.Accreditation] ([AccreditationStatusId]);
@@ -2197,7 +2218,7 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250523122716_Accreditation'
+    WHERE [MigrationId] = N'20250528074330_Accreditation'
 )
 BEGIN
     CREATE INDEX [IX_Public.Accreditation_RegistrationMaterialId] ON [Public.Accreditation] ([RegistrationMaterialId]);
@@ -2206,7 +2227,7 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250523122716_Accreditation'
+    WHERE [MigrationId] = N'20250528074330_Accreditation'
 )
 BEGIN
     CREATE INDEX [IX_Public.AccreditationDeterminationDate_AccreditationId] ON [Public.AccreditationDeterminationDate] ([AccreditationId]);
@@ -2215,7 +2236,7 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250523122716_Accreditation'
+    WHERE [MigrationId] = N'20250528074330_Accreditation'
 )
 BEGIN
     CREATE INDEX [IX_Public.RegulatorAccreditationRegistrationTaskStatus_RegistrationId] ON [Public.RegulatorAccreditationRegistrationTaskStatus] ([RegistrationId]);
@@ -2224,7 +2245,7 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250523122716_Accreditation'
+    WHERE [MigrationId] = N'20250528074330_Accreditation'
 )
 BEGIN
     CREATE INDEX [IX_Public.RegulatorAccreditationRegistrationTaskStatus_TaskId] ON [Public.RegulatorAccreditationRegistrationTaskStatus] ([TaskId]);
@@ -2233,7 +2254,7 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250523122716_Accreditation'
+    WHERE [MigrationId] = N'20250528074330_Accreditation'
 )
 BEGIN
     CREATE INDEX [IX_Public.RegulatorAccreditationRegistrationTaskStatus_TaskStatusId] ON [Public.RegulatorAccreditationRegistrationTaskStatus] ([TaskStatusId]);
@@ -2242,7 +2263,7 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250523122716_Accreditation'
+    WHERE [MigrationId] = N'20250528074330_Accreditation'
 )
 BEGIN
     CREATE INDEX [IX_Public.RegulatorAccreditationTaskStatus_AccreditationId] ON [Public.RegulatorAccreditationTaskStatus] ([AccreditationId]);
@@ -2251,7 +2272,7 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250523122716_Accreditation'
+    WHERE [MigrationId] = N'20250528074330_Accreditation'
 )
 BEGIN
     CREATE INDEX [IX_Public.RegulatorAccreditationTaskStatus_TaskId] ON [Public.RegulatorAccreditationTaskStatus] ([TaskId]);
@@ -2260,7 +2281,7 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250523122716_Accreditation'
+    WHERE [MigrationId] = N'20250528074330_Accreditation'
 )
 BEGIN
     CREATE INDEX [IX_Public.RegulatorAccreditationTaskStatus_TaskStatusId] ON [Public.RegulatorAccreditationTaskStatus] ([TaskStatusId]);
@@ -2269,104 +2290,11 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250523122716_Accreditation'
+    WHERE [MigrationId] = N'20250528074330_Accreditation'
 )
 BEGIN
     INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
-    VALUES (N'20250523122716_Accreditation', N'8.0.8');
-END;
-GO
-
-COMMIT;
-GO
-
-BEGIN TRANSACTION;
-GO
-
-IF NOT EXISTS (
-    SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250524114225_Accreditation2'
-)
-BEGIN
-    INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
-    VALUES (N'20250524114225_Accreditation2', N'8.0.8');
-END;
-GO
-
-COMMIT;
-GO
-
-BEGIN TRANSACTION;
-GO
-
-IF NOT EXISTS (
-    SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250527110446_Accreditation-3'
-)
-BEGIN
-    DECLARE @var6 sysname;
-    SELECT @var6 = [d].[name]
-    FROM [sys].[default_constraints] [d]
-    INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
-    WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Public.Accreditation]') AND [c].[name] = N'ApplicationReference');
-    IF @var6 IS NOT NULL EXEC(N'ALTER TABLE [Public.Accreditation] DROP CONSTRAINT [' + @var6 + '];');
-    ALTER TABLE [Public.Accreditation] DROP COLUMN [ApplicationReference];
-END;
-GO
-
-IF NOT EXISTS (
-    SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250527110446_Accreditation-3'
-)
-BEGIN
-    ALTER TABLE [Public.Accreditation] ADD [ApplicationReferenceNumber] nvarchar(12) NOT NULL DEFAULT N'';
-END;
-GO
-
-IF NOT EXISTS (
-    SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250527110446_Accreditation-3'
-)
-BEGIN
-    INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
-    VALUES (N'20250527110446_Accreditation-3', N'8.0.8');
-END;
-GO
-
-COMMIT;
-GO
-
-BEGIN TRANSACTION;
-GO
-
-IF NOT EXISTS (
-    SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250527161825_Accreditation4'
-)
-BEGIN
-    IF EXISTS (SELECT * FROM [sys].[identity_columns] WHERE [name] IN (N'Id', N'Name') AND [object_id] = OBJECT_ID(N'[Lookup.RegistrationMaterialStatus]'))
-        SET IDENTITY_INSERT [Lookup.RegistrationMaterialStatus] ON;
-    EXEC(N'INSERT INTO [Lookup.RegistrationMaterialStatus] ([Id], [Name])
-    VALUES (3, N''Started''),
-    (4, N''Submitted''),
-    (5, N''RegulatorReviewing''),
-    (6, N''Queried''),
-    (7, N''Updated''),
-    (8, N''Withdrawn''),
-    (9, N''Suspended''),
-    (10, N''Cancelled'')');
-    IF EXISTS (SELECT * FROM [sys].[identity_columns] WHERE [name] IN (N'Id', N'Name') AND [object_id] = OBJECT_ID(N'[Lookup.RegistrationMaterialStatus]'))
-        SET IDENTITY_INSERT [Lookup.RegistrationMaterialStatus] OFF;
-END;
-GO
-
-IF NOT EXISTS (
-    SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250527161825_Accreditation4'
-)
-BEGIN
-    INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
-    VALUES (N'20250527161825_Accreditation4', N'8.0.8');
+    VALUES (N'20250528074330_Accreditation', N'8.0.8');
 END;
 GO
 

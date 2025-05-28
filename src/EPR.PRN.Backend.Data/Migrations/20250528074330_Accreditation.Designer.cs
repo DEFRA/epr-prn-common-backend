@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EPR.PRN.Backend.Data.Migrations
 {
     [DbContext(typeof(EprContext))]
-    [Migration("20250527110446_Accreditation-3")]
-    partial class Accreditation3
+    [Migration("20250528074330_Accreditation")]
+    partial class Accreditation
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -1383,6 +1383,46 @@ namespace EPR.PRN.Backend.Data.Migrations
                         {
                             Id = 2,
                             Name = "Refused"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Name = "Started"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Name = "Submitted"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Name = "RegulatorReviewing"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Name = "Queried"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            Name = "Updated"
+                        },
+                        new
+                        {
+                            Id = 8,
+                            Name = "Withdrawn"
+                        },
+                        new
+                        {
+                            Id = 9,
+                            Name = "Suspended"
+                        },
+                        new
+                        {
+                            Id = 10,
+                            Name = "Cancelled"
                         });
                 });
 
