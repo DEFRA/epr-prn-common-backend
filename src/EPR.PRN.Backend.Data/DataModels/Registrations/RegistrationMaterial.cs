@@ -62,6 +62,8 @@ public class RegistrationMaterial
     public decimal MaximumReprocessingCapacityTonne { get; set; }
     [ForeignKey("MaximumReprocessingPeriod")]
     public int? MaximumReprocessingPeriodId { get; set; }
+    public DulyMade? Dulymade { get; set; }
+    public DeterminationDate? DeterminationDate { get; set; }
     public LookupPeriod? MaximumReprocessingPeriod { get; set; }
     public bool IsMaterialRegistered { get; set; } = false;
     public List<RegistrationReprocessingIO>? RegistrationReprocessingIO { get; set; }

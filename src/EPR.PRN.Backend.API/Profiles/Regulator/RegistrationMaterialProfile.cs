@@ -110,7 +110,9 @@ public class RegistrationMaterialProfile : Profile
            .ForMember(dest => dest.CreatedDate, opt => opt.MapFrom(src => src.CreatedDate))
            .ForMember(dest => dest.SiteAddress, opt => opt.MapFrom(src => src.Registration.ReprocessingSiteAddress != null ? CreateAddressString(src.Registration.ReprocessingSiteAddress) : string.Empty))
            .ForMember(dest => dest.NationId, opt => opt.MapFrom(src => GetNationId(src.Registration)))
-           .ForMember(dest => dest.MaterialName, opt => opt.MapFrom(src => src.Material.MaterialName));
+           .ForMember(dest => dest.MaterialName, opt => opt.MapFrom(src => src.Material.MaterialName))
+           .ForMember(dest => dest.DulyMadeDate, opt => opt.MapFrom(src => src.Dulymade.DulyMadeDate))
+           .ForMember(dest => dest.DeterminationDate, opt => opt.MapFrom(src => src.DeterminationDate.DeterminateDate));
     }
     private int GetNationId(Registration registration)
     {

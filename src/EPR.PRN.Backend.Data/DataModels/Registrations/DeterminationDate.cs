@@ -9,8 +9,9 @@ namespace EPR.PRN.Backend.Data.DataModels.Registrations
         [Key]
         public int Id { get; set; }
         public Guid ExternalId { get; set; }
-        [ForeignKey(nameof(RegistrationMaterial))]
+        [ForeignKey("RegistrationMaterial")]
         public int RegistrationMaterialId { get; set; }
+        public RegistrationMaterial? RegistrationMaterial { get; set; }
         public DateTime? DeterminateDate { get; set; }
     }
 }
