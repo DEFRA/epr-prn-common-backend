@@ -157,14 +157,15 @@ namespace EPR.PRN.Backend.Data.Migrations
                 {
                     { 1, "Started" },
                     { 2, "Submitted" },
-                    { 3, "Accepted" },
+                    { 3, "RegulatorReviewing" },
                     { 4, "Queried" },
                     { 5, "Updated" },
                     { 6, "Granted" },
                     { 7, "Refused" },
                     { 8, "Withdrawn" },
                     { 9, "Suspended" },
-                    { 10, "Cancelled" }
+                    { 10, "Cancelled" },
+                    { 11, "ReadyToSubmit" }
                 });
 
             migrationBuilder.InsertData(
@@ -176,10 +177,10 @@ namespace EPR.PRN.Backend.Data.Migrations
                     { 4, "Submitted" },
                     { 5, "RegulatorReviewing" },
                     { 6, "Queried" },
-                    { 7, "Updated" },
                     { 8, "Withdrawn" },
                     { 9, "Suspended" },
-                    { 10, "Cancelled" }
+                    { 10, "Cancelled" },
+                    { 11, "ReadyToSubmit" }
                 });
 
             migrationBuilder.InsertData(
@@ -286,11 +287,6 @@ namespace EPR.PRN.Backend.Data.Migrations
             migrationBuilder.DeleteData(
                 table: "Lookup.RegistrationMaterialStatus",
                 keyColumn: "Id",
-                keyValue: 7);
-
-            migrationBuilder.DeleteData(
-                table: "Lookup.RegistrationMaterialStatus",
-                keyColumn: "Id",
                 keyValue: 8);
 
             migrationBuilder.DeleteData(
@@ -302,6 +298,11 @@ namespace EPR.PRN.Backend.Data.Migrations
                 table: "Lookup.RegistrationMaterialStatus",
                 keyColumn: "Id",
                 keyValue: 10);
+
+            migrationBuilder.DeleteData(
+                table: "Lookup.RegistrationMaterialStatus",
+                keyColumn: "Id",
+                keyValue: 11);
 
             migrationBuilder.DeleteData(
                 table: "Lookup.RegulatorTask",

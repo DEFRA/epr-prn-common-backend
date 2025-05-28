@@ -181,22 +181,23 @@ namespace EPR.PRN.Backend.Data
                 new LookupRegistrationMaterialStatus { Id = 4, Name = "Submitted" },
                 new LookupRegistrationMaterialStatus { Id = 5, Name = "RegulatorReviewing" },
                 new LookupRegistrationMaterialStatus { Id = 6, Name = "Queried" },
-                new LookupRegistrationMaterialStatus { Id = 7, Name = "Updated" },
                 new LookupRegistrationMaterialStatus { Id = 8, Name = "Withdrawn" },
                 new LookupRegistrationMaterialStatus { Id = 9, Name = "Suspended" },
-                new LookupRegistrationMaterialStatus { Id = 10, Name = "Cancelled" });
+                new LookupRegistrationMaterialStatus { Id = 10, Name = "Cancelled" },
+                new LookupRegistrationMaterialStatus { Id = 11, Name = "ReadyToSubmit" });
 
             modelBuilder.Entity<LookupAccreditationStatus>().HasData(
                 new LookupAccreditationStatus { Id = 1, Name = "Started" },
                 new LookupAccreditationStatus { Id = 2, Name = "Submitted" },
-                new LookupAccreditationStatus { Id = 3, Name = "Accepted" },
+                new LookupAccreditationStatus { Id = 3, Name = "RegulatorReviewing" },
                 new LookupAccreditationStatus { Id = 4, Name = "Queried" },
                 new LookupAccreditationStatus { Id = 5, Name = "Updated" },
                 new LookupAccreditationStatus { Id = 6, Name = "Granted" },
                 new LookupAccreditationStatus { Id = 7, Name = "Refused" },
                 new LookupAccreditationStatus { Id = 8, Name = "Withdrawn" },
                 new LookupAccreditationStatus { Id = 9, Name = "Suspended" },
-                new LookupAccreditationStatus { Id = 10, Name = "Cancelled" });
+                new LookupAccreditationStatus { Id = 10, Name = "Cancelled" },
+                new LookupAccreditationStatus { Id = 11, Name = "ReadyToSubmit" });
 
             modelBuilder.Entity<LookupTaskStatus>().HasData(
                 new LookupTaskStatus { Id = 1, Name = "NotStarted" },

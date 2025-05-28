@@ -1043,7 +1043,7 @@ namespace EPR.PRN.Backend.Data.Migrations
                         new
                         {
                             Id = 3,
-                            Name = "Accepted"
+                            Name = "RegulatorReviewing"
                         },
                         new
                         {
@@ -1079,6 +1079,11 @@ namespace EPR.PRN.Backend.Data.Migrations
                         {
                             Id = 10,
                             Name = "Cancelled"
+                        },
+                        new
+                        {
+                            Id = 11,
+                            Name = "ReadyToSubmit"
                         });
                 });
 
@@ -1403,11 +1408,6 @@ namespace EPR.PRN.Backend.Data.Migrations
                         },
                         new
                         {
-                            Id = 7,
-                            Name = "Updated"
-                        },
-                        new
-                        {
                             Id = 8,
                             Name = "Withdrawn"
                         },
@@ -1420,6 +1420,11 @@ namespace EPR.PRN.Backend.Data.Migrations
                         {
                             Id = 10,
                             Name = "Cancelled"
+                        },
+                        new
+                        {
+                            Id = 11,
+                            Name = "ReadyToSubmit"
                         });
                 });
 

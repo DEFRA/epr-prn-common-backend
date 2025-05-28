@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EPR.PRN.Backend.Data.Migrations
 {
     [DbContext(typeof(EprContext))]
-    [Migration("20250528074330_Accreditation")]
+    [Migration("20250528090955_Accreditation")]
     partial class Accreditation
     {
         /// <inheritdoc />
@@ -1046,7 +1046,7 @@ namespace EPR.PRN.Backend.Data.Migrations
                         new
                         {
                             Id = 3,
-                            Name = "Accepted"
+                            Name = "RegulatorReviewing"
                         },
                         new
                         {
@@ -1082,6 +1082,11 @@ namespace EPR.PRN.Backend.Data.Migrations
                         {
                             Id = 10,
                             Name = "Cancelled"
+                        },
+                        new
+                        {
+                            Id = 11,
+                            Name = "ReadyToSubmit"
                         });
                 });
 
@@ -1406,11 +1411,6 @@ namespace EPR.PRN.Backend.Data.Migrations
                         },
                         new
                         {
-                            Id = 7,
-                            Name = "Updated"
-                        },
-                        new
-                        {
                             Id = 8,
                             Name = "Withdrawn"
                         },
@@ -1423,6 +1423,11 @@ namespace EPR.PRN.Backend.Data.Migrations
                         {
                             Id = 10,
                             Name = "Cancelled"
+                        },
+                        new
+                        {
+                            Id = 11,
+                            Name = "ReadyToSubmit"
                         });
                 });
 
