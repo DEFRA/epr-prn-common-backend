@@ -17,6 +17,7 @@ public class DulyMade
     [ForeignKey("TaskStatus")]
     public int TaskStatusId { get; set; }
     public LookupTaskStatus? TaskStatus { get; set; }
+    public DateTime? DulyMadeDate { get; set; }
     public Guid? DulyMadeBy { get; set; }
     [MaxLength(500)]
     public string? DulyMadeNote { get; set; }

@@ -298,6 +298,7 @@ public class RegistrationMaterialRepositoryTests
         {
             dulyMadeEntry.Should().NotBeNull();
             dulyMadeEntry!.DulyMadeBy.Should().Be(userId);
+            dulyMadeEntry!.DulyMadeDate.Should().Be(dulyMadeDate);
             savedDeterminationDate.DeterminateDate.Should().Be(determinationDate);
             dulyMadeEntry.TaskStatusId.Should().Be(statusId);
 
