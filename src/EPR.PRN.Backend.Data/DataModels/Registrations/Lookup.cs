@@ -19,6 +19,14 @@ public abstract class LookupBase
 [ExcludeFromCodeCoverage]
 public class LookupRegistrationMaterialStatus : LookupBase{}
 
+[Table("Lookup.AccreditationStatus")]
+[ExcludeFromCodeCoverage]
+public class LookupAccreditationStatus : LookupBase
+{
+    [MaxLength(100)]
+    public override required string Name { get; set; }
+}
+
 [Table("Lookup.RegulatorTask")]
 [ExcludeFromCodeCoverage]
 public class LookupRegulatorTask : LookupBase
