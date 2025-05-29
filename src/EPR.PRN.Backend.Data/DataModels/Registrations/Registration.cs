@@ -41,5 +41,7 @@ public class Registration
 
     public List<RegulatorRegistrationTaskStatus>? Tasks { get; set; }
 
+    public List<RegulatorAccreditationRegistrationTaskStatus>? AccreditationTasks { get; set; }
+
     public List<RegistrationMaterial>? Materials { get; set; }
 }

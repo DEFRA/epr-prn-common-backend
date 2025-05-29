@@ -16,9 +16,11 @@ public class RegistrationMaterialProfile : Profile
         .ForMember(dest => dest.Regulator, opt => opt.MapFrom(_ => "EA"))
         .ForMember(dest => dest.OrganisationType,
             opt => opt.MapFrom(src => (ApplicationOrganisationType)src.ApplicationTypeId))
+        .ForMember(dest => dest.Tasks, opt => opt.MapFrom((src, dest, _, context) => MapTasks(src.Tasks, src.AccreditationTasks, context)))
         .ForMember(dest => dest.SiteAddress, opt => opt.MapFrom(src =>
              src.ReprocessingSiteAddress != null ? CreateAddressString(src.ReprocessingSiteAddress)
                 : string.Empty))
+        .ForMember(dest => dest.SiteGridReference, opt => opt.MapFrom(src => src.ReprocessingSiteAddress != null ? src.ReprocessingSiteAddress.GridReference:string.Empty))
         .ForMember(dest => dest.Materials, opt => opt.MapFrom(src => src.Materials.Where(m => m.IsMaterialRegistered)));
 
         CreateMap<RegistrationMaterial, RegistrationMaterialDto>()
@@ -28,6 +30,24 @@ public class RegistrationMaterialProfile : Profile
             .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.Name))
             .ForMember(dest => dest.ApplicationReferenceNumber, opt => opt.MapFrom(src => src.ApplicationReferenceNumber))
             .ForMember(dest => dest.RegistrationReferenceNumber, opt => opt.MapFrom(src => src.RegistrationReferenceNumber));
+
+        CreateMap<Accreditation, AccreditationDto>()
+            .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.ExternalId))
+            .ForMember(dest => dest.DeterminationDate, opt => opt.MapFrom(src => src.AccreditationDulyMade.FirstOrDefault().DeterminationDate))
+            .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.AccreditationStatus.Name))
+            .ForMember(dest => dest.ApplicationReference, opt => opt.MapFrom(src => src.ApplicationReferenceNumber));
+
+        CreateMap<RegulatorAccreditationRegistrationTaskStatus, RegistrationTaskDto>()
+            .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.ExternalId))
+            .ForMember(dest => dest.TaskName, opt => opt.MapFrom(src => src.Task.Name))
+            .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.TaskStatus.Name))
+            .ForMember(dest => dest.Year, opt => opt.MapFrom(src => src.AccreditationYear));
+
+        CreateMap<RegulatorAccreditationTaskStatus, RegistrationTaskDto>()
+            .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.ExternalId))
+            .ForMember(dest => dest.TaskName, opt => opt.MapFrom(src => src.Task.Name))
+            .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.TaskStatus.Name))
+            .ForMember(dest => dest.Year, opt => opt.MapFrom(src => src.Accreditation.AccreditationYear));
 
         CreateMap<RegulatorRegistrationTaskStatus, RegistrationTaskDto>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.ExternalId))
@@ -116,7 +136,18 @@ public class RegistrationMaterialProfile : Profile
            .ForMember(dest => dest.DulyMadeDate, opt => opt.MapFrom(src => src.DulyMade.DulyMadeDate))
            .ForMember(dest => dest.DeterminationDate, opt => opt.MapFrom(src => src.DeterminationDate.DeterminateDate));
     }
-    private int GetNationId(Registration registration)
+
+    private static List<RegistrationTaskDto> MapTasks(List<RegulatorRegistrationTaskStatus>? registrationTasks, List<RegulatorAccreditationRegistrationTaskStatus>? accreditationTasks, ResolutionContext context)
+    {
+        var registrationTasksDto = context.Mapper.Map<List<RegistrationTaskDto>>(registrationTasks);
+        var accreditationTasksDto = context.Mapper.Map<List<RegistrationTaskDto>>(accreditationTasks);
+
+        registrationTasksDto.AddRange(accreditationTasksDto);
+
+        return registrationTasksDto;
+    }
+
+    private static int GetNationId(Registration registration)
     {
         if (registration.ApplicationTypeId == (int)ApplicationOrganisationType.Reprocessor)
         {

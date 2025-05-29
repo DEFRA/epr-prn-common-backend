@@ -2040,3 +2040,265 @@ GO
 COMMIT;
 GO
 
+BEGIN TRANSACTION;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250528090955_Accreditation'
+)
+BEGIN
+    CREATE TABLE [Lookup.AccreditationStatus] (
+        [Id] int NOT NULL IDENTITY,
+        [Name] nvarchar(100) NOT NULL,
+        CONSTRAINT [PK_Lookup.AccreditationStatus] PRIMARY KEY ([Id])
+    );
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250528090955_Accreditation'
+)
+BEGIN
+    CREATE TABLE [Public.RegulatorAccreditationRegistrationTaskStatus] (
+        [Id] int NOT NULL IDENTITY,
+        [RegistrationId] int NOT NULL,
+        [AccreditationYear] int NOT NULL,
+        [ExternalId] uniqueidentifier NOT NULL,
+        [TaskId] int NULL,
+        [TaskStatusId] int NULL,
+        [Comments] nvarchar(500) NULL,
+        [StatusCreatedBy] uniqueidentifier NOT NULL,
+        [StatusCreatedDate] datetime2 NOT NULL,
+        [StatusUpdatedBy] uniqueidentifier NULL,
+        [StatusUpdatedDate] datetime2 NULL,
+        CONSTRAINT [PK_Public.RegulatorAccreditationRegistrationTaskStatus] PRIMARY KEY ([Id]),
+        CONSTRAINT [FK_Public.RegulatorAccreditationRegistrationTaskStatus_Lookup.RegulatorTask_TaskId] FOREIGN KEY ([TaskId]) REFERENCES [Lookup.RegulatorTask] ([Id]),
+        CONSTRAINT [FK_Public.RegulatorAccreditationRegistrationTaskStatus_Lookup.TaskStatus_TaskStatusId] FOREIGN KEY ([TaskStatusId]) REFERENCES [Lookup.TaskStatus] ([Id]),
+        CONSTRAINT [FK_Public.RegulatorAccreditationRegistrationTaskStatus_Public.Registration_RegistrationId] FOREIGN KEY ([RegistrationId]) REFERENCES [Public.Registration] ([Id]) ON DELETE CASCADE
+    );
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250528090955_Accreditation'
+)
+BEGIN
+    CREATE TABLE [Public.Accreditation] (
+        [Id] int NOT NULL IDENTITY,
+        [ExternalId] uniqueidentifier NOT NULL,
+        [RegistrationMaterialId] int NOT NULL,
+        [AccreditationYear] int NOT NULL,
+        [ApplicationReferenceNumber] nvarchar(12) NOT NULL,
+        [AccreditationStatusId] int NOT NULL,
+        CONSTRAINT [PK_Public.Accreditation] PRIMARY KEY ([Id]),
+        CONSTRAINT [FK_Public.Accreditation_Lookup.AccreditationStatus_AccreditationStatusId] FOREIGN KEY ([AccreditationStatusId]) REFERENCES [Lookup.AccreditationStatus] ([Id]) ON DELETE CASCADE,
+        CONSTRAINT [FK_Public.Accreditation_Public.RegistrationMaterial_RegistrationMaterialId] FOREIGN KEY ([RegistrationMaterialId]) REFERENCES [Public.RegistrationMaterial] ([Id]) ON DELETE CASCADE
+    );
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250528090955_Accreditation'
+)
+BEGIN
+    CREATE TABLE [Public.AccreditationDeterminationDate] (
+        [Id] int NOT NULL IDENTITY,
+        [ExternalId] uniqueidentifier NOT NULL,
+        [AccreditationId] int NOT NULL,
+        [DeterminationDate] datetime2 NULL,
+        CONSTRAINT [PK_Public.AccreditationDeterminationDate] PRIMARY KEY ([Id]),
+        CONSTRAINT [FK_Public.AccreditationDeterminationDate_Public.Accreditation_AccreditationId] FOREIGN KEY ([AccreditationId]) REFERENCES [Public.Accreditation] ([Id]) ON DELETE CASCADE
+    );
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250528090955_Accreditation'
+)
+BEGIN
+    CREATE TABLE [Public.RegulatorAccreditationTaskStatus] (
+        [Id] int NOT NULL IDENTITY,
+        [AccreditationId] int NULL,
+        [ExternalId] uniqueidentifier NOT NULL,
+        [TaskId] int NULL,
+        [TaskStatusId] int NULL,
+        [Comments] nvarchar(500) NULL,
+        [StatusCreatedBy] uniqueidentifier NOT NULL,
+        [StatusCreatedDate] datetime2 NOT NULL,
+        [StatusUpdatedBy] uniqueidentifier NULL,
+        [StatusUpdatedDate] datetime2 NULL,
+        CONSTRAINT [PK_Public.RegulatorAccreditationTaskStatus] PRIMARY KEY ([Id]),
+        CONSTRAINT [FK_Public.RegulatorAccreditationTaskStatus_Lookup.RegulatorTask_TaskId] FOREIGN KEY ([TaskId]) REFERENCES [Lookup.RegulatorTask] ([Id]),
+        CONSTRAINT [FK_Public.RegulatorAccreditationTaskStatus_Lookup.TaskStatus_TaskStatusId] FOREIGN KEY ([TaskStatusId]) REFERENCES [Lookup.TaskStatus] ([Id]),
+        CONSTRAINT [FK_Public.RegulatorAccreditationTaskStatus_Public.Accreditation_AccreditationId] FOREIGN KEY ([AccreditationId]) REFERENCES [Public.Accreditation] ([Id])
+    );
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250528090955_Accreditation'
+)
+BEGIN
+    IF EXISTS (SELECT * FROM [sys].[identity_columns] WHERE [name] IN (N'Id', N'Name') AND [object_id] = OBJECT_ID(N'[Lookup.AccreditationStatus]'))
+        SET IDENTITY_INSERT [Lookup.AccreditationStatus] ON;
+    EXEC(N'INSERT INTO [Lookup.AccreditationStatus] ([Id], [Name])
+    VALUES (1, N''Started''),
+    (2, N''Submitted''),
+    (3, N''RegulatorReviewing''),
+    (4, N''Queried''),
+    (5, N''Updated''),
+    (6, N''Granted''),
+    (7, N''Refused''),
+    (8, N''Withdrawn''),
+    (9, N''Suspended''),
+    (10, N''Cancelled''),
+    (11, N''ReadyToSubmit'')');
+    IF EXISTS (SELECT * FROM [sys].[identity_columns] WHERE [name] IN (N'Id', N'Name') AND [object_id] = OBJECT_ID(N'[Lookup.AccreditationStatus]'))
+        SET IDENTITY_INSERT [Lookup.AccreditationStatus] OFF;
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250528090955_Accreditation'
+)
+BEGIN
+    IF EXISTS (SELECT * FROM [sys].[identity_columns] WHERE [name] IN (N'Id', N'Name') AND [object_id] = OBJECT_ID(N'[Lookup.RegistrationMaterialStatus]'))
+        SET IDENTITY_INSERT [Lookup.RegistrationMaterialStatus] ON;
+    EXEC(N'INSERT INTO [Lookup.RegistrationMaterialStatus] ([Id], [Name])
+    VALUES (3, N''Started''),
+    (4, N''Submitted''),
+    (5, N''RegulatorReviewing''),
+    (6, N''Queried''),
+    (8, N''Withdrawn''),
+    (9, N''Suspended''),
+    (10, N''Cancelled''),
+    (11, N''ReadyToSubmit'')');
+    IF EXISTS (SELECT * FROM [sys].[identity_columns] WHERE [name] IN (N'Id', N'Name') AND [object_id] = OBJECT_ID(N'[Lookup.RegistrationMaterialStatus]'))
+        SET IDENTITY_INSERT [Lookup.RegistrationMaterialStatus] OFF;
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250528090955_Accreditation'
+)
+BEGIN
+    IF EXISTS (SELECT * FROM [sys].[identity_columns] WHERE [name] IN (N'Id', N'ApplicationTypeId', N'IsMaterialSpecific', N'JourneyTypeId', N'Name') AND [object_id] = OBJECT_ID(N'[Lookup.RegulatorTask]'))
+        SET IDENTITY_INSERT [Lookup.RegulatorTask] ON;
+    EXEC(N'INSERT INTO [Lookup.RegulatorTask] ([Id], [ApplicationTypeId], [IsMaterialSpecific], [JourneyTypeId], [Name])
+    VALUES (17, 1, CAST(0 AS bit), 2, N''AssignOfficer''),
+    (18, 1, CAST(1 AS bit), 2, N''PRNs tonnage and authority to issue PRNs''),
+    (19, 1, CAST(1 AS bit), 2, N''Business Plan''),
+    (20, 1, CAST(1 AS bit), 2, N''Accreditation sampling and inspection plan''),
+    (21, 1, CAST(1 AS bit), 2, N''Overseas reprocessing sites and broadly equivalent evidence''),
+    (22, 2, CAST(0 AS bit), 2, N''AssignOfficer''),
+    (23, 2, CAST(1 AS bit), 2, N''PRNs tonnage and authority to issue PRNs''),
+    (24, 2, CAST(1 AS bit), 2, N''Business Plan''),
+    (25, 2, CAST(1 AS bit), 2, N''Accreditation sampling and inspection plan''),
+    (26, 2, CAST(1 AS bit), 2, N''Overseas reprocessing sites and broadly equivalent evidence'')');
+    IF EXISTS (SELECT * FROM [sys].[identity_columns] WHERE [name] IN (N'Id', N'ApplicationTypeId', N'IsMaterialSpecific', N'JourneyTypeId', N'Name') AND [object_id] = OBJECT_ID(N'[Lookup.RegulatorTask]'))
+        SET IDENTITY_INSERT [Lookup.RegulatorTask] OFF;
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250528090955_Accreditation'
+)
+BEGIN
+    CREATE INDEX [IX_Public.Accreditation_AccreditationStatusId] ON [Public.Accreditation] ([AccreditationStatusId]);
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250528090955_Accreditation'
+)
+BEGIN
+    CREATE INDEX [IX_Public.Accreditation_RegistrationMaterialId] ON [Public.Accreditation] ([RegistrationMaterialId]);
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250528090955_Accreditation'
+)
+BEGIN
+    CREATE INDEX [IX_Public.AccreditationDeterminationDate_AccreditationId] ON [Public.AccreditationDeterminationDate] ([AccreditationId]);
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250528090955_Accreditation'
+)
+BEGIN
+    CREATE INDEX [IX_Public.RegulatorAccreditationRegistrationTaskStatus_RegistrationId] ON [Public.RegulatorAccreditationRegistrationTaskStatus] ([RegistrationId]);
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250528090955_Accreditation'
+)
+BEGIN
+    CREATE INDEX [IX_Public.RegulatorAccreditationRegistrationTaskStatus_TaskId] ON [Public.RegulatorAccreditationRegistrationTaskStatus] ([TaskId]);
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250528090955_Accreditation'
+)
+BEGIN
+    CREATE INDEX [IX_Public.RegulatorAccreditationRegistrationTaskStatus_TaskStatusId] ON [Public.RegulatorAccreditationRegistrationTaskStatus] ([TaskStatusId]);
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250528090955_Accreditation'
+)
+BEGIN
+    CREATE INDEX [IX_Public.RegulatorAccreditationTaskStatus_AccreditationId] ON [Public.RegulatorAccreditationTaskStatus] ([AccreditationId]);
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250528090955_Accreditation'
+)
+BEGIN
+    CREATE INDEX [IX_Public.RegulatorAccreditationTaskStatus_TaskId] ON [Public.RegulatorAccreditationTaskStatus] ([TaskId]);
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250528090955_Accreditation'
+)
+BEGIN
+    CREATE INDEX [IX_Public.RegulatorAccreditationTaskStatus_TaskStatusId] ON [Public.RegulatorAccreditationTaskStatus] ([TaskStatusId]);
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250528090955_Accreditation'
+)
+BEGIN
+    INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+    VALUES (N'20250528090955_Accreditation', N'8.0.8');
+END;
+GO
+
+COMMIT;
+GO
+

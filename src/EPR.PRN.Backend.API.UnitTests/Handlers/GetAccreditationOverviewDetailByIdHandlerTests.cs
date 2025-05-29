@@ -5,17 +5,17 @@ using EPR.PRN.Backend.Data.Interfaces.Regulator;
 using FluentAssertions;
 using Moq;
 using EPR.PRN.Backend.API.Common.Enums;
-using EPR.PRN.Backend.API.Handlers.Regulator;
 using EPR.PRN.Backend.API.Profiles.Regulator;
+using EPR.PRN.Backend.API.Handlers.Regulator;
 
 namespace EPR.PRN.Backend.API.UnitTests.Handlers;
 
 [TestClass]
-public class GetRegistrationOverviewDetailByIdHandlerTests
+public class GetAccreditationOverviewDetailByIdHandlerTests
 {
     private Mock<IRegistrationMaterialRepository> _repoMock;
     private IMapper _mapper;
-    private GetRegistrationOverviewDetailByIdHandler _handler;
+    private GetRegistrationOverviewDetailWithAccreditationsByIdHandler _handler;
 
     [TestInitialize]
     public void TestInitialize()
@@ -28,24 +28,27 @@ public class GetRegistrationOverviewDetailByIdHandlerTests
         });
         _mapper = config.CreateMapper();
 
-        _handler = new GetRegistrationOverviewDetailByIdHandler(_repoMock.Object, _mapper);
+        _handler = new GetRegistrationOverviewDetailWithAccreditationsByIdHandler(_repoMock.Object, _mapper);
     }
 
     [TestMethod]
     public async Task Handle_WhenTasksAndMaterialsExist_ShouldReturnMappedDto()
     {
         // Arrange
-        Guid registrationId = Guid.Parse("4bac12f7-f7a9-4df4-b7b5-9c4221860c4d");
+        Guid registrationId = Guid.NewGuid();
+        int year = 2025;
 
         var registration = new Registration
         {
+            Id = 1,
             ExternalId = registrationId,
             ApplicationTypeId = 101,
-            Tasks = [
-                new RegulatorRegistrationTaskStatus
+            AccreditationTasks = [
+                new RegulatorAccreditationRegistrationTaskStatus
                 {
                     Task = new LookupRegulatorTask { Name = "SiteAddressAndContactDetails" },
-                    TaskStatus = new LookupTaskStatus { Name = "Completed" }
+                    TaskStatus = new LookupTaskStatus { Name = "Completed" },
+                    AccreditationYear = year,
                 }
             ],
             Materials =
@@ -57,15 +60,32 @@ public class GetRegistrationOverviewDetailByIdHandlerTests
                     IsMaterialRegistered = true,
                     Tasks =
                     [
-                        new RegulatorApplicationTaskStatus
+                    ],
+                    Accreditations =
+                    [
+                        new Accreditation
                         {
-                            Task = new LookupRegulatorTask { Name = "BusinessAddress" },
-                            TaskStatus = new LookupTaskStatus { Name = "Started" }
+                            Id = 1,
+                            AccreditationYear = year,
+                            ApplicationReferenceNumber = "APP-12345",
+                            Tasks = [
+
+                            ]
                         }
                     ]
                 }
             ]
         };
+
+        var task = new RegulatorAccreditationTaskStatus
+        {
+            AccreditationId = 1,
+            Accreditation = registration.Materials[0].Accreditations[0],
+            Task = new LookupRegulatorTask { Name = "BusinessAddress" },
+            TaskStatus = new LookupTaskStatus { Name = "Started" }
+        };
+
+        registration.Materials[0].Accreditations[0].Tasks.Add(task);
 
         var requiredTasks = new List<LookupRegulatorTask>
         {
@@ -77,11 +97,11 @@ public class GetRegistrationOverviewDetailByIdHandlerTests
             new() { Name = "BusinessAddress" }
         };
         
-        _repoMock.Setup(x => x.GetRegistrationById(registrationId)).ReturnsAsync(registration);
-        _repoMock.Setup(x => x.GetRequiredTasks(101, false, 1)).ReturnsAsync(requiredTasks);
-        _repoMock.Setup(x => x.GetRequiredTasks(101, true, 1)).ReturnsAsync(requiredMaterialTasks);
+        _repoMock.Setup(x => x.GetRegistrationByExternalIdAndYear(registrationId, year)).ReturnsAsync(registration);
+        _repoMock.Setup(x => x.GetRequiredTasks(101, false, 2)).ReturnsAsync(requiredTasks);
+        _repoMock.Setup(x => x.GetRequiredTasks(101, true, 2)).ReturnsAsync(requiredMaterialTasks);
         
-        var query = new GetRegistrationOverviewDetailByIdQuery { Id = registrationId };
+        var query = new GetRegistrationOverviewDetailWithAccreditationsByIdQuery { Id = registrationId, Year = year };
 
         // Act
         var result = await _handler.Handle(query, CancellationToken.None);
@@ -93,18 +113,23 @@ public class GetRegistrationOverviewDetailByIdHandlerTests
         result.Tasks[0].Status.Should().Be(RegulatorTaskStatus.Completed.ToString());
 
         result.Materials.Should().HaveCount(1);
-        result.Materials[0].Tasks.Should().HaveCount(1);
-        result.Materials[0].Tasks[0].TaskName.Should().Be("BusinessAddress");
-        result.Materials[0].Tasks[0].Status.Should().Be(RegulatorTaskStatus.Started.ToString());
+        result.Materials[0].Tasks.Should().HaveCount(0);
+
+        result.Materials[0].Accreditations.Should().HaveCount(1);
+        result.Materials[0].Accreditations[0].AccreditationYear.Should().Be(year);
+        result.Materials[0].Accreditations[0].Tasks.Should().HaveCount(1);
+        result.Materials[0].Accreditations[0].Tasks[0].TaskName.Should().Be("BusinessAddress");
+        result.Materials[0].Accreditations[0].Tasks[0].Status.Should().Be(RegulatorTaskStatus.Started.ToString());
     }
 
     [TestMethod]
     public async Task Handle_WhenNoTasksExist_ShouldCreateNotStartedEntriesForRequiredTasks()
     {
         // Arrange
-        Guid registrationId = Guid.Parse("4bac12f7-f7a9-4df4-b7b5-9c4221860c4d");
+        Guid registrationId = Guid.NewGuid();
+        int year = 2025;
 
-        var registration = new Registration
+        var accreditation_registration = new Registration
         {
             ExternalId = registrationId,
             ApplicationTypeId = 101,
@@ -116,26 +141,31 @@ public class GetRegistrationOverviewDetailByIdHandlerTests
                     Id = 10,
                     Material = new LookupMaterial { MaterialName = "Plastic" },
                     IsMaterialRegistered = true,
-                    Tasks = []
+                    Tasks = [],
+                    Accreditations = new List<Accreditation>{ 
+                        new Accreditation{ 
+                        AccreditationYear = year,
+                        ApplicationReferenceNumber = "APP-12345",
+                        }
+                    }
                 }
             ]
         };
 
         var requiredTasks = new List<LookupRegulatorTask>
         {
-            new() { Name = "SiteAddressAndContactDetails" }
+            new() { Name = "AssignOfficer", JourneyTypeId = 2 }
         };
 
         var requiredMaterialTasks = new List<LookupRegulatorTask>
         {
-            new() { Name = "BusinessAddress" }
         };
 
-        _repoMock.Setup(x => x.GetRegistrationById(registrationId)).ReturnsAsync(registration);
-        _repoMock.Setup(x => x.GetRequiredTasks(101, false, 1)).ReturnsAsync(requiredTasks);
-        _repoMock.Setup(x => x.GetRequiredTasks(101, true, 1)).ReturnsAsync(requiredMaterialTasks);
+        _repoMock.Setup(x => x.GetRegistrationByExternalIdAndYear(registrationId, year)).ReturnsAsync(accreditation_registration);
+        _repoMock.Setup(x => x.GetRequiredTasks(101, false, 2)).ReturnsAsync(requiredTasks);
+        _repoMock.Setup(x => x.GetRequiredTasks(101, true, 2)).ReturnsAsync(requiredMaterialTasks);
 
-        var query = new GetRegistrationOverviewDetailByIdQuery { Id = registrationId };
+        var query = new GetRegistrationOverviewDetailWithAccreditationsByIdQuery { Id = registrationId, Year = year };
 
         // Act
         var result = await _handler.Handle(query, CancellationToken.None);
@@ -143,22 +173,21 @@ public class GetRegistrationOverviewDetailByIdHandlerTests
         // Assert
         result.Should().NotBeNull();
         result.Tasks.Should().HaveCount(1);
-        result.Tasks[0].TaskName.Should().Be("SiteAddressAndContactDetails");
+        result.Tasks[0].TaskName.Should().Be("AssignOfficer");
         result.Tasks[0].Status.Should().Be(RegulatorTaskStatus.NotStarted.ToString());
 
         result.Materials.Should().HaveCount(1);
-        result.Materials[0].Tasks.Should().HaveCount(1);
-        result.Materials[0].Tasks[0].TaskName.Should().Be("BusinessAddress");
-        result.Materials[0].Tasks[0].Status.Should().Be(RegulatorTaskStatus.NotStarted.ToString());
+        result.Materials[0].Tasks.Should().HaveCount(0);
     }
 
     [TestMethod]
     public async Task Handle_ShouldReturnEmptyMaterials_WhenNoMaterialsFound()
     {
         // Arrange
-        Guid registrationId = Guid.Parse("4bac12f7-f7a9-4df4-b7b5-9c4221860c4d");
+        Guid registrationId = Guid.NewGuid();
+        int year = 2025;
 
-        var registration = new Registration
+        var accreditation_registration = new Registration
         {
             ExternalId = registrationId,
             ApplicationTypeId = 101
@@ -178,10 +207,10 @@ public class GetRegistrationOverviewDetailByIdHandlerTests
             }
         };
 
-        _repoMock.Setup(x => x.GetRegistrationById(registrationId)).ReturnsAsync(registration);
+        _repoMock.Setup(x => x.GetRegistrationByExternalIdAndYear(registrationId, year)).ReturnsAsync(accreditation_registration);
         _repoMock.Setup(x => x.GetRequiredTasks(101, false, 1)).ReturnsAsync(requiredTasks);
-        
-        var query = new GetRegistrationOverviewDetailByIdQuery { Id = registrationId };
+
+        var query = new GetRegistrationOverviewDetailWithAccreditationsByIdQuery { Id = registrationId, Year = year };
 
         // Act
         var result = await _handler.Handle(query, CancellationToken.None);
