@@ -61,12 +61,14 @@ public class AccreditationRepository(EprAccreditationContext eprContext) : IAccr
         existingAccreditation.NewUsesPercentage = accreditation.NewUsesPercentage;
         existingAccreditation.NewMarketsPercentage = accreditation.NewMarketsPercentage;
         existingAccreditation.CommunicationsPercentage = accreditation.CommunicationsPercentage;
+        existingAccreditation.OtherPercentage = accreditation.OtherPercentage;
         existingAccreditation.InfrastructureNotes = accreditation.InfrastructureNotes;
         existingAccreditation.PackagingWasteNotes = accreditation.PackagingWasteNotes;
         existingAccreditation.BusinessCollectionsNotes = accreditation.BusinessCollectionsNotes;
         existingAccreditation.NewUsesNotes = accreditation.NewUsesNotes;
         existingAccreditation.NewMarketsNotes = accreditation.NewMarketsNotes;
         existingAccreditation.CommunicationsNotes = accreditation.CommunicationsNotes;
+        existingAccreditation.OtherNotes = accreditation.OtherNotes;
         existingAccreditation.UpdatedBy = accreditation.UpdatedBy;
         existingAccreditation.UpdatedDate = DateTime.UtcNow;
 

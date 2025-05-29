@@ -43,6 +43,9 @@ public class Accreditation
     [Column(TypeName = "decimal(10,2)")]
     public decimal? CommunicationsPercentage { get; set; }
 
+    [Column(TypeName = "decimal(10,2)")]
+    public decimal? OtherPercentage { get; set; }
+
     [MaxLength(500)]
     public string? InfrastructureNotes { get; set; }
 
@@ -60,6 +63,9 @@ public class Accreditation
 
     [MaxLength(500)]
     public string? CommunicationsNotes { get; set; }
+
+    [MaxLength(500)]
+    public string? OtherNotes { get; set; }
 
     public Guid CreatedBy { get; set; }
     public DateTime CreatedDate { get; set; }
