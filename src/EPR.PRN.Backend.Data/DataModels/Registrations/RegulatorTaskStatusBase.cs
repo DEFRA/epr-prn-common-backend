@@ -18,8 +18,6 @@ namespace EPR.PRN.Backend.Data.DataModels.Registrations
         public LookupTaskStatus TaskStatus { get; set; } = null!;
         [ForeignKey("TaskStatus")]
         public int? TaskStatusId { get; set; }
-        [MaxLength(500)]
-        public string? Comments { get; set; } 
         public Guid StatusCreatedBy { get; set; }
         public DateTime StatusCreatedDate { get; set; }
         public Guid? StatusUpdatedBy { get; set; }
