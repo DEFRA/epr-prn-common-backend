@@ -44,7 +44,7 @@ public class RegistrationMaterialProfile : Profile
             .ForMember(dest => dest.RegistrationId, opt => opt.MapFrom(src => src.Registration.ExternalId))
             .ForMember(dest => dest.MaterialName, opt => opt.MapFrom(src => src.Material.MaterialName))
             .ForMember(dest => dest.Status, opt => opt.MapFrom(src => (RegistrationMaterialStatus?)src.StatusId))
-            .ForMember(dest => dest.DulyMade, opt => opt.MapFrom(src => src.Dulymade.DulyMadeDate))
+            .ForMember(dest => dest.DulyMade, opt => opt.MapFrom(src => src.DulyMade!.DulyMadeDate))
             .ForMember(dest => dest.DeterminationDate, opt => opt.MapFrom(src => src.DeterminationDate.DeterminateDate));
 
         CreateMap<RegistrationMaterial, RegistrationMaterialReprocessingIODto>()
@@ -113,7 +113,7 @@ public class RegistrationMaterialProfile : Profile
            .ForMember(dest => dest.SiteAddress, opt => opt.MapFrom(src => src.Registration.ReprocessingSiteAddress != null ? CreateAddressString(src.Registration.ReprocessingSiteAddress) : string.Empty))
            .ForMember(dest => dest.NationId, opt => opt.MapFrom(src => GetNationId(src.Registration)))
            .ForMember(dest => dest.MaterialName, opt => opt.MapFrom(src => src.Material.MaterialName))
-           .ForMember(dest => dest.DulyMadeDate, opt => opt.MapFrom(src => src.Dulymade.DulyMadeDate))
+           .ForMember(dest => dest.DulyMadeDate, opt => opt.MapFrom(src => src.DulyMade.DulyMadeDate))
            .ForMember(dest => dest.DeterminationDate, opt => opt.MapFrom(src => src.DeterminationDate.DeterminateDate));
     }
     private int GetNationId(Registration registration)

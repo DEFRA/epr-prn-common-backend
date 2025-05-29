@@ -23,7 +23,7 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
     public async Task<RegistrationMaterial> GetRegistrationMaterialById(Guid registrationMaterialId)
     {
         var registrationMaterials = GetRegistrationMaterialsWithRelatedEntities()
-            .Include(rm => rm.Dulymade)
+            .Include(rm => rm.DulyMade)
             .Include(rm => rm.DeterminationDate);
 
         return await registrationMaterials.SingleOrDefaultAsync(rm => rm.ExternalId == registrationMaterialId)
