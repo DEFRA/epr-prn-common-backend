@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EPR.PRN.Backend.Data.Migrations
 {
     [DbContext(typeof(EprContext))]
-    [Migration("20250529171315_Accreditation_Updates")]
+    [Migration("20250529173128_Accreditation_Updates")]
     partial class Accreditation_Updates
     {
         /// <inheritdoc />
@@ -1657,6 +1657,22 @@ namespace EPR.PRN.Backend.Data.Migrations
                             IsMaterialSpecific = true,
                             JourneyTypeId = 2,
                             Name = "Overseas reprocessing sites and broadly equivalent evidence"
+                        },
+                        new
+                        {
+                            Id = 27,
+                            ApplicationTypeId = 1,
+                            IsMaterialSpecific = false,
+                            JourneyTypeId = 2,
+                            Name = "DulyMade"
+                        },
+                        new
+                        {
+                            Id = 28,
+                            ApplicationTypeId = 2,
+                            IsMaterialSpecific = false,
+                            JourneyTypeId = 2,
+                            Name = "DulyMade"
                         });
                 });
 

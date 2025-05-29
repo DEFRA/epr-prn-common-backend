@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
+#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
+
 namespace EPR.PRN.Backend.Data.Migrations
 {
     /// <inheritdoc />
@@ -180,6 +182,15 @@ namespace EPR.PRN.Backend.Data.Migrations
                 oldType: "datetime2",
                 oldNullable: true);
 
+            migrationBuilder.InsertData(
+                table: "Lookup.RegulatorTask",
+                columns: new[] { "Id", "ApplicationTypeId", "IsMaterialSpecific", "JourneyTypeId", "Name" },
+                values: new object[,]
+                {
+                    { 27, 1, false, 2, "DulyMade" },
+                    { 28, 2, false, 2, "DulyMade" }
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_Public.RegulatorRegistrationTaskStatus_RegulatorTaskId",
                 table: "Public.RegulatorRegistrationTaskStatus",
@@ -327,6 +338,16 @@ namespace EPR.PRN.Backend.Data.Migrations
             migrationBuilder.DropIndex(
                 name: "IX_Public.RegulatorAccreditationRegistrationTaskStatus_RegulatorTaskId",
                 table: "Public.RegulatorAccreditationRegistrationTaskStatus");
+
+            migrationBuilder.DeleteData(
+                table: "Lookup.RegulatorTask",
+                keyColumn: "Id",
+                keyValue: 27);
+
+            migrationBuilder.DeleteData(
+                table: "Lookup.RegulatorTask",
+                keyColumn: "Id",
+                keyValue: 28);
 
             migrationBuilder.DropColumn(
                 name: "RegulatorTaskId",
