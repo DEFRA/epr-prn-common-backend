@@ -99,6 +99,7 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
     {
         RegistrationMaterialId = material.RegistrationId,
         ExternalId = registration.ExternalId,
+        RegistrationMaterial = material
     };
 
         var applicationTypeId = registration.ApplicationTypeId;
