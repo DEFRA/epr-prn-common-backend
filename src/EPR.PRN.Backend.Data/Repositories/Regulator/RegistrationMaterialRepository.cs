@@ -62,8 +62,7 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
 
     public async Task<Accreditation> GetAccreditation_FileUploadById(Guid accreditationId)
     {
-        var accreditations = GetAccreditation_FileUploadById();
-
+        var accreditations = GetAccreditation_FileUploadById();        
         return await accreditations.SingleOrDefaultAsync(rm => rm.ExternalId == accreditationId)
                ?? throw new KeyNotFoundException("Accreditation not found.");
     }

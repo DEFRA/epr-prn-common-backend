@@ -3,13 +3,10 @@ using EPR.PRN.Backend.API.Commands;
 using EPR.PRN.Backend.API.Common.Constants;
 using EPR.PRN.Backend.API.Dto.Regulator;
 using EPR.PRN.Backend.API.Queries;
-
-using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.FeatureManagement.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
-using static EPR.PRN.Backend.API.Common.Constants.PrnConstants;
 
 namespace EPR.PRN.Backend.API.Controllers.Regulator;
 

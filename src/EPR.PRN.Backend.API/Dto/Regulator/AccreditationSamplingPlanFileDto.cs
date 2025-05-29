@@ -1,9 +1,7 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 
-namespace EPR.PRN.Backend.API.Dto.Regulator
+namespace EPR.PRN.Backend.API.Dto.Regulator;
+[ExcludeFromCodeCoverage]
+public class AccreditationSamplingPlanFileDto : SamplingPlanFileDto
 {
-    [ExcludeFromCodeCoverage]
-    public class AccreditationSamplingPlanFileDto : SamplingPlanFileDto
-    {
-    }
 }
