@@ -13,6 +13,7 @@ public interface IRegistrationMaterialRepository
     Task<RegistrationMaterial> GetRegistrationMaterial_WasteLicencesById(Guid registrationMaterialId);
     Task<RegistrationMaterial> GetRegistrationMaterial_RegistrationReprocessingIOById(Guid registrationMaterialId);
     Task<RegistrationMaterial> GetRegistrationMaterial_FileUploadById(Guid registrationMaterialId);
+    Task<Accreditation> GetAccreditation_FileUploadById(Guid accreditationId);
     Task UpdateRegistrationOutCome(Guid registrationMaterialId, int statusId, string? comment, string? registrationReferenceNumber);
     Task RegistrationMaterialsMarkAsDulyMade(Guid registrationMaterialId, int statusId, DateTime DeterminationDate,
             DateTime DulyMadeDate,Guid DulyMadeBy);

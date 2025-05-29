@@ -26,4 +26,5 @@ public class Accreditation
     public int AccreditationStatusId { get; set; }
     public LookupAccreditationStatus AccreditationStatus { get;  set; }
     public List<AccreditationDeterminationDate> AccreditationDulyMade { get; set; }
+    public List<AccreditationFileUpload>? FileUploads { get; set; }
 }

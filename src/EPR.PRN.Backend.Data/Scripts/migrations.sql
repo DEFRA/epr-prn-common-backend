@@ -2302,3 +2302,84 @@ GO
 COMMIT;
 GO
 
+BEGIN TRANSACTION;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250528152956_accreditationFileUploadTable'
+)
+BEGIN
+    DECLARE @var6 sysname;
+    SELECT @var6 = [d].[name]
+    FROM [sys].[default_constraints] [d]
+    INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+    WHERE ([d].[parent_object_id] = OBJECT_ID(N'[public.FileUpload]') AND [c].[name] = N'UpdatedBy');
+    IF @var6 IS NOT NULL EXEC(N'ALTER TABLE [public.FileUpload] DROP CONSTRAINT [' + @var6 + '];');
+    ALTER TABLE [public.FileUpload] ALTER COLUMN [UpdatedBy] nvarchar(50) NOT NULL;
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250528152956_accreditationFileUploadTable'
+)
+BEGIN
+    CREATE TABLE [public.AccreditationFileUpload] (
+        [Id] int NOT NULL IDENTITY,
+        [AccreditationId] int NULL,
+        [ExternalId] uniqueidentifier NOT NULL,
+        [Filename] nvarchar(50) NULL,
+        [FileId] uniqueidentifier NOT NULL,
+        [DateUploaded] datetime2 NULL,
+        [UpdatedBy] nvarchar(50) NOT NULL,
+        [FileUploadTypeId] int NULL,
+        [FileUploadStatusId] int NULL,
+        CONSTRAINT [PK_public.AccreditationFileUpload] PRIMARY KEY ([Id]),
+        CONSTRAINT [FK_public.AccreditationFileUpload_Lookup.FileUploadStatus_FileUploadStatusId] FOREIGN KEY ([FileUploadStatusId]) REFERENCES [Lookup.FileUploadStatus] ([Id]),
+        CONSTRAINT [FK_public.AccreditationFileUpload_Lookup.FileUploadType_FileUploadTypeId] FOREIGN KEY ([FileUploadTypeId]) REFERENCES [Lookup.FileUploadType] ([Id]),
+        CONSTRAINT [FK_public.AccreditationFileUpload_Public.Accreditation_AccreditationId] FOREIGN KEY ([AccreditationId]) REFERENCES [Public.Accreditation] ([Id])
+    );
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250528152956_accreditationFileUploadTable'
+)
+BEGIN
+    CREATE INDEX [IX_public.AccreditationFileUpload_AccreditationId] ON [public.AccreditationFileUpload] ([AccreditationId]);
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250528152956_accreditationFileUploadTable'
+)
+BEGIN
+    CREATE INDEX [IX_public.AccreditationFileUpload_FileUploadStatusId] ON [public.AccreditationFileUpload] ([FileUploadStatusId]);
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250528152956_accreditationFileUploadTable'
+)
+BEGIN
+    CREATE INDEX [IX_public.AccreditationFileUpload_FileUploadTypeId] ON [public.AccreditationFileUpload] ([FileUploadTypeId]);
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250528152956_accreditationFileUploadTable'
+)
+BEGIN
+    INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+    VALUES (N'20250528152956_accreditationFileUploadTable', N'8.0.8');
+END;
+GO
+
+COMMIT;
+GO
+
