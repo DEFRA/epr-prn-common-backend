@@ -73,58 +73,68 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
 
         await eprContext.SaveChangesAsync();
     }
-    public async Task RegistrationMaterialsMarkAsDulyMade(Guid registrationMaterialId, int statusId, DateTime DeterminationDate, DateTime DulyMadeDate, Guid DulyMadeBy)
+    public async Task RegistrationMaterialsMarkAsDulyMade(Guid registrationMaterialId, int statusId, DateTime determinationDate, DateTime dulyMadeDate, Guid dulyMadeBy)
     {
-        var material = await eprContext.RegistrationMaterials.FirstOrDefaultAsync(rm => rm.ExternalId == registrationMaterialId);
-        if (material is null) throw new KeyNotFoundException("Material not found.");
+        var material = await eprContext.RegistrationMaterials
+            .FirstOrDefaultAsync(rm => rm.ExternalId == registrationMaterialId);
+        if (material is null)
+            throw new KeyNotFoundException("Material not found.");
+
         var dulyMade = await eprContext.DulyMade
-            .FirstOrDefaultAsync(rm => rm.RegistrationMaterial!.ExternalId == registrationMaterialId)
+            .FirstOrDefaultAsync(dm => dm.RegistrationMaterial!.ExternalId == registrationMaterialId)
             ?? new DulyMade
             {
                 RegistrationMaterialId = material.Id,
-                RegistrationMaterial = material // Initialize the required member
+                RegistrationMaterial = material
             };
 
         var registration = await eprContext.Registrations
-     .FirstOrDefaultAsync(x => x.Id == material.RegistrationId);
-
-        if (registration == null)
+            .FirstOrDefaultAsync(r => r.Id == material.RegistrationId);
+        if (registration is null)
             throw new KeyNotFoundException("Registration not found.");
 
         var applicationTypeId = registration.ApplicationTypeId;
 
-
-        var taskid = await eprContext.LookupTasks
+        var taskId = await eprContext.LookupTasks
             .Where(t => t.Name == "CheckRegistrationStatus" && t.ApplicationTypeId == applicationTypeId)
             .Select(t => t.Id)
             .FirstOrDefaultAsync();
-        var regulatorApplicationTaskStatus = new RegulatorApplicationTaskStatus
+
+        var existingTaskStatus = await eprContext.RegulatorApplicationTaskStatus
+            .FirstOrDefaultAsync(ts => ts.RegistrationMaterialId == material.Id && ts.TaskId == taskId);
+
+        if (existingTaskStatus is null)
         {
-            RegistrationMaterialId = material.Id,
-            TaskStatusId = statusId,
-            ExternalId = material.ExternalId,
-            TaskId = taskid,
-            StatusCreatedDate = DateTime.UtcNow,
-            StatusUpdatedBy = DulyMadeBy
+            existingTaskStatus = new RegulatorApplicationTaskStatus
+            {
+                RegistrationMaterialId = material.Id,
+                TaskId = taskId,
+                ExternalId= Guid.NewGuid(),
+                StatusCreatedDate = DateTime.UtcNow,
+                StatusCreatedBy = dulyMadeBy,
+            };
 
-        };
-
-        // Set/update the fields
-        dulyMade.TaskStatusId = statusId;
-        dulyMade.DeterminationDate = DeterminationDate;
-        dulyMade.DulyMadeDate = DulyMadeDate;
-        dulyMade.DulyMadeBy = DulyMadeBy;
-        dulyMade.ExternalId = material.ExternalId;
-
-        // If this is a new entity, add it to the context
-        if (dulyMade.Id == 0)
-        {
-            await eprContext.DulyMade.AddAsync(dulyMade);
-            await eprContext.RegulatorApplicationTaskStatus.AddAsync(regulatorApplicationTaskStatus);
+            await eprContext.RegulatorApplicationTaskStatus.AddAsync(existingTaskStatus);
         }
+
+        // Always update status details
+        existingTaskStatus.TaskStatusId = statusId;
+        existingTaskStatus.StatusUpdatedBy = dulyMadeBy;
+        existingTaskStatus.StatusUpdatedDate = DateTime.UtcNow;
+
+        // Always update DulyMade fields
+        dulyMade.TaskStatusId = statusId;
+        dulyMade.DeterminationDate = determinationDate;
+        dulyMade.DulyMadeDate = dulyMadeDate;
+        dulyMade.DulyMadeBy = dulyMadeBy;
+        dulyMade.ExternalId = Guid.NewGuid();
+
+        if (dulyMade.Id == 0)
+            await eprContext.DulyMade.AddAsync(dulyMade);
 
         await eprContext.SaveChangesAsync();
     }
+
 
     private IIncludableQueryable<RegistrationMaterial, LookupRegistrationMaterialStatus> GetRegistrationMaterialsWithRelatedEntities()
     {

@@ -88,4 +88,65 @@ public class RegulatorRegistrationTaskStatusControllerTests
         // Assert
         await act.Should().ThrowAsync<Exception>().WithMessage("Test exception");
     }
+    [TestMethod]
+    public async Task AddRegistrationTaskQueryNote_ReturnsNoContent_WhenValidInput()
+    {
+        // Arrange
+        var validator = new InlineValidator<UpdateRegulatorRegistrationTaskCommand>();
+        var taskId = Guid.NewGuid();
+        var command = new AddRegistrationTaskQueryNoteCommand
+        {
+            Note = "This is a valid note",
+            QueryBy = Guid.NewGuid()
+        };
+
+        // Act
+        _systemUnderTest = new RegulatorRegistrationTaskStatusController(_mockMediator.Object, validator, _mockLogger.Object);
+        var result = await _systemUnderTest.RegistrationTaskQueryNote(taskId, command);
+
+        // Assert
+        result.Should().BeOfType<NoContentResult>();
+    }
+
+    [TestMethod]
+    public async Task AddRegistrationTaskQueryNote_ReturnsBadRequest_WhenValidationFails()
+    {
+        // Arrange
+        var taskId = Guid.Empty;
+        var command = new AddRegistrationTaskQueryNoteCommand()
+        {
+            Note = "", // Invalid note
+            QueryBy = Guid.Empty // Invalid QueryBy
+        };
+
+        // Act
+        var result = await _systemUnderTest.RegistrationTaskQueryNote(taskId, command);
+
+        // Assert
+        result.Should().BeOfType<BadRequestObjectResult>();
+        var badRequest = result as BadRequestObjectResult;
+        badRequest!.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
+    }
+
+    [TestMethod]
+    public async Task AddRegistrationTaskQueryNote_ReturnsInternalServerError_WhenMediatorThrows()
+    {
+        // Arrange
+        var taskId = Guid.NewGuid();
+        var command = new AddRegistrationTaskQueryNoteCommand
+        {
+            Note = "Some valid note",
+            QueryBy = Guid.NewGuid()
+        };
+
+        _mockMediator.Setup(x => x.Send(It.IsAny<AddRegistrationTaskQueryNoteCommand>(), It.IsAny<CancellationToken>()))
+            .ThrowsAsync(new Exception("Unexpected failure"));
+
+        // Act
+        Func<Task> act = async () => await _systemUnderTest.RegistrationTaskQueryNote(taskId, command);
+
+        // Assert
+        await act.Should().ThrowAsync<Exception>().WithMessage("Unexpected failure");
+    }
+
 }

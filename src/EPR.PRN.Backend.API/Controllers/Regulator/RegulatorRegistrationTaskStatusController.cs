@@ -1,5 +1,6 @@
 ﻿using EPR.PRN.Backend.API.Commands;
 using EPR.PRN.Backend.API.Common.Constants;
+using EPR.PRN.Backend.API.Validators.Regulator;
 using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -9,7 +10,7 @@ namespace EPR.PRN.Backend.API.Controllers.Regulator;
 [FeatureGate(FeatureFlags.ReprocessorExporter)]
 [ApiController]
 [ApiVersion("1.0")]
-[Route("api/v{version:apiVersion}/regulatorRegistrationTaskStatus")]
+[Route("api/v{version:apiVersion}/RegulatorRegistrationTaskStatus")]
 
 public class RegulatorRegistrationTaskStatusController(
     IMediator mediator,
@@ -30,5 +31,29 @@ public class RegulatorRegistrationTaskStatusController(
         await mediator.Send(command);
 
         return NoContent();
+    }
+    [HttpPost("{Id}/queryNote")]
+    [ProducesResponseType(204)]
+    [ProducesResponseType(400)]
+    [ProducesResponseType(500)]
+    public async Task<IActionResult> RegistrationTaskQueryNote(Guid Id, [FromBody] AddRegistrationTaskQueryNoteCommand command)
+    {
+        logger.LogInformation(LogMessages.UpdateRegulatorApplicationTask);
+        command.RegulatorRegistrationTaskStatusId = Id;
+
+
+        var validator = new AddRegistrationTaskQueryNoteCommandValidator();
+        var result = validator.Validate(command);
+
+        if (result.IsValid)
+        {
+            await mediator.Send(command);
+            return NoContent();
+        }
+        else
+        {
+            return BadRequest(result.Errors);
+        }
+
     }
 }

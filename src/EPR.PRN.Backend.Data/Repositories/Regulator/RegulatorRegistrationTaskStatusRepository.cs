@@ -52,7 +52,6 @@ namespace EPR.PRN.Backend.Data.Repositories.Regulator
                     ExternalId = Guid.NewGuid(),
                     Task = task,
                     TaskStatus = statusEntity,
-                    Comments = comments,
                     StatusCreatedBy = user,
                     StatusCreatedDate = DateTime.UtcNow,
                     StatusUpdatedBy = user,
@@ -60,12 +59,31 @@ namespace EPR.PRN.Backend.Data.Repositories.Regulator
                 };
 
                 await _context.RegulatorRegistrationTaskStatus.AddAsync(taskStatus);
+
+                if (comments != null && status == RegulatorTaskStatus.Queried)
+                {
+
+                    var queryNote = new QueryNote
+                    {
+                        Notes = comments,
+                        CreatedBy = user,
+                        CreatedDate = DateTime.UtcNow
+                    };
+                    await _context.QueryNote.AddAsync(queryNote);
+
+                    var registrationTaskStatusQueryNotes = new RegistrationTaskStatusQueryNotes
+                    {
+                        QueryNote = queryNote,
+                        RegulatorRegistrationTaskStatus = taskStatus
+                    };
+                    await _context.RegistrationTaskStatusQueryNotes.AddAsync(registrationTaskStatusQueryNotes);
+
+                }
             }
             else
             {
                 // Update the existing entity
                 taskStatus.TaskStatus = statusEntity;
-                taskStatus.Comments = comments;
                 taskStatus.StatusUpdatedBy = user;
                 taskStatus.StatusUpdatedDate = DateTime.UtcNow;
 
@@ -74,6 +92,41 @@ namespace EPR.PRN.Backend.Data.Repositories.Regulator
 
             await _context.SaveChangesAsync();
             _logger.LogInformation("Successfully updated status for task with TaskName {TaskName} And RegistrationId {RegistrationId} to {Status}", TaskName, RegistrationId, status);
+        }
+        public async Task AddRegistrationTaskQueryNoteAsync(Guid taskStatusId, Guid queryBy, string note)
+        {
+            var registrationTaskStatus = await _context.RegulatorRegistrationTaskStatus
+                .FirstOrDefaultAsync(rm => rm.ExternalId == taskStatusId);
+
+            if (registrationTaskStatus is null)
+            {
+                throw new KeyNotFoundException("Regulator Registration Task Status not found.");
+            }
+            else if ((RegulatorTaskStatus)registrationTaskStatus.TaskStatusId == RegulatorTaskStatus.Completed)
+            {
+                throw new KeyNotFoundException("Cannot insert query because the Regulator Registration Task Status is completed.");
+            }
+            var querynote = new QueryNote
+            {
+                Notes = note,
+                CreatedBy = queryBy,
+                CreatedDate = DateTime.UtcNow
+            };
+            await _context.QueryNote.AddAsync(querynote);
+
+            var registrationTaskStatusQueryNotes = new RegistrationTaskStatusQueryNotes
+            {
+                QueryNote = querynote,
+                RegulatorRegistrationTaskStatus = registrationTaskStatus
+            };
+            await _context.RegistrationTaskStatusQueryNotes.AddAsync(registrationTaskStatusQueryNotes);
+
+          
+
+            await _context.SaveChangesAsync();
+
+            _logger.LogInformation("Successfully add query note for task");
+
         }
         private async Task<RegulatorRegistrationTaskStatus?> GetTaskStatus(string TaskName, Guid RegistrationId)
         {

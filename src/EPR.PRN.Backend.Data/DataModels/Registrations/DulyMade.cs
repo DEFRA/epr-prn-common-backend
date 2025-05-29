@@ -10,6 +10,7 @@ public class DulyMade
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     [Key]
     public int Id { get; set; }
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public Guid ExternalId { get; set; }
     [ForeignKey("RegistrationMaterial")]
     public int RegistrationMaterialId { get; set; }   

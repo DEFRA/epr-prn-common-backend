@@ -1,0 +1,17 @@
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Diagnostics.CodeAnalysis;
+
+namespace EPR.PRN.Backend.Data.DataModels.Registrations;
+[ExcludeFromCodeCoverage]
+[Table("Public.QueryNote")]
+public class QueryNote
+{    
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+    [Key]
+    public int Id { get; set; }
+    [MaxLength(500)]
+    public string Notes { get; set; }
+    public Guid CreatedBy { get; set; }
+    public DateTime CreatedDate { get; set; }
+}

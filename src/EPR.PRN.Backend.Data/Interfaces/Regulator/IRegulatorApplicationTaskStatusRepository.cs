@@ -7,5 +7,7 @@ namespace EPR.PRN.Backend.Data.Interfaces.Regulator
     {
         Task<RegulatorApplicationTaskStatus> GetTaskStatusAsync(string TaskName, Guid RegistrationMaterialId);
         Task UpdateStatusAsync(string TaskName, Guid RegistrationMaterialId, RegulatorTaskStatus status, string? comments, Guid user);
+
+        Task AddApplicationTaskQueryNoteAsync(Guid taskStatusId, Guid queryBy, string note);
     }
 }

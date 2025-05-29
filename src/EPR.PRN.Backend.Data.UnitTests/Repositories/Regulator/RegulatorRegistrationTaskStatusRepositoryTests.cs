@@ -95,7 +95,6 @@ namespace EPR.PRN.Backend.Data.UnitTests.Repositories.Regulator
             taskStatus.Task.Name.Should().Be(taskName);
             taskStatus.Registration.ExternalId.Should().Be(registrationId);
             taskStatus.TaskStatus.Name.Should().Be(status.ToString());
-            taskStatus.Comments.Should().Be(comments);
             taskStatus.StatusCreatedBy.Should().Be(user);
             taskStatus.StatusUpdatedBy.Should().Be(user);
         }
@@ -119,7 +118,6 @@ namespace EPR.PRN.Backend.Data.UnitTests.Repositories.Regulator
                 Task = new LookupRegulatorTask { Name = taskName },
                 Registration = new Registration { ExternalId = registrationId },
                 TaskStatus = new LookupTaskStatus { Name = existingStatus.ToString() },
-                Comments = "Task started",
                 StatusCreatedBy = existingUser,
                 StatusUpdatedBy = existingUser
             });
@@ -138,7 +136,6 @@ namespace EPR.PRN.Backend.Data.UnitTests.Repositories.Regulator
             taskStatus.Task.Name.Should().Be(taskName);
             taskStatus.Registration.ExternalId.Should().Be(registrationId);
             taskStatus.TaskStatus.Name.Should().Be(status.ToString());
-            taskStatus.Comments.Should().Be(comments);
             taskStatus.StatusCreatedBy.Should().Be(existingUser);
             taskStatus.StatusUpdatedBy.Should().Be(user);
         }
@@ -187,6 +184,68 @@ namespace EPR.PRN.Backend.Data.UnitTests.Repositories.Regulator
 
             // Assert
             await act.Should().ThrowAsync<RegulatorInvalidOperationException>();
+        }
+        [TestMethod]
+        public async Task AddRegistrationTaskQueryNoteAsync_ShouldAddNote_WhenTaskStatusIsValid()
+        {
+            var externalId = Guid.NewGuid();
+            var queryBy = Guid.NewGuid();
+            var note = "Test query note";
+
+            var taskStatus = new RegulatorRegistrationTaskStatus
+            {
+                ExternalId = externalId,
+                Id = 1,
+                TaskStatusId = (int)RegulatorTaskStatus.Queried
+            };
+
+            _context.RegulatorRegistrationTaskStatus.Add(taskStatus);
+            _context.SaveChanges();
+
+            await _repository.AddRegistrationTaskQueryNoteAsync(externalId, queryBy, note);
+
+            var savedNote = _context.QueryNote.FirstOrDefault();
+            savedNote.Should().NotBeNull();
+            savedNote!.Notes.Should().Be(note);
+            savedNote.CreatedBy.Should().Be(queryBy);
+
+            var link = _context.RegistrationTaskStatusQueryNotes.FirstOrDefault();
+            link.Should().NotBeNull();
+            link!.RegulatorRegistrationTaskStatus.Id.Should().Be(taskStatus.Id);
+        }
+
+        [TestMethod]
+        public async Task AddRegistrationTaskQueryNoteAsync_ShouldThrow_WhenTaskStatusNotFound()
+        {
+            var invalidId = Guid.NewGuid();
+            var queryBy = Guid.NewGuid();
+
+            Func<Task> act = async () => await _repository.AddRegistrationTaskQueryNoteAsync(invalidId, queryBy, "Note");
+
+            await act.Should().ThrowAsync<KeyNotFoundException>()
+                .WithMessage("Regulator Registration Task Status not found.");
+        }
+
+        [TestMethod]
+        public async Task AddRegistrationTaskQueryNoteAsync_ShouldThrow_WhenStatusIsCompleted()
+        {
+            var externalId = Guid.NewGuid();
+            var queryBy = Guid.NewGuid();
+
+            var taskStatus = new RegulatorRegistrationTaskStatus
+            {
+                ExternalId = externalId,
+                Id = 1,
+                TaskStatusId = (int)RegulatorTaskStatus.Completed
+            };
+
+            _context.RegulatorRegistrationTaskStatus.Add(taskStatus);
+            _context.SaveChanges();
+
+            Func<Task> act = async () => await _repository.AddRegistrationTaskQueryNoteAsync(externalId, queryBy, "Note");
+
+            await act.Should().ThrowAsync<KeyNotFoundException>()
+                .WithMessage("Cannot insert query because the Regulator Registration Task Status is completed.");
         }
     }
 }
