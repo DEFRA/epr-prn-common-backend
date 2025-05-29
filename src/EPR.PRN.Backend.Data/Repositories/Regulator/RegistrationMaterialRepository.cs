@@ -97,6 +97,7 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
     .FirstOrDefaultAsync(x => x.RegistrationMaterialId == material.RegistrationId) 
     ?? new DeterminationDate
     {
+        DeterminateDate = DeterminationDate,
         RegistrationMaterialId = material.RegistrationId,
         ExternalId = registration.ExternalId,
         RegistrationMaterial = material
