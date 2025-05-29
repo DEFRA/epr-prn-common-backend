@@ -63,6 +63,11 @@ namespace EPR.PRN.Backend.Data.Migrations
                 name: "IX_Public.RegulatorAccreditationRegistrationTaskStatus_TaskId",
                 table: "Public.RegulatorAccreditationRegistrationTaskStatus");
 
+            migrationBuilder.DeleteData(
+                table: "Lookup.RegulatorTask",
+                keyColumn: "Id",
+                keyValue: 21);
+
             migrationBuilder.DropColumn(
                 name: "TaskId",
                 table: "Public.RegulatorRegistrationTaskStatus");
@@ -424,6 +429,11 @@ namespace EPR.PRN.Backend.Data.Migrations
                 nullable: true,
                 oldClrType: typeof(DateTime),
                 oldType: "datetime2");
+
+            migrationBuilder.InsertData(
+                table: "Lookup.RegulatorTask",
+                columns: new[] { "Id", "ApplicationTypeId", "IsMaterialSpecific", "JourneyTypeId", "Name" },
+                values: new object[] { 21, 1, true, 2, "Overseas reprocessing sites and broadly equivalent evidence" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Public.RegulatorRegistrationTaskStatus_TaskId",

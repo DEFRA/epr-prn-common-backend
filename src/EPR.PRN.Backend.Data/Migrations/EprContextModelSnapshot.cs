@@ -1617,14 +1617,6 @@ namespace EPR.PRN.Backend.Data.Migrations
                         },
                         new
                         {
-                            Id = 21,
-                            ApplicationTypeId = 1,
-                            IsMaterialSpecific = true,
-                            JourneyTypeId = 2,
-                            Name = "Overseas reprocessing sites and broadly equivalent evidence"
-                        },
-                        new
-                        {
                             Id = 22,
                             ApplicationTypeId = 2,
                             IsMaterialSpecific = false,
