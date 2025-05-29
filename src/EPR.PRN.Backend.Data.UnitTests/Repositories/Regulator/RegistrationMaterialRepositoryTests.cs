@@ -73,7 +73,7 @@ public class RegistrationMaterialRepositoryTests
             new RegulatorApplicationTaskStatus
             {
                 Id = 1,
-                TaskId = 1,
+                RegulatorTaskId = 1,
                 TaskStatusId = 1,
                 TaskStatus = taskStatus,
                 Task = task
@@ -111,7 +111,7 @@ public class RegistrationMaterialRepositoryTests
             new RegulatorRegistrationTaskStatus
             {
                 Id = 1,
-                TaskId = 1,
+                RegulatorTaskId = 1,
                 TaskStatusId = 1,
                 TaskStatus = taskStatus,
                 Task = task
@@ -133,7 +133,7 @@ public class RegistrationMaterialRepositoryTests
                 new RegulatorAccreditationRegistrationTaskStatus
                 {
                     Id = 2,
-                    TaskId = 1,
+                    RegulatorTaskId = 1,
                     TaskStatusId = 1,
                     TaskStatus = taskStatus,
                     Task = task,
@@ -143,7 +143,7 @@ public class RegistrationMaterialRepositoryTests
                 new RegulatorAccreditationRegistrationTaskStatus
                 {
                     Id = 3,
-                    TaskId = 1,
+                    RegulatorTaskId = 1,
                     TaskStatusId = 1,
                     TaskStatus = taskStatus,
                     Task = task,
@@ -167,7 +167,7 @@ public class RegistrationMaterialRepositoryTests
                         new RegulatorApplicationTaskStatus
                         {
                             Id = 3,
-                            TaskId = 1,
+                            RegulatorTaskId = 1,
                             TaskStatusId = 1,
                             TaskStatus = taskStatus,
                             Task = task
@@ -208,7 +208,7 @@ public class RegistrationMaterialRepositoryTests
                                 new RegulatorAccreditationTaskStatus
                                 {
                                     Id = 1,
-                                    TaskId = 1,
+                                    RegulatorTaskId = 1,
                                     TaskStatusId = 1,
                                     TaskStatus = taskStatus,
                                     Task = task
@@ -232,7 +232,7 @@ public class RegistrationMaterialRepositoryTests
                                 new RegulatorAccreditationTaskStatus
                                 {
                                     Id = 2,
-                                    TaskId = 1,
+                                    RegulatorTaskId = 1,
                                     TaskStatusId = 1,
                                     TaskStatus = taskStatus,
                                     Task = task
@@ -463,7 +463,7 @@ public class RegistrationMaterialRepositoryTests
 
             taskStatusEntry.Should().NotBeNull();
             taskStatusEntry!.TaskStatusId.Should().Be(statusId);
-            taskStatusEntry.TaskId.Should().Be(2);
+            taskStatusEntry.RegulatorTaskId.Should().Be(2);
             taskStatusEntry.StatusUpdatedBy.Should().Be(userId);
             taskStatusEntry.StatusCreatedDate.Date.Should().Be(DateTime.UtcNow.Date);
         }
