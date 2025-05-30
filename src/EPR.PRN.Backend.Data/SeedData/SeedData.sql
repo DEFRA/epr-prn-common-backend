@@ -3468,6 +3468,13 @@ GO
 INSERT [dbo].[Public.Accreditation] ([Id], [ExternalId], [RegistrationMaterialId], [AccreditationYear], [AccreditationStatusId], [ApplicationReferenceNumber]) VALUES (20, N'cf1ecbcb-6476-4f12-91be-cdddbd1322c5', 358, 2025, 10, N'Ref20')
 GO
 INSERT [dbo].[Public.Accreditation] ([Id], [ExternalId], [RegistrationMaterialId], [AccreditationYear], [AccreditationStatusId], [ApplicationReferenceNumber]) VALUES (21, N'a7c10f98-c940-48e2-8a29-2786c7cc5bef', 328, 2026, 2, N'Ref21')
+GO
+INSERT [dbo].[Public.Accreditation] ([Id], [ExternalId], [RegistrationMaterialId], [AccreditationYear], [AccreditationStatusId], [ApplicationReferenceNumber]) VALUES (22, N'fa75afba-c754-4f0f-be31-21b274a27c76', 329, 2025, 3, N'Ref22')
+GO
+INSERT [dbo].[Public.Accreditation] ([Id], [ExternalId], [RegistrationMaterialId], [AccreditationYear], [AccreditationStatusId], [ApplicationReferenceNumber]) VALUES (23, N'ee79073f-206b-4155-9494-6c21fb4ee0fc', 330, 2026, 3, N'Ref23')
+
+
+
 
 SET IDENTITY_INSERT [dbo].[Public.Accreditation] OFF
 GO
