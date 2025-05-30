@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EPR.PRN.Backend.Data.Migrations
 {
     [DbContext(typeof(EprContext))]
-    [Migration("20250530105703_Accreditation_Updates_2")]
+    [Migration("20250530121218_Accreditation_Updates_2")]
     partial class Accreditation_Updates_2
     {
         /// <inheritdoc />
