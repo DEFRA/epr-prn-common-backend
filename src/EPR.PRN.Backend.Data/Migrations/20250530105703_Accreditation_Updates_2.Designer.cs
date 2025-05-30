@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EPR.PRN.Backend.Data.Migrations
 {
     [DbContext(typeof(EprContext))]
-    [Migration("20250529173128_Accreditation_Updates")]
-    partial class Accreditation_Updates
+    [Migration("20250530105703_Accreditation_Updates_2")]
+    partial class Accreditation_Updates_2
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
