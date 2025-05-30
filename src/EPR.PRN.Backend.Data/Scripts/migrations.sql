@@ -2924,3 +2924,41 @@ GO
 COMMIT;
 GO
 
+BEGIN TRANSACTION;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250530134136_Set-DulyMade-Lookup-IsMaterialSpecific'
+)
+BEGIN
+    EXEC(N'UPDATE [Lookup.RegulatorTask] SET [IsMaterialSpecific] = CAST(1 AS bit)
+    WHERE [Id] = 27;
+    SELECT @@ROWCOUNT');
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250530134136_Set-DulyMade-Lookup-IsMaterialSpecific'
+)
+BEGIN
+    EXEC(N'UPDATE [Lookup.RegulatorTask] SET [IsMaterialSpecific] = CAST(1 AS bit)
+    WHERE [Id] = 28;
+    SELECT @@ROWCOUNT');
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250530134136_Set-DulyMade-Lookup-IsMaterialSpecific'
+)
+BEGIN
+    INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+    VALUES (N'20250530134136_Set-DulyMade-Lookup-IsMaterialSpecific', N'8.0.8');
+END;
+GO
+
+COMMIT;
+GO
+
