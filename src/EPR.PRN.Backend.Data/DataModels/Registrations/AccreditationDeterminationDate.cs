@@ -14,5 +14,5 @@ public class AccreditationDeterminationDate
     [ForeignKey("Accreditation")]
     public int AccreditationId { get; set; }   
     public Accreditation? Accreditation { get; set; }    
-    public DateTime? DeterminationDate { get; set; }
+    public DateTime DeterminationDate { get; set; }
   }
