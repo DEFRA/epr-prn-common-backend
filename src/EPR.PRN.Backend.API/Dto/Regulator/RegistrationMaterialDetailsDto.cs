@@ -10,4 +10,6 @@ public class RegistrationMaterialDetailsDto
     public Guid RegistrationId { get; set; }
     public string MaterialName { get; set; } = string.Empty;
     public RegistrationMaterialStatus? Status { get; set; }
+    public DateTime? DulyMade { get; set; }
+    public DateTime? DeterminationDate { get; set; }
 }

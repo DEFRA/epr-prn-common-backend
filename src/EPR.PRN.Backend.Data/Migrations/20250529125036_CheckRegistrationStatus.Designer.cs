@@ -4,6 +4,7 @@ using EPR.PRN.Backend.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EPR.PRN.Backend.Data.Migrations
 {
     [DbContext(typeof(EprContext))]
-    partial class EprContextModelSnapshot : ModelSnapshot
+    [Migration("20250529125036_CheckRegistrationStatus")]
+    partial class CheckRegistrationStatus
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -856,7 +859,7 @@ namespace EPR.PRN.Backend.Data.Migrations
                     b.Property<int>("AccreditationId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("DeterminationDate")
+                    b.Property<DateTime?>("DeterminationDate")
                         .HasColumnType("datetime2");
 
                     b.Property<Guid>("ExternalId")
@@ -1640,6 +1643,14 @@ namespace EPR.PRN.Backend.Data.Migrations
                         },
                         new
                         {
+                            Id = 21,
+                            ApplicationTypeId = 1,
+                            IsMaterialSpecific = true,
+                            JourneyTypeId = 2,
+                            Name = "Overseas reprocessing sites and broadly equivalent evidence"
+                        },
+                        new
+                        {
                             Id = 22,
                             ApplicationTypeId = 2,
                             IsMaterialSpecific = false,
@@ -1677,22 +1688,6 @@ namespace EPR.PRN.Backend.Data.Migrations
                             IsMaterialSpecific = true,
                             JourneyTypeId = 2,
                             Name = "Overseas reprocessing sites and broadly equivalent evidence"
-                        },
-                        new
-                        {
-                            Id = 27,
-                            ApplicationTypeId = 1,
-                            IsMaterialSpecific = true,
-                            JourneyTypeId = 2,
-                            Name = "DulyMade"
-                        },
-                        new
-                        {
-                            Id = 28,
-                            ApplicationTypeId = 2,
-                            IsMaterialSpecific = true,
-                            JourneyTypeId = 2,
-                            Name = "DulyMade"
                         });
                 });
 
@@ -2042,14 +2037,15 @@ namespace EPR.PRN.Backend.Data.Migrations
                     b.Property<int>("AccreditationYear")
                         .HasColumnType("int");
 
+                    b.Property<string>("Comments")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
                     b.Property<Guid>("ExternalId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("RegistrationId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("RegulatorTaskId")
                         .HasColumnType("int");
 
                     b.Property<Guid>("StatusCreatedBy")
@@ -2064,14 +2060,17 @@ namespace EPR.PRN.Backend.Data.Migrations
                     b.Property<DateTime?>("StatusUpdatedDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("TaskStatusId")
+                    b.Property<int?>("TaskId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("TaskStatusId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
                     b.HasIndex("RegistrationId");
 
-                    b.HasIndex("RegulatorTaskId");
+                    b.HasIndex("TaskId");
 
                     b.HasIndex("TaskStatusId");
 
@@ -2086,15 +2085,16 @@ namespace EPR.PRN.Backend.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("AccreditationId")
+                    b.Property<int?>("AccreditationId")
                         .HasColumnType("int");
+
+                    b.Property<string>("Comments")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
 
                     b.Property<Guid>("ExternalId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("RegulatorTaskId")
-                        .HasColumnType("int");
 
                     b.Property<Guid>("StatusCreatedBy")
                         .HasColumnType("uniqueidentifier");
@@ -2108,14 +2108,17 @@ namespace EPR.PRN.Backend.Data.Migrations
                     b.Property<DateTime?>("StatusUpdatedDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("TaskStatusId")
+                    b.Property<int?>("TaskId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("TaskStatusId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
                     b.HasIndex("AccreditationId");
 
-                    b.HasIndex("RegulatorTaskId");
+                    b.HasIndex("TaskId");
 
                     b.HasIndex("TaskStatusId");
 
@@ -2141,9 +2144,6 @@ namespace EPR.PRN.Backend.Data.Migrations
                     b.Property<int?>("RegistrationMaterialId")
                         .HasColumnType("int");
 
-                    b.Property<int>("RegulatorTaskId")
-                        .HasColumnType("int");
-
                     b.Property<Guid>("StatusCreatedBy")
                         .HasColumnType("uniqueidentifier");
 
@@ -2156,14 +2156,17 @@ namespace EPR.PRN.Backend.Data.Migrations
                     b.Property<DateTime?>("StatusUpdatedDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("TaskStatusId")
+                    b.Property<int?>("TaskId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("TaskStatusId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
                     b.HasIndex("RegistrationMaterialId");
 
-                    b.HasIndex("RegulatorTaskId");
+                    b.HasIndex("TaskId");
 
                     b.HasIndex("TaskStatusId");
 
@@ -2189,9 +2192,6 @@ namespace EPR.PRN.Backend.Data.Migrations
                     b.Property<int?>("RegistrationId")
                         .HasColumnType("int");
 
-                    b.Property<int>("RegulatorTaskId")
-                        .HasColumnType("int");
-
                     b.Property<Guid>("StatusCreatedBy")
                         .HasColumnType("uniqueidentifier");
 
@@ -2204,14 +2204,17 @@ namespace EPR.PRN.Backend.Data.Migrations
                     b.Property<DateTime?>("StatusUpdatedDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("TaskStatusId")
+                    b.Property<int?>("TaskId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("TaskStatusId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
                     b.HasIndex("RegistrationId");
 
-                    b.HasIndex("RegulatorTaskId");
+                    b.HasIndex("TaskId");
 
                     b.HasIndex("TaskStatusId");
 
@@ -2465,15 +2468,11 @@ namespace EPR.PRN.Backend.Data.Migrations
 
                     b.HasOne("EPR.PRN.Backend.Data.DataModels.Registrations.LookupRegulatorTask", "Task")
                         .WithMany()
-                        .HasForeignKey("RegulatorTaskId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("TaskId");
 
                     b.HasOne("EPR.PRN.Backend.Data.DataModels.Registrations.LookupTaskStatus", "TaskStatus")
                         .WithMany()
-                        .HasForeignKey("TaskStatusId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("TaskStatusId");
 
                     b.Navigation("Task");
 
@@ -2484,21 +2483,15 @@ namespace EPR.PRN.Backend.Data.Migrations
                 {
                     b.HasOne("EPR.PRN.Backend.Data.DataModels.Registrations.Accreditation", "Accreditation")
                         .WithMany("Tasks")
-                        .HasForeignKey("AccreditationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("AccreditationId");
 
                     b.HasOne("EPR.PRN.Backend.Data.DataModels.Registrations.LookupRegulatorTask", "Task")
                         .WithMany()
-                        .HasForeignKey("RegulatorTaskId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("TaskId");
 
                     b.HasOne("EPR.PRN.Backend.Data.DataModels.Registrations.LookupTaskStatus", "TaskStatus")
                         .WithMany()
-                        .HasForeignKey("TaskStatusId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("TaskStatusId");
 
                     b.Navigation("Accreditation");
 
@@ -2515,15 +2508,11 @@ namespace EPR.PRN.Backend.Data.Migrations
 
                     b.HasOne("EPR.PRN.Backend.Data.DataModels.Registrations.LookupRegulatorTask", "Task")
                         .WithMany()
-                        .HasForeignKey("RegulatorTaskId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("TaskId");
 
                     b.HasOne("EPR.PRN.Backend.Data.DataModels.Registrations.LookupTaskStatus", "TaskStatus")
                         .WithMany()
-                        .HasForeignKey("TaskStatusId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("TaskStatusId");
 
                     b.Navigation("RegistrationMaterial");
 
@@ -2540,15 +2529,11 @@ namespace EPR.PRN.Backend.Data.Migrations
 
                     b.HasOne("EPR.PRN.Backend.Data.DataModels.Registrations.LookupRegulatorTask", "Task")
                         .WithMany()
-                        .HasForeignKey("RegulatorTaskId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("TaskId");
 
                     b.HasOne("EPR.PRN.Backend.Data.DataModels.Registrations.LookupTaskStatus", "TaskStatus")
                         .WithMany()
-                        .HasForeignKey("TaskStatusId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("TaskStatusId");
 
                     b.Navigation("Registration");
 
