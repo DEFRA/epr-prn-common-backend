@@ -44,6 +44,7 @@ namespace EPR.PRN.Backend.API.Helpers
                 .AddScoped<IRegulatorRegistrationTaskStatusRepository, RegulatorRegistrationTaskStatusRepository>()
                 .AddScoped<IValidator<SavePrnDetailsRequest>, SavePrnDetailsRequestValidator>()
                 .AddScoped<IRegistrationMaterialRepository, RegistrationMaterialRepository>()
+                .AddScoped<IRegulatorRegistrationAccreditationRepository, RegulatorRegistrationAccreditationRepository>()
                 .AddScoped<IRegistrationRepository, RegistrationRepository>()
                 .AddScoped<IDateTimeProvider, DateTimeProvider>();
 
