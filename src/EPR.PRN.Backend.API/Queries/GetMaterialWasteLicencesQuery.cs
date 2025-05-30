@@ -7,6 +7,6 @@ namespace EPR.PRN.Backend.API.Queries
     public class GetMaterialWasteLicencesQuery : IRequest<RegistrationMaterialWasteLicencesDto>
     {
         [Required]
-        public int Id { get; set; }
+        public Guid Id { get; set; }
     }
 }

@@ -1,11 +1,11 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Serialization;
 
+using EPR.PRN.Backend.API.Validators.Regulator;
 using EPR.PRN.Backend.API.Common.Constants;
 using EPR.PRN.Backend.API.Configs;
 using EPR.PRN.Backend.API.Handlers;
 using EPR.PRN.Backend.API.Helpers;
-using EPR.PRN.Backend.API.Validators;
 using EPR.PRN.Backend.API.Middlewares;
 using EPR.PRN.Backend.Data;
 
