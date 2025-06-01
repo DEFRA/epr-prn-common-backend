@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EPR.PRN.Backend.Data.Migrations
 {
     [DbContext(typeof(EprContext))]
-    [Migration("20250528195025_AddQueryNoteTable")]
-    partial class AddQueryNoteTable
+    [Migration("20250601163300_AddNoteTable")]
+    partial class AddNoteTable
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -917,7 +917,7 @@ namespace EPR.PRN.Backend.Data.Migrations
                     b.ToTable("Public.Address");
                 });
 
-            modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.ApplicationTaskStatusQueryNotes", b =>
+            modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.ApplicationTaskStatusQueryNote", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -937,7 +937,7 @@ namespace EPR.PRN.Backend.Data.Migrations
 
                     b.HasIndex("RegulatorApplicationTaskStatusId");
 
-                    b.ToTable("Public.ApplicationTaskStatusQueryNotes");
+                    b.ToTable("Public.ApplicationTaskStatusQueryNote");
                 });
 
             modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.DulyMade", b =>
@@ -1764,7 +1764,7 @@ namespace EPR.PRN.Backend.Data.Migrations
                     b.ToTable("Public.MaterialExemptionReference");
                 });
 
-            modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.QueryNote", b =>
+            modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.Note", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -1785,7 +1785,7 @@ namespace EPR.PRN.Backend.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Public.QueryNote");
+                    b.ToTable("Public.Note");
                 });
 
             modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.Registration", b =>
@@ -2051,7 +2051,7 @@ namespace EPR.PRN.Backend.Data.Migrations
                     b.ToTable("Public.RegistrationTaskStatus");
                 });
 
-            modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.RegistrationTaskStatusQueryNotes", b =>
+            modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.RegistrationTaskStatusQueryNote", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -2074,7 +2074,7 @@ namespace EPR.PRN.Backend.Data.Migrations
 
                     b.HasIndex("RegulatorRegistrationTaskStatusId");
 
-                    b.ToTable("Public.RegistrationTaskStatusQueryNotes");
+                    b.ToTable("Public.RegistrationTaskStatusQueryNote");
                 });
 
             modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.RegulatorAccreditationRegistrationTaskStatus", b =>
@@ -2087,6 +2087,10 @@ namespace EPR.PRN.Backend.Data.Migrations
 
                     b.Property<int>("AccreditationYear")
                         .HasColumnType("int");
+
+                    b.Property<string>("Comments")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
 
                     b.Property<Guid>("ExternalId")
                         .ValueGeneratedOnAdd()
@@ -2134,6 +2138,10 @@ namespace EPR.PRN.Backend.Data.Migrations
 
                     b.Property<int?>("AccreditationId")
                         .HasColumnType("int");
+
+                    b.Property<string>("Comments")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
 
                     b.Property<Guid>("ExternalId")
                         .ValueGeneratedOnAdd()
@@ -2315,21 +2323,21 @@ namespace EPR.PRN.Backend.Data.Migrations
                     b.Navigation("Accreditation");
                 });
 
-            modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.ApplicationTaskStatusQueryNotes", b =>
+            modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.ApplicationTaskStatusQueryNote", b =>
                 {
-                    b.HasOne("EPR.PRN.Backend.Data.DataModels.Registrations.QueryNote", "QueryNote")
+                    b.HasOne("EPR.PRN.Backend.Data.DataModels.Registrations.Note", "Note")
                         .WithMany()
                         .HasForeignKey("QueryNoteId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("EPR.PRN.Backend.Data.DataModels.Registrations.RegulatorApplicationTaskStatus", "RegulatorApplicationTaskStatus")
-                        .WithMany()
+                        .WithMany("ApplicationTaskStatusQueryNotes")
                         .HasForeignKey("RegulatorApplicationTaskStatusId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("QueryNote");
+                    b.Navigation("Note");
 
                     b.Navigation("RegulatorApplicationTaskStatus");
                 });
@@ -2501,16 +2509,16 @@ namespace EPR.PRN.Backend.Data.Migrations
                     b.Navigation("TaskStatus");
                 });
 
-            modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.RegistrationTaskStatusQueryNotes", b =>
+            modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.RegistrationTaskStatusQueryNote", b =>
                 {
-                    b.HasOne("EPR.PRN.Backend.Data.DataModels.Registrations.QueryNote", "QueryNote")
+                    b.HasOne("EPR.PRN.Backend.Data.DataModels.Registrations.Note", "QueryNote")
                         .WithMany()
                         .HasForeignKey("QueryNoteId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("EPR.PRN.Backend.Data.DataModels.Registrations.RegulatorRegistrationTaskStatus", "RegulatorRegistrationTaskStatus")
-                        .WithMany()
+                        .WithMany("RegistrationTaskStatusQueryNotes")
                         .HasForeignKey("RegulatorRegistrationTaskStatusId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -2641,6 +2649,16 @@ namespace EPR.PRN.Backend.Data.Migrations
                     b.Navigation("RegistrationReprocessingIO");
 
                     b.Navigation("Tasks");
+                });
+
+            modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.RegulatorApplicationTaskStatus", b =>
+                {
+                    b.Navigation("ApplicationTaskStatusQueryNotes");
+                });
+
+            modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.RegulatorRegistrationTaskStatus", b =>
+                {
+                    b.Navigation("RegistrationTaskStatusQueryNotes");
                 });
 #pragma warning restore 612, 618
         }

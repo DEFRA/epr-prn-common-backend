@@ -2085,6 +2085,10 @@ namespace EPR.PRN.Backend.Data.Migrations
                     b.Property<int>("AccreditationYear")
                         .HasColumnType("int");
 
+                    b.Property<string>("Comments")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
                     b.Property<Guid>("ExternalId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
@@ -2131,6 +2135,10 @@ namespace EPR.PRN.Backend.Data.Migrations
 
                     b.Property<int?>("AccreditationId")
                         .HasColumnType("int");
+
+                    b.Property<string>("Comments")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
 
                     b.Property<Guid>("ExternalId")
                         .ValueGeneratedOnAdd()

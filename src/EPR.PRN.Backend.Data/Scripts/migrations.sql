@@ -2307,7 +2307,7 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250528195025_AddQueryNoteTable'
+    WHERE [MigrationId] = N'20250601163300_AddNoteTable'
 )
 BEGIN
     DECLARE @var6 sysname;
@@ -2322,7 +2322,7 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250528195025_AddQueryNoteTable'
+    WHERE [MigrationId] = N'20250601163300_AddNoteTable'
 )
 BEGIN
     DECLARE @var7 sysname;
@@ -2337,125 +2337,95 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250528195025_AddQueryNoteTable'
+    WHERE [MigrationId] = N'20250601163300_AddNoteTable'
 )
 BEGIN
-    DECLARE @var8 sysname;
-    SELECT @var8 = [d].[name]
-    FROM [sys].[default_constraints] [d]
-    INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
-    WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Public.RegulatorAccreditationTaskStatus]') AND [c].[name] = N'Comments');
-    IF @var8 IS NOT NULL EXEC(N'ALTER TABLE [Public.RegulatorAccreditationTaskStatus] DROP CONSTRAINT [' + @var8 + '];');
-    ALTER TABLE [Public.RegulatorAccreditationTaskStatus] DROP COLUMN [Comments];
-END;
-GO
-
-IF NOT EXISTS (
-    SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250528195025_AddQueryNoteTable'
-)
-BEGIN
-    DECLARE @var9 sysname;
-    SELECT @var9 = [d].[name]
-    FROM [sys].[default_constraints] [d]
-    INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
-    WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Public.RegulatorAccreditationRegistrationTaskStatus]') AND [c].[name] = N'Comments');
-    IF @var9 IS NOT NULL EXEC(N'ALTER TABLE [Public.RegulatorAccreditationRegistrationTaskStatus] DROP CONSTRAINT [' + @var9 + '];');
-    ALTER TABLE [Public.RegulatorAccreditationRegistrationTaskStatus] DROP COLUMN [Comments];
-END;
-GO
-
-IF NOT EXISTS (
-    SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250528195025_AddQueryNoteTable'
-)
-BEGIN
-    CREATE TABLE [Public.QueryNote] (
+    CREATE TABLE [Public.Note] (
         [Id] int NOT NULL IDENTITY,
         [Notes] nvarchar(500) NOT NULL,
         [CreatedBy] uniqueidentifier NOT NULL,
         [CreatedDate] datetime2 NOT NULL,
-        CONSTRAINT [PK_Public.QueryNote] PRIMARY KEY ([Id])
+        CONSTRAINT [PK_Public.Note] PRIMARY KEY ([Id])
     );
 END;
 GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250528195025_AddQueryNoteTable'
+    WHERE [MigrationId] = N'20250601163300_AddNoteTable'
 )
 BEGIN
-    CREATE TABLE [Public.ApplicationTaskStatusQueryNotes] (
+    CREATE TABLE [Public.ApplicationTaskStatusQueryNote] (
         [Id] int NOT NULL IDENTITY,
         [QueryNoteId] int NOT NULL,
         [RegulatorApplicationTaskStatusId] int NOT NULL,
-        CONSTRAINT [PK_Public.ApplicationTaskStatusQueryNotes] PRIMARY KEY ([Id]),
-        CONSTRAINT [FK_Public.ApplicationTaskStatusQueryNotes_Public.QueryNote_QueryNoteId] FOREIGN KEY ([QueryNoteId]) REFERENCES [Public.QueryNote] ([Id]) ON DELETE CASCADE,
-        CONSTRAINT [FK_Public.ApplicationTaskStatusQueryNotes_Public.RegulatorApplicationTaskStatus_RegulatorApplicationTaskStatusId] FOREIGN KEY ([RegulatorApplicationTaskStatusId]) REFERENCES [Public.RegulatorApplicationTaskStatus] ([Id]) ON DELETE CASCADE
+        CONSTRAINT [PK_Public.ApplicationTaskStatusQueryNote] PRIMARY KEY ([Id]),
+        CONSTRAINT [FK_Public.ApplicationTaskStatusQueryNote_Public.Note_QueryNoteId] FOREIGN KEY ([QueryNoteId]) REFERENCES [Public.Note] ([Id]) ON DELETE CASCADE,
+        CONSTRAINT [FK_Public.ApplicationTaskStatusQueryNote_Public.RegulatorApplicationTaskStatus_RegulatorApplicationTaskStatusId] FOREIGN KEY ([RegulatorApplicationTaskStatusId]) REFERENCES [Public.RegulatorApplicationTaskStatus] ([Id]) ON DELETE CASCADE
     );
 END;
 GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250528195025_AddQueryNoteTable'
+    WHERE [MigrationId] = N'20250601163300_AddNoteTable'
 )
 BEGIN
-    CREATE TABLE [Public.RegistrationTaskStatusQueryNotes] (
+    CREATE TABLE [Public.RegistrationTaskStatusQueryNote] (
         [Id] int NOT NULL IDENTITY,
         [QueryNoteId] int NOT NULL,
         [RegulatorRegistrationTaskStatusId] int NOT NULL,
         [RegistrationTaskStatusId] int NOT NULL,
-        CONSTRAINT [PK_Public.RegistrationTaskStatusQueryNotes] PRIMARY KEY ([Id]),
-        CONSTRAINT [FK_Public.RegistrationTaskStatusQueryNotes_Public.QueryNote_QueryNoteId] FOREIGN KEY ([QueryNoteId]) REFERENCES [Public.QueryNote] ([Id]) ON DELETE CASCADE,
-        CONSTRAINT [FK_Public.RegistrationTaskStatusQueryNotes_Public.RegulatorRegistrationTaskStatus_RegulatorRegistrationTaskStatusId] FOREIGN KEY ([RegulatorRegistrationTaskStatusId]) REFERENCES [Public.RegulatorRegistrationTaskStatus] ([Id]) ON DELETE CASCADE
+        CONSTRAINT [PK_Public.RegistrationTaskStatusQueryNote] PRIMARY KEY ([Id]),
+        CONSTRAINT [FK_Public.RegistrationTaskStatusQueryNote_Public.Note_QueryNoteId] FOREIGN KEY ([QueryNoteId]) REFERENCES [Public.Note] ([Id]) ON DELETE CASCADE,
+        CONSTRAINT [FK_Public.RegistrationTaskStatusQueryNote_Public.RegulatorRegistrationTaskStatus_RegulatorRegistrationTaskStatusId] FOREIGN KEY ([RegulatorRegistrationTaskStatusId]) REFERENCES [Public.RegulatorRegistrationTaskStatus] ([Id]) ON DELETE CASCADE
     );
 END;
 GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250528195025_AddQueryNoteTable'
+    WHERE [MigrationId] = N'20250601163300_AddNoteTable'
 )
 BEGIN
-    CREATE INDEX [IX_Public.ApplicationTaskStatusQueryNotes_QueryNoteId] ON [Public.ApplicationTaskStatusQueryNotes] ([QueryNoteId]);
+    CREATE INDEX [IX_Public.ApplicationTaskStatusQueryNote_QueryNoteId] ON [Public.ApplicationTaskStatusQueryNote] ([QueryNoteId]);
 END;
 GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250528195025_AddQueryNoteTable'
+    WHERE [MigrationId] = N'20250601163300_AddNoteTable'
 )
 BEGIN
-    CREATE INDEX [IX_Public.ApplicationTaskStatusQueryNotes_RegulatorApplicationTaskStatusId] ON [Public.ApplicationTaskStatusQueryNotes] ([RegulatorApplicationTaskStatusId]);
+    CREATE INDEX [IX_Public.ApplicationTaskStatusQueryNote_RegulatorApplicationTaskStatusId] ON [Public.ApplicationTaskStatusQueryNote] ([RegulatorApplicationTaskStatusId]);
 END;
 GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250528195025_AddQueryNoteTable'
+    WHERE [MigrationId] = N'20250601163300_AddNoteTable'
 )
 BEGIN
-    CREATE INDEX [IX_Public.RegistrationTaskStatusQueryNotes_QueryNoteId] ON [Public.RegistrationTaskStatusQueryNotes] ([QueryNoteId]);
+    CREATE INDEX [IX_Public.RegistrationTaskStatusQueryNote_QueryNoteId] ON [Public.RegistrationTaskStatusQueryNote] ([QueryNoteId]);
 END;
 GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250528195025_AddQueryNoteTable'
+    WHERE [MigrationId] = N'20250601163300_AddNoteTable'
 )
 BEGIN
-    CREATE INDEX [IX_Public.RegistrationTaskStatusQueryNotes_RegulatorRegistrationTaskStatusId] ON [Public.RegistrationTaskStatusQueryNotes] ([RegulatorRegistrationTaskStatusId]);
+    CREATE INDEX [IX_Public.RegistrationTaskStatusQueryNote_RegulatorRegistrationTaskStatusId] ON [Public.RegistrationTaskStatusQueryNote] ([RegulatorRegistrationTaskStatusId]);
 END;
 GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250528195025_AddQueryNoteTable'
+    WHERE [MigrationId] = N'20250601163300_AddNoteTable'
 )
 BEGIN
     INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
-    VALUES (N'20250528195025_AddQueryNoteTable', N'8.0.8');
+    VALUES (N'20250601163300_AddNoteTable', N'8.0.8');
 END;
 GO
 
