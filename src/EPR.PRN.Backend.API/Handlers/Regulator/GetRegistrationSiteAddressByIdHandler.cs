@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
+using EPR.PRN.Backend.API.Common.Constants;
 using EPR.PRN.Backend.API.Dto.Regulator;
 using EPR.PRN.Backend.API.Queries;
+using EPR.PRN.Backend.Data.DataModels.Registrations;
 using EPR.PRN.Backend.Data.Interfaces.Regulator;
 using MediatR;
 
@@ -15,8 +17,17 @@ public class GetRegistrationSiteAddressByIdHandler(
     {
         var registration = await rmRepository.GetRegistrationById(request.Id);
 
+       if(registration.ReprocessingSiteAddress != null && registration.Tasks !=null)
+        {
+            var registrationTask = registration.Tasks
+             .Where(t =>
+                 t.Task?.Name == RegulatorTaskNames.SiteAddressAndContactDetails &&
+                 t.Task?.ApplicationTypeId == registration.ApplicationTypeId && t.Task.IsMaterialSpecific == false);
+            registration.Tasks = registrationTask.ToList() ?? new();
+        }
 
-        var siteAddressDto = registration.ReprocessingSiteAddressId != null ? mapper.Map<RegistrationSiteAddressDto>(registration) : new RegistrationSiteAddressDto();
+        var siteAddressDto = registration.ReprocessingSiteAddress != null ? mapper.Map<RegistrationSiteAddressDto>(registration) : new RegistrationSiteAddressDto();
         return siteAddressDto;
     }
+    
 }

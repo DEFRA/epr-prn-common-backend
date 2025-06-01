@@ -247,5 +247,104 @@ namespace EPR.PRN.Backend.Data.UnitTests.Repositories.Regulator
             await act.Should().ThrowAsync<KeyNotFoundException>()
                 .WithMessage("Cannot insert query because the Regulator Registration Task Status is completed.");
         }
+        [TestMethod]
+        public async Task GetTaskStatusAsync_ShouldThrowArgumentNullException_WhenTaskNameIsNull()
+        {
+            var registrationId = Guid.NewGuid();
+
+            Func<Task> act = async () => await _repository.GetTaskStatusAsync(null!, registrationId);
+
+            await act.Should().ThrowAsync<ArgumentNullException>();
+        }
+
+        [TestMethod]
+        public async Task UpdateStatusAsync_ShouldNotAddNote_WhenCommentsIsNull_AndStatusIsNotQueried()
+        {
+            var taskName = "TaskWithNullComment";
+            var registrationId = Guid.NewGuid();
+            var user = Guid.NewGuid();
+
+            _context.LookupTaskStatuses.Add(new LookupTaskStatus { Id = 2, Name = RegulatorTaskStatus.Started.ToString() });
+            _context.LookupTasks.Add(new LookupRegulatorTask { Id = 1, Name = taskName, IsMaterialSpecific = false, ApplicationTypeId = 1 });
+            _context.Registrations.Add(new Registration { ExternalId = registrationId, ApplicationTypeId = 1 });
+            _context.SaveChanges();
+
+            await _repository.UpdateStatusAsync(taskName, registrationId, RegulatorTaskStatus.Started, null, user);
+
+            _context.QueryNote.Should().BeEmpty("because comments were null and status was not 'Queried'");
+        }
+        [TestMethod]
+        public async Task UpdateStatusAsync_ShouldNotAddNote_WhenCommentsIsNull_AndStatusIsQueried()
+        {
+            var taskName = "QueriedTaskNullComment";
+            var registrationId = Guid.NewGuid();
+            var user = Guid.NewGuid();
+
+            _context.LookupTaskStatuses.Add(new LookupTaskStatus { Id = 3, Name = RegulatorTaskStatus.Queried.ToString() });
+            _context.LookupTasks.Add(new LookupRegulatorTask { Id = 2, Name = taskName, IsMaterialSpecific = false, ApplicationTypeId = 1 });
+            _context.Registrations.Add(new Registration { ExternalId = registrationId, ApplicationTypeId = 1 });
+            _context.SaveChanges();
+
+            await _repository.UpdateStatusAsync(taskName, registrationId, RegulatorTaskStatus.Queried, null, user);
+
+            _context.QueryNote.Should().BeEmpty("because comments were null even though status was 'Queried'");
+        }
+        [TestMethod]
+        public async Task UpdateStatusAsync_ShouldThrowException_WhenLookupTaskStatusIsMissing()
+        {
+            var taskName = "MissingStatus";
+            var registrationId = Guid.NewGuid();
+            var user = Guid.NewGuid();
+
+            _context.LookupTasks.Add(new LookupRegulatorTask { Id = 1, Name = taskName, IsMaterialSpecific = false, ApplicationTypeId = 1 });
+            _context.Registrations.Add(new Registration { ExternalId = registrationId, ApplicationTypeId = 1 });
+            _context.SaveChanges();
+
+            Func<Task> act = async () => await _repository.UpdateStatusAsync(taskName, registrationId, RegulatorTaskStatus.Completed, "Some note", user);
+
+            await act.Should().ThrowAsync<InvalidOperationException>("because the LookupTaskStatus does not exist in DB");
+        }
+        [TestMethod]
+        public async Task AddRegistrationTaskQueryNoteAsync_ShouldAddNote_WhenStatusIsStarted()
+        {
+            var externalId = Guid.NewGuid();
+            var queryBy = Guid.NewGuid();
+            var note = "Started task note";
+
+            _context.RegulatorRegistrationTaskStatus.Add(new RegulatorRegistrationTaskStatus
+            {
+                ExternalId = externalId,
+                Id = 1,
+                TaskStatusId = (int)RegulatorTaskStatus.Started
+            });
+
+            _context.SaveChanges();
+
+            await _repository.AddRegistrationTaskQueryNoteAsync(externalId, queryBy, note);
+
+            var savedNote = _context.QueryNote.FirstOrDefault();
+            savedNote.Should().NotBeNull();
+            savedNote!.Notes.Should().Be(note);
+            savedNote.CreatedBy.Should().Be(queryBy);
+        }
+        [TestMethod]
+        public async Task AddRegistrationTaskQueryNoteAsync_ShouldThrow_WhenQueryByIsEmptyGuid()
+        {
+            var externalId = Guid.NewGuid();
+            var note = "Invalid user";
+
+            _context.RegulatorRegistrationTaskStatus.Add(new RegulatorRegistrationTaskStatus
+            {
+                ExternalId = externalId,
+                Id = 1,
+                TaskStatusId = (int)RegulatorTaskStatus.Started
+            });
+
+            _context.SaveChanges();
+
+            Func<Task> act = async () => await _repository.AddRegistrationTaskQueryNoteAsync(externalId, Guid.Empty, note);
+
+            await act.Should().ThrowAsync<ArgumentException>("because queryBy is an empty Guid (invalid user)");
+        }
     }
 }

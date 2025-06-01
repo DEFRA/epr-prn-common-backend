@@ -1,6 +1,6 @@
 ﻿namespace EPR.PRN.Backend.API.Dto.Regulator
 {
-    public class RegistrationMaterialWasteLicencesDto
+    public class RegistrationMaterialWasteLicencesDto:NoteBase
     {
         public required string PermitType { get; set; }
         public required string[] LicenceNumbers { get; set; }
@@ -12,5 +12,9 @@
         public required string MaximumReprocessingPeriod { get; set; }
         public required string MaterialName { get; set; }
         public required Guid RegistrationMaterialId { get; set; }
+        public required Guid RegistrationId { get; set; }
+        public string SiteAddress { get; set; } = string.Empty;
+        public Guid RegulatorApplicationTaskStatusId { get; set; }
+
     }
 }

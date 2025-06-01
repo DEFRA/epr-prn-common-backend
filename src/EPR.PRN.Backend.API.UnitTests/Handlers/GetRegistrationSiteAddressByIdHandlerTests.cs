@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using EPR.PRN.Backend.API.Common.Constants;
+using EPR.PRN.Backend.API.Common.Enums;
 using EPR.PRN.Backend.API.Handlers.Regulator;
 using EPR.PRN.Backend.API.Profiles.Regulator;
 using EPR.PRN.Backend.API.Queries;
@@ -85,4 +87,273 @@ public class GetRegistrationSiteAddressByIdHandlerTests
         result.Should().NotBeNull();
         result.SiteAddress.Should().BeNullOrEmpty();
     }
+    
+    [TestMethod]
+    public async Task Handle_ShouldFilterTasks_And_MapRelevantFieldsCorrectly()
+    {
+        // Arrange
+        var registrationId = Guid.NewGuid();
+        var taskExternalId = Guid.NewGuid();
+        var applicationTypeId = 1;
+
+        var query = new GetRegistrationSiteAddressByIdQuery { Id = registrationId };
+
+        var registration = new Registration
+        {
+            ExternalId = registrationId,
+            ApplicationTypeId = applicationTypeId,
+            OrganisationId = Guid.NewGuid(),
+            ReprocessingSiteAddressId = 1,
+            ReprocessingSiteAddress = new Address
+            {
+                AddressLine1 = "Filter Lane",
+                TownCity = "FilterTown",
+                PostCode = "FT1 1FT",
+                NationId = 4,
+                GridReference = "AB1234"
+            },
+            LegalDocumentAddress = new Address
+            {
+                AddressLine1 = "Legal St",
+                TownCity = "Lawville",
+                PostCode = "LV1 2XY"
+            },
+            Tasks = new List<RegulatorRegistrationTaskStatus>
+        {
+            new RegulatorRegistrationTaskStatus
+            {
+                ExternalId = taskExternalId,
+                TaskStatusId = 2,
+                Task = new LookupRegulatorTask
+                {
+                    Name = RegulatorTaskNames.SiteAddressAndContactDetails,
+                    ApplicationTypeId = applicationTypeId,
+                    IsMaterialSpecific = false
+                },
+                RegistrationTaskStatusQueryNotes = new List<RegistrationTaskStatusQueryNote>
+                {
+                    new RegistrationTaskStatusQueryNote
+                    {
+                        QueryNote = new Note
+                        {
+                            Notes = "Note A",
+                            CreatedBy = new Guid(),
+                            CreatedDate = new DateTime(2024, 1, 1)
+                        }
+                    },
+                    new RegistrationTaskStatusQueryNote
+                    {
+                        QueryNote = new Note
+                        {
+                            Notes = "Note A", // duplicate note for distinct check
+                            CreatedBy =new Guid(),
+                            CreatedDate = new DateTime(2024, 1, 1)
+                        }
+                    }
+                }
+            },
+            // Irrelevant tasks
+            new RegulatorRegistrationTaskStatus
+            {
+                Task = new LookupRegulatorTask
+                {
+                    Name = "UnrelatedTask",
+                    ApplicationTypeId = applicationTypeId,
+                    IsMaterialSpecific = false
+                }
+            },
+            new RegulatorRegistrationTaskStatus
+            {
+                Task = new LookupRegulatorTask
+                {
+                    Name = RegulatorTaskNames.SiteAddressAndContactDetails,
+                    ApplicationTypeId = 999,
+                    IsMaterialSpecific = false
+                }
+            },
+            new RegulatorRegistrationTaskStatus
+            {
+                Task = new LookupRegulatorTask
+                {
+                    Name = RegulatorTaskNames.SiteAddressAndContactDetails,
+                    ApplicationTypeId = applicationTypeId,
+                    IsMaterialSpecific = true
+                }
+            }
+        }
+        };
+
+        _rmRepositoryMock
+            .Setup(r => r.GetRegistrationById(registrationId))
+            .ReturnsAsync(registration);
+
+        // Act
+        var result = await _handler.Handle(query, CancellationToken.None);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.RegistrationId.Should().Be(registrationId);
+        result.SiteAddress.Should().Contain("Filter Lane");
+        result.NationId.Should().Be(4);
+        result.GridReference.Should().Be("AB1234");
+        result.LegalCorrespondenceAddress.Should().Contain("Legal St");
+        result.OrganisationId.Should().Be(registration.OrganisationId);
+        result.RegulatorRegistrationTaskStatusId.Should().Be(taskExternalId);
+        result.TaskStatus.Should().Be((RegulatorTaskStatus)2);
+        result.QueryNotes.First().Notes.Should().Be("Note A");
+        registration.Tasks.Should().HaveCount(1);
+        registration.Tasks.First().Task.Name.Should().Be(RegulatorTaskNames.SiteAddressAndContactDetails);
+    }
+    [TestMethod]
+    public async Task Handle_ShouldMapQueryNotesCorrectly_WhenValidQueryNotesExist()
+    {
+        // Arrange
+        var registrationId = Guid.NewGuid();
+        var createdBy = Guid.NewGuid();
+        var createdDate = new DateTime(2024, 1, 1);
+
+
+        var query = new GetRegistrationSiteAddressByIdQuery { Id = registrationId };
+
+        var queryNote = new Note
+        {
+            Notes = "Note A",
+            CreatedBy = createdBy,
+            CreatedDate = createdDate
+        };
+
+        var registration = new Registration
+        {
+            ExternalId = registrationId,
+            ReprocessingSiteAddressId = 123,
+            ApplicationTypeId=1,
+            ReprocessingSiteAddress = new Address
+            {
+                AddressLine1 = "123 Mapper Street",
+                TownCity = "Noteville",
+                PostCode = "NT1 2AB",
+                NationId = 1,
+                GridReference = "GR123"
+            },
+            OrganisationId = Guid.NewGuid(),
+            Tasks = new List<RegulatorRegistrationTaskStatus>
+        {
+            new RegulatorRegistrationTaskStatus
+            {
+                ExternalId = Guid.NewGuid(),
+                TaskStatusId = (int)RegulatorTaskStatus.Queried,
+                Task = new LookupRegulatorTask
+                {
+                    Name = RegulatorTaskNames.SiteAddressAndContactDetails,
+                    ApplicationTypeId = 1,
+                    IsMaterialSpecific = false
+                },
+                RegistrationTaskStatusQueryNotes = new List<RegistrationTaskStatusQueryNote>
+                {
+                    new() { QueryNote = queryNote },
+                    new() { QueryNote = queryNote } // Intentional duplicate
+                }
+            }
+        }
+        };
+
+        _rmRepositoryMock
+            .Setup(r => r.GetRegistrationById(registrationId))
+            .ReturnsAsync(registration);
+
+        // Act
+        var result = await _handler.Handle(query, CancellationToken.None);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.QueryNotes.Should().ContainSingle(q =>
+            q.Notes == "Note A" &&
+            q.CreatedBy == createdBy &&
+            q.CreatedDate == createdDate);
+
+        result.QueryNotes.Should().HaveCount(1); // Deduplication assertion
+    }
+
+
+    [TestMethod]
+    public async Task Handle_ShouldNotFail_WhenTasksIsEmptyAndAddressExists()
+    {
+        // Arrange
+        var registrationId = Guid.NewGuid();
+        var query = new GetRegistrationSiteAddressByIdQuery { Id = registrationId };
+
+        var registration = new Registration
+        {
+            ExternalId = registrationId,
+            ReprocessingSiteAddressId = 10,
+            ReprocessingSiteAddress = new Address
+            {
+                AddressLine1 = "Empty Tasks Street",
+                TownCity = "Quietville",
+                PostCode = "QT1 9ZZ"
+            },
+            Tasks = new List<RegulatorRegistrationTaskStatus>() // empty list
+        };
+
+        _rmRepositoryMock
+            .Setup(r => r.GetRegistrationById(registrationId))
+            .ReturnsAsync(registration);
+
+        // Act
+        var result = await _handler.Handle(query, CancellationToken.None);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.SiteAddress.Should().Contain("Empty Tasks Street");
+        registration.Tasks.Should().BeEmpty();
+    }
+    [TestMethod]
+    public async Task Handle_ShouldSkipTaskFiltering_WhenTasksIsNull()
+    {
+        // Arrange
+        var registrationId = Guid.NewGuid();
+        var query = new GetRegistrationSiteAddressByIdQuery { Id = registrationId };
+
+        var registration = new Registration
+        {
+            ExternalId = registrationId,
+            ReprocessingSiteAddressId = 50,
+            ReprocessingSiteAddress = new Address
+            {
+                AddressLine1 = "No Tasks Rd",
+                TownCity = "Nulltown",
+                PostCode = "NT1 5ZZ"
+            },
+            Tasks = null
+        };
+
+        _rmRepositoryMock
+            .Setup(r => r.GetRegistrationById(registrationId))
+            .ReturnsAsync(registration);
+
+        // Act
+        var result = await _handler.Handle(query, CancellationToken.None);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.SiteAddress.Should().Contain("No Tasks Rd");
+    }
+    [TestMethod]
+    public async Task Handle_ShouldReturnEmptyDto_WhenRegistrationIsNull()
+    {
+        // Arrange
+        var registrationId = Guid.NewGuid();
+        var query = new GetRegistrationSiteAddressByIdQuery { Id = registrationId };
+
+        _rmRepositoryMock
+            .Setup(r => r.GetRegistrationById(registrationId))
+            .ReturnsAsync((Registration)null!);
+
+        // Act & Assert
+        await Assert.ThrowsExceptionAsync<NullReferenceException>(async () =>
+        {
+            await _handler.Handle(query, CancellationToken.None);
+        });
+    }
+
 }

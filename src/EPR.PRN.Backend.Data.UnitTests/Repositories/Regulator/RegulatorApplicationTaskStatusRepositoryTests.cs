@@ -234,5 +234,144 @@ namespace EPR.PRN.Backend.Data.UnitTests.Repositories.Regulator
             await act.Should().ThrowAsync<KeyNotFoundException>()
                 .WithMessage("Cannot insert query because the Regulator Application Task Status is completed.");
         }
+        [TestMethod]
+        public async Task UpdateStatusAsync_ShouldThrowException_WhenLookupTaskStatusNotFound()
+        {
+            var taskName = "TestTask";
+            var materialId = Guid.NewGuid();
+            var user = Guid.NewGuid();
+
+            _context.LookupTasks.Add(new LookupRegulatorTask
+            {
+                Name = taskName,
+                IsMaterialSpecific = true,
+                ApplicationTypeId = 1
+            });
+
+            _context.RegistrationMaterials.Add(new RegistrationMaterial
+            {
+                ExternalId = materialId,
+                Registration = new Registration { ApplicationTypeId = 1 }
+            });
+
+            _context.SaveChanges();
+
+            Func<Task> act = async () => await _repository.UpdateStatusAsync(taskName, materialId, RegulatorTaskStatus.Started, null, user);
+
+            await act.Should().ThrowAsync<InvalidOperationException>(); // Or custom exception if added
+        }
+        [TestMethod]
+        public async Task UpdateStatusAsync_ShouldThrowInvalidOperationException_WhenLookupTaskStatusNotFound()
+        {
+            // Arrange
+            var taskName = "MissingStatusTask";
+            var registrationMaterialId = Guid.NewGuid();
+            var registrationId = Guid.NewGuid();
+            var status = RegulatorTaskStatus.Started;
+            var user = Guid.NewGuid();
+
+            _context.LookupTasks.Add(new LookupRegulatorTask
+            {
+                Id = 1,
+                Name = taskName,
+                IsMaterialSpecific = true,
+                ApplicationTypeId = 1
+            });
+
+            _context.RegistrationMaterials.Add(new RegistrationMaterial
+            {
+                ExternalId = registrationMaterialId,
+                Registration = new Registration
+                {
+                    ExternalId = registrationId,
+                    ApplicationTypeId = 1
+                }
+            });
+
+            _context.SaveChanges();
+
+            // Act
+            Func<Task> act = async () => await _repository.UpdateStatusAsync(taskName, registrationMaterialId, status, null, user);
+
+            // Assert
+            await act.Should().ThrowAsync<InvalidOperationException>();
+        }
+        [TestMethod]
+        public async Task UpdateStatusAsync_ShouldNotAddNote_WhenStatusIsQueried_AndCommentsAreNull()
+        {
+            var taskName = "QueriedWithoutNote";
+            var registrationMaterialId = Guid.NewGuid();
+            var registrationId = Guid.NewGuid();
+            var status = RegulatorTaskStatus.Queried;
+            var user = Guid.NewGuid();
+
+            _context.LookupTaskStatuses.Add(new LookupTaskStatus { Id = 5, Name = "Queried" });
+            _context.LookupTasks.Add(new LookupRegulatorTask
+            {
+                Id = 2,
+                Name = taskName,
+                IsMaterialSpecific = true,
+                ApplicationTypeId = 1
+            });
+
+            _context.RegistrationMaterials.Add(new RegistrationMaterial
+            {
+                ExternalId = registrationMaterialId,
+                Registration = new Registration
+                {
+                    ExternalId = registrationId,
+                    ApplicationTypeId = 1
+                }
+            });
+
+            _context.SaveChanges();
+
+            await _repository.UpdateStatusAsync(taskName, registrationMaterialId, status, null, user);
+
+            // Assert that no notes were created
+            _context.QueryNote.Should().BeEmpty();
+            _context.ApplicationTaskStatusQueryNotes.Should().BeEmpty();
+        }
+        [TestMethod]
+        public async Task UpdateStatusAsync_ShouldLogInformation()
+        {
+            var taskName = "LogTestTask";
+            var registrationMaterialId = Guid.NewGuid();
+            var registrationId = Guid.NewGuid();
+            var status = RegulatorTaskStatus.Started;
+            var user = Guid.NewGuid();
+
+            _context.LookupTaskStatuses.Add(new LookupTaskStatus { Id = 3, Name = "Started" });
+            _context.LookupTasks.Add(new LookupRegulatorTask
+            {
+                Id = 3,
+                Name = taskName,
+                IsMaterialSpecific = true,
+                ApplicationTypeId = 1
+            });
+
+            _context.RegistrationMaterials.Add(new RegistrationMaterial
+            {
+                ExternalId = registrationMaterialId,
+                Registration = new Registration
+                {
+                    ExternalId = registrationId,
+                    ApplicationTypeId = 1
+                }
+            });
+
+            _context.SaveChanges();
+
+            await _repository.UpdateStatusAsync(taskName, registrationMaterialId, status, null, user);
+
+            _loggerMock.Verify(
+                x => x.Log(
+                    LogLevel.Information,
+                    It.IsAny<EventId>(),
+                    It.Is<It.IsAnyType>((v, _) => v.ToString()!.Contains("Updating status for task")),
+                    It.IsAny<Exception>(),
+                    (Func<It.IsAnyType, Exception?, string>)It.IsAny<object>()),
+                Times.AtLeastOnce);
+        }
     }
 }

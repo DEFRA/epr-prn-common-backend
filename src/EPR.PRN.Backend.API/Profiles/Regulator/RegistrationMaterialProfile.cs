@@ -4,7 +4,6 @@ using EPR.PRN.Backend.API.Common.Enums;
 using EPR.PRN.Backend.API.Common.Exceptions;
 using EPR.PRN.Backend.API.Dto.Regulator;
 using EPR.PRN.Backend.Data.DataModels.Registrations;
-using Microsoft.Identity.Client;
 
 namespace EPR.PRN.Backend.API.Profiles.Regulator;
 
@@ -21,7 +20,7 @@ public class RegistrationMaterialProfile : Profile
         .ForMember(dest => dest.SiteAddress, opt => opt.MapFrom(src =>
              src.ReprocessingSiteAddress != null ? CreateAddressString(src.ReprocessingSiteAddress)
                 : string.Empty))
-        .ForMember(dest => dest.SiteGridReference, opt => opt.MapFrom(src => src.ReprocessingSiteAddress != null ? src.ReprocessingSiteAddress.GridReference:string.Empty))
+        .ForMember(dest => dest.SiteGridReference, opt => opt.MapFrom(src => src.ReprocessingSiteAddress != null ? src.ReprocessingSiteAddress.GridReference : string.Empty))
         .ForMember(dest => dest.Materials, opt => opt.MapFrom(src => src.Materials.Where(m => m.IsMaterialRegistered)));
 
         CreateMap<RegistrationMaterial, RegistrationMaterialDto>()
@@ -64,7 +63,9 @@ public class RegistrationMaterialProfile : Profile
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.ExternalId))
             .ForMember(dest => dest.RegistrationId, opt => opt.MapFrom(src => src.Registration.ExternalId))
             .ForMember(dest => dest.MaterialName, opt => opt.MapFrom(src => src.Material.MaterialName))
-            .ForMember(dest => dest.Status, opt => opt.MapFrom(src => (RegistrationMaterialStatus?)src.StatusId));
+            .ForMember(dest => dest.Status, opt => opt.MapFrom(src => (RegistrationMaterialStatus?)src.StatusId))
+            .ForMember(dest => dest.DulyMade, opt => opt.MapFrom(src => src.DulyMade!.DulyMadeDate))
+            .ForMember(dest => dest.DeterminationDate, opt => opt.MapFrom(src => src.DeterminationDate.DeterminateDate));
 
         CreateMap<RegistrationMaterial, RegistrationMaterialReprocessingIODto>()
             .ForMember(dest => dest.MaterialName, opt => opt.MapFrom(src => src.Material.MaterialName))
@@ -185,7 +186,7 @@ public class RegistrationMaterialProfile : Profile
             .ForMember(dest => dest.RegistrationId, opt => opt.MapFrom(src => src.ExternalId))
             .ForMember(dest => dest.OrganisationId, opt => opt.MapFrom(src => src.OrganisationId))
             .ForMember(dest => dest.SiteAddress, opt => opt.MapFrom(src => src.ReprocessingSiteAddress != null ? CreateAddressString(src.ReprocessingSiteAddress) : string.Empty))
-            .ForMember(dest => dest.MaterialsAuthorisation, opt => opt.MapFrom(src => src.Materials)) 
+            .ForMember(dest => dest.MaterialsAuthorisation, opt => opt.MapFrom(src => src.Materials))
             .ForMember(dest => dest.RegulatorRegistrationTaskStatusId, opt => opt.MapFrom(src => src.Tasks.FirstOrDefault().ExternalId))
             .ForMember(dest => dest.TaskStatus, opt => opt.MapFrom(src => (RegulatorTaskStatus)(src.Tasks.FirstOrDefault().TaskStatusId)))
             .ForMember(dest => dest.QueryNotes,
@@ -214,6 +215,8 @@ public class RegistrationMaterialProfile : Profile
            .ForMember(dest => dest.SiteAddress, opt => opt.MapFrom(src => src.Registration.ReprocessingSiteAddress != null ? CreateAddressString(src.Registration.ReprocessingSiteAddress) : string.Empty))
            .ForMember(dest => dest.NationId, opt => opt.MapFrom(src => GetNationId(src.Registration)))
            .ForMember(dest => dest.MaterialName, opt => opt.MapFrom(src => src.Material.MaterialName))
+          .ForMember(dest => dest.DulyMadeDate, opt => opt.MapFrom(src => src.DulyMade.DulyMadeDate))
+           .ForMember(dest => dest.DeterminationDate, opt => opt.MapFrom(src => src.DeterminationDate.DeterminateDate))
             .ForMember(dest => dest.RegulatorApplicationTaskStatusId, opt => opt.MapFrom(src => src.Tasks.FirstOrDefault().ExternalId))
             .ForMember(dest => dest.TaskStatus, opt => opt.MapFrom(src => (RegulatorTaskStatus)(src.Tasks.FirstOrDefault().TaskStatusId)))
             .ForMember(dest => dest.QueryNotes,
@@ -289,7 +292,5 @@ public class RegistrationMaterialProfile : Profile
                 reprocessingSiteAddress.County,
                 reprocessingSiteAddress.PostCode
             }.Where(addressPart => !string.IsNullOrEmpty(addressPart)));
-
-    
 
 }
