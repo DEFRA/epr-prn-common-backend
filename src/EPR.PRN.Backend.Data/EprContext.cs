@@ -288,6 +288,7 @@ namespace EPR.PRN.Backend.Data
         public virtual DbSet<RegistrationMaterial> RegistrationMaterials { get; set; }
         public virtual DbSet<MaterialExemptionReference> MaterialExemptionReferences { get; set; }
         public virtual DbSet<RegistrationReprocessingIO> RegistrationReprocessingIO { get; set; }
+        public virtual DbSet<DeterminationDate> DeterminationDate { get; set; }
         public virtual DbSet<DulyMade> DulyMade { get; set; }
         public virtual DbSet<RegulatorApplicationTaskStatus> RegulatorApplicationTaskStatus { get; set; }
         public virtual DbSet<RegulatorRegistrationTaskStatus> RegulatorRegistrationTaskStatus { get; set; }
