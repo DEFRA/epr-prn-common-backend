@@ -38,7 +38,8 @@ namespace EPR.PRN.Backend.Data.UnitTests.Repositories.Regulator
             var taskStatus = new RegulatorRegistrationTaskStatus
             {
                 Task = new LookupRegulatorTask { Name = taskName },
-                Registration = new Registration { ExternalId = registrationId }
+                Registration = new Registration { ExternalId = registrationId },
+                TaskStatus = new LookupTaskStatus { Name = RegulatorTaskStatus.Completed.ToString() }
             };
 
             _context.RegulatorRegistrationTaskStatus.Add(taskStatus);

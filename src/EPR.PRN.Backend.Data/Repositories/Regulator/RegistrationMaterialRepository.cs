@@ -160,7 +160,7 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
             RegistrationMaterialId = material.Id,
             TaskStatusId = statusId,
             ExternalId = new Guid(),
-            TaskId = taskid,
+            RegulatorTaskId = taskid,
             StatusCreatedDate = DateTime.UtcNow,
             StatusUpdatedBy = DulyMadeBy
 
