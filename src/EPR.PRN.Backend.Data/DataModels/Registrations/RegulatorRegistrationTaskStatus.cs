@@ -10,4 +10,5 @@ public class RegulatorRegistrationTaskStatus: RegulatorTaskStatusBase
     public Registration Registration { get; set; }
     [ForeignKey("Registration")]
     public int? RegistrationId { get; set; }
+    public List<RegistrationTaskStatusQueryNote> RegistrationTaskStatusQueryNotes { get; set; } = new();
 }

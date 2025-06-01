@@ -64,7 +64,7 @@ namespace EPR.PRN.Backend.Data.Repositories.Regulator
                 if (comments != null && status == RegulatorTaskStatus.Queried)
                 {
 
-                    var queryNote = new QueryNote
+                    var queryNote = new Note
                     {
                         Notes = comments,
                         CreatedBy = user,
@@ -72,9 +72,9 @@ namespace EPR.PRN.Backend.Data.Repositories.Regulator
                     };
                     await _context.QueryNote.AddAsync(queryNote);
 
-                    var applicationTaskStatusQueryNotes = new ApplicationTaskStatusQueryNotes
+                    var applicationTaskStatusQueryNotes = new ApplicationTaskStatusQueryNote
                     {
-                        QueryNote = queryNote,
+                        Note = queryNote,
                         RegulatorApplicationTaskStatus = taskStatus
                     };
                     await _context.ApplicationTaskStatusQueryNotes.AddAsync(applicationTaskStatusQueryNotes);
@@ -109,7 +109,7 @@ namespace EPR.PRN.Backend.Data.Repositories.Regulator
             {
                 throw new KeyNotFoundException("Cannot insert query because the Regulator Application Task Status is completed.");
             }
-            var querynote = new QueryNote
+            var querynote = new Note
                 {
                     Notes = note,
                     CreatedBy = queryBy,
@@ -117,9 +117,9 @@ namespace EPR.PRN.Backend.Data.Repositories.Regulator
                 };
             await _context.QueryNote.AddAsync(querynote);
 
-            var applicationTaskStatusQueryNotes =  new ApplicationTaskStatusQueryNotes
+            var applicationTaskStatusQueryNotes =  new ApplicationTaskStatusQueryNote
                 {
-                    QueryNote = querynote,
+                    Note = querynote,
                     RegulatorApplicationTaskStatusId = applicationTaskStatus.Id
                 };
             await _context.ApplicationTaskStatusQueryNotes.AddAsync(applicationTaskStatusQueryNotes);

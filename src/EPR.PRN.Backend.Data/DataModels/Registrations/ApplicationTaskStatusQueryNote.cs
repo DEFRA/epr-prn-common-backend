@@ -5,14 +5,14 @@ using System.Diagnostics.CodeAnalysis;
 namespace EPR.PRN.Backend.Data.DataModels.Registrations;
 
 [ExcludeFromCodeCoverage]
-[Table("Public.ApplicationTaskStatusQueryNotes")]
-public class ApplicationTaskStatusQueryNotes
+[Table("Public.ApplicationTaskStatusQueryNote")]
+public class ApplicationTaskStatusQueryNote
 {    
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     [Key]
     public int Id { get; set; }
-    public QueryNote QueryNote { get; set; }
-    [ForeignKey("QueryNote")]
+    public Note Note { get; set; }
+    [ForeignKey("Note")]
     public int QueryNoteId { get; set; }
     public RegulatorApplicationTaskStatus RegulatorApplicationTaskStatus { get; set; }
     [ForeignKey("RegulatorApplicationTaskStatus")]
