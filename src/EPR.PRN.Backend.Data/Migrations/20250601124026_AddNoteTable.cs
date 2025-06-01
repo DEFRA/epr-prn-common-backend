@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace EPR.PRN.Backend.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class AddQueryNoteTable : Migration
+    public partial class AddNoteTable : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -28,7 +28,7 @@ namespace EPR.PRN.Backend.Data.Migrations
                 table: "Public.RegulatorAccreditationRegistrationTaskStatus");
 
             migrationBuilder.CreateTable(
-                name: "Public.QueryNote",
+                name: "Public.Note",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -39,11 +39,11 @@ namespace EPR.PRN.Backend.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Public.QueryNote", x => x.Id);
+                    table.PrimaryKey("PK_Public.Note", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Public.ApplicationTaskStatusQueryNotes",
+                name: "Public.ApplicationTaskStatusQueryNote",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -53,15 +53,15 @@ namespace EPR.PRN.Backend.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Public.ApplicationTaskStatusQueryNotes", x => x.Id);
+                    table.PrimaryKey("PK_Public.ApplicationTaskStatusQueryNote", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Public.ApplicationTaskStatusQueryNotes_Public.QueryNote_QueryNoteId",
+                        name: "FK_Public.ApplicationTaskStatusQueryNote_Public.Note_QueryNoteId",
                         column: x => x.QueryNoteId,
-                        principalTable: "Public.QueryNote",
+                        principalTable: "Public.Note",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Public.ApplicationTaskStatusQueryNotes_Public.RegulatorApplicationTaskStatus_RegulatorApplicationTaskStatusId",
+                        name: "FK_Public.ApplicationTaskStatusQueryNote_Public.RegulatorApplicationTaskStatus_RegulatorApplicationTaskStatusId",
                         column: x => x.RegulatorApplicationTaskStatusId,
                         principalTable: "Public.RegulatorApplicationTaskStatus",
                         principalColumn: "Id",
@@ -69,7 +69,7 @@ namespace EPR.PRN.Backend.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Public.RegistrationTaskStatusQueryNotes",
+                name: "Public.RegistrationTaskStatusQueryNote",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -80,15 +80,15 @@ namespace EPR.PRN.Backend.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Public.RegistrationTaskStatusQueryNotes", x => x.Id);
+                    table.PrimaryKey("PK_Public.RegistrationTaskStatusQueryNote", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Public.RegistrationTaskStatusQueryNotes_Public.QueryNote_QueryNoteId",
+                        name: "FK_Public.RegistrationTaskStatusQueryNote_Public.Note_QueryNoteId",
                         column: x => x.QueryNoteId,
-                        principalTable: "Public.QueryNote",
+                        principalTable: "Public.Note",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Public.RegistrationTaskStatusQueryNotes_Public.RegulatorRegistrationTaskStatus_RegulatorRegistrationTaskStatusId",
+                        name: "FK_Public.RegistrationTaskStatusQueryNote_Public.RegulatorRegistrationTaskStatus_RegulatorRegistrationTaskStatusId",
                         column: x => x.RegulatorRegistrationTaskStatusId,
                         principalTable: "Public.RegulatorRegistrationTaskStatus",
                         principalColumn: "Id",
@@ -96,23 +96,23 @@ namespace EPR.PRN.Backend.Data.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Public.ApplicationTaskStatusQueryNotes_QueryNoteId",
-                table: "Public.ApplicationTaskStatusQueryNotes",
+                name: "IX_Public.ApplicationTaskStatusQueryNote_QueryNoteId",
+                table: "Public.ApplicationTaskStatusQueryNote",
                 column: "QueryNoteId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Public.ApplicationTaskStatusQueryNotes_RegulatorApplicationTaskStatusId",
-                table: "Public.ApplicationTaskStatusQueryNotes",
+                name: "IX_Public.ApplicationTaskStatusQueryNote_RegulatorApplicationTaskStatusId",
+                table: "Public.ApplicationTaskStatusQueryNote",
                 column: "RegulatorApplicationTaskStatusId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Public.RegistrationTaskStatusQueryNotes_QueryNoteId",
-                table: "Public.RegistrationTaskStatusQueryNotes",
+                name: "IX_Public.RegistrationTaskStatusQueryNote_QueryNoteId",
+                table: "Public.RegistrationTaskStatusQueryNote",
                 column: "QueryNoteId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Public.RegistrationTaskStatusQueryNotes_RegulatorRegistrationTaskStatusId",
-                table: "Public.RegistrationTaskStatusQueryNotes",
+                name: "IX_Public.RegistrationTaskStatusQueryNote_RegulatorRegistrationTaskStatusId",
+                table: "Public.RegistrationTaskStatusQueryNote",
                 column: "RegulatorRegistrationTaskStatusId");
         }
 
@@ -120,13 +120,13 @@ namespace EPR.PRN.Backend.Data.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Public.ApplicationTaskStatusQueryNotes");
+                name: "Public.ApplicationTaskStatusQueryNote");
 
             migrationBuilder.DropTable(
-                name: "Public.RegistrationTaskStatusQueryNotes");
+                name: "Public.RegistrationTaskStatusQueryNote");
 
             migrationBuilder.DropTable(
-                name: "Public.QueryNote");
+                name: "Public.Note");
 
             migrationBuilder.AddColumn<string>(
                 name: "Comments",

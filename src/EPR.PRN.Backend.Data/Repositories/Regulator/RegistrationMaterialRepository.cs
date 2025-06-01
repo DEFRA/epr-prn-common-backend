@@ -1,7 +1,10 @@
-﻿using EPR.PRN.Backend.Data.DataModels.Registrations;
+﻿using EPR.PRN.Backend.API.Common.Constants;
+using EPR.PRN.Backend.API.Common.Enums;
+using EPR.PRN.Backend.Data.DataModels.Registrations;
 using EPR.PRN.Backend.Data.Interfaces.Regulator;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
+using Microsoft.IdentityModel.Tokens;
 
 namespace EPR.PRN.Backend.Data.Repositories.Regulator;
 
@@ -40,26 +43,61 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
 
     public async Task<RegistrationMaterial> GetRegistrationMaterial_WasteLicencesById(Guid registrationMaterialId)
     {
-        var registrationMaterials = GetRegistrationMaterialsWithRelatedEntities_WasteLicences();
+        var registrationMaterialsQuery = GetRegistrationMaterialsWithRelatedEntities_WasteLicences();
 
-        return await registrationMaterials.SingleOrDefaultAsync(rm => rm.ExternalId == registrationMaterialId)
-               ?? throw new KeyNotFoundException("Material not found.");
+        var registrationMaterials = await registrationMaterialsQuery
+            .SingleOrDefaultAsync(rm => rm.ExternalId == registrationMaterialId);
+
+        if (registrationMaterials == null)
+            throw new KeyNotFoundException("Material not found.");
+        else if (registrationMaterials.Tasks != null)
+            {
+                var samplingTask = registrationMaterials.Tasks
+                  .Where(t =>
+                      t.Task?.Name == RegulatorTaskNames.WasteLicensesPermitsAndExemptions &&
+                      t.Task?.ApplicationTypeId == registrationMaterials.Registration.ApplicationTypeId && t.Task.IsMaterialSpecific == true);
+                registrationMaterials.Tasks = samplingTask.ToList() ?? new();
+            }        
+        return registrationMaterials;
     }
 
     public async Task<RegistrationMaterial> GetRegistrationMaterial_RegistrationReprocessingIOById(Guid registrationMaterialId)
     {
-        var registrationMaterials = GetRegistrationMaterialsWithRelatedEntities_RegistrationReprocessingIO();
+        var registrationMaterialsQuery = GetRegistrationMaterialsWithRelatedEntities_RegistrationReprocessingIO();
 
-        return await registrationMaterials.SingleOrDefaultAsync(rm => rm.ExternalId == registrationMaterialId)
-               ?? throw new KeyNotFoundException("Material not found.");
+        var registrationMaterials = await registrationMaterialsQuery
+           .SingleOrDefaultAsync(rm => rm.ExternalId == registrationMaterialId);
+
+        if (registrationMaterials == null)
+            throw new KeyNotFoundException("Material not found.");
+        else if (registrationMaterials.Tasks != null)
+            {
+                var samplingTask = registrationMaterials.Tasks
+                  .Where(t =>
+                      t.Task?.Name == RegulatorTaskNames.ReprocessingInputsAndOutputs &&
+                      t.Task?.ApplicationTypeId == registrationMaterials.Registration.ApplicationTypeId && t.Task.IsMaterialSpecific == true);
+                registrationMaterials.Tasks = samplingTask.ToList() ?? new();
+            }
+        return registrationMaterials;
     }
 
     public async Task<RegistrationMaterial> GetRegistrationMaterial_FileUploadById(Guid registrationMaterialId)
     {
-        var registrationMaterials = GetRegistrationMaterial_FileUploadById();
+        var registrationMaterialsQuery = GetRegistrationMaterial_FileUploadById();
+        var registrationMaterials = await registrationMaterialsQuery
+          .SingleOrDefaultAsync(rm => rm.ExternalId == registrationMaterialId);
 
-        return await registrationMaterials.SingleOrDefaultAsync(rm => rm.ExternalId == registrationMaterialId)
-               ?? throw new KeyNotFoundException("Material not found.");
+        if (registrationMaterials == null)
+            throw new KeyNotFoundException("Material not found.");
+        else if (registrationMaterials.Tasks != null)
+        {
+            var samplingTask = registrationMaterials.Tasks
+              .Where(t =>
+                  t.Task?.Name == RegulatorTaskNames.SamplingAndInspectionPlan &&
+                  t.Task?.ApplicationTypeId == registrationMaterials.Registration.ApplicationTypeId && t.Task.IsMaterialSpecific == true);
+            registrationMaterials.Tasks = samplingTask.ToList() ?? new();
+        }
+        return registrationMaterials;
     }
 
     public async Task UpdateRegistrationOutCome(Guid registrationMaterialId, int statusId, string? comment, string registrationReferenceNumber)
@@ -114,7 +152,7 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
         {
             RegistrationMaterialId = material.Id,
             TaskStatusId = statusId,
-            ExternalId = material.ExternalId,
+            ExternalId = new Guid(),
             TaskId = taskid,
             StatusCreatedDate = DateTime.UtcNow,
             StatusUpdatedBy = DulyMadeBy
@@ -126,7 +164,7 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
         dulyMade.DulyMadeDate = DulyMadeDate;
         determinationDate.DeterminateDate = DeterminationDate;
         dulyMade.DulyMadeBy = DulyMadeBy;
-        dulyMade.ExternalId = material.ExternalId;
+        dulyMade.ExternalId = new Guid();
 
         // If this is a new entity, add it to the context
         if (dulyMade.Id == 0)
@@ -156,6 +194,11 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
                 .ThenInclude(r => r.BusinessAddress)
              .Include(rm => rm.Registration)
                 .ThenInclude(r => r.LegalDocumentAddress)
+            .Include(rm => rm.Tasks)!
+                .ThenInclude(q => q.ApplicationTaskStatusQueryNotes)!
+                .ThenInclude(qn => qn.Note)
+            .Include(rm => rm.Tasks)!
+                .ThenInclude(q => q.Task)
             .Include(rm => rm.Material)
             .Include(rm => rm.Status);
 
@@ -175,6 +218,17 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
             .Include(rm => rm.EnvironmentalPermitWasteManagementPeriod)
             .Include(rm => rm.MaximumReprocessingPeriod)
             .Include(rm => rm.PermitType)
+            .Include(rm => rm.Registration)
+                .ThenInclude(r => r.ReprocessingSiteAddress)
+            .Include(rm => rm.Registration)
+                .ThenInclude(r => r.BusinessAddress)
+             .Include(rm => rm.Registration)
+                .ThenInclude(r => r.LegalDocumentAddress)
+            .Include(rm => rm.Tasks)!
+                .ThenInclude(q => q.ApplicationTaskStatusQueryNotes)!
+                .ThenInclude(qn => qn.Note)
+            .Include(rm => rm.Tasks)!
+                .ThenInclude(q => q.Task)                
             .Include(rm => rm.Material);
 
         return registrationMaterials;
@@ -187,6 +241,15 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
             .AsNoTracking()
             .AsSplitQuery()
             .Include(rm => rm.RegistrationReprocessingIO)
+            .Include(rm => rm.Registration)
+                .ThenInclude(r => r.ReprocessingSiteAddress)
+            .Include(rm => rm.Registration)
+                .ThenInclude(r => r.BusinessAddress)
+             .Include(rm => rm.Registration)
+                .ThenInclude(r => r.LegalDocumentAddress)
+            .Include(rm => rm.Tasks)!
+                .ThenInclude(q => q.ApplicationTaskStatusQueryNotes)!
+                .ThenInclude(qn => qn.Note)
             .Include(rm => rm.Material);
 
         return registrationMaterials;
@@ -202,6 +265,15 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
             .ThenInclude(fu => fu.FileUploadType)
             .Include(rm => rm.FileUploads)!
             .ThenInclude(fu => fu.FileUploadStatus)
+            .Include(rm => rm.Registration)
+                .ThenInclude(r => r.ReprocessingSiteAddress)
+            .Include(rm => rm.Registration)
+                .ThenInclude(r => r.BusinessAddress)
+             .Include(rm => rm.Registration)
+                .ThenInclude(r => r.LegalDocumentAddress)
+            .Include(rm => rm.Tasks)!
+                .ThenInclude(q => q.ApplicationTaskStatusQueryNotes)!
+                .ThenInclude(qn => qn.Note)
             .Include(rm => rm.Material);
 
         return registrationMaterials;
@@ -220,6 +292,9 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
                 .ThenInclude(t => t.TaskStatus)
             .Include(r => r.Tasks)!
                 .ThenInclude(t => t.Task)
+            .Include(r => r.Tasks)!
+                   .ThenInclude(t => t.RegistrationTaskStatusQueryNotes)
+                   .ThenInclude(t => t.QueryNote)
             .Include(r => r.Materials)!
                 .ThenInclude(m => m.Tasks)!
                 .ThenInclude(t => t.TaskStatus)
@@ -228,6 +303,10 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
             .Include(r => r.Materials)!
                 .ThenInclude(m => m.Tasks)!
                 .ThenInclude(t => t.Task)
+            .Include(r => r.Materials)!
+                .ThenInclude(rm => rm.Tasks)!
+                .ThenInclude(q => q.ApplicationTaskStatusQueryNotes)!
+                .ThenInclude(qn => qn.Note)
              .Include(r => r.Materials)!
                 .ThenInclude(rm => rm.Status);
 
@@ -273,7 +352,7 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
 
             return registrations;
         }
-        else 
+        else
         {
             var registrations = eprContext
                 .Registrations
@@ -286,16 +365,16 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
                     .ThenInclude(t => t.TaskStatus)
                 .Include(r => r.AccreditationTasks!)!
                     .ThenInclude(t => t.Task)
-
+                .Include(r => r.Tasks)!
+                   .ThenInclude(t => t.RegistrationTaskStatusQueryNotes)
+                   .ThenInclude(t => t.QueryNote)
                 .Include(r => r.Materials)!
                     .ThenInclude(m => m.Material)
                 .Include(r => r.Materials)!
                     .ThenInclude(rm => rm.Status)
-
                 .Include(r => r.Materials)!
                     .ThenInclude(rm => rm.Accreditations)!
                         .ThenInclude(a => a.AccreditationDulyMade)
-
                 .Include(r => r.Materials)!
                     .ThenInclude(rm => rm.Accreditations)!
                         .ThenInclude(a => a.Tasks)!
@@ -304,12 +383,16 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
                     .ThenInclude(rm => rm.Accreditations)!
                         .ThenInclude(a => a.Tasks)!
                             .ThenInclude(t => t.TaskStatus)
+                  .Include(r => r.Materials)!
+                        .ThenInclude(rm => rm.Tasks)!
+                            .ThenInclude(q => q.ApplicationTaskStatusQueryNotes)!
+                            .ThenInclude(qn => qn.Note)
                 .Include(r => r.Materials)!
                     .ThenInclude(rm => rm.Accreditations)!
                         .ThenInclude(a => a.AccreditationStatus);
 
             return registrations;
         }
-            
+
     }
 }

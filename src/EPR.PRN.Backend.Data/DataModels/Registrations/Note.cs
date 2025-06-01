@@ -4,8 +4,8 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace EPR.PRN.Backend.Data.DataModels.Registrations;
 [ExcludeFromCodeCoverage]
-[Table("Public.QueryNote")]
-public class QueryNote
+[Table("Public.Note")]
+public class Note
 {    
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     [Key]

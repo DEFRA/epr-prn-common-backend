@@ -21,6 +21,10 @@ namespace EPR.PRN.Backend.Data.Repositories.Regulator
 
         public async Task<RegulatorRegistrationTaskStatus?> GetTaskStatusAsync(string TaskName, Guid RegistrationId)
         {
+            if (TaskName == null )
+            {
+                throw new ArgumentNullException(nameof(TaskName));
+            }
             return await GetTaskStatus(TaskName, RegistrationId);
         }
 
@@ -63,7 +67,7 @@ namespace EPR.PRN.Backend.Data.Repositories.Regulator
                 if (comments != null && status == RegulatorTaskStatus.Queried)
                 {
 
-                    var queryNote = new QueryNote
+                    var queryNote = new Note
                     {
                         Notes = comments,
                         CreatedBy = user,
@@ -71,7 +75,7 @@ namespace EPR.PRN.Backend.Data.Repositories.Regulator
                     };
                     await _context.QueryNote.AddAsync(queryNote);
 
-                    var registrationTaskStatusQueryNotes = new RegistrationTaskStatusQueryNotes
+                    var registrationTaskStatusQueryNotes = new RegistrationTaskStatusQueryNote
                     {
                         QueryNote = queryNote,
                         RegulatorRegistrationTaskStatus = taskStatus
@@ -106,15 +110,20 @@ namespace EPR.PRN.Backend.Data.Repositories.Regulator
             {
                 throw new KeyNotFoundException("Cannot insert query because the Regulator Registration Task Status is completed.");
             }
-            var querynote = new QueryNote
+            else if(queryBy == Guid.Empty)
             {
-                Notes = note,
-                CreatedBy = queryBy,
-                CreatedDate = DateTime.UtcNow
-            };
+                throw new ArgumentException("invalid user.");
+            }
+
+                var querynote = new Note
+                {
+                    Notes = note,
+                    CreatedBy = queryBy,
+                    CreatedDate = DateTime.UtcNow
+                };
             await _context.QueryNote.AddAsync(querynote);
 
-            var registrationTaskStatusQueryNotes = new RegistrationTaskStatusQueryNotes
+            var registrationTaskStatusQueryNotes = new RegistrationTaskStatusQueryNote
             {
                 QueryNote = querynote,
                 RegulatorRegistrationTaskStatus = registrationTaskStatus
