@@ -2307,155 +2307,310 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250528195025_AddQueryNoteTable'
+    WHERE [MigrationId] = N'20250529125036_CheckRegistrationStatus'
+)
+BEGIN
+    DROP INDEX [IX_Public.DulyMade_RegistrationMaterialId] ON [Public.DulyMade];
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250529125036_CheckRegistrationStatus'
 )
 BEGIN
     DECLARE @var6 sysname;
     SELECT @var6 = [d].[name]
     FROM [sys].[default_constraints] [d]
     INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
-    WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Public.RegulatorRegistrationTaskStatus]') AND [c].[name] = N'Comments');
-    IF @var6 IS NOT NULL EXEC(N'ALTER TABLE [Public.RegulatorRegistrationTaskStatus] DROP CONSTRAINT [' + @var6 + '];');
-    ALTER TABLE [Public.RegulatorRegistrationTaskStatus] DROP COLUMN [Comments];
+    WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Public.DulyMade]') AND [c].[name] = N'DeterminationDate');
+    IF @var6 IS NOT NULL EXEC(N'ALTER TABLE [Public.DulyMade] DROP CONSTRAINT [' + @var6 + '];');
+    ALTER TABLE [Public.DulyMade] DROP COLUMN [DeterminationDate];
 END;
 GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250528195025_AddQueryNoteTable'
+    WHERE [MigrationId] = N'20250529125036_CheckRegistrationStatus'
+)
+BEGIN
+    CREATE TABLE [Public.DeterminationDate] (
+        [Id] int NOT NULL IDENTITY,
+        [ExternalId] uniqueidentifier NOT NULL,
+        [RegistrationMaterialId] int NOT NULL,
+        [DeterminateDate] datetime2 NULL,
+        CONSTRAINT [PK_Public.DeterminationDate] PRIMARY KEY ([Id]),
+        CONSTRAINT [FK_Public.DeterminationDate_Public.RegistrationMaterial_RegistrationMaterialId] FOREIGN KEY ([RegistrationMaterialId]) REFERENCES [Public.RegistrationMaterial] ([Id]) ON DELETE CASCADE
+    );
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250529125036_CheckRegistrationStatus'
+)
+BEGIN
+    CREATE UNIQUE INDEX [IX_Public.DulyMade_RegistrationMaterialId] ON [Public.DulyMade] ([RegistrationMaterialId]);
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250529125036_CheckRegistrationStatus'
+)
+BEGIN
+    CREATE UNIQUE INDEX [IX_Public.DeterminationDate_RegistrationMaterialId] ON [Public.DeterminationDate] ([RegistrationMaterialId]);
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250529125036_CheckRegistrationStatus'
+)
+BEGIN
+    INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+    VALUES (N'20250529125036_CheckRegistrationStatus', N'8.0.8');
+END;
+GO
+
+COMMIT;
+GO
+
+BEGIN TRANSACTION;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250601124026_AddNoteTable'
 )
 BEGIN
     DECLARE @var7 sysname;
     SELECT @var7 = [d].[name]
     FROM [sys].[default_constraints] [d]
     INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
-    WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Public.RegulatorApplicationTaskStatus]') AND [c].[name] = N'Comments');
-    IF @var7 IS NOT NULL EXEC(N'ALTER TABLE [Public.RegulatorApplicationTaskStatus] DROP CONSTRAINT [' + @var7 + '];');
-    ALTER TABLE [Public.RegulatorApplicationTaskStatus] DROP COLUMN [Comments];
+    WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Public.RegulatorRegistrationTaskStatus]') AND [c].[name] = N'Comments');
+    IF @var7 IS NOT NULL EXEC(N'ALTER TABLE [Public.RegulatorRegistrationTaskStatus] DROP CONSTRAINT [' + @var7 + '];');
+    ALTER TABLE [Public.RegulatorRegistrationTaskStatus] DROP COLUMN [Comments];
 END;
 GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250528195025_AddQueryNoteTable'
+    WHERE [MigrationId] = N'20250601124026_AddNoteTable'
 )
 BEGIN
     DECLARE @var8 sysname;
     SELECT @var8 = [d].[name]
     FROM [sys].[default_constraints] [d]
     INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
-    WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Public.RegulatorAccreditationTaskStatus]') AND [c].[name] = N'Comments');
-    IF @var8 IS NOT NULL EXEC(N'ALTER TABLE [Public.RegulatorAccreditationTaskStatus] DROP CONSTRAINT [' + @var8 + '];');
-    ALTER TABLE [Public.RegulatorAccreditationTaskStatus] DROP COLUMN [Comments];
+    WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Public.RegulatorApplicationTaskStatus]') AND [c].[name] = N'Comments');
+    IF @var8 IS NOT NULL EXEC(N'ALTER TABLE [Public.RegulatorApplicationTaskStatus] DROP CONSTRAINT [' + @var8 + '];');
+    ALTER TABLE [Public.RegulatorApplicationTaskStatus] DROP COLUMN [Comments];
 END;
 GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250528195025_AddQueryNoteTable'
+    WHERE [MigrationId] = N'20250601124026_AddNoteTable'
 )
 BEGIN
     DECLARE @var9 sysname;
     SELECT @var9 = [d].[name]
     FROM [sys].[default_constraints] [d]
     INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+    WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Public.RegulatorAccreditationTaskStatus]') AND [c].[name] = N'Comments');
+    IF @var9 IS NOT NULL EXEC(N'ALTER TABLE [Public.RegulatorAccreditationTaskStatus] DROP CONSTRAINT [' + @var9 + '];');
+    ALTER TABLE [Public.RegulatorAccreditationTaskStatus] DROP COLUMN [Comments];
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250601124026_AddNoteTable'
+)
+BEGIN
+    DECLARE @var10 sysname;
+    SELECT @var10 = [d].[name]
+    FROM [sys].[default_constraints] [d]
+    INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
     WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Public.RegulatorAccreditationRegistrationTaskStatus]') AND [c].[name] = N'Comments');
-    IF @var9 IS NOT NULL EXEC(N'ALTER TABLE [Public.RegulatorAccreditationRegistrationTaskStatus] DROP CONSTRAINT [' + @var9 + '];');
+    IF @var10 IS NOT NULL EXEC(N'ALTER TABLE [Public.RegulatorAccreditationRegistrationTaskStatus] DROP CONSTRAINT [' + @var10 + '];');
     ALTER TABLE [Public.RegulatorAccreditationRegistrationTaskStatus] DROP COLUMN [Comments];
 END;
 GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250528195025_AddQueryNoteTable'
+    WHERE [MigrationId] = N'20250601124026_AddNoteTable'
 )
 BEGIN
-    CREATE TABLE [Public.QueryNote] (
+    CREATE TABLE [Public.Note] (
         [Id] int NOT NULL IDENTITY,
         [Notes] nvarchar(500) NOT NULL,
         [CreatedBy] uniqueidentifier NOT NULL,
         [CreatedDate] datetime2 NOT NULL,
-        CONSTRAINT [PK_Public.QueryNote] PRIMARY KEY ([Id])
+        CONSTRAINT [PK_Public.Note] PRIMARY KEY ([Id])
     );
 END;
 GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250528195025_AddQueryNoteTable'
+    WHERE [MigrationId] = N'20250601124026_AddNoteTable'
 )
 BEGIN
-    CREATE TABLE [Public.ApplicationTaskStatusQueryNotes] (
+    CREATE TABLE [Public.ApplicationTaskStatusQueryNote] (
         [Id] int NOT NULL IDENTITY,
         [QueryNoteId] int NOT NULL,
         [RegulatorApplicationTaskStatusId] int NOT NULL,
-        CONSTRAINT [PK_Public.ApplicationTaskStatusQueryNotes] PRIMARY KEY ([Id]),
-        CONSTRAINT [FK_Public.ApplicationTaskStatusQueryNotes_Public.QueryNote_QueryNoteId] FOREIGN KEY ([QueryNoteId]) REFERENCES [Public.QueryNote] ([Id]) ON DELETE CASCADE,
-        CONSTRAINT [FK_Public.ApplicationTaskStatusQueryNotes_Public.RegulatorApplicationTaskStatus_RegulatorApplicationTaskStatusId] FOREIGN KEY ([RegulatorApplicationTaskStatusId]) REFERENCES [Public.RegulatorApplicationTaskStatus] ([Id]) ON DELETE CASCADE
+        CONSTRAINT [PK_Public.ApplicationTaskStatusQueryNote] PRIMARY KEY ([Id]),
+        CONSTRAINT [FK_Public.ApplicationTaskStatusQueryNote_Public.Note_QueryNoteId] FOREIGN KEY ([QueryNoteId]) REFERENCES [Public.Note] ([Id]) ON DELETE CASCADE,
+        CONSTRAINT [FK_Public.ApplicationTaskStatusQueryNote_Public.RegulatorApplicationTaskStatus_RegulatorApplicationTaskStatusId] FOREIGN KEY ([RegulatorApplicationTaskStatusId]) REFERENCES [Public.RegulatorApplicationTaskStatus] ([Id]) ON DELETE CASCADE
     );
 END;
 GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250528195025_AddQueryNoteTable'
+    WHERE [MigrationId] = N'20250601124026_AddNoteTable'
 )
 BEGIN
-    CREATE TABLE [Public.RegistrationTaskStatusQueryNotes] (
+    CREATE TABLE [Public.RegistrationTaskStatusQueryNote] (
         [Id] int NOT NULL IDENTITY,
         [QueryNoteId] int NOT NULL,
         [RegulatorRegistrationTaskStatusId] int NOT NULL,
         [RegistrationTaskStatusId] int NOT NULL,
-        CONSTRAINT [PK_Public.RegistrationTaskStatusQueryNotes] PRIMARY KEY ([Id]),
-        CONSTRAINT [FK_Public.RegistrationTaskStatusQueryNotes_Public.QueryNote_QueryNoteId] FOREIGN KEY ([QueryNoteId]) REFERENCES [Public.QueryNote] ([Id]) ON DELETE CASCADE,
-        CONSTRAINT [FK_Public.RegistrationTaskStatusQueryNotes_Public.RegulatorRegistrationTaskStatus_RegulatorRegistrationTaskStatusId] FOREIGN KEY ([RegulatorRegistrationTaskStatusId]) REFERENCES [Public.RegulatorRegistrationTaskStatus] ([Id]) ON DELETE CASCADE
+        CONSTRAINT [PK_Public.RegistrationTaskStatusQueryNote] PRIMARY KEY ([Id]),
+        CONSTRAINT [FK_Public.RegistrationTaskStatusQueryNote_Public.Note_QueryNoteId] FOREIGN KEY ([QueryNoteId]) REFERENCES [Public.Note] ([Id]) ON DELETE CASCADE,
+        CONSTRAINT [FK_Public.RegistrationTaskStatusQueryNote_Public.RegulatorRegistrationTaskStatus_RegulatorRegistrationTaskStatusId] FOREIGN KEY ([RegulatorRegistrationTaskStatusId]) REFERENCES [Public.RegulatorRegistrationTaskStatus] ([Id]) ON DELETE CASCADE
     );
 END;
 GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250528195025_AddQueryNoteTable'
+    WHERE [MigrationId] = N'20250601124026_AddNoteTable'
 )
 BEGIN
-    CREATE INDEX [IX_Public.ApplicationTaskStatusQueryNotes_QueryNoteId] ON [Public.ApplicationTaskStatusQueryNotes] ([QueryNoteId]);
+    CREATE INDEX [IX_Public.ApplicationTaskStatusQueryNote_QueryNoteId] ON [Public.ApplicationTaskStatusQueryNote] ([QueryNoteId]);
 END;
 GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250528195025_AddQueryNoteTable'
+    WHERE [MigrationId] = N'20250601124026_AddNoteTable'
 )
 BEGIN
-    CREATE INDEX [IX_Public.ApplicationTaskStatusQueryNotes_RegulatorApplicationTaskStatusId] ON [Public.ApplicationTaskStatusQueryNotes] ([RegulatorApplicationTaskStatusId]);
+    CREATE INDEX [IX_Public.ApplicationTaskStatusQueryNote_RegulatorApplicationTaskStatusId] ON [Public.ApplicationTaskStatusQueryNote] ([RegulatorApplicationTaskStatusId]);
 END;
 GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250528195025_AddQueryNoteTable'
+    WHERE [MigrationId] = N'20250601124026_AddNoteTable'
 )
 BEGIN
-    CREATE INDEX [IX_Public.RegistrationTaskStatusQueryNotes_QueryNoteId] ON [Public.RegistrationTaskStatusQueryNotes] ([QueryNoteId]);
+    CREATE INDEX [IX_Public.RegistrationTaskStatusQueryNote_QueryNoteId] ON [Public.RegistrationTaskStatusQueryNote] ([QueryNoteId]);
 END;
 GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250528195025_AddQueryNoteTable'
+    WHERE [MigrationId] = N'20250601124026_AddNoteTable'
 )
 BEGIN
-    CREATE INDEX [IX_Public.RegistrationTaskStatusQueryNotes_RegulatorRegistrationTaskStatusId] ON [Public.RegistrationTaskStatusQueryNotes] ([RegulatorRegistrationTaskStatusId]);
+    CREATE INDEX [IX_Public.RegistrationTaskStatusQueryNote_RegulatorRegistrationTaskStatusId] ON [Public.RegistrationTaskStatusQueryNote] ([RegulatorRegistrationTaskStatusId]);
 END;
 GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250528195025_AddQueryNoteTable'
+    WHERE [MigrationId] = N'20250601124026_AddNoteTable'
 )
 BEGIN
     INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
-    VALUES (N'20250528195025_AddQueryNoteTable', N'8.0.8');
+    VALUES (N'20250601124026_AddNoteTable', N'8.0.8');
+END;
+GO
+
+COMMIT;
+GO
+
+BEGIN TRANSACTION;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250601130637_accreditationFileUploadTable'
+)
+BEGIN
+    DECLARE @var11 sysname;
+    SELECT @var11 = [d].[name]
+    FROM [sys].[default_constraints] [d]
+    INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+    WHERE ([d].[parent_object_id] = OBJECT_ID(N'[public.FileUpload]') AND [c].[name] = N'UpdatedBy');
+    IF @var11 IS NOT NULL EXEC(N'ALTER TABLE [public.FileUpload] DROP CONSTRAINT [' + @var11 + '];');
+    ALTER TABLE [public.FileUpload] ALTER COLUMN [UpdatedBy] nvarchar(50) NOT NULL;
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250601130637_accreditationFileUploadTable'
+)
+BEGIN
+    CREATE TABLE [public.AccreditationFileUpload] (
+        [Id] int NOT NULL IDENTITY,
+        [AccreditationId] int NULL,
+        [ExternalId] uniqueidentifier NOT NULL,
+        [Filename] nvarchar(50) NULL,
+        [FileId] uniqueidentifier NOT NULL,
+        [DateUploaded] datetime2 NULL,
+        [UpdatedBy] nvarchar(50) NOT NULL,
+        [FileUploadTypeId] int NULL,
+        [FileUploadStatusId] int NULL,
+        CONSTRAINT [PK_public.AccreditationFileUpload] PRIMARY KEY ([Id]),
+        CONSTRAINT [FK_public.AccreditationFileUpload_Lookup.FileUploadStatus_FileUploadStatusId] FOREIGN KEY ([FileUploadStatusId]) REFERENCES [Lookup.FileUploadStatus] ([Id]),
+        CONSTRAINT [FK_public.AccreditationFileUpload_Lookup.FileUploadType_FileUploadTypeId] FOREIGN KEY ([FileUploadTypeId]) REFERENCES [Lookup.FileUploadType] ([Id]),
+        CONSTRAINT [FK_public.AccreditationFileUpload_Public.Accreditation_AccreditationId] FOREIGN KEY ([AccreditationId]) REFERENCES [Public.Accreditation] ([Id])
+    );
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250601130637_accreditationFileUploadTable'
+)
+BEGIN
+    CREATE INDEX [IX_public.AccreditationFileUpload_AccreditationId] ON [public.AccreditationFileUpload] ([AccreditationId]);
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250601130637_accreditationFileUploadTable'
+)
+BEGIN
+    CREATE INDEX [IX_public.AccreditationFileUpload_FileUploadStatusId] ON [public.AccreditationFileUpload] ([FileUploadStatusId]);
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250601130637_accreditationFileUploadTable'
+)
+BEGIN
+    CREATE INDEX [IX_public.AccreditationFileUpload_FileUploadTypeId] ON [public.AccreditationFileUpload] ([FileUploadTypeId]);
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250601130637_accreditationFileUploadTable'
+)
+BEGIN
+    INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+    VALUES (N'20250601130637_accreditationFileUploadTable', N'8.0.8');
 END;
 GO
 

@@ -303,5 +303,6 @@ namespace EPR.PRN.Backend.Data
         public virtual DbSet<Note> QueryNote { get; set; }
         public virtual DbSet<ApplicationTaskStatusQueryNote> ApplicationTaskStatusQueryNotes { get; set; }
         public virtual DbSet<RegistrationTaskStatusQueryNote> RegistrationTaskStatusQueryNotes { get; set; }
+        public virtual DbSet<Accreditation> Accreditations { get; set; }
     }
 }
