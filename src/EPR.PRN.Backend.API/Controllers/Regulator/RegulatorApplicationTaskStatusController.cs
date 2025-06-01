@@ -40,20 +40,15 @@ public class RegulatorApplicationTaskStatusController(
     public async Task<IActionResult> AddApplicationTaskQueryNote(Guid Id, [FromBody] AddApplicationTaskQueryNoteCommand command)
     {
         logger.LogInformation(LogMessages.UpdateRegulatorApplicationTask);
+
         command.RegulatorApplicationTaskStatusId = Id;
 
-
         var validator = new AddApplicationTaskQueryNoteCommandValidator();
-        var result = validator.Validate(command);
+        await validator.ValidateAndThrowAsync(command);
 
-        if (result.IsValid)
-        {
-            await mediator.Send(command);
-            return NoContent();
-        }
-        else
-        {
-            return BadRequest(result.Errors);
-        }      
+        await mediator.Send(command);
+
+        return NoContent();
+
     }
 }

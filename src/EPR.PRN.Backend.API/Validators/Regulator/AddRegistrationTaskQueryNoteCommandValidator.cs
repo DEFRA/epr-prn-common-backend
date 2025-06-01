@@ -6,9 +6,7 @@ namespace EPR.PRN.Backend.API.Validators.Regulator;
 public class AddRegistrationTaskQueryNoteCommandValidator : AbstractValidator<AddRegistrationTaskQueryNoteCommand>
 {
     public AddRegistrationTaskQueryNoteCommandValidator()
-    {
-        
-
+    { 
         RuleFor(x => x.RegulatorRegistrationTaskStatusId)
             .NotEmpty().WithMessage("Regulator Registration Task Status Id is required")
             .NotEqual(Guid.Empty).WithMessage("Regulator Registration Task Status is invalid Id ");           

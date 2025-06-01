@@ -468,7 +468,41 @@ public class RegistrationMaterialRepositoryTests
             taskStatusEntry.StatusCreatedDate.Date.Should().Be(DateTime.UtcNow.Date);
         }
     }
+    [TestMethod]
+    public async Task RegistrationMaterialsMarkAsDulyMade_ShouldThrow_WhenMaterialNotFound()
+    {
+        // Arrange
+        var nonExistentId = Guid.NewGuid();
+        var statusId = 3;
+        var dulyMadeDate = DateTime.UtcNow.Date;
+        var determinationDate = dulyMadeDate.AddDays(84);
+        var userId = Guid.NewGuid();
 
+        // Act & Assert
+        await Assert.ThrowsExceptionAsync<KeyNotFoundException>(() =>
+            _repository.RegistrationMaterialsMarkAsDulyMade(nonExistentId, statusId, determinationDate, dulyMadeDate, userId));
+    }
+    [TestMethod]
+    public async Task UpdateRegistrationOutCome_ShouldHandleNullCommentAndReference()
+    {
+        // Arrange
+        var id = Guid.Parse("a9421fc1-a912-42ee-85a5-3e06408759a9");
+
+        // Act
+        await _repository.UpdateRegistrationOutCome(id, 2, null, null);
+        var updated = await _context.RegistrationMaterials.FindAsync(1);
+
+        // Assert
+        using (new AssertionScope())
+        {
+            updated.Should().NotBeNull();
+            updated!.StatusId.Should().Be(2);
+            updated.Comments.Should().BeNull();
+            updated.RegistrationReferenceNumber.Should().BeNull();
+        }
+    }
+   
+       
     [TestCleanup]
     public void Cleanup()
     {

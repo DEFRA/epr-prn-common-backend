@@ -9,7 +9,6 @@ namespace EPR.PRN.Backend.API.Commands;
 public class AddRegistrationTaskQueryNoteCommand : IRequest
 {
     [Required]
-    [MaxLength(500)]
     public required string Note { get; set; }
     [BindNever]
     [SwaggerIgnore]

@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.FeatureManagement.Mvc;
 
 namespace EPR.PRN.Backend.API.Controllers.Regulator;
+
 [FeatureGate(FeatureFlags.ReprocessorExporter)]
 [ApiController]
 [ApiVersion("1.0")]
@@ -39,21 +40,14 @@ public class RegulatorRegistrationTaskStatusController(
     public async Task<IActionResult> RegistrationTaskQueryNote(Guid Id, [FromBody] AddRegistrationTaskQueryNoteCommand command)
     {
         logger.LogInformation(LogMessages.UpdateRegulatorApplicationTask);
+
         command.RegulatorRegistrationTaskStatusId = Id;
 
-
         var validator = new AddRegistrationTaskQueryNoteCommandValidator();
-        var result = validator.Validate(command);
+        await validator.ValidateAndThrowAsync(command);
 
-        if (result.IsValid)
-        {
-            await mediator.Send(command);
-            return NoContent();
-        }
-        else
-        {
-            return BadRequest(result.Errors);
-        }
+        await mediator.Send(command);
 
+        return NoContent();
     }
 }

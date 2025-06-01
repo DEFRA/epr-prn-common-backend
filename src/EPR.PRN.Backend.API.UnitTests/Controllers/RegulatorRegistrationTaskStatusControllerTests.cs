@@ -119,13 +119,11 @@ public class RegulatorRegistrationTaskStatusControllerTests
             QueryBy = Guid.Empty // Invalid QueryBy
         };
 
-        // Act
-        var result = await _systemUnderTest.RegistrationTaskQueryNote(taskId, command);
-
         // Assert
-        result.Should().BeOfType<BadRequestObjectResult>();
-        var badRequest = result as BadRequestObjectResult;
-        badRequest!.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
+        
+        Func<Task> act = () => _systemUnderTest.RegistrationTaskQueryNote(taskId, command);
+
+        await act.Should().ThrowAsync<ValidationException>();
     }
 
     [TestMethod]
