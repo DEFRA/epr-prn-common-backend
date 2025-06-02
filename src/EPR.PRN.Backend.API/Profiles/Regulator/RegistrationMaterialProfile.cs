@@ -131,6 +131,17 @@ public class RegistrationMaterialProfile : Profile
            .ForMember(dest => dest.SiteAddress, opt => opt.MapFrom(src => src.Registration.ReprocessingSiteAddress != null ? CreateAddressString(src.Registration.ReprocessingSiteAddress) : string.Empty))
            .ForMember(dest => dest.NationId, opt => opt.MapFrom(src => GetNationId(src.Registration)))
            .ForMember(dest => dest.MaterialName, opt => opt.MapFrom(src => src.Material.MaterialName));
+
+        CreateMap<Accreditation, AccreditationPaymentFeeDetailsDto>()
+            .ForMember(dest => dest.AccreditationId, opt => opt.MapFrom(src => src.ExternalId))
+            .ForMember(dest => dest.OrganisationName, opt => opt.MapFrom(src => src.RegistrationMaterial.Registration.OrganisationId))
+            .ForMember(dest => dest.SiteAddress, opt => opt.MapFrom(src =>
+             src.RegistrationMaterial.Registration.BusinessAddress != null ? CreateAddressString(src.RegistrationMaterial.Registration.BusinessAddress)
+                : string.Empty))
+            .ForMember(dest => dest.ApplicationReferenceNumber, opt => opt.MapFrom(src => src.ApplicationReferenceNumber))
+            .ForMember(dest => dest.MaterialName, opt => opt.MapFrom(src => src.RegistrationMaterial.Material.MaterialName))
+            .ForMember(dest => dest.SubmittedDate, opt => opt.MapFrom(src => src.CreatedOn))
+            .ForMember(dest => dest.ApplicationType, opt => opt.MapFrom(src => src.RegistrationMaterial.Registration.ApplicationTypeId));
     }
 
     private static List<RegistrationTaskDto> MapTasks(List<RegulatorRegistrationTaskStatus>? registrationTasks, List<RegulatorAccreditationRegistrationTaskStatus>? accreditationTasks, ResolutionContext context)

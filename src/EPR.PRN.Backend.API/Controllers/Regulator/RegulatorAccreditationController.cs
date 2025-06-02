@@ -22,7 +22,7 @@ public class RegulatorAccreditationController(IMediator mediator,
      ILogger<RegulatorAccreditationController> logger) : ControllerBase
 {
     #region Get methods
-    [HttpGet("accreditations/{1}/paymentFees")]
+    [HttpGet("accreditations/{Id}/paymentFees")]
     [ProducesResponseType(typeof(AccreditationPaymentFeeDetailsDto), 200)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -33,7 +33,7 @@ public class RegulatorAccreditationController(IMediator mediator,
     [SwaggerResponse(StatusCodes.Status200OK, "Returns accreditation payment fee details.", typeof(AccreditationPaymentFeeDetailsDto))]
     [SwaggerResponse(StatusCodes.Status400BadRequest, "If the request is invalid or a validation error occurs.", typeof(ProblemDetails))]
     [SwaggerResponse(StatusCodes.Status500InternalServerError, "If an unexpected error occurs.", typeof(ContentResult))]
-    public async Task<IActionResult> GetRegistrationAccreditationPaymentFeeDetailsById(int Id)
+    public async Task<IActionResult> GetRegistrationAccreditationPaymentFeeDetailsById(Guid Id)
     {
         logger.LogInformation(LogMessages.AccreditationMaterialsTasks);
         var result = await mediator.Send(new GetRegistrationAccreditationPaymentFeesByIdQuery() { Id = Id });

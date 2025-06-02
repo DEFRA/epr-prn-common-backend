@@ -12,5 +12,5 @@ namespace EPR.PRN.Backend.API.Queries;
 public class GetRegistrationAccreditationPaymentFeesByIdQuery : IRequest<AccreditationPaymentFeeDetailsDto>
 {
     [Required]
-    public int Id { get; set; }
+    public Guid Id { get; set; }
 }

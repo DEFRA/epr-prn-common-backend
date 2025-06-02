@@ -14,36 +14,8 @@ public class GetRegistrationAccreditationPaymentFeesByIdHandler(
 {
     public async Task<AccreditationPaymentFeeDetailsDto> Handle(GetRegistrationAccreditationPaymentFeesByIdQuery request, CancellationToken cancellationToken)
     {
-        //
-        AccreditationPaymentFeeDetailsDto accreditationDto = new();
-        //
-
-        //ToDo: ditch this and get the proper data
-        //var registration = await repo.GetRegistrationById(request.Id);
-        //var registrationDto = mapper.Map<RegistrationOverviewDto>(registration);
-
-        //var missingRegistrationTasks = await GetMissingTasks(registration.ApplicationTypeId, false, registrationDto.Tasks);
-        //registrationDto.Tasks.AddRange(missingRegistrationTasks);
-
-        //foreach (var materialDto in registrationDto.Materials)
-        //{
-
-        //    var missingMaterialTasks = await GetMissingTasks(registration.ApplicationTypeId, true, materialDto.Tasks);
-        //    materialDto.Tasks.AddRange(missingMaterialTasks);
-        //}
-        ////
-
-        return accreditationDto;
+        var accreditationEntity = await repo.GetAccreditationPaymentFeesById(request.Id);
+        var accreditationDto = mapper.Map<AccreditationPaymentFeeDetailsDto>(accreditationEntity);
+        return accreditationDto;    
     }
-
-    //private async Task<IEnumerable<RegistrationTaskDto>> GetMissingTasks(int applicationTypeId, bool isMaterialSpecific, List<RegistrationTaskDto> existingTasks)
-    //{
-    //    var requiredTasks = await repo.GetRequiredTasks(applicationTypeId, isMaterialSpecific);
-
-    //    var missingTasks = requiredTasks
-    //        .Where(rt => existingTasks.All(r => r.TaskName != rt.Name))
-    //        .Select(t => new RegistrationTaskDto { TaskName = t.Name, Status = RegulatorTaskStatus.NotStarted.ToString() });
-
-    //    return missingTasks;
-    //}
 }

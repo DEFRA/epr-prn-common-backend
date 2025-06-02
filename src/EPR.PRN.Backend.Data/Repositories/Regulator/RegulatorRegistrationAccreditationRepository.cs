@@ -9,6 +9,19 @@ namespace EPR.PRN.Backend.Data.Repositories.Regulator;
 
 public class RegulatorRegistrationAccreditationRepository(EprContext eprContext) : IRegulatorRegistrationAccreditationRepository
 {
+    public async Task<Accreditation> GetAccreditationPaymentFeesById(Guid accreditationId)
+    {
+        return await eprContext.Accreditations
+            .Include(a => a.RegistrationMaterial)
+                .ThenInclude(rm => rm.Material)
+            .Include(a => a.RegistrationMaterial)
+                .ThenInclude(rm => rm.Registration)
+                    .ThenInclude(r => r.BusinessAddress)
+            .Include(a => a.AccreditationStatus)
+            .FirstOrDefaultAsync(a => a.ExternalId == accreditationId)
+            ?? throw new KeyNotFoundException("Accreditation not found.");
+
+    }
     public async Task AccreditationMarkAsDulyMade(Guid accreditationId, int statusId, DateTime DulyMadeDate, DateTime DeterminationDate, Guid DulyMadeBy)
     {
      //   var accreditation = await eprContext.RegistrationMaterials.FirstOrDefaultAsync(rm => rm.ExternalId == registrationMaterialId);
