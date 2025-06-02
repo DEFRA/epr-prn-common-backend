@@ -17,8 +17,7 @@ namespace EPR.PRN.Backend.API.Controllers.Regulator;
 [Route("api/v{version:apiVersion}")]
 [FeatureGate(FeatureFlags.ReprocessorExporter)]
 public class RegulatorAccreditationController(IMediator mediator,
-    IValidator<RegulatorAccreditationMarkAsDulyMadeCommand> validator,
-     IValidationService validationService,
+     IValidator<RegulatorAccreditationMarkAsDulyMadeCommand> validator,
      ILogger<RegulatorAccreditationController> logger) : ControllerBase
 {
     #region Get methods
