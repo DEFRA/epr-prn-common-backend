@@ -27,16 +27,16 @@ public class RegulatorAccreditationController(IMediator mediator,
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [SwaggerOperation(
-            Summary = "get registration accreditations with materials and tasks",
-            Description = "attempting to get registration accreditations with materials and tasks."
+            Summary = "get accreditation payment fees",
+            Description = "attempting to get payment fees."
         )]
-    [SwaggerResponse(StatusCodes.Status200OK, "Returns registration accreditations with materials and tasks.", typeof(AccreditationPaymentFeeDetailsDto))]
+    [SwaggerResponse(StatusCodes.Status200OK, "Returns accreditation payment fee details.", typeof(AccreditationPaymentFeeDetailsDto))]
     [SwaggerResponse(StatusCodes.Status400BadRequest, "If the request is invalid or a validation error occurs.", typeof(ProblemDetails))]
     [SwaggerResponse(StatusCodes.Status500InternalServerError, "If an unexpected error occurs.", typeof(ContentResult))]
-    public async Task<IActionResult> GetRegistrationAccreditationById(int Id)
+    public async Task<IActionResult> GetRegistrationAccreditationPaymentFeeDetailsById(int Id)
     {
         logger.LogInformation(LogMessages.AccreditationMaterialsTasks);
-        var result = await mediator.Send(new GetRegistrationAccreditationSummaryByIdQuery() { Id = Id });
+        var result = await mediator.Send(new GetRegistrationAccreditationPaymentFeesByIdQuery() { Id = Id });
         return Ok(result);
     }
     #endregion Get Methods

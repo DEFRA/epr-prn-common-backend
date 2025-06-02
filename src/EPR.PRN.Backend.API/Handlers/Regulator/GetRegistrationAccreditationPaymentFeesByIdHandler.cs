@@ -7,12 +7,12 @@ using MediatR;
 
 namespace EPR.PRN.Backend.API.Handlers.Regulator;
 
-public class GetRegistrationAccreditationSummaryByIdHandler(
+public class GetRegistrationAccreditationPaymentFeesByIdHandler(
     IRegulatorRegistrationAccreditationRepository repo,
     IMapper mapper
-) : IRequestHandler<GetRegistrationAccreditationSummaryByIdQuery, AccreditationPaymentFeeDetailsDto>
+) : IRequestHandler<GetRegistrationAccreditationPaymentFeesByIdQuery, AccreditationPaymentFeeDetailsDto>
 {
-    public async Task<AccreditationPaymentFeeDetailsDto> Handle(GetRegistrationAccreditationSummaryByIdQuery request, CancellationToken cancellationToken)
+    public async Task<AccreditationPaymentFeeDetailsDto> Handle(GetRegistrationAccreditationPaymentFeesByIdQuery request, CancellationToken cancellationToken)
     {
         //
         AccreditationPaymentFeeDetailsDto accreditationDto = new();

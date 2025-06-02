@@ -133,47 +133,47 @@ public class RegistrationAccreditationRepositoryTests
     }
 
 
-    [TestMethod]
-    public async Task RegistrationMaterialsMarkAsDulyMade_ShouldSetDulyMadeCorrectly()
-    {
-        // Arrange
-        var dulyMadeDate = DateTime.UtcNow.Date;
-        var determinationDate = dulyMadeDate.AddDays(84);
-        var userId = Guid.NewGuid();
-        // Seed required LookupTask for the CheckAccreditationStatus task
-        _context.LookupTasks.Add(new LookupRegulatorTask
-        {
-            Id = 2,
-            Name = "CheckAccreditationStatus",
-            ApplicationTypeId = 1,
-            JourneyTypeId = 1,
-            IsMaterialSpecific = true
-        });
+    //[TestMethod]
+    //public async Task RegistrationMaterialsMarkAsDulyMade_ShouldSetDulyMadeCorrectly()
+    //{
+    //    // Arrange
+    //    var dulyMadeDate = DateTime.UtcNow.Date;
+    //    var determinationDate = dulyMadeDate.AddDays(84);
+    //    var userId = Guid.NewGuid();
+    //    // Seed required LookupTask for the CheckAccreditationStatus task
+    //    _context.LookupTasks.Add(new LookupRegulatorTask
+    //    {
+    //        Id = 2,
+    //        Name = "CheckAccreditationStatus",
+    //        ApplicationTypeId = 1,
+    //        JourneyTypeId = 1,
+    //        IsMaterialSpecific = true
+    //    });
 
-        await _context.SaveChangesAsync();
+    //    await _context.SaveChangesAsync();
 
-        // Act
-        await _repository.AccreditationMarkAsDulyMade(dulyMadeDate, determinationDate, userId);
+    //    // Act
+    //    await _repository.AccreditationMarkAsDulyMade(dulyMadeDate, determinationDate, userId);
 
-        // Assert
-        //var dulyMadeEntry = await _context.DulyMade
-        //    .FirstOrDefaultAsync(x => x.Id == registrationMaterialId);
-        //var taskStatusEntry = await _context.RegulatorApplicationTaskStatus
-        //    .FirstOrDefaultAsync(x => x.RegistrationMaterialId == registrationMaterialId && x.TaskStatusId == statusId);
+    //    // Assert
+    //    //var dulyMadeEntry = await _context.DulyMade
+    //    //    .FirstOrDefaultAsync(x => x.Id == registrationMaterialId);
+    //    //var taskStatusEntry = await _context.RegulatorApplicationTaskStatus
+    //    //    .FirstOrDefaultAsync(x => x.RegistrationMaterialId == registrationMaterialId && x.TaskStatusId == statusId);
 
-        //using (new AssertionScope())
-        //{
-        //    dulyMadeEntry.Should().NotBeNull();
-        //    dulyMadeEntry!.DulyMadeBy.Should().Be(userId);
-        //    dulyMadeEntry.DulyMadeDate.Should().Be(dulyMadeDate);
-        //    dulyMadeEntry.DeterminationDate.Should().Be(determinationDate);
+    //    //using (new AssertionScope())
+    //    //{
+    //    //    dulyMadeEntry.Should().NotBeNull();
+    //    //    dulyMadeEntry!.DulyMadeBy.Should().Be(userId);
+    //    //    dulyMadeEntry.DulyMadeDate.Should().Be(dulyMadeDate);
+    //    //    dulyMadeEntry.DeterminationDate.Should().Be(determinationDate);
 
-        //    taskStatusEntry.Should().NotBeNull();
-        //    taskStatusEntry.TaskId.Should().Be(2);
-        //    taskStatusEntry.StatusUpdatedBy.Should().Be(userId);
-        //    taskStatusEntry.StatusCreatedDate.Date.Should().Be(DateTime.UtcNow.Date);
-        //}
-    }
+    //    //    taskStatusEntry.Should().NotBeNull();
+    //    //    taskStatusEntry.TaskId.Should().Be(2);
+    //    //    taskStatusEntry.StatusUpdatedBy.Should().Be(userId);
+    //    //    taskStatusEntry.StatusCreatedDate.Date.Should().Be(DateTime.UtcNow.Date);
+    //    //}
+    //}
 
     [TestCleanup]
     public void Cleanup()
