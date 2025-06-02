@@ -77,7 +77,7 @@ namespace EPR.PRN.Backend.Data.Repositories.Regulator
         }
         private async Task<RegulatorApplicationTaskStatus?> GetTaskStatus(string TaskName, Guid RegistrationMaterialId)
         {
-            return await _context.RegulatorApplicationTaskStatus.Include(ts => ts.TaskStatus).Include(y => y.RegistrationMaterial).FirstOrDefaultAsync(x => x.Task.Name == TaskName && x.RegistrationMaterial.ExternalId == RegistrationMaterialId);
+            return await _context.RegulatorApplicationTaskStatus.Include(ts => ts.Task).Include(ts => ts.TaskStatus).Include(y => y.RegistrationMaterial).FirstOrDefaultAsync(x => x.Task.Name == TaskName && x.RegistrationMaterial.ExternalId == RegistrationMaterialId);
         }
     }
 }
