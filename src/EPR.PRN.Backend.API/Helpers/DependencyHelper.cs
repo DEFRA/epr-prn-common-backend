@@ -27,6 +27,7 @@ namespace EPR.PRN.Backend.API.Helpers
                 .AddScoped<IPrnService, PrnService>()
                 .AddScoped<IValidationService, ValidationService>()
                 .AddScoped<IObligationCalculatorService, ObligationCalculatorService>()
+                .AddScoped<IMaterialService, MaterialService>()
                 .AddScoped<IObligationCalculationRepository, ObligationCalculationRepository>()
                 .AddScoped<IRecyclingTargetDataService, RecyclingTargetDataService>()
                 .AddScoped<IRecyclingTargetRepository, RecyclingTargetRepository>()
