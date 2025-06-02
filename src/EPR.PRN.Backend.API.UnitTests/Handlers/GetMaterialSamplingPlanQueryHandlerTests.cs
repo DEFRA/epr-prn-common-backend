@@ -39,7 +39,7 @@ public class GetMaterialSamplingPlanQueryHandlerTests
         var materialId = Guid.Parse("a9421fc1-a912-42ee-85a5-3e06408759a9");
         DateTime dateUploaded = DateTime.UtcNow;
         var query = new GetMaterialSamplingPlanQuery { Id = materialId };
-        var updatedBy = Guid.NewGuid();
+        var updatedBy = "Test user";
         var fileId = Guid.NewGuid();
 
         var materialEntity = new RegistrationMaterial
@@ -50,8 +50,8 @@ public class GetMaterialSamplingPlanQueryHandlerTests
             Material = new LookupMaterial { MaterialName = "Plastic" },
             StatusId = 1,
             Status = new LookupRegistrationMaterialStatus { Id = 1, Name = "Granted" },
-            FileUploads = new List<FileUpload>{
-                new FileUpload
+            FileUploads = new List<RegistrationFileUpload>{
+                new RegistrationFileUpload
                 {
                     
                     Filename = "Filename",

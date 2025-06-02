@@ -67,7 +67,7 @@ public class RegistrationMaterial
     public LookupPeriod? MaximumReprocessingPeriod { get; set; }
     public bool IsMaterialRegistered { get; set; } = false;
     public List<RegistrationReprocessingIO>? RegistrationReprocessingIO { get; set; }
-    public List<FileUpload>? FileUploads { get; set; }
+    public List<RegistrationFileUpload>? FileUploads { get; set; }
     public List<MaterialExemptionReference>? MaterialExemptionReferences { get; set; }
     public List<RegulatorApplicationTaskStatus>? Tasks { get; set; }
     public List<Accreditation>? Accreditations { get; set; }
