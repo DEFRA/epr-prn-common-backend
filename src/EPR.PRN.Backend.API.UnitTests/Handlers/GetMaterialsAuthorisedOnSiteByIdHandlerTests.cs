@@ -100,7 +100,7 @@ public class GetMaterialsAuthorisedOnSiteByIdHandlerTests
 
         var validTask = new RegulatorRegistrationTaskStatus
         {
-            TaskId = 2,
+            RegulatorTaskId = 2,
             TaskStatusId = (int)RegulatorTaskStatus.Queried,
             Task = new LookupRegulatorTask
             {
@@ -111,7 +111,7 @@ public class GetMaterialsAuthorisedOnSiteByIdHandlerTests
         };
         var invalidTask1 = new RegulatorRegistrationTaskStatus
         {
-            TaskId = 2,
+            RegulatorTaskId = 2,
             TaskStatusId = (int)RegulatorTaskStatus.Queried,
             Task = new LookupRegulatorTask
             {
@@ -123,7 +123,7 @@ public class GetMaterialsAuthorisedOnSiteByIdHandlerTests
 
         var invalidTask2 = new RegulatorRegistrationTaskStatus
         {
-            TaskId = 2,
+            RegulatorTaskId = 2,
             TaskStatusId = (int)RegulatorTaskStatus.Queried,
             Task = new LookupRegulatorTask
             {

@@ -73,7 +73,7 @@ public class RegistrationMaterialRepositoryTests
             new RegulatorApplicationTaskStatus
             {
                 Id = 1,
-                TaskId = 1,
+                RegulatorTaskId = 1,
                 TaskStatusId = 1,
                 TaskStatus = taskStatus,
                 Task = task
@@ -111,7 +111,7 @@ public class RegistrationMaterialRepositoryTests
             new RegulatorRegistrationTaskStatus
             {
                 Id = 1,
-                TaskId = 1,
+                RegulatorTaskId = 1,
                 TaskStatusId = 1,
                 TaskStatus = taskStatus,
                 Task = task
@@ -133,7 +133,7 @@ public class RegistrationMaterialRepositoryTests
                 new RegulatorAccreditationRegistrationTaskStatus
                 {
                     Id = 2,
-                    TaskId = 1,
+                    RegulatorTaskId = 1,
                     TaskStatusId = 1,
                     TaskStatus = taskStatus,
                     Task = task,
@@ -143,7 +143,7 @@ public class RegistrationMaterialRepositoryTests
                 new RegulatorAccreditationRegistrationTaskStatus
                 {
                     Id = 3,
-                    TaskId = 1,
+                    RegulatorTaskId = 1,
                     TaskStatusId = 1,
                     TaskStatus = taskStatus,
                     Task = task,
@@ -167,7 +167,7 @@ public class RegistrationMaterialRepositoryTests
                         new RegulatorApplicationTaskStatus
                         {
                             Id = 3,
-                            TaskId = 1,
+                            RegulatorTaskId = 1,
                             TaskStatusId = 1,
                             TaskStatus = taskStatus,
                             Task = task
@@ -194,6 +194,7 @@ public class RegistrationMaterialRepositoryTests
                         new Accreditation
                         {
                             Id = 1,
+                            ExternalId = Guid.Parse("4c632765-7652-42ae-8527-23f10a971c28"),
                             RegistrationMaterialId = 2,
                             AccreditationStatusId = 1,
                             ApplicationReferenceNumber = "ACC12345",
@@ -208,7 +209,7 @@ public class RegistrationMaterialRepositoryTests
                                 new RegulatorAccreditationTaskStatus
                                 {
                                     Id = 1,
-                                    TaskId = 1,
+                                    RegulatorTaskId = 1,
                                     TaskStatusId = 1,
                                     TaskStatus = taskStatus,
                                     Task = task
@@ -232,7 +233,7 @@ public class RegistrationMaterialRepositoryTests
                                 new RegulatorAccreditationTaskStatus
                                 {
                                     Id = 2,
-                                    TaskId = 1,
+                                    RegulatorTaskId = 1,
                                     TaskStatusId = 1,
                                     TaskStatus = taskStatus,
                                     Task = task
@@ -423,6 +424,24 @@ public class RegistrationMaterialRepositoryTests
     {
         await Assert.ThrowsExceptionAsync<KeyNotFoundException>(() => _repository.GetRegistrationMaterial_FileUploadById(Guid.Parse("cd9dcc80-fcf5-4f46-addd-b8a256f735a3")));
     }
+
+    [TestMethod]
+    public async Task GetAccreditation_FileUploadById_ShouldReturnMaterial_WhenExists()
+    {
+        var accreditation = await _repository.GetAccreditation_FileUploadById(Guid.Parse("4c632765-7652-42ae-8527-23f10a971c28"));
+        using (new AssertionScope())
+        {
+            Assert.IsNotNull(accreditation);
+            Assert.AreEqual("ACC12345", accreditation.ApplicationReferenceNumber);
+        }
+    }
+
+    [TestMethod]
+    public async Task GetAccreditation_FileUploadById_ShouldThrow_WhenNotFound()
+    {
+        await Assert.ThrowsExceptionAsync<KeyNotFoundException>(() => _repository.GetAccreditation_FileUploadById(Guid.Parse("cd9dcc80-fcf5-4f46-addd-b8a256f735a3")));
+    }
+   
     [TestMethod]
     public async Task RegistrationMaterialsMarkAsDulyMade_ShouldSetDulyMadeCorrectly()
     {
@@ -450,6 +469,8 @@ public class RegistrationMaterialRepositoryTests
         // Assert
         var dulyMadeEntry = await _context.DulyMade
             .FirstOrDefaultAsync(x => x.RegistrationMaterial.ExternalId == registrationMaterialId);
+        var savedDeterminationDate = await _context.DeterminationDate
+            .FirstOrDefaultAsync(x => x.RegistrationMaterialId == 1);
         var taskStatusEntry = await _context.RegulatorApplicationTaskStatus
             .FirstOrDefaultAsync(x => x.RegistrationMaterial.ExternalId == registrationMaterialId && x.TaskStatusId == statusId);
 
@@ -457,13 +478,13 @@ public class RegistrationMaterialRepositoryTests
         {
             dulyMadeEntry.Should().NotBeNull();
             dulyMadeEntry!.DulyMadeBy.Should().Be(userId);
-            dulyMadeEntry.DulyMadeDate.Should().Be(dulyMadeDate);
-            dulyMadeEntry.DeterminationDate.Should().Be(determinationDate);
+            dulyMadeEntry!.DulyMadeDate.Should().Be(dulyMadeDate);
+            savedDeterminationDate.DeterminateDate.Should().Be(determinationDate);
             dulyMadeEntry.TaskStatusId.Should().Be(statusId);
 
             taskStatusEntry.Should().NotBeNull();
             taskStatusEntry!.TaskStatusId.Should().Be(statusId);
-            taskStatusEntry.TaskId.Should().Be(2);
+            taskStatusEntry.RegulatorTaskId.Should().Be(2);
             taskStatusEntry.StatusUpdatedBy.Should().Be(userId);
             taskStatusEntry.StatusCreatedDate.Date.Should().Be(DateTime.UtcNow.Date);
         }

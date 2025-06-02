@@ -1,4 +1,3 @@
-using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics.CodeAnalysis;
 
@@ -10,6 +9,4 @@ public class RegulatorAccreditationRegistrationTaskStatus : RegulatorTaskStatusB
 {
     public int RegistrationId { get; set; }
     public int AccreditationYear { get; set; }
-    [MaxLength(500)]
-    public string? Comments { get; set; }
 }

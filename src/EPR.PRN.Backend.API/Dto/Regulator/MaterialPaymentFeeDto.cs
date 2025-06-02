@@ -12,6 +12,8 @@ public class MaterialPaymentFeeDto:NoteBase
     public string MaterialName { get; set; }
     public string SiteAddress { get; set; } = string.Empty;
     public string ApplicationReferenceNumber { get; set; } = string.Empty;
+    public DateTime? DulyMadeDate { get; set; }
+    public DateTime? DeterminationDate { get; set; }
     public DateTime CreatedDate { get; set; }
     public Guid RegulatorApplicationTaskStatusId { get; set; }
 }
