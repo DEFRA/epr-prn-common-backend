@@ -2962,3 +2962,77 @@ GO
 COMMIT;
 GO
 
+BEGIN TRANSACTION;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250602090849_CheckRegistrationStatus'
+)
+BEGIN
+    DROP INDEX [IX_Public.DulyMade_RegistrationMaterialId] ON [Public.DulyMade];
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250602090849_CheckRegistrationStatus'
+)
+BEGIN
+    DECLARE @var18 sysname;
+    SELECT @var18 = [d].[name]
+    FROM [sys].[default_constraints] [d]
+    INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+    WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Public.DulyMade]') AND [c].[name] = N'DeterminationDate');
+    IF @var18 IS NOT NULL EXEC(N'ALTER TABLE [Public.DulyMade] DROP CONSTRAINT [' + @var18 + '];');
+    ALTER TABLE [Public.DulyMade] DROP COLUMN [DeterminationDate];
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250602090849_CheckRegistrationStatus'
+)
+BEGIN
+    CREATE TABLE [Public.DeterminationDate] (
+        [Id] int NOT NULL IDENTITY,
+        [ExternalId] uniqueidentifier NOT NULL,
+        [RegistrationMaterialId] int NOT NULL,
+        [DeterminateDate] datetime2 NULL,
+        CONSTRAINT [PK_Public.DeterminationDate] PRIMARY KEY ([Id]),
+        CONSTRAINT [FK_Public.DeterminationDate_Public.RegistrationMaterial_RegistrationMaterialId] FOREIGN KEY ([RegistrationMaterialId]) REFERENCES [Public.RegistrationMaterial] ([Id]) ON DELETE CASCADE
+    );
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250602090849_CheckRegistrationStatus'
+)
+BEGIN
+    CREATE UNIQUE INDEX [IX_Public.DulyMade_RegistrationMaterialId] ON [Public.DulyMade] ([RegistrationMaterialId]);
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250602090849_CheckRegistrationStatus'
+)
+BEGIN
+    CREATE UNIQUE INDEX [IX_Public.DeterminationDate_RegistrationMaterialId] ON [Public.DeterminationDate] ([RegistrationMaterialId]);
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250602090849_CheckRegistrationStatus'
+)
+BEGIN
+    INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+    VALUES (N'20250602090849_CheckRegistrationStatus', N'8.0.8');
+END;
+GO
+
+COMMIT;
+GO
+
