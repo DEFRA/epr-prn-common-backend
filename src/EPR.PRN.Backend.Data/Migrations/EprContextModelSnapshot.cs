@@ -2303,26 +2303,7 @@ namespace EPR.PRN.Backend.Data.Migrations
                     b.Navigation("Accreditation");
                 });
 
-            modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.AccreditationFileUpload", b =>
-                {
-                    b.HasOne("EPR.PRN.Backend.Data.DataModels.Registrations.Accreditation", "Accreditation")
-                        .WithMany("FileUploads")
-                        .HasForeignKey("AccreditationId");
 
-                    b.HasOne("EPR.PRN.Backend.Data.DataModels.Registrations.LookupFileUploadStatus", "FileUploadStatus")
-                        .WithMany()
-                        .HasForeignKey("FileUploadStatusId");
-
-                    b.HasOne("EPR.PRN.Backend.Data.DataModels.Registrations.LookupFileUploadType", "FileUploadType")
-                        .WithMany()
-                        .HasForeignKey("FileUploadTypeId");
-
-                    b.Navigation("Accreditation");
-
-                    b.Navigation("FileUploadStatus");
-
-                    b.Navigation("FileUploadType");
-                });
 
             modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.DulyMade", b =>
                 {
