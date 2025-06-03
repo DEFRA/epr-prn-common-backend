@@ -13,13 +13,13 @@ namespace EPR.PRN.Backend.Data.Migrations
                 name: "CreatedOn",
                 table: "Public.Accreditation",
                 type: "datetime2",
-                nullable: true);
+                nullable: false);
 
             migrationBuilder.AddColumn<int>(
                 name: "PRNTonnage",
                 table: "Public.Accreditation",
                 type: "int",
-                nullable: true);
+                nullable: false);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
