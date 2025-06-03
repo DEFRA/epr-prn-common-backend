@@ -97,6 +97,39 @@ namespace EPR.PRN.Backend.Data.UnitTests.Repositories.Regulator
         }
 
         [TestMethod]
+        public async Task UpdateStatusAsync_ShouldAddNewTaskStatus_WhenStatusQueried()
+        {
+            var taskName = "NewTask";
+            var registrationMaterialId = Guid.NewGuid();
+            var registrationId = Guid.NewGuid();
+            var status = RegulatorTaskStatus.Queried;
+            var comments = "Task started";
+            var user = Guid.NewGuid();
+
+            _context.LookupTaskStatuses.Add(new LookupTaskStatus { Id = 4, Name = "Queried" });
+            _context.LookupTasks.Add(new LookupRegulatorTask { Id = 1, Name = taskName, IsMaterialSpecific = true, ApplicationTypeId = 1 });
+            _context.RegistrationMaterials.Add(new RegistrationMaterial
+            {
+                ExternalId = registrationMaterialId,
+                Registration = new Registration { ExternalId = registrationId, ApplicationTypeId = 1 }
+            });
+
+            _context.SaveChanges();
+
+            await _repository.UpdateStatusAsync(taskName, registrationMaterialId, status, comments, user);
+
+            var taskStatus = _context.RegulatorApplicationTaskStatus.FirstOrDefault();
+
+            taskStatus.Should().NotBeNull();
+            taskStatus!.ExternalId.Should().NotBe(Guid.Empty);
+            taskStatus.Task.Name.Should().Be(taskName);
+            taskStatus.RegistrationMaterial.ExternalId.Should().Be(registrationMaterialId);
+            taskStatus.TaskStatus.Name.Should().Be(status.ToString());
+            taskStatus.StatusCreatedBy.Should().Be(user);
+            taskStatus.StatusUpdatedBy.Should().Be(user);
+        }
+
+        [TestMethod]
         public async Task UpdateStatusAsync_ShouldUpdateExistingTaskStatus_WhenTaskExists()
         {
             var taskName = "ExistingTask";

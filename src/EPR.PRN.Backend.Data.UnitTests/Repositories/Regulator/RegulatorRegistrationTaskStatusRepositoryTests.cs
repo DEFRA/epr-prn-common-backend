@@ -101,6 +101,38 @@ namespace EPR.PRN.Backend.Data.UnitTests.Repositories.Regulator
         }
 
         [TestMethod]
+        public async Task UpdateStatusAsync_ShouldAddNewTaskStatus_WhenStatusQueried()
+        {
+            // Arrange
+            var taskName = "NewTask";
+            var registrationId = Guid.Parse("4bac12f7-f7a9-4df4-b7b5-9c4221860c4d");
+            var status = RegulatorTaskStatus.Queried;
+            var comments = "Task Queried";
+            var user = Guid.NewGuid();
+
+            _context.LookupTaskStatuses.Add(new LookupTaskStatus { Id = 4, Name = "Queried" });
+
+            _context.LookupTasks.Add(new LookupRegulatorTask { Id = 1, Name = taskName, IsMaterialSpecific = false, ApplicationTypeId = 1 });
+
+            _context.Registrations.Add(new Registration { ExternalId = registrationId, ApplicationTypeId = 1 });
+
+            _context.SaveChanges();
+
+            // Act
+            await _repository.UpdateStatusAsync(taskName, registrationId, status, comments, user);
+
+            // Assert
+            var taskStatus = _context.RegulatorRegistrationTaskStatus.FirstOrDefault();
+
+            taskStatus.Should().NotBeNull();
+            taskStatus.Task.Name.Should().Be(taskName);
+            taskStatus.Registration.ExternalId.Should().Be(registrationId);
+            taskStatus.TaskStatus.Name.Should().Be(status.ToString());
+            taskStatus.StatusCreatedBy.Should().Be(user);
+            taskStatus.StatusUpdatedBy.Should().Be(user);
+        }
+
+        [TestMethod]
         public async Task UpdateStatusAsync_ShouldUpdateExistingTaskStatus_WhenTaskExists()
         {
             // Arrange
