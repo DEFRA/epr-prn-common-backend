@@ -66,7 +66,7 @@ public class GetMaterialSamplingPlanQueryHandlerTests
         };
 
         _rmRepositoryMock
-            .Setup(r => r.GetRegistrationMaterial_FileUploadById(materialId))
+            .Setup(r => r.GetRegistrationMaterialById(materialId))
             .ReturnsAsync(materialEntity);
 
         // Act

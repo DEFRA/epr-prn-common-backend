@@ -14,9 +14,8 @@ public class GetRegistrationSiteAddressByIdHandler(
     public async Task<RegistrationSiteAddressDto> Handle(GetRegistrationSiteAddressByIdQuery request, CancellationToken cancellationToken)
     {
         var registration = await rmRepository.GetRegistrationById(request.Id);
+        var siteAddressDto = registration.ReprocessingSiteAddress != null ? mapper.Map<RegistrationSiteAddressDto>(registration) : new RegistrationSiteAddressDto();
 
-
-        var siteAddressDto = registration.ReprocessingSiteAddressId != null ? mapper.Map<RegistrationSiteAddressDto>(registration) : new RegistrationSiteAddressDto();
         return siteAddressDto;
-    }
+    }    
 }

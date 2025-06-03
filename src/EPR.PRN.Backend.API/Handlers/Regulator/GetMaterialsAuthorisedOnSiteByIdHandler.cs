@@ -14,6 +14,7 @@ public class GetMaterialsAuthorisedOnSiteByIdHandler(
     {
         var registration = await rmRepository.GetRegistrationById(request.Id);
         var materialsAuthorisedDto = mapper.Map<MaterialsAuthorisedOnSiteDto>(registration);
+
         return materialsAuthorisedDto;
     }
 }

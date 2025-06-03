@@ -373,59 +373,6 @@ public class RegistrationMaterialRepositoryTests
     }
 
     [TestMethod]
-    public async Task GetRegistrationMaterial_WasteLicencesById_ShouldReturnMaterial_WhenExists()
-    {
-        var material = await _repository.GetRegistrationMaterial_WasteLicencesById(Guid.Parse("a9421fc1-a912-42ee-85a5-3e06408759a9"));
-        using (new AssertionScope())
-        {
-            Assert.IsNotNull(material);
-            Assert.AreEqual("REF12345", material.RegistrationReferenceNumber);
-            Assert.IsNotNull(material.Material);
-        }
-    }
-
-    [TestMethod]
-    public async Task GetRegistrationMaterial_WasteLicencesById_ShouldThrow_WhenNotFound()
-    {
-        await Assert.ThrowsExceptionAsync<KeyNotFoundException>(() => _repository.GetRegistrationMaterial_WasteLicencesById(Guid.Parse("cd9dcc80-fcf5-4f46-addd-b8a256f735a3")));
-    }
-
-    [TestMethod]
-    public async Task GetRegistrationMaterial_RegistrationReprocessingIOById_ShouldReturnMaterial_WhenExists()
-    {
-        var material = await _repository.GetRegistrationMaterial_RegistrationReprocessingIOById(Guid.Parse("a9421fc1-a912-42ee-85a5-3e06408759a9"));
-        using (new AssertionScope())
-        {
-            Assert.IsNotNull(material);
-            Assert.AreEqual("REF12345", material.RegistrationReferenceNumber);
-            Assert.IsNotNull(material.Material);
-        }
-    }
-
-    [TestMethod]
-    public async Task GetRegistrationMaterial_RegistrationReprocessingIOById_ShouldThrow_WhenNotFound()
-    {
-        await Assert.ThrowsExceptionAsync<KeyNotFoundException>(() => _repository.GetRegistrationMaterial_RegistrationReprocessingIOById(Guid.Parse("cd9dcc80-fcf5-4f46-addd-b8a256f735a3")));
-    }
-
-    [TestMethod]
-    public async Task GetRegistrationMaterial_FileUploadById_ShouldReturnMaterial_WhenExists()
-    {
-        var material = await _repository.GetRegistrationMaterial_FileUploadById(Guid.Parse("a9421fc1-a912-42ee-85a5-3e06408759a9"));
-        using (new AssertionScope())
-        {
-            Assert.IsNotNull(material);
-            Assert.AreEqual("REF12345", material.RegistrationReferenceNumber);
-        }
-    }
-
-    [TestMethod]
-    public async Task GetRegistrationMaterial_FileUploadById_ShouldThrow_WhenNotFound()
-    {
-        await Assert.ThrowsExceptionAsync<KeyNotFoundException>(() => _repository.GetRegistrationMaterial_FileUploadById(Guid.Parse("cd9dcc80-fcf5-4f46-addd-b8a256f735a3")));
-    }
-
-    [TestMethod]
     public async Task GetAccreditation_FileUploadById_ShouldReturnMaterial_WhenExists()
     {
         var accreditation = await _repository.GetAccreditation_FileUploadById(Guid.Parse("4c632765-7652-42ae-8527-23f10a971c28"));
@@ -489,7 +436,41 @@ public class RegistrationMaterialRepositoryTests
             taskStatusEntry.StatusCreatedDate.Date.Should().Be(DateTime.UtcNow.Date);
         }
     }
+    [TestMethod]
+    public async Task RegistrationMaterialsMarkAsDulyMade_ShouldThrow_WhenMaterialNotFound()
+    {
+        // Arrange
+        var nonExistentId = Guid.NewGuid();
+        var statusId = 3;
+        var dulyMadeDate = DateTime.UtcNow.Date;
+        var determinationDate = dulyMadeDate.AddDays(84);
+        var userId = Guid.NewGuid();
 
+        // Act & Assert
+        await Assert.ThrowsExceptionAsync<KeyNotFoundException>(() =>
+            _repository.RegistrationMaterialsMarkAsDulyMade(nonExistentId, statusId, determinationDate, dulyMadeDate, userId));
+    }
+    [TestMethod]
+    public async Task UpdateRegistrationOutCome_ShouldHandleNullCommentAndReference()
+    {
+        // Arrange
+        var id = Guid.Parse("a9421fc1-a912-42ee-85a5-3e06408759a9");
+
+        // Act
+        await _repository.UpdateRegistrationOutCome(id, 2, null, null);
+        var updated = await _context.RegistrationMaterials.FindAsync(1);
+
+        // Assert
+        using (new AssertionScope())
+        {
+            updated.Should().NotBeNull();
+            updated!.StatusId.Should().Be(2);
+            updated.Comments.Should().BeNull();
+            updated.RegistrationReferenceNumber.Should().BeNull();
+        }
+    }
+   
+       
     [TestCleanup]
     public void Cleanup()
     {

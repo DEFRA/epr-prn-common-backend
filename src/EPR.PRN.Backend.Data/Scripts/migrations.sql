@@ -3132,3 +3132,133 @@ GO
 COMMIT;
 GO
 
+BEGIN TRANSACTION;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250603090928_AddNoteTable'
+)
+BEGIN
+    DECLARE @var21 sysname;
+    SELECT @var21 = [d].[name]
+    FROM [sys].[default_constraints] [d]
+    INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+    WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Public.RegulatorRegistrationTaskStatus]') AND [c].[name] = N'Comments');
+    IF @var21 IS NOT NULL EXEC(N'ALTER TABLE [Public.RegulatorRegistrationTaskStatus] DROP CONSTRAINT [' + @var21 + '];');
+    ALTER TABLE [Public.RegulatorRegistrationTaskStatus] DROP COLUMN [Comments];
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250603090928_AddNoteTable'
+)
+BEGIN
+    DECLARE @var22 sysname;
+    SELECT @var22 = [d].[name]
+    FROM [sys].[default_constraints] [d]
+    INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+    WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Public.RegulatorApplicationTaskStatus]') AND [c].[name] = N'Comments');
+    IF @var22 IS NOT NULL EXEC(N'ALTER TABLE [Public.RegulatorApplicationTaskStatus] DROP CONSTRAINT [' + @var22 + '];');
+    ALTER TABLE [Public.RegulatorApplicationTaskStatus] DROP COLUMN [Comments];
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250603090928_AddNoteTable'
+)
+BEGIN
+    CREATE TABLE [Public.Note] (
+        [Id] int NOT NULL IDENTITY,
+        [Notes] nvarchar(500) NOT NULL,
+        [CreatedBy] uniqueidentifier NOT NULL,
+        [CreatedDate] datetime2 NOT NULL,
+        CONSTRAINT [PK_Public.Note] PRIMARY KEY ([Id])
+    );
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250603090928_AddNoteTable'
+)
+BEGIN
+    CREATE TABLE [Public.ApplicationTaskStatusQueryNote] (
+        [Id] int NOT NULL IDENTITY,
+        [QueryNoteId] int NOT NULL,
+        [RegulatorApplicationTaskStatusId] int NOT NULL,
+        CONSTRAINT [PK_Public.ApplicationTaskStatusQueryNote] PRIMARY KEY ([Id]),
+        CONSTRAINT [FK_Public.ApplicationTaskStatusQueryNote_Public.Note_QueryNoteId] FOREIGN KEY ([QueryNoteId]) REFERENCES [Public.Note] ([Id]) ON DELETE CASCADE,
+        CONSTRAINT [FK_Public.ApplicationTaskStatusQueryNote_Public.RegulatorApplicationTaskStatus_RegulatorApplicationTaskStatusId] FOREIGN KEY ([RegulatorApplicationTaskStatusId]) REFERENCES [Public.RegulatorApplicationTaskStatus] ([Id]) ON DELETE CASCADE
+    );
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250603090928_AddNoteTable'
+)
+BEGIN
+    CREATE TABLE [Public.RegistrationTaskStatusQueryNote] (
+        [Id] int NOT NULL IDENTITY,
+        [QueryNoteId] int NOT NULL,
+        [RegulatorRegistrationTaskStatusId] int NOT NULL,
+        [RegistrationTaskStatusId] int NOT NULL,
+        CONSTRAINT [PK_Public.RegistrationTaskStatusQueryNote] PRIMARY KEY ([Id]),
+        CONSTRAINT [FK_Public.RegistrationTaskStatusQueryNote_Public.Note_QueryNoteId] FOREIGN KEY ([QueryNoteId]) REFERENCES [Public.Note] ([Id]) ON DELETE CASCADE,
+        CONSTRAINT [FK_Public.RegistrationTaskStatusQueryNote_Public.RegulatorRegistrationTaskStatus_RegulatorRegistrationTaskStatusId] FOREIGN KEY ([RegulatorRegistrationTaskStatusId]) REFERENCES [Public.RegulatorRegistrationTaskStatus] ([Id]) ON DELETE CASCADE
+    );
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250603090928_AddNoteTable'
+)
+BEGIN
+    CREATE INDEX [IX_Public.ApplicationTaskStatusQueryNote_QueryNoteId] ON [Public.ApplicationTaskStatusQueryNote] ([QueryNoteId]);
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250603090928_AddNoteTable'
+)
+BEGIN
+    CREATE INDEX [IX_Public.ApplicationTaskStatusQueryNote_RegulatorApplicationTaskStatusId] ON [Public.ApplicationTaskStatusQueryNote] ([RegulatorApplicationTaskStatusId]);
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250603090928_AddNoteTable'
+)
+BEGIN
+    CREATE INDEX [IX_Public.RegistrationTaskStatusQueryNote_QueryNoteId] ON [Public.RegistrationTaskStatusQueryNote] ([QueryNoteId]);
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250603090928_AddNoteTable'
+)
+BEGIN
+    CREATE INDEX [IX_Public.RegistrationTaskStatusQueryNote_RegulatorRegistrationTaskStatusId] ON [Public.RegistrationTaskStatusQueryNote] ([RegulatorRegistrationTaskStatusId]);
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250603090928_AddNoteTable'
+)
+BEGIN
+    INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+    VALUES (N'20250603090928_AddNoteTable', N'8.0.8');
+END;
+GO
+
+COMMIT;
+GO
+

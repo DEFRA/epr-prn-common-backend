@@ -301,6 +301,9 @@ namespace EPR.PRN.Backend.Data
         public virtual DbSet<Address> LookupAddresses { get; set; }
         public virtual DbSet<LookupPeriod> LookupPeriod { get; set; }
         public virtual DbSet<LookupMaterialPermit> LookupMaterialPermit { get; set; }
+        public virtual DbSet<Note> QueryNote { get; set; }
+        public virtual DbSet<ApplicationTaskStatusQueryNote> ApplicationTaskStatusQueryNotes { get; set; }
+        public virtual DbSet<RegistrationTaskStatusQueryNote> RegistrationTaskStatusQueryNotes { get; set; }
         public virtual DbSet<Accreditation> Accreditations { get; set; }
     }
 }

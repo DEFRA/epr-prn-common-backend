@@ -144,18 +144,27 @@ public class RegistrationMaterialControllerTests
     [TestMethod]
     public async Task GetWasteLicences_ReturnsOk_WithExpectedResult()
     {
-        // Arrange
+        // Arrange  
         var materialId = Guid.Parse("a9421fc1-a912-42ee-85a5-3e06408759a9");
-        var expectedDto = new RegistrationMaterialWasteLicencesDto() { PermitType = "", LicenceNumbers = [], MaterialName = "", MaximumReprocessingCapacityTonne = 1,  MaximumReprocessingPeriod = "", RegistrationMaterialId = Guid.Parse("a9421fc1-a912-42ee-85a5-3e06408759a9") };
+        var expectedDto = new RegistrationMaterialWasteLicencesDto
+        {
+            PermitType = "",
+            LicenceNumbers = Array.Empty<string>(),
+            MaterialName = "",
+            MaximumReprocessingCapacityTonne = 1,
+            MaximumReprocessingPeriod = "",
+            RegistrationMaterialId = Guid.Parse("a9421fc1-a912-42ee-85a5-3e06408759a9"),
+            RegistrationId = Guid.NewGuid() // Fix: Set the required RegistrationId property  
+        };
 
         _mediatorMock
             .Setup(m => m.Send(It.IsAny<GetMaterialWasteLicencesQuery>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(expectedDto);
 
-        // Act
+        // Act  
         var result = await _controller.GetWasteLicences(materialId);
 
-        // Assert
+        // Assert  
         using (new AssertionScope())
         {
             var okResult = result as OkObjectResult;

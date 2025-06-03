@@ -65,7 +65,7 @@ public class GetMaterialWasteLicenceQueryHandlerTests
         };
 
         _rmRepositoryMock
-            .Setup(r => r.GetRegistrationMaterial_WasteLicencesById(materialId))
+            .Setup(r => r.GetRegistrationMaterialById(materialId))
             .ReturnsAsync(materialEntity);
 
         // Act
@@ -110,7 +110,7 @@ public class GetMaterialWasteLicenceQueryHandlerTests
         };
 
         _rmRepositoryMock
-            .Setup(r => r.GetRegistrationMaterial_WasteLicencesById(materialId))
+            .Setup(r => r.GetRegistrationMaterialById(materialId))
             .ReturnsAsync(materialEntity);
 
         // Act
@@ -156,7 +156,7 @@ public class GetMaterialWasteLicenceQueryHandlerTests
         };
 
         _rmRepositoryMock
-            .Setup(r => r.GetRegistrationMaterial_WasteLicencesById(materialId))
+            .Setup(r => r.GetRegistrationMaterialById(materialId))
             .ReturnsAsync(materialEntity);
 
         // Act
@@ -201,7 +201,7 @@ public class GetMaterialWasteLicenceQueryHandlerTests
         };
 
         _rmRepositoryMock
-            .Setup(r => r.GetRegistrationMaterial_WasteLicencesById(materialId))
+            .Setup(r => r.GetRegistrationMaterialById(materialId))
             .ReturnsAsync(materialEntity);
 
         // Act
@@ -246,7 +246,7 @@ public class GetMaterialWasteLicenceQueryHandlerTests
         };
 
         _rmRepositoryMock
-            .Setup(r => r.GetRegistrationMaterial_WasteLicencesById(materialId))
+            .Setup(r => r.GetRegistrationMaterialById(materialId))
             .ReturnsAsync(materialEntity);
 
         // Act
@@ -292,7 +292,7 @@ public class GetMaterialWasteLicenceQueryHandlerTests
         };
 
         _rmRepositoryMock
-            .Setup(r => r.GetRegistrationMaterial_WasteLicencesById(materialId))
+            .Setup(r => r.GetRegistrationMaterialById(materialId))
             .ReturnsAsync(materialEntity);
 
         // Act
@@ -336,7 +336,7 @@ public class GetMaterialWasteLicenceQueryHandlerTests
         };
 
         _rmRepositoryMock
-            .Setup(r => r.GetRegistrationMaterial_WasteLicencesById(materialId))
+            .Setup(r => r.GetRegistrationMaterialById(materialId))
             .ReturnsAsync(materialEntity);
 
         // Act
@@ -381,7 +381,7 @@ public class GetMaterialWasteLicenceQueryHandlerTests
         };
 
         _rmRepositoryMock
-            .Setup(r => r.GetRegistrationMaterial_WasteLicencesById(materialId))
+            .Setup(r => r.GetRegistrationMaterialById(materialId))
             .ReturnsAsync(materialEntity);
 
         // Act
@@ -425,7 +425,7 @@ public class GetMaterialWasteLicenceQueryHandlerTests
         };
 
         _rmRepositoryMock
-            .Setup(r => r.GetRegistrationMaterial_WasteLicencesById(materialId))
+            .Setup(r => r.GetRegistrationMaterialById(materialId))
             .ReturnsAsync(materialEntity);
 
         // Act
@@ -470,7 +470,7 @@ public class GetMaterialWasteLicenceQueryHandlerTests
         };
 
         _rmRepositoryMock
-            .Setup(r => r.GetRegistrationMaterial_WasteLicencesById(materialId))
+            .Setup(r => r.GetRegistrationMaterialById(materialId))
             .ReturnsAsync(materialEntity);
 
         // Act
@@ -522,7 +522,7 @@ public class GetMaterialWasteLicenceQueryHandlerTests
         };
 
         _rmRepositoryMock
-            .Setup(r => r.GetRegistrationMaterial_WasteLicencesById(materialId))
+            .Setup(r => r.GetRegistrationMaterialById(materialId))
             .ReturnsAsync(materialEntity);
 
         // Act

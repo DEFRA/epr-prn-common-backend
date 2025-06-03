@@ -159,8 +159,6 @@ public class RegistrationMaterialController(IMediator mediator
         var result = await mediator.Send(new GetRegistrationAccreditationReferenceByIdQuery() { Id = Id });
         return Ok(result);
     }
-
-
     #endregion Get Methods
 
     #region Post Methods

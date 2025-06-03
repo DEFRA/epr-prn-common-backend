@@ -3,15 +3,16 @@ BEGIN TRY
 
     BEGIN TRANSACTION;
  
-	DELETE FROM dbo.[Public.RegulatorApplicationTaskStatus]
-	DELETE FROM dbo.[Public.RegulatorRegistrationTaskStatus]
+    DELETE FROM [dbo].[Public.ApplicationTaskStatusQueryNote]
+    DELETE FROM [dbo].[Public.RegistrationTaskStatusQueryNote]
+	DELETE FROM [dbo].[Public.RegulatorApplicationTaskStatus]
+	DELETE FROM [dbo].[Public.RegulatorRegistrationTaskStatus]
     DELETE FROM [dbo].[Public.FileUpload]
     DELETE FROM [dbo].[Public.RegistrationReprocessingIO]
     DELETE FROM [dbo].[Public.RegistrationMaterial]
     DELETE FROM [dbo].[Public.Registration]
     DELETE FROM [dbo].[Public.MaterialExemptionReference]
     DELETE FROM [dbo].[Public.Address]
-    DELETE FROM [dbo].[public.AccreditationFileUpload]
     DELETE FROM [dbo].[Public.Accreditation]
     DELETE FROM [dbo].[Public.AccreditationDeterminationDate]
      
@@ -19,6 +20,7 @@ BEGIN TRY
     DELETE FROM [dbo].[Public.RegulatorAccreditationTaskStatus]
     DELETE FROM [dbo].[Public.RegulatorApplicationTaskStatus]
     DELETE FROM [dbo].[Public.RegulatorRegistrationTaskStatus]
+    DELETE FROM [dbo].[Public.Note]
 
 	
     COMMIT TRANSACTION;
@@ -3450,32 +3452,25 @@ INSERT [dbo].[Public.Accreditation] ([Id], [ExternalId], [RegistrationMaterialId
 GO
 INSERT [dbo].[Public.Accreditation] ([Id], [ExternalId], [RegistrationMaterialId], [AccreditationYear], [AccreditationStatusId], [ApplicationReferenceNumber]) VALUES (11, N'37f8e9e5-5d5e-4576-a6f9-5461ddf2e0bd', 331, 2025, 1, N'Ref11')
 GO
-INSERT [dbo].[Public.Accreditation] ([Id], [ExternalId], [RegistrationMaterialId], [AccreditationYear], [AccreditationStatusId], [ApplicationReferenceNumber]) VALUES (12, N'0a544e63-4902-4cec-aa62-252f85c334e6', 334, 2025, 2, N'Ref12')
+INSERT [dbo].[Public.Accreditation] ([Id], [ExternalId], [RegistrationMaterialId], [AccreditationYear], [AccreditationStatusId], [ApplicationReferenceNumber]) VALUES (12, N'0a544e63-4902-4cec-aa62-252f85c334e6', 304, 2025, 2, N'Ref12')
 GO
-INSERT [dbo].[Public.Accreditation] ([Id], [ExternalId], [RegistrationMaterialId], [AccreditationYear], [AccreditationStatusId], [ApplicationReferenceNumber]) VALUES (13, N'3689480c-9d41-489d-bedf-4536f01db3d6', 337, 2025, 3, N'Ref13')
+INSERT [dbo].[Public.Accreditation] ([Id], [ExternalId], [RegistrationMaterialId], [AccreditationYear], [AccreditationStatusId], [ApplicationReferenceNumber]) VALUES (13, N'3689480c-9d41-489d-bedf-4536f01db3d6', 307, 2025, 3, N'Ref13')
 GO
-INSERT [dbo].[Public.Accreditation] ([Id], [ExternalId], [RegistrationMaterialId], [AccreditationYear], [AccreditationStatusId], [ApplicationReferenceNumber]) VALUES (14, N'ad3e39d1-56f4-4631-a01a-a907e4418149', 340, 2025, 4, N'Ref14')
+INSERT [dbo].[Public.Accreditation] ([Id], [ExternalId], [RegistrationMaterialId], [AccreditationYear], [AccreditationStatusId], [ApplicationReferenceNumber]) VALUES (14, N'ad3e39d1-56f4-4631-a01a-a907e4418149', 310, 2025, 4, N'Ref14')
 GO
-INSERT [dbo].[Public.Accreditation] ([Id], [ExternalId], [RegistrationMaterialId], [AccreditationYear], [AccreditationStatusId], [ApplicationReferenceNumber]) VALUES (15, N'db06d239-c418-4811-a5ec-8dbeb6e18a21', 343, 2025, 5, N'Ref15')
+INSERT [dbo].[Public.Accreditation] ([Id], [ExternalId], [RegistrationMaterialId], [AccreditationYear], [AccreditationStatusId], [ApplicationReferenceNumber]) VALUES (15, N'db06d239-c418-4811-a5ec-8dbeb6e18a21', 313, 2025, 5, N'Ref15')
 GO
-INSERT [dbo].[Public.Accreditation] ([Id], [ExternalId], [RegistrationMaterialId], [AccreditationYear], [AccreditationStatusId], [ApplicationReferenceNumber]) VALUES (16, N'eecebe9b-9eec-4394-94e4-428411755679', 346, 2025, 6, N'Ref16')
+INSERT [dbo].[Public.Accreditation] ([Id], [ExternalId], [RegistrationMaterialId], [AccreditationYear], [AccreditationStatusId], [ApplicationReferenceNumber]) VALUES (16, N'eecebe9b-9eec-4394-94e4-428411755679', 316, 2025, 6, N'Ref16')
 GO
-INSERT [dbo].[Public.Accreditation] ([Id], [ExternalId], [RegistrationMaterialId], [AccreditationYear], [AccreditationStatusId], [ApplicationReferenceNumber]) VALUES (17, N'9fb367aa-6934-4707-89cb-62a7744a6cba', 349, 2025, 7, N'Ref17')
+INSERT [dbo].[Public.Accreditation] ([Id], [ExternalId], [RegistrationMaterialId], [AccreditationYear], [AccreditationStatusId], [ApplicationReferenceNumber]) VALUES (17, N'9fb367aa-6934-4707-89cb-62a7744a6cba', 319, 2025, 7, N'Ref17')
 GO
-INSERT [dbo].[Public.Accreditation] ([Id], [ExternalId], [RegistrationMaterialId], [AccreditationYear], [AccreditationStatusId], [ApplicationReferenceNumber]) VALUES (18, N'e9746f1b-f08f-41ab-b249-a19c3dfea25a', 352, 2025, 8, N'Ref18')
+INSERT [dbo].[Public.Accreditation] ([Id], [ExternalId], [RegistrationMaterialId], [AccreditationYear], [AccreditationStatusId], [ApplicationReferenceNumber]) VALUES (18, N'e9746f1b-f08f-41ab-b249-a19c3dfea25a', 322, 2025, 8, N'Ref18')
 GO
-INSERT [dbo].[Public.Accreditation] ([Id], [ExternalId], [RegistrationMaterialId], [AccreditationYear], [AccreditationStatusId], [ApplicationReferenceNumber]) VALUES (19, N'79c21126-7b02-442d-93a9-8a784627992e', 355, 2025, 9, N'Ref19')
+INSERT [dbo].[Public.Accreditation] ([Id], [ExternalId], [RegistrationMaterialId], [AccreditationYear], [AccreditationStatusId], [ApplicationReferenceNumber]) VALUES (19, N'79c21126-7b02-442d-93a9-8a784627992e', 325, 2025, 9, N'Ref19')
 GO
-INSERT [dbo].[Public.Accreditation] ([Id], [ExternalId], [RegistrationMaterialId], [AccreditationYear], [AccreditationStatusId], [ApplicationReferenceNumber]) VALUES (20, N'cf1ecbcb-6476-4f12-91be-cdddbd1322c5', 358, 2025, 10, N'Ref20')
+INSERT [dbo].[Public.Accreditation] ([Id], [ExternalId], [RegistrationMaterialId], [AccreditationYear], [AccreditationStatusId], [ApplicationReferenceNumber]) VALUES (20, N'cf1ecbcb-6476-4f12-91be-cdddbd1322c5', 328, 2025, 10, N'Ref20')
 GO
-INSERT [dbo].[Public.Accreditation] ([Id], [ExternalId], [RegistrationMaterialId], [AccreditationYear], [AccreditationStatusId], [ApplicationReferenceNumber]) VALUES (21, N'a7c10f98-c940-48e2-8a29-2786c7cc5bef', 328, 2026, 2, N'Ref21')
-GO
-INSERT [dbo].[Public.Accreditation] ([Id], [ExternalId], [RegistrationMaterialId], [AccreditationYear], [AccreditationStatusId], [ApplicationReferenceNumber]) VALUES (22, N'fa75afba-c754-4f0f-be31-21b274a27c76', 329, 2025, 3, N'Ref22')
-GO
-INSERT [dbo].[Public.Accreditation] ([Id], [ExternalId], [RegistrationMaterialId], [AccreditationYear], [AccreditationStatusId], [ApplicationReferenceNumber]) VALUES (23, N'ee79073f-206b-4155-9494-6c21fb4ee0fc', 330, 2026, 3, N'Ref23')
-
-
-
+INSERT [dbo].[Public.Accreditation] ([Id], [ExternalId], [RegistrationMaterialId], [AccreditationYear], [AccreditationStatusId], [ApplicationReferenceNumber]) VALUES (21, N'a7c10f98-c940-48e2-8a29-2786c7cc5bef', 328, 2026, 2, N'Ref10')
 
 SET IDENTITY_INSERT [dbo].[Public.Accreditation] OFF
 GO
@@ -3531,49 +3526,10 @@ INSERT [dbo].[Public.AccreditationDeterminationDate] ([Id], [ExternalId], [Accre
 GO
 SET IDENTITY_INSERT [dbo].[Public.AccreditationDeterminationDate] OFF
 GO
-SET IDENTITY_INSERT [dbo].[public.AccreditationFileUpload] ON 
-GO
-INSERT [dbo].[public.AccreditationFileUpload] ([Id], [ExternalId], [AccreditationId], [Filename], [FileId], [DateUploaded], [UpdatedBy], [FileUploadTypeId], [FileUploadStatusId]) VALUES (451, N'4ba341f0-774f-4ebf-ba99-908421269976', 1, N'testFile1.pdf', N'23268ae6-17ac-4eee-bdc4-032eaa45dbf6', CAST(N'2025-05-09T20:48:45.4110986' AS DateTime2), N'764eb1bf-e862-4315-bb2e-7b9e834ff37c', 1, 1)
-GO
-INSERT [dbo].[public.AccreditationFileUpload] ([Id], [ExternalId], [AccreditationId], [Filename], [FileId], [DateUploaded], [UpdatedBy], [FileUploadTypeId], [FileUploadStatusId]) VALUES (452, N'86125b6a-6d90-4606-b5e3-61d3378a965e', 2, N'testFile2.pdf', N'89326f27-cd87-45f7-bad6-0b31bdaf9071', CAST(N'2025-05-09T20:48:45.4111030' AS DateTime2), N'fc2b602e-dcda-440a-85a2-1c4778e1ce44', 1, 1)
-GO
-INSERT [dbo].[public.AccreditationFileUpload] ([Id], [ExternalId], [AccreditationId], [Filename], [FileId], [DateUploaded], [UpdatedBy], [FileUploadTypeId], [FileUploadStatusId]) VALUES (453, N'f7473bab-4cdf-4725-87ed-49a41780d6b0', 3, N'testFile1.pdf', N'23268ae6-17ac-4eee-bdc4-032eaa45dbf6', CAST(N'2025-05-09T20:48:45.4111134' AS DateTime2), N'c417f213-9c19-4ce8-9703-3d65c84340b0', 1, 1)
-GO
-INSERT [dbo].[public.AccreditationFileUpload] ([Id], [ExternalId], [AccreditationId], [Filename], [FileId], [DateUploaded], [UpdatedBy], [FileUploadTypeId], [FileUploadStatusId]) VALUES (454, N'16a76422-2807-4b2a-bfd2-8b141c829123', 4, N'testFile2.pdf', N'89326f27-cd87-45f7-bad6-0b31bdaf9071', CAST(N'2025-05-09T20:48:45.4111167' AS DateTime2), N'5d780e2d-5b43-4a45-92ac-7e2889582083', 1, 1)
-GO
-INSERT [dbo].[public.AccreditationFileUpload] ([Id], [ExternalId], [AccreditationId], [Filename], [FileId], [DateUploaded], [UpdatedBy], [FileUploadTypeId], [FileUploadStatusId]) VALUES (455, N'7616528f-7c05-4211-a087-5236cdcc7d2a', 5, N'testFile1.pdf', N'23268ae6-17ac-4eee-bdc4-032eaa45dbf6', CAST(N'2025-05-09T20:48:45.4111207' AS DateTime2), N'9670349c-aada-4ff3-910a-12a3b2412ee9', 1, 1)
-GO
-INSERT [dbo].[public.AccreditationFileUpload] ([Id], [ExternalId], [AccreditationId], [Filename], [FileId], [DateUploaded], [UpdatedBy], [FileUploadTypeId], [FileUploadStatusId]) VALUES (456, N'e4b09955-bbdc-4674-8b8d-3ea05e442083', 6, N'testFile2.pdf', N'89326f27-cd87-45f7-bad6-0b31bdaf9071', CAST(N'2025-05-09T20:48:45.4111232' AS DateTime2), N'cfe927d0-4e51-4aa7-afd2-6ba639cd6519', 1, 1)
-GO
-INSERT [dbo].[public.AccreditationFileUpload] ([Id], [ExternalId], [AccreditationId], [Filename], [FileId], [DateUploaded], [UpdatedBy], [FileUploadTypeId], [FileUploadStatusId]) VALUES (457, N'1bde3a69-5938-4f69-bcca-c0b537e60e9c', 7, N'testFile1.pdf', N'23268ae6-17ac-4eee-bdc4-032eaa45dbf6', CAST(N'2025-05-09T20:48:45.4111260' AS DateTime2), N'420c3315-4f41-43bd-8f4d-c2d3be20de09', 1, 1)
-GO
-INSERT [dbo].[public.AccreditationFileUpload] ([Id], [ExternalId], [AccreditationId], [Filename], [FileId], [DateUploaded], [UpdatedBy], [FileUploadTypeId], [FileUploadStatusId]) VALUES (458, N'd5dc28c1-4e05-40d7-8a54-739a6f786d26', 8, N'testFile2.pdf', N'89326f27-cd87-45f7-bad6-0b31bdaf9071', CAST(N'2025-05-09T20:48:45.4111324' AS DateTime2), N'997042b2-0e77-419e-ae94-87d8046d4a28', 1, 1)
-GO
-INSERT [dbo].[public.AccreditationFileUpload] ([Id], [ExternalId], [AccreditationId], [Filename], [FileId], [DateUploaded], [UpdatedBy], [FileUploadTypeId], [FileUploadStatusId]) VALUES (459, N'9204de81-e420-4d4a-9a0c-8bc821ee8c95', 9, N'testFile1.pdf', N'23268ae6-17ac-4eee-bdc4-032eaa45dbf6', CAST(N'2025-05-09T20:48:45.4111350' AS DateTime2), N'ad3b2b00-8054-4bf8-974d-b7d0067e3d1f', 1, 1)
-GO
-INSERT [dbo].[public.AccreditationFileUpload] ([Id], [ExternalId], [AccreditationId], [Filename], [FileId], [DateUploaded], [UpdatedBy], [FileUploadTypeId], [FileUploadStatusId]) VALUES (460, N'f753960d-9a86-49bc-9fa7-ec5cf1655c29', 10, N'testFile2.pdf', N'89326f27-cd87-45f7-bad6-0b31bdaf9071', CAST(N'2025-05-09T20:48:45.4111382' AS DateTime2), N'7b9ce271-766c-4ed5-b0d0-a58baf2271a3', 1, 1)
-GO
-INSERT [dbo].[public.AccreditationFileUpload] ([Id], [ExternalId], [AccreditationId], [Filename], [FileId], [DateUploaded], [UpdatedBy], [FileUploadTypeId], [FileUploadStatusId]) VALUES (461, N'0e0daf57-4f8e-49e5-9cc7-2c8cccad403d', 11, N'testFile1.pdf', N'23268ae6-17ac-4eee-bdc4-032eaa45dbf6', CAST(N'2025-05-09T20:48:45.4111410' AS DateTime2), N'dcce88d6-7fab-4ab6-adb6-67392b360040', 1, 1)
-GO
-INSERT [dbo].[public.AccreditationFileUpload] ([Id], [ExternalId], [AccreditationId], [Filename], [FileId], [DateUploaded], [UpdatedBy], [FileUploadTypeId], [FileUploadStatusId]) VALUES (462, N'976fc34a-b008-42d7-a7ee-3a6c7058364f', 12, N'testFile2.pdf', N'89326f27-cd87-45f7-bad6-0b31bdaf9071', CAST(N'2025-05-09T20:48:45.4111431' AS DateTime2), N'82c8bdd3-b1c4-4d99-b5e9-224347f45186', 1, 1)
-GO
-INSERT [dbo].[public.AccreditationFileUpload] ([Id], [ExternalId], [AccreditationId], [Filename], [FileId], [DateUploaded], [UpdatedBy], [FileUploadTypeId], [FileUploadStatusId]) VALUES (463, N'a8f7ac95-9e47-46c3-b676-0b4ece11710e', 13, N'testFile1.pdf', N'23268ae6-17ac-4eee-bdc4-032eaa45dbf6', CAST(N'2025-05-09T20:48:45.4111504' AS DateTime2), N'43a88c1d-8249-4167-acb1-ed5f5da90aaa', 1, 1)
-GO
-INSERT [dbo].[public.AccreditationFileUpload] ([Id], [ExternalId], [AccreditationId], [Filename], [FileId], [DateUploaded], [UpdatedBy], [FileUploadTypeId], [FileUploadStatusId]) VALUES (464, N'237664ab-d592-4de6-95e9-d7debf58dca7', 14, N'testFile2.pdf', N'89326f27-cd87-45f7-bad6-0b31bdaf9071', CAST(N'2025-05-09T20:48:45.4111529' AS DateTime2), N'2008e12b-a7cb-415a-93ec-b0ab6cdf48f9', 1, 1)
-GO
-INSERT [dbo].[public.AccreditationFileUpload] ([Id], [ExternalId], [AccreditationId], [Filename], [FileId], [DateUploaded], [UpdatedBy], [FileUploadTypeId], [FileUploadStatusId]) VALUES (465, N'c1459fd2-315c-4a4e-945e-788db5c30c65', 15, N'testFile1.pdf', N'23268ae6-17ac-4eee-bdc4-032eaa45dbf6', CAST(N'2025-05-09T20:48:45.4111553' AS DateTime2), N'8a184bfa-29d7-4db7-b1e2-4f6d083c0a22', 1, 1)
-GO
-INSERT [dbo].[public.AccreditationFileUpload] ([Id], [ExternalId], [AccreditationId], [Filename], [FileId], [DateUploaded], [UpdatedBy], [FileUploadTypeId], [FileUploadStatusId]) VALUES (466, N'168588f3-f781-4971-9e7a-79128646ee2d', 16, N'testFile2.pdf', N'89326f27-cd87-45f7-bad6-0b31bdaf9071', CAST(N'2025-05-09T20:48:45.4111584' AS DateTime2), N'58a5a425-eb91-4a81-a4a2-5652198ca3bd', 1, 1)
-GO
-INSERT [dbo].[public.AccreditationFileUpload] ([Id], [ExternalId], [AccreditationId], [Filename], [FileId], [DateUploaded], [UpdatedBy], [FileUploadTypeId], [FileUploadStatusId]) VALUES (467, N'7519ae39-6497-4940-9653-fb7023ad56b5', 17, N'testFile1.pdf', N'23268ae6-17ac-4eee-bdc4-032eaa45dbf6', CAST(N'2025-05-09T20:48:45.4111611' AS DateTime2), N'b0a240a2-9e40-4732-8d0c-d75aff168780', 1, 1)
-GO
-INSERT [dbo].[public.AccreditationFileUpload] ([Id], [ExternalId], [AccreditationId], [Filename], [FileId], [DateUploaded], [UpdatedBy], [FileUploadTypeId], [FileUploadStatusId]) VALUES (468, N'4e3dc664-54c4-4922-8ea4-4e4dd9e23944', 18, N'testFile2.pdf', N'89326f27-cd87-45f7-bad6-0b31bdaf9071', CAST(N'2025-05-09T20:48:45.4111665' AS DateTime2), N'2b4538ea-f166-41df-8dae-19291319c016', 1, 1)
-GO
-INSERT [dbo].[public.AccreditationFileUpload] ([Id], [ExternalId], [AccreditationId], [Filename], [FileId], [DateUploaded], [UpdatedBy], [FileUploadTypeId], [FileUploadStatusId]) VALUES (469, N'20069143-95c6-4868-9f66-5f4c8c45b1e8', 19, N'testFile1.pdf', N'23268ae6-17ac-4eee-bdc4-032eaa45dbf6', CAST(N'2025-05-09T20:48:45.4111693' AS DateTime2), N'3b512456-e037-4a17-a4eb-7f78537d204c', 1, 1)
-GO
-INSERT [dbo].[public.AccreditationFileUpload] ([Id], [ExternalId], [AccreditationId], [Filename], [FileId], [DateUploaded], [UpdatedBy], [FileUploadTypeId], [FileUploadStatusId]) VALUES (470, N'e0227c12-792d-4cdc-9873-d210468e4b70', 20, N'testFile2.pdf', N'89326f27-cd87-45f7-bad6-0b31bdaf9071', CAST(N'2025-05-09T20:48:45.4111716' AS DateTime2), N'5c17f495-e581-4c37-8651-b3109195d772', 1, 1)
-GO
-INSERT [dbo].[public.AccreditationFileUpload] ([Id], [ExternalId], [AccreditationId], [Filename], [FileId], [DateUploaded], [UpdatedBy], [FileUploadTypeId], [FileUploadStatusId]) VALUES (471, N'944ac31b-3155-4493-adff-26cdcd9f88c7', 21, N'testFile1.pdf', N'23268ae6-17ac-4eee-bdc4-032eaa45dbf6', CAST(N'2025-05-09T20:48:45.4111737' AS DateTime2), N'a59d4abf-3b69-4009-8cd5-f60623b7f1a5', 1, 1)
-GO
-SET IDENTITY_INSERT [dbo].[public.AccreditationFileUpload] OFF
-GO
+
+
+
+
+
+
+ 
