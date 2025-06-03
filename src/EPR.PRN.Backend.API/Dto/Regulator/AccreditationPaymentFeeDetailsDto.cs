@@ -15,6 +15,6 @@ public class AccreditationPaymentFeeDetailsDto
     public decimal FeeAmount { get; set; }
     public ApplicationOrganisationType ApplicationType { get; init; }
     public string Regulator { get; set; }
-    public int PRNTonnage { get; set; }
+    public PrnTonnageType PRNTonnage { get; set; }
 }
 
