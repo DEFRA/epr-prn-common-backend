@@ -48,6 +48,63 @@ public class RegistrationAccreditationRepositoryTests
         await Assert.ThrowsExceptionAsync<KeyNotFoundException>(() => _repository.GetAccreditationPaymentFeesById(Guid.Parse("cd9dcc80-fcf5-4f46-addd-b8a256f735a3")));
     }
 
+
+    [TestMethod]
+    public async Task AccreditationMarkAsDulyMade_Throws_WhenAccreditationNotFound()
+    {
+        // Act & Assert
+        await Assert.ThrowsExceptionAsync<KeyNotFoundException>(() =>
+            _repository.AccreditationMarkAsDulyMade(Guid.NewGuid(), 1, DateTime.UtcNow, DateTime.UtcNow, Guid.NewGuid()));
+    }
+
+    [TestMethod]
+    public async Task AccreditationMarkAsDulyMade_ShouldSetDulyMadeCorrectly()
+    {
+        // Arrange
+        var accreditationId = Guid.Parse("4bac12f7-f7a9-4df4-b7b5-9c4221860c4d");
+        var registrationMaterialId = Guid.Parse("a9421fc1-a912-42ee-85a5-3e06408759a9");
+        var statusId = 5;
+        var dulyMadeDate = DateTime.UtcNow.Date;
+        var determinationDate = dulyMadeDate.AddDays(84);
+        var userId = Guid.NewGuid();
+        // Seed required LookupTask for the CheckRegistrationStatus task
+        _context.LookupTasks.Add(new LookupRegulatorTask
+        {
+            Id = 27,
+            Name = "DulyMade",
+            ApplicationTypeId = 1,
+            JourneyTypeId = 1,
+            IsMaterialSpecific = true
+        });
+
+        await _context.SaveChangesAsync();
+
+        // Act
+        await _repository.AccreditationMarkAsDulyMade(accreditationId, statusId, determinationDate, dulyMadeDate, userId);
+
+        // Assert
+        var dulyMadeEntry = await _context.AccreditationDulyMade
+            .FirstOrDefaultAsync(x => x.ExternalId == registrationMaterialId);
+        var taskStatusEntry = await _context.RegulatorAccreditationTaskStatus
+            .FirstOrDefaultAsync(x => x.ExternalId == accreditationId && x.TaskStatusId == statusId);
+
+        using (new AssertionScope())
+        {
+            dulyMadeEntry.Should().NotBeNull();
+            dulyMadeEntry!.DulyMadeBy.Should().Be(userId);
+            dulyMadeEntry.DulyMadeDate.Should().Be(dulyMadeDate);
+            dulyMadeEntry.DeterminationDate.Should().Be(determinationDate);
+            dulyMadeEntry.TaskStatusId.Should().Be(statusId);
+
+            taskStatusEntry.Should().NotBeNull();
+            taskStatusEntry!.TaskStatusId.Should().Be(statusId);
+            taskStatusEntry.RegulatorTaskId.Should().Be(2);
+            taskStatusEntry.StatusUpdatedBy.Should().Be(userId);
+            taskStatusEntry.StatusCreatedDate.Date.Should().Be(DateTime.UtcNow.Date);
+        }
+    }
+
+
     private void SeedDatabase()
     {
         var address = new Address
