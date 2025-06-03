@@ -15,7 +15,7 @@ public class RegistrationTaskStatusQueryNote
     [ForeignKey("Note")]
     public int QueryNoteId { get; set; }
     public RegulatorRegistrationTaskStatus RegulatorRegistrationTaskStatus { get; set; }
-    [ForeignKey("RegistrationTaskStatus")]
-    public int RegistrationTaskStatusId { get; set; }
+    [ForeignKey("RegulatorRegistrationTaskStatus")]
+    public int RegulatorRegistrationTaskStatusId { get; set; }
 
 }
