@@ -165,7 +165,8 @@ public class AccreditationServiceTests
             OrganisationId = Guid.NewGuid(),
             RegistrationMaterialId = 1,
             ApplicationTypeId = 2,
-            AccreditationStatusId = 3
+            AccreditationStatusId = 3,
+            PrnTonnageAndAuthoritiesConfirmed = false
         };
         
         // Act

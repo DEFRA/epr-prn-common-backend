@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using EPR.PRN.Backend.Data.DataModels.Registrations;
+using Microsoft.Identity.Client;
 
 namespace EPR.PRN.Backend.Data.DataModels.Accreditations;
 
@@ -24,6 +25,7 @@ public class Accreditation
 
     public int? AccreditationYear { get; set; }
     public int? PrnTonnage { get; set; }
+    public bool PrnTonnageAndAuthoritiesConfirmed { get; set; }
 
     [Column(TypeName = "decimal(10,2)")]
     public decimal? InfrastructurePercentage { get; set; }

@@ -56,6 +56,7 @@ public class AccreditationRepository(EprAccreditationContext eprContext) : IAccr
         existingAccreditation.AccreferenceNumber = accreditation.AccreferenceNumber;
         existingAccreditation.AccreditationYear = accreditation.AccreditationYear;
         existingAccreditation.PrnTonnage = accreditation.PrnTonnage;
+        existingAccreditation.PrnTonnageAndAuthoritiesConfirmed = accreditation.PrnTonnageAndAuthoritiesConfirmed;
         existingAccreditation.InfrastructurePercentage = accreditation.InfrastructurePercentage;
         existingAccreditation.PackagingWastePercentage = accreditation.PackagingWastePercentage;
         existingAccreditation.BusinessCollectionsPercentage = accreditation.BusinessCollectionsPercentage;
