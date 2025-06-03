@@ -3,8 +3,10 @@ BEGIN TRY
 
     BEGIN TRANSACTION;
  
-	DELETE FROM dbo.[Public.RegulatorApplicationTaskStatus]
-	DELETE FROM dbo.[Public.RegulatorRegistrationTaskStatus]
+    DELETE FROM [dbo].[Public.ApplicationTaskStatusQueryNote]
+    DELETE FROM [dbo].[Public.RegistrationTaskStatusQueryNote]
+	DELETE FROM [dbo].[Public.RegulatorApplicationTaskStatus]
+	DELETE FROM [dbo].[Public.RegulatorRegistrationTaskStatus]
     DELETE FROM [dbo].[Public.FileUpload]
     DELETE FROM [dbo].[Public.RegistrationReprocessingIO]
     DELETE FROM [dbo].[Public.RegistrationMaterial]
@@ -18,6 +20,7 @@ BEGIN TRY
     DELETE FROM [dbo].[Public.RegulatorAccreditationTaskStatus]
     DELETE FROM [dbo].[Public.RegulatorApplicationTaskStatus]
     DELETE FROM [dbo].[Public.RegulatorRegistrationTaskStatus]
+    DELETE FROM [dbo].[Public.Note]
 
 	
     COMMIT TRANSACTION;
