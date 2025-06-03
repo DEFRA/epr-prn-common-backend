@@ -856,7 +856,7 @@ namespace EPR.PRN.Backend.Data.Migrations
                     b.Property<int>("AccreditationId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime?>("DeterminationDate")
+                    b.Property<DateTime>("DeterminationDate")
                         .HasColumnType("datetime2");
 
                     b.Property<Guid>("ExternalId")
@@ -867,6 +867,53 @@ namespace EPR.PRN.Backend.Data.Migrations
                     b.HasIndex("AccreditationId");
 
                     b.ToTable("Public.AccreditationDeterminationDate");
+                });
+
+            modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.AccreditationFileUpload", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("AccreditationId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("DateUploaded")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("ExternalId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("FileId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int?>("FileUploadStatusId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("FileUploadTypeId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Filename")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("UpdatedBy")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AccreditationId");
+
+                    b.HasIndex("FileUploadStatusId");
+
+                    b.HasIndex("FileUploadTypeId");
+
+                    b.ToTable("public.AccreditationFileUpload");
                 });
 
             modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.Address", b =>
@@ -937,7 +984,7 @@ namespace EPR.PRN.Backend.Data.Migrations
                     b.ToTable("Public.ApplicationTaskStatusQueryNote");
                 });
 
-            modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.DulyMade", b =>
+            modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.DeterminationDate", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -945,8 +992,30 @@ namespace EPR.PRN.Backend.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime?>("DeterminationDate")
+                    b.Property<DateTime?>("DeterminateDate")
                         .HasColumnType("datetime2");
+
+                    b.Property<Guid>("ExternalId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("RegistrationMaterialId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RegistrationMaterialId")
+                        .IsUnique();
+
+                    b.ToTable("Public.DeterminationDate");
+                });
+
+            modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.DulyMade", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("DeterminationNote")
                         .HasMaxLength(500)
@@ -980,60 +1049,12 @@ namespace EPR.PRN.Backend.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("RegistrationMaterialId");
+                    b.HasIndex("RegistrationMaterialId")
+                        .IsUnique();
 
                     b.HasIndex("TaskStatusId");
 
                     b.ToTable("Public.DulyMade");
-                });
-
-            modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.FileUpload", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Comments")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<DateTime?>("DateUploaded")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid>("ExternalId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("FileId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int?>("FileUploadStatusId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("FileUploadTypeId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Filename")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<int?>("RegistrationMaterialId")
-                        .HasColumnType("int");
-
-                    b.Property<Guid>("UpdatedBy")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("FileUploadStatusId");
-
-                    b.HasIndex("FileUploadTypeId");
-
-                    b.HasIndex("RegistrationMaterialId");
-
-                    b.ToTable("public.FileUpload");
                 });
 
             modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.LookupAccreditationStatus", b =>
@@ -1641,14 +1662,6 @@ namespace EPR.PRN.Backend.Data.Migrations
                         },
                         new
                         {
-                            Id = 21,
-                            ApplicationTypeId = 1,
-                            IsMaterialSpecific = true,
-                            JourneyTypeId = 2,
-                            Name = "Overseas reprocessing sites and broadly equivalent evidence"
-                        },
-                        new
-                        {
                             Id = 22,
                             ApplicationTypeId = 2,
                             IsMaterialSpecific = false,
@@ -1686,6 +1699,22 @@ namespace EPR.PRN.Backend.Data.Migrations
                             IsMaterialSpecific = true,
                             JourneyTypeId = 2,
                             Name = "Overseas reprocessing sites and broadly equivalent evidence"
+                        },
+                        new
+                        {
+                            Id = 27,
+                            ApplicationTypeId = 1,
+                            IsMaterialSpecific = true,
+                            JourneyTypeId = 2,
+                            Name = "DulyMade"
+                        },
+                        new
+                        {
+                            Id = 28,
+                            ApplicationTypeId = 2,
+                            IsMaterialSpecific = true,
+                            JourneyTypeId = 2,
+                            Name = "DulyMade"
                         });
                 });
 
@@ -1839,6 +1868,57 @@ namespace EPR.PRN.Backend.Data.Migrations
                     b.HasIndex("ReprocessingSiteAddressId");
 
                     b.ToTable("Public.Registration");
+                });
+
+            modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.RegistrationFileUpload", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Comments")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<DateTime?>("DateUploaded")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("ExternalId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("FileId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int?>("FileUploadStatusId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("FileUploadTypeId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Filename")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int?>("RegistrationMaterialId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UpdatedBy")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FileUploadStatusId");
+
+                    b.HasIndex("FileUploadTypeId");
+
+                    b.HasIndex("RegistrationMaterialId");
+
+                    b.ToTable("public.FileUpload");
                 });
 
             modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.RegistrationMaterial", b =>
@@ -2085,15 +2165,14 @@ namespace EPR.PRN.Backend.Data.Migrations
                     b.Property<int>("AccreditationYear")
                         .HasColumnType("int");
 
-                    b.Property<string>("Comments")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
                     b.Property<Guid>("ExternalId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("RegistrationId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RegulatorTaskId")
                         .HasColumnType("int");
 
                     b.Property<Guid>("StatusCreatedBy")
@@ -2108,17 +2187,14 @@ namespace EPR.PRN.Backend.Data.Migrations
                     b.Property<DateTime?>("StatusUpdatedDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("TaskId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("TaskStatusId")
+                    b.Property<int>("TaskStatusId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
                     b.HasIndex("RegistrationId");
 
-                    b.HasIndex("TaskId");
+                    b.HasIndex("RegulatorTaskId");
 
                     b.HasIndex("TaskStatusId");
 
@@ -2133,16 +2209,15 @@ namespace EPR.PRN.Backend.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("AccreditationId")
+                    b.Property<int>("AccreditationId")
                         .HasColumnType("int");
-
-                    b.Property<string>("Comments")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
 
                     b.Property<Guid>("ExternalId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("RegulatorTaskId")
+                        .HasColumnType("int");
 
                     b.Property<Guid>("StatusCreatedBy")
                         .HasColumnType("uniqueidentifier");
@@ -2156,17 +2231,14 @@ namespace EPR.PRN.Backend.Data.Migrations
                     b.Property<DateTime?>("StatusUpdatedDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("TaskId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("TaskStatusId")
+                    b.Property<int>("TaskStatusId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
                     b.HasIndex("AccreditationId");
 
-                    b.HasIndex("TaskId");
+                    b.HasIndex("RegulatorTaskId");
 
                     b.HasIndex("TaskStatusId");
 
@@ -2188,6 +2260,9 @@ namespace EPR.PRN.Backend.Data.Migrations
                     b.Property<int?>("RegistrationMaterialId")
                         .HasColumnType("int");
 
+                    b.Property<int>("RegulatorTaskId")
+                        .HasColumnType("int");
+
                     b.Property<Guid>("StatusCreatedBy")
                         .HasColumnType("uniqueidentifier");
 
@@ -2200,17 +2275,14 @@ namespace EPR.PRN.Backend.Data.Migrations
                     b.Property<DateTime?>("StatusUpdatedDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("TaskId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("TaskStatusId")
+                    b.Property<int>("TaskStatusId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
                     b.HasIndex("RegistrationMaterialId");
 
-                    b.HasIndex("TaskId");
+                    b.HasIndex("RegulatorTaskId");
 
                     b.HasIndex("TaskStatusId");
 
@@ -2232,6 +2304,9 @@ namespace EPR.PRN.Backend.Data.Migrations
                     b.Property<int?>("RegistrationId")
                         .HasColumnType("int");
 
+                    b.Property<int>("RegulatorTaskId")
+                        .HasColumnType("int");
+
                     b.Property<Guid>("StatusCreatedBy")
                         .HasColumnType("uniqueidentifier");
 
@@ -2244,17 +2319,14 @@ namespace EPR.PRN.Backend.Data.Migrations
                     b.Property<DateTime?>("StatusUpdatedDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("TaskId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("TaskStatusId")
+                    b.Property<int>("TaskStatusId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
                     b.HasIndex("RegistrationId");
 
-                    b.HasIndex("TaskId");
+                    b.HasIndex("RegulatorTaskId");
 
                     b.HasIndex("TaskStatusId");
 
@@ -2320,6 +2392,27 @@ namespace EPR.PRN.Backend.Data.Migrations
                     b.Navigation("Accreditation");
                 });
 
+            modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.AccreditationFileUpload", b =>
+                {
+                    b.HasOne("EPR.PRN.Backend.Data.DataModels.Registrations.Accreditation", "Accreditation")
+                        .WithMany("FileUploads")
+                        .HasForeignKey("AccreditationId");
+
+                    b.HasOne("EPR.PRN.Backend.Data.DataModels.Registrations.LookupFileUploadStatus", "FileUploadStatus")
+                        .WithMany()
+                        .HasForeignKey("FileUploadStatusId");
+
+                    b.HasOne("EPR.PRN.Backend.Data.DataModels.Registrations.LookupFileUploadType", "FileUploadType")
+                        .WithMany()
+                        .HasForeignKey("FileUploadTypeId");
+
+                    b.Navigation("Accreditation");
+
+                    b.Navigation("FileUploadStatus");
+
+                    b.Navigation("FileUploadType");
+                });
+
             modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.ApplicationTaskStatusQueryNote", b =>
                 {
                     b.HasOne("EPR.PRN.Backend.Data.DataModels.Registrations.Note", "Note")
@@ -2339,11 +2432,22 @@ namespace EPR.PRN.Backend.Data.Migrations
                     b.Navigation("RegulatorApplicationTaskStatus");
                 });
 
+            modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.DeterminationDate", b =>
+                {
+                    b.HasOne("EPR.PRN.Backend.Data.DataModels.Registrations.RegistrationMaterial", "RegistrationMaterial")
+                        .WithOne("DeterminationDate")
+                        .HasForeignKey("EPR.PRN.Backend.Data.DataModels.Registrations.DeterminationDate", "RegistrationMaterialId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("RegistrationMaterial");
+                });
+
             modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.DulyMade", b =>
                 {
                     b.HasOne("EPR.PRN.Backend.Data.DataModels.Registrations.RegistrationMaterial", "RegistrationMaterial")
-                        .WithMany()
-                        .HasForeignKey("RegistrationMaterialId")
+                        .WithOne("DulyMade")
+                        .HasForeignKey("EPR.PRN.Backend.Data.DataModels.Registrations.DulyMade", "RegistrationMaterialId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -2356,27 +2460,6 @@ namespace EPR.PRN.Backend.Data.Migrations
                     b.Navigation("RegistrationMaterial");
 
                     b.Navigation("TaskStatus");
-                });
-
-            modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.FileUpload", b =>
-                {
-                    b.HasOne("EPR.PRN.Backend.Data.DataModels.Registrations.LookupFileUploadStatus", "FileUploadStatus")
-                        .WithMany()
-                        .HasForeignKey("FileUploadStatusId");
-
-                    b.HasOne("EPR.PRN.Backend.Data.DataModels.Registrations.LookupFileUploadType", "FileUploadType")
-                        .WithMany()
-                        .HasForeignKey("FileUploadTypeId");
-
-                    b.HasOne("EPR.PRN.Backend.Data.DataModels.Registrations.RegistrationMaterial", "RegistrationMaterial")
-                        .WithMany("FileUploads")
-                        .HasForeignKey("RegistrationMaterialId");
-
-                    b.Navigation("FileUploadStatus");
-
-                    b.Navigation("FileUploadType");
-
-                    b.Navigation("RegistrationMaterial");
                 });
 
             modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.MaterialExemptionReference", b =>
@@ -2409,6 +2492,27 @@ namespace EPR.PRN.Backend.Data.Migrations
                     b.Navigation("LegalDocumentAddress");
 
                     b.Navigation("ReprocessingSiteAddress");
+                });
+
+            modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.RegistrationFileUpload", b =>
+                {
+                    b.HasOne("EPR.PRN.Backend.Data.DataModels.Registrations.LookupFileUploadStatus", "FileUploadStatus")
+                        .WithMany()
+                        .HasForeignKey("FileUploadStatusId");
+
+                    b.HasOne("EPR.PRN.Backend.Data.DataModels.Registrations.LookupFileUploadType", "FileUploadType")
+                        .WithMany()
+                        .HasForeignKey("FileUploadTypeId");
+
+                    b.HasOne("EPR.PRN.Backend.Data.DataModels.Registrations.RegistrationMaterial", "RegistrationMaterial")
+                        .WithMany("FileUploads")
+                        .HasForeignKey("RegistrationMaterialId");
+
+                    b.Navigation("FileUploadStatus");
+
+                    b.Navigation("FileUploadType");
+
+                    b.Navigation("RegistrationMaterial");
                 });
 
             modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.RegistrationMaterial", b =>
@@ -2535,11 +2639,15 @@ namespace EPR.PRN.Backend.Data.Migrations
 
                     b.HasOne("EPR.PRN.Backend.Data.DataModels.Registrations.LookupRegulatorTask", "Task")
                         .WithMany()
-                        .HasForeignKey("TaskId");
+                        .HasForeignKey("RegulatorTaskId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("EPR.PRN.Backend.Data.DataModels.Registrations.LookupTaskStatus", "TaskStatus")
                         .WithMany()
-                        .HasForeignKey("TaskStatusId");
+                        .HasForeignKey("TaskStatusId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Task");
 
@@ -2550,15 +2658,21 @@ namespace EPR.PRN.Backend.Data.Migrations
                 {
                     b.HasOne("EPR.PRN.Backend.Data.DataModels.Registrations.Accreditation", "Accreditation")
                         .WithMany("Tasks")
-                        .HasForeignKey("AccreditationId");
+                        .HasForeignKey("AccreditationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("EPR.PRN.Backend.Data.DataModels.Registrations.LookupRegulatorTask", "Task")
                         .WithMany()
-                        .HasForeignKey("TaskId");
+                        .HasForeignKey("RegulatorTaskId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("EPR.PRN.Backend.Data.DataModels.Registrations.LookupTaskStatus", "TaskStatus")
                         .WithMany()
-                        .HasForeignKey("TaskStatusId");
+                        .HasForeignKey("TaskStatusId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Accreditation");
 
@@ -2575,11 +2689,15 @@ namespace EPR.PRN.Backend.Data.Migrations
 
                     b.HasOne("EPR.PRN.Backend.Data.DataModels.Registrations.LookupRegulatorTask", "Task")
                         .WithMany()
-                        .HasForeignKey("TaskId");
+                        .HasForeignKey("RegulatorTaskId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("EPR.PRN.Backend.Data.DataModels.Registrations.LookupTaskStatus", "TaskStatus")
                         .WithMany()
-                        .HasForeignKey("TaskStatusId");
+                        .HasForeignKey("TaskStatusId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("RegistrationMaterial");
 
@@ -2596,11 +2714,15 @@ namespace EPR.PRN.Backend.Data.Migrations
 
                     b.HasOne("EPR.PRN.Backend.Data.DataModels.Registrations.LookupRegulatorTask", "Task")
                         .WithMany()
-                        .HasForeignKey("TaskId");
+                        .HasForeignKey("RegulatorTaskId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("EPR.PRN.Backend.Data.DataModels.Registrations.LookupTaskStatus", "TaskStatus")
                         .WithMany()
-                        .HasForeignKey("TaskStatusId");
+                        .HasForeignKey("TaskStatusId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Registration");
 
@@ -2623,6 +2745,8 @@ namespace EPR.PRN.Backend.Data.Migrations
                 {
                     b.Navigation("AccreditationDulyMade");
 
+                    b.Navigation("FileUploads");
+
                     b.Navigation("Tasks");
                 });
 
@@ -2638,6 +2762,10 @@ namespace EPR.PRN.Backend.Data.Migrations
             modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.RegistrationMaterial", b =>
                 {
                     b.Navigation("Accreditations");
+
+                    b.Navigation("DeterminationDate");
+
+                    b.Navigation("DulyMade");
 
                     b.Navigation("FileUploads");
 
