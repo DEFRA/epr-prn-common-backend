@@ -15,8 +15,8 @@ public class AddRegistrationTaskQueryNoteCommandValidator : AbstractValidator<Ad
             .NotEmpty().WithMessage("Note is required")
             .MaximumLength(500).WithMessage("Note must not exceed 500 characters");
 
-        RuleFor(x => x.QueryBy)
-            .NotEmpty().WithMessage("Query by is required ")
-            .NotEqual(Guid.Empty).WithMessage("Query by is invalid Id");
+        RuleFor(x => x.CreatedBy)
+            .NotEmpty().WithMessage("Created by is required ")
+            .NotEqual(Guid.Empty).WithMessage("Created by is invalid Id");
     }
 }

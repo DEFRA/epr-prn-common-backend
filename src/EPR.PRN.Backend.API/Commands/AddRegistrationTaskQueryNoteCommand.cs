@@ -13,5 +13,5 @@ public class AddRegistrationTaskQueryNoteCommand : IRequest
     [BindNever]
     [SwaggerIgnore]
     public Guid RegulatorRegistrationTaskStatusId { get; set; }
-    public Guid QueryBy { get; set; }
+    public Guid CreatedBy { get; set; }
 }

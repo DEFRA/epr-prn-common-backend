@@ -82,23 +82,12 @@ public class RegistrationMaterialProfile : Profile
             .ForMember(dest => dest.TotalInputs, opt => opt.MapFrom(src => src.RegistrationReprocessingIO!.Single().TotalInputs))
             .ForMember(dest => dest.TotalOutputs, opt => opt.MapFrom(src => src.RegistrationReprocessingIO!.Single().TotalOutputs))
             .ForMember(dest => dest.RegistrationMaterialId, opt => opt.MapFrom(src => src.ExternalId))
-             .ForMember(dest => dest.RegistrationId, opt => opt.MapFrom(src => src.Registration.ExternalId))
-             .ForMember(dest => dest.OrganisationId, opt => opt.MapFrom(src => src.Registration.OrganisationId))
-             .ForMember(dest => dest.SiteAddress, opt => opt.MapFrom(src => src.Registration.ReprocessingSiteAddress != null ? CreateAddressString(src.Registration.ReprocessingSiteAddress) : string.Empty))
-           .ForMember(dest => dest.RegulatorApplicationTaskStatusId, opt => opt.MapFrom(src => src.Tasks.FirstOrDefault().ExternalId))
-            .ForMember(dest => dest.TaskStatus, opt => opt.MapFrom(src => (RegulatorTaskStatus)(src.Tasks.FirstOrDefault().TaskStatusId)))
-            .ForMember(dest => dest.QueryNotes,
-        opt => opt.MapFrom(src => src.Tasks
-                .SelectMany(task => task.ApplicationTaskStatusQueryNotes)
-                .Select(noteLink => noteLink.Note)
-                .Distinct()
-                .Select(qn => new QueryNoteDto
-                {
-                    Notes = qn.Notes,
-                    CreatedBy = qn.CreatedBy,
-                    CreatedDate = qn.CreatedDate
-                }).ToList() ?? new List<QueryNoteDto>()));
-
+            .ForMember(dest => dest.RegistrationId, opt => opt.MapFrom(src => src.Registration.ExternalId))
+            .ForMember(dest => dest.OrganisationId, opt => opt.MapFrom(src => src.Registration.OrganisationId))
+            .ForMember(dest => dest.SiteAddress, opt => opt.MapFrom(src => src.Registration.ReprocessingSiteAddress != null ? CreateAddressString(src.Registration.ReprocessingSiteAddress) : string.Empty))
+            .ForMember(dest => dest.RegulatorApplicationTaskStatusId, opt => opt.MapFrom(src => GetApplicationTaskExternalId(src.Tasks, RegulatorTaskNames.ReprocessingInputsAndOutputs)))
+            .ForMember(dest => dest.TaskStatus, opt => opt.MapFrom(src => GetApplicationTaskStatus(src.Tasks, RegulatorTaskNames.ReprocessingInputsAndOutputs)))
+            .ForMember(dest => dest.QueryNotes, opt => opt.MapFrom(src => GetApplicationTaskNotes(src.Tasks, RegulatorTaskNames.ReprocessingInputsAndOutputs)));
 
         CreateMap<RegistrationMaterial, RegistrationMaterialSamplingPlanDto>()
             .ForMember(dest => dest.MaterialName, opt => opt.MapFrom(src => src.Material.MaterialName));
@@ -107,22 +96,12 @@ public class RegistrationMaterialProfile : Profile
             .ForMember(dest => dest.MaterialName, opt => opt.MapFrom(src => src.Material.MaterialName))
             .ForMember(dest => dest.Files, opt => opt.MapFrom(src => src.FileUploads))
             .ForMember(dest => dest.RegistrationMaterialId, opt => opt.MapFrom(src => src.ExternalId))
-             .ForMember(dest => dest.RegistrationId, opt => opt.MapFrom(src => src.Registration.ExternalId))
-             .ForMember(dest => dest.OrganisationId, opt => opt.MapFrom(src => src.Registration.OrganisationId))
-             .ForMember(dest => dest.SiteAddress, opt => opt.MapFrom(src => src.Registration.ReprocessingSiteAddress != null ? CreateAddressString(src.Registration.ReprocessingSiteAddress) : string.Empty))
-           .ForMember(dest => dest.RegulatorApplicationTaskStatusId, opt => opt.MapFrom(src => src.Tasks.FirstOrDefault().ExternalId))
-            .ForMember(dest => dest.TaskStatus, opt => opt.MapFrom(src => (RegulatorTaskStatus)(src.Tasks.FirstOrDefault().TaskStatusId)))
-            .ForMember(dest => dest.QueryNotes,
-        opt => opt.MapFrom(src => src.Tasks
-                .SelectMany(task => task.ApplicationTaskStatusQueryNotes)
-                .Select(noteLink => noteLink.Note)
-                .Distinct()
-                .Select(qn => new QueryNoteDto
-                {
-                    Notes = qn.Notes,
-                    CreatedBy = qn.CreatedBy,
-                    CreatedDate = qn.CreatedDate
-                }).ToList() ?? new List<QueryNoteDto>()));
+            .ForMember(dest => dest.RegistrationId, opt => opt.MapFrom(src => src.Registration.ExternalId))
+            .ForMember(dest => dest.OrganisationId, opt => opt.MapFrom(src => src.Registration.OrganisationId))
+            .ForMember(dest => dest.SiteAddress, opt => opt.MapFrom(src => src.Registration.ReprocessingSiteAddress != null ? CreateAddressString(src.Registration.ReprocessingSiteAddress) : string.Empty))
+            .ForMember(dest => dest.RegulatorApplicationTaskStatusId, opt => opt.MapFrom(src => GetApplicationTaskExternalId(src.Tasks, RegulatorTaskNames.SamplingAndInspectionPlan)))
+            .ForMember(dest => dest.TaskStatus, opt => opt.MapFrom(src => GetApplicationTaskStatus(src.Tasks, RegulatorTaskNames.SamplingAndInspectionPlan)))
+            .ForMember(dest => dest.QueryNotes, opt => opt.MapFrom(src => GetApplicationTaskNotes(src.Tasks, RegulatorTaskNames.SamplingAndInspectionPlan)));
 
         CreateMap<RegistrationFileUpload, RegistrationMaterialSamplingPlanFileDto>()
             .ForMember(dest => dest.Filename, opt => opt.MapFrom(src => src.Filename))
@@ -157,23 +136,12 @@ public class RegistrationMaterialProfile : Profile
             .ForMember(dest => dest.MaximumReprocessingPeriod, opt => opt.MapFrom(src => src.MaximumReprocessingPeriod!.Name))
             .ForMember(dest => dest.MaterialName, opt => opt.MapFrom(src => src.Material.MaterialName))
             .ForMember(dest => dest.RegistrationMaterialId, opt => opt.MapFrom(src => src.ExternalId))
-             .ForMember(dest => dest.RegistrationId, opt => opt.MapFrom(src => src.Registration.ExternalId))
-             .ForMember(dest => dest.OrganisationId, opt => opt.MapFrom(src => src.Registration.OrganisationId))
-             .ForMember(dest => dest.SiteAddress, opt => opt.MapFrom(src => src.Registration.ReprocessingSiteAddress != null ? CreateAddressString(src.Registration.ReprocessingSiteAddress) : string.Empty))
-           .ForMember(dest => dest.RegulatorApplicationTaskStatusId, opt => opt.MapFrom(src => src.Tasks.FirstOrDefault().ExternalId))
-            .ForMember(dest => dest.TaskStatus, opt => opt.MapFrom(src => (RegulatorTaskStatus)(src.Tasks.FirstOrDefault().TaskStatusId)))
-            .ForMember(dest => dest.QueryNotes,
-        opt => opt.MapFrom(src => src.Tasks
-                .SelectMany(task => task.ApplicationTaskStatusQueryNotes)
-                .Select(noteLink => noteLink.Note)
-                .Distinct()
-                .Select(qn => new QueryNoteDto
-                {
-                    Notes = qn.Notes,
-                    CreatedBy = qn.CreatedBy,
-                    CreatedDate = qn.CreatedDate
-                }).ToList() ?? new List<QueryNoteDto>()));
-
+            .ForMember(dest => dest.RegistrationId, opt => opt.MapFrom(src => src.Registration.ExternalId))
+            .ForMember(dest => dest.OrganisationId, opt => opt.MapFrom(src => src.Registration.OrganisationId))
+            .ForMember(dest => dest.SiteAddress, opt => opt.MapFrom(src => src.Registration.ReprocessingSiteAddress != null ? CreateAddressString(src.Registration.ReprocessingSiteAddress) : string.Empty))
+            .ForMember(dest => dest.RegulatorApplicationTaskStatusId, opt => opt.MapFrom(src => GetApplicationTaskExternalId(src.Tasks, RegulatorTaskNames.WasteLicensesPermitsAndExemptions)))
+            .ForMember(dest => dest.TaskStatus, opt => opt.MapFrom(src => GetApplicationTaskStatus(src.Tasks, RegulatorTaskNames.WasteLicensesPermitsAndExemptions)))
+            .ForMember(dest => dest.QueryNotes, opt => opt.MapFrom(src => GetApplicationTaskNotes(src.Tasks, RegulatorTaskNames.WasteLicensesPermitsAndExemptions)));
 
         CreateMap<Registration, RegistrationSiteAddressDto>()
            .ForMember(dest => dest.RegistrationId, opt => opt.MapFrom(src => src.ExternalId))
@@ -182,39 +150,18 @@ public class RegistrationMaterialProfile : Profile
            .ForMember(dest => dest.GridReference, opt => opt.MapFrom(src => src.ReprocessingSiteAddress != null ? src.ReprocessingSiteAddress.GridReference : string.Empty))
            .ForMember(dest => dest.LegalCorrespondenceAddress, opt => opt.MapFrom(src => src.LegalDocumentAddress != null ? CreateAddressString(src.LegalDocumentAddress) : string.Empty))
            .ForMember(dest => dest.OrganisationId, opt => opt.MapFrom(src => src.OrganisationId))
-           .ForMember(dest => dest.RegulatorRegistrationTaskStatusId, opt => opt.MapFrom(src => src.Tasks.FirstOrDefault().ExternalId))
-            .ForMember(dest => dest.TaskStatus, opt => opt.MapFrom(src => (RegulatorTaskStatus)(src.Tasks.FirstOrDefault().TaskStatusId)))
-            .ForMember(dest => dest.QueryNotes,
-        opt => opt.MapFrom(src => src.Tasks
-                .SelectMany(task => task.RegistrationTaskStatusQueryNotes)
-                .Select(noteLink => noteLink.QueryNote)
-                .Distinct()
-                .Select(qn => new QueryNoteDto
-                {
-                    Notes = qn.Notes,
-                    CreatedBy = qn.CreatedBy,
-                    CreatedDate = qn.CreatedDate
-                }).ToList() ?? new List<QueryNoteDto>()));
-
+           .ForMember(dest => dest.RegulatorRegistrationTaskStatusId, opt => opt.MapFrom(src => GetRegistrationTaskExternalId(src.Tasks, RegulatorTaskNames.SiteAddressAndContactDetails)))
+           .ForMember(dest => dest.TaskStatus, opt => opt.MapFrom(src => GetRegistrationTaskStatus(src.Tasks, RegulatorTaskNames.SiteAddressAndContactDetails)))
+           .ForMember(dest => dest.QueryNotes, opt => opt.MapFrom(src => GetRegistrationTaskNotes(src.Tasks, RegulatorTaskNames.SiteAddressAndContactDetails)));
 
         CreateMap<Registration, MaterialsAuthorisedOnSiteDto>()
             .ForMember(dest => dest.RegistrationId, opt => opt.MapFrom(src => src.ExternalId))
             .ForMember(dest => dest.OrganisationId, opt => opt.MapFrom(src => src.OrganisationId))
             .ForMember(dest => dest.SiteAddress, opt => opt.MapFrom(src => src.ReprocessingSiteAddress != null ? CreateAddressString(src.ReprocessingSiteAddress) : string.Empty))
-            .ForMember(dest => dest.MaterialsAuthorisation, opt => opt.MapFrom(src => src.Materials)) 
-            .ForMember(dest => dest.RegulatorRegistrationTaskStatusId, opt => opt.MapFrom(src => src.Tasks.FirstOrDefault().ExternalId))
-            .ForMember(dest => dest.TaskStatus, opt => opt.MapFrom(src => (RegulatorTaskStatus)(src.Tasks.FirstOrDefault().TaskStatusId)))
-            .ForMember(dest => dest.QueryNotes,
-        opt => opt.MapFrom(src => src.Tasks
-                .SelectMany(task => task.RegistrationTaskStatusQueryNotes)
-                .Select(noteLink => noteLink.QueryNote)
-                .Distinct()
-                .Select(qn => new QueryNoteDto
-                {
-                    Notes = qn.Notes,
-                    CreatedBy = qn.CreatedBy,
-                    CreatedDate = qn.CreatedDate
-                }).ToList() ?? new List<QueryNoteDto>()));
+            .ForMember(dest => dest.MaterialsAuthorisation, opt => opt.MapFrom(src => src.Materials))
+            .ForMember(dest => dest.RegulatorRegistrationTaskStatusId, opt => opt.MapFrom(src => GetRegistrationTaskExternalId(src.Tasks, RegulatorTaskNames.MaterialsAuthorisedOnSite)))
+            .ForMember(dest => dest.TaskStatus, opt => opt.MapFrom(src => GetRegistrationTaskStatus(src.Tasks, RegulatorTaskNames.MaterialsAuthorisedOnSite)))
+            .ForMember(dest => dest.QueryNotes, opt => opt.MapFrom(src => GetRegistrationTaskNotes(src.Tasks, RegulatorTaskNames.MaterialsAuthorisedOnSite)));
 
 
         CreateMap<RegistrationMaterial, MaterialsAuthorisedOnSiteInfoDto>()
@@ -230,19 +177,88 @@ public class RegistrationMaterialProfile : Profile
            .ForMember(dest => dest.SiteAddress, opt => opt.MapFrom(src => src.Registration.ReprocessingSiteAddress != null ? CreateAddressString(src.Registration.ReprocessingSiteAddress) : string.Empty))
            .ForMember(dest => dest.NationId, opt => opt.MapFrom(src => GetNationId(src.Registration)))
            .ForMember(dest => dest.MaterialName, opt => opt.MapFrom(src => src.Material.MaterialName))
-            .ForMember(dest => dest.RegulatorApplicationTaskStatusId, opt => opt.MapFrom(src => src.Tasks.FirstOrDefault().ExternalId))
-            .ForMember(dest => dest.TaskStatus, opt => opt.MapFrom(src => (RegulatorTaskStatus)(src.Tasks.FirstOrDefault().TaskStatusId)))
-            .ForMember(dest => dest.QueryNotes,
-        opt => opt.MapFrom(src => src.Tasks
-                .SelectMany(task => task.ApplicationTaskStatusQueryNotes)
-                .Select(noteLink => noteLink.Note)
-                .Distinct()
-                .Select(qn => new QueryNoteDto
-                {
-                    Notes = qn.Notes,
-                    CreatedBy = qn.CreatedBy,
-                    CreatedDate = qn.CreatedDate
-                }).ToList() ?? new List<QueryNoteDto>()));
+           .ForMember(dest => dest.DeterminationDate, opt => opt.MapFrom(src => src.DeterminationDate != null ? src.DeterminationDate.DeterminateDate : null))
+           .ForMember(dest => dest.RegulatorApplicationTaskStatusId, opt => opt.MapFrom(src => GetApplicationTaskExternalId(src.Tasks, RegulatorTaskNames.CheckRegistrationStatus)))
+           .ForMember(dest => dest.TaskStatus, opt => opt.MapFrom(src => GetApplicationTaskStatus(src.Tasks, RegulatorTaskNames.CheckRegistrationStatus)))
+           .ForMember(dest => dest.QueryNotes, opt => opt.MapFrom(src => GetApplicationTaskNotes(src.Tasks, RegulatorTaskNames.CheckRegistrationStatus)));
+    }
+
+    private List<QueryNoteDto> GetRegistrationTaskNotes(List<RegulatorRegistrationTaskStatus>? srcTasks, string taskName)
+    {
+        if (srcTasks == null)
+        {
+            return [];
+        }
+
+        return srcTasks
+            .Where(t => t.Task.Name == taskName)
+            .SelectMany(task => task.RegistrationTaskStatusQueryNotes)
+            .Select(noteLink => noteLink.QueryNote)
+            .Distinct()
+            .Select(qn => new QueryNoteDto
+            {
+                Notes = qn.Notes,
+                CreatedBy = qn.CreatedBy,
+                CreatedDate = qn.CreatedDate
+            }).ToList();
+    }
+
+    private Guid? GetRegistrationTaskExternalId(List<RegulatorRegistrationTaskStatus>? srcTasks, string taskName)
+    {
+        var task = srcTasks?.FirstOrDefault(t => t.Task.Name == taskName);
+
+        return task?.ExternalId;
+    }
+
+    private RegulatorTaskStatus GetRegistrationTaskStatus(List<RegulatorRegistrationTaskStatus>? srcTasks, string taskName)
+    {
+        var task = srcTasks?.FirstOrDefault(t => t.Task.Name == taskName);
+
+        if (task != null)
+        {
+            return (RegulatorTaskStatus)task.TaskStatusId;
+        }
+
+        return RegulatorTaskStatus.NotStarted;
+    }
+
+    private List<QueryNoteDto> GetApplicationTaskNotes(List<RegulatorApplicationTaskStatus>? srcTasks, string taskName)
+    {
+        if (srcTasks == null)
+        {
+            return [];
+        }
+
+        return srcTasks
+            .Where(t => t.Task.Name == taskName)
+            .SelectMany(task => task.ApplicationTaskStatusQueryNotes)
+            .Select(noteLink => noteLink.Note)
+            .Distinct()
+            .Select(qn => new QueryNoteDto
+            {
+                Notes = qn.Notes,
+                CreatedBy = qn.CreatedBy,
+                CreatedDate = qn.CreatedDate
+            }).ToList();
+    }
+
+    private Guid? GetApplicationTaskExternalId(List<RegulatorApplicationTaskStatus>? srcTasks, string taskName)
+    {
+        var task = srcTasks?.FirstOrDefault(t => t.Task.Name == taskName);
+
+        return task?.ExternalId;
+    }
+
+    private RegulatorTaskStatus GetApplicationTaskStatus(List<RegulatorApplicationTaskStatus>? srcTasks, string taskName)
+    {
+        var task = srcTasks?.FirstOrDefault(t => t.Task.Name == taskName);
+
+        if (task != null)
+        {
+            return (RegulatorTaskStatus)task.TaskStatusId;
+        }
+
+        return RegulatorTaskStatus.NotStarted;
     }
 
     private static List<RegistrationTaskDto> MapTasks(List<RegulatorRegistrationTaskStatus>? registrationTasks, List<RegulatorAccreditationRegistrationTaskStatus>? accreditationTasks, ResolutionContext context)

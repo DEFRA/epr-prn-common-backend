@@ -13,8 +13,9 @@ public class GetMaterialWasteLicencesQueryHandler(
 {
     public async Task<RegistrationMaterialWasteLicencesDto> Handle(GetMaterialWasteLicencesQuery request, CancellationToken cancellationToken)
     {
-        var materialEntity = await rmRepository.GetRegistrationMaterial_WasteLicencesById(request.Id);
-        var materialDto = mapper.Map<RegistrationMaterialWasteLicencesDto>(materialEntity);
+        var registrationMaterial = await rmRepository.GetRegistrationMaterialById(request.Id);
+        var materialDto = mapper.Map<RegistrationMaterialWasteLicencesDto>(registrationMaterial);
+
         return materialDto;
     }
 }

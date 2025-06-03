@@ -11,6 +11,6 @@ public class AddApplicationTaskQueryNoteHandler(IRegulatorApplicationTaskStatusR
     {
         await
        repository.AddApplicationTaskQueryNoteAsync(command.RegulatorApplicationTaskStatusId,
-       command.QueryBy, command.Note);
+       command.CreatedBy, command.Note);
     }
 }

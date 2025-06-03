@@ -9,6 +9,6 @@ public class RegistrationTaskQueryNoteHandler(IRegulatorRegistrationTaskStatusRe
     public async Task Handle(AddRegistrationTaskQueryNoteCommand command, CancellationToken cancellationToken)
     {
        
-        await repository.AddRegistrationTaskQueryNoteAsync(command.RegulatorRegistrationTaskStatusId, command.QueryBy, command.Note);
+        await repository.AddRegistrationTaskQueryNoteAsync(command.RegulatorRegistrationTaskStatusId, command.CreatedBy, command.Note);
     }
 }

@@ -13,8 +13,8 @@ public class GetMaterialSamplingPlanQueryHandler(
 {
     public async Task<RegistrationMaterialSamplingPlanDto> Handle(GetMaterialSamplingPlanQuery request, CancellationToken cancellationToken)
     {
-        var materialEntity = await rmRepository.GetRegistrationMaterial_FileUploadById(request.Id);
-        var materialDto = mapper.Map<RegistrationMaterialSamplingPlanDto>(materialEntity);
+        var registrationMaterial = await rmRepository.GetRegistrationMaterialById(request.Id);
+        var materialDto = mapper.Map<RegistrationMaterialSamplingPlanDto>(registrationMaterial);
         return materialDto;
     }
 }
