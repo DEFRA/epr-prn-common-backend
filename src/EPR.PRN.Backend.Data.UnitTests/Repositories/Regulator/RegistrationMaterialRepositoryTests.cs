@@ -5,6 +5,7 @@ using EPR.PRN.Backend.Data.Repositories.Regulator;
 using FluentAssertions;
 using FluentAssertions.Execution;
 using Microsoft.EntityFrameworkCore;
+using System.Threading.Tasks;
 
 namespace EPR.PRN.Backend.Data.UnitTests.Repositories.Regulator;
 
@@ -436,6 +437,62 @@ public class RegistrationMaterialRepositoryTests
             taskStatusEntry.StatusCreatedDate.Date.Should().Be(DateTime.UtcNow.Date);
         }
     }
+
+    [TestMethod]
+    public async Task RegistrationMaterialsMarkAsDulyMade_ShouldUpdateRegulatorApplicationTaskStatus_WhenItExists()
+    {
+        // Arrange
+        var registrationMaterialId = Guid.Parse("a9421fc1-a912-42ee-85a5-3e06408759a9");
+        var statusId = 6;
+        var dulyMadeDate = DateTime.UtcNow.Date;
+        var determinationDate = dulyMadeDate.AddDays(84);
+        var userId = Guid.NewGuid();
+
+        _context.RegulatorApplicationTaskStatus.Add(new RegulatorApplicationTaskStatus
+        {
+            Id = 2,
+            RegulatorTaskId = 2,
+            TaskStatusId = 1,
+            TaskStatus = new LookupTaskStatus { Id = 2, Name = "Started" },
+            Task = new LookupRegulatorTask
+            {
+                Id = 2,
+                Name = "CheckRegistrationStatus",
+                ApplicationTypeId = 1,
+                JourneyTypeId = 1,
+                IsMaterialSpecific = true,
+            },
+            RegistrationMaterialId = 1
+        });
+
+        await _context.SaveChangesAsync();
+        // Act
+        await _repository.RegistrationMaterialsMarkAsDulyMade(registrationMaterialId, statusId, determinationDate, dulyMadeDate, userId);
+
+        // Assert
+        var dulyMadeEntry = await _context.DulyMade
+            .FirstOrDefaultAsync(x => x.RegistrationMaterial.ExternalId == registrationMaterialId);
+        var savedDeterminationDate = await _context.DeterminationDate
+            .FirstOrDefaultAsync(x => x.RegistrationMaterialId == 1);
+        var taskStatusEntry = await _context.RegulatorApplicationTaskStatus
+            .FirstOrDefaultAsync(x => x.RegistrationMaterial.ExternalId == registrationMaterialId && x.TaskStatusId == statusId);
+
+        using (new AssertionScope())
+        {
+            dulyMadeEntry.Should().NotBeNull();
+            dulyMadeEntry!.DulyMadeBy.Should().Be(userId);
+            dulyMadeEntry!.DulyMadeDate.Should().Be(dulyMadeDate);
+            savedDeterminationDate.DeterminateDate.Should().Be(determinationDate);
+            dulyMadeEntry.TaskStatusId.Should().Be(statusId);
+
+            taskStatusEntry.Should().NotBeNull();
+            taskStatusEntry!.TaskStatusId.Should().Be(statusId);
+            taskStatusEntry.RegulatorTaskId.Should().Be(2);
+            taskStatusEntry.StatusUpdatedBy.Should().Be(userId);
+        }
+    }
+
+
     [TestMethod]
     public async Task RegistrationMaterialsMarkAsDulyMade_ShouldThrow_WhenMaterialNotFound()
     {
