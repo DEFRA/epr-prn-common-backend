@@ -3132,3 +3132,61 @@ GO
 COMMIT;
 GO
 
+BEGIN TRANSACTION;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250603090535_AccreditationDulyMade'
+)
+BEGIN
+    CREATE TABLE [Public.AccreditationDulyMade] (
+        [Id] int NOT NULL IDENTITY,
+        [ExternalId] uniqueidentifier NOT NULL,
+        [AccreditationId] int NOT NULL,
+        [TaskStatusId] int NOT NULL,
+        [DulyMadeDate] datetime2 NULL,
+        [DulyMadeBy] uniqueidentifier NULL,
+        [DeterminationDate] datetime2 NULL,
+        [DulyMadeNote] nvarchar(500) NULL,
+        [DeterminationNote] nvarchar(500) NULL,
+        [DeterminationUpdatedBy] uniqueidentifier NULL,
+        [DeterminationUpdatedDate] datetime2 NULL,
+        CONSTRAINT [PK_Public.AccreditationDulyMade] PRIMARY KEY ([Id]),
+        CONSTRAINT [FK_Public.AccreditationDulyMade_Public.Accreditation_AccreditationId] FOREIGN KEY ([AccreditationId]) REFERENCES [Public.Accreditation] ([Id]) ON DELETE NO ACTION,
+        CONSTRAINT [FK_Public.AccreditationDulyMade_Lookup.TaskStatus_TaskStatusId] FOREIGN KEY ([TaskStatusId]) REFERENCES [Lookup.TaskStatus] ([Id]) ON DELETE NO ACTION
+    );
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250603090535_AccreditationDulyMade'
+)
+BEGIN
+    CREATE INDEX [IX_Public.AccreditationDulyMade_AccreditationId] ON [Public.AccreditationDulyMade] ([AccreditationId]);
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250603090535_AccreditationDulyMade'
+)
+BEGIN
+    CREATE INDEX [IX_Public.AccreditationDulyMade_TaskStatusId] ON [Public.AccreditationDulyMade] ([TaskStatusId]);
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250603090535_AccreditationDulyMade'
+)
+BEGIN
+    INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+    VALUES (N'20250603090535_AccreditationDulyMade', N'8.0.8');
+END;
+GO
+
+COMMIT;
+GO
+
