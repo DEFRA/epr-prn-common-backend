@@ -9,9 +9,12 @@ public class RegulatorAccreditationMarkAsDulyMadeValidator : AbstractValidator<R
 {
     public RegulatorAccreditationMarkAsDulyMadeValidator()
     {
+        RuleFor(x => x.Id)
+            .NotEmpty().WithMessage(ValidationMessages.RegistrationAccreditationIdRequired);
+
         RuleFor(x => x.DulyMadeDate)
             .Must(date => date != DateTime.MinValue)
-            .WithMessage(ValidationMessages.InvalidDulyMadeDate);
+            .WithMessage(ValidationMessages.InvalidDulyMadeDate);//
 
         RuleFor(x => x.DeterminationDate)
             .Must(date => date != DateTime.MinValue)
