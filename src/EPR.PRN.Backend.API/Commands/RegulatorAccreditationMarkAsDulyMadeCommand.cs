@@ -10,6 +10,7 @@ public class RegulatorAccreditationMarkAsDulyMadeCommand : IRequest
 {
     [BindNever]
     [SwaggerIgnore]
+    public Guid Id { get; set; }
     public DateTime DulyMadeDate { get; set; }
     public DateTime DeterminationDate { get; set; }
     public Guid DulyMadeBy { get; set; } 

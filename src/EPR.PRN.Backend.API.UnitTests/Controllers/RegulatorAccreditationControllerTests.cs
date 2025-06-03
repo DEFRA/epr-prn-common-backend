@@ -65,21 +65,59 @@ public class RegulatorAccreditationControllerTests
         okResult!.Value.Should().BeEquivalentTo(dto);
     }
 
-
     [TestMethod]
-    public async Task GetRegistrationAccreditationPaymentFeeDetailsById_ReturnsNotFound_WhenResultIsNull()
+    public async Task RegistrationAccreditationMarkAsDulyMade_ValidCommand_ReturnsNoContent()
     {
         // Arrange
-        var accreditationId = Guid.NewGuid();
+        var accreditationId = Guid.Parse("a9421fc1-a912-42ee-85a5-3e06408759a9");
+        var command = new RegulatorAccreditationMarkAsDulyMadeCommand
+        {
+            DulyMadeDate = DateTime.UtcNow.AddMonths(-1),
+            DeterminationDate = DateTime.UtcNow
+        };
+
+        _validatorMock
+            .Setup(v => v.ValidateAsync(command, default))
+            .ReturnsAsync(new ValidationResult());
 
         _mediatorMock
-            .Setup(m => m.Send(It.IsAny<GetRegistrationAccreditationPaymentFeesByIdQuery>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync((AccreditationPaymentFeeDetailsDto)null!);
+            .Setup(m => m.Send(It.IsAny<RegulatorAccreditationMarkAsDulyMadeCommand>(), It.IsAny<CancellationToken>()))
+            .Returns(Task.FromResult(Unit.Value));
 
         // Act
-        var result = await _controller.GetRegistrationAccreditationPaymentFeeDetailsById(accreditationId);
+        var result = await _controller.RegulatorAccreditationMarkAsDulyMade(accreditationId, command);
 
         // Assert
-        result.Should().BeOfType<NotFoundResult>();
+        using (new AssertionScope())
+        {
+            result.Should().BeOfType<NoContentResult>();
+            command.Id.Should().Be(accreditationId);
+        }
     }
+    [TestMethod]
+    public async Task RegistrationMaterialsMarkAsDulyMade_ShouldThrowValidationException_WhenValidationFails()
+    {
+        // Arrange
+        var validator = new InlineValidator<RegulatorAccreditationMarkAsDulyMadeCommand>();
+        validator.RuleFor(x => x.DulyMadeDate).Must(_ => false).WithMessage("Validation failed");
+
+        var accreditationId = Guid.Parse("a9421fc1-a912-42ee-85a5-3e06408759a9");
+        var command = new RegulatorAccreditationMarkAsDulyMadeCommand
+        {
+            DulyMadeDate = DateTime.UtcNow,
+            DeterminationDate = DateTime.UtcNow.AddMonths(1)
+        };
+
+        var controller = new RegulatorAccreditationController(
+            _mediatorMock.Object,
+            validator,
+            _loggerMock.Object
+        );
+
+        // Act & Assert
+        await FluentActions.Invoking(() =>
+            controller.RegulatorAccreditationMarkAsDulyMade(accreditationId, command)
+        ).Should().ThrowAsync<ValidationException>();
+    }
+
 }

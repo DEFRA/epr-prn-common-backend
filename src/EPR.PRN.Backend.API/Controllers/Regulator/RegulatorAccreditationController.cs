@@ -55,7 +55,7 @@ public class RegulatorAccreditationController(IMediator mediator,
     public async Task<IActionResult> RegulatorAccreditationMarkAsDulyMade(Guid Id, [FromBody] RegulatorAccreditationMarkAsDulyMadeCommand command)
     {
         logger.LogInformation(LogMessages.MarkAccreditationAsDulyMade, Id);
-        command.DulyMadeBy = Id;
+        command.Id = Id;
 
         await validator.ValidateAndThrowAsync(command);
 
