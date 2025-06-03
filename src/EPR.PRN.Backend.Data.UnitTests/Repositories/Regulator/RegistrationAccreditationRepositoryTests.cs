@@ -57,36 +57,66 @@ public class RegistrationAccreditationRepositoryTests
             _repository.AccreditationMarkAsDulyMade(Guid.NewGuid(), 1, DateTime.UtcNow, DateTime.UtcNow, Guid.NewGuid()));
     }
 
+
     [TestMethod]
     public async Task AccreditationMarkAsDulyMade_ShouldSetDulyMadeCorrectly()
     {
         // Arrange
-        var accreditationId = Guid.Parse("4bac12f7-f7a9-4df4-b7b5-9c4221860c4d");
-        var registrationMaterialId = Guid.Parse("a9421fc1-a912-42ee-85a5-3e06408759a9");
+        var accreditationId = Guid.NewGuid();
+        var registrationMaterialId = Guid.NewGuid();
         var statusId = 5;
         var dulyMadeDate = DateTime.UtcNow.Date;
         var determinationDate = dulyMadeDate.AddDays(84);
         var userId = Guid.NewGuid();
-        // Seed required LookupTask for the CheckRegistrationStatus task
-        _context.LookupTasks.Add(new LookupRegulatorTask
+
+        var registration = new Registration
+        {
+            Id = 99,
+            ApplicationTypeId = 1
+        };
+
+        var material = new RegistrationMaterial
+        {
+            Id = 99,
+            ExternalId = registrationMaterialId,
+            RegistrationId = registration.Id,
+            Registration = registration
+        };
+
+        var accreditation = new Accreditation
+        {
+            Id = 99,
+            ExternalId = accreditationId,
+            RegistrationMaterialId = material.Id,
+            RegistrationMaterial = material,
+            ApplicationReferenceNumber = "ACC12345",
+        };
+
+        var lookupTask = new LookupRegulatorTask
         {
             Id = 27,
             Name = "DulyMade",
-            ApplicationTypeId = 1,
+            ApplicationTypeId = registration.ApplicationTypeId,
             JourneyTypeId = 1,
             IsMaterialSpecific = true
-        });
+        };
+
+        _context.Registrations.Add(registration);
+        _context.RegistrationMaterials.Add(material);
+        _context.Accreditations.Add(accreditation);
+        _context.LookupTasks.Add(lookupTask);
 
         await _context.SaveChangesAsync();
 
         // Act
-        await _repository.AccreditationMarkAsDulyMade(accreditationId, statusId, determinationDate, dulyMadeDate, userId);
+        await _repository.AccreditationMarkAsDulyMade(accreditationId, statusId, dulyMadeDate, determinationDate, userId);
 
-        // Assert
+        // Assert 
         var dulyMadeEntry = await _context.AccreditationDulyMade
             .FirstOrDefaultAsync(x => x.ExternalId == registrationMaterialId);
         var taskStatusEntry = await _context.RegulatorAccreditationTaskStatus
-            .FirstOrDefaultAsync(x => x.ExternalId == accreditationId && x.TaskStatusId == statusId);
+            .FirstOrDefaultAsync(x => x.ExternalId == registrationMaterialId && x.TaskStatusId == statusId);
+
 
         using (new AssertionScope())
         {
@@ -98,11 +128,12 @@ public class RegistrationAccreditationRepositoryTests
 
             taskStatusEntry.Should().NotBeNull();
             taskStatusEntry!.TaskStatusId.Should().Be(statusId);
-            taskStatusEntry.RegulatorTaskId.Should().Be(2);
+            taskStatusEntry.RegulatorTaskId.Should().Be(lookupTask.Id);
             taskStatusEntry.StatusUpdatedBy.Should().Be(userId);
             taskStatusEntry.StatusCreatedDate.Date.Should().Be(DateTime.UtcNow.Date);
         }
     }
+
 
 
     private void SeedDatabase()
