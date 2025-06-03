@@ -1,5 +1,6 @@
 ﻿namespace EPR.PRN.Backend.API.Services;
 
+using System.Diagnostics.CodeAnalysis;
 using AutoMapper;
 using EPR.PRN.Backend.API.Dto.Accreditation;
 using EPR.PRN.Backend.API.Services.Interfaces;
@@ -76,5 +77,12 @@ public class AccreditationService(
         var entity = mapper.Map<Accreditation>(accreditationDto);
 
         await repository.Update(entity);
+    }
+
+    [ExcludeFromCodeCoverage]
+    public async Task ClearDownDatabase()
+    {
+        // Temporary: Aid to QA whilst Accreditation uses in-memory database.
+        await repository.ClearDownDatabase();
     }
 }

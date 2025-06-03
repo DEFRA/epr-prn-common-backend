@@ -14,4 +14,6 @@ public interface IAccreditationService
     Task<Guid> CreateAccreditation(AccreditationRequestDto accreditationDto);
 
     Task UpdateAccreditation(AccreditationRequestDto accreditationDto);
+
+    Task ClearDownDatabase();
 }

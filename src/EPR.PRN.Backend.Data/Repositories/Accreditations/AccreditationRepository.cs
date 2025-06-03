@@ -1,4 +1,5 @@
-﻿using EPR.PRN.Backend.Data.DataModels.Accreditations;
+﻿using System.Diagnostics.CodeAnalysis;
+using EPR.PRN.Backend.Data.DataModels.Accreditations;
 using EPR.PRN.Backend.Data.Interfaces.Accreditations;
 using Microsoft.EntityFrameworkCore;
 
@@ -75,5 +76,13 @@ public class AccreditationRepository(EprAccreditationContext eprContext) : IAccr
 
         eprContext.Entry(existingAccreditation).State = EntityState.Modified;
         await eprContext.SaveChangesAsync();
+    }
+
+    [ExcludeFromCodeCoverage]
+    public async Task ClearDownDatabase()
+    {
+        // Temporary: Aid to QA whilst Accreditation uses in-memory database.
+        await eprContext.Database.EnsureDeletedAsync();
+        await eprContext.Database.EnsureCreatedAsync();
     }
 }
