@@ -14,4 +14,6 @@ public interface IAccreditationRepository
     Task Create(Accreditation accreditation);
 
     Task Update(Accreditation accreditation);
+
+    Task ClearDownDatabase();
 }
