@@ -53,4 +53,20 @@ public class MaterialServiceTests
         // Assert
         result.Should().BeEquivalentTo(expectedMaterials);
     }
+
+    [TestMethod]
+    public async Task GetAllMaterials_NoDataReturned()
+    {
+        // Arrange
+        var expectedMaterials = Enumerable.Empty<Material>();
+
+        // Expectations
+        _mockRepository.Setup(r => r.GetAllMaterials()).ReturnsAsync(new List<Material>());
+
+        // Act
+        var result = await _systemUnderTest.GetAllMaterialsAsync(CancellationToken.None);
+
+        // Assert
+        result.Should().BeEquivalentTo(expectedMaterials);
+    }
 }
