@@ -33,18 +33,19 @@ namespace EPR.PRN.Backend.Data.Repositories.Regulator
             var statusEntity = _context.LookupTaskStatuses.Single(lts => lts.Name == status.ToString());
             if (taskStatus == null)
             {
-                var accreditation = _context.Accreditations.SingleOrDefault(x => x.ExternalId == AccreditationId);
-                
+                var accreditation = await _context.Accreditations
+                                         .Include(a => a.RegistrationMaterial)
+                                             .ThenInclude(rm => rm.Registration)
+                                         .SingleOrDefaultAsync(x => x.ExternalId == AccreditationId);
+
                 if (accreditation == null)
                     throw new KeyNotFoundException("Accreditation not found.");
 
-                var registrationMaterial = _context.RegistrationMaterials.SingleOrDefault(x => x.Id == accreditation.RegistrationMaterialId);
-
-                var registration = _context.Registrations.SingleOrDefault(x => x.Id == registrationMaterial.RegistrationId);
-                //var registration = _context.Registrations.SingleOrDefault(x => x.Materials.FirstOrDefault(m => m.MaterialId == registrationMaterial.Id));
+                var registration = accreditation.RegistrationMaterial?.Registration;
 
                 if (registration == null)
                     throw new KeyNotFoundException("Registration not found.");
+
 
                 var task = _context.LookupTasks.SingleOrDefault(t => t.Name == TaskName && !t.IsMaterialSpecific && t.ApplicationTypeId == registration.ApplicationTypeId);
                 
@@ -81,9 +82,11 @@ namespace EPR.PRN.Backend.Data.Repositories.Regulator
         }
         private async Task<RegulatorAccreditationTaskStatus?> GetTaskStatus(string TaskName, Guid AccreditationId)
         {
-            return await _context.RegulatorAccreditationTaskStatus.Include(ts => ts.TaskStatus)
+            return await _context.RegulatorAccreditationTaskStatus
+                .Include(ts => ts.Task)
+                .Include(ts => ts.TaskStatus)
                 .Include(a => a.Accreditation)
-                .FirstOrDefaultAsync(x => x.Task.Name == TaskName && x.ExternalId == AccreditationId);
+                .FirstOrDefaultAsync(ts => ts.Accreditation.ExternalId == AccreditationId && ts.Task.Name == TaskName);
         }
     }
 }
