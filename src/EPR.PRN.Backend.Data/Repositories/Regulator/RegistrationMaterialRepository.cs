@@ -30,7 +30,9 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
 
     public async Task<RegistrationMaterial> GetRegistrationMaterialById(Guid registrationMaterialId)
     {
-        var registrationMaterials = GetRegistrationMaterialsWithRelatedEntities();
+        var registrationMaterials = GetRegistrationMaterialsWithRelatedEntities()
+            .Include(rm => rm.DulyMade)
+            .Include(rm => rm.DeterminationDate);
 
         return await registrationMaterials.SingleOrDefaultAsync(rm => rm.ExternalId == registrationMaterialId)
                ?? throw new KeyNotFoundException("Material not found.");
@@ -58,6 +60,13 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
 
         return await registrationMaterials.SingleOrDefaultAsync(rm => rm.ExternalId == registrationMaterialId)
                ?? throw new KeyNotFoundException("Material not found.");
+    }
+
+    public async Task<Accreditation> GetAccreditation_FileUploadById(Guid accreditationId)
+    {
+        var accreditations = GetAccreditation_FileUploadById();        
+        return await accreditations.SingleOrDefaultAsync(rm => rm.ExternalId == accreditationId)
+               ?? throw new KeyNotFoundException("Accreditation not found.");
     }
 
     public async Task UpdateRegistrationOutCome(Guid registrationMaterialId, int statusId, string? comment, string registrationReferenceNumber)
@@ -91,6 +100,16 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
         if (registration == null)
             throw new KeyNotFoundException("Registration not found.");
 
+        var determinationDate = await eprContext.DeterminationDate
+    .FirstOrDefaultAsync(x => x.RegistrationMaterialId == material.RegistrationId) 
+    ?? new DeterminationDate
+    {
+        DeterminateDate = DeterminationDate,
+        RegistrationMaterialId = material.RegistrationId,
+        ExternalId = registration.ExternalId,
+        RegistrationMaterial = material
+    };
+
         var applicationTypeId = registration.ApplicationTypeId;
 
 
@@ -111,8 +130,8 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
 
         // Set/update the fields
         dulyMade.TaskStatusId = statusId;
-        dulyMade.DeterminationDate = DeterminationDate;
         dulyMade.DulyMadeDate = DulyMadeDate;
+        determinationDate.DeterminateDate = DeterminationDate;
         dulyMade.DulyMadeBy = DulyMadeBy;
         dulyMade.ExternalId = material.ExternalId;
 
@@ -121,6 +140,12 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
         {
             await eprContext.DulyMade.AddAsync(dulyMade);
             await eprContext.RegulatorApplicationTaskStatus.AddAsync(regulatorApplicationTaskStatus);
+        }
+
+        if (determinationDate.Id == 0)
+        {
+            determinationDate.RegistrationMaterialId = material.Id;
+            await eprContext.DeterminationDate.AddAsync(determinationDate);
         }
 
         await eprContext.SaveChangesAsync();
@@ -187,6 +212,22 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
             .Include(rm => rm.Material);
 
         return registrationMaterials;
+    }
+
+    private IIncludableQueryable<Accreditation, LookupMaterial> GetAccreditation_FileUploadById()
+    {
+        var accreditations =
+            eprContext.Accreditations
+            .AsNoTracking()
+            .AsSplitQuery()
+            .Include(rm => rm.FileUploads)!
+            .ThenInclude(fu => fu.FileUploadType)
+            .Include(rm => rm.FileUploads)!
+            .ThenInclude(fu => fu.FileUploadStatus)
+            .Include(rm => rm.RegistrationMaterial)
+            .ThenInclude(rm => rm.Material);
+
+        return accreditations;
     }
 
     private IIncludableQueryable<Registration, LookupRegistrationMaterialStatus> GetRegistrationsWithRelatedEntities()
@@ -294,4 +335,6 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
         }
             
     }
+
+ 
 }

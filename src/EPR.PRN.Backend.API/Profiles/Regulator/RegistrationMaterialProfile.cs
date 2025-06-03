@@ -63,7 +63,9 @@ public class RegistrationMaterialProfile : Profile
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.ExternalId))
             .ForMember(dest => dest.RegistrationId, opt => opt.MapFrom(src => src.Registration.ExternalId))
             .ForMember(dest => dest.MaterialName, opt => opt.MapFrom(src => src.Material.MaterialName))
-            .ForMember(dest => dest.Status, opt => opt.MapFrom(src => (RegistrationMaterialStatus?)src.StatusId));
+            .ForMember(dest => dest.Status, opt => opt.MapFrom(src => (RegistrationMaterialStatus?)src.StatusId))
+            .ForMember(dest => dest.DulyMade, opt => opt.MapFrom(src => src.DulyMade!.DulyMadeDate))
+            .ForMember(dest => dest.DeterminationDate, opt => opt.MapFrom(src => src.DeterminationDate.DeterminateDate));
 
         CreateMap<RegistrationMaterial, RegistrationMaterialReprocessingIODto>()
             .ForMember(dest => dest.MaterialName, opt => opt.MapFrom(src => src.Material.MaterialName))
@@ -86,14 +88,29 @@ public class RegistrationMaterialProfile : Profile
             .ForMember(dest => dest.MaterialName, opt => opt.MapFrom(src => src.Material.MaterialName))
             .ForMember(dest => dest.Files, opt => opt.MapFrom(src => src.FileUploads));
 
-        CreateMap<FileUpload, RegistrationMaterialSamplingPlanFileDto>()
+        CreateMap<RegistrationFileUpload, RegistrationMaterialSamplingPlanFileDto>()
             .ForMember(dest => dest.Filename, opt => opt.MapFrom(src => src.Filename))
             .ForMember(dest => dest.FileId, opt => opt.MapFrom(src => src.FileId))
             .ForMember(dest => dest.DateUploaded, opt => opt.MapFrom(src => src.DateUploaded))
             .ForMember(dest => dest.UpdatedBy, opt => opt.MapFrom(src => src.UpdatedBy))
-            .ForMember(dest => dest.FileUploadType, opt => opt.MapFrom(src => src.FileUploadType.Name))
-            .ForMember(dest => dest.FileUploadStatus, opt => opt.MapFrom(src => src.FileUploadStatus.Name))
+            .ForMember(dest => dest.FileUploadType, opt => opt.MapFrom(src => src.FileUploadType!.Name))
+            .ForMember(dest => dest.FileUploadStatus, opt => opt.MapFrom(src => src.FileUploadStatus!.Name))
             .ForMember(dest => dest.Comments, opt => opt.MapFrom(src => src.Comments));
+
+        CreateMap<RegistrationMaterial, AccreditationSamplingPlanDto>()
+            .ForMember(dest => dest.MaterialName, opt => opt.MapFrom(src => src.Material.MaterialName));
+
+        CreateMap<AccreditationFileUpload, AccreditationSamplingPlanFileDto>()
+            .ForMember(dest => dest.Filename, opt => opt.MapFrom(src => src.Filename))
+            .ForMember(dest => dest.FileId, opt => opt.MapFrom(src => src.FileId))
+            .ForMember(dest => dest.DateUploaded, opt => opt.MapFrom(src => src.DateUploaded))
+            .ForMember(dest => dest.UpdatedBy, opt => opt.MapFrom(src => src.UpdatedBy))
+            .ForMember(dest => dest.FileUploadType, opt => opt.MapFrom(src => src.FileUploadType!.Name))
+            .ForMember(dest => dest.FileUploadStatus, opt => opt.MapFrom(src => src.FileUploadStatus!.Name));
+
+        CreateMap<Accreditation, AccreditationSamplingPlanDto>()
+            .ForMember(dest => dest.MaterialName, opt => opt.MapFrom(src => src.RegistrationMaterial.Material.MaterialName))
+            .ForMember(dest => dest.Files, opt => opt.MapFrom(src => src.FileUploads));
 
         CreateMap<RegistrationMaterial, RegistrationMaterialWasteLicencesDto>()
             .ForMember(dest => dest.PermitType, opt => opt.MapFrom(src => src.PermitType!.Name))
@@ -142,6 +159,9 @@ public class RegistrationMaterialProfile : Profile
             .ForMember(dest => dest.MaterialName, opt => opt.MapFrom(src => src.RegistrationMaterial.Material.MaterialName))
             .ForMember(dest => dest.SubmittedDate, opt => opt.MapFrom(src => src.CreatedOn))
             .ForMember(dest => dest.ApplicationType, opt => opt.MapFrom(src => src.RegistrationMaterial.Registration.ApplicationTypeId));
+           .ForMember(dest => dest.MaterialName, opt => opt.MapFrom(src => src.Material.MaterialName))
+           .ForMember(dest => dest.DulyMadeDate, opt => opt.MapFrom(src => src.DulyMade.DulyMadeDate))
+           .ForMember(dest => dest.DeterminationDate, opt => opt.MapFrom(src => src.DeterminationDate.DeterminateDate));
     }
 
     private static List<RegistrationTaskDto> MapTasks(List<RegulatorRegistrationTaskStatus>? registrationTasks, List<RegulatorAccreditationRegistrationTaskStatus>? accreditationTasks, ResolutionContext context)

@@ -28,4 +28,5 @@ public class Accreditation
     public List<AccreditationDeterminationDate> AccreditationDulyMade { get; set; }
     public DateTime? CreatedOn { get; set; }
     public int PRNTonnage { get; set; }
+    public List<AccreditationFileUpload>? FileUploads { get; set; }
 }

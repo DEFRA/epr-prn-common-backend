@@ -241,8 +241,8 @@ namespace EPR.PRN.Backend.Data
                 new LookupRegulatorTask { Id = 24, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 2, Name = "Business Plan" },
                 new LookupRegulatorTask { Id = 25, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 2, Name = "Accreditation sampling and inspection plan" },
                 new LookupRegulatorTask { Id = 26, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 2, Name = "Overseas reprocessing sites and broadly equivalent evidence" },
-                new LookupRegulatorTask { Id = 27, IsMaterialSpecific = false, ApplicationTypeId = 1, JourneyTypeId = 2, Name = "DulyMade" },
-                new LookupRegulatorTask { Id = 28, IsMaterialSpecific = false, ApplicationTypeId = 2, JourneyTypeId = 2, Name = "DulyMade" });
+                new LookupRegulatorTask { Id = 27, IsMaterialSpecific = true, ApplicationTypeId = 1, JourneyTypeId = 2, Name = "DulyMade" },
+                new LookupRegulatorTask { Id = 28, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 2, Name = "DulyMade" });
 
             modelBuilder.Entity<LookupMaterialPermit>().HasData(
                 new LookupMaterialPermit { Id = 1, Name = PermitTypes.WasteExemption },
@@ -289,6 +289,7 @@ namespace EPR.PRN.Backend.Data
         public virtual DbSet<RegistrationMaterial> RegistrationMaterials { get; set; }
         public virtual DbSet<MaterialExemptionReference> MaterialExemptionReferences { get; set; }
         public virtual DbSet<RegistrationReprocessingIO> RegistrationReprocessingIO { get; set; }
+        public virtual DbSet<DeterminationDate> DeterminationDate { get; set; }
         public virtual DbSet<DulyMade> DulyMade { get; set; }
         public virtual DbSet<RegulatorApplicationTaskStatus> RegulatorApplicationTaskStatus { get; set; }
         public virtual DbSet<RegulatorRegistrationTaskStatus> RegulatorRegistrationTaskStatus { get; set; }
