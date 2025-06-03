@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore.Query;
 
 namespace EPR.PRN.Backend.Data.Repositories.Regulator;
 
-public class RegulatorRegistrationAccreditationRepository(EprContext eprContext) : IRegulatorRegistrationAccreditationRepository
+public class RegulatorAccreditationRepository(EprContext eprContext) : IRegulatorAccreditationRepository
 {
     public async Task<Accreditation> GetAccreditationById(Guid accreditationId)
     {
@@ -32,8 +32,10 @@ public class RegulatorRegistrationAccreditationRepository(EprContext eprContext)
     public async Task AccreditationMarkAsDulyMade(Guid accreditationId, int statusId, DateTime DulyMadeDate, DateTime DeterminationDate, Guid DulyMadeBy)
     {
         var accreditation = await eprContext.Accreditations.FirstOrDefaultAsync(rm => rm.ExternalId == accreditationId);
+        
         if (accreditation is null) throw new KeyNotFoundException("Accreditation not found.");
             var material = await eprContext.RegistrationMaterials.FirstOrDefaultAsync(rm => rm.Id == accreditation.RegistrationMaterialId);
+        
         if (material is null) throw new KeyNotFoundException("Material not found.");
             var dulyMade = await eprContext.AccreditationDulyMade
                 .FirstOrDefaultAsync(rm => rm.ExternalId == material.ExternalId)

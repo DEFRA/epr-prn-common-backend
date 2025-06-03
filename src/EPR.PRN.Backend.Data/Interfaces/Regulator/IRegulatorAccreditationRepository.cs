@@ -3,7 +3,7 @@ using EPR.PRN.Backend.Data.DataModels.Registrations;
 
 namespace EPR.PRN.Backend.Data.Interfaces.Regulator;
 
-public interface IRegulatorRegistrationAccreditationRepository
+public interface IRegulatorAccreditationRepository
 {
     Task<Accreditation> GetAccreditationById(Guid accreditationId);
     Task<Accreditation> GetAccreditationPaymentFeesById(Guid accreditationId);

@@ -14,14 +14,14 @@ namespace EPR.PRN.Backend.API.UnitTests.Handlers;
 [TestClass]
 public class GetRegistrationAccreditationPaymentFeesByIdHandlerTests
 {
-    private Mock<IRegulatorRegistrationAccreditationRepository> _rmRepositoryMock;
+    private Mock<IRegulatorAccreditationRepository> _rmRepositoryMock;
     private IMapper _mapper;
-    private GetRegistrationAccreditationPaymentFeesByIdHandler _handler;
+    private GetRegulatorAccreditationPaymentFeesByIdHandler _handler;
 
     [TestInitialize]
     public void TestInitialize()
     {
-        _rmRepositoryMock = new Mock<IRegulatorRegistrationAccreditationRepository>();
+        _rmRepositoryMock = new Mock<IRegulatorAccreditationRepository>();
 
         var config = new MapperConfiguration(cfg =>
         {
@@ -29,7 +29,7 @@ public class GetRegistrationAccreditationPaymentFeesByIdHandlerTests
         });
         _mapper = config.CreateMapper();
 
-        _handler = new GetRegistrationAccreditationPaymentFeesByIdHandler(_rmRepositoryMock.Object, _mapper);
+        _handler = new GetRegulatorAccreditationPaymentFeesByIdHandler(_rmRepositoryMock.Object, _mapper);
     }
 
     [TestMethod]
@@ -65,13 +65,13 @@ public class GetRegistrationAccreditationPaymentFeesByIdHandlerTests
             Regulator = "EA"
         };
 
-        var repoMock = new Mock<IRegulatorRegistrationAccreditationRepository>();
+        var repoMock = new Mock<IRegulatorAccreditationRepository>();
         repoMock.Setup(r => r.GetAccreditationPaymentFeesById(accreditationId)).ReturnsAsync(accreditation);
 
         var mapperMock = new Mock<IMapper>();
         mapperMock.Setup(m => m.Map<AccreditationPaymentFeeDetailsDto>(accreditation)).Returns(expectedDto);
 
-        var handler = new GetRegistrationAccreditationPaymentFeesByIdHandler(repoMock.Object, mapperMock.Object);
+        var handler = new GetRegulatorAccreditationPaymentFeesByIdHandler(repoMock.Object, mapperMock.Object);
 
         var query = new GetRegistrationAccreditationPaymentFeesByIdQuery { Id = accreditationId };
 

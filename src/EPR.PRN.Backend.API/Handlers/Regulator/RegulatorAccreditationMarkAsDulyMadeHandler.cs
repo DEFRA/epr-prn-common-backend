@@ -6,7 +6,7 @@ using MediatR;
 namespace EPR.PRN.Backend.API.Handlers.Regulator;
 
 public class RegulatorAccreditationMarkAsDulyMadeHandler(
-    IRegulatorRegistrationAccreditationRepository rmRepository
+    IRegulatorAccreditationRepository rmRepository
 ) : IRequestHandler<RegulatorAccreditationMarkAsDulyMadeCommand>
 {
     public async Task Handle(RegulatorAccreditationMarkAsDulyMadeCommand request, CancellationToken cancellationToken)

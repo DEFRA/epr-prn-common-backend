@@ -10,10 +10,10 @@ using Microsoft.EntityFrameworkCore;
 namespace EPR.PRN.Backend.Data.UnitTests.Repositories.Regulator;
 
 [TestClass]
-public class RegistrationAccreditationRepositoryTests
+public class RegulatorAccreditationRepositoryTests
 {
     private EprContext _context;
-    private IRegulatorRegistrationAccreditationRepository _repository;
+    private IRegulatorAccreditationRepository _repository;
 
     [TestInitialize]
     public void TestInitialize()
@@ -23,7 +23,7 @@ public class RegistrationAccreditationRepositoryTests
                         .Options;
 
         _context = new EprContext(options);
-        _repository = new RegulatorRegistrationAccreditationRepository(_context);
+        _repository = new RegulatorAccreditationRepository(_context);
 
         SeedDatabase();
     }

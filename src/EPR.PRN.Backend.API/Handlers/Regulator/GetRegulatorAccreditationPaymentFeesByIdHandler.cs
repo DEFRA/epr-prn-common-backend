@@ -7,8 +7,8 @@ using MediatR;
 
 namespace EPR.PRN.Backend.API.Handlers.Regulator;
 
-public class GetRegistrationAccreditationPaymentFeesByIdHandler(
-    IRegulatorRegistrationAccreditationRepository repo,
+public class GetRegulatorAccreditationPaymentFeesByIdHandler(
+    IRegulatorAccreditationRepository repo,
     IMapper mapper
 ) : IRequestHandler<GetRegistrationAccreditationPaymentFeesByIdQuery, AccreditationPaymentFeeDetailsDto>
 {
