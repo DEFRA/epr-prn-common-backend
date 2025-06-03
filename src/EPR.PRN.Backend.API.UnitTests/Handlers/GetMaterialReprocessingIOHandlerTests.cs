@@ -66,7 +66,7 @@ public class GetMaterialReprocessingIOHandlerTests
         };
 
         _rmRepositoryMock
-            .Setup(r => r.GetRegistrationMaterial_RegistrationReprocessingIOById(materialId))
+            .Setup(r => r.GetRegistrationMaterialById(materialId))
             .ReturnsAsync(materialEntity);
 
         // Act

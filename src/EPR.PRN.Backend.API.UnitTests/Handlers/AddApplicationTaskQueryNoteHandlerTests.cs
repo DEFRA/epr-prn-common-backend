@@ -33,7 +33,7 @@ public class AddApplicationTaskQueryNoteCommandHandlerTests
         // Assert
         _mockRepository.Verify(r => r.AddApplicationTaskQueryNoteAsync(
             command.RegulatorApplicationTaskStatusId,
-            command.QueryBy,
+            command.CreatedBy,
             command.Note), Times.Once);
     }
 
@@ -59,7 +59,7 @@ public class AddApplicationTaskQueryNoteCommandHandlerTests
         var command = new AddApplicationTaskQueryNoteCommand
         {
             RegulatorApplicationTaskStatusId = Guid.NewGuid(),
-            QueryBy = Guid.NewGuid(),
+            CreatedBy = Guid.NewGuid(),
             Note = string.Empty // technically valid depending on validation
         };
 
@@ -69,7 +69,7 @@ public class AddApplicationTaskQueryNoteCommandHandlerTests
         // Assert
         _mockRepository.Verify(r => r.AddApplicationTaskQueryNoteAsync(
             command.RegulatorApplicationTaskStatusId,
-            command.QueryBy,
+            command.CreatedBy,
             command.Note), Times.Once);
     }
 
@@ -93,7 +93,7 @@ public class AddApplicationTaskQueryNoteCommandHandlerTests
         var command = new AddApplicationTaskQueryNoteCommand
         {
             RegulatorApplicationTaskStatusId = Guid.Empty,
-            QueryBy = Guid.Empty,
+            CreatedBy = Guid.Empty,
             Note = "Some note"
         };
 
@@ -103,7 +103,7 @@ public class AddApplicationTaskQueryNoteCommandHandlerTests
         // Assert
         _mockRepository.Verify(r => r.AddApplicationTaskQueryNoteAsync(
             command.RegulatorApplicationTaskStatusId,
-            command.QueryBy,
+            command.CreatedBy,
             command.Note), Times.Once);
     }
 }

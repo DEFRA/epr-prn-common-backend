@@ -97,7 +97,7 @@ public class RegulatorRegistrationTaskStatusControllerTests
         var command = new AddRegistrationTaskQueryNoteCommand
         {
             Note = "This is a valid note",
-            QueryBy = Guid.NewGuid()
+            CreatedBy = Guid.NewGuid()
         };
 
         // Act
@@ -116,7 +116,7 @@ public class RegulatorRegistrationTaskStatusControllerTests
         var command = new AddRegistrationTaskQueryNoteCommand()
         {
             Note = "", // Invalid note
-            QueryBy = Guid.Empty // Invalid QueryBy
+            CreatedBy = Guid.Empty // Invalid QueryBy
         };
 
         // Assert
@@ -134,7 +134,7 @@ public class RegulatorRegistrationTaskStatusControllerTests
         var command = new AddRegistrationTaskQueryNoteCommand
         {
             Note = "Some valid note",
-            QueryBy = Guid.NewGuid()
+            CreatedBy = Guid.NewGuid()
         };
 
         _mockMediator.Setup(x => x.Send(It.IsAny<AddRegistrationTaskQueryNoteCommand>(), It.IsAny<CancellationToken>()))
