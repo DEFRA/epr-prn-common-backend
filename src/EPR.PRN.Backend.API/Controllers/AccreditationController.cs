@@ -1,5 +1,6 @@
 ﻿namespace EPR.PRN.Backend.API.Controllers;
 
+using System.Diagnostics.CodeAnalysis;
 using EPR.PRN.Backend.API.Common.Constants;
 using EPR.PRN.Backend.API.Dto.Accreditation;
 using EPR.PRN.Backend.API.Services.Interfaces;
@@ -60,5 +61,16 @@ public class AccreditationController(IAccreditationService accreditationService)
         var accreditation = await accreditationService.GetAccreditationById(externalId);
 
         return Ok(accreditation);
+    }
+
+    [HttpPost("clear-down-database")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ExcludeFromCodeCoverage]
+    public async Task<IActionResult> ClearDownDatabase()
+    {
+        // Temporary: Aid to QA whilst Accreditation uses in-memory database.
+        await accreditationService.ClearDownDatabase();
+
+        return Ok();
     }
 }
