@@ -190,6 +190,8 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
                 .Include(rm => rm.FileUploads)!
                 .ThenInclude(fu => fu.FileUploadStatus)
                 .Include(rm => rm.Tasks)!
+                .ThenInclude(t => t.Task)
+                .Include(rm => rm.Tasks)!
                 .ThenInclude(q => q.ApplicationTaskStatusQueryNotes)!
                 .ThenInclude(qn => qn.Note)
                 .Include(rm => rm.Material);
