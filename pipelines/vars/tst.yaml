@@ -1,6 +1,10 @@
 variables:
   azureSubscription: 'AZD-RWD-TST1'
-  docker.imageName: 'epraccreditationbackend'
+  docker.imageName: 'eprprncommonbackend'
   acr.azureContainerRegistryName: 'tstrwdinfac1401'
-  acr.repositoryName: 'epraccreditationbackendrepository'
+  acr.repositoryName: 'eprprncommonbackendrepository'
   serviceName: 'tstrwdwebwa1418'
+  kvName: TSTRWDINFKV1401
+  sqlDBserver: 'tstrwddbssq1401.database.windows.net'
+  sqlDB: 'tst1_prn'
+  acr.Subscription: 'AZD-RWD-TST1'
