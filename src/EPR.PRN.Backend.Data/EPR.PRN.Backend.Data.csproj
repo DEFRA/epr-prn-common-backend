@@ -1,0 +1,48 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+	</PropertyGroup>
+	<Target Name="GenerateSqlScript" AfterTargets="AfterBuild" Condition="$(AzureBuild) != true">
+		<Exec Condition="$(Configuration) == Release" Command="dotnet-ef migrations script --configuration Release --verbose --no-build --context EPR.PRN.Backend.Data.EprContext --idempotent --output Scripts/migrations.sql" />
+	</Target>
+	<ItemGroup>
+		<PackageReference Include="AutoMapper" Version="14.0.0" />
+		<PackageReference Include="Azure.Identity" Version="1.12.0" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.8" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.8">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="8.0.8" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.8" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.8">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="System.Formats.Asn1" Version="8.0.1" />
+	</ItemGroup>
+	<ItemGroup>
+	  <ProjectReference Include="..\EPR.PRN.Backend.API.Common\EPR.PRN.Backend.API.Common.csproj" />
+	</ItemGroup>
+	<ItemGroup>
+		
+		<SonarQubeSetting Include="sonar.coverage.exclusions">
+			<Value>Migrations/*,Scripts/*</Value>
+		</SonarQubeSetting>
+	</ItemGroup>
+
+	<ItemGroup>
+		<SonarQubeSetting Include="sonar.cpd.exclusions">
+			<Value>Migrations/*,Scripts/*</Value>
+		</SonarQubeSetting>
+	</ItemGroup>
+
+	<ItemGroup>
+		<SonarQubeSetting Include="sonar.exclusions">
+			<Value>Scripts/*,SeedData/**</Value>
+		</SonarQubeSetting>
+	</ItemGroup>
+</Project>
