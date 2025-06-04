@@ -90,9 +90,6 @@ public class RegistrationMaterialProfile : Profile
             .ForMember(dest => dest.QueryNotes, opt => opt.MapFrom(src => GetApplicationTaskNotes(src.Tasks, RegulatorTaskNames.ReprocessingInputsAndOutputs)));
 
         CreateMap<RegistrationMaterial, RegistrationMaterialSamplingPlanDto>()
-            .ForMember(dest => dest.MaterialName, opt => opt.MapFrom(src => src.Material.MaterialName));
-
-        CreateMap<RegistrationMaterial, RegistrationMaterialSamplingPlanDto>()
             .ForMember(dest => dest.MaterialName, opt => opt.MapFrom(src => src.Material.MaterialName))
             .ForMember(dest => dest.Files, opt => opt.MapFrom(src => src.FileUploads))
             .ForMember(dest => dest.RegistrationMaterialId, opt => opt.MapFrom(src => src.ExternalId))

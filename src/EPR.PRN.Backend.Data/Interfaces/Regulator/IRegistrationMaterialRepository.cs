@@ -6,7 +6,7 @@ public interface IRegistrationMaterialRepository
 {
     Task<Registration> GetRegistrationById(Guid registrationId);
     Task<Registration> GetRegistrationByExternalIdAndYear(Guid externalId, int? year);
-
+    Task<RegistrationMaterial> GetRegistrationMaterial_FileUploadById(Guid registrationMaterialId);
     Task<List<LookupRegulatorTask>> GetRequiredTasks(int applicationTypeId, bool isMaterialSpecific, int journeyTypeId);
 
     Task<RegistrationMaterial> GetRegistrationMaterialById(Guid registrationMaterialId);
@@ -14,5 +14,4 @@ public interface IRegistrationMaterialRepository
     Task UpdateRegistrationOutCome(Guid registrationMaterialId, int statusId, string? comment, string? registrationReferenceNumber);
     Task RegistrationMaterialsMarkAsDulyMade(Guid registrationMaterialId, int statusId, DateTime DeterminationDate,
             DateTime DulyMadeDate,Guid DulyMadeBy);
-    
 }
