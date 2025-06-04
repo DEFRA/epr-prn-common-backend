@@ -12,7 +12,8 @@ public class MaterialExemptionReferenceService(
     private readonly ILogger<MaterialExemptionReferenceService> _logger = logger;
     private readonly IMaterialExemptionReferenceRepository _materialRepository = exemptionReferenceRepository;
    
-    public Task<bool> CreateMaterialExemptionReferenceAsync(List<MaterialExemptionReferenceRequest> materialExemptionReferences, CancellationToken cancellationToken)
+    public Task<bool> CreateMaterialExemptionReferenceAsync(List<MaterialExemptionReferenceRequest> 
+        materialExemptionReferences, CancellationToken cancellationToken)
     {       
         var exemptions = materialExemptionReferences.Select(exemption => new MaterialExemptionReference
         {
