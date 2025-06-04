@@ -47,7 +47,7 @@ namespace EPR.PRN.Backend.Data.Repositories.Regulator
                     throw new KeyNotFoundException("Registration not found.");
 
 
-                var task = _context.LookupTasks.SingleOrDefault(t => t.Name == TaskName && !t.IsMaterialSpecific && t.ApplicationTypeId == registration.ApplicationTypeId);
+                var task = _context.LookupTasks.SingleOrDefault(t => t.Name == TaskName && t.IsMaterialSpecific && t.ApplicationTypeId == registration.ApplicationTypeId);
                 
                 if (task == null)
                     throw new RegulatorInvalidOperationException($"No Valid Task Exists: {TaskName}");
