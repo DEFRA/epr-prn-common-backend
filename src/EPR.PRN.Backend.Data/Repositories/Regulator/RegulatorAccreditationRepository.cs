@@ -23,7 +23,7 @@ public class RegulatorAccreditationRepository(EprContext eprContext) : IRegulato
                 .ThenInclude(rm => rm.Material)
             .Include(a => a.RegistrationMaterial)
                 .ThenInclude(rm => rm.Registration)
-                    .ThenInclude(r => r.BusinessAddress)
+                    .ThenInclude(r => r.ReprocessingSiteAddress)
             .Include(a => a.AccreditationStatus)
             .FirstOrDefaultAsync(a => a.ExternalId == accreditationId)
             ?? throw new KeyNotFoundException("Accreditation not found.");

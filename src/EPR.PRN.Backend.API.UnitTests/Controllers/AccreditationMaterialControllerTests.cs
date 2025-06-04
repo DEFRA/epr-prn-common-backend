@@ -100,7 +100,8 @@ public class AccreditationMaterialControllerTests
             SubmittedDate = DateTime.UtcNow,
             FeeAmount = 100.0m,
             ApplicationType = ApplicationOrganisationType.Reprocessor,
-            Regulator = "EA"
+            Regulator = "EA",
+            NationId = 3
         };
 
         _mediatorMock

@@ -131,12 +131,13 @@ public class RegistrationMaterialProfile : Profile
             .ForMember(dest => dest.AccreditationId, opt => opt.MapFrom(src => src.ExternalId))
             .ForMember(dest => dest.OrganisationName, opt => opt.MapFrom(src => src.RegistrationMaterial.Registration.OrganisationId))
             .ForMember(dest => dest.SiteAddress, opt => opt.MapFrom(src =>
-             src.RegistrationMaterial.Registration.BusinessAddress != null ? CreateAddressString(src.RegistrationMaterial.Registration.BusinessAddress)
+             src.RegistrationMaterial.Registration.ReprocessingSiteAddress != null ? CreateAddressString(src.RegistrationMaterial.Registration.ReprocessingSiteAddress)
                 : string.Empty))
             .ForMember(dest => dest.ApplicationReferenceNumber, opt => opt.MapFrom(src => src.ApplicationReferenceNumber))
             .ForMember(dest => dest.MaterialName, opt => opt.MapFrom(src => src.RegistrationMaterial.Material.MaterialName))
             .ForMember(dest => dest.SubmittedDate, opt => opt.MapFrom(src => src.CreatedOn))
-            .ForMember(dest => dest.ApplicationType, opt => opt.MapFrom(src => src.RegistrationMaterial.Registration.ApplicationTypeId));
+            .ForMember(dest => dest.ApplicationType, opt => opt.MapFrom(src => src.RegistrationMaterial.Registration.ApplicationTypeId))
+            .ForMember(dest => dest.NationId, opt => opt.MapFrom(src => src.RegistrationMaterial.Registration.ReprocessingSiteAddress.NationId != null ? src.RegistrationMaterial.Registration.ReprocessingSiteAddress.NationId : 0));
 
 
         CreateMap<RegistrationMaterial, RegistrationMaterialWasteLicencesDto>()

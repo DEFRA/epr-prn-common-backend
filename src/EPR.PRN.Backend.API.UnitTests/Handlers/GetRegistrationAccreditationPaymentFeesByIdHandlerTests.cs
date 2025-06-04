@@ -62,7 +62,8 @@ public class GetRegistrationAccreditationPaymentFeesByIdHandlerTests
             SiteAddress = "123 Test St, Testville, TS1 1AA",
             SubmittedDate = accreditation.CreatedOn,
             ApplicationType = ApplicationOrganisationType.Reprocessor,
-            Regulator = "EA"
+            Regulator = "EA",
+            NationId = 3
         };
 
         var repoMock = new Mock<IRegulatorAccreditationRepository>();
