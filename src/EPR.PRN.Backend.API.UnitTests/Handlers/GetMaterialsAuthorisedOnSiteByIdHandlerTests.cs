@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using EPR.PRN.Backend.API.Common.Constants;
+using EPR.PRN.Backend.API.Common.Enums;
 using EPR.PRN.Backend.API.Handlers.Regulator;
 using EPR.PRN.Backend.API.Profiles.Regulator;
 using EPR.PRN.Backend.API.Queries;
@@ -77,7 +79,7 @@ public class GetMaterialsAuthorisedOnSiteByIdHandlerTests
         // Assert
         result.Should().NotBeNull();
         result.RegistrationId.Should().Be(registrationId);
-        result.SiteAddress.Should().Contain("Unit 7"); 
+        result.SiteAddress.Should().Contain("Unit 7");
         result.MaterialsAuthorisation.Should().HaveCount(2);
 
         var paper = result.MaterialsAuthorisation.First(m => m.MaterialName == "Plastic");

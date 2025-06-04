@@ -1,5 +1,6 @@
 ﻿using EPR.PRN.Backend.API.Commands;
 using EPR.PRN.Backend.API.Common.Constants;
+using EPR.PRN.Backend.API.Validators.Regulator;
 using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -31,5 +32,23 @@ public class RegulatorApplicationTaskStatusController(
         await mediator.Send(command);
 
         return NoContent();
+    }
+    [HttpPost("{Id}/queryNote")]
+    [ProducesResponseType(204)]
+    [ProducesResponseType(400)]
+    [ProducesResponseType(500)]
+    public async Task<IActionResult> AddApplicationTaskQueryNote(Guid Id, [FromBody] AddApplicationTaskQueryNoteCommand command)
+    {
+        logger.LogInformation(LogMessages.UpdateRegulatorApplicationTask);
+
+        command.RegulatorApplicationTaskStatusId = Id;
+
+        var validator = new AddApplicationTaskQueryNoteCommandValidator();
+        await validator.ValidateAndThrowAsync(command);
+
+        await mediator.Send(command);
+
+        return NoContent();
+
     }
 }

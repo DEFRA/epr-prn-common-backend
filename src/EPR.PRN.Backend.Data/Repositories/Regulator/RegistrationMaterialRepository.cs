@@ -38,30 +38,6 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
                ?? throw new KeyNotFoundException("Material not found.");
     }
 
-    public async Task<RegistrationMaterial> GetRegistrationMaterial_WasteLicencesById(Guid registrationMaterialId)
-    {
-        var registrationMaterials = GetRegistrationMaterialsWithRelatedEntities_WasteLicences();
-
-        return await registrationMaterials.SingleOrDefaultAsync(rm => rm.ExternalId == registrationMaterialId)
-               ?? throw new KeyNotFoundException("Material not found.");
-    }
-
-    public async Task<RegistrationMaterial> GetRegistrationMaterial_RegistrationReprocessingIOById(Guid registrationMaterialId)
-    {
-        var registrationMaterials = GetRegistrationMaterialsWithRelatedEntities_RegistrationReprocessingIO();
-
-        return await registrationMaterials.SingleOrDefaultAsync(rm => rm.ExternalId == registrationMaterialId)
-               ?? throw new KeyNotFoundException("Material not found.");
-    }
-
-    public async Task<RegistrationMaterial> GetRegistrationMaterial_FileUploadById(Guid registrationMaterialId)
-    {
-        var registrationMaterials = GetRegistrationMaterial_FileUploadById();
-
-        return await registrationMaterials.SingleOrDefaultAsync(rm => rm.ExternalId == registrationMaterialId)
-               ?? throw new KeyNotFoundException("Material not found.");
-    }
-
     public async Task<Accreditation> GetAccreditation_FileUploadById(Guid accreditationId)
     {
         var accreditations = GetAccreditation_FileUploadById();        
@@ -101,7 +77,7 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
             throw new KeyNotFoundException("Registration not found.");
 
         var determinationDate = await eprContext.DeterminationDate
-    .FirstOrDefaultAsync(x => x.RegistrationMaterialId == material.RegistrationId) 
+    .FirstOrDefaultAsync(x => x.RegistrationMaterialId == material.RegistrationId)
     ?? new DeterminationDate
     {
         DeterminateDate = DeterminationDate,
@@ -111,35 +87,51 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
     };
 
         var applicationTypeId = registration.ApplicationTypeId;
-
-
+        
         var taskid = await eprContext.LookupTasks
             .Where(t => t.Name == "CheckRegistrationStatus" && t.ApplicationTypeId == applicationTypeId)
             .Select(t => t.Id)
             .FirstOrDefaultAsync();
-        var regulatorApplicationTaskStatus = new RegulatorApplicationTaskStatus
-        {
-            RegistrationMaterialId = material.Id,
-            TaskStatusId = statusId,
-            ExternalId = material.ExternalId,
-            RegulatorTaskId = taskid,
-            StatusCreatedDate = DateTime.UtcNow,
-            StatusUpdatedBy = DulyMadeBy
 
-        };
+        var regulatorApplicationTaskStatus =
+            await eprContext.RegulatorApplicationTaskStatus.FirstOrDefaultAsync(x =>
+                x.RegistrationMaterialId == material.Id && x.RegulatorTaskId == taskid);
+
+        if (regulatorApplicationTaskStatus != null)
+        {
+            regulatorApplicationTaskStatus.TaskStatusId = statusId;
+            regulatorApplicationTaskStatus.StatusUpdatedBy = DulyMadeBy;
+            regulatorApplicationTaskStatus.StatusUpdatedDate = DateTime.UtcNow;
+        }
+        else
+        {
+            regulatorApplicationTaskStatus = new RegulatorApplicationTaskStatus
+            {
+                RegistrationMaterialId = material.Id,
+                TaskStatusId = statusId,
+                ExternalId = Guid.NewGuid(),
+                RegulatorTaskId = taskid,
+                StatusCreatedDate = DateTime.UtcNow,
+                StatusUpdatedBy = DulyMadeBy
+            };
+        }
 
         // Set/update the fields
         dulyMade.TaskStatusId = statusId;
         dulyMade.DulyMadeDate = DulyMadeDate;
         determinationDate.DeterminateDate = DeterminationDate;
         dulyMade.DulyMadeBy = DulyMadeBy;
-        dulyMade.ExternalId = material.ExternalId;
+        dulyMade.ExternalId = Guid.NewGuid();
 
         // If this is a new entity, add it to the context
+        if (regulatorApplicationTaskStatus.Id == 0)
+        {
+            await eprContext.RegulatorApplicationTaskStatus.AddAsync(regulatorApplicationTaskStatus);
+        }
+
         if (dulyMade.Id == 0)
         {
             await eprContext.DulyMade.AddAsync(dulyMade);
-            await eprContext.RegulatorApplicationTaskStatus.AddAsync(regulatorApplicationTaskStatus);
         }
 
         if (determinationDate.Id == 0)
@@ -151,6 +143,8 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
         await eprContext.SaveChangesAsync();
     }
 
+
+
     private IIncludableQueryable<RegistrationMaterial, LookupRegistrationMaterialStatus> GetRegistrationMaterialsWithRelatedEntities()
     {
         var registrationMaterials =
@@ -161,55 +155,16 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
                 .ThenInclude(r => r.ReprocessingSiteAddress)
             .Include(rm => rm.Registration)
                 .ThenInclude(r => r.BusinessAddress)
-             .Include(rm => rm.Registration)
+            .Include(rm => rm.PermitType)
+            .Include(rm => rm.Registration)
                 .ThenInclude(r => r.LegalDocumentAddress)
+            .Include(rm => rm.Tasks)!
+                .ThenInclude(q => q.ApplicationTaskStatusQueryNotes)!
+                .ThenInclude(qn => qn.Note)
+            .Include(rm => rm.Tasks)!
+                .ThenInclude(q => q.Task)
             .Include(rm => rm.Material)
             .Include(rm => rm.Status);
-
-        return registrationMaterials;
-    }
-
-    private IIncludableQueryable<RegistrationMaterial, LookupMaterial> GetRegistrationMaterialsWithRelatedEntities_WasteLicences()
-    {
-        var registrationMaterials =
-            eprContext.RegistrationMaterials
-            .AsNoTracking()
-            .AsSplitQuery()
-            .Include(rm => rm.MaterialExemptionReferences)
-            .Include(rm => rm.PPCPeriod)
-            .Include(rm => rm.WasteManagementPeriod)
-            .Include(rm => rm.InstallationPeriod)
-            .Include(rm => rm.EnvironmentalPermitWasteManagementPeriod)
-            .Include(rm => rm.MaximumReprocessingPeriod)
-            .Include(rm => rm.PermitType)
-            .Include(rm => rm.Material);
-
-        return registrationMaterials;
-    }
-
-    private IIncludableQueryable<RegistrationMaterial, LookupMaterial> GetRegistrationMaterialsWithRelatedEntities_RegistrationReprocessingIO()
-    {
-        var registrationMaterials =
-            eprContext.RegistrationMaterials
-            .AsNoTracking()
-            .AsSplitQuery()
-            .Include(rm => rm.RegistrationReprocessingIO)
-            .Include(rm => rm.Material);
-
-        return registrationMaterials;
-    }
-
-    private IIncludableQueryable<RegistrationMaterial, LookupMaterial> GetRegistrationMaterial_FileUploadById()
-    {
-        var registrationMaterials =
-            eprContext.RegistrationMaterials
-            .AsNoTracking()
-            .AsSplitQuery()
-            .Include(rm => rm.FileUploads)!
-            .ThenInclude(fu => fu.FileUploadType)
-            .Include(rm => rm.FileUploads)!
-            .ThenInclude(fu => fu.FileUploadStatus)
-            .Include(rm => rm.Material);
 
         return registrationMaterials;
     }
@@ -243,6 +198,9 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
                 .ThenInclude(t => t.TaskStatus)
             .Include(r => r.Tasks)!
                 .ThenInclude(t => t.Task)
+            .Include(r => r.Tasks)!
+                   .ThenInclude(t => t.RegistrationTaskStatusQueryNotes)
+                   .ThenInclude(t => t.QueryNote)
             .Include(r => r.Materials)!
                 .ThenInclude(m => m.Tasks)!
                 .ThenInclude(t => t.TaskStatus)
@@ -251,6 +209,10 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
             .Include(r => r.Materials)!
                 .ThenInclude(m => m.Tasks)!
                 .ThenInclude(t => t.Task)
+            .Include(r => r.Materials)!
+                .ThenInclude(rm => rm.Tasks)!
+                .ThenInclude(q => q.ApplicationTaskStatusQueryNotes)!
+                .ThenInclude(qn => qn.Note)
              .Include(r => r.Materials)!
                 .ThenInclude(rm => rm.Status);
 
@@ -296,7 +258,7 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
 
             return registrations;
         }
-        else 
+        else
         {
             var registrations = eprContext
                 .Registrations
@@ -309,16 +271,16 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
                     .ThenInclude(t => t.TaskStatus)
                 .Include(r => r.AccreditationTasks!)!
                     .ThenInclude(t => t.Task)
-
+                .Include(r => r.Tasks)!
+                   .ThenInclude(t => t.RegistrationTaskStatusQueryNotes)
+                   .ThenInclude(t => t.QueryNote)
                 .Include(r => r.Materials)!
                     .ThenInclude(m => m.Material)
                 .Include(r => r.Materials)!
                     .ThenInclude(rm => rm.Status)
-
                 .Include(r => r.Materials)!
                     .ThenInclude(rm => rm.Accreditations)!
                         .ThenInclude(a => a.AccreditationDulyMade)
-
                 .Include(r => r.Materials)!
                     .ThenInclude(rm => rm.Accreditations)!
                         .ThenInclude(a => a.Tasks)!
@@ -327,14 +289,16 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
                     .ThenInclude(rm => rm.Accreditations)!
                         .ThenInclude(a => a.Tasks)!
                             .ThenInclude(t => t.TaskStatus)
+                  .Include(r => r.Materials)!
+                        .ThenInclude(rm => rm.Tasks)!
+                            .ThenInclude(q => q.ApplicationTaskStatusQueryNotes)!
+                            .ThenInclude(qn => qn.Note)
                 .Include(r => r.Materials)!
                     .ThenInclude(rm => rm.Accreditations)!
                         .ThenInclude(a => a.AccreditationStatus);
 
             return registrations;
         }
-            
-    }
 
- 
+    }
 }

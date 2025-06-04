@@ -14,7 +14,6 @@ public class GetMaterialPaymentInfoByIdHandler(
     public async Task<MaterialPaymentFeeDto> Handle(GetMaterialPaymentFeeByIdQuery request, CancellationToken cancellationToken)
     {
         var registrationMaterial = await rmRepository.GetRegistrationMaterialById(request.Id);
-
         var materialPaymentFeeDto = registrationMaterial != null ? mapper.Map<MaterialPaymentFeeDto>(registrationMaterial) : new MaterialPaymentFeeDto();
 
         return materialPaymentFeeDto;
