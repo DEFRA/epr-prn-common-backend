@@ -175,6 +175,7 @@ public class RegistrationMaterialProfile : Profile
            .ForMember(dest => dest.NationId, opt => opt.MapFrom(src => GetNationId(src.Registration)))
            .ForMember(dest => dest.MaterialName, opt => opt.MapFrom(src => src.Material.MaterialName))
            .ForMember(dest => dest.DeterminationDate, opt => opt.MapFrom(src => src.DeterminationDate != null ? src.DeterminationDate.DeterminateDate : null))
+           .ForMember(dest => dest.DulyMadeDate, opt => opt.MapFrom(src => src.DulyMade!.DulyMadeDate))
            .ForMember(dest => dest.RegulatorApplicationTaskStatusId, opt => opt.MapFrom(src => GetApplicationTaskExternalId(src.Tasks, RegulatorTaskNames.CheckRegistrationStatus)))
            .ForMember(dest => dest.TaskStatus, opt => opt.MapFrom(src => GetApplicationTaskStatus(src.Tasks, RegulatorTaskNames.CheckRegistrationStatus)))
            .ForMember(dest => dest.QueryNotes, opt => opt.MapFrom(src => GetApplicationTaskNotes(src.Tasks, RegulatorTaskNames.CheckRegistrationStatus)));
