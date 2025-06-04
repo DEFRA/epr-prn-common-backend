@@ -2,7 +2,8 @@
 BEGIN TRY
 
     BEGIN TRANSACTION;
- 
+
+    DELETE FROM [dbo].[Public.Note] 
     DELETE FROM [dbo].[Public.ApplicationTaskStatusQueryNote]
     DELETE FROM [dbo].[Public.RegistrationTaskStatusQueryNote]
 	DELETE FROM [dbo].[Public.RegulatorApplicationTaskStatus]
@@ -21,7 +22,6 @@ BEGIN TRY
     DELETE FROM [dbo].[Public.RegulatorAccreditationTaskStatus]
     DELETE FROM [dbo].[Public.RegulatorApplicationTaskStatus]
     DELETE FROM [dbo].[Public.RegulatorRegistrationTaskStatus]
-    DELETE FROM [dbo].[Public.Note]
 
 	
     COMMIT TRANSACTION;

@@ -9,8 +9,6 @@
 		<Exec Condition="$(Configuration) == Release" Command="dotnet-ef migrations script --configuration Release --verbose --no-build --context EPR.PRN.Backend.Data.EprContext --idempotent --output Scripts/migrations.sql" />
 	</Target>
 	<ItemGroup>
-	  <Compile Remove="Migrations\20250603090535_AccreditationDulyMade.cs" />
-	  <Compile Remove="Migrations\20250603090535_AccreditationDulyMade.Designer.cs" />
 	</ItemGroup>
 	<ItemGroup>
 		<PackageReference Include="AutoMapper" Version="14.0.0" />

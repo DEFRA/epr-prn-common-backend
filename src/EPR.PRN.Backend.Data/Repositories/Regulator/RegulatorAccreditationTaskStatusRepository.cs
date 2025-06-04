@@ -31,6 +31,7 @@ namespace EPR.PRN.Backend.Data.Repositories.Regulator
             var taskStatus = await GetTaskStatus(TaskName, AccreditationId);
 
             var statusEntity = _context.LookupTaskStatuses.Single(lts => lts.Name == status.ToString());
+            
             if (taskStatus == null)
             {
                 var accreditation = await _context.Accreditations
@@ -48,7 +49,7 @@ namespace EPR.PRN.Backend.Data.Repositories.Regulator
 
 
                 var task = _context.LookupTasks.SingleOrDefault(t => t.Name == TaskName && t.IsMaterialSpecific && t.ApplicationTypeId == registration.ApplicationTypeId);
-                
+
                 if (task == null)
                     throw new RegulatorInvalidOperationException($"No Valid Task Exists: {TaskName}");
 
@@ -66,6 +67,24 @@ namespace EPR.PRN.Backend.Data.Repositories.Regulator
                 };
 
                 await _context.RegulatorAccreditationTaskStatus.AddAsync(taskStatus);
+
+
+                if (comments != null && status == RegulatorTaskStatus.Queried)
+                {
+                    var queryNote = new Note
+                    {
+                        Notes = comments,
+                        CreatedBy = user,
+                        CreatedDate = DateTime.UtcNow
+                    };
+                    await _context.QueryNote.AddAsync(queryNote);
+                    var accreditationTaskStatusQueryNotes = new AccreditationTaskStatusQueryNote
+                    {
+                        Note = queryNote,
+                        RegulatorAccreditationTaskStatus = taskStatus
+                    };
+                    await _context.AccreditationTaskStatusQueryNote.AddAsync(accreditationTaskStatusQueryNotes);
+                }
             }
             else
             {
@@ -80,6 +99,7 @@ namespace EPR.PRN.Backend.Data.Repositories.Regulator
             await _context.SaveChangesAsync();
             _logger.LogInformation("Successfully updated status for task with TaskName {TaskName} And AccreditationId {AccreditationId} to {Status}", TaskName, AccreditationId, status);
         }
+
         private async Task<RegulatorAccreditationTaskStatus?> GetTaskStatus(string TaskName, Guid AccreditationId)
         {
             return await _context.RegulatorAccreditationTaskStatus

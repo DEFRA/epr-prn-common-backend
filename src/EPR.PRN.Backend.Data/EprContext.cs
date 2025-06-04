@@ -307,6 +307,7 @@ namespace EPR.PRN.Backend.Data
         public virtual DbSet<Accreditation> Accreditations { get; set; }
         public virtual DbSet<AccreditationDulyMade> AccreditationDulyMade { get; set; }
         public virtual DbSet<RegulatorAccreditationTaskStatus> RegulatorAccreditationTaskStatus { get; set; }
+        public virtual DbSet<AccreditationTaskStatusQueryNote> AccreditationTaskStatusQueryNote { get; set; }
 
     }
 }
