@@ -526,8 +526,24 @@ public class RegistrationMaterialRepositoryTests
             updated.RegistrationReferenceNumber.Should().BeNull();
         }
     }
-   
-       
+
+    [TestMethod]
+    public async Task GetRegistrationMaterial_FileUploadById_ShouldReturnMaterial_WhenExists()
+    {
+        var material = await _repository.GetRegistrationMaterial_FileUploadById(Guid.Parse("a9421fc1-a912-42ee-85a5-3e06408759a9"));
+        using (new AssertionScope())
+        {
+            Assert.IsNotNull(material);
+            Assert.AreEqual("REF12345", material.RegistrationReferenceNumber);
+        }
+    }
+
+    [TestMethod]
+    public async Task GetRegistrationMaterial_FileUploadById_ShouldThrow_WhenNotFound()
+    {
+        await Assert.ThrowsExceptionAsync<KeyNotFoundException>(() => _repository.GetRegistrationMaterial_FileUploadById(Guid.Parse("cd9dcc80-fcf5-4f46-addd-b8a256f735a3")));
+    }
+
     [TestCleanup]
     public void Cleanup()
     {
