@@ -71,6 +71,7 @@ public class AccreditationRepository(EprAccreditationContext eprContext) : IAccr
         existingAccreditation.NewMarketsNotes = accreditation.NewMarketsNotes;
         existingAccreditation.CommunicationsNotes = accreditation.CommunicationsNotes;
         existingAccreditation.OtherNotes = accreditation.OtherNotes;
+        existingAccreditation.BusinessPlanConfirmed = accreditation.BusinessPlanConfirmed;
         existingAccreditation.UpdatedBy = accreditation.UpdatedBy;
         existingAccreditation.UpdatedDate = DateTime.UtcNow;
 

@@ -30,5 +30,6 @@ namespace EPR.PRN.Backend.API.Dto.Accreditation
         public string? NewMarketsNotes { get; set; }
         public string? CommunicationsNotes { get; set; }
         public string? OtherNotes { get; set; }
+        public bool BusinessPlanConfirmed { get; set; }
     }
 }
