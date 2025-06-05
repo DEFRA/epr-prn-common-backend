@@ -3471,7 +3471,7 @@ INSERT [dbo].[Public.Accreditation] ([Id], [ExternalId], [RegistrationMaterialId
 GO
 INSERT [dbo].[Public.Accreditation] ([Id], [ExternalId], [RegistrationMaterialId], [AccreditationYear], [AccreditationStatusId], [ApplicationReferenceNumber], [CreatedOn], [PRNTonnage]) VALUES (20, N'cf1ecbcb-6476-4f12-91be-cdddbd1322c5', 358, 2025, 10, N'Ref20', CAST(N'2025-01-01T00:00:00.0000000' AS DateTime2), 4)
 GO
-INSERT [dbo].[Public.Accreditation] ([Id], [ExternalId], [RegistrationMaterialId], [AccreditationYear], [AccreditationStatusId], [ApplicationReferenceNumber], [CreatedOn], [PRNTonnage]) VALUES (21, N'a7c10f98-c940-48e2-8a29-2786c7cc5bef', 328, 2026, 2, N'Ref21', CAST(N'2025-01-01T00:00:00.0000000' AS DateTime2), 1)
+INSERT [dbo].[Public.Accreditation] ([Id], [ExternalId], [RegistrationMaterialId], [AccreditationYear], [AccreditationStatusId], [ApplicationReferenceNumber], [CreatedOn], [PRNTonnage]) VALUES (21, N'32d113cd-6943-45d4-81d6-f86c51b64b14', 328, 2026, 2, N'Ref21', CAST(N'2025-01-01T00:00:00.0000000' AS DateTime2), 1)
 GO
 INSERT [dbo].[Public.Accreditation] ([Id], [ExternalId], [RegistrationMaterialId], [AccreditationYear], [AccreditationStatusId], [ApplicationReferenceNumber], [CreatedOn], [PRNTonnage]) VALUES (22, N'fa75afba-c754-4f0f-be31-21b274a27c76', 329, 2025, 3, N'Ref22', CAST(N'2025-01-01T00:00:00.0000000' AS DateTime2), 2)
 GO
