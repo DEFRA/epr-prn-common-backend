@@ -1,5 +1,3 @@
-using AutoFixture;
-using EPR.PRN.Backend.API.Repositories.Interfaces;
 using EPR.PRN.Backend.API.Services;
 using EPR.PRN.Backend.Data.DataModels.Registrations;
 using EPR.PRN.Backend.Data.Interfaces;
@@ -67,6 +65,7 @@ public class MaterialExemptionReferenceServiceTests
         // Assert  
         Assert.IsFalse(result);
     }
+    
     [TestMethod]
     public async Task CreateMaterialExemptionReferenceAsync_EmptyList_ReturnsFalse()
     {
@@ -80,6 +79,7 @@ public class MaterialExemptionReferenceServiceTests
         // Assert  
         Assert.IsFalse(result);
     }
+    
     [TestMethod]
     public async Task CreateMaterialExemptionReferenceAsync_RepositoryReturnsFalse_ReturnsFalse()
     {
@@ -103,5 +103,4 @@ public class MaterialExemptionReferenceServiceTests
         // Assert
         Assert.IsFalse(result); 
     }
-
 }
