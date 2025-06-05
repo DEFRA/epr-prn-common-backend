@@ -38,6 +38,14 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
                ?? throw new KeyNotFoundException("Material not found.");
     }
 
+    public async Task<RegistrationMaterial> GetRegistrationMaterial_FileUploadById(Guid registrationMaterialId)
+    {
+        var registrationMaterials = GetRegistrationMaterial_FileUploadById();
+
+        return await registrationMaterials.SingleOrDefaultAsync(rm => rm.ExternalId == registrationMaterialId)
+               ?? throw new KeyNotFoundException("Material not found.");
+    }
+
     public async Task<Accreditation> GetAccreditation_FileUploadById(Guid accreditationId)
     {
         var accreditations = GetAccreditation_FileUploadById();        
@@ -165,6 +173,28 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
                 .ThenInclude(q => q.Task)
             .Include(rm => rm.Material)
             .Include(rm => rm.Status);
+
+        return registrationMaterials;
+    }
+
+    private IIncludableQueryable<RegistrationMaterial, LookupMaterial> GetRegistrationMaterial_FileUploadById()
+    {
+        var registrationMaterials =
+            eprContext.RegistrationMaterials
+                .AsNoTracking()
+                .AsSplitQuery()
+                .Include(rm => rm.Registration)
+                .ThenInclude(r => r.ReprocessingSiteAddress)
+                .Include(rm => rm.FileUploads)!
+                .ThenInclude(fu => fu.FileUploadType)
+                .Include(rm => rm.FileUploads)!
+                .ThenInclude(fu => fu.FileUploadStatus)
+                .Include(rm => rm.Tasks)!
+                .ThenInclude(t => t.Task)
+                .Include(rm => rm.Tasks)!
+                .ThenInclude(q => q.ApplicationTaskStatusQueryNotes)!
+                .ThenInclude(qn => qn.Note)
+                .Include(rm => rm.Material);
 
         return registrationMaterials;
     }
@@ -299,6 +329,5 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
 
             return registrations;
         }
-
     }
 }
