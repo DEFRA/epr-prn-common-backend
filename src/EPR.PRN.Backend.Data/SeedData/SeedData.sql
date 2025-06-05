@@ -17,6 +17,7 @@ BEGIN TRY
     DELETE FROM [dbo].[Public.Address]
     DELETE FROM [dbo].[Public.Accreditation]
     DELETE FROM [dbo].[Public.AccreditationDeterminationDate]
+    DELETE FROM [dbo].[Public.AccreditationDulyMade]
      
     DELETE FROM [dbo].[Public.RegulatorAccreditationRegistrationTaskStatus]
     DELETE FROM [dbo].[Public.RegulatorAccreditationTaskStatus]
