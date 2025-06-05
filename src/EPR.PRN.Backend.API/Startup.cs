@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.FeatureManagement;
+using EPR.PRN.Backend.API.Middlewares.Filters;
 
 namespace EPR.PRN.Backend.API
 {
@@ -52,6 +53,7 @@ namespace EPR.PRN.Backend.API
                 config.CustomSchemaIds(s => s.FullName);
                 config.DocumentFilter<FeatureEnabledDocumentFilter>();
                 config.OperationFilter<FeatureGateOperationFilter>();
+                config.OperationFilter<ResponseOperationFilter>();
             });
             services.AddFeatureManagement();
 
