@@ -51,6 +51,15 @@ public class RegulatorAccreditationRepository(EprContext eprContext) : IRegulato
         if (registration == null)
             throw new KeyNotFoundException("Registration not found.");
 
+        var determinationDate = await eprContext.AccreditationDeterminationDate
+                .FirstOrDefaultAsync(x => x.AccreditationId == accreditation.Id)
+                ?? new AccreditationDeterminationDate
+                {
+                    AccreditationId = accreditation.Id,
+                    DeterminationDate = DeterminationDate,
+                    ExternalId = Guid.NewGuid()
+                };
+
         var applicationTypeId = registration.ApplicationTypeId;
 
 
@@ -58,6 +67,7 @@ public class RegulatorAccreditationRepository(EprContext eprContext) : IRegulato
             .Where(t => t.Name == "DulyMade" && t.ApplicationTypeId == applicationTypeId)
             .Select(t => t.Id)
             .FirstOrDefaultAsync();
+
         var regulatorAccreditationTaskStatus = new RegulatorAccreditationTaskStatus
         {
             AccreditationId = accreditation.Id,
@@ -72,22 +82,24 @@ public class RegulatorAccreditationRepository(EprContext eprContext) : IRegulato
         dulyMade.TaskStatusId = statusId;
         dulyMade.DulyMadeDate = DulyMadeDate;
         dulyMade.DulyMadeBy = DulyMadeBy;
-
-        var determination = new AccreditationDeterminationDate
-        {
-            AccreditationId = accreditation.Id,
-            ExternalId = Guid.NewGuid(),
-            DeterminationDate = DeterminationDate
-        };
+        determinationDate.DeterminationDate = DeterminationDate;
 
         // If this is a new entity, add it to the context
-        if (dulyMade.Id == 0)
+        if (regulatorAccreditationTaskStatus.Id == 0)
         {
-            await eprContext.AccreditationDulyMade.AddAsync(dulyMade);
             await eprContext.RegulatorAccreditationTaskStatus.AddAsync(regulatorAccreditationTaskStatus);
         }
 
-        await eprContext.AccreditationDeterminationDate.AddAsync(determination);
+        if (dulyMade.Id == 0)
+        {
+            await eprContext.AccreditationDulyMade.AddAsync(dulyMade);
+        }
+
+        if (determinationDate.Id == 0)
+        {
+            determinationDate.AccreditationId = accreditation.Id;
+            await eprContext.AccreditationDeterminationDate.AddAsync(determinationDate);
+        }
 
         await eprContext.SaveChangesAsync();
     }
