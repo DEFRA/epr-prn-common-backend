@@ -886,28 +886,14 @@ namespace EPR.PRN.Backend.Data.Migrations
                     b.Property<int>("AccreditationId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime?>("DeterminationDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("DeterminationNote")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<Guid?>("DeterminationUpdatedBy")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime?>("DeterminationUpdatedDate")
-                        .HasColumnType("datetime2");
+                    b.Property<int?>("DeterminationDateId")
+                        .HasColumnType("int");
 
                     b.Property<Guid?>("DulyMadeBy")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime?>("DulyMadeDate")
                         .HasColumnType("datetime2");
-
-                    b.Property<string>("DulyMadeNote")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
 
                     b.Property<Guid>("ExternalId")
                         .HasColumnType("uniqueidentifier");
@@ -916,6 +902,8 @@ namespace EPR.PRN.Backend.Data.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("DeterminationDateId");
 
                     b.HasIndex("TaskStatusId");
 
@@ -2467,11 +2455,17 @@ namespace EPR.PRN.Backend.Data.Migrations
 
             modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.AccreditationDulyMade", b =>
                 {
+                    b.HasOne("EPR.PRN.Backend.Data.DataModels.Registrations.AccreditationDeterminationDate", "DeterminationDate")
+                        .WithMany()
+                        .HasForeignKey("DeterminationDateId");
+
                     b.HasOne("EPR.PRN.Backend.Data.DataModels.Registrations.LookupTaskStatus", "TaskStatus")
                         .WithMany()
                         .HasForeignKey("TaskStatusId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("DeterminationDate");
 
                     b.Navigation("TaskStatus");
                 });
