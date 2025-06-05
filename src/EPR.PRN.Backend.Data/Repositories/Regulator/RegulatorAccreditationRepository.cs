@@ -38,11 +38,11 @@ public class RegulatorAccreditationRepository(EprContext eprContext) : IRegulato
         
         if (material is null) throw new KeyNotFoundException("Material not found.");
             var dulyMade = await eprContext.AccreditationDulyMade
-                .FirstOrDefaultAsync(rm => rm.ExternalId == material.ExternalId)
+                .FirstOrDefaultAsync(adm => adm.AccreditationId == accreditation.Id)
                 ?? new AccreditationDulyMade
                 {
                     AccreditationId = accreditation.Id,
-                    ExternalId = accreditationId 
+                    ExternalId = Guid.NewGuid()
                 };
 
         var registration = await eprContext.Registrations
@@ -62,7 +62,7 @@ public class RegulatorAccreditationRepository(EprContext eprContext) : IRegulato
         {
             AccreditationId = accreditation.Id,
             TaskStatusId = statusId,
-            ExternalId = material.ExternalId,
+            ExternalId = Guid.NewGuid(),
             RegulatorTaskId = taskid,
             StatusCreatedDate = DateTime.UtcNow,
             StatusUpdatedBy = DulyMadeBy
@@ -70,10 +70,15 @@ public class RegulatorAccreditationRepository(EprContext eprContext) : IRegulato
 
         // Set/update the fields
         dulyMade.TaskStatusId = statusId;
-        dulyMade.DeterminationDate = DeterminationDate;
         dulyMade.DulyMadeDate = DulyMadeDate;
         dulyMade.DulyMadeBy = DulyMadeBy;
-        dulyMade.ExternalId = material.ExternalId;
+
+        var determination = new AccreditationDeterminationDate
+        {
+            AccreditationId = accreditation.Id,
+            ExternalId = Guid.NewGuid(),
+            DeterminationDate = DeterminationDate
+        };
 
         // If this is a new entity, add it to the context
         if (dulyMade.Id == 0)
@@ -81,6 +86,8 @@ public class RegulatorAccreditationRepository(EprContext eprContext) : IRegulato
             await eprContext.AccreditationDulyMade.AddAsync(dulyMade);
             await eprContext.RegulatorAccreditationTaskStatus.AddAsync(regulatorAccreditationTaskStatus);
         }
+
+        await eprContext.AccreditationDeterminationDate.AddAsync(determination);
 
         await eprContext.SaveChangesAsync();
     }

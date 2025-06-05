@@ -134,6 +134,68 @@ public class RegulatorAccreditationRepositoryTests
         }
     }
 
+    [TestMethod]
+    public async Task AccreditationMarkAsDulyMade_CreatesAccreditationDeterminationDateRecord()
+    {
+        // Arrange
+        var accreditationId = Guid.NewGuid();
+        var registrationMaterialId = Guid.NewGuid();
+        var statusId = 2;
+        var dulyMadeDate = DateTime.UtcNow;
+        var determinationDate = DateTime.UtcNow.AddDays(10);
+        var userId = Guid.NewGuid();
+
+        var registration = new Registration
+        {
+            Id = 10,
+            ApplicationTypeId = 1
+        };
+
+        var material = new RegistrationMaterial
+        {
+            Id = 10,
+            ExternalId = registrationMaterialId,
+            RegistrationId = registration.Id,
+            Registration = registration
+        };
+
+        var accreditation = new Accreditation
+        {
+            Id = 10,
+            ExternalId = accreditationId,
+            RegistrationMaterialId = material.Id,
+            RegistrationMaterial = material,
+            ApplicationReferenceNumber = "ACC78910"
+        };
+
+        var lookupTask = new LookupRegulatorTask
+        {
+            Id = 27,
+            Name = "DulyMade",
+            ApplicationTypeId = registration.ApplicationTypeId,
+            JourneyTypeId = 1,
+            IsMaterialSpecific = true
+        };
+
+        _context.Registrations.Add(registration);
+        _context.RegistrationMaterials.Add(material);
+        _context.Accreditations.Add(accreditation);
+        _context.LookupTasks.Add(lookupTask);
+        await _context.SaveChangesAsync();
+
+        // Act
+        await _repository.AccreditationMarkAsDulyMade(accreditationId, statusId, dulyMadeDate, determinationDate, userId);
+
+        // Assert
+        var determination = await _context.AccreditationDeterminationDate.FirstOrDefaultAsync(x => x.ExternalId == accreditationId);
+
+        using (new AssertionScope())
+        {
+            determination.Should().NotBeNull();
+            determination!.AccreditationId.Should().Be(accreditation.Id);
+            determination.DeterminationDate.Date.Should().Be(determinationDate.Date);
+        }
+    }
 
 
     private void SeedDatabase()
