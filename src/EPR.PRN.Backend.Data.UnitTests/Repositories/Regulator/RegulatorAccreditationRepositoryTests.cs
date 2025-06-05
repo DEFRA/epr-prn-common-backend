@@ -6,6 +6,7 @@ using EPR.PRN.Backend.Data.Repositories.Regulator;
 using FluentAssertions;
 using FluentAssertions.Execution;
 using Microsoft.EntityFrameworkCore;
+using Moq;
 
 namespace EPR.PRN.Backend.Data.UnitTests.Repositories.Regulator;
 
@@ -109,9 +110,6 @@ public class RegulatorAccreditationRepositoryTests
         }
     }
 
-
-
-
     [TestMethod]
     public async Task AccreditationMarkAsDulyMade_CreatesAccreditationDeterminationDateRecord()
     {
@@ -172,6 +170,103 @@ public class RegulatorAccreditationRepositoryTests
             determination.Should().NotBeNull();
             determination!.AccreditationId.Should().Be(accreditation.Id);
             determination.DeterminationDate.Date.Should().Be(determinationDate.Date);
+        }
+    }
+
+    [TestMethod]
+    public async Task AccreditationMarkAsDulyMade_UpdatesAccreditationDeterminationDateRecord()
+    {
+        // Arrange
+        var accreditationId = Guid.Parse("4bac12f7-f7a9-4df4-b7b5-9c4221860c4d");
+        var newDeterminationDate = DateTime.UtcNow.AddDays(30);
+        var statusId = 5;
+        var dulyMadeDate = DateTime.UtcNow.Date;
+        var userId = Guid.NewGuid();
+
+        // Insert an initial determination date to simulate existing record
+        var accreditation = await _context.Accreditations
+            .Include(x => x.RegistrationMaterial)
+            .FirstAsync(x => x.ExternalId == accreditationId);
+
+        var existingDetermination = new AccreditationDeterminationDate
+        {
+            AccreditationId = accreditation.Id,
+            DeterminationDate = DateTime.UtcNow.AddDays(-10),
+            ExternalId = Guid.NewGuid()
+        };
+
+        _context.AccreditationDeterminationDate.Add(existingDetermination);
+
+        _context.LookupTasks.Add(new LookupRegulatorTask
+        {
+            Id = 27,
+            Name = "DulyMade",
+            ApplicationTypeId = 1,
+            JourneyTypeId = 1,
+            IsMaterialSpecific = true
+        });
+
+        await _context.SaveChangesAsync();
+
+        // Act
+        await _repository.AccreditationMarkAsDulyMade(accreditationId, statusId, dulyMadeDate, newDeterminationDate, userId);
+
+        // Assert
+        var updatedDetermination = await _context.AccreditationDeterminationDate
+            .FirstOrDefaultAsync(x => x.AccreditationId == accreditation.Id);
+
+        using (new AssertionScope())
+        {
+            updatedDetermination.Should().NotBeNull();
+            updatedDetermination!.DeterminationDate.Date.Should().Be(newDeterminationDate.Date);
+        }
+    }
+
+    [TestMethod]
+    public async Task AccreditationMarkAsDulyMade_DoesNotDuplicateAccreditationDeterminationDateRecord()
+    {
+        // Arrange
+        var accreditationId = Guid.Parse("4bac12f7-f7a9-4df4-b7b5-9c4221860c4d");
+        var newDeterminationDate = DateTime.UtcNow.AddDays(45);
+        var statusId = 5;
+        var dulyMadeDate = DateTime.UtcNow.Date;
+        var userId = Guid.NewGuid();
+
+        var accreditation = await _context.Accreditations
+            .FirstAsync(x => x.ExternalId == accreditationId);
+
+        var existingDetermination = new AccreditationDeterminationDate
+        {
+            AccreditationId = accreditation.Id,
+            DeterminationDate = DateTime.UtcNow.AddDays(-20),
+            ExternalId = Guid.NewGuid()
+        };
+
+        _context.AccreditationDeterminationDate.Add(existingDetermination);
+
+        _context.LookupTasks.Add(new LookupRegulatorTask
+        {
+            Id = 28,
+            Name = "DulyMade",
+            ApplicationTypeId = 1,
+            JourneyTypeId = 1,
+            IsMaterialSpecific = true
+        });
+
+        await _context.SaveChangesAsync();
+
+        // Act
+        await _repository.AccreditationMarkAsDulyMade(accreditationId, statusId, dulyMadeDate, newDeterminationDate, userId);
+
+        // Assert
+        var determinationRecords = await _context.AccreditationDeterminationDate
+            .Where(x => x.AccreditationId == accreditation.Id)
+            .ToListAsync();
+
+        using (new AssertionScope())
+        {
+            determinationRecords.Count.Should().Be(1);
+            determinationRecords[0].DeterminationDate.Date.Should().Be(newDeterminationDate.Date);
         }
     }
 
