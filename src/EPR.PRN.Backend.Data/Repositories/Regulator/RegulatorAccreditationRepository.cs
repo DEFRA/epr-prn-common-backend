@@ -79,7 +79,6 @@ public class RegulatorAccreditationRepository(EprContext eprContext) : IRegulato
         };
 
         // Set/update the fields
-        dulyMade.TaskStatusId = statusId;
         dulyMade.DulyMadeDate = DulyMadeDate;
         dulyMade.DulyMadeBy = DulyMadeBy;
         determinationDate.DeterminationDate = DeterminationDate;
