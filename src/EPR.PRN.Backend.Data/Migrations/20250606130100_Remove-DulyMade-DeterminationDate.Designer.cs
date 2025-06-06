@@ -4,6 +4,7 @@ using EPR.PRN.Backend.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EPR.PRN.Backend.Data.Migrations
 {
     [DbContext(typeof(EprContext))]
-    partial class EprContextModelSnapshot : ModelSnapshot
+    [Migration("20250606130100_Remove-DulyMade-DeterminationDate")]
+    partial class RemoveDulyMadeDeterminationDate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -846,9 +849,6 @@ namespace EPR.PRN.Backend.Data.Migrations
 
                     b.HasIndex("AccreditationStatusId");
 
-                    b.HasIndex("ExternalId")
-                        .IsUnique();
-
                     b.HasIndex("RegistrationMaterialId");
 
                     b.ToTable("Public.Accreditation");
@@ -875,9 +875,6 @@ namespace EPR.PRN.Backend.Data.Migrations
 
                     b.HasIndex("AccreditationId");
 
-                    b.HasIndex("ExternalId")
-                        .IsUnique();
-
                     b.ToTable("Public.AccreditationDeterminationDate");
                 });
 
@@ -892,19 +889,21 @@ namespace EPR.PRN.Backend.Data.Migrations
                     b.Property<int>("AccreditationId")
                         .HasColumnType("int");
 
-                    b.Property<Guid>("DulyMadeBy")
+                    b.Property<Guid?>("DulyMadeBy")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime>("DulyMadeDate")
+                    b.Property<DateTime?>("DulyMadeDate")
                         .HasColumnType("datetime2");
 
                     b.Property<Guid>("ExternalId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<int>("TaskStatusId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("ExternalId")
-                        .IsUnique();
+                    b.HasIndex("TaskStatusId");
 
                     b.ToTable("Public.AccreditationDulyMade");
                 });
@@ -1065,9 +1064,6 @@ namespace EPR.PRN.Backend.Data.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ExternalId")
-                        .IsUnique();
 
                     b.HasIndex("RegistrationMaterialId")
                         .IsUnique();
@@ -1859,9 +1855,6 @@ namespace EPR.PRN.Backend.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ExternalId")
-                        .IsUnique();
-
                     b.HasIndex("RegistrationMaterialId");
 
                     b.ToTable("Public.MaterialExemptionReference");
@@ -1939,9 +1932,6 @@ namespace EPR.PRN.Backend.Data.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("BusinessAddressId");
-
-                    b.HasIndex("ExternalId")
-                        .IsUnique();
 
                     b.HasIndex("LegalDocumentAddressId");
 
@@ -2100,9 +2090,6 @@ namespace EPR.PRN.Backend.Data.Migrations
 
                     b.HasIndex("EnvironmentalPermitWasteManagementPeriodId");
 
-                    b.HasIndex("ExternalId")
-                        .IsUnique();
-
                     b.HasIndex("InstallationPeriodId");
 
                     b.HasIndex("MaterialId");
@@ -2174,9 +2161,6 @@ namespace EPR.PRN.Backend.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ExternalId")
-                        .IsUnique();
-
                     b.HasIndex("RegistrationMaterialId");
 
                     b.ToTable("Public.RegistrationReprocessingIO");
@@ -2204,9 +2188,6 @@ namespace EPR.PRN.Backend.Data.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ExternalId")
-                        .IsUnique();
 
                     b.HasIndex("RegistrationId");
 
@@ -2278,9 +2259,6 @@ namespace EPR.PRN.Backend.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ExternalId")
-                        .IsUnique();
-
                     b.HasIndex("RegistrationId");
 
                     b.HasIndex("RegulatorTaskId");
@@ -2327,9 +2305,6 @@ namespace EPR.PRN.Backend.Data.Migrations
 
                     b.HasIndex("AccreditationId");
 
-                    b.HasIndex("ExternalId")
-                        .IsUnique();
-
                     b.HasIndex("RegulatorTaskId");
 
                     b.HasIndex("TaskStatusId");
@@ -2371,9 +2346,6 @@ namespace EPR.PRN.Backend.Data.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ExternalId")
-                        .IsUnique();
 
                     b.HasIndex("RegistrationMaterialId");
 
@@ -2418,9 +2390,6 @@ namespace EPR.PRN.Backend.Data.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ExternalId")
-                        .IsUnique();
 
                     b.HasIndex("RegistrationId");
 
@@ -2488,6 +2457,17 @@ namespace EPR.PRN.Backend.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("Accreditation");
+                });
+
+            modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.AccreditationDulyMade", b =>
+                {
+                    b.HasOne("EPR.PRN.Backend.Data.DataModels.Registrations.LookupTaskStatus", "TaskStatus")
+                        .WithMany()
+                        .HasForeignKey("TaskStatusId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("TaskStatus");
                 });
 
             modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.AccreditationFileUpload", b =>

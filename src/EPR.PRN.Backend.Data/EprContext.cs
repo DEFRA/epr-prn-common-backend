@@ -240,9 +240,10 @@ namespace EPR.PRN.Backend.Data
                 new LookupRegulatorTask { Id = 23, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 2, Name = "PRNs tonnage and authority to issue PRNs" },
                 new LookupRegulatorTask { Id = 24, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 2, Name = "Business Plan" },
                 new LookupRegulatorTask { Id = 25, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 2, Name = "Accreditation sampling and inspection plan" },
-                new LookupRegulatorTask { Id = 26, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 2, Name = "Overseas reprocessing sites and broadly equivalent evidence" },
+                new LookupRegulatorTask { Id = 26, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 2, Name = "Overseas Reprocessing Sites" },
                 new LookupRegulatorTask { Id = 27, IsMaterialSpecific = true, ApplicationTypeId = 1, JourneyTypeId = 2, Name = "DulyMade" },
-                new LookupRegulatorTask { Id = 28, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 2, Name = "DulyMade" });
+                new LookupRegulatorTask { Id = 28, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 2, Name = "DulyMade" },
+                new LookupRegulatorTask { Id = 29, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 2, Name = "Evidence of Broadly Equivalent Standards" });
 
             modelBuilder.Entity<LookupMaterialPermit>().HasData(
                 new LookupMaterialPermit { Id = 1, Name = PermitTypes.WasteExemption },
@@ -266,7 +267,59 @@ namespace EPR.PRN.Backend.Data
                 new LookupFileUploadStatus { Id = 4, Name = "Upload failed" },
                 new LookupFileUploadStatus { Id = 5, Name = "File deleted(Soft delete of record in database – will physically remove from blob storage)" });
 
-                base.OnModelCreating(modelBuilder);
+            modelBuilder.Entity<Accreditation>()
+                .HasIndex(e => e.ExternalId)
+                .IsUnique(); // Ensures UniqueId is unique
+
+            modelBuilder.Entity<AccreditationDeterminationDate>()
+                .HasIndex(e => e.ExternalId)
+                .IsUnique(); // Ensures UniqueId is unique
+
+            modelBuilder.Entity<AccreditationDulyMade>()
+                .HasIndex(e => e.ExternalId)
+                .IsUnique(); // Ensures UniqueId is unique
+
+            modelBuilder.Entity<DeterminationDate>()
+                .HasIndex(e => e.ExternalId)
+                .IsUnique(); // Ensures UniqueId is unique
+
+            modelBuilder.Entity<MaterialExemptionReference>()
+                .HasIndex(e => e.ExternalId)
+                .IsUnique(); // Ensures UniqueId is unique
+
+            modelBuilder.Entity<Registration>()
+                .HasIndex(e => e.ExternalId)
+                .IsUnique(); // Ensures UniqueId is unique
+
+            modelBuilder.Entity<RegistrationMaterial>()
+                .HasIndex(e => e.ExternalId)
+                .IsUnique(); // Ensures UniqueId is unique
+
+            modelBuilder.Entity<RegistrationReprocessingIO>()
+                .HasIndex(e => e.ExternalId)
+                .IsUnique(); // Ensures UniqueId is unique
+
+            modelBuilder.Entity<RegistrationTaskStatus>()
+                .HasIndex(e => e.ExternalId)
+                .IsUnique(); // Ensures UniqueId is unique
+
+            modelBuilder.Entity<RegulatorAccreditationRegistrationTaskStatus>()
+                .HasIndex(e => e.ExternalId)
+                .IsUnique(); // Ensures UniqueId is unique
+
+            modelBuilder.Entity<RegulatorAccreditationTaskStatus>()
+                .HasIndex(e => e.ExternalId)
+                .IsUnique(); // Ensures UniqueId is unique
+
+            modelBuilder.Entity<RegulatorApplicationTaskStatus>()
+                .HasIndex(e => e.ExternalId)
+                .IsUnique(); // Ensures UniqueId is unique
+
+            modelBuilder.Entity<RegulatorRegistrationTaskStatus>()
+                .HasIndex(e => e.ExternalId)
+                .IsUnique(); // Ensures UniqueId is unique
+
+            base.OnModelCreating(modelBuilder);
         }
 
         public virtual DbSet<Eprn> Prn { get; set; }
