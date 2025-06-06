@@ -75,22 +75,23 @@ namespace EPR.PRN.Backend.Data.Repositories.Regulator
                     var applicationTaskStatusQueryNotes = new ApplicationTaskStatusQueryNote
                     {
                         Note = queryNote,
-                        RegulatorApplicationTaskStatus = taskStatus
+                        RegulatorApplicationTaskStatus = taskStatus                        
                     };
+
                     await _context.ApplicationTaskStatusQueryNotes.AddAsync(applicationTaskStatusQueryNotes);
 
                 }
-
             }
             else
             {
                 // Update the existing entity
                 taskStatus.TaskStatus = statusEntity;
+                taskStatus.StatusCreatedBy = user;
+                taskStatus.StatusCreatedDate = DateTime.UtcNow;
                 taskStatus.StatusUpdatedBy = user;
                 taskStatus.StatusUpdatedDate = DateTime.UtcNow;
 
                 _context.RegulatorApplicationTaskStatus.Update(taskStatus);
-                
             }
 
             await _context.SaveChangesAsync();

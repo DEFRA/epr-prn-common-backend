@@ -75,6 +75,7 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
             ?? new DulyMade
             {
                 RegistrationMaterialId = material.Id,
+                ExternalId = Guid.NewGuid(),
                 RegistrationMaterial = material // Initialize the required member
             };
 
@@ -90,7 +91,7 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
     {
         DeterminateDate = DeterminationDate,
         RegistrationMaterialId = material.RegistrationId,
-        ExternalId = registration.ExternalId,
+        ExternalId = Guid.NewGuid(),
         RegistrationMaterial = material
     };
 
@@ -129,7 +130,6 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
         dulyMade.DulyMadeDate = DulyMadeDate;
         determinationDate.DeterminateDate = DeterminationDate;
         dulyMade.DulyMadeBy = DulyMadeBy;
-        dulyMade.ExternalId = Guid.NewGuid();
 
         // If this is a new entity, add it to the context
         if (regulatorApplicationTaskStatus.Id == 0)
