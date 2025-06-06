@@ -428,7 +428,6 @@ public class RegistrationMaterialRepositoryTests
             dulyMadeEntry!.DulyMadeBy.Should().Be(userId);
             dulyMadeEntry!.DulyMadeDate.Should().Be(dulyMadeDate);
             savedDeterminationDate.DeterminateDate.Should().Be(determinationDate);
-            dulyMadeEntry.TaskStatusId.Should().Be(statusId);
 
             taskStatusEntry.Should().NotBeNull();
             taskStatusEntry!.TaskStatusId.Should().Be(statusId);
@@ -483,7 +482,6 @@ public class RegistrationMaterialRepositoryTests
             dulyMadeEntry!.DulyMadeBy.Should().Be(userId);
             dulyMadeEntry!.DulyMadeDate.Should().Be(dulyMadeDate);
             savedDeterminationDate.DeterminateDate.Should().Be(determinationDate);
-            dulyMadeEntry.TaskStatusId.Should().Be(statusId);
 
             taskStatusEntry.Should().NotBeNull();
             taskStatusEntry!.TaskStatusId.Should().Be(statusId);

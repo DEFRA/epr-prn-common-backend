@@ -48,7 +48,7 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
 
     public async Task<Accreditation> GetAccreditation_FileUploadById(Guid accreditationId)
     {
-        var accreditations = GetAccreditation_FileUploadById();        
+        var accreditations = GetAccreditation_FileUploadById();
         return await accreditations.SingleOrDefaultAsync(rm => rm.ExternalId == accreditationId)
                ?? throw new KeyNotFoundException("Accreditation not found.");
     }
@@ -75,7 +75,8 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
             ?? new DulyMade
             {
                 RegistrationMaterialId = material.Id,
-                RegistrationMaterial = material // Initialize the required member
+                RegistrationMaterial = material, // Initialize the required member
+                ExternalId = Guid.NewGuid()
             };
 
         var registration = await eprContext.Registrations
@@ -90,12 +91,12 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
     {
         DeterminateDate = DeterminationDate,
         RegistrationMaterialId = material.RegistrationId,
-        ExternalId = registration.ExternalId,
+        ExternalId = Guid.NewGuid(),
         RegistrationMaterial = material
     };
 
         var applicationTypeId = registration.ApplicationTypeId;
-        
+
         var taskid = await eprContext.LookupTasks
             .Where(t => t.Name == "CheckRegistrationStatus" && t.ApplicationTypeId == applicationTypeId)
             .Select(t => t.Id)
@@ -125,11 +126,9 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
         }
 
         // Set/update the fields
-        dulyMade.TaskStatusId = statusId;
         dulyMade.DulyMadeDate = DulyMadeDate;
         determinationDate.DeterminateDate = DeterminationDate;
         dulyMade.DulyMadeBy = DulyMadeBy;
-        dulyMade.ExternalId = Guid.NewGuid();
 
         // If this is a new entity, add it to the context
         if (regulatorApplicationTaskStatus.Id == 0)
