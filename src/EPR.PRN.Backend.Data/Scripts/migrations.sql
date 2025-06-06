@@ -3293,3 +3293,255 @@ GO
 COMMIT;
 GO
 
+BEGIN TRANSACTION;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250604103449_AccreditationTaskStatusQueryNote'
+)
+BEGIN
+    ALTER TABLE [Public.Accreditation] ADD [CreatedOn] datetime2 NULL;
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250604103449_AccreditationTaskStatusQueryNote'
+)
+BEGIN
+    ALTER TABLE [Public.Accreditation] ADD [PRNTonnage] int NOT NULL DEFAULT 0;
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250604103449_AccreditationTaskStatusQueryNote'
+)
+BEGIN
+    CREATE TABLE [Public.AccreditationDulyMade] (
+        [Id] int NOT NULL IDENTITY,
+        [ExternalId] uniqueidentifier NOT NULL,
+        [AccreditationId] int NOT NULL,
+        [TaskStatusId] int NOT NULL,
+        [DulyMadeDate] datetime2 NULL,
+        [DulyMadeBy] uniqueidentifier NULL,
+        [DeterminationDate] datetime2 NULL,
+        [DulyMadeNote] nvarchar(500) NULL,
+        [DeterminationNote] nvarchar(500) NULL,
+        [DeterminationUpdatedBy] uniqueidentifier NULL,
+        [DeterminationUpdatedDate] datetime2 NULL,
+        CONSTRAINT [PK_Public.AccreditationDulyMade] PRIMARY KEY ([Id]),
+        CONSTRAINT [FK_Public.AccreditationDulyMade_Lookup.TaskStatus_TaskStatusId] FOREIGN KEY ([TaskStatusId]) REFERENCES [Lookup.TaskStatus] ([Id]) ON DELETE CASCADE
+    );
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250604103449_AccreditationTaskStatusQueryNote'
+)
+BEGIN
+    CREATE TABLE [Public.AccreditationTaskStatusQueryNote] (
+        [Id] int NOT NULL IDENTITY,
+        [QueryNoteId] int NOT NULL,
+        [RegulatorAccreditationTaskStatusId] int NOT NULL,
+        CONSTRAINT [PK_Public.AccreditationTaskStatusQueryNote] PRIMARY KEY ([Id]),
+        CONSTRAINT [FK_Public.AccreditationTaskStatusQueryNote_Public.Note_QueryNoteId] FOREIGN KEY ([QueryNoteId]) REFERENCES [Public.Note] ([Id]) ON DELETE CASCADE,
+        CONSTRAINT [FK_Public.AccreditationTaskStatusQueryNote_Public.RegulatorApplicationTaskStatus_RegulatorAccreditationTaskStatusId] FOREIGN KEY ([RegulatorAccreditationTaskStatusId]) REFERENCES [Public.RegulatorApplicationTaskStatus] ([Id]) ON DELETE CASCADE
+    );
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250604103449_AccreditationTaskStatusQueryNote'
+)
+BEGIN
+    CREATE INDEX [IX_Public.AccreditationDulyMade_TaskStatusId] ON [Public.AccreditationDulyMade] ([TaskStatusId]);
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250604103449_AccreditationTaskStatusQueryNote'
+)
+BEGIN
+    CREATE INDEX [IX_Public.AccreditationTaskStatusQueryNote_QueryNoteId] ON [Public.AccreditationTaskStatusQueryNote] ([QueryNoteId]);
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250604103449_AccreditationTaskStatusQueryNote'
+)
+BEGIN
+    CREATE INDEX [IX_Public.AccreditationTaskStatusQueryNote_RegulatorAccreditationTaskStatusId] ON [Public.AccreditationTaskStatusQueryNote] ([RegulatorAccreditationTaskStatusId]);
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250604103449_AccreditationTaskStatusQueryNote'
+)
+BEGIN
+    INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+    VALUES (N'20250604103449_AccreditationTaskStatusQueryNote', N'8.0.8');
+END;
+GO
+
+COMMIT;
+GO
+
+BEGIN TRANSACTION;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250604113009_AccreditationTaskStatusQueryNote2'
+)
+BEGIN
+    ALTER TABLE [Public.AccreditationTaskStatusQueryNote] DROP CONSTRAINT [FK_Public.AccreditationTaskStatusQueryNote_Public.RegulatorApplicationTaskStatus_RegulatorAccreditationTaskStatusId];
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250604113009_AccreditationTaskStatusQueryNote2'
+)
+BEGIN
+    ALTER TABLE [Public.AccreditationTaskStatusQueryNote] ADD CONSTRAINT [FK_Public.AccreditationTaskStatusQueryNote_Public.RegulatorAccreditationTaskStatus_RegulatorAccreditationTaskStatusId] FOREIGN KEY ([RegulatorAccreditationTaskStatusId]) REFERENCES [Public.RegulatorAccreditationTaskStatus] ([Id]) ON DELETE CASCADE;
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250604113009_AccreditationTaskStatusQueryNote2'
+)
+BEGIN
+    INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+    VALUES (N'20250604113009_AccreditationTaskStatusQueryNote2', N'8.0.8');
+END;
+GO
+
+COMMIT;
+GO
+
+BEGIN TRANSACTION;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250605124846_RemoveColumnsFromAccreditationDulyMade'
+)
+BEGIN
+    DECLARE @var24 sysname;
+    SELECT @var24 = [d].[name]
+    FROM [sys].[default_constraints] [d]
+    INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+    WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Public.AccreditationDulyMade]') AND [c].[name] = N'DeterminationDate');
+    IF @var24 IS NOT NULL EXEC(N'ALTER TABLE [Public.AccreditationDulyMade] DROP CONSTRAINT [' + @var24 + '];');
+    ALTER TABLE [Public.AccreditationDulyMade] DROP COLUMN [DeterminationDate];
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250605124846_RemoveColumnsFromAccreditationDulyMade'
+)
+BEGIN
+    DECLARE @var25 sysname;
+    SELECT @var25 = [d].[name]
+    FROM [sys].[default_constraints] [d]
+    INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+    WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Public.AccreditationDulyMade]') AND [c].[name] = N'DeterminationNote');
+    IF @var25 IS NOT NULL EXEC(N'ALTER TABLE [Public.AccreditationDulyMade] DROP CONSTRAINT [' + @var25 + '];');
+    ALTER TABLE [Public.AccreditationDulyMade] DROP COLUMN [DeterminationNote];
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250605124846_RemoveColumnsFromAccreditationDulyMade'
+)
+BEGIN
+    DECLARE @var26 sysname;
+    SELECT @var26 = [d].[name]
+    FROM [sys].[default_constraints] [d]
+    INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+    WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Public.AccreditationDulyMade]') AND [c].[name] = N'DeterminationUpdatedBy');
+    IF @var26 IS NOT NULL EXEC(N'ALTER TABLE [Public.AccreditationDulyMade] DROP CONSTRAINT [' + @var26 + '];');
+    ALTER TABLE [Public.AccreditationDulyMade] DROP COLUMN [DeterminationUpdatedBy];
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250605124846_RemoveColumnsFromAccreditationDulyMade'
+)
+BEGIN
+    DECLARE @var27 sysname;
+    SELECT @var27 = [d].[name]
+    FROM [sys].[default_constraints] [d]
+    INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+    WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Public.AccreditationDulyMade]') AND [c].[name] = N'DeterminationUpdatedDate');
+    IF @var27 IS NOT NULL EXEC(N'ALTER TABLE [Public.AccreditationDulyMade] DROP CONSTRAINT [' + @var27 + '];');
+    ALTER TABLE [Public.AccreditationDulyMade] DROP COLUMN [DeterminationUpdatedDate];
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250605124846_RemoveColumnsFromAccreditationDulyMade'
+)
+BEGIN
+    DECLARE @var28 sysname;
+    SELECT @var28 = [d].[name]
+    FROM [sys].[default_constraints] [d]
+    INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+    WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Public.AccreditationDulyMade]') AND [c].[name] = N'DulyMadeNote');
+    IF @var28 IS NOT NULL EXEC(N'ALTER TABLE [Public.AccreditationDulyMade] DROP CONSTRAINT [' + @var28 + '];');
+    ALTER TABLE [Public.AccreditationDulyMade] DROP COLUMN [DulyMadeNote];
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250605124846_RemoveColumnsFromAccreditationDulyMade'
+)
+BEGIN
+    ALTER TABLE [Public.AccreditationDulyMade] ADD [DeterminationDateId] int NULL;
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250605124846_RemoveColumnsFromAccreditationDulyMade'
+)
+BEGIN
+    CREATE INDEX [IX_Public.AccreditationDulyMade_DeterminationDateId] ON [Public.AccreditationDulyMade] ([DeterminationDateId]);
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250605124846_RemoveColumnsFromAccreditationDulyMade'
+)
+BEGIN
+    ALTER TABLE [Public.AccreditationDulyMade] ADD CONSTRAINT [FK_Public.AccreditationDulyMade_Public.AccreditationDeterminationDate_DeterminationDateId] FOREIGN KEY ([DeterminationDateId]) REFERENCES [Public.AccreditationDeterminationDate] ([Id]);
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250605124846_RemoveColumnsFromAccreditationDulyMade'
+)
+BEGIN
+    INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+    VALUES (N'20250605124846_RemoveColumnsFromAccreditationDulyMade', N'8.0.8');
+END;
+GO
+
+COMMIT;
+GO
+

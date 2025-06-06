@@ -4,6 +4,7 @@ using EPR.PRN.Backend.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EPR.PRN.Backend.Data.Migrations
 {
     [DbContext(typeof(EprContext))]
-    partial class EprContextModelSnapshot : ModelSnapshot
+    [Migration("20250604103449_AccreditationTaskStatusQueryNote")]
+    partial class AccreditationTaskStatusQueryNote
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -886,14 +889,28 @@ namespace EPR.PRN.Backend.Data.Migrations
                     b.Property<int>("AccreditationId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("DeterminationDateId")
-                        .HasColumnType("int");
+                    b.Property<DateTime?>("DeterminationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DeterminationNote")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<Guid?>("DeterminationUpdatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("DeterminationUpdatedDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<Guid?>("DulyMadeBy")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime?>("DulyMadeDate")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("DulyMadeNote")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
 
                     b.Property<Guid>("ExternalId")
                         .HasColumnType("uniqueidentifier");
@@ -902,8 +919,6 @@ namespace EPR.PRN.Backend.Data.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("DeterminationDateId");
 
                     b.HasIndex("TaskStatusId");
 
@@ -2455,17 +2470,11 @@ namespace EPR.PRN.Backend.Data.Migrations
 
             modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.AccreditationDulyMade", b =>
                 {
-                    b.HasOne("EPR.PRN.Backend.Data.DataModels.Registrations.AccreditationDeterminationDate", "DeterminationDate")
-                        .WithMany()
-                        .HasForeignKey("DeterminationDateId");
-
                     b.HasOne("EPR.PRN.Backend.Data.DataModels.Registrations.LookupTaskStatus", "TaskStatus")
                         .WithMany()
                         .HasForeignKey("TaskStatusId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("DeterminationDate");
 
                     b.Navigation("TaskStatus");
                 });
@@ -2499,7 +2508,7 @@ namespace EPR.PRN.Backend.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("EPR.PRN.Backend.Data.DataModels.Registrations.RegulatorAccreditationTaskStatus", "RegulatorAccreditationTaskStatus")
+                    b.HasOne("EPR.PRN.Backend.Data.DataModels.Registrations.RegulatorApplicationTaskStatus", "RegulatorApplicationTaskStatus")
                         .WithMany()
                         .HasForeignKey("RegulatorAccreditationTaskStatusId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -2507,7 +2516,7 @@ namespace EPR.PRN.Backend.Data.Migrations
 
                     b.Navigation("Note");
 
-                    b.Navigation("RegulatorAccreditationTaskStatus");
+                    b.Navigation("RegulatorApplicationTaskStatus");
                 });
 
             modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.ApplicationTaskStatusQueryNote", b =>

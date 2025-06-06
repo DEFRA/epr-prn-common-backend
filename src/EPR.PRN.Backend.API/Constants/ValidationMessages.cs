@@ -8,6 +8,7 @@ public static class ValidationMessages
     public const string RegistrationOutcomeCommentsCommentsRequired = "Comments are required.";
 
     public const string RegistrationMaterialIdRequired = "Id is required.";
+    public const string RegistrationAccreditationIdRequired = "Accreditation Id is required.";
     public const string InvalidDulyMadeDate = "Invalid registration material DulyMadeDate is invalid.";
     public const string InvalidDeterminationDate = "Invalid registration material DeterminationDate is invalid.";
     public const string DeterminationDate12WeekRule = "DeterminationDate must be at least 12 weeks after DulyMadeDate.";
