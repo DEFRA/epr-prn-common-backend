@@ -5,6 +5,7 @@ using EPR.PRN.Backend.Data.Repositories.Regulator;
 using FluentAssertions;
 using FluentAssertions.Execution;
 using Microsoft.EntityFrameworkCore;
+using System.Threading.Tasks;
 
 namespace EPR.PRN.Backend.Data.UnitTests.Repositories.Regulator;
 
@@ -59,6 +60,7 @@ public class RegistrationMaterialRepositoryTests
         var material = new RegistrationMaterial
         {
             Id = 1,
+            ExternalId = Guid.Parse("a9421fc1-a912-42ee-85a5-3e06408759a9"),
             MaterialId = 1,
             StatusId = 1,
             RegistrationReferenceNumber = "REF12345",
@@ -72,7 +74,7 @@ public class RegistrationMaterialRepositoryTests
             new RegulatorApplicationTaskStatus
             {
                 Id = 1,
-                TaskId = 1,
+                RegulatorTaskId = 1,
                 TaskStatusId = 1,
                 TaskStatus = taskStatus,
                 Task = task
@@ -101,7 +103,7 @@ public class RegistrationMaterialRepositoryTests
         {
             Id = 1,
             ApplicationTypeId = 1,
-            ExternalId = Guid.NewGuid(),
+            ExternalId = Guid.Parse("4bac12f7-f7a9-4df4-b7b5-9c4221860c4d"),
             ReprocessingSiteAddress = address,
             BusinessAddress = address,
             LegalDocumentAddress = address,
@@ -110,7 +112,7 @@ public class RegistrationMaterialRepositoryTests
             new RegulatorRegistrationTaskStatus
             {
                 Id = 1,
-                TaskId = 1,
+                RegulatorTaskId = 1,
                 TaskStatusId = 1,
                 TaskStatus = taskStatus,
                 Task = task
@@ -119,12 +121,139 @@ public class RegistrationMaterialRepositoryTests
             Materials = new List<RegistrationMaterial> { material }
         };
 
+        var Accreditation_registration = new Registration
+        {
+            Id = 2,
+            ApplicationTypeId = 1,
+            ExternalId = Guid.Parse("4bac12f7-f7a9-4df4-b7b5-9c4221860c5d"),
+            ReprocessingSiteAddress = address,
+            BusinessAddress = address,
+            LegalDocumentAddress = address,
+            AccreditationTasks = new List<RegulatorAccreditationRegistrationTaskStatus>
+            {
+                new RegulatorAccreditationRegistrationTaskStatus
+                {
+                    Id = 2,
+                    RegulatorTaskId = 1,
+                    TaskStatusId = 1,
+                    TaskStatus = taskStatus,
+                    Task = task,
+                    AccreditationYear = 2025,
+
+                },
+                new RegulatorAccreditationRegistrationTaskStatus
+                {
+                    Id = 3,
+                    RegulatorTaskId = 1,
+                    TaskStatusId = 1,
+                    TaskStatus = taskStatus,
+                    Task = task,
+                    AccreditationYear = 2026,
+                }
+            },
+            Materials = new List<RegistrationMaterial> {
+                new RegistrationMaterial {
+                    Id = 2,
+                    ExternalId = Guid.Parse("a9421fc1-a912-42ee-85a5-3e06408754a9"),
+                    MaterialId = 1,
+                    StatusId = 1,
+                    RegistrationReferenceNumber = "REF12345",
+                    Comments = "Initial comment",
+                    Status = materialStatus,
+                    Material = lookupMaterial,
+                    IsMaterialRegistered = true,
+
+                    Tasks = new List<RegulatorApplicationTaskStatus>
+                    {
+                        new RegulatorApplicationTaskStatus
+                        {
+                            Id = 3,
+                            RegulatorTaskId = 1,
+                            TaskStatusId = 1,
+                            TaskStatus = taskStatus,
+                            Task = task
+                        }
+                    },
+                    PermitType = lookupMaterialPermit,
+                    EnvironmentalPermitWasteManagementPeriod = lookupPeriod,
+                    EnvironmentalPermitWasteManagementTonne = 100,
+                    InstallationPeriod = lookupPeriod,
+                    InstallationReprocessingTonne = 200,
+                    WasteManagementPeriod = lookupPeriod,
+                    WasteManagementReprocessingCapacityTonne = 300,
+                    PPCPeriod = lookupPeriod,
+                    PPCReprocessingCapacityTonne = 400,
+                    MaximumReprocessingCapacityTonne = 500,
+                    MaximumReprocessingPeriod = lookupPeriod,
+                    MaterialExemptionReferences = new List<MaterialExemptionReference> { new MaterialExemptionReference {
+                                Id = 2,
+                                ReferenceNo = "EXEMPT123",
+                                RegistrationMaterialId = 2
+                            }
+                        },
+                    Accreditations = new List<Accreditation>{
+                        new Accreditation
+                        {
+                            Id = 1,
+                            ExternalId = Guid.Parse("4c632765-7652-42ae-8527-23f10a971c28"),
+                            RegistrationMaterialId = 2,
+                            AccreditationStatusId = 1,
+                            ApplicationReferenceNumber = "ACC12345",
+                            AccreditationYear = 2025,
+                            AccreditationStatus = new LookupAccreditationStatus
+                            {
+                                Id = 1,
+                                Name = "Pending"
+                            },
+                            Tasks = new List<RegulatorAccreditationTaskStatus>
+                            {
+                                new RegulatorAccreditationTaskStatus
+                                {
+                                    Id = 1,
+                                    RegulatorTaskId = 1,
+                                    TaskStatusId = 1,
+                                    TaskStatus = taskStatus,
+                                    Task = task
+                                }
+                            }
+                        },
+                                                new Accreditation
+                        {
+                            Id = 2,
+                            RegistrationMaterialId = 2,
+                            AccreditationStatusId = 1,
+                            ApplicationReferenceNumber = "ACC12345",
+                            AccreditationYear = 2026,
+                            AccreditationStatus = new LookupAccreditationStatus
+                            {
+                                Id = 2,
+                                Name = "Granted"
+                            },
+                            Tasks = new List<RegulatorAccreditationTaskStatus>
+                            {
+                                new RegulatorAccreditationTaskStatus
+                                {
+                                    Id = 2,
+                                    RegulatorTaskId = 1,
+                                    TaskStatusId = 1,
+                                    TaskStatus = taskStatus,
+                                    Task = task
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        };
+
         _context.LookupTasks.Add(task);
         _context.LookupTaskStatuses.Add(taskStatus);
         _context.LookupRegistrationMaterialStatuses.Add(materialStatus);
         _context.LookupMaterials.Add(lookupMaterial);
         _context.LookupAddresses.Add(address);
         _context.Registrations.Add(registration);
+
+        _context.Registrations.Add(Accreditation_registration);
 
         _context.LookupPeriod.Add(lookupPeriod);
         _context.LookupMaterialPermit.Add(lookupMaterialPermit);
@@ -136,7 +265,7 @@ public class RegistrationMaterialRepositoryTests
     [TestMethod]
     public async Task GetRegistrationById_ShouldReturnRegistration_WhenRegistrationExists()
     {
-        var result = await _repository.GetRegistrationById(1);
+        var result = await _repository.GetRegistrationById(Guid.Parse("4bac12f7-f7a9-4df4-b7b5-9c4221860c4d"));
         using (new AssertionScope())
         {
             Assert.IsNotNull(result);
@@ -149,13 +278,48 @@ public class RegistrationMaterialRepositoryTests
     [TestMethod]
     public async Task GetRegistrationById_ShouldThrowKeyNotFoundException_WhenNotFound()
     {
-        await Assert.ThrowsExceptionAsync<KeyNotFoundException>(() => _repository.GetRegistrationById(999));
+        await Assert.ThrowsExceptionAsync<KeyNotFoundException>(() => _repository.GetRegistrationById(Guid.Parse("cd9dcc80-fcf5-4f46-addd-b8a256f735a3")));
     }
+
+    [TestMethod]
+    public async Task GetRegistrationByExternalIdAndYear_ShouldReturnRegistration_WhenRegistrationExists()
+    {
+        var result = await _repository.GetRegistrationByExternalIdAndYear(Guid.Parse("4bac12f7-f7a9-4df4-b7b5-9c4221860c5d"), 2025);
+        using (new AssertionScope())
+        {
+            Assert.IsNotNull(result);
+            Assert.AreEqual(2, result.Id);
+            Assert.IsNotNull(result.Materials);
+            Assert.IsNotNull(result.AccreditationTasks);
+            Assert.AreEqual(1, result.AccreditationTasks.Count);
+        }
+    }
+
+    [TestMethod]
+    public async Task GetRegistrationByExternalIdAndNullYear_ShouldReturnRegistration_WhenRegistrationExists()
+    {
+        var result = await _repository.GetRegistrationByExternalIdAndYear(Guid.Parse("4bac12f7-f7a9-4df4-b7b5-9c4221860c5d"), null);
+        using (new AssertionScope())
+        {
+            Assert.IsNotNull(result);
+            Assert.AreEqual(2, result.Id);
+            Assert.IsNotNull(result.Materials);
+            Assert.IsNotNull(result.AccreditationTasks);
+            Assert.AreEqual(2, result.AccreditationTasks.Count);
+        }
+    }
+
+    [TestMethod]
+    public async Task GetRegistrationByExternalIdAndYear_ShouldThrowKeyNotFoundException_WhenNotFound()
+    {
+        await Assert.ThrowsExceptionAsync<KeyNotFoundException>(() => _repository.GetRegistrationByExternalIdAndYear(Guid.Parse("cd9dcc80-fcf5-4f46-addd-b8a256f735a3"), 2025));
+    }
+
 
     [TestMethod]
     public async Task GetRequiredTasks_ShouldReturnCorrectTasks()
     {
-        var result = await _repository.GetRequiredTasks(1, false);
+        var result = await _repository.GetRequiredTasks(1, false, 1);
         using (new AssertionScope())
         {
             Assert.AreEqual(1, result.Count);
@@ -170,7 +334,7 @@ public class RegistrationMaterialRepositoryTests
         var comment = "Updated comment";
         var newReference = "REFUPDATED";
 
-        await _repository.UpdateRegistrationOutCome(1, newStatusId, comment, newReference);
+        await _repository.UpdateRegistrationOutCome(Guid.Parse("a9421fc1-a912-42ee-85a5-3e06408759a9"), newStatusId, comment, newReference);
         var updated = await _context.RegistrationMaterials.FindAsync(1);
 
         using (new AssertionScope())
@@ -186,13 +350,13 @@ public class RegistrationMaterialRepositoryTests
     public async Task UpdateRegistrationOutCome_ShouldThrow_WhenMaterialNotFound()
     {
         await Assert.ThrowsExceptionAsync<KeyNotFoundException>(() =>
-            _repository.UpdateRegistrationOutCome(999, 1, "Test", "REF"));
+            _repository.UpdateRegistrationOutCome(Guid.Parse("cd9dcc80-fcf5-4f46-addd-b8a256f735a3"), 1, "Test", "REF"));
     }
 
     [TestMethod]
     public async Task GetRegistrationMaterialById_ShouldReturnMaterial_WhenExists()
     {
-        var material = await _repository.GetRegistrationMaterialById(1);
+        var material = await _repository.GetRegistrationMaterialById(Guid.Parse("a9421fc1-a912-42ee-85a5-3e06408759a9"));
         using (new AssertionScope())
         {
             Assert.IsNotNull(material);
@@ -206,66 +370,31 @@ public class RegistrationMaterialRepositoryTests
     [TestMethod]
     public async Task GetRegistrationMaterialById_ShouldThrow_WhenNotFound()
     {
-        await Assert.ThrowsExceptionAsync<KeyNotFoundException>(() => _repository.GetRegistrationMaterialById(999));
+        await Assert.ThrowsExceptionAsync<KeyNotFoundException>(() => _repository.GetRegistrationMaterialById(Guid.Parse("cd9dcc80-fcf5-4f46-addd-b8a256f735a3")));
     }
 
     [TestMethod]
-    public async Task GetRegistrationMaterial_WasteLicencesById_ShouldReturnMaterial_WhenExists()
+    public async Task GetAccreditation_FileUploadById_ShouldReturnMaterial_WhenExists()
     {
-        var material = await _repository.GetRegistrationMaterial_WasteLicencesById(1);
+        var accreditation = await _repository.GetAccreditation_FileUploadById(Guid.Parse("4c632765-7652-42ae-8527-23f10a971c28"));
         using (new AssertionScope())
         {
-            Assert.IsNotNull(material);
-            Assert.AreEqual("REF12345", material.RegistrationReferenceNumber);
-            Assert.IsNotNull(material.Material);
+            Assert.IsNotNull(accreditation);
+            Assert.AreEqual("ACC12345", accreditation.ApplicationReferenceNumber);
         }
     }
 
     [TestMethod]
-    public async Task GetRegistrationMaterial_WasteLicencesById_ShouldThrow_WhenNotFound()
+    public async Task GetAccreditation_FileUploadById_ShouldThrow_WhenNotFound()
     {
-        await Assert.ThrowsExceptionAsync<KeyNotFoundException>(() => _repository.GetRegistrationMaterial_WasteLicencesById(999));
+        await Assert.ThrowsExceptionAsync<KeyNotFoundException>(() => _repository.GetAccreditation_FileUploadById(Guid.Parse("cd9dcc80-fcf5-4f46-addd-b8a256f735a3")));
     }
-
-    [TestMethod]
-    public async Task GetRegistrationMaterial_RegistrationReprocessingIOById_ShouldReturnMaterial_WhenExists()
-    {
-        var material = await _repository.GetRegistrationMaterial_RegistrationReprocessingIOById(1);
-        using (new AssertionScope())
-        {
-            Assert.IsNotNull(material);
-            Assert.AreEqual("REF12345", material.RegistrationReferenceNumber);
-            Assert.IsNotNull(material.Material);
-        }
-    }
-
-    [TestMethod]
-    public async Task GetRegistrationMaterial_RegistrationReprocessingIOById_ShouldThrow_WhenNotFound()
-    {
-        await Assert.ThrowsExceptionAsync<KeyNotFoundException>(() => _repository.GetRegistrationMaterial_RegistrationReprocessingIOById(999));
-    }
-
-    [TestMethod]
-    public async Task GetRegistrationMaterial_FileUploadById_ShouldReturnMaterial_WhenExists()
-    {
-        var material = await _repository.GetRegistrationMaterial_FileUploadById(1);
-        using (new AssertionScope())
-        {
-            Assert.IsNotNull(material);
-            Assert.AreEqual("REF12345", material.RegistrationReferenceNumber);
-        }
-    }
-
-    [TestMethod]
-    public async Task GetRegistrationMaterial_FileUploadById_ShouldThrow_WhenNotFound()
-    {
-        await Assert.ThrowsExceptionAsync<KeyNotFoundException>(() => _repository.GetRegistrationMaterial_FileUploadById(999));
-    }
+   
     [TestMethod]
     public async Task RegistrationMaterialsMarkAsDulyMade_ShouldSetDulyMadeCorrectly()
     {
         // Arrange
-        var registrationMaterialId = 1;
+        var registrationMaterialId = Guid.Parse("a9421fc1-a912-42ee-85a5-3e06408759a9");
         var statusId = 3;
         var dulyMadeDate = DateTime.UtcNow.Date;
         var determinationDate = dulyMadeDate.AddDays(84);
@@ -287,24 +416,132 @@ public class RegistrationMaterialRepositoryTests
 
         // Assert
         var dulyMadeEntry = await _context.DulyMade
-            .FirstOrDefaultAsync(x => x.RegistrationMaterialId == registrationMaterialId);
+            .FirstOrDefaultAsync(x => x.RegistrationMaterial.ExternalId == registrationMaterialId);
+        var savedDeterminationDate = await _context.DeterminationDate
+            .FirstOrDefaultAsync(x => x.RegistrationMaterialId == 1);
         var taskStatusEntry = await _context.RegulatorApplicationTaskStatus
-            .FirstOrDefaultAsync(x => x.RegistrationMaterialId == registrationMaterialId && x.TaskStatusId == statusId);
+            .FirstOrDefaultAsync(x => x.RegistrationMaterial.ExternalId == registrationMaterialId && x.TaskStatusId == statusId);
 
         using (new AssertionScope())
         {
             dulyMadeEntry.Should().NotBeNull();
             dulyMadeEntry!.DulyMadeBy.Should().Be(userId);
-            dulyMadeEntry.DulyMadeDate.Should().Be(dulyMadeDate);
-            dulyMadeEntry.DeterminationDate.Should().Be(determinationDate);
+            dulyMadeEntry!.DulyMadeDate.Should().Be(dulyMadeDate);
+            savedDeterminationDate.DeterminateDate.Should().Be(determinationDate);
             dulyMadeEntry.TaskStatusId.Should().Be(statusId);
 
             taskStatusEntry.Should().NotBeNull();
             taskStatusEntry!.TaskStatusId.Should().Be(statusId);
-            taskStatusEntry.TaskId.Should().Be(2);
+            taskStatusEntry.RegulatorTaskId.Should().Be(2);
             taskStatusEntry.StatusUpdatedBy.Should().Be(userId);
             taskStatusEntry.StatusCreatedDate.Date.Should().Be(DateTime.UtcNow.Date);
         }
+    }
+
+    [TestMethod]
+    public async Task RegistrationMaterialsMarkAsDulyMade_ShouldUpdateRegulatorApplicationTaskStatus_WhenItExists()
+    {
+        // Arrange
+        var registrationMaterialId = Guid.Parse("a9421fc1-a912-42ee-85a5-3e06408759a9");
+        var statusId = 6;
+        var dulyMadeDate = DateTime.UtcNow.Date;
+        var determinationDate = dulyMadeDate.AddDays(84);
+        var userId = Guid.NewGuid();
+
+        _context.RegulatorApplicationTaskStatus.Add(new RegulatorApplicationTaskStatus
+        {
+            Id = 2,
+            RegulatorTaskId = 2,
+            TaskStatusId = 1,
+            TaskStatus = new LookupTaskStatus { Id = 2, Name = "Started" },
+            Task = new LookupRegulatorTask
+            {
+                Id = 2,
+                Name = "CheckRegistrationStatus",
+                ApplicationTypeId = 1,
+                JourneyTypeId = 1,
+                IsMaterialSpecific = true,
+            },
+            RegistrationMaterialId = 1
+        });
+
+        await _context.SaveChangesAsync();
+        // Act
+        await _repository.RegistrationMaterialsMarkAsDulyMade(registrationMaterialId, statusId, determinationDate, dulyMadeDate, userId);
+
+        // Assert
+        var dulyMadeEntry = await _context.DulyMade
+            .FirstOrDefaultAsync(x => x.RegistrationMaterial.ExternalId == registrationMaterialId);
+        var savedDeterminationDate = await _context.DeterminationDate
+            .FirstOrDefaultAsync(x => x.RegistrationMaterialId == 1);
+        var taskStatusEntry = await _context.RegulatorApplicationTaskStatus
+            .FirstOrDefaultAsync(x => x.RegistrationMaterial.ExternalId == registrationMaterialId && x.TaskStatusId == statusId);
+
+        using (new AssertionScope())
+        {
+            dulyMadeEntry.Should().NotBeNull();
+            dulyMadeEntry!.DulyMadeBy.Should().Be(userId);
+            dulyMadeEntry!.DulyMadeDate.Should().Be(dulyMadeDate);
+            savedDeterminationDate.DeterminateDate.Should().Be(determinationDate);
+            dulyMadeEntry.TaskStatusId.Should().Be(statusId);
+
+            taskStatusEntry.Should().NotBeNull();
+            taskStatusEntry!.TaskStatusId.Should().Be(statusId);
+            taskStatusEntry.RegulatorTaskId.Should().Be(2);
+            taskStatusEntry.StatusUpdatedBy.Should().Be(userId);
+        }
+    }
+
+
+    [TestMethod]
+    public async Task RegistrationMaterialsMarkAsDulyMade_ShouldThrow_WhenMaterialNotFound()
+    {
+        // Arrange
+        var nonExistentId = Guid.NewGuid();
+        var statusId = 3;
+        var dulyMadeDate = DateTime.UtcNow.Date;
+        var determinationDate = dulyMadeDate.AddDays(84);
+        var userId = Guid.NewGuid();
+
+        // Act & Assert
+        await Assert.ThrowsExceptionAsync<KeyNotFoundException>(() =>
+            _repository.RegistrationMaterialsMarkAsDulyMade(nonExistentId, statusId, determinationDate, dulyMadeDate, userId));
+    }
+    [TestMethod]
+    public async Task UpdateRegistrationOutCome_ShouldHandleNullCommentAndReference()
+    {
+        // Arrange
+        var id = Guid.Parse("a9421fc1-a912-42ee-85a5-3e06408759a9");
+
+        // Act
+        await _repository.UpdateRegistrationOutCome(id, 2, null, null);
+        var updated = await _context.RegistrationMaterials.FindAsync(1);
+
+        // Assert
+        using (new AssertionScope())
+        {
+            updated.Should().NotBeNull();
+            updated!.StatusId.Should().Be(2);
+            updated.Comments.Should().BeNull();
+            updated.RegistrationReferenceNumber.Should().BeNull();
+        }
+    }
+
+    [TestMethod]
+    public async Task GetRegistrationMaterial_FileUploadById_ShouldReturnMaterial_WhenExists()
+    {
+        var material = await _repository.GetRegistrationMaterial_FileUploadById(Guid.Parse("a9421fc1-a912-42ee-85a5-3e06408759a9"));
+        using (new AssertionScope())
+        {
+            Assert.IsNotNull(material);
+            Assert.AreEqual("REF12345", material.RegistrationReferenceNumber);
+        }
+    }
+
+    [TestMethod]
+    public async Task GetRegistrationMaterial_FileUploadById_ShouldThrow_WhenNotFound()
+    {
+        await Assert.ThrowsExceptionAsync<KeyNotFoundException>(() => _repository.GetRegistrationMaterial_FileUploadById(Guid.Parse("cd9dcc80-fcf5-4f46-addd-b8a256f735a3")));
     }
 
     [TestCleanup]

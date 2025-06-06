@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using EPR.PRN.Backend.API.Common.Enums;
-using EPR.PRN.Backend.API.Handlers;
-using EPR.PRN.Backend.API.Profiles;
+using EPR.PRN.Backend.API.Handlers.Regulator;
+using EPR.PRN.Backend.API.Profiles.Regulator;
 using EPR.PRN.Backend.API.Queries;
 using EPR.PRN.Backend.Data.DataModels.Registrations;
 using EPR.PRN.Backend.Data.Interfaces.Regulator;
@@ -36,22 +36,22 @@ public class GetMaterialSamplingPlanQueryHandlerTests
     public async Task Handle_ShouldReturnMappedDto_WhenMaterialExists()
     {
         // Arrange
-        int materialId = 1;
+        var materialId = Guid.Parse("a9421fc1-a912-42ee-85a5-3e06408759a9");
         DateTime dateUploaded = DateTime.UtcNow;
         var query = new GetMaterialSamplingPlanQuery { Id = materialId };
-        var updatedBy = Guid.NewGuid();
+        var updatedBy = "Test user";
         var fileId = Guid.NewGuid();
 
         var materialEntity = new RegistrationMaterial
         {
-            Id = materialId,
+            ExternalId = materialId,
             RegistrationId = 10,
             MaterialId = 2,
             Material = new LookupMaterial { MaterialName = "Plastic" },
             StatusId = 1,
             Status = new LookupRegistrationMaterialStatus { Id = 1, Name = "Granted" },
-            FileUploads = new List<FileUpload>{
-                new FileUpload
+            FileUploads = new List<RegistrationFileUpload>{
+                new RegistrationFileUpload
                 {
                     
                     Filename = "Filename",

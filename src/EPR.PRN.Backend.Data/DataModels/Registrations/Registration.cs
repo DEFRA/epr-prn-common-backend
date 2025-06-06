@@ -14,7 +14,7 @@ public class Registration
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public Guid ExternalId { get; set; }
     public int ApplicationTypeId { get; set; }
-    public int OrganisationId { get; set; }
+    public Guid OrganisationId { get; set; }
     public int RegistrationStatusId { get; set; }
 
     [ForeignKey("BusinessAddress")]
@@ -40,6 +40,8 @@ public class Registration
     public DateTime? UpdatedDate { get; set; }
 
     public List<RegulatorRegistrationTaskStatus>? Tasks { get; set; }
+
+    public List<RegulatorAccreditationRegistrationTaskStatus>? AccreditationTasks { get; set; }
 
     public List<RegistrationMaterial>? Materials { get; set; }
 }

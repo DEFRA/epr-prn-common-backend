@@ -7,6 +7,6 @@ namespace EPR.PRN.Backend.API.Queries
     public class GetMaterialReprocessingIOQuery : IRequest<RegistrationMaterialReprocessingIODto>
     {
         [Required]
-        public int Id { get; set; }
+        public Guid Id { get; set; }
     }
 }

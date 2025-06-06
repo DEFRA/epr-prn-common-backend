@@ -1,6 +1,5 @@
 ﻿using EPR.PRN.Backend.API.Commands;
-using EPR.PRN.Backend.API.Common.Enums;
-using EPR.PRN.Backend.API.Controllers;
+using EPR.PRN.Backend.API.Controllers.Regulator;
 using EPR.PRN.Backend.API.Dto.Regulator;
 using EPR.PRN.Backend.API.Queries;
 
@@ -12,11 +11,8 @@ using FluentValidation.Results;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using EPR.PRN.Backend.API.Dto;
 
 using Moq;
-using EPR.PRN.Backend.Data.DataModels.Registrations;
-using EPR.PRN.Backend.API.Handlers;
 
 namespace EPR.PRN.Backend.API.UnitTests.Controllers;
 
@@ -43,10 +39,10 @@ public class RegistrationMaterialControllerTests
     public async Task GetRegistrationOverviewDetailById_ReturnsOk_WithExpectedResult()
     {
         // Arrange
-        int registrationId = 1;
+        var registrationId = Guid.Parse("4bac12f7-f7a9-4df4-b7b5-9c4221860c4d");
         var expectedDto = new RegistrationOverviewDto
         {
-            OrganisationName = "Test Organisation",
+            OrganisationId = Guid.NewGuid(),
             Regulator = "Test Regulator"
         };
 
@@ -70,7 +66,7 @@ public class RegistrationMaterialControllerTests
     public async Task GetMaterialDetailById_ReturnsOk_WithExpectedResult()
     {
         // Arrange
-        int materialId = 2;
+        var materialId = Guid.Parse("a9421fc1-a912-42ee-85a5-3e06408759a9");
         var expectedDto = new RegistrationMaterialDetailsDto();
 
         _mediatorMock
@@ -93,7 +89,7 @@ public class RegistrationMaterialControllerTests
     public async Task UpdateRegistrationOutcome_ValidCommand_ReturnsNoContent()
     {
         // Arrange
-        int materialId = 3;
+        var materialId = Guid.Parse("a9421fc1-a912-42ee-85a5-3e06408759a9");
         var command = new RegistrationMaterialsOutcomeCommand
         {
             RegistrationReferenceNumber = "R25ER2475638626AL" // Ensure the required property is set
@@ -126,7 +122,7 @@ public class RegistrationMaterialControllerTests
         var validator = new InlineValidator<RegistrationMaterialsOutcomeCommand>();
         validator.RuleFor(x => x.Status).Must(_ => false).WithMessage("Validation failed");
 
-        var registrationId = 10;
+        var registrationId = Guid.Parse("4bac12f7-f7a9-4df4-b7b5-9c4221860c4d");
         var command = new RegistrationMaterialsOutcomeCommand
         {
             RegistrationReferenceNumber = "R26ER2375628626PL" // Ensure the required property is set
@@ -148,18 +144,27 @@ public class RegistrationMaterialControllerTests
     [TestMethod]
     public async Task GetWasteLicences_ReturnsOk_WithExpectedResult()
     {
-        // Arrange
-        int materialId = 2;
-        var expectedDto = new RegistrationMaterialWasteLicencesDto() { PermitType = "", LicenceNumbers = [], MaterialName = "", MaximumReprocessingCapacityTonne = 1,  MaximumReprocessingPeriod = "", RegistrationMaterialId = 1  };
+        // Arrange  
+        var materialId = Guid.Parse("a9421fc1-a912-42ee-85a5-3e06408759a9");
+        var expectedDto = new RegistrationMaterialWasteLicencesDto
+        {
+            PermitType = "",
+            LicenceNumbers = Array.Empty<string>(),
+            MaterialName = "",
+            MaximumReprocessingCapacityTonne = 1,
+            MaximumReprocessingPeriod = "",
+            RegistrationMaterialId = Guid.Parse("a9421fc1-a912-42ee-85a5-3e06408759a9"),
+            RegistrationId = Guid.NewGuid() // Fix: Set the required RegistrationId property  
+        };
 
         _mediatorMock
             .Setup(m => m.Send(It.IsAny<GetMaterialWasteLicencesQuery>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(expectedDto);
 
-        // Act
+        // Act  
         var result = await _controller.GetWasteLicences(materialId);
 
-        // Assert
+        // Assert  
         using (new AssertionScope())
         {
             var okResult = result as OkObjectResult;
@@ -172,7 +177,7 @@ public class RegistrationMaterialControllerTests
     public async Task GetSamplingPlan_ReturnsOk_WithExpectedResult()
     {
         // Arrange
-        int materialId = 2;
+        var materialId = Guid.Parse("a9421fc1-a912-42ee-85a5-3e06408759a9");
         var expectedDto = new RegistrationMaterialSamplingPlanDto() { MaterialName = "" };
 
         _mediatorMock
@@ -195,7 +200,7 @@ public class RegistrationMaterialControllerTests
     public async Task GetreprocessingIO_ReturnsOk_WithExpectedResult()
     {
         // Arrange
-        int materialId = 2;
+        var materialId = Guid.Parse("a9421fc1-a912-42ee-85a5-3e06408759a9");
         var expectedDto = new RegistrationMaterialReprocessingIODto() { MaterialName = "", SourcesOfPackagingWaste = "", PlantEquipmentUsed = "" };
 
         _mediatorMock
@@ -218,7 +223,7 @@ public class RegistrationMaterialControllerTests
     public async Task GetSiteAddressByRegistrationId_ReturnsOk_WithExpectedResult()
     {
         // Arrange
-        int registrationId = 2;
+        var registrationId = Guid.Parse("4bac12f7-f7a9-4df4-b7b5-9c4221860c4d");
 
        
         var expectedDto = new RegistrationSiteAddressDto();
@@ -239,7 +244,7 @@ public class RegistrationMaterialControllerTests
     public async Task GetMaterialsAuthorisedOnSiteId_ReturnsOk_WithExpectedResult()
     {
         // Arrange
-        int registrationId = 2;
+        var registrationId = Guid.Parse("4bac12f7-f7a9-4df4-b7b5-9c4221860c4d");
 
 
         var expectedDto = new MaterialsAuthorisedOnSiteDto();
@@ -261,7 +266,7 @@ public class RegistrationMaterialControllerTests
     public async Task GetMaterialPaymentFeeById_ReturnsOk_WithExpectedResult()
     {
         // Arrange
-        int materialId = 12;
+        var materialId = Guid.Parse("a9421fc1-a912-42ee-85a5-3e06408759a9");
         var expectedDto = new MaterialPaymentFeeDto();
 
         _mediatorMock
@@ -289,7 +294,7 @@ public class RegistrationMaterialControllerTests
                 determinationDate >= model.DulyMadeDate.AddDays(7 * 12))
             .WithMessage("DeterminationDate must be at least 12 weeks after DulyMadeDate.");
 
-        var registrationMaterialId = 12;
+        var registrationMaterialId = Guid.Parse("a9421fc1-a912-42ee-85a5-3e06408759a9");
         var command = new RegistrationMaterialsMarkAsDulyMadeCommand
         {
             DulyMadeDate= new DateTime(2025, 5, 12),
@@ -313,7 +318,7 @@ public class RegistrationMaterialControllerTests
     public async Task GetRegistrationAccreditationReferenceById_ReturnsOk_WithExpectedResult()
     {
         // Arrange
-        int materialId = 12;
+        var materialId = Guid.Parse("a9421fc1-a912-42ee-85a5-3e06408759a9");
         var expectedDto = new RegistrationAccreditationReferenceDto();
 
         _mediatorMock
@@ -335,7 +340,7 @@ public class RegistrationMaterialControllerTests
     public async Task GetRegistrationAccreditationReference_ReturnsOk_WithExpectedResult()
     {
         // Arrange
-        int materialId = 10;
+        var materialId = Guid.Parse("a9421fc1-a912-42ee-85a5-3e06408759a9");
         var expectedDto = new RegistrationAccreditationReferenceDto();
 
         _mediatorMock
@@ -357,7 +362,7 @@ public class RegistrationMaterialControllerTests
     public async Task RegistrationMaterialsMarkAsDulyMade_ValidCommand_ReturnsNoContent()
     {
         // Arrange
-        int materialId = 5;
+        var materialId = Guid.Parse("a9421fc1-a912-42ee-85a5-3e06408759a9");
         var command = new RegistrationMaterialsMarkAsDulyMadeCommand
         {
             DulyMadeDate = DateTime.UtcNow.AddMonths(-1),
@@ -389,7 +394,7 @@ public class RegistrationMaterialControllerTests
         var validator = new InlineValidator<RegistrationMaterialsMarkAsDulyMadeCommand>();
         validator.RuleFor(x => x.DulyMadeDate).Must(_ => false).WithMessage("Validation failed");
 
-        int materialId = 9;
+        var materialId = Guid.Parse("a9421fc1-a912-42ee-85a5-3e06408759a9");
         var command = new RegistrationMaterialsMarkAsDulyMadeCommand
         {
             DulyMadeDate = DateTime.UtcNow,

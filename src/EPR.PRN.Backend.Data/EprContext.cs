@@ -5,6 +5,7 @@ using EPR.PRN.Backend.Data.DataModels;
 using EPR.PRN.Backend.Data.DataModels.Registrations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace EPR.PRN.Backend.Data
 {
@@ -175,7 +176,28 @@ namespace EPR.PRN.Backend.Data
 
             modelBuilder.Entity<LookupRegistrationMaterialStatus>().HasData(
                 new LookupRegistrationMaterialStatus { Id = 1, Name = "Granted" },
-                new LookupRegistrationMaterialStatus { Id = 2, Name = "Refused" });
+                new LookupRegistrationMaterialStatus { Id = 2, Name = "Refused" },
+                new LookupRegistrationMaterialStatus { Id = 3, Name = "Started" },
+                new LookupRegistrationMaterialStatus { Id = 4, Name = "Submitted" },
+                new LookupRegistrationMaterialStatus { Id = 5, Name = "RegulatorReviewing" },
+                new LookupRegistrationMaterialStatus { Id = 6, Name = "Queried" },
+                new LookupRegistrationMaterialStatus { Id = 8, Name = "Withdrawn" },
+                new LookupRegistrationMaterialStatus { Id = 9, Name = "Suspended" },
+                new LookupRegistrationMaterialStatus { Id = 10, Name = "Cancelled" },
+                new LookupRegistrationMaterialStatus { Id = 11, Name = "ReadyToSubmit" });
+
+            modelBuilder.Entity<LookupAccreditationStatus>().HasData(
+                new LookupAccreditationStatus { Id = 1, Name = "Started" },
+                new LookupAccreditationStatus { Id = 2, Name = "Submitted" },
+                new LookupAccreditationStatus { Id = 3, Name = "RegulatorReviewing" },
+                new LookupAccreditationStatus { Id = 4, Name = "Queried" },
+                new LookupAccreditationStatus { Id = 5, Name = "Updated" },
+                new LookupAccreditationStatus { Id = 6, Name = "Granted" },
+                new LookupAccreditationStatus { Id = 7, Name = "Refused" },
+                new LookupAccreditationStatus { Id = 8, Name = "Withdrawn" },
+                new LookupAccreditationStatus { Id = 9, Name = "Suspended" },
+                new LookupAccreditationStatus { Id = 10, Name = "Cancelled" },
+                new LookupAccreditationStatus { Id = 11, Name = "ReadyToSubmit" });
 
             modelBuilder.Entity<LookupTaskStatus>().HasData(
                 new LookupTaskStatus { Id = 1, Name = "NotStarted" },
@@ -208,7 +230,19 @@ namespace EPR.PRN.Backend.Data
                 new LookupRegulatorTask { Id = 13, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 1, Name = "MaterialDetailsAndContact" },
                 new LookupRegulatorTask { Id = 14, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 1, Name = "OverseasReprocessorAndInterimSiteDetails" },
                 new LookupRegulatorTask { Id = 15, IsMaterialSpecific = true, ApplicationTypeId = 1, JourneyTypeId = 1, Name = "CheckRegistrationStatus" },
-                new LookupRegulatorTask { Id = 16, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 1, Name = "CheckRegistrationStatus" });
+                new LookupRegulatorTask { Id = 16, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 1, Name = "CheckRegistrationStatus" },
+                new LookupRegulatorTask { Id = 17, IsMaterialSpecific = false, ApplicationTypeId = 1, JourneyTypeId = 2, Name = "AssignOfficer" },
+                new LookupRegulatorTask { Id = 18, IsMaterialSpecific = true, ApplicationTypeId = 1, JourneyTypeId = 2, Name = "PRNs tonnage and authority to issue PRNs" },
+                new LookupRegulatorTask { Id = 19, IsMaterialSpecific = true, ApplicationTypeId = 1, JourneyTypeId = 2, Name = "Business Plan" },
+                new LookupRegulatorTask { Id = 20, IsMaterialSpecific = true, ApplicationTypeId = 1, JourneyTypeId = 2, Name = "Accreditation sampling and inspection plan" },
+
+                new LookupRegulatorTask { Id = 22, IsMaterialSpecific = false, ApplicationTypeId = 2, JourneyTypeId = 2, Name = "AssignOfficer" },
+                new LookupRegulatorTask { Id = 23, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 2, Name = "PRNs tonnage and authority to issue PRNs" },
+                new LookupRegulatorTask { Id = 24, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 2, Name = "Business Plan" },
+                new LookupRegulatorTask { Id = 25, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 2, Name = "Accreditation sampling and inspection plan" },
+                new LookupRegulatorTask { Id = 26, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 2, Name = "Overseas reprocessing sites and broadly equivalent evidence" },
+                new LookupRegulatorTask { Id = 27, IsMaterialSpecific = true, ApplicationTypeId = 1, JourneyTypeId = 2, Name = "DulyMade" },
+                new LookupRegulatorTask { Id = 28, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 2, Name = "DulyMade" });
 
             modelBuilder.Entity<LookupMaterialPermit>().HasData(
                 new LookupMaterialPermit { Id = 1, Name = PermitTypes.WasteExemption },
@@ -255,6 +289,7 @@ namespace EPR.PRN.Backend.Data
         public virtual DbSet<RegistrationMaterial> RegistrationMaterials { get; set; }
         public virtual DbSet<MaterialExemptionReference> MaterialExemptionReferences { get; set; }
         public virtual DbSet<RegistrationReprocessingIO> RegistrationReprocessingIO { get; set; }
+        public virtual DbSet<DeterminationDate> DeterminationDate { get; set; }
         public virtual DbSet<DulyMade> DulyMade { get; set; }
         public virtual DbSet<RegulatorApplicationTaskStatus> RegulatorApplicationTaskStatus { get; set; }
         public virtual DbSet<RegulatorRegistrationTaskStatus> RegulatorRegistrationTaskStatus { get; set; }
@@ -266,5 +301,14 @@ namespace EPR.PRN.Backend.Data
         public virtual DbSet<Address> LookupAddresses { get; set; }
         public virtual DbSet<LookupPeriod> LookupPeriod { get; set; }
         public virtual DbSet<LookupMaterialPermit> LookupMaterialPermit { get; set; }
+        public virtual DbSet<Note> QueryNote { get; set; }
+        public virtual DbSet<ApplicationTaskStatusQueryNote> ApplicationTaskStatusQueryNotes { get; set; }
+        public virtual DbSet<RegistrationTaskStatusQueryNote> RegistrationTaskStatusQueryNotes { get; set; }
+        public virtual DbSet<Accreditation> Accreditations { get; set; }
+        public virtual DbSet<AccreditationDulyMade> AccreditationDulyMade { get; set; }
+        public virtual DbSet<RegulatorAccreditationTaskStatus> RegulatorAccreditationTaskStatus { get; set; }
+        public virtual DbSet<AccreditationTaskStatusQueryNote> AccreditationTaskStatusQueryNote { get; set; }
+        public virtual DbSet<AccreditationDeterminationDate> AccreditationDeterminationDate { get; set; }
+
     }
 }

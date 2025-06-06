@@ -14,12 +14,10 @@ namespace EPR.PRN.Backend.Data.DataModels.Registrations
         public Guid ExternalId { get; set; }
         public LookupRegulatorTask Task { get; set; } = null!;
         [ForeignKey("Task")]
-        public int? TaskId { get; set; }
+        public int RegulatorTaskId { get; set; }
         public LookupTaskStatus TaskStatus { get; set; } = null!;
         [ForeignKey("TaskStatus")]
-        public int? TaskStatusId { get; set; }
-        [MaxLength(500)]
-        public string? Comments { get; set; } 
+        public int TaskStatusId { get; set; }
         public Guid StatusCreatedBy { get; set; }
         public DateTime StatusCreatedDate { get; set; }
         public Guid? StatusUpdatedBy { get; set; }

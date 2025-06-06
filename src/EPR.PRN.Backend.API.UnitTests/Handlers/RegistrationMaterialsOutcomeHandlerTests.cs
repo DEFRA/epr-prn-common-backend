@@ -1,6 +1,6 @@
 ﻿using EPR.PRN.Backend.API.Commands;
 using EPR.PRN.Backend.API.Common.Enums;
-using EPR.PRN.Backend.API.Handlers;
+using EPR.PRN.Backend.API.Handlers.Regulator;
 using EPR.PRN.Backend.Data.DataModels.Registrations;
 using EPR.PRN.Backend.Data.Interfaces.Regulator;
 using FluentAssertions;
@@ -29,7 +29,7 @@ public class RegistrationMaterialsOutcomeHandlerTests
 
         var command = new RegistrationMaterialsOutcomeCommand
         {
-            Id = material.Id,
+            Id = material.ExternalId,
             Status = RegistrationMaterialStatus.Granted,
             Comments = "No change",
             RegistrationReferenceNumber = "REF0005-03"
@@ -53,7 +53,7 @@ public class RegistrationMaterialsOutcomeHandlerTests
 
         var command = new RegistrationMaterialsOutcomeCommand
         {
-            Id = material.Id,
+            Id = material.ExternalId,
             Status = RegistrationMaterialStatus.Refused,
             Comments = "Trying to revert",
             RegistrationReferenceNumber = "REF0005-03"
@@ -77,7 +77,7 @@ public class RegistrationMaterialsOutcomeHandlerTests
 
         var command = new RegistrationMaterialsOutcomeCommand
         {
-            Id = material.Id,
+            Id = material.ExternalId,
             Status = RegistrationMaterialStatus.Refused,
             Comments = "Initial setting",
             RegistrationReferenceNumber = "REF-NULL"
@@ -100,7 +100,7 @@ public class RegistrationMaterialsOutcomeHandlerTests
 
         var command = new RegistrationMaterialsOutcomeCommand
         {
-            Id = material.Id,
+            Id = material.ExternalId,
             Status = RegistrationMaterialStatus.Granted,
             Comments = "All good",
             RegistrationReferenceNumber = "REF-GRANTED"
@@ -123,7 +123,7 @@ public class RegistrationMaterialsOutcomeHandlerTests
 
         var command = new RegistrationMaterialsOutcomeCommand
         {
-            Id = material.Id,
+            Id = material.ExternalId,
             Status = RegistrationMaterialStatus.Refused,
             Comments = "Valid update",
             RegistrationReferenceNumber = "REF0001"

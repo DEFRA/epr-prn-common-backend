@@ -13,7 +13,7 @@ public class RegistrationMaterialsOutcomeCommand : IRequest
 {
     [BindNever]
     [SwaggerIgnore]
-    public int Id { get; set; }
+    public Guid Id { get; set; }
     public RegistrationMaterialStatus Status { get; set; }
     public string? Comments { get; set; }  
     public required string RegistrationReferenceNumber { get; set; } 
