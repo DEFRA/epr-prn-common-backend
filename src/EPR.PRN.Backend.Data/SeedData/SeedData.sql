@@ -3482,58 +3482,6 @@ SET IDENTITY_INSERT [dbo].[Public.Accreditation] OFF
 GO
 
 
-
-
-GO
-SET IDENTITY_INSERT [dbo].[Public.AccreditationDeterminationDate] ON 
-GO
-INSERT [dbo].[Public.AccreditationDeterminationDate] ([Id], [ExternalId], [AccreditationId], [DeterminationDate]) VALUES (1, N'a4fbff72-0966-4a5c-8aaf-01bba11da842', 1, CAST(N'2025-01-01T00:00:00.0000000' AS DateTime2))
-GO
-INSERT [dbo].[Public.AccreditationDeterminationDate] ([Id], [ExternalId], [AccreditationId], [DeterminationDate]) VALUES (2, N'3c38acf7-5127-4cd3-856f-bde384398576', 2, CAST(N'2025-01-01T00:00:00.0000000' AS DateTime2))
-GO
-INSERT [dbo].[Public.AccreditationDeterminationDate] ([Id], [ExternalId], [AccreditationId], [DeterminationDate]) VALUES (3, N'efbe21f2-89d3-4808-a9f8-0c91e22a08b6', 3, CAST(N'2025-01-01T00:00:00.0000000' AS DateTime2))
-GO
-INSERT [dbo].[Public.AccreditationDeterminationDate] ([Id], [ExternalId], [AccreditationId], [DeterminationDate]) VALUES (4, N'f8d30b50-b552-44a3-b952-cae616195b9a', 4, CAST(N'2025-01-01T00:00:00.0000000' AS DateTime2))
-GO
-INSERT [dbo].[Public.AccreditationDeterminationDate] ([Id], [ExternalId], [AccreditationId], [DeterminationDate]) VALUES (5, N'cec27137-aea4-44b6-8f09-ec49afb73d46', 5, CAST(N'2025-01-01T00:00:00.0000000' AS DateTime2))
-GO
-INSERT [dbo].[Public.AccreditationDeterminationDate] ([Id], [ExternalId], [AccreditationId], [DeterminationDate]) VALUES (6, N'a8f9e1c6-bd09-4123-b660-5319226d66f1', 6, CAST(N'2025-01-01T00:00:00.0000000' AS DateTime2))
-GO
-INSERT [dbo].[Public.AccreditationDeterminationDate] ([Id], [ExternalId], [AccreditationId], [DeterminationDate]) VALUES (7, N'da7da64d-53fc-43df-aeee-f6d86a6bb316', 7, CAST(N'2025-01-01T00:00:00.0000000' AS DateTime2))
-GO
-INSERT [dbo].[Public.AccreditationDeterminationDate] ([Id], [ExternalId], [AccreditationId], [DeterminationDate]) VALUES (8, N'328c9212-7767-4299-b7e5-37458943fe93', 8, CAST(N'2025-01-01T00:00:00.0000000' AS DateTime2))
-GO
-INSERT [dbo].[Public.AccreditationDeterminationDate] ([Id], [ExternalId], [AccreditationId], [DeterminationDate]) VALUES (9, N'c906aa81-92da-46e3-99b0-7e3b7b9836ad', 9, CAST(N'2025-01-01T00:00:00.0000000' AS DateTime2))
-GO
-INSERT [dbo].[Public.AccreditationDeterminationDate] ([Id], [ExternalId], [AccreditationId], [DeterminationDate]) VALUES (10, N'fbc44122-075e-443b-a7c4-838e2e0e3d8e', 10, CAST(N'2025-01-01T00:00:00.0000000' AS DateTime2))
-GO
-INSERT [dbo].[Public.AccreditationDeterminationDate] ([Id], [ExternalId], [AccreditationId], [DeterminationDate]) VALUES (11, N'5a71a29c-5de8-46df-bf6f-4cb156db9587', 11, CAST(N'2025-01-01T00:00:00.0000000' AS DateTime2))
-GO
-INSERT [dbo].[Public.AccreditationDeterminationDate] ([Id], [ExternalId], [AccreditationId], [DeterminationDate]) VALUES (12, N'cb730457-3bb6-4426-b3f7-366414021fb7', 12, CAST(N'2025-01-01T00:00:00.0000000' AS DateTime2))
-GO
-INSERT [dbo].[Public.AccreditationDeterminationDate] ([Id], [ExternalId], [AccreditationId], [DeterminationDate]) VALUES (13, N'b087ee82-1d08-45a0-98bb-8c4ebe0a3996', 13, CAST(N'2025-01-01T00:00:00.0000000' AS DateTime2))
-GO
-INSERT [dbo].[Public.AccreditationDeterminationDate] ([Id], [ExternalId], [AccreditationId], [DeterminationDate]) VALUES (14, N'f63df0ac-0337-46ca-9976-b1dbe13e3df9', 14, CAST(N'2025-01-01T00:00:00.0000000' AS DateTime2))
-GO
-INSERT [dbo].[Public.AccreditationDeterminationDate] ([Id], [ExternalId], [AccreditationId], [DeterminationDate]) VALUES (15, N'fa30dbd0-1839-4749-b283-d1444448f59a', 15, CAST(N'2025-01-01T00:00:00.0000000' AS DateTime2))
-GO
-INSERT [dbo].[Public.AccreditationDeterminationDate] ([Id], [ExternalId], [AccreditationId], [DeterminationDate]) VALUES (16, N'2e159dfd-1a57-41d3-92ea-1e1a096a1bae', 16, CAST(N'2025-01-01T00:00:00.0000000' AS DateTime2))
-GO
-INSERT [dbo].[Public.AccreditationDeterminationDate] ([Id], [ExternalId], [AccreditationId], [DeterminationDate]) VALUES (17, N'2e159dfd-1a57-41d3-92ea-1e1a096a1bae', 17, CAST(N'2025-01-01T00:00:00.0000000' AS DateTime2))
-GO
-INSERT [dbo].[Public.AccreditationDeterminationDate] ([Id], [ExternalId], [AccreditationId], [DeterminationDate]) VALUES (18, N'af8b89cb-da0b-44af-9915-4ef6bb13c974', 18, CAST(N'2025-01-01T00:00:00.0000000' AS DateTime2))
-GO
-INSERT [dbo].[Public.AccreditationDeterminationDate] ([Id], [ExternalId], [AccreditationId], [DeterminationDate]) VALUES (19, N'fd530794-b8d0-42d1-af88-a70a59ee623e', 19, CAST(N'2025-01-01T00:00:00.0000000' AS DateTime2))
-GO
-INSERT [dbo].[Public.AccreditationDeterminationDate] ([Id], [ExternalId], [AccreditationId], [DeterminationDate]) VALUES (20, N'66b0e6ac-ec31-4068-a190-cd7b3d7e229d', 20, CAST(N'2025-01-01T00:00:00.0000000' AS DateTime2))
-GO
-INSERT [dbo].[Public.AccreditationDeterminationDate] ([Id], [ExternalId], [AccreditationId], [DeterminationDate]) VALUES (21, N'a56ec10e-f0af-405f-8693-7ca5a9f483fe', 21, CAST(N'2025-01-01T00:00:00.0000000' AS DateTime2))
-GO
-SET IDENTITY_INSERT [dbo].[Public.AccreditationDeterminationDate] OFF
-GO
-
-
-
 SET IDENTITY_INSERT [dbo].[public.AccreditationFileUpload] ON 
 GO
 INSERT [dbo].[public.AccreditationFileUpload] ([Id], [ExternalId], [AccreditationId], [Filename], [FileId], [DateUploaded], [UpdatedBy], [FileUploadTypeId], [FileUploadStatusId]) VALUES (451, N'4ba341f0-774f-4ebf-ba99-908421269976', 1, N'testFile1.pdf', N'23268ae6-17ac-4eee-bdc4-032eaa45dbf6', CAST(N'2025-05-09T20:48:45.4110986' AS DateTime2), 'Test User 1', 1, 1)
