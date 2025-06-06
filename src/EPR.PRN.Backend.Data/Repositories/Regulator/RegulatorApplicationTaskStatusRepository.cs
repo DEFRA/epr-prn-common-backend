@@ -86,8 +86,6 @@ namespace EPR.PRN.Backend.Data.Repositories.Regulator
             {
                 // Update the existing entity
                 taskStatus.TaskStatus = statusEntity;
-                taskStatus.StatusCreatedBy = user;
-                taskStatus.StatusCreatedDate = DateTime.UtcNow;
                 taskStatus.StatusUpdatedBy = user;
                 taskStatus.StatusUpdatedDate = DateTime.UtcNow;
 

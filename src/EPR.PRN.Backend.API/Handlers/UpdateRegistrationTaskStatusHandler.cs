@@ -8,6 +8,7 @@ public class UpdateRegistrationTaskStatusHandler(IRegistrationRepository reposit
 {
     public async Task Handle(UpdateRegistrationTaskStatusCommand command, CancellationToken cancellationToken)
     {
-        await repository.UpdateRegistrationTaskStatusAsync(command.TaskName, command.RegistrationId, command.Status, command.UserGuid);
+        var userId = Guid.Parse(command.UserGuid);
+        await repository.UpdateRegistrationTaskStatusAsync(command.TaskName, command.RegistrationId, command.Status, userId);
     }
 }

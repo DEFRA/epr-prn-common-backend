@@ -428,7 +428,6 @@ public class RegistrationMaterialRepositoryTests
             dulyMadeEntry!.DulyMadeBy.Should().Be(userId);
             dulyMadeEntry!.DulyMadeDate.Should().Be(dulyMadeDate);
             savedDeterminationDate.DeterminateDate.Should().Be(determinationDate);
-            dulyMadeEntry.TaskStatusId.Should().Be(statusId);
 
             taskStatusEntry.Should().NotBeNull();
             taskStatusEntry!.TaskStatusId.Should().Be(statusId);
@@ -483,7 +482,6 @@ public class RegistrationMaterialRepositoryTests
             dulyMadeEntry!.DulyMadeBy.Should().Be(userId);
             dulyMadeEntry!.DulyMadeDate.Should().Be(dulyMadeDate);
             savedDeterminationDate.DeterminateDate.Should().Be(determinationDate);
-            dulyMadeEntry.TaskStatusId.Should().Be(statusId);
 
             taskStatusEntry.Should().NotBeNull();
             taskStatusEntry!.TaskStatusId.Should().Be(statusId);
@@ -491,7 +489,6 @@ public class RegistrationMaterialRepositoryTests
             taskStatusEntry.StatusUpdatedBy.Should().Be(userId);
         }
     }
-
 
     [TestMethod]
     public async Task RegistrationMaterialsMarkAsDulyMade_ShouldThrow_WhenMaterialNotFound()
@@ -507,6 +504,7 @@ public class RegistrationMaterialRepositoryTests
         await Assert.ThrowsExceptionAsync<KeyNotFoundException>(() =>
             _repository.RegistrationMaterialsMarkAsDulyMade(nonExistentId, statusId, determinationDate, dulyMadeDate, userId));
     }
+
     [TestMethod]
     public async Task UpdateRegistrationOutCome_ShouldHandleNullCommentAndReference()
     {

@@ -2,7 +2,6 @@ using AutoFixture;
 using EPR.PRN.Backend.API.Commands;
 using EPR.PRN.Backend.API.Handlers.Regulator;
 using EPR.PRN.Backend.Data.Interfaces.Regulator;
-using EPR.PRN.Backend.Data.Repositories.Regulator;
 using FluentAssertions;
 using Moq;
 

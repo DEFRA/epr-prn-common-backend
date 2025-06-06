@@ -73,6 +73,7 @@ public class RegistrationRepositoryTests
         var registration = new Registration { Id = 1, ApplicationTypeId = 1 };
         var task = new LookupRegulatorTask { Name = "NewTask", ApplicationTypeId = 1, IsMaterialSpecific = false };
         var status = new LookupTaskStatus { Name = TaskStatuses.Completed.ToString() };
+        var userId = Guid.NewGuid();
 
         await _context.Registrations.AddAsync(registration);
         await _context.LookupTasks.AddAsync(task);
@@ -80,7 +81,7 @@ public class RegistrationRepositoryTests
         await _context.SaveChangesAsync();
 
         // Act
-        await _repository.UpdateRegistrationTaskStatusAsync("NewTask", 1, TaskStatuses.Completed);
+        await _repository.UpdateRegistrationTaskStatusAsync("NewTask", 1, TaskStatuses.Completed, userId);
 
         // Assert
         var result = await _repository.GetTaskStatusAsync("NewTask", 1);
@@ -96,6 +97,7 @@ public class RegistrationRepositoryTests
         var task = new LookupRegulatorTask { Name = "ExistingTask", ApplicationTypeId = 1, IsMaterialSpecific = false };
         var oldStatus = new LookupTaskStatus { Name = TaskStatuses.Started.ToString() };
         var newStatus = new LookupTaskStatus { Name = TaskStatuses.Completed.ToString() };
+        var userId = Guid.NewGuid();
 
         await _context.Registrations.AddAsync(registration);
         await _context.LookupTasks.AddAsync(task);
@@ -112,7 +114,7 @@ public class RegistrationRepositoryTests
         await _context.SaveChangesAsync();
 
         // Act
-        await _repository.UpdateRegistrationTaskStatusAsync("ExistingTask", 2, TaskStatuses.Completed);
+        await _repository.UpdateRegistrationTaskStatusAsync("ExistingTask", 2, TaskStatuses.Completed, userId);
 
         // Assert
         var result = await _repository.GetTaskStatusAsync("ExistingTask", 2);
@@ -126,9 +128,10 @@ public class RegistrationRepositoryTests
         var status = new LookupTaskStatus { Name = TaskStatuses.Completed.ToString() };
         await _context.LookupTaskStatuses.AddAsync(status);
         await _context.SaveChangesAsync();
+        var userId = Guid.NewGuid();
 
         // Act
-        Func<Task> act = async () => await _repository.UpdateRegistrationTaskStatusAsync("AnyTask", 9999, TaskStatuses.Completed);
+        Func<Task> act = async () => await _repository.UpdateRegistrationTaskStatusAsync("AnyTask", 9999, TaskStatuses.Completed, userId);
 
         // Assert
         await act.Should().ThrowAsync<KeyNotFoundException>();
@@ -144,9 +147,10 @@ public class RegistrationRepositoryTests
         await _context.Registrations.AddAsync(registration);
         await _context.LookupTaskStatuses.AddAsync(status);
         await _context.SaveChangesAsync();
+        var userId = Guid.NewGuid();
 
         // Act
-        Func<Task> act = async () => await _repository.UpdateRegistrationTaskStatusAsync("MissingTask", 3, TaskStatuses.Completed);
+        Func<Task> act = async () => await _repository.UpdateRegistrationTaskStatusAsync("MissingTask", 3, TaskStatuses.Completed, userId);
 
         // Assert
         await act.Should().ThrowAsync<RegulatorInvalidOperationException>()

@@ -48,7 +48,7 @@ public class RegistrationRepository(EprContext context, ILogger<RegistrationRepo
         return taskStatus;
     }
 
-    public async Task UpdateRegistrationTaskStatusAsync(string taskName, int registrationId, TaskStatuses status, string userGuid)
+    public async Task UpdateRegistrationTaskStatusAsync(string taskName, int registrationId, TaskStatuses status, Guid userGuid)
     {
         logger.LogInformation("Updating status for task with TaskName {TaskName} And RegistrationId {RegistrationId} to {Status}", taskName, registrationId, status);
 
@@ -79,8 +79,6 @@ public class RegistrationRepository(EprContext context, ILogger<RegistrationRepo
                 RegistrationId = registrationId,
                 Task = task,
                 TaskStatus = statusEntity,
-                StatusCreatedBy = userGuid,
-                StatusCreatedOn = DateTime.UtcNow
             };
 
             await context.RegistrationTaskStatus.AddAsync(taskStatus);
@@ -89,8 +87,6 @@ public class RegistrationRepository(EprContext context, ILogger<RegistrationRepo
         {
             // Update the existing entity
             taskStatus.TaskStatus = statusEntity;
-            StatusUpdatedBy = userGuid;
-            StatusUpdatedOn = DateTime.UtcNow;
 
             context.RegistrationTaskStatus.Update(taskStatus);
         }

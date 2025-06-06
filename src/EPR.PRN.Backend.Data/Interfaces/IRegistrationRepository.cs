@@ -8,7 +8,7 @@ namespace EPR.PRN.Backend.Data.Interfaces
     {
         Task<int> CreateRegistrationAsync(int applicationTypeId, Guid organisationId);
         Task<RegistrationTaskStatus?> GetTaskStatusAsync(string taskName, int registrationId);
-        Task UpdateRegistrationTaskStatusAsync(string taskName, int registrationId, TaskStatuses status, string userGuid);
+        Task UpdateRegistrationTaskStatusAsync(string taskName, int registrationId, TaskStatuses status, Guid userGuid);
         Task UpdateSiteAddressAsync(int registrationId, AddressDto reprocessingSiteAddress);
     }
 }
