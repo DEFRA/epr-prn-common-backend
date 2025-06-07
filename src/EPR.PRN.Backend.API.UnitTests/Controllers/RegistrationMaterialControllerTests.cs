@@ -17,6 +17,7 @@ using EPR.PRN.Backend.API.Dto;
 using Moq;
 using EPR.PRN.Backend.Data.DataModels.Registrations;
 using EPR.PRN.Backend.API.Handlers;
+using EPR.PRN.Backend.Obligation.Models;
 
 namespace EPR.PRN.Backend.API.UnitTests.Controllers;
 
@@ -408,6 +409,39 @@ public class RegistrationMaterialControllerTests
             controller.RegistrationMaterialsMarkAsDulyMade(materialId, command)
         ).Should().ThrowAsync<ValidationException>();
     }
+    
+    [TestMethod]
+    public async Task CreateRegistrationMaterialAndExemptionReferences_ValidCommand_ReturnsNoContent()
+    {
+        // Arrange  
+        var command = new CreateRegistrationMaterialAndExemptionReferencesCommand
+        {
+            RegistrationMaterial = new RegistrationMaterialDto
+            {
+                MaterialName = "Test Material"
+            },
+            MaterialExemptionReferences = new List<MaterialExemptionReferenceRequest>()
+        };
 
+        _mediatorMock
+            .Setup(m => m.Send(It.IsAny<CreateRegistrationMaterialAndExemptionReferencesCommand>(), It.IsAny<CancellationToken>()))
+            .Returns(Task.FromResult(Unit.Value));
 
+        // Act  
+        var result = await _controller.CreateRegistrationMaterialAndExemptionReferences(command);
+
+        // Assert  
+        result.Should().BeOfType<OkResult>();
+       
+
+        _loggerMock.Verify(
+            x => x.Log(
+                LogLevel.Information,
+                It.IsAny<EventId>(),
+                It.Is<It.IsAnyType>((v, t) => true), 
+                It.IsAny<Exception>(),
+                It.IsAny<Func<It.IsAnyType, Exception, string>>()),
+            Times.AtLeastOnce
+        );
+    }
 }
