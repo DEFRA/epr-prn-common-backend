@@ -6,7 +6,7 @@ namespace EPR.PRN.Backend.API.Commands;
 
 public class CreateRegistrationMaterialAndExemptionReferencesCommand: IRequest
 {
-    public RegistrationMaterialDto RegistrationMaterial { get; set; }
+    public required RegistrationMaterialDto RegistrationMaterial { get; set; }
 
-    public List<MaterialExemptionReferenceRequest> MaterialExemptionReferences { get; set; }
+    public required List<MaterialExemptionReferenceRequest> MaterialExemptionReferences { get; set; }
 }
