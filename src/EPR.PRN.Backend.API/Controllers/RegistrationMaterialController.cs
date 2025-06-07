@@ -164,7 +164,7 @@ public class RegistrationMaterialController(IMediator mediator
     #endregion Get Methods
 
     #region Post Methods
-    [HttpPost("createRegistrationMaterialAndExemptionReferences")]
+    [HttpPost("registrationMaterials/createRegistrationMaterialAndExemptionReferences")]
     public async Task<IActionResult> CreateRegistrationMaterialAndExemptionReferences([FromBody] CreateRegistrationMaterialAndExemptionReferencesCommand command)
     {
         logger.LogInformation(LogMessages.CreateRegistrationMaterialAndExemptionReferences);        

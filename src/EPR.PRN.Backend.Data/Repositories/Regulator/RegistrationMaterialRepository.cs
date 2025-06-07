@@ -213,7 +213,7 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
         List<MaterialExemptionReference> exemptionReferences)
     {        
         await eprContext.RegistrationMaterials.AddAsync(registrationMaterial);
-        await eprContext.SaveChangesAsync();
+        //await eprContext.SaveChangesAsync();
      
         foreach (var exemption in exemptionReferences)
         {
