@@ -3550,7 +3550,7 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250606130329_RemoveunusedDulyMadeFields'
+    WHERE [MigrationId] = N'20250606161040_RemoveunusedDulyMadeFields'
 )
 BEGIN
     ALTER TABLE [Public.DulyMade] DROP CONSTRAINT [FK_Public.DulyMade_Lookup.TaskStatus_TaskStatusId];
@@ -3559,7 +3559,7 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250606130329_RemoveunusedDulyMadeFields'
+    WHERE [MigrationId] = N'20250606161040_RemoveunusedDulyMadeFields'
 )
 BEGIN
     DROP INDEX [IX_Public.DulyMade_TaskStatusId] ON [Public.DulyMade];
@@ -3568,7 +3568,7 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250606130329_RemoveunusedDulyMadeFields'
+    WHERE [MigrationId] = N'20250606161040_RemoveunusedDulyMadeFields'
 )
 BEGIN
     DECLARE @var29 sysname;
@@ -3583,7 +3583,7 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250606130329_RemoveunusedDulyMadeFields'
+    WHERE [MigrationId] = N'20250606161040_RemoveunusedDulyMadeFields'
 )
 BEGIN
     DECLARE @var30 sysname;
@@ -3598,7 +3598,7 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250606130329_RemoveunusedDulyMadeFields'
+    WHERE [MigrationId] = N'20250606161040_RemoveunusedDulyMadeFields'
 )
 BEGIN
     DECLARE @var31 sysname;
@@ -3613,7 +3613,7 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250606130329_RemoveunusedDulyMadeFields'
+    WHERE [MigrationId] = N'20250606161040_RemoveunusedDulyMadeFields'
 )
 BEGIN
     DECLARE @var32 sysname;
@@ -3628,7 +3628,7 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250606130329_RemoveunusedDulyMadeFields'
+    WHERE [MigrationId] = N'20250606161040_RemoveunusedDulyMadeFields'
 )
 BEGIN
     DECLARE @var33 sysname;
@@ -3643,11 +3643,45 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250606130329_RemoveunusedDulyMadeFields'
+    WHERE [MigrationId] = N'20250606161040_RemoveunusedDulyMadeFields'
+)
+BEGIN
+    DECLARE @var34 sysname;
+    SELECT @var34 = [d].[name]
+    FROM [sys].[default_constraints] [d]
+    INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+    WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Public.DulyMade]') AND [c].[name] = N'DulyMadeDate');
+    IF @var34 IS NOT NULL EXEC(N'ALTER TABLE [Public.DulyMade] DROP CONSTRAINT [' + @var34 + '];');
+    EXEC(N'UPDATE [Public.DulyMade] SET [DulyMadeDate] = ''0001-01-01T00:00:00.0000000'' WHERE [DulyMadeDate] IS NULL');
+    ALTER TABLE [Public.DulyMade] ALTER COLUMN [DulyMadeDate] datetime2 NOT NULL;
+    ALTER TABLE [Public.DulyMade] ADD DEFAULT '0001-01-01T00:00:00.0000000' FOR [DulyMadeDate];
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250606161040_RemoveunusedDulyMadeFields'
+)
+BEGIN
+    DECLARE @var35 sysname;
+    SELECT @var35 = [d].[name]
+    FROM [sys].[default_constraints] [d]
+    INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+    WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Public.DulyMade]') AND [c].[name] = N'DulyMadeBy');
+    IF @var35 IS NOT NULL EXEC(N'ALTER TABLE [Public.DulyMade] DROP CONSTRAINT [' + @var35 + '];');
+    EXEC(N'UPDATE [Public.DulyMade] SET [DulyMadeBy] = ''00000000-0000-0000-0000-000000000000'' WHERE [DulyMadeBy] IS NULL');
+    ALTER TABLE [Public.DulyMade] ALTER COLUMN [DulyMadeBy] uniqueidentifier NOT NULL;
+    ALTER TABLE [Public.DulyMade] ADD DEFAULT '00000000-0000-0000-0000-000000000000' FOR [DulyMadeBy];
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250606161040_RemoveunusedDulyMadeFields'
 )
 BEGIN
     INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
-    VALUES (N'20250606130329_RemoveunusedDulyMadeFields', N'8.0.8');
+    VALUES (N'20250606161040_RemoveunusedDulyMadeFields', N'8.0.8');
 END;
 GO
 

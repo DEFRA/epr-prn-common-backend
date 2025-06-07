@@ -1081,10 +1081,10 @@ namespace EPR.PRN.Backend.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<Guid?>("DulyMadeBy")
+                    b.Property<Guid>("DulyMadeBy")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime?>("DulyMadeDate")
+                    b.Property<DateTime>("DulyMadeDate")
                         .HasColumnType("datetime2");
 
                     b.Property<Guid>("ExternalId")

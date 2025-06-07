@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EPR.PRN.Backend.Data.Migrations
 {
     [DbContext(typeof(EprContext))]
-    [Migration("20250606130329_RemoveunusedDulyMadeFields")]
+    [Migration("20250606161040_RemoveunusedDulyMadeFields")]
     partial class RemoveunusedDulyMadeFields
     {
         /// <inheritdoc />
@@ -1084,10 +1084,10 @@ namespace EPR.PRN.Backend.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<Guid?>("DulyMadeBy")
+                    b.Property<Guid>("DulyMadeBy")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime?>("DulyMadeDate")
+                    b.Property<DateTime>("DulyMadeDate")
                         .HasColumnType("datetime2");
 
                     b.Property<Guid>("ExternalId")
