@@ -207,4 +207,21 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
 
         return registrations;
     }
+    
+    public async Task CreateRegistrationMaterialWithExemptionsAsync(
+        RegistrationMaterial registrationMaterial,
+        List<MaterialExemptionReference> exemptionReferences)
+    {        
+        await eprContext.RegistrationMaterials.AddAsync(registrationMaterial);
+        await eprContext.SaveChangesAsync();
+     
+        foreach (var exemption in exemptionReferences)
+        {
+            exemption.RegistrationMaterialId = registrationMaterial.Id;
+            exemption.RegistrationMaterial = registrationMaterial;
+        }
+
+        await eprContext.MaterialExemptionReferences.AddRangeAsync(exemptionReferences);
+        await eprContext.SaveChangesAsync();       
+    }
 }

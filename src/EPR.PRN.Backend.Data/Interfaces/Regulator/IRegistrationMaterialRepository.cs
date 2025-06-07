@@ -15,5 +15,6 @@ public interface IRegistrationMaterialRepository
     Task UpdateRegistrationOutCome(int registrationMaterialId, int statusId, string? comment, string? registrationReferenceNumber);
     Task RegistrationMaterialsMarkAsDulyMade(int registrationMaterialId, int statusId, DateTime DeterminationDate,
             DateTime DulyMadeDate,Guid DulyMadeBy);
-    
+
+    Task CreateRegistrationMaterialWithExemptionsAsync(RegistrationMaterial registrationMaterial, List<MaterialExemptionReference> exemptionReferences);
 }

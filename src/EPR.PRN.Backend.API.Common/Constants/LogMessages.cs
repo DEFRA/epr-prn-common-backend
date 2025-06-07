@@ -16,4 +16,5 @@ public static class LogMessages
     public const string UpdateRegistrationTaskStatus = "Attempting to update registration task status";
     public const string MarkAsDulyMade = "MarkAsDulyMadeby id :{Id}";
     public const string RegistrationMaterialReference = "Attempting to get reference data registration material id :{Id}";
+    public const string CreateRegistrationMaterialAndExemptionReferences = "Attempting to create new registration material and exemption references";
 }
