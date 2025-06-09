@@ -232,18 +232,18 @@ namespace EPR.PRN.Backend.Data
                 new LookupRegulatorTask { Id = 15, IsMaterialSpecific = true, ApplicationTypeId = 1, JourneyTypeId = 1, Name = "CheckRegistrationStatus" },
                 new LookupRegulatorTask { Id = 16, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 1, Name = "CheckRegistrationStatus" },
                 new LookupRegulatorTask { Id = 17, IsMaterialSpecific = false, ApplicationTypeId = 1, JourneyTypeId = 2, Name = "AssignOfficer" },
-                new LookupRegulatorTask { Id = 18, IsMaterialSpecific = true, ApplicationTypeId = 1, JourneyTypeId = 2, Name = "PRNs tonnage and authority to issue PRNs" },
-                new LookupRegulatorTask { Id = 19, IsMaterialSpecific = true, ApplicationTypeId = 1, JourneyTypeId = 2, Name = "Business Plan" },
-                new LookupRegulatorTask { Id = 20, IsMaterialSpecific = true, ApplicationTypeId = 1, JourneyTypeId = 2, Name = "Accreditation sampling and inspection plan" },
+                new LookupRegulatorTask { Id = 18, IsMaterialSpecific = true, ApplicationTypeId = 1, JourneyTypeId = 2, Name = "PRNsTonnageAndAuthorityToIssuePRNs" },
+                new LookupRegulatorTask { Id = 19, IsMaterialSpecific = true, ApplicationTypeId = 1, JourneyTypeId = 2, Name = "BusinessPlan" },
+                new LookupRegulatorTask { Id = 20, IsMaterialSpecific = true, ApplicationTypeId = 1, JourneyTypeId = 2, Name = "AccreditationSamplingAndInspectionPlan" },
 
                 new LookupRegulatorTask { Id = 22, IsMaterialSpecific = false, ApplicationTypeId = 2, JourneyTypeId = 2, Name = "AssignOfficer" },
-                new LookupRegulatorTask { Id = 23, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 2, Name = "PRNs tonnage and authority to issue PRNs" },
-                new LookupRegulatorTask { Id = 24, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 2, Name = "Business Plan" },
-                new LookupRegulatorTask { Id = 25, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 2, Name = "Accreditation sampling and inspection plan" },
-                new LookupRegulatorTask { Id = 26, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 2, Name = "Overseas Reprocessing Sites" },
+                new LookupRegulatorTask { Id = 23, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 2, Name = "PRNsTonnageAndAuthorityToIssuePRNs" },
+                new LookupRegulatorTask { Id = 24, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 2, Name = "BusinessPlan" },
+                new LookupRegulatorTask { Id = 25, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 2, Name = "AccreditationSamplingAndInspectionPlan" },
+                new LookupRegulatorTask { Id = 26, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 2, Name = "OverseasReprocessingSites" },
                 new LookupRegulatorTask { Id = 27, IsMaterialSpecific = true, ApplicationTypeId = 1, JourneyTypeId = 2, Name = "DulyMade" },
                 new LookupRegulatorTask { Id = 28, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 2, Name = "DulyMade" },
-                new LookupRegulatorTask { Id = 29, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 2, Name = "Evidence of Broadly Equivalent Standards" });
+                new LookupRegulatorTask { Id = 29, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 2, Name = "EvidenceOfBroadlyEquivalentStandards" });
 
             modelBuilder.Entity<LookupMaterialPermit>().HasData(
                 new LookupMaterialPermit { Id = 1, Name = PermitTypes.WasteExemption },

@@ -3545,3 +3545,413 @@ GO
 COMMIT;
 GO
 
+BEGIN TRANSACTION;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250606125924_Exporter-Tasks'
+)
+BEGIN
+    EXEC(N'UPDATE [Lookup.RegulatorTask] SET [Name] = N''Overseas Reprocessing Sites''
+    WHERE [Id] = 26;
+    SELECT @@ROWCOUNT');
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250606125924_Exporter-Tasks'
+)
+BEGIN
+    IF EXISTS (SELECT * FROM [sys].[identity_columns] WHERE [name] IN (N'Id', N'ApplicationTypeId', N'IsMaterialSpecific', N'JourneyTypeId', N'Name') AND [object_id] = OBJECT_ID(N'[Lookup.RegulatorTask]'))
+        SET IDENTITY_INSERT [Lookup.RegulatorTask] ON;
+    EXEC(N'INSERT INTO [Lookup.RegulatorTask] ([Id], [ApplicationTypeId], [IsMaterialSpecific], [JourneyTypeId], [Name])
+    VALUES (29, 2, CAST(1 AS bit), 2, N''Evidence of Broadly Equivalent Standards'')');
+    IF EXISTS (SELECT * FROM [sys].[identity_columns] WHERE [name] IN (N'Id', N'ApplicationTypeId', N'IsMaterialSpecific', N'JourneyTypeId', N'Name') AND [object_id] = OBJECT_ID(N'[Lookup.RegulatorTask]'))
+        SET IDENTITY_INSERT [Lookup.RegulatorTask] OFF;
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250606125924_Exporter-Tasks'
+)
+BEGIN
+    INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+    VALUES (N'20250606125924_Exporter-Tasks', N'8.0.8');
+END;
+GO
+
+COMMIT;
+GO
+
+BEGIN TRANSACTION;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250606130100_Remove-DulyMade-DeterminationDate'
+)
+BEGIN
+    ALTER TABLE [Public.AccreditationDulyMade] DROP CONSTRAINT [FK_Public.AccreditationDulyMade_Public.AccreditationDeterminationDate_DeterminationDateId];
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250606130100_Remove-DulyMade-DeterminationDate'
+)
+BEGIN
+    DROP INDEX [IX_Public.AccreditationDulyMade_DeterminationDateId] ON [Public.AccreditationDulyMade];
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250606130100_Remove-DulyMade-DeterminationDate'
+)
+BEGIN
+    DECLARE @var29 sysname;
+    SELECT @var29 = [d].[name]
+    FROM [sys].[default_constraints] [d]
+    INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+    WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Public.AccreditationDulyMade]') AND [c].[name] = N'DeterminationDateId');
+    IF @var29 IS NOT NULL EXEC(N'ALTER TABLE [Public.AccreditationDulyMade] DROP CONSTRAINT [' + @var29 + '];');
+    ALTER TABLE [Public.AccreditationDulyMade] DROP COLUMN [DeterminationDateId];
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250606130100_Remove-DulyMade-DeterminationDate'
+)
+BEGIN
+    INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+    VALUES (N'20250606130100_Remove-DulyMade-DeterminationDate', N'8.0.8');
+END;
+GO
+
+COMMIT;
+GO
+
+BEGIN TRANSACTION;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250606133242_ExternalId-Unique-Indexes'
+)
+BEGIN
+    CREATE UNIQUE INDEX [IX_Public.RegulatorRegistrationTaskStatus_ExternalId] ON [Public.RegulatorRegistrationTaskStatus] ([ExternalId]);
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250606133242_ExternalId-Unique-Indexes'
+)
+BEGIN
+    CREATE UNIQUE INDEX [IX_Public.RegulatorApplicationTaskStatus_ExternalId] ON [Public.RegulatorApplicationTaskStatus] ([ExternalId]);
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250606133242_ExternalId-Unique-Indexes'
+)
+BEGIN
+    CREATE UNIQUE INDEX [IX_Public.RegulatorAccreditationTaskStatus_ExternalId] ON [Public.RegulatorAccreditationTaskStatus] ([ExternalId]);
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250606133242_ExternalId-Unique-Indexes'
+)
+BEGIN
+    CREATE UNIQUE INDEX [IX_Public.RegulatorAccreditationRegistrationTaskStatus_ExternalId] ON [Public.RegulatorAccreditationRegistrationTaskStatus] ([ExternalId]);
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250606133242_ExternalId-Unique-Indexes'
+)
+BEGIN
+    CREATE UNIQUE INDEX [IX_Public.RegistrationTaskStatus_ExternalId] ON [Public.RegistrationTaskStatus] ([ExternalId]);
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250606133242_ExternalId-Unique-Indexes'
+)
+BEGIN
+    CREATE UNIQUE INDEX [IX_Public.RegistrationReprocessingIO_ExternalId] ON [Public.RegistrationReprocessingIO] ([ExternalId]);
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250606133242_ExternalId-Unique-Indexes'
+)
+BEGIN
+    CREATE UNIQUE INDEX [IX_Public.RegistrationMaterial_ExternalId] ON [Public.RegistrationMaterial] ([ExternalId]);
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250606133242_ExternalId-Unique-Indexes'
+)
+BEGIN
+    CREATE UNIQUE INDEX [IX_Public.Registration_ExternalId] ON [Public.Registration] ([ExternalId]);
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250606133242_ExternalId-Unique-Indexes'
+)
+BEGIN
+    CREATE UNIQUE INDEX [IX_Public.MaterialExemptionReference_ExternalId] ON [Public.MaterialExemptionReference] ([ExternalId]);
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250606133242_ExternalId-Unique-Indexes'
+)
+BEGIN
+    CREATE UNIQUE INDEX [IX_Public.DeterminationDate_ExternalId] ON [Public.DeterminationDate] ([ExternalId]);
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250606133242_ExternalId-Unique-Indexes'
+)
+BEGIN
+    CREATE UNIQUE INDEX [IX_Public.AccreditationDulyMade_ExternalId] ON [Public.AccreditationDulyMade] ([ExternalId]);
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250606133242_ExternalId-Unique-Indexes'
+)
+BEGIN
+    CREATE UNIQUE INDEX [IX_Public.AccreditationDeterminationDate_ExternalId] ON [Public.AccreditationDeterminationDate] ([ExternalId]);
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250606133242_ExternalId-Unique-Indexes'
+)
+BEGIN
+    CREATE UNIQUE INDEX [IX_Public.Accreditation_ExternalId] ON [Public.Accreditation] ([ExternalId]);
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250606133242_ExternalId-Unique-Indexes'
+)
+BEGIN
+    INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+    VALUES (N'20250606133242_ExternalId-Unique-Indexes', N'8.0.8');
+END;
+GO
+
+COMMIT;
+GO
+
+BEGIN TRANSACTION;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250606165255_Accreditation-DulyMade-Updates'
+)
+BEGIN
+    ALTER TABLE [Public.AccreditationDulyMade] DROP CONSTRAINT [FK_Public.AccreditationDulyMade_Lookup.TaskStatus_TaskStatusId];
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250606165255_Accreditation-DulyMade-Updates'
+)
+BEGIN
+    DROP INDEX [IX_Public.AccreditationDulyMade_TaskStatusId] ON [Public.AccreditationDulyMade];
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250606165255_Accreditation-DulyMade-Updates'
+)
+BEGIN
+    DECLARE @var30 sysname;
+    SELECT @var30 = [d].[name]
+    FROM [sys].[default_constraints] [d]
+    INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+    WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Public.AccreditationDulyMade]') AND [c].[name] = N'TaskStatusId');
+    IF @var30 IS NOT NULL EXEC(N'ALTER TABLE [Public.AccreditationDulyMade] DROP CONSTRAINT [' + @var30 + '];');
+    ALTER TABLE [Public.AccreditationDulyMade] DROP COLUMN [TaskStatusId];
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250606165255_Accreditation-DulyMade-Updates'
+)
+BEGIN
+    DECLARE @var31 sysname;
+    SELECT @var31 = [d].[name]
+    FROM [sys].[default_constraints] [d]
+    INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+    WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Public.AccreditationDulyMade]') AND [c].[name] = N'DulyMadeDate');
+    IF @var31 IS NOT NULL EXEC(N'ALTER TABLE [Public.AccreditationDulyMade] DROP CONSTRAINT [' + @var31 + '];');
+    EXEC(N'UPDATE [Public.AccreditationDulyMade] SET [DulyMadeDate] = ''0001-01-01T00:00:00.0000000'' WHERE [DulyMadeDate] IS NULL');
+    ALTER TABLE [Public.AccreditationDulyMade] ALTER COLUMN [DulyMadeDate] datetime2 NOT NULL;
+    ALTER TABLE [Public.AccreditationDulyMade] ADD DEFAULT '0001-01-01T00:00:00.0000000' FOR [DulyMadeDate];
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250606165255_Accreditation-DulyMade-Updates'
+)
+BEGIN
+    DECLARE @var32 sysname;
+    SELECT @var32 = [d].[name]
+    FROM [sys].[default_constraints] [d]
+    INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+    WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Public.AccreditationDulyMade]') AND [c].[name] = N'DulyMadeBy');
+    IF @var32 IS NOT NULL EXEC(N'ALTER TABLE [Public.AccreditationDulyMade] DROP CONSTRAINT [' + @var32 + '];');
+    EXEC(N'UPDATE [Public.AccreditationDulyMade] SET [DulyMadeBy] = ''00000000-0000-0000-0000-000000000000'' WHERE [DulyMadeBy] IS NULL');
+    ALTER TABLE [Public.AccreditationDulyMade] ALTER COLUMN [DulyMadeBy] uniqueidentifier NOT NULL;
+    ALTER TABLE [Public.AccreditationDulyMade] ADD DEFAULT '00000000-0000-0000-0000-000000000000' FOR [DulyMadeBy];
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250606165255_Accreditation-DulyMade-Updates'
+)
+BEGIN
+    INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+    VALUES (N'20250606165255_Accreditation-DulyMade-Updates', N'8.0.8');
+END;
+GO
+
+COMMIT;
+GO
+
+BEGIN TRANSACTION;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250609202920_UpdateAccreditationTaskNames'
+)
+BEGIN
+    EXEC(N'UPDATE [Lookup.RegulatorTask] SET [Name] = N''PRNsTonnageAndAuthorityToIssuePRNs''
+    WHERE [Id] = 18;
+    SELECT @@ROWCOUNT');
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250609202920_UpdateAccreditationTaskNames'
+)
+BEGIN
+    EXEC(N'UPDATE [Lookup.RegulatorTask] SET [Name] = N''BusinessPlan''
+    WHERE [Id] = 19;
+    SELECT @@ROWCOUNT');
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250609202920_UpdateAccreditationTaskNames'
+)
+BEGIN
+    EXEC(N'UPDATE [Lookup.RegulatorTask] SET [Name] = N''AccreditationSamplingAndInspectionPlan''
+    WHERE [Id] = 20;
+    SELECT @@ROWCOUNT');
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250609202920_UpdateAccreditationTaskNames'
+)
+BEGIN
+    EXEC(N'UPDATE [Lookup.RegulatorTask] SET [Name] = N''PRNsTonnageAndAuthorityToIssuePRNs''
+    WHERE [Id] = 23;
+    SELECT @@ROWCOUNT');
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250609202920_UpdateAccreditationTaskNames'
+)
+BEGIN
+    EXEC(N'UPDATE [Lookup.RegulatorTask] SET [Name] = N''BusinessPlan''
+    WHERE [Id] = 24;
+    SELECT @@ROWCOUNT');
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250609202920_UpdateAccreditationTaskNames'
+)
+BEGIN
+    EXEC(N'UPDATE [Lookup.RegulatorTask] SET [Name] = N''AccreditationSamplingAndInspectionPlan''
+    WHERE [Id] = 25;
+    SELECT @@ROWCOUNT');
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250609202920_UpdateAccreditationTaskNames'
+)
+BEGIN
+    EXEC(N'UPDATE [Lookup.RegulatorTask] SET [Name] = N''OverseasReprocessingSites''
+    WHERE [Id] = 26;
+    SELECT @@ROWCOUNT');
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250609202920_UpdateAccreditationTaskNames'
+)
+BEGIN
+    EXEC(N'UPDATE [Lookup.RegulatorTask] SET [Name] = N''EvidenceOfBroadlyEquivalentStandards''
+    WHERE [Id] = 29;
+    SELECT @@ROWCOUNT');
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250609202920_UpdateAccreditationTaskNames'
+)
+BEGIN
+    INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+    VALUES (N'20250609202920_UpdateAccreditationTaskNames', N'8.0.8');
+END;
+GO
+
+COMMIT;
+GO
+
