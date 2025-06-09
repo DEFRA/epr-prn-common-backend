@@ -6,6 +6,6 @@
 
         public int RegistrationMaterialId { get; set; }
 
-        public string ReferenceNumber { get; set; }
+        public required string ReferenceNumber { get; set; }
     }
 }

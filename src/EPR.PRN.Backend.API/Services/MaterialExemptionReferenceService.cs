@@ -14,7 +14,8 @@ public class MaterialExemptionReferenceService(
    
     public Task<bool> CreateMaterialExemptionReferenceAsync(List<MaterialExemptionReferenceRequest> 
         materialExemptionReferences, CancellationToken cancellationToken)
-    {       
+    {
+        _logger.LogInformation("Creating material exemption references");
         var exemptions = materialExemptionReferences.Select(exemption => new MaterialExemptionReference
         {
             ExternalId = exemption.ExternalId,
