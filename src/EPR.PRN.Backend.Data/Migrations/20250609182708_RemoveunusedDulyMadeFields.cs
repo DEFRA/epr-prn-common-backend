@@ -58,6 +58,16 @@ namespace EPR.PRN.Backend.Data.Migrations
                 oldClrType: typeof(Guid),
                 oldType: "uniqueidentifier",
                 oldNullable: true);
+
+            migrationBuilder.AlterColumn<DateTime>(
+                name: "DeterminateDate",
+                table: "Public.DeterminationDate",
+                type: "datetime2",
+                nullable: false,
+                defaultValue: new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                oldClrType: typeof(DateTime),
+                oldType: "datetime2",
+                oldNullable: true);
         }
 
         /// <inheritdoc />
@@ -111,6 +121,14 @@ namespace EPR.PRN.Backend.Data.Migrations
                 type: "int",
                 nullable: false,
                 defaultValue: 0);
+
+            migrationBuilder.AlterColumn<DateTime>(
+                name: "DeterminateDate",
+                table: "Public.DeterminationDate",
+                type: "datetime2",
+                nullable: true,
+                oldClrType: typeof(DateTime),
+                oldType: "datetime2");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Public.DulyMade_TaskStatusId",

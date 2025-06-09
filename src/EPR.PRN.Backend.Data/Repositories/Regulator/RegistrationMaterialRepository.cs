@@ -1,4 +1,5 @@
-﻿using EPR.PRN.Backend.Data.DataModels.Registrations;
+﻿using EPR.PRN.Backend.API.Common.Constants;
+using EPR.PRN.Backend.Data.DataModels.Registrations;
 using EPR.PRN.Backend.Data.Interfaces.Regulator;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
@@ -98,7 +99,7 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
         var applicationTypeId = registration.ApplicationTypeId;
 
         var taskid = await eprContext.LookupTasks
-            .Where(t => t.Name == "CheckRegistrationStatus" && t.ApplicationTypeId == applicationTypeId)
+            .Where(t => t.Name == RegulatorTaskNames.CheckRegistrationStatus && t.ApplicationTypeId == applicationTypeId)
             .Select(t => t.Id)
             .FirstOrDefaultAsync();
 

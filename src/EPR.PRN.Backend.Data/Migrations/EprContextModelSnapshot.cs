@@ -1056,7 +1056,7 @@ namespace EPR.PRN.Backend.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime?>("DeterminateDate")
+                    b.Property<DateTime>("DeterminateDate")
                         .HasColumnType("datetime2");
 
                     b.Property<Guid>("ExternalId")

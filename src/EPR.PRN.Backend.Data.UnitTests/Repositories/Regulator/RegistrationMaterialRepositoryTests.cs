@@ -403,7 +403,7 @@ public class RegistrationMaterialRepositoryTests
         _context.LookupTasks.Add(new LookupRegulatorTask
         {
             Id = 2,
-            Name = "CheckRegistrationStatus",
+            Name = RegulatorTaskNames.CheckRegistrationStatus,
             ApplicationTypeId = 1,
             JourneyTypeId = 1,
             IsMaterialSpecific = true
@@ -505,6 +505,46 @@ public class RegistrationMaterialRepositoryTests
         await Assert.ThrowsExceptionAsync<KeyNotFoundException>(() =>
             _repository.RegistrationMaterialsMarkAsDulyMade(nonExistentId, statusId, determinationDate, dulyMadeDate, userId));
     }
+    [TestMethod]
+    public async Task RegistrationMaterialsMarkAsDulyMade_ShouldThrow_WhenRegistrationNotFound()
+    {
+        // Arrange: Material exists but its Registration does not  
+        var materialId = Guid.NewGuid();
+        var newMaterial = new RegistrationMaterial
+        {
+            ExternalId = materialId,
+            RegistrationId = 9999 // No such Registration seeded  
+        };
+        _context.RegistrationMaterials.Add(newMaterial);
+        await _context.SaveChangesAsync();
+
+        // Act & Assert  
+        await Assert.ThrowsExceptionAsync<KeyNotFoundException>(() =>
+            _repository.RegistrationMaterialsMarkAsDulyMade(materialId, 3, DateTime.UtcNow.AddDays(84), DateTime.UtcNow, Guid.NewGuid()));
+    }
+       
+    [TestMethod]
+    public async Task RegistrationMaterialsMarkAsDulyMade_ShouldUpdate_WhenDulyMadeAlreadyExists()
+    {
+        // Arrange: Add a pre-existing DulyMade entity
+        var materialId = Guid.Parse("a9421fc1-a912-42ee-85a5-3e06408759a9");
+
+      _context.DulyMade.Add(new DulyMade
+        {
+           
+            RegistrationMaterialId = 1,
+            ExternalId = Guid.NewGuid(),
+            DulyMadeDate = DateTime.UtcNow.AddDays(-10)
+        });
+       
+        await _context.SaveChangesAsync();
+
+        // Act
+        await _repository.RegistrationMaterialsMarkAsDulyMade(materialId, 3, DateTime.UtcNow.AddDays(84), DateTime.UtcNow, Guid.NewGuid());
+
+        // Assert as needed
+    }
+   
     [TestMethod]
     public async Task UpdateRegistrationOutCome_ShouldHandleNullCommentAndReference()
     {

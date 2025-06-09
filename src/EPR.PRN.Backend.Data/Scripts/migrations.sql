@@ -3550,7 +3550,7 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250606161040_RemoveunusedDulyMadeFields'
+    WHERE [MigrationId] = N'20250609182708_RemoveunusedDulyMadeFields'
 )
 BEGIN
     ALTER TABLE [Public.DulyMade] DROP CONSTRAINT [FK_Public.DulyMade_Lookup.TaskStatus_TaskStatusId];
@@ -3559,7 +3559,7 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250606161040_RemoveunusedDulyMadeFields'
+    WHERE [MigrationId] = N'20250609182708_RemoveunusedDulyMadeFields'
 )
 BEGIN
     DROP INDEX [IX_Public.DulyMade_TaskStatusId] ON [Public.DulyMade];
@@ -3568,7 +3568,7 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250606161040_RemoveunusedDulyMadeFields'
+    WHERE [MigrationId] = N'20250609182708_RemoveunusedDulyMadeFields'
 )
 BEGIN
     DECLARE @var29 sysname;
@@ -3583,7 +3583,7 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250606161040_RemoveunusedDulyMadeFields'
+    WHERE [MigrationId] = N'20250609182708_RemoveunusedDulyMadeFields'
 )
 BEGIN
     DECLARE @var30 sysname;
@@ -3598,7 +3598,7 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250606161040_RemoveunusedDulyMadeFields'
+    WHERE [MigrationId] = N'20250609182708_RemoveunusedDulyMadeFields'
 )
 BEGIN
     DECLARE @var31 sysname;
@@ -3613,7 +3613,7 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250606161040_RemoveunusedDulyMadeFields'
+    WHERE [MigrationId] = N'20250609182708_RemoveunusedDulyMadeFields'
 )
 BEGIN
     DECLARE @var32 sysname;
@@ -3628,7 +3628,7 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250606161040_RemoveunusedDulyMadeFields'
+    WHERE [MigrationId] = N'20250609182708_RemoveunusedDulyMadeFields'
 )
 BEGIN
     DECLARE @var33 sysname;
@@ -3643,7 +3643,7 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250606161040_RemoveunusedDulyMadeFields'
+    WHERE [MigrationId] = N'20250609182708_RemoveunusedDulyMadeFields'
 )
 BEGIN
     DECLARE @var34 sysname;
@@ -3660,7 +3660,7 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250606161040_RemoveunusedDulyMadeFields'
+    WHERE [MigrationId] = N'20250609182708_RemoveunusedDulyMadeFields'
 )
 BEGIN
     DECLARE @var35 sysname;
@@ -3677,11 +3677,28 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250606161040_RemoveunusedDulyMadeFields'
+    WHERE [MigrationId] = N'20250609182708_RemoveunusedDulyMadeFields'
+)
+BEGIN
+    DECLARE @var36 sysname;
+    SELECT @var36 = [d].[name]
+    FROM [sys].[default_constraints] [d]
+    INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+    WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Public.DeterminationDate]') AND [c].[name] = N'DeterminateDate');
+    IF @var36 IS NOT NULL EXEC(N'ALTER TABLE [Public.DeterminationDate] DROP CONSTRAINT [' + @var36 + '];');
+    EXEC(N'UPDATE [Public.DeterminationDate] SET [DeterminateDate] = ''0001-01-01T00:00:00.0000000'' WHERE [DeterminateDate] IS NULL');
+    ALTER TABLE [Public.DeterminationDate] ALTER COLUMN [DeterminateDate] datetime2 NOT NULL;
+    ALTER TABLE [Public.DeterminationDate] ADD DEFAULT '0001-01-01T00:00:00.0000000' FOR [DeterminateDate];
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250609182708_RemoveunusedDulyMadeFields'
 )
 BEGIN
     INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
-    VALUES (N'20250606161040_RemoveunusedDulyMadeFields', N'8.0.8');
+    VALUES (N'20250609182708_RemoveunusedDulyMadeFields', N'8.0.8');
 END;
 GO
 
