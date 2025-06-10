@@ -68,7 +68,7 @@ public class RegistrationMaterialRepositoryTests
             Status = materialStatus,
             Material = lookupMaterial,
             IsMaterialRegistered = true,
-          
+
             Tasks = new List<RegulatorApplicationTaskStatus>
         {
             new RegulatorApplicationTaskStatus
@@ -389,7 +389,7 @@ public class RegistrationMaterialRepositoryTests
     {
         await Assert.ThrowsExceptionAsync<KeyNotFoundException>(() => _repository.GetAccreditation_FileUploadById(Guid.Parse("cd9dcc80-fcf5-4f46-addd-b8a256f735a3")));
     }
-   
+
     [TestMethod]
     public async Task RegistrationMaterialsMarkAsDulyMade_ShouldSetDulyMadeCorrectly()
     {
@@ -403,7 +403,7 @@ public class RegistrationMaterialRepositoryTests
         _context.LookupTasks.Add(new LookupRegulatorTask
         {
             Id = 2,
-            Name = RegulatorTaskNames.CheckRegistrationStatus,
+            Name = "CheckRegistrationStatus",
             ApplicationTypeId = 1,
             JourneyTypeId = 1,
             IsMaterialSpecific = true
@@ -428,7 +428,6 @@ public class RegistrationMaterialRepositoryTests
             dulyMadeEntry!.DulyMadeBy.Should().Be(userId);
             dulyMadeEntry!.DulyMadeDate.Should().Be(dulyMadeDate);
             savedDeterminationDate.DeterminateDate.Should().Be(determinationDate);
-
             taskStatusEntry.Should().NotBeNull();
             taskStatusEntry!.TaskStatusId.Should().Be(statusId);
             taskStatusEntry.RegulatorTaskId.Should().Be(2);
@@ -456,7 +455,7 @@ public class RegistrationMaterialRepositoryTests
             Task = new LookupRegulatorTask
             {
                 Id = 2,
-                Name = "CheckRegistrationStatus",
+                Name = RegulatorTaskNames.CheckRegistrationStatus,
                 ApplicationTypeId = 1,
                 JourneyTypeId = 1,
                 IsMaterialSpecific = true,
@@ -482,7 +481,6 @@ public class RegistrationMaterialRepositoryTests
             dulyMadeEntry!.DulyMadeBy.Should().Be(userId);
             dulyMadeEntry!.DulyMadeDate.Should().Be(dulyMadeDate);
             savedDeterminationDate.DeterminateDate.Should().Be(determinationDate);
-
             taskStatusEntry.Should().NotBeNull();
             taskStatusEntry!.TaskStatusId.Should().Be(statusId);
             taskStatusEntry.RegulatorTaskId.Should().Be(2);
@@ -505,6 +503,7 @@ public class RegistrationMaterialRepositoryTests
         await Assert.ThrowsExceptionAsync<KeyNotFoundException>(() =>
             _repository.RegistrationMaterialsMarkAsDulyMade(nonExistentId, statusId, determinationDate, dulyMadeDate, userId));
     }
+
     [TestMethod]
     public async Task RegistrationMaterialsMarkAsDulyMade_ShouldThrow_WhenRegistrationNotFound()
     {
@@ -522,21 +521,21 @@ public class RegistrationMaterialRepositoryTests
         await Assert.ThrowsExceptionAsync<KeyNotFoundException>(() =>
             _repository.RegistrationMaterialsMarkAsDulyMade(materialId, 3, DateTime.UtcNow.AddDays(84), DateTime.UtcNow, Guid.NewGuid()));
     }
-       
+
     [TestMethod]
     public async Task RegistrationMaterialsMarkAsDulyMade_ShouldUpdate_WhenDulyMadeAlreadyExists()
     {
         // Arrange: Add a pre-existing DulyMade entity
         var materialId = Guid.Parse("a9421fc1-a912-42ee-85a5-3e06408759a9");
 
-      _context.DulyMade.Add(new DulyMade
+        _context.DulyMade.Add(new DulyMade
         {
-           
+
             RegistrationMaterialId = 1,
             ExternalId = Guid.NewGuid(),
             DulyMadeDate = DateTime.UtcNow.AddDays(-10)
         });
-       
+
         await _context.SaveChangesAsync();
 
         // Act
@@ -544,7 +543,7 @@ public class RegistrationMaterialRepositoryTests
 
         // Assert as needed
     }
-   
+
     [TestMethod]
     public async Task UpdateRegistrationOutCome_ShouldHandleNullCommentAndReference()
     {
