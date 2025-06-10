@@ -166,6 +166,29 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
         await eprContext.SaveChangesAsync();
     }
 
+    public async Task<int> CreateAsync(int registrationId, string material)
+    {
+        var existingRegistration = await eprContext.Registrations.SingleAsync(o => o.Id == registrationId);
+        if (existingRegistration == null)
+        {
+            throw new KeyNotFoundException("Registration not found.");
+        }
+
+        var newMaterial = new RegistrationMaterial
+        {
+            RegistrationId = registrationId,
+            Material = await eprContext.LookupMaterials.SingleAsync(m => m.MaterialName == material),
+            StatusId = (await eprContext.LookupRegistrationMaterialStatuses.SingleAsync(s => s.Name == "Pending")).Id,
+            CreatedDate = DateTime.UtcNow,
+            ExternalId = Guid.NewGuid()
+        };
+
+        await eprContext.RegistrationMaterials.AddAsync(newMaterial);
+        await eprContext.SaveChangesAsync();
+
+        return newMaterial.Id;
+    }
+
     private IIncludableQueryable<RegistrationMaterial, LookupRegistrationMaterialStatus> GetRegistrationMaterialsWithRelatedEntities()
     {
         var registrationMaterials =
