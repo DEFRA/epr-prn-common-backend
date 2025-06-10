@@ -251,7 +251,6 @@ namespace EPR.PRN.Backend.Data
                 new LookupRegulatorTask { Id = 25, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 2, Name = "Accreditation sampling and inspection plan" },
                 new LookupRegulatorTask { Id = 26, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 2, Name = "Overseas reprocessing sites and broadly equivalent evidence" },
                 new LookupRegulatorTask { Id = 27, IsMaterialSpecific = true, ApplicationTypeId = 1, JourneyTypeId = 2, Name = "DulyMade" },
-                new LookupRegulatorTask { Id = 28, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 2, Name = "DulyMade" },
                 new LookupRegulatorTask { Id = 29, IsMaterialSpecific = false, ApplicationTypeId = 1, JourneyTypeId = 1, Name = "WasteCarrierBrokerDealerNumber" });
 
             modelBuilder.Entity<LookupMaterialPermit>().HasData(
