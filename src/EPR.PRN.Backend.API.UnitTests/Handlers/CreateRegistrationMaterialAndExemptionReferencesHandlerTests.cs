@@ -63,5 +63,82 @@ public class CreateRegistrationMaterialAndExemptionReferencesHandlerTests
             It.IsAny<RegistrationMaterial>(),
             It.IsAny<List<MaterialExemptionReference>>()),
             Times.Once);        
-    }   
+    }
+    
+    [TestMethod]
+    public async Task Handle_ShouldPassCorrectRegistrationMaterialAndExemptionReferencesToRepository()
+    {
+        // Arrange
+        var expectedMaterial = new RegistrationMaterialDto
+        {
+            ExternalId = Guid.NewGuid(),
+            RegistrationId = 42,
+            MaterialId = 99,
+            MaterialName = "TestMaterial",
+            StatusId = 5,
+            StatusUpdatedDate = DateTime.UtcNow.AddDays(-1),
+            PermitTypeId = 7,
+            PPCReprocessingCapacityTonne = 123.45m,
+            WasteManagementReprocessingCapacityTonne = 234.56m,
+            InstallationReprocessingTonne = 345.67m,
+            EnvironmentalPermitWasteManagementTonne = 456.78m,
+            MaximumReprocessingCapacityTonne = 567.89m,
+            IsMaterialRegistered = false,
+            CreatedDate = DateTime.UtcNow.AddDays(-2)
+        };
+
+        var expectedExemptions = new List<MaterialExemptionReferenceRequest>
+        {
+            new() { ExternalId = expectedMaterial.ExternalId, RegistrationMaterialId = expectedMaterial.MaterialId, ReferenceNumber = "EX-001" },
+            new() { ExternalId = expectedMaterial.ExternalId, RegistrationMaterialId = expectedMaterial.MaterialId, ReferenceNumber = "EX-002" }
+        };
+
+        var command = new CreateRegistrationMaterialAndExemptionReferencesCommand
+        {
+            RegistrationMaterial = expectedMaterial,
+            MaterialExemptionReferences = expectedExemptions
+        };
+
+        RegistrationMaterial actualMaterial = null;
+        List<MaterialExemptionReference> actualExemptions = null;
+
+        _repositoryMock
+            .Setup(r => r.CreateRegistrationMaterialWithExemptionsAsync(
+                It.IsAny<RegistrationMaterial>(),
+                It.IsAny<List<MaterialExemptionReference>>()))
+            .Callback<RegistrationMaterial, List<MaterialExemptionReference>>((mat, exs) =>
+            {
+                actualMaterial = mat;
+                actualExemptions = exs;
+            })
+            .Returns(Task.CompletedTask);
+
+        // Act
+        await _handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        Assert.IsNotNull(actualMaterial);
+        Assert.AreEqual(command.RegistrationMaterial.ExternalId, actualMaterial.ExternalId);
+        Assert.AreEqual(command.RegistrationMaterial.RegistrationId, actualMaterial.RegistrationId);
+        Assert.AreEqual(command.RegistrationMaterial.MaterialId, actualMaterial.MaterialId);        
+        Assert.AreEqual(command.RegistrationMaterial.StatusId, actualMaterial.StatusId);
+        Assert.AreEqual(command.RegistrationMaterial.PermitTypeId, actualMaterial.PermitTypeId);
+        Assert.AreEqual(command.RegistrationMaterial.PPCReprocessingCapacityTonne, actualMaterial.PPCReprocessingCapacityTonne);
+        Assert.AreEqual(command.RegistrationMaterial.WasteManagementReprocessingCapacityTonne, actualMaterial.WasteManagementReprocessingCapacityTonne);
+        Assert.AreEqual(command.RegistrationMaterial.InstallationReprocessingTonne, actualMaterial.InstallationReprocessingTonne);
+        Assert.AreEqual(command.RegistrationMaterial.EnvironmentalPermitWasteManagementTonne, actualMaterial.EnvironmentalPermitWasteManagementTonne);
+        Assert.AreEqual(command.RegistrationMaterial.MaximumReprocessingCapacityTonne, actualMaterial.MaximumReprocessingCapacityTonne);
+        Assert.AreEqual(command.RegistrationMaterial.IsMaterialRegistered, actualMaterial.IsMaterialRegistered);
+        Assert.AreEqual(command.RegistrationMaterial.CreatedDate, actualMaterial.CreatedDate);
+
+        Assert.IsNotNull(actualExemptions);
+        Assert.AreEqual(expectedExemptions.Count, actualExemptions.Count);
+        
+        for (int i = 0; i < expectedExemptions.Count; i++)
+        {
+            Assert.AreEqual(expectedExemptions[i].RegistrationMaterialId, actualExemptions[i].RegistrationMaterialId);
+            Assert.AreEqual(expectedExemptions[i].ExternalId, actualExemptions[i].ExternalId);
+            Assert.AreEqual(expectedExemptions[i].ReferenceNumber, actualExemptions[i].ReferenceNo);
+        }
+    }
 }
