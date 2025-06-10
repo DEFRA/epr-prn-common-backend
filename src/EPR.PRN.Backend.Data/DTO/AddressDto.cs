@@ -3,7 +3,7 @@
 namespace EPR.PRN.Backend.Data.DTO;
 
 [ExcludeFromCodeCoverage]
-public class AddressDto
+public record AddressDto
 {
     public int? Id { get; set; }
     

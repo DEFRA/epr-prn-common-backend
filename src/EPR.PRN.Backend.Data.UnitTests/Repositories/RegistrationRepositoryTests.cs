@@ -182,7 +182,7 @@ public class RegistrationRepositoryTests
 
         var reprocAddress = await _context.LookupAddresses.FindAsync(updatedRegistration.ReprocessingSiteAddressId);
 
-        reprocAddress.AddressLine1.Should().Be("123 Test St");
+        reprocAddress!.AddressLine1.Should().Be("123 Test St");
     }
 
     [TestMethod]
@@ -227,6 +227,66 @@ public class RegistrationRepositoryTests
 
         // Assert
         var updatedRegistration = await _context.Registrations.FindAsync(registration.Id);
-        updatedRegistration.ReprocessingSiteAddressId.Should().Be(101);
+        updatedRegistration!.ReprocessingSiteAddressId.Should().Be(101);
+    }
+
+    [TestMethod]
+    public async Task UpdateAsync_NoExistingAddresses_ShouldUpdateAccordingly()
+    {
+        // Arrange
+        var registration = new Registration { Id = 2, ExternalId = Guid.NewGuid()};
+
+        _context.Registrations.Add(registration);
+
+        await _context.SaveChangesAsync();
+
+        var businessAddress = new AddressDto { Id = 101, AddressLine1 = "Address line 1" };
+        var reprocessingAddress = new AddressDto { Id = 101, AddressLine1 = "Address line 1" };
+        var legalAddress = new AddressDto { Id = 101, AddressLine1 = "Address line 1" };
+
+        // Act
+        await _repository.UpdateAsync(registration.Id, businessAddress, reprocessingAddress, legalAddress);
+
+        // Assert
+        var updatedRegistration = await _context.Registrations.FindAsync(registration.Id);
+        updatedRegistration!.BusinessAddressId.Should().Be(1);
+        updatedRegistration!.ReprocessingSiteAddressId.Should().Be(2);
+        updatedRegistration!.LegalDocumentAddressId.Should().Be(3);
+    }
+
+    [TestMethod]
+    public async Task GetByOrganisationAsync_Exists_ReturnRegistration()
+    {
+        // Arrange
+        var registration = new Registration { Id = 2, ApplicationTypeId = 1, ExternalId = Guid.NewGuid(), OrganisationId = 1};
+
+        _context.Registrations.Add(registration);
+
+        await _context.SaveChangesAsync();
+
+        // Act
+        var result = await _repository.GetByOrganisationAsync(1, 1);
+
+        // Assert
+        result.Should().NotBeNull();
+    }
+
+    [TestMethod]
+    public async Task GetByOrganisationAsync_DoesNotExist_ReturnNull()
+    {
+        // Arrange
+
+        // Negative data
+        var registration = new Registration { Id = 2, ApplicationTypeId = 1, ExternalId = Guid.NewGuid(), OrganisationId = 1 };
+
+        _context.Registrations.Add(registration);
+
+        await _context.SaveChangesAsync();
+
+        // Act
+        var result = await _repository.GetByOrganisationAsync(2, 2);
+
+        // Assert
+        result.Should().BeNull();
     }
 }
