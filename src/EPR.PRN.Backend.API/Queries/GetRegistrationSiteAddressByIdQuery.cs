@@ -9,5 +9,5 @@ namespace EPR.PRN.Backend.API.Queries;
 public class GetRegistrationSiteAddressByIdQuery : IRequest<RegistrationSiteAddressDto>
 {
     [Required]
-    public int Id { get; set; }
+    public Guid Id { get; set; }
 }
