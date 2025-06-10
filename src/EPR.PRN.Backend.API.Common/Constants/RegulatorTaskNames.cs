@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace EPR.PRN.Backend.API.Common.Constants
+﻿namespace EPR.PRN.Backend.API.Common.Constants
 {
     public static class RegulatorTaskNames
     {
@@ -23,5 +17,6 @@ namespace EPR.PRN.Backend.API.Common.Constants
         public const string SamplingAndInspectionPlan = "SamplingAndInspectionPlan";
         public const string SiteAddressAndContactDetails = "SiteAddressAndContactDetails";
         public const string WasteLicensesPermitsAndExemptions = "WasteLicensesPermitsAndExemptions";
+        public const string WasteCarrierBrokerDealerNumber = "WasteCarrierBrokerDealerNumber";
     }
 }

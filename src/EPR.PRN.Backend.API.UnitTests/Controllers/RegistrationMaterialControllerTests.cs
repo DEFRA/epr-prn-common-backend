@@ -240,6 +240,29 @@ public class RegistrationMaterialControllerTests
         okResult.Should().NotBeNull();
         okResult!.Value.Should().BeEquivalentTo(expectedDto);
     }
+
+    [TestMethod]
+    public async Task GetWasteCarrierDetailsByRegistrationId_ReturnsOk_WithExpectedResult()
+    {
+        // Arrange
+        var registrationId = Guid.Parse("4bac12f7-f7a9-4df4-b7b5-9c4221860c4d");
+
+
+        var expectedDto = new RegistrationWasteCarrierDto();
+
+        _mediatorMock
+            .Setup(m => m.Send(It.IsAny<GetRegistrationWasteCarrierDetailsByIdQuery>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(expectedDto);
+
+        // Act
+        var result = await _controller.GetWasteCarrierDetailsByRegistrationId(registrationId);
+
+        // Assert
+        var okResult = result as OkObjectResult;
+        okResult.Should().NotBeNull();
+        okResult!.Value.Should().BeEquivalentTo(expectedDto);
+    }
+
     [TestMethod]
     public async Task GetMaterialsAuthorisedOnSiteId_ReturnsOk_WithExpectedResult()
     {

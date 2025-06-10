@@ -12,6 +12,8 @@ BEGIN TRY
 	DELETE FROM [dbo].[public.AccreditationFileUpload]
     DELETE FROM [dbo].[Public.RegistrationReprocessingIO]
     DELETE FROM [dbo].[Public.RegistrationMaterial]
+    DELETE FROM [dbo].[Public.ApplicationTaskStatusQueryNote]
+    DELETE FROM [dbo].[Public.CarrierBrokerDealerPermits]
     DELETE FROM [dbo].[Public.Registration]
     DELETE FROM [dbo].[Public.MaterialExemptionReference]
     DELETE FROM [dbo].[Public.Address]
@@ -3569,4 +3571,57 @@ GO
 INSERT [dbo].[public.AccreditationFileUpload] ([Id], [ExternalId], [AccreditationId], [Filename], [FileId], [DateUploaded], [UpdatedBy], [FileUploadTypeId], [FileUploadStatusId]) VALUES (492, N'944ac31b-3155-4493-adff-26cdcd9f88c7', 21, N'testFile1.pdf', N'23268ae6-17ac-4eee-bdc4-032eaa45dbf6', CAST(N'2025-05-09T20:48:45.4111737' AS DateTime2), 'Test User 21', 1, 1)
 GO
 SET IDENTITY_INSERT [dbo].[public.AccreditationFileUpload] OFF
+GO
+
+SET IDENTITY_INSERT [dbo].[Public.CarrierBrokerDealerPermits] ON 
+GO
+INSERT [dbo].[Public.CarrierBrokerDealerPermits] ([Id], [ExternalId], [RegistrationId], [WasteCarrierBrokerDealerRegistration], [WasteManagementEnvironmentPermitNumber], [InstatallationPermitOrPPCNumber], [RegisteredWasteCarrierBrokerDealerFlag], [CreatedBy], [CreatedDate], [UpdatedBy], [UpdatedDate]) VALUES (1, N'8f5c1748-0062-4674-86e8-398dc7ab49de', 2, N'WCB2', NULL, NULL, 0, N'00000000-0000-0000-0000-000000000000', CAST(N'2025-01-01T00:00:00.0000000' AS DateTime2), NULL, NULL)
+GO
+INSERT [dbo].[Public.CarrierBrokerDealerPermits] ([Id], [ExternalId], [RegistrationId], [WasteCarrierBrokerDealerRegistration], [WasteManagementEnvironmentPermitNumber], [InstatallationPermitOrPPCNumber], [RegisteredWasteCarrierBrokerDealerFlag], [CreatedBy], [CreatedDate], [UpdatedBy], [UpdatedDate]) VALUES (2, N'ad0b1f6d-5c8d-4d03-8550-0c5f36fc4a56', 4, N'WCB4', NULL, NULL, 0, N'00000000-0000-0000-0000-000000000000', CAST(N'2025-01-01T00:00:00.0000000' AS DateTime2), NULL, NULL)
+GO
+INSERT [dbo].[Public.CarrierBrokerDealerPermits] ([Id], [ExternalId], [RegistrationId], [WasteCarrierBrokerDealerRegistration], [WasteManagementEnvironmentPermitNumber], [InstatallationPermitOrPPCNumber], [RegisteredWasteCarrierBrokerDealerFlag], [CreatedBy], [CreatedDate], [UpdatedBy], [UpdatedDate]) VALUES (3, N'1b73abb8-4154-46ef-a86d-175957bc05fd', 6, N'WCB6', NULL, NULL, 0, N'00000000-0000-0000-0000-000000000000', CAST(N'2025-01-01T00:00:00.0000000' AS DateTime2), NULL, NULL)
+GO
+INSERT [dbo].[Public.CarrierBrokerDealerPermits] ([Id], [ExternalId], [RegistrationId], [WasteCarrierBrokerDealerRegistration], [WasteManagementEnvironmentPermitNumber], [InstatallationPermitOrPPCNumber], [RegisteredWasteCarrierBrokerDealerFlag], [CreatedBy], [CreatedDate], [UpdatedBy], [UpdatedDate]) VALUES (4, N'4c2b8b61-ca9f-40fb-b76e-718cdd8ac4b5', 8, N'WCB8', NULL, NULL, 0, N'00000000-0000-0000-0000-000000000000', CAST(N'2025-01-01T00:00:00.0000000' AS DateTime2), NULL, NULL)
+GO
+INSERT [dbo].[Public.CarrierBrokerDealerPermits] ([Id], [ExternalId], [RegistrationId], [WasteCarrierBrokerDealerRegistration], [WasteManagementEnvironmentPermitNumber], [InstatallationPermitOrPPCNumber], [RegisteredWasteCarrierBrokerDealerFlag], [CreatedBy], [CreatedDate], [UpdatedBy], [UpdatedDate]) VALUES (5, N'39d82d98-7a6c-40e8-88a1-9fd3bfde2588', 10, N'WCB10', NULL, NULL, 0, N'00000000-0000-0000-0000-000000000000', CAST(N'2025-01-01T00:00:00.0000000' AS DateTime2), NULL, NULL)
+GO
+INSERT [dbo].[Public.CarrierBrokerDealerPermits] ([Id], [ExternalId], [RegistrationId], [WasteCarrierBrokerDealerRegistration], [WasteManagementEnvironmentPermitNumber], [InstatallationPermitOrPPCNumber], [RegisteredWasteCarrierBrokerDealerFlag], [CreatedBy], [CreatedDate], [UpdatedBy], [UpdatedDate]) VALUES (6, N'cf22c4e9-dad6-4339-a560-9478d8bb1b39', 12, N'WCB12', NULL, NULL, 0, N'00000000-0000-0000-0000-000000000000', CAST(N'2025-01-01T00:00:00.0000000' AS DateTime2), NULL, NULL)
+GO
+INSERT [dbo].[Public.CarrierBrokerDealerPermits] ([Id], [ExternalId], [RegistrationId], [WasteCarrierBrokerDealerRegistration], [WasteManagementEnvironmentPermitNumber], [InstatallationPermitOrPPCNumber], [RegisteredWasteCarrierBrokerDealerFlag], [CreatedBy], [CreatedDate], [UpdatedBy], [UpdatedDate]) VALUES (7, N'bfdac971-fdb5-4aea-886b-cd81c2f6e630', 14, N'WCB14', NULL, NULL, 0, N'00000000-0000-0000-0000-000000000000', CAST(N'2025-01-01T00:00:00.0000000' AS DateTime2), NULL, NULL)
+GO
+INSERT [dbo].[Public.CarrierBrokerDealerPermits] ([Id], [ExternalId], [RegistrationId], [WasteCarrierBrokerDealerRegistration], [WasteManagementEnvironmentPermitNumber], [InstatallationPermitOrPPCNumber], [RegisteredWasteCarrierBrokerDealerFlag], [CreatedBy], [CreatedDate], [UpdatedBy], [UpdatedDate]) VALUES (8, N'45b00402-78e7-4905-964e-807c10eaae2b', 16, N'WCB16', NULL, NULL, 0, N'00000000-0000-0000-0000-000000000000', CAST(N'2025-01-01T00:00:00.0000000' AS DateTime2), NULL, NULL)
+GO
+INSERT [dbo].[Public.CarrierBrokerDealerPermits] ([Id], [ExternalId], [RegistrationId], [WasteCarrierBrokerDealerRegistration], [WasteManagementEnvironmentPermitNumber], [InstatallationPermitOrPPCNumber], [RegisteredWasteCarrierBrokerDealerFlag], [CreatedBy], [CreatedDate], [UpdatedBy], [UpdatedDate]) VALUES (9, N'd430b3c0-0ba5-4bdc-b620-4b938714a4e3', 18, N'WCB18', NULL, NULL, 0, N'00000000-0000-0000-0000-000000000000', CAST(N'2025-01-01T00:00:00.0000000' AS DateTime2), NULL, NULL)
+GO
+INSERT [dbo].[Public.CarrierBrokerDealerPermits] ([Id], [ExternalId], [RegistrationId], [WasteCarrierBrokerDealerRegistration], [WasteManagementEnvironmentPermitNumber], [InstatallationPermitOrPPCNumber], [RegisteredWasteCarrierBrokerDealerFlag], [CreatedBy], [CreatedDate], [UpdatedBy], [UpdatedDate]) VALUES (10, N'ea8d2580-b30e-4373-8819-52687cf9dcde', 20, N'WCB20', NULL, NULL, 0, N'00000000-0000-0000-0000-000000000000', CAST(N'2025-01-01T00:00:00.0000000' AS DateTime2), NULL, NULL)
+GO
+INSERT [dbo].[Public.CarrierBrokerDealerPermits] ([Id], [ExternalId], [RegistrationId], [WasteCarrierBrokerDealerRegistration], [WasteManagementEnvironmentPermitNumber], [InstatallationPermitOrPPCNumber], [RegisteredWasteCarrierBrokerDealerFlag], [CreatedBy], [CreatedDate], [UpdatedBy], [UpdatedDate]) VALUES (11, N'da8e2fc2-28cb-4b4c-bed4-a92c7fcb2cd7', 22, N'WCB22', NULL, NULL, 0, N'00000000-0000-0000-0000-000000000000', CAST(N'2025-01-01T00:00:00.0000000' AS DateTime2), NULL, NULL)
+GO
+INSERT [dbo].[Public.CarrierBrokerDealerPermits] ([Id], [ExternalId], [RegistrationId], [WasteCarrierBrokerDealerRegistration], [WasteManagementEnvironmentPermitNumber], [InstatallationPermitOrPPCNumber], [RegisteredWasteCarrierBrokerDealerFlag], [CreatedBy], [CreatedDate], [UpdatedBy], [UpdatedDate]) VALUES (12, N'3fd0a500-49dc-40cf-9a45-438c0f913e49', 24, N'WCB24', NULL, NULL, 0, N'00000000-0000-0000-0000-000000000000', CAST(N'2025-01-01T00:00:00.0000000' AS DateTime2), NULL, NULL)
+GO
+INSERT [dbo].[Public.CarrierBrokerDealerPermits] ([Id], [ExternalId], [RegistrationId], [WasteCarrierBrokerDealerRegistration], [WasteManagementEnvironmentPermitNumber], [InstatallationPermitOrPPCNumber], [RegisteredWasteCarrierBrokerDealerFlag], [CreatedBy], [CreatedDate], [UpdatedBy], [UpdatedDate]) VALUES (13, N'285934d0-cbe3-461d-8fb4-ff7abdd608c0', 26, N'WCB26', NULL, NULL, 0, N'00000000-0000-0000-0000-000000000000', CAST(N'2025-01-01T00:00:00.0000000' AS DateTime2), NULL, NULL)
+GO
+INSERT [dbo].[Public.CarrierBrokerDealerPermits] ([Id], [ExternalId], [RegistrationId], [WasteCarrierBrokerDealerRegistration], [WasteManagementEnvironmentPermitNumber], [InstatallationPermitOrPPCNumber], [RegisteredWasteCarrierBrokerDealerFlag], [CreatedBy], [CreatedDate], [UpdatedBy], [UpdatedDate]) VALUES (14, N'ec79d701-2b2c-4262-9155-11af543cd08c', 28, N'WCB28', NULL, NULL, 0, N'00000000-0000-0000-0000-000000000000', CAST(N'2025-01-01T00:00:00.0000000' AS DateTime2), NULL, NULL)
+GO
+INSERT [dbo].[Public.CarrierBrokerDealerPermits] ([Id], [ExternalId], [RegistrationId], [WasteCarrierBrokerDealerRegistration], [WasteManagementEnvironmentPermitNumber], [InstatallationPermitOrPPCNumber], [RegisteredWasteCarrierBrokerDealerFlag], [CreatedBy], [CreatedDate], [UpdatedBy], [UpdatedDate]) VALUES (15, N'ef47d338-aece-4e88-a8e8-b4c1228ddd88', 30, N'WCB30', NULL, NULL, 0, N'00000000-0000-0000-0000-000000000000', CAST(N'2025-01-01T00:00:00.0000000' AS DateTime2), NULL, NULL)
+GO
+INSERT [dbo].[Public.CarrierBrokerDealerPermits] ([Id], [ExternalId], [RegistrationId], [WasteCarrierBrokerDealerRegistration], [WasteManagementEnvironmentPermitNumber], [InstatallationPermitOrPPCNumber], [RegisteredWasteCarrierBrokerDealerFlag], [CreatedBy], [CreatedDate], [UpdatedBy], [UpdatedDate]) VALUES (16, N'ab9e919c-5d50-4114-8c92-de4082a4dac3', 32, N'WCB32', NULL, NULL, 0, N'00000000-0000-0000-0000-000000000000', CAST(N'2025-01-01T00:00:00.0000000' AS DateTime2), NULL, NULL)
+GO
+INSERT [dbo].[Public.CarrierBrokerDealerPermits] ([Id], [ExternalId], [RegistrationId], [WasteCarrierBrokerDealerRegistration], [WasteManagementEnvironmentPermitNumber], [InstatallationPermitOrPPCNumber], [RegisteredWasteCarrierBrokerDealerFlag], [CreatedBy], [CreatedDate], [UpdatedBy], [UpdatedDate]) VALUES (17, N'cd7f5be5-1225-4a74-aeec-fe338917e40b', 34, N'WCB34', NULL, NULL, 0, N'00000000-0000-0000-0000-000000000000', CAST(N'2025-01-01T00:00:00.0000000' AS DateTime2), NULL, NULL)
+GO
+INSERT [dbo].[Public.CarrierBrokerDealerPermits] ([Id], [ExternalId], [RegistrationId], [WasteCarrierBrokerDealerRegistration], [WasteManagementEnvironmentPermitNumber], [InstatallationPermitOrPPCNumber], [RegisteredWasteCarrierBrokerDealerFlag], [CreatedBy], [CreatedDate], [UpdatedBy], [UpdatedDate]) VALUES (18, N'b60352e1-5f21-479e-bc7a-dba300e70c20', 36, N'WCB36', NULL, NULL, 0, N'00000000-0000-0000-0000-000000000000', CAST(N'2025-01-01T00:00:00.0000000' AS DateTime2), NULL, NULL)
+GO
+INSERT [dbo].[Public.CarrierBrokerDealerPermits] ([Id], [ExternalId], [RegistrationId], [WasteCarrierBrokerDealerRegistration], [WasteManagementEnvironmentPermitNumber], [InstatallationPermitOrPPCNumber], [RegisteredWasteCarrierBrokerDealerFlag], [CreatedBy], [CreatedDate], [UpdatedBy], [UpdatedDate]) VALUES (19, N'3ceea1f8-c3b5-4fcf-a13d-7e1bf50ee93b', 38, N'WCB38', NULL, NULL, 0, N'00000000-0000-0000-0000-000000000000', CAST(N'2025-01-01T00:00:00.0000000' AS DateTime2), NULL, NULL)
+GO
+INSERT [dbo].[Public.CarrierBrokerDealerPermits] ([Id], [ExternalId], [RegistrationId], [WasteCarrierBrokerDealerRegistration], [WasteManagementEnvironmentPermitNumber], [InstatallationPermitOrPPCNumber], [RegisteredWasteCarrierBrokerDealerFlag], [CreatedBy], [CreatedDate], [UpdatedBy], [UpdatedDate]) VALUES (20, N'30908b47-2632-45ee-a6fd-567b7ec1f08e', 40, N'WCB40', NULL, NULL, 0, N'00000000-0000-0000-0000-000000000000', CAST(N'2025-01-01T00:00:00.0000000' AS DateTime2), NULL, NULL)
+GO
+INSERT [dbo].[Public.CarrierBrokerDealerPermits] ([Id], [ExternalId], [RegistrationId], [WasteCarrierBrokerDealerRegistration], [WasteManagementEnvironmentPermitNumber], [InstatallationPermitOrPPCNumber], [RegisteredWasteCarrierBrokerDealerFlag], [CreatedBy], [CreatedDate], [UpdatedBy], [UpdatedDate]) VALUES (21, N'a4b665e6-f66a-4828-8fed-55d76dc1cd68', 42, N'WCB42', NULL, NULL, 0, N'00000000-0000-0000-0000-000000000000', CAST(N'2025-01-01T00:00:00.0000000' AS DateTime2), NULL, NULL)
+GO
+INSERT [dbo].[Public.CarrierBrokerDealerPermits] ([Id], [ExternalId], [RegistrationId], [WasteCarrierBrokerDealerRegistration], [WasteManagementEnvironmentPermitNumber], [InstatallationPermitOrPPCNumber], [RegisteredWasteCarrierBrokerDealerFlag], [CreatedBy], [CreatedDate], [UpdatedBy], [UpdatedDate]) VALUES (22, N'5f29acdc-56f7-437e-89d0-5ed656c42dde', 44, N'WCB44', NULL, NULL, 0, N'00000000-0000-0000-0000-000000000000', CAST(N'2025-01-01T00:00:00.0000000' AS DateTime2), NULL, NULL)
+GO
+INSERT [dbo].[Public.CarrierBrokerDealerPermits] ([Id], [ExternalId], [RegistrationId], [WasteCarrierBrokerDealerRegistration], [WasteManagementEnvironmentPermitNumber], [InstatallationPermitOrPPCNumber], [RegisteredWasteCarrierBrokerDealerFlag], [CreatedBy], [CreatedDate], [UpdatedBy], [UpdatedDate]) VALUES (23, N'fbc8807b-1750-4ce4-9010-649db9bce920', 46, N'WCB46', NULL, NULL, 0, N'00000000-0000-0000-0000-000000000000', CAST(N'2025-01-01T00:00:00.0000000' AS DateTime2), NULL, NULL)
+GO
+INSERT [dbo].[Public.CarrierBrokerDealerPermits] ([Id], [ExternalId], [RegistrationId], [WasteCarrierBrokerDealerRegistration], [WasteManagementEnvironmentPermitNumber], [InstatallationPermitOrPPCNumber], [RegisteredWasteCarrierBrokerDealerFlag], [CreatedBy], [CreatedDate], [UpdatedBy], [UpdatedDate]) VALUES (24, N'fbb2a661-6b19-440a-a53a-3d2c5c4b1d38', 48, N'WCB48', NULL, NULL, 0, N'00000000-0000-0000-0000-000000000000', CAST(N'2025-01-01T00:00:00.0000000' AS DateTime2), NULL, NULL)
+GO
+SET IDENTITY_INSERT [dbo].[Public.CarrierBrokerDealerPermits] OFF
 GO

@@ -3545,3 +3545,74 @@ GO
 COMMIT;
 GO
 
+BEGIN TRANSACTION;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250610104645_AddCarrierBrokerDealerPermitsTable'
+)
+BEGIN
+    CREATE TABLE [Public.CarrierBrokerDealerPermits] (
+        [Id] int NOT NULL IDENTITY,
+        [ExternalId] uniqueidentifier NOT NULL,
+        [RegistrationId] int NOT NULL,
+        [WasteCarrierBrokerDealerRegistration] nvarchar(max) NULL,
+        [WasteManagementEnvironmentPermitNumber] nvarchar(max) NULL,
+        [InstatallationPermitOrPPCNumber] nvarchar(max) NULL,
+        [RegisteredWasteCarrierBrokerDealerFlag] bit NOT NULL,
+        [CreatedBy] uniqueidentifier NOT NULL,
+        [CreatedDate] datetime2 NOT NULL,
+        [UpdatedBy] uniqueidentifier NULL,
+        [UpdatedDate] datetime2 NULL,
+        CONSTRAINT [PK_Public.CarrierBrokerDealerPermits] PRIMARY KEY ([Id]),
+        CONSTRAINT [FK_Public.CarrierBrokerDealerPermits_Public.Registration_RegistrationId] FOREIGN KEY ([RegistrationId]) REFERENCES [Public.Registration] ([Id]) ON DELETE CASCADE
+    );
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250610104645_AddCarrierBrokerDealerPermitsTable'
+)
+BEGIN
+    IF EXISTS (SELECT * FROM [sys].[identity_columns] WHERE [name] IN (N'Id', N'ApplicationTypeId', N'IsMaterialSpecific', N'JourneyTypeId', N'Name') AND [object_id] = OBJECT_ID(N'[Lookup.RegulatorTask]'))
+        SET IDENTITY_INSERT [Lookup.RegulatorTask] ON;
+    EXEC(N'INSERT INTO [Lookup.RegulatorTask] ([Id], [ApplicationTypeId], [IsMaterialSpecific], [JourneyTypeId], [Name])
+    VALUES (29, 1, CAST(0 AS bit), 1, N''WasteCarrierBrokerDealerNumber'')');
+    IF EXISTS (SELECT * FROM [sys].[identity_columns] WHERE [name] IN (N'Id', N'ApplicationTypeId', N'IsMaterialSpecific', N'JourneyTypeId', N'Name') AND [object_id] = OBJECT_ID(N'[Lookup.RegulatorTask]'))
+        SET IDENTITY_INSERT [Lookup.RegulatorTask] OFF;
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250610104645_AddCarrierBrokerDealerPermitsTable'
+)
+BEGIN
+    CREATE UNIQUE INDEX [IX_Public.CarrierBrokerDealerPermits_ExternalId] ON [Public.CarrierBrokerDealerPermits] ([ExternalId]);
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250610104645_AddCarrierBrokerDealerPermitsTable'
+)
+BEGIN
+    CREATE UNIQUE INDEX [IX_Public.CarrierBrokerDealerPermits_RegistrationId] ON [Public.CarrierBrokerDealerPermits] ([RegistrationId]);
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250610104645_AddCarrierBrokerDealerPermitsTable'
+)
+BEGIN
+    INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+    VALUES (N'20250610104645_AddCarrierBrokerDealerPermitsTable', N'8.0.8');
+END;
+GO
+
+COMMIT;
+GO
+
