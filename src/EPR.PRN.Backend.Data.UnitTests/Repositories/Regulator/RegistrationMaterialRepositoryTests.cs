@@ -5,6 +5,7 @@ using EPR.PRN.Backend.Data.Repositories.Regulator;
 using FluentAssertions;
 using FluentAssertions.Execution;
 using Microsoft.EntityFrameworkCore;
+using System.Configuration;
 using System.Threading.Tasks;
 
 namespace EPR.PRN.Backend.Data.UnitTests.Repositories.Regulator;
@@ -431,7 +432,7 @@ public class RegistrationMaterialRepositoryTests
             taskStatusEntry.Should().NotBeNull();
             taskStatusEntry!.TaskStatusId.Should().Be(statusId);
             taskStatusEntry.RegulatorTaskId.Should().Be(2);
-            taskStatusEntry.StatusUpdatedBy.Should().Be(userId);
+            taskStatusEntry.StatusCreatedBy.Should().Be(userId);
             taskStatusEntry.StatusCreatedDate.Date.Should().Be(DateTime.UtcNow.Date);
         }
     }
@@ -521,27 +522,45 @@ public class RegistrationMaterialRepositoryTests
         await Assert.ThrowsExceptionAsync<KeyNotFoundException>(() =>
             _repository.RegistrationMaterialsMarkAsDulyMade(materialId, 3, DateTime.UtcNow.AddDays(84), DateTime.UtcNow, Guid.NewGuid()));
     }
-
+  
     [TestMethod]
-    public async Task RegistrationMaterialsMarkAsDulyMade_ShouldUpdate_WhenDulyMadeAlreadyExists()
+    public async Task RegistrationMaterialsMarkAsDulyMade_ShouldUpdateDeterminationDate_WhenItAlreadyExists()
     {
-        // Arrange: Add a pre-existing DulyMade entity
+        // Arrange
         var materialId = Guid.Parse("a9421fc1-a912-42ee-85a5-3e06408759a9");
+        var userId = Guid.NewGuid();
+        var dulyMadeDate = DateTime.UtcNow.Date;
+        var determinationDate = dulyMadeDate.AddDays(84);
 
-        _context.DulyMade.Add(new DulyMade
+        _context.DeterminationDate.Add(new DeterminationDate
         {
-
-            RegistrationMaterialId = 1,
+            Id = 1,
             ExternalId = Guid.NewGuid(),
-            DulyMadeDate = DateTime.UtcNow.AddDays(-10)
+            RegistrationMaterialId = 1,
+            DeterminateDate = DateTime.UtcNow.AddDays(-84)
+        });
+
+        _context.LookupTasks.Add(new LookupRegulatorTask
+        {
+            Id = 2,
+            Name = RegulatorTaskNames.CheckRegistrationStatus,
+            ApplicationTypeId = 1,
+            JourneyTypeId = 1,
+            IsMaterialSpecific = true
         });
 
         await _context.SaveChangesAsync();
 
         // Act
-        await _repository.RegistrationMaterialsMarkAsDulyMade(materialId, 3, DateTime.UtcNow.AddDays(84), DateTime.UtcNow, Guid.NewGuid());
+        await _repository.RegistrationMaterialsMarkAsDulyMade(materialId, 3, determinationDate, dulyMadeDate, userId);
 
-        // Assert as needed
+        // Assert
+        using (new AssertionScope())
+        {
+
+            var updatedDeterminationDate = await _context.DeterminationDate.FirstOrDefaultAsync(x => x.RegistrationMaterialId == 1);
+            updatedDeterminationDate!.DeterminateDate.Should().Be(determinationDate);
+        }
     }
 
     [TestMethod]
