@@ -1,4 +1,3 @@
-using EPR.PRN.Backend.API.Common.Enums;
 using EPR.PRN.Backend.API.Dto.Regulator;
 using EPR.PRN.Backend.API.Queries;
 using EPR.PRN.Backend.Data.DataModels.Registrations;
@@ -41,7 +40,7 @@ public class GetRegistrationByOrganisationQueryHandler(
         {
             mapped.Tasks = result.RegistrationTasks.Select(t => new RegistrationTaskDto
             {
-                Id = t.Id,
+                Id = t.ExternalId,
                 Status = t.TaskStatus.Name,
                 TaskName = t.Task.Name
             }).ToList();

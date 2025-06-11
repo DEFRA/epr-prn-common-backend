@@ -258,14 +258,15 @@ public class RegistrationRepositoryTests
     public async Task GetByOrganisationAsync_Exists_ReturnRegistration()
     {
         // Arrange
-        var registration = new Registration { Id = 2, ApplicationTypeId = 1, ExternalId = Guid.NewGuid(), OrganisationId = 1};
+        var organisationId = Guid.NewGuid();
+        var registration = new Registration { Id = 2, ApplicationTypeId = 1, ExternalId = Guid.NewGuid(), OrganisationId = organisationId };
 
         _context.Registrations.Add(registration);
 
         await _context.SaveChangesAsync();
 
         // Act
-        var result = await _repository.GetByOrganisationAsync(1, 1);
+        var result = await _repository.GetByOrganisationAsync(1, organisationId);
 
         // Assert
         result.Should().NotBeNull();
@@ -275,18 +276,65 @@ public class RegistrationRepositoryTests
     public async Task GetByOrganisationAsync_DoesNotExist_ReturnNull()
     {
         // Arrange
-
+        var organisationId = Guid.NewGuid();
         // Negative data
-        var registration = new Registration { Id = 2, ApplicationTypeId = 1, ExternalId = Guid.NewGuid(), OrganisationId = 1 };
+        var registration = new Registration { Id = 2, ApplicationTypeId = 1, ExternalId = Guid.NewGuid(), OrganisationId = organisationId };
 
         _context.Registrations.Add(registration);
 
         await _context.SaveChangesAsync();
 
         // Act
-        var result = await _repository.GetByOrganisationAsync(2, 2);
+        var result = await _repository.GetByOrganisationAsync(2, organisationId);
 
         // Assert
         result.Should().BeNull();
+    }
+
+    [TestMethod]
+    public async Task CreateRegistrationAsync_ShouldCreateNewRecord()
+    {
+        // Arrange
+        var organisationId = Guid.NewGuid();
+
+        // Act
+        var result = await _repository.CreateRegistrationAsync(1, organisationId, new AddressDto
+        {
+            AddressLine1 = "address line 1",
+            AddressLine2 = "address line 2",
+            PostCode = "cv1 2tt",
+            TownCity = "town",
+            Country = "country",
+            County = "county",
+            GridReference = "grid ref",
+            NationId = 1
+        });
+
+        // Assert
+        var loaded = await _context.Registrations.FindAsync(result);
+        result.Should().Be(1);
+        loaded.Should().BeEquivalentTo(new Registration
+        {
+            Id = result,
+            RegistrationStatusId = 1,
+            ReprocessingSiteAddressId = 1,
+            ExternalId = loaded!.ExternalId,
+            ApplicationTypeId = 1,
+            OrganisationId = organisationId,
+            ReprocessingSiteAddress = new Address
+            {
+                Id = 1,
+                AddressLine1 = "address line 1",
+                AddressLine2 = "address line 2",
+                PostCode = "cv1 2tt",
+                TownCity = "town",
+                County = "county",
+                GridReference = "grid ref",
+                NationId = 1
+            },
+            CreatedBy = loaded.CreatedBy,
+            CreatedDate = loaded.CreatedDate,
+            UpdatedBy = loaded.UpdatedBy
+        });
     }
 }

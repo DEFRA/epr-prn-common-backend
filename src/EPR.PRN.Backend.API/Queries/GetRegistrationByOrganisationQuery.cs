@@ -17,5 +17,5 @@ public class GetRegistrationByOrganisationQuery : IRequest<Dto.Regulator.Registr
     /// <summary>
     /// The id for the organisation that is registering.
     /// </summary>
-    public int OrganisationId { get; set; }
+    public Guid OrganisationId { get; set; }
 }

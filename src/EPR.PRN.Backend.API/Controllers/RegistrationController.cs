@@ -23,7 +23,7 @@ public class RegistrationController(IMediator mediator
 {
     #region Get Methods
 
-    [HttpGet("registrations/{applicationTypeId:int}/organisations/{organisationId:int}")]
+    [HttpGet("registrations/{applicationTypeId:int}/organisations/{organisationId:guid}")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(RegistrationDto))]
     [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
@@ -34,7 +34,7 @@ public class RegistrationController(IMediator mediator
     [SwaggerResponse(StatusCodes.Status400BadRequest, "If the request is invalid or a validation error occurs.", typeof(ProblemDetails))]
     [SwaggerResponse(StatusCodes.Status500InternalServerError, "If an unexpected error occurs.", typeof(ContentResult))]
     [ExcludeFromCodeCoverage(Justification = "TODO: To be done as part of create registration user story")]
-    public async Task<IActionResult> GetRegistrationByOrganisation([FromRoute]int applicationTypeId, [FromRoute]int organisationId)
+    public async Task<IActionResult> GetRegistrationByOrganisation([FromRoute]int applicationTypeId, [FromRoute]Guid organisationId)
     {
         logger.LogInformation(string.Format(LogMessages.GetRegistrationByOrganisation, applicationTypeId, organisationId));
 

@@ -1,5 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using EPR.PRN.Backend.API.Common.Enums;
+﻿using EPR.PRN.Backend.API.Common.Enums;
 using EPR.PRN.Backend.API.Common.Exceptions;
 using EPR.PRN.Backend.Data.DataModels.Registrations;
 using EPR.PRN.Backend.Data.DTO;
@@ -12,8 +11,7 @@ namespace EPR.PRN.Backend.Data.Repositories;
 
 public class RegistrationRepository(EprContext context, ILogger<RegistrationRepository> logger) : IRegistrationRepository
 {
-    [ExcludeFromCodeCoverage(Justification = "TODO: To be done as part of create registration user story")]
-    public async Task<int> CreateRegistrationAsync(int applicationTypeId, Guid organisationId, AddressDto address)
+    public async Task<int> CreateRegistrationAsync(int applicationTypeId, Guid organisationId, AddressDto reprocessingSiteAddress)
     {
         logger.LogInformation("Creating registration for ApplicationTypeId: {ApplicationTypeId} and OrganisationId: {OrganisationId}", applicationTypeId, organisationId);
         var registration = new Registration();
@@ -66,7 +64,7 @@ public class RegistrationRepository(EprContext context, ILogger<RegistrationRepo
         return await registrations.SingleOrDefaultAsync(o => o.Id == registrationId);
     }
 
-    public async Task<Registration?> GetByOrganisationAsync(int applicationTypeId, int organisationId)
+    public async Task<Registration?> GetByOrganisationAsync(int applicationTypeId, Guid organisationId)
     {
         var registrations = LoadRegistrationWithRelatedEntities();
 
