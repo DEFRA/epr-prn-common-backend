@@ -21,4 +21,6 @@ public class RegistrationDto
     public AddressDto? ReprocessingSiteAddress { get; set; }
 
     public AddressDto? LegalDocumentAddress { get; set; }
+
+    public IList<RegistrationTaskDto> Tasks { get; set; } = [];
 }

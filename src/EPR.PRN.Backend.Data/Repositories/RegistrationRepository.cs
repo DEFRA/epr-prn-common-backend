@@ -66,9 +66,15 @@ public class RegistrationRepository(EprContext context, ILogger<RegistrationRepo
 
     public async Task<Registration?> GetByOrganisationAsync(int applicationTypeId, int organisationId) =>
         await context.Registrations
-            .Include(o => o.BusinessAddress)
-            .Include(o => o.LegalDocumentAddress)
-            .Include(o => o.ReprocessingSiteAddress)
+            .AsNoTracking()
+            .AsSplitQuery()
+            .Include(r => r.BusinessAddress)
+            .Include(r => r.ReprocessingSiteAddress)
+            .Include(r => r.LegalDocumentAddress)
+            .Include(r => r.RegistrationTasks)!
+                .ThenInclude(t => t.TaskStatus)
+            .Include(r => r.RegistrationTasks)!
+                .ThenInclude(t => t.Task)
             .Include(o => o.Materials)
             .Where(o => o.ApplicationTypeId == applicationTypeId)
             .Where(o => o.OrganisationId == organisationId)

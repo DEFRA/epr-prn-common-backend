@@ -1,3 +1,4 @@
+using EPR.PRN.Backend.API.Common.Enums;
 using EPR.PRN.Backend.API.Dto.Regulator;
 using EPR.PRN.Backend.API.Queries;
 using EPR.PRN.Backend.Data.DataModels.Registrations;
@@ -36,6 +37,16 @@ public class GetRegistrationByOrganisationQueryHandler(
             LegalDocumentAddress = MapAddress(result.LegalDocumentAddress)
         };
 
+        if (result.RegistrationTasks is not null)
+        {
+            mapped.Tasks = result.RegistrationTasks.Select(t => new RegistrationTaskDto
+            {
+                Id = t.Id,
+                Status = t.TaskStatus.Name,
+                TaskName = t.Task.Name
+            }).ToList();
+        }
+    
         return mapped;
     }
 

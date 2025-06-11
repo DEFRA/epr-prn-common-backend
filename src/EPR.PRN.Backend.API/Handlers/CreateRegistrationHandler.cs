@@ -1,6 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 using EPR.PRN.Backend.API.Commands;
-using EPR.PRN.Backend.Data.DTO;
+using EPR.PRN.Backend.API.Common.Enums;
 using EPR.PRN.Backend.Data.Interfaces;
 using MediatR;
 
@@ -12,7 +12,11 @@ public class CreateRegistrationHandler(IRegistrationRepository repository)
 {
     public async Task<int> Handle(CreateRegistrationCommand command, CancellationToken cancellationToken)
     {
-        return await repository
-            .CreateRegistrationAsync(command.ApplicationTypeId, command.OrganisationId, command.ReprocessingSiteAddress);
+        var registrationId = await repository.CreateRegistrationAsync(command.ApplicationTypeId, command.OrganisationId, command.ReprocessingSiteAddress);
+
+        await repository.UpdateRegistrationTaskStatusAsync(nameof(RegistrationTaskType.SiteAddressAndContactDetails),
+            registrationId, TaskStatuses.Started);
+
+        return registrationId;
     }
 }
