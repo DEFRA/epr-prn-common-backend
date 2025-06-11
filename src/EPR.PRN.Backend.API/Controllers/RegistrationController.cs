@@ -44,6 +44,11 @@ public class RegistrationController(IMediator mediator
             OrganisationId = organisationId
         });
 
+        if (registration is null)
+        {
+            return NotFound();
+        }
+
         return Ok(registration);
     }
 

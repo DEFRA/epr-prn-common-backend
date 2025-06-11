@@ -15,11 +15,22 @@ public class UpdateRegistrationCommandValidator : AbstractValidator<UpdateRegist
             .NotNull()
             .WithMessage("Reprocessing Site Address is required");
 
-        When(x => x.ReprocessingSiteAddress?.Id.GetValueOrDefault() == 0, () => {
+        When(x => x.BusinessAddress?.Id.GetValueOrDefault() == 0, () => {
 
-            RuleFor(x => x.ReprocessingSiteAddress.NationId)
+            RuleFor(x => x.ReprocessingSiteAddress.AddressLine1)
                 .NotEmpty()
-                .WithMessage("NationId is required");
+                .WithMessage("AddressLine1 is required");
+
+            RuleFor(x => x.ReprocessingSiteAddress.TownCity)
+                .NotEmpty()
+                .WithMessage("TownCity is required");
+
+            RuleFor(x => x.ReprocessingSiteAddress.PostCode)
+                .NotEmpty()
+                .WithMessage("PostCode is required");
+        });
+
+        When(x => x.ReprocessingSiteAddress?.Id.GetValueOrDefault() == 0, () => {
 
             RuleFor(x => x.ReprocessingSiteAddress.GridReference)
                 .NotEmpty()
@@ -39,14 +50,6 @@ public class UpdateRegistrationCommandValidator : AbstractValidator<UpdateRegist
         });
 
         When(x => x.LegalAddress?.Id.GetValueOrDefault() == 0, () => {
-
-            RuleFor(x => x.LegalAddress.NationId)
-                .NotEmpty()
-                .WithMessage("NationId is required");
-
-            RuleFor(x => x.LegalAddress.GridReference)
-                .NotEmpty()
-                .WithMessage("GridReference is required");
 
             RuleFor(x => x.LegalAddress.AddressLine1)
                 .NotEmpty()
