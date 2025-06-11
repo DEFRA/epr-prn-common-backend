@@ -10,5 +10,7 @@ namespace EPR.PRN.Backend.Data.Interfaces
         Task<RegistrationTaskStatus?> GetTaskStatusAsync(string taskName, int registrationId);
         Task UpdateRegistrationTaskStatusAsync(string taskName, int registrationId, TaskStatuses status);
         Task UpdateSiteAddressAsync(int registrationId, AddressDto reprocessingSiteAddress);
+
+        public Task<IEnumerable<RegistrationDto>> GetRegistrationsForOrgAsync(int organisationId);
     }
 }

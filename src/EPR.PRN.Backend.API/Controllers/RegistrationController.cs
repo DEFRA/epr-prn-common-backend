@@ -88,4 +88,26 @@ public class RegistrationController(IMediator mediator
         return NoContent();
     }
     #endregion Post Methods
+
+    [HttpGet("registrations/{organisationId:int}/overview")]
+    [ProducesResponseType(StatusCodes.Status204NoContent, Type = typeof(NoContentResult))]
+    [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
+    [SwaggerOperation(
+        Summary = "return the registrations overview for a given organisation id",
+        Description = "attempting to return registrations."
+    )]
+    [SwaggerResponse(StatusCodes.Status204NoContent, $"Returns No Content", typeof(NoContentResult))]
+    [SwaggerResponse(StatusCodes.Status400BadRequest, "If the request is invalid or a validation error occurs.", typeof(ProblemDetails))]
+    [SwaggerResponse(StatusCodes.Status500InternalServerError, "If an unexpected error occurs.", typeof(ContentResult))]
+    public async Task<IActionResult> GetRegistrationsForOrg([FromRoute] int organisationId)
+    {
+        var command = new RegistrationsOverviewCommand { OrganisationId = organisationId };
+        
+        logger.LogInformation(LogMessages.RegistrationsOverview, command.OrganisationId);
+        
+        await validationService.ValidateAndThrowAsync(command);
+        var result = await mediator.Send(command);
+        return Ok(result);
+    }
 }
