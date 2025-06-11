@@ -126,15 +126,15 @@ namespace EPR.PRN.Backend.Data.Migrations
                 name: "TaskStatusId",
                 table: "Public.RegulatorAccreditationRegistrationTaskStatus");
 
-            migrationBuilder.AlterColumn<int>(
-                name: "AccreditationId",
-                table: "Public.RegulatorAccreditationTaskStatus",
-                type: "int",
-                nullable: false,
-                defaultValue: 0,
-                oldClrType: typeof(int),
-                oldType: "int",
-                oldNullable: true);
+            //migrationBuilder.AlterColumn<int>(
+            //    name: "AccreditationId",
+            //    table: "Public.RegulatorAccreditationTaskStatus",
+            //    type: "int",
+            //    nullable: false,
+            //    defaultValue: 0,
+            //    oldClrType: typeof(int),
+            //    oldType: "int",
+            //    oldNullable: true);
 
             migrationBuilder.AlterColumn<DateTime>(
                 name: "DeterminationDate",
