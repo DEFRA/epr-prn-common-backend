@@ -135,7 +135,7 @@ public class RegistrationRepository(EprContext context, ILogger<RegistrationRepo
     public async Task<IEnumerable<RegistrationOverviewDto>> GetRegistrationsOverviewForOrgIdAsync(Guid organisationId)
     {
         return await context.Registrations
-            //.Where(r => r.OrganisationId == organisationId) // Apply filter early
+            .Where(r => r.OrganisationId == organisationId) // Apply filter early
             .SelectMany(r => r.Materials.Select(m => new RegistrationOverviewDto
             {
                 RegistrationId = r.ExternalId,
