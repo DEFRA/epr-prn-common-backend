@@ -1,6 +1,6 @@
 ﻿using EPR.PRN.Backend.API.Commands;
 using EPR.PRN.Backend.API.Constants;
-using EPR.PRN.Backend.API.Validators;
+using EPR.PRN.Backend.API.Validators.Regulator;
 
 namespace EPR.PRN.Backend.API.UnitTests.Validators
 {
@@ -20,7 +20,7 @@ namespace EPR.PRN.Backend.API.UnitTests.Validators
         {
             var command = new RegistrationMaterialsMarkAsDulyMadeCommand
             {
-                RegistrationMaterialId = 1,
+                RegistrationMaterialId = Guid.Parse("a9421fc1-a912-42ee-85a5-3e06408759a9"),
                 DulyMadeDate = DateTime.UtcNow.Date,
                 DeterminationDate = DateTime.UtcNow.Date.AddDays(84),
                 DulyMadeBy = Guid.NewGuid()
@@ -32,18 +32,18 @@ namespace EPR.PRN.Backend.API.UnitTests.Validators
         }
 
         [TestMethod]
-        public void Should_Have_Error_When_RegistrationMaterialId_Is_Zero()
+        public void Should_Have_Error_When_RegistrationMaterialId_Is_Empty()
         {
             var command = new RegistrationMaterialsMarkAsDulyMadeCommand
             {
-                RegistrationMaterialId = 0
+                RegistrationMaterialId = Guid.Empty
             };
 
             var result = _validator.Validate(command);
 
             Assert.IsTrue(result.Errors.Any(e =>
                 e.PropertyName == "RegistrationMaterialId" &&
-                e.ErrorMessage == ValidationMessages.RegistrationMaterialIdGreaterThanZero));
+                e.ErrorMessage == ValidationMessages.RegistrationMaterialIdRequired));
         }
 
         [TestMethod]

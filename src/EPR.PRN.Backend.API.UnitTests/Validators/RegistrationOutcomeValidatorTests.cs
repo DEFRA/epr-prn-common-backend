@@ -1,7 +1,7 @@
 ﻿using EPR.PRN.Backend.API.Commands;
 using EPR.PRN.Backend.API.Common.Enums;
 using EPR.PRN.Backend.API.Constants;
-using EPR.PRN.Backend.API.Validators;
+using EPR.PRN.Backend.API.Validators.Regulator;
 
 namespace EPR.PRN.Backend.API.UnitTests.Validators;
 
@@ -17,46 +17,12 @@ public class RegistrationOutcomeValidatorTests
     }
 
     [TestMethod]
-    public void Should_Have_Validation_Error_When_Id_Is_Empty()
-    {
-        // Arrange  
-        var command = new RegistrationMaterialsOutcomeCommand
-        {
-            Id = 0,
-            RegistrationReferenceNumber = "TestReference"
-        };
-
-        // Act  
-        var result = _validator.Validate(command);
-
-        // Assert  
-        Assert.IsTrue(result.Errors.Any(e => e.PropertyName == "Id" && e.ErrorMessage == ValidationMessages.RegistrationOutcomeIdGreaterThanZero));
-    }
-
-    [TestMethod]
-    public void Should_Have_Validation_Error_When_Id_Is_Negative()
-    {
-        // Arrange  
-        var command = new RegistrationMaterialsOutcomeCommand
-        {
-            Id = -1,
-            RegistrationReferenceNumber = "REF0005-03"
-        };
-
-        // Act  
-        var result = _validator.Validate(command);
-
-        // Assert  
-        Assert.IsTrue(result.Errors.Any(e => e.PropertyName == "Id" && e.ErrorMessage == ValidationMessages.RegistrationOutcomeIdGreaterThanZero));
-    }
-
-    [TestMethod]
     public void Should_Have_Validation_Error_When_Status_Is_Invalid()
     {
         // Arrange  
         var command = new RegistrationMaterialsOutcomeCommand
         {
-            Id = 1,
+            Id = Guid.Parse("a9421fc1-a912-42ee-85a5-3e06408759a9"),
             Status = (RegistrationMaterialStatus)999,
             RegistrationReferenceNumber = "TestReference"
         };
@@ -74,7 +40,7 @@ public class RegistrationOutcomeValidatorTests
         // Arrange  
         var command = new RegistrationMaterialsOutcomeCommand
         {
-            Id = 1,
+            Id = Guid.Parse("a9421fc1-a912-42ee-85a5-3e06408759a9"),
             Status = RegistrationMaterialStatus.Refused,
             Comments = new string('A', 501),
             RegistrationReferenceNumber = "TestReference"
@@ -93,7 +59,7 @@ public class RegistrationOutcomeValidatorTests
         // Arrange  
         var command = new RegistrationMaterialsOutcomeCommand
         {
-            Id = 1,
+            Id = Guid.Parse("a9421fc1-a912-42ee-85a5-3e06408759a9"),
             Status = RegistrationMaterialStatus.Refused,
             Comments = string.Empty,
             RegistrationReferenceNumber = "TestReference"
@@ -112,7 +78,7 @@ public class RegistrationOutcomeValidatorTests
         // Arrange  
         var command = new RegistrationMaterialsOutcomeCommand
         {
-            Id = 1,
+            Id = Guid.Parse("a9421fc1-a912-42ee-85a5-3e06408759a9"),
             Status = RegistrationMaterialStatus.Refused,
             Comments = "Some comments",
             RegistrationReferenceNumber = "TestReference"
@@ -131,7 +97,7 @@ public class RegistrationOutcomeValidatorTests
         // Arrange  
         var command = new RegistrationMaterialsOutcomeCommand
         {
-            Id = 1,
+            Id = Guid.Parse("a9421fc1-a912-42ee-85a5-3e06408759a9"),
             Status = RegistrationMaterialStatus.Granted,
             Comments = "Some comments",
             RegistrationReferenceNumber = "TestReference"
