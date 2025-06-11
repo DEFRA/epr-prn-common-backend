@@ -3955,3 +3955,52 @@ GO
 COMMIT;
 GO
 
+BEGIN TRANSACTION;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250611214428_UpdateExporterTaskNames'
+)
+BEGIN
+    EXEC(N'DELETE FROM [Lookup.RegulatorTask]
+    WHERE [Id] = 29;
+    SELECT @@ROWCOUNT');
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250611214428_UpdateExporterTaskNames'
+)
+BEGIN
+    EXEC(N'UPDATE [Lookup.RegulatorTask] SET [Name] = N''PERNsTonnageAndAuthorityToIssuePERNs''
+    WHERE [Id] = 23;
+    SELECT @@ROWCOUNT');
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250611214428_UpdateExporterTaskNames'
+)
+BEGIN
+    EXEC(N'UPDATE [Lookup.RegulatorTask] SET [Name] = N''OverseasReprocessingSitesAndEvidenceOfBroadlyEquivalentStandards''
+    WHERE [Id] = 26;
+    SELECT @@ROWCOUNT');
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250611214428_UpdateExporterTaskNames'
+)
+BEGIN
+    INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+    VALUES (N'20250611214428_UpdateExporterTaskNames', N'8.0.8');
+END;
+GO
+
+COMMIT;
+GO
+

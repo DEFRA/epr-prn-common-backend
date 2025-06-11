@@ -237,13 +237,12 @@ namespace EPR.PRN.Backend.Data
                 new LookupRegulatorTask { Id = 20, IsMaterialSpecific = true, ApplicationTypeId = 1, JourneyTypeId = 2, Name = "AccreditationSamplingAndInspectionPlan" },
 
                 new LookupRegulatorTask { Id = 22, IsMaterialSpecific = false, ApplicationTypeId = 2, JourneyTypeId = 2, Name = "AssignOfficer" },
-                new LookupRegulatorTask { Id = 23, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 2, Name = "PRNsTonnageAndAuthorityToIssuePRNs" },
+                new LookupRegulatorTask { Id = 23, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 2, Name = "PERNsTonnageAndAuthorityToIssuePERNs" },
                 new LookupRegulatorTask { Id = 24, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 2, Name = "BusinessPlan" },
                 new LookupRegulatorTask { Id = 25, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 2, Name = "AccreditationSamplingAndInspectionPlan" },
-                new LookupRegulatorTask { Id = 26, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 2, Name = "OverseasReprocessingSites" },
+                new LookupRegulatorTask { Id = 26, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 2, Name = "OverseasReprocessingSitesAndEvidenceOfBroadlyEquivalentStandards" },
                 new LookupRegulatorTask { Id = 27, IsMaterialSpecific = true, ApplicationTypeId = 1, JourneyTypeId = 2, Name = "DulyMade" },
-                new LookupRegulatorTask { Id = 28, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 2, Name = "DulyMade" },
-                new LookupRegulatorTask { Id = 29, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 2, Name = "EvidenceOfBroadlyEquivalentStandards" });
+                new LookupRegulatorTask { Id = 28, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 2, Name = "DulyMade" });
 
             modelBuilder.Entity<LookupMaterialPermit>().HasData(
                 new LookupMaterialPermit { Id = 1, Name = PermitTypes.WasteExemption },
