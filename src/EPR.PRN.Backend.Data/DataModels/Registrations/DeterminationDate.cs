@@ -15,6 +15,6 @@ namespace EPR.PRN.Backend.Data.DataModels.Registrations
         [ForeignKey("RegistrationMaterial")]
         public int RegistrationMaterialId { get; set; }
         public RegistrationMaterial? RegistrationMaterial { get; set; }
-        public DateTime? DeterminateDate { get; set; }
+        public DateTime DeterminateDate { get; set; }
     }
 }
