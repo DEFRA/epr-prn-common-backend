@@ -3553,7 +3553,7 @@ IF NOT EXISTS (
     WHERE [MigrationId] = N'20250610165559_ModifyObligationCalculationsTableToAddNewCoulmnAndRelatedTable'
 )
 BEGIN
-    ALTER TABLE [ObligationCalculations] ADD [SubmitterId] uniqueidentifier NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000';
+    DELETE FROM ObligationCalculations
 END;
 GO
 
@@ -3562,7 +3562,16 @@ IF NOT EXISTS (
     WHERE [MigrationId] = N'20250610165559_ModifyObligationCalculationsTableToAddNewCoulmnAndRelatedTable'
 )
 BEGIN
-    ALTER TABLE [ObligationCalculations] ADD [SubmitterTypeId] int NOT NULL DEFAULT 1;
+    ALTER TABLE [ObligationCalculations] ADD [SubmitterId] uniqueidentifier NOT NULL;
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250610165559_ModifyObligationCalculationsTableToAddNewCoulmnAndRelatedTable'
+)
+BEGIN
+    ALTER TABLE [ObligationCalculations] ADD [SubmitterTypeId] int NOT NULL;
 END;
 GO
 

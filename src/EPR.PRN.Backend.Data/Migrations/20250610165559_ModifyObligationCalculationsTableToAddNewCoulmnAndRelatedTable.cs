@@ -13,19 +13,20 @@ namespace EPR.PRN.Backend.Data.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<Guid>(
+			// Remove exisitng rows from ObligationCalculations table
+			migrationBuilder.Sql(@"DELETE FROM ObligationCalculations");
+
+			migrationBuilder.AddColumn<Guid>(
                 name: "SubmitterId",
                 table: "ObligationCalculations",
                 type: "uniqueidentifier",
-                nullable: false,
-                defaultValue: new Guid("00000000-0000-0000-0000-000000000000"));
+                nullable: false);
 
             migrationBuilder.AddColumn<int>(
                 name: "SubmitterTypeId",
                 table: "ObligationCalculations",
                 type: "int",
-                nullable: false,
-                defaultValue: 0);
+                nullable: false);
 
             migrationBuilder.CreateTable(
                 name: "ObligationCalculationOrganisationSubmitterType",
