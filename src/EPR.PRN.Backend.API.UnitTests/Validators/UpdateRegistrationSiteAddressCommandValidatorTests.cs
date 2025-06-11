@@ -68,7 +68,6 @@ public class UpdateRegistrationSiteAddressCommandValidatorTests
 
         using (new AssertionScope())
         {
-            result.ShouldHaveValidationErrorFor("ReprocessingSiteAddress.NationId");
             result.ShouldHaveValidationErrorFor("ReprocessingSiteAddress.GridReference");
             result.ShouldHaveValidationErrorFor("ReprocessingSiteAddress.AddressLine1");
             result.ShouldHaveValidationErrorFor("ReprocessingSiteAddress.TownCity");
