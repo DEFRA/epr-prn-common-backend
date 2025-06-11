@@ -3,6 +3,7 @@ using System.Net;
 
 using EPR.PRN.Backend.API.Commands;
 using EPR.PRN.Backend.API.Common.Constants;
+using EPR.PRN.Backend.API.Queries;
 using EPR.PRN.Backend.API.Services.Interfaces;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -89,7 +90,7 @@ public class RegistrationController(IMediator mediator
     }
     #endregion Post Methods
 
-    [HttpGet("registrations/{organisationId:int}/overview")]
+    [HttpGet("registrations/{organisationId:guid}/overview")]
     [ProducesResponseType(StatusCodes.Status204NoContent, Type = typeof(NoContentResult))]
     [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
@@ -100,14 +101,15 @@ public class RegistrationController(IMediator mediator
     [SwaggerResponse(StatusCodes.Status204NoContent, $"Returns No Content", typeof(NoContentResult))]
     [SwaggerResponse(StatusCodes.Status400BadRequest, "If the request is invalid or a validation error occurs.", typeof(ProblemDetails))]
     [SwaggerResponse(StatusCodes.Status500InternalServerError, "If an unexpected error occurs.", typeof(ContentResult))]
-    public async Task<IActionResult> GetRegistrationsForOrg([FromRoute] int organisationId)
+    public async Task<IActionResult> GetRegistrationsOverviewForOrg([FromRoute] Guid organisationId)
     {
-        var command = new RegistrationsOverviewCommand { OrganisationId = organisationId };
+        logger.LogInformation(LogMessages.RegistrationsOverview, organisationId);
         
-        logger.LogInformation(LogMessages.RegistrationsOverview, command.OrganisationId);
+        var request = new GetRegistrationsOverviewByOrgIdQuery { OrganisationId = organisationId };
+        await validationService.ValidateAndThrowAsync(request);
         
-        await validationService.ValidateAndThrowAsync(command);
-        var result = await mediator.Send(command);
+        var result = await mediator.Send(request);
+
         return Ok(result);
     }
 }

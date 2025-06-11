@@ -1,6 +1,7 @@
 ﻿using EPR.PRN.Backend.API.Common.Enums;
 using EPR.PRN.Backend.Data.DataModels.Registrations;
-using EPR.PRN.Backend.Data.DTO;
+using EPR.PRN.Backend.Data.DTO.Registration;
+
 
 namespace EPR.PRN.Backend.Data.Interfaces
 {
@@ -9,8 +10,7 @@ namespace EPR.PRN.Backend.Data.Interfaces
         Task<int> CreateRegistrationAsync(int applicationTypeId, int organisationId);
         Task<RegistrationTaskStatus?> GetTaskStatusAsync(string taskName, int registrationId);
         Task UpdateRegistrationTaskStatusAsync(string taskName, int registrationId, TaskStatuses status);
-        Task UpdateSiteAddressAsync(int registrationId, AddressDto reprocessingSiteAddress);
-
-        public Task<IEnumerable<RegistrationDto>> GetRegistrationsForOrgAsync(int organisationId);
+        Task UpdateSiteAddressAsync(int registrationId, DTO.AddressDto reprocessingSiteAddress);
+        Task<IEnumerable<RegistrationOverviewDto>> GetRegistrationsOverviewForOrgIdAsync(Guid organisationId);
     }
 }

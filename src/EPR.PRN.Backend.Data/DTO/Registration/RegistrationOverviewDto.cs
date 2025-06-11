@@ -1,7 +1,7 @@
-﻿namespace EPR.PRN.Backend.Data.DTO
+﻿namespace EPR.PRN.Backend.Data.DTO.Registration
 {
-    
-    public class RegistrationDto
+
+    public class RegistrationOverviewDto
 
     {
         public Guid RegistrationId { get; set; }
