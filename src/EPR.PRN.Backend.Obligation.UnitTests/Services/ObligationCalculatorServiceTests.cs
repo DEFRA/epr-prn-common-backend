@@ -139,7 +139,7 @@ public class ObligationCalculatorServiceTests
 	{
 		// Arrange
 		var materials = GetMaterials();
-		var obligationCalculations = _fixture.CreateMany<ObligationCalculation>(7).ToList();
+		var obligationCalculations = _fixture.CreateMany<ObligationCalculation>(2).ToList();
 		obligationCalculations[0].MaterialId = 1; // Plastic
 		obligationCalculations[0].MaterialObligationValue = 2;
 		obligationCalculations[1].MaterialId = 2; // Wood
