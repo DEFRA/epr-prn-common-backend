@@ -157,14 +157,40 @@ namespace EPR.PRN.Backend.Data
                 .HasForeignKey(s => s.PrnIdFk)
                 .OnDelete(DeleteBehavior.NoAction);
             });
-            
-            modelBuilder.Entity<ObligationCalculation>()
+
+            modelBuilder.Entity<ObligationCalculationOrganisationSubmitterType>(entity =>
+            {
+                entity.HasIndex(a => a.TypeName)
+                .IsUnique();
+
+                entity.HasData
+                (
+                    new ObligationCalculationOrganisationSubmitterType
+                    {
+                        Id = 1,
+                        TypeName = ObligationCalculationOrganisationSubmitterTypeName.ComplianceScheme.ToString()
+                    },
+                    new ObligationCalculationOrganisationSubmitterType
+                    {
+                        Id = 2,
+                        TypeName = ObligationCalculationOrganisationSubmitterTypeName.DirectRegistrant.ToString()
+					}
+                );
+            });
+
+			modelBuilder.Entity<ObligationCalculation>()
 			.HasOne(c => c.Material)
 			.WithMany()
 			.HasForeignKey(c => c.MaterialId)
 			.OnDelete(DeleteBehavior.NoAction);
 
-            modelBuilder.Entity<LookupMaterial>().HasData(
+			modelBuilder.Entity<ObligationCalculation>()
+			.HasOne(c => c.ObligationCalculationOrganisationSubmitterType)
+			.WithMany()
+			.HasForeignKey(c => c.SubmitterTypeId)
+			.OnDelete(DeleteBehavior.NoAction);
+
+			modelBuilder.Entity<LookupMaterial>().HasData(
                 new LookupMaterial { Id = 1, MaterialName = "Plastic", MaterialCode = "PL" },
                 new LookupMaterial { Id = 2, MaterialName = "Steel", MaterialCode = "ST" },
                 new LookupMaterial { Id = 3, MaterialName = "Aluminium", MaterialCode = "AL" },
@@ -247,7 +273,9 @@ namespace EPR.PRN.Backend.Data
 
         public virtual DbSet<Material> Material { get; set; }
 
-        public virtual DbSet<PEprNpwdSync> PEprNpwdSync { get; set; }
+		public virtual DbSet<ObligationCalculationOrganisationSubmitterType> ObligationCalculationOrganisationSubmitterType { get; set; }
+
+		public virtual DbSet<PEprNpwdSync> PEprNpwdSync { get; set; }
 
         public virtual DbSet<PrnMaterialMapping> PrnMaterialMapping { get; set; }
 

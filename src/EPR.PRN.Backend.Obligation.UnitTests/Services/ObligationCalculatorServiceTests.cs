@@ -24,11 +24,11 @@ public class ObligationCalculatorServiceTests
 	private Mock<IMaterialCalculationStrategyResolver> _mockStrategyResolver;
 	private Mock<IPrnRepository> _mockPrnRepository;
 	private Mock<IMaterialRepository> _mockMaterialRepository;
+	private Mock<IObligationCalculationOrganisationSubmitterTypeRepository> _mockSubmitterTypeRepository;
 	private Mock<ILogger<ObligationCalculatorService>> _mockLogger;
 	private ObligationCalculatorService _service;
 	private Fixture _fixture;
-	private readonly List<Guid> organisationIds = [];
-	private readonly Guid orgId = Guid.NewGuid();
+	private readonly Guid submitterId = Guid.NewGuid(); // Either ComplianceSchemeId or DR OrganisationId
 	private readonly int obligationCalculationYear = DateTime.UtcNow.Year;
 
 	[TestInitialize]
@@ -40,6 +40,7 @@ public class ObligationCalculatorServiceTests
 		_mockStrategyResolver = new Mock<IMaterialCalculationStrategyResolver>();
 		_mockPrnRepository = new Mock<IPrnRepository>();
 		_mockMaterialRepository = new Mock<IMaterialRepository>();
+		_mockSubmitterTypeRepository = new Mock<IObligationCalculationOrganisationSubmitterTypeRepository>();
 		_mockLogger = new Mock<ILogger<ObligationCalculatorService>>();
 		_service = new ObligationCalculatorService(
 			_mockObligationCalculationRepository.Object,
@@ -47,10 +48,8 @@ public class ObligationCalculatorServiceTests
 			_mockStrategyResolver.Object,
 			_mockLogger.Object,
 			_mockPrnRepository.Object,
-			_mockMaterialRepository.Object);
-
-		organisationIds.Add(Guid.NewGuid());
-		organisationIds.Add(Guid.NewGuid());
+			_mockMaterialRepository.Object,
+			_mockSubmitterTypeRepository.Object);
 	}
 
 	[TestMethod]
@@ -82,15 +81,15 @@ public class ObligationCalculatorServiceTests
 
 		var prns = prnList.AsQueryable();
 		_mockMaterialRepository.Setup(repo => repo.GetAllMaterials()).ReturnsAsync(materials);
-		_mockObligationCalculationRepository.Setup(repo => repo.GetObligationCalculation(organisationIds, obligationCalculationYear)).ReturnsAsync(obligationCalculations);
-		_mockPrnRepository.Setup(repo => repo.GetAcceptedAndAwaitingPrnsByYear(orgId, obligationCalculationYear)).Returns(prns);
+		_mockObligationCalculationRepository.Setup(repo => repo.GetObligationCalculationBySubmitterIdAndYear(submitterId, obligationCalculationYear)).ReturnsAsync(obligationCalculations);
+		_mockPrnRepository.Setup(repo => repo.GetAcceptedAndAwaitingPrnsByYear(submitterId, obligationCalculationYear)).Returns(prns);
 
 		var acceptedTonnage = _fixture.CreateMany<EprnTonnageResultsDto>(7).ToList();
 		var awaitingTonnage = _fixture.CreateMany<EprnTonnageResultsDto>(7).ToList();
 		_mockRecyclingTargetDataService.Setup(x => x.GetRecyclingTargetsAsync()).ReturnsAsync(GetRecyclingTargets());
 
 		// Act
-		var result = await _service.GetObligationCalculation(orgId, organisationIds, obligationCalculationYear);
+		var result = await _service.GetObligationCalculation(submitterId, obligationCalculationYear);
 
 		// Assert
 		result.IsSuccess.Should().BeTrue();
@@ -141,9 +140,9 @@ public class ObligationCalculatorServiceTests
 		// Arrange
 		var materials = GetMaterials();
 		var obligationCalculations = _fixture.CreateMany<ObligationCalculation>(7).ToList();
-		obligationCalculations[0].MaterialId = 1;
+		obligationCalculations[0].MaterialId = 1; // Plastic
 		obligationCalculations[0].MaterialObligationValue = 2;
-		obligationCalculations[1].MaterialId = 2;
+		obligationCalculations[1].MaterialId = 2; // Wood
 		obligationCalculations[1].MaterialObligationValue = 1;
 
 		var prnList = _fixture.CreateMany<EprnResultsDto>(2).ToList();
@@ -160,12 +159,12 @@ public class ObligationCalculatorServiceTests
 
 		var prns = prnList.AsQueryable();
 		_mockMaterialRepository.Setup(repo => repo.GetAllMaterials()).ReturnsAsync(materials);
-		_mockObligationCalculationRepository.Setup(repo => repo.GetObligationCalculation(organisationIds, obligationCalculationYear)).ReturnsAsync(obligationCalculations);
-		_mockPrnRepository.Setup(repo => repo.GetAcceptedAndAwaitingPrnsByYear(orgId, obligationCalculationYear)).Returns(prns);
+		_mockObligationCalculationRepository.Setup(repo => repo.GetObligationCalculationBySubmitterIdAndYear(submitterId, obligationCalculationYear)).ReturnsAsync(obligationCalculations);
+		_mockPrnRepository.Setup(repo => repo.GetAcceptedAndAwaitingPrnsByYear(submitterId, obligationCalculationYear)).Returns(prns);
 		_mockRecyclingTargetDataService.Setup(x => x.GetRecyclingTargetsAsync()).ReturnsAsync(GetRecyclingTargets());
 
 		// Act
-		var result = await _service.GetObligationCalculation(orgId, organisationIds, obligationCalculationYear);
+		var result = await _service.GetObligationCalculation(submitterId, obligationCalculationYear);
 
 		// Assert
 		result.IsSuccess.Should().BeTrue();
@@ -174,10 +173,49 @@ public class ObligationCalculatorServiceTests
 		var obligationData = result.ObligationModel.ObligationData;
 		obligationData.Should().NotBeNull();
 		obligationData.Count.Should().Be(7);
-		var plasticObligationData = obligationData.Find(d => d.MaterialName == PrnConstants.Materials.Plastic);
-		plasticObligationData.Status.Should().Be(ObligationConstants.Statuses.NotMet);
-		var woodObligationData = obligationData.Find(d => d.MaterialName == PrnConstants.Materials.Wood);
-		woodObligationData.Status.Should().Be(ObligationConstants.Statuses.Met);
+		obligationData.Find(d => d.MaterialName == MaterialType.Plastic.ToString()).Status.Should().Be(ObligationConstants.Statuses.NotMet);
+		obligationData.Find(d => d.MaterialName == MaterialType.Wood.ToString()).Status.Should().Be(ObligationConstants.Statuses.Met);
+	}
+
+	[TestMethod]
+	public async Task GetObligationCalculation_ShouldReturnSuccess_WithNull_ForMaterialsNotSubmitted()
+	{
+		// Arrange
+		var materials = GetMaterials();
+
+		var obligationCalculations = _fixture.CreateMany<ObligationCalculation>(2).ToList();
+		obligationCalculations[0].MaterialId = 1; //Plastic
+		obligationCalculations[0].MaterialObligationValue = 100;
+		obligationCalculations[1].MaterialId = 2; // Wood
+		obligationCalculations[1].MaterialObligationValue = 200;
+
+		var prnList = _fixture.CreateMany<EprnResultsDto>(2).ToList();
+
+		var prns = prnList.AsQueryable();
+		_mockMaterialRepository.Setup(repo => repo.GetAllMaterials()).ReturnsAsync(materials);
+		_mockObligationCalculationRepository.Setup(repo => repo.GetObligationCalculationBySubmitterIdAndYear(submitterId, obligationCalculationYear)).ReturnsAsync(obligationCalculations);
+		_mockPrnRepository.Setup(repo => repo.GetAcceptedAndAwaitingPrnsByYear(submitterId, obligationCalculationYear)).Returns(prns);
+		_mockRecyclingTargetDataService.Setup(x => x.GetRecyclingTargetsAsync()).ReturnsAsync(GetRecyclingTargets());
+
+		// Act
+		var result = await _service.GetObligationCalculation(submitterId, obligationCalculationYear);
+
+		// Assert
+		result.IsSuccess.Should().BeTrue();
+		result.ObligationModel.Should().NotBeNull();
+
+		var obligationData = result.ObligationModel.ObligationData;
+		obligationData.Should().NotBeNull();
+		obligationData.Count.Should().Be(7);
+
+		obligationData.Find(d => d.MaterialName == MaterialType.Plastic.ToString()).ObligationToMeet.Should().NotBeNull();
+		obligationData.Find(d => d.MaterialName == MaterialType.Wood.ToString()).ObligationToMeet.Should().NotBeNull();
+
+		obligationData.Find(d => d.MaterialName == MaterialType.Glass.ToString()).ObligationToMeet.Should().BeNull();
+		obligationData.Find(d => d.MaterialName == MaterialType.GlassRemelt.ToString()).ObligationToMeet.Should().BeNull();
+		obligationData.Find(d => d.MaterialName == MaterialType.Paper.ToString()).ObligationToMeet.Should().BeNull();
+		obligationData.Find(d => d.MaterialName == MaterialType.Steel.ToString()).ObligationToMeet.Should().BeNull();
+		obligationData.Find(d => d.MaterialName == MaterialType.Aluminium.ToString()).ObligationToMeet.Should().BeNull();
 	}
 
 	[TestMethod]
@@ -192,12 +230,12 @@ public class ObligationCalculatorServiceTests
 
 		var prns = prnList.AsQueryable();
 		_mockMaterialRepository.Setup(repo => repo.GetAllMaterials()).ReturnsAsync(materials);
-		_mockObligationCalculationRepository.Setup(repo => repo.GetObligationCalculation(organisationIds, obligationCalculationYear)).ReturnsAsync(obligationCalculations);
-		_mockPrnRepository.Setup(repo => repo.GetAcceptedAndAwaitingPrnsByYear(orgId, obligationCalculationYear)).Returns(prns);
+		_mockObligationCalculationRepository.Setup(repo => repo.GetObligationCalculationBySubmitterIdAndYear(submitterId, obligationCalculationYear)).ReturnsAsync(obligationCalculations);
+		_mockPrnRepository.Setup(repo => repo.GetAcceptedAndAwaitingPrnsByYear(submitterId, obligationCalculationYear)).Returns(prns);
 		_mockRecyclingTargetDataService.Setup(x => x.GetRecyclingTargetsAsync()).ReturnsAsync(GetRecyclingTargets());
 
 		// Act
-		var result = await _service.GetObligationCalculation(orgId, organisationIds, obligationCalculationYear);
+		var result = await _service.GetObligationCalculation(submitterId, obligationCalculationYear);
 
 		// Assert
 		result.IsSuccess.Should().BeTrue();
@@ -221,7 +259,7 @@ public class ObligationCalculatorServiceTests
 		_mockMaterialRepository.Setup(repo => repo.GetAllMaterials()).ReturnsAsync(materials);
 
 		// Act
-		var result = await _service.GetObligationCalculation(orgId, organisationIds, obligationCalculationYear);
+		var result = await _service.GetObligationCalculation(submitterId, obligationCalculationYear);
 
 		// Assert
 		result.IsSuccess.Should().BeFalse();
@@ -246,12 +284,12 @@ public class ObligationCalculatorServiceTests
 		prnList[4].Status.StatusName = EprnStatus.AWAITINGACCEPTANCE.ToString();
 		var prns = prnList.AsQueryable();
 		_mockMaterialRepository.Setup(repo => repo.GetAllMaterials()).ReturnsAsync(materials);
-		_mockObligationCalculationRepository.Setup(repo => repo.GetObligationCalculation(organisationIds, obligationCalculationYear)).ReturnsAsync(obligationCalculations);
-		_mockPrnRepository.Setup(repo => repo.GetAcceptedAndAwaitingPrnsByYear(orgId, obligationCalculationYear)).Returns(prns);
+		_mockObligationCalculationRepository.Setup(repo => repo.GetObligationCalculationBySubmitterIdAndYear(submitterId, obligationCalculationYear)).ReturnsAsync(obligationCalculations);
+		_mockPrnRepository.Setup(repo => repo.GetAcceptedAndAwaitingPrnsByYear(submitterId, obligationCalculationYear)).Returns(prns);
 		_mockRecyclingTargetDataService.Setup(x => x.GetRecyclingTargetsAsync()).ReturnsAsync(GetRecyclingTargets());
 
 		// Act
-		var result = await _service.GetObligationCalculation(orgId, organisationIds, obligationCalculationYear);
+		var result = await _service.GetObligationCalculation(submitterId, obligationCalculationYear);
 
 		// Assert
 		result.IsSuccess.Should().BeTrue();
@@ -261,101 +299,162 @@ public class ObligationCalculatorServiceTests
     [TestMethod]
     public async Task CalculatePomDataAsync_WhenSubmissionMaterialIsNullOrEmpty_ShouldLogErrorAndSkip()
     {
+		// Arrange
         var organisationId = Guid.NewGuid();
         var submissions = new List<SubmissionCalculationRequest>
         {
-            new() { OrganisationId = organisationId, PackagingMaterial = null }
+            new() { OrganisationId = organisationId, PackagingMaterial = null, SubmitterId = submitterId }
         };
         _mockRecyclingTargetDataService.Setup(x => x.GetRecyclingTargetsAsync()).ReturnsAsync([]);
+		var loggedMessages = MockLogger(LogLevel.Error);
 
-		var loggedMessages = MockLogger();
+		// Act
+		var result = await _service.CalculateAsync(submitterId, submissions);
 
-		var result = await _service.CalculateAsync(organisationId, submissions);
-
+		// Assert
 		result.Success.Should().BeFalse();
-		loggedMessages.Should().Contain($"Material was null or empty for OrganisationId: {organisationId}.");
-		loggedMessages.Should().Contain($"No calculations for OrganisationId: {organisationId}.");
+		loggedMessages.Should().Contain($"Material was null or empty for OrganisationId: {organisationId} and SubmitterId: {submitterId}.");
+		loggedMessages.Should().Contain($"No calculations for SubmitterId: {submitterId}.");
 	}
 
     [TestMethod]
     public async Task CalculatePomDataAsync_WhenMaterialIsInvalid_ShouldLogErrorAndSkip()
     {
+		// Arrange
         var organisationId = Guid.NewGuid();
         var packagingMaterial = "InvalidMaterial";
         var submissions = new List<SubmissionCalculationRequest>
         {
-            new() { OrganisationId = organisationId, PackagingMaterial = packagingMaterial }
+            new() { OrganisationId = organisationId, PackagingMaterial = packagingMaterial, SubmitterId = submitterId }
         };
         _mockRecyclingTargetDataService.Setup(x => x.GetRecyclingTargetsAsync()).ReturnsAsync([]);
-        var loggedMessages = MockLogger();
+        var loggedMessages = MockLogger(LogLevel.Error);
 
-		var result = await _service.CalculateAsync(organisationId, submissions);
+		// Act
+		var result = await _service.CalculateAsync(submitterId, submissions);
 
+		// Assert
 		result.Success.Should().BeFalse();
-		loggedMessages.Should().Contain($"Material provided was not valid: {packagingMaterial} for OrganisationId: {organisationId}.");
-		loggedMessages.Should().Contain($"No calculations for OrganisationId: {organisationId}.");
+		loggedMessages.Should().Contain($"Material provided was not valid: {packagingMaterial} for OrganisationId: {organisationId} and SubmitterId: {submitterId}.");
+		loggedMessages.Should().Contain($"No calculations for SubmitterId: {submitterId}.");
 	}
 
 	[TestMethod]
 	public async Task CalculatePomDataAsync_WhenStrategyIsNull_ShouldLogErrorAndSkip()
 	{
+		// Arrange
 		var organisationId = Guid.NewGuid();
 		var packagingMaterial = "PL";
 		var materials = GetMaterials();
 		var submissions = new List<SubmissionCalculationRequest>
 		{
-			new() { OrganisationId = organisationId, PackagingMaterial = packagingMaterial }
+			new() { OrganisationId = organisationId, PackagingMaterial = packagingMaterial, SubmitterId = organisationId }
 		};
 		_mockRecyclingTargetDataService.Setup(x => x.GetRecyclingTargetsAsync()).ReturnsAsync([]);
 		_mockMaterialRepository.Setup(repo => repo.GetAllMaterials()).ReturnsAsync(materials);
 		_mockStrategyResolver.Setup(x => x.Resolve(MaterialType.Plastic)).Returns((IMaterialCalculationStrategy)null);
-		var loggedMessages = MockLogger();
+		var loggedMessages = MockLogger(LogLevel.Error);
 
+		// Act
 		var result = await _service.CalculateAsync(organisationId, submissions);
 
+		// Assert
 		result.Success.Should().BeFalse();
-		loggedMessages.Should().Contain($"Could not find handler for Material Type: {packagingMaterial} for OrganisationId: {organisationId}.");
-		loggedMessages.Should().Contain($"No calculations for OrganisationId: {organisationId}.");
+		loggedMessages.Should().Contain($"Could not find handler for Material Type: {packagingMaterial} for OrganisationId: {organisationId} and SubmitterId: {organisationId}.");
+		loggedMessages.Should().Contain($"No calculations for SubmitterId: {organisationId}.");
 	}
 
     [TestMethod]
     public async Task CalculatePomDataAsync_WhenCalculationsAreEmpty_ShouldLogError()
     {
-        var organisationId = Guid.NewGuid();
+		// Arrange
         var packagingMaterial = "PL";
 		var materials = GetMaterials();
 		var submissions = new List<SubmissionCalculationRequest>
         {
-            new() { OrganisationId = organisationId, PackagingMaterial = packagingMaterial }
+            new() {
+				OrganisationId = Guid.NewGuid(),
+				PackagingMaterial = packagingMaterial,
+				SubmitterId = submitterId,
+				SubmitterType = ObligationCalculationOrganisationSubmitterTypeName.ComplianceScheme.ToString()
+			}
         };
-
 
 		_mockRecyclingTargetDataService.Setup(x => x.GetRecyclingTargetsAsync()).ReturnsAsync([]);
 		_mockMaterialRepository.Setup(repo => repo.GetAllMaterials()).ReturnsAsync(materials);
 		var mockStrategy = new Mock<IMaterialCalculationStrategy>();
 		mockStrategy.Setup(x => x.Calculate(It.IsAny<CalculationRequestDto>())).Returns([]);
 		_mockStrategyResolver.Setup(x => x.Resolve(MaterialType.Plastic)).Returns(mockStrategy.Object);
-		var loggedMessages = MockLogger();
+		var loggedMessages = MockLogger(LogLevel.Error);
 
-		var result = await _service.CalculateAsync(organisationId, submissions);
+		// Act
+		var result = await _service.CalculateAsync(submitterId, submissions);
 
+		// Assert
 		result.Success.Should().BeFalse();
-		loggedMessages.Should().Contain($"No calculations for OrganisationId: {organisationId}.");
+		loggedMessages.Should().Contain($"No calculations for SubmitterId: {submitterId}.");
 	}
 
-    [TestMethod]
-    public async Task CalculatePomDataAsync_WhenCalculationsAreSuccessful_ShouldReturnSuccess()
-    {
-        var organisationId = Guid.NewGuid();
-        var packagingMaterial = "PL";
+	[TestMethod]
+	[DataRow("")]
+	[DataRow("Random")]
+	public async Task CalculatePomDataAsync_WhenCalculationsAreEmpty_ShouldLogWarning(string submitterType)
+	{
+		// Arrange
+		var packagingMaterial = "PL";
 		var materials = GetMaterials();
 		var submissions = new List<SubmissionCalculationRequest>
-        {
-            new() { OrganisationId = organisationId, PackagingMaterial = packagingMaterial }
-        };
+		{
+			new() {
+				OrganisationId = Guid.NewGuid(),
+				PackagingMaterial = packagingMaterial,
+				SubmitterId = submitterId,
+				SubmitterType = submitterType
+			}
+		};
 
 		_mockRecyclingTargetDataService.Setup(x => x.GetRecyclingTargetsAsync()).ReturnsAsync([]);
 		_mockMaterialRepository.Setup(repo => repo.GetAllMaterials()).ReturnsAsync(materials);
+		var mockStrategy = new Mock<IMaterialCalculationStrategy>();
+		mockStrategy.Setup(x => x.Calculate(It.IsAny<CalculationRequestDto>())).Returns([]);
+		_mockStrategyResolver.Setup(x => x.Resolve(MaterialType.Plastic)).Returns(mockStrategy.Object);
+		var loggedMessages = MockLogger(LogLevel.Warning);
+
+		// Act
+		await _service.CalculateAsync(submitterId, submissions);
+
+		// Assert
+		loggedMessages.Should().Contain($"SubmitterType provided is not valid: {submitterType} for SubmitterId: {submitterId}.");
+	}
+
+	[TestMethod]
+    public async Task CalculatePomDataAsync_WhenCalculationsAreSuccessful_ShouldReturnSuccess()
+    {
+		var organisationId = Guid.NewGuid();
+        var packagingMaterial = "PL";
+		var materialWeight = 120;
+		var recyclingTargets = GetRecyclingTargets();
+		var materials = GetMaterials();
+		var submitterTypeName = ObligationCalculationOrganisationSubmitterTypeName.ComplianceScheme;
+		var submitterTypeId = (int)submitterTypeName;
+
+
+		var submissions = new List<SubmissionCalculationRequest>
+		{
+			new() {
+				OrganisationId = Guid.NewGuid(),
+				SubmitterId = submitterId,
+				SubmitterType = ObligationCalculationOrganisationSubmitterTypeName.ComplianceScheme.ToString(),
+				PackagingMaterial = packagingMaterial,
+				PackagingMaterialWeight = materialWeight,
+				SubmissionPeriod = "2024"
+			}
+		};
+
+		_mockRecyclingTargetDataService.Setup(x => x.GetRecyclingTargetsAsync()).ReturnsAsync(recyclingTargets);
+		_mockMaterialRepository.Setup(repo => repo.GetAllMaterials()).ReturnsAsync(materials);
+		_mockSubmitterTypeRepository.Setup(repo => repo.GetSubmitterTypeIdByTypeName(submitterTypeName)).ReturnsAsync(submitterTypeId);
+		
 		var mockStrategy = new Mock<IMaterialCalculationStrategy>();
 		mockStrategy.Setup(x => x.Calculate(It.IsAny<CalculationRequestDto>())).Returns(
 		[
@@ -367,27 +466,36 @@ public class ObligationCalculatorServiceTests
 
 		result.Success.Should().BeTrue();
 		result.Calculations.Should().NotBeNullOrEmpty();
+
+		_mockRecyclingTargetDataService.Verify(x => x.GetRecyclingTargetsAsync(), Times.Once);
+		_mockSubmitterTypeRepository.Verify(x => x.GetSubmitterTypeIdByTypeName(submitterTypeName), Times.Once);
+		_mockMaterialRepository.Verify(x => x.GetAllMaterials(), Times.Once);
+
+		// Verify strategy resolver was called for each material type
+		_mockStrategyResolver.Verify(x => x.Resolve(MaterialType.Plastic), Times.Once);
+
+		// Verify that the individual strategies' Calculate methods were called
+		mockStrategy.Verify(s => s.Calculate(It.IsAny<CalculationRequestDto>()), Times.Once);
 	}
 
 	[TestMethod]
-	public async Task UpsertCalculatedPomDataAsync_Should_CallRepository_WhenValidCalculationsAreProvided()
+	public async Task RemoveAndAddObligationCalculationAsync_Should_CallRepository_WhenValidCalculationsAreProvided()
 	{
 		var calculations = new List<ObligationCalculation>
 			{
 				new()
 			};
-		var organisationId = Guid.NewGuid();
 
-		await _service.UpsertCalculatedPomDataAsync(organisationId, calculations);
+		await _service.RemoveAndAddObligationCalculationAsync(submitterId, calculations);
 
-		_mockObligationCalculationRepository.Verify(x => x.UpsertObligationCalculationAsync(organisationId, calculations), Times.Once);
+		_mockObligationCalculationRepository.Verify(x => x.RemoveAndAddObligationCalculationBySubmitterIdAsync(submitterId, calculations), Times.Once);
 	}
 
-	private List<string> MockLogger()
+	private List<string> MockLogger(LogLevel logLevel)
 	{
 		var loggedMessages = new List<string>();
 		_mockLogger.Setup(x => x.Log(
-			LogLevel.Error,
+			logLevel,
 			It.IsAny<EventId>(),
 			It.Is<It.IsAnyType>((v, t) => true),
 			It.IsAny<Exception>(),

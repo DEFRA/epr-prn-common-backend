@@ -17,11 +17,23 @@ namespace EPR.PRN.Backend.Obligation.Services
 		IMaterialCalculationStrategyResolver strategyResolver,
 		ILogger<ObligationCalculatorService> logger,
 		IPrnRepository prnRepository,
-		IMaterialRepository materialRepository) : IObligationCalculatorService
+		IMaterialRepository materialRepository,
+		IObligationCalculationOrganisationSubmitterTypeRepository submitterTypeRepository) : IObligationCalculatorService
 	{
-		public async Task<CalculationResult> CalculateAsync(Guid organisationId, List<SubmissionCalculationRequest> request)
+		public async Task<CalculationResult> CalculateAsync(Guid submitterId, List<SubmissionCalculationRequest> request)
 		{
 			var recyclingTargets = await recyclingTargetDataService.GetRecyclingTargetsAsync();
+			var submitterTypeId = 0;
+			if (request[0].SubmitterType.IsNullOrEmpty() ||
+				!Enum.TryParse(request[0].SubmitterType, true, out ObligationCalculationOrganisationSubmitterTypeName submitterTypeName))
+			{
+				logger.LogWarning("SubmitterType provided is not valid: {SubmitterType} for SubmitterId: {SubmitterId}.",
+					request[0].SubmitterType, submitterId);
+			}
+			else
+			{
+				submitterTypeId = await submitterTypeRepository.GetSubmitterTypeIdByTypeName(submitterTypeName);
+			}
 			var materials = await materialRepository.GetAllMaterials();
 			var result = new CalculationResult();
 			var calculations = new List<ObligationCalculation>();
@@ -30,7 +42,7 @@ namespace EPR.PRN.Backend.Obligation.Services
 			{
 				if (string.IsNullOrEmpty(submission.PackagingMaterial))
 				{
-					logger.LogError("Material was null or empty for OrganisationId: {OrganisationId}.", organisationId);
+					logger.LogError("Material was null or empty for OrganisationId: {OrganisationId} and SubmitterId: {SubmitterId}.", submission.OrganisationId, submitterId);
 					result.Success = false;
 					continue;
 				}
@@ -38,8 +50,8 @@ namespace EPR.PRN.Backend.Obligation.Services
 				var materialName = materials.FirstOrDefault(m => m.MaterialCode == submission.PackagingMaterial)?.MaterialName;
                 if (materialName.IsNullOrEmpty() || !Enum.TryParse(materialName, true, out MaterialType materialType))
                 {
-                    logger.LogError("Material provided was not valid: {PackagingMaterial} for OrganisationId: {OrganisationId}.",
-                        submission.PackagingMaterial, organisationId);
+                    logger.LogError("Material provided was not valid: {PackagingMaterial} for OrganisationId: {OrganisationId} and SubmitterId: {SubmitterId}.",
+                        submission.PackagingMaterial, submission.OrganisationId, submitterId);
                     result.Success = false;
                     continue;
                 }
@@ -47,17 +59,19 @@ namespace EPR.PRN.Backend.Obligation.Services
                 var strategy = strategyResolver.Resolve(materialType);
                 if (strategy == null)
                 {
-                    logger.LogError("Could not find handler for Material Type: {PackagingMaterial} for OrganisationId: {OrganisationId}.", submission.PackagingMaterial, organisationId);
+                    logger.LogError("Could not find handler for Material Type: {PackagingMaterial} for OrganisationId: {OrganisationId} and SubmitterId: {SubmitterId}.",
+						submission.PackagingMaterial, submission.OrganisationId, submitterId);
                     result.Success = false;
                     continue;
                 }
 
                 var calculationRequest = new CalculationRequestDto
 				{
-					OrganisationId = organisationId,
+					SubmitterId = submission.SubmitterId,
 					SubmissionCalculationRequest = submission,
 					MaterialType = materialType,
 					Materials = [.. materials],
+					SubmitterTypeId = submitterTypeId,
 					RecyclingTargets = recyclingTargets
 				};
 
@@ -66,7 +80,7 @@ namespace EPR.PRN.Backend.Obligation.Services
 
 			if (calculations.Count == 0)
 			{
-				logger.LogError("No calculations for OrganisationId: {OrganisationId}.", organisationId);
+				logger.LogError("No calculations for SubmitterId: {SubmitterId}.", submitterId);
 				result.Success = false;
 			}
 			else
@@ -78,12 +92,12 @@ namespace EPR.PRN.Backend.Obligation.Services
 			return result;
 		}
 
-		public async Task UpsertCalculatedPomDataAsync(Guid organisationId, List<ObligationCalculation> calculations)
+		public async Task RemoveAndAddObligationCalculationAsync(Guid submitterId, List<ObligationCalculation> calculations)
 		{
-			await obligationCalculationRepository.UpsertObligationCalculationAsync(organisationId, calculations);
+			await obligationCalculationRepository.RemoveAndAddObligationCalculationBySubmitterIdAsync(submitterId, calculations);
 		}
 
-		public async Task<ObligationCalculationResult> GetObligationCalculation(Guid callingOrganisationId, IEnumerable<Guid> organisationIds, int year)
+		public async Task<ObligationCalculationResult> GetObligationCalculation(Guid organisationId, int year)
 		{
 			var materials = await materialRepository.GetAllMaterials();
 			if (!materials.Any())
@@ -96,9 +110,9 @@ namespace EPR.PRN.Backend.Obligation.Services
 				};
 			}
 
-			var obligationCalculations = await obligationCalculationRepository.GetObligationCalculation(organisationIds, year);
+			var obligationCalculations = await obligationCalculationRepository.GetObligationCalculationBySubmitterIdAndYear(organisationId, year);
 
-			var prns = prnRepository.GetAcceptedAndAwaitingPrnsByYear(callingOrganisationId, year);
+			var prns = prnRepository.GetAcceptedAndAwaitingPrnsByYear(organisationId, year);
 
 			var acceptedTonnageForPrns = GetSumOfTonnageForMaterials(prns, EprnStatus.ACCEPTED.ToString());
 			var awaitingAcceptanceForPrns = GetSumOfTonnageForMaterials(prns, EprnStatus.AWAITINGACCEPTANCE.ToString());
@@ -120,11 +134,11 @@ namespace EPR.PRN.Backend.Obligation.Services
 				// Segregate Paper and Fibre obligation data from other material types
 				if (material.MaterialName.Contains(MaterialType.Paper.ToString()) || material.MaterialName.Contains(MaterialType.FibreComposite.ToString()))
 				{
-					paperFibreObligationData.Add(GetObligationData(material.MaterialName, callingOrganisationId, obligationMaterialCalculations, tonnageAccepted, tonnageAwaitingAcceptance, recyclingTarget));
+					paperFibreObligationData.Add(GetObligationData(material.MaterialName, organisationId, obligationMaterialCalculations, tonnageAccepted, tonnageAwaitingAcceptance, recyclingTarget));
 				}
 				else
 				{
-					responseObligationData.Add(GetObligationData(material.MaterialName, callingOrganisationId, obligationMaterialCalculations, tonnageAccepted, tonnageAwaitingAcceptance, recyclingTarget));
+					responseObligationData.Add(GetObligationData(material.MaterialName, organisationId, obligationMaterialCalculations, tonnageAccepted, tonnageAwaitingAcceptance, recyclingTarget));
 				}
 			}
 
@@ -148,7 +162,7 @@ namespace EPR.PRN.Backend.Obligation.Services
 				TonnageAwaitingAcceptance = tonnageAwaitingAcceptance ?? 0,
 				TonnageOutstanding = (obligationMaterialCalculations.Count > 0 && tonnageAccepted.HasValue) ? obligationMaterialCalculations.Sum(x => x.MaterialObligationValue) - tonnageAccepted : null,
 				MaterialTarget = recyclingTarget ?? 0,
-				ObligationToMeet = obligationMaterialCalculations.Count > 0 ? (int?)obligationMaterialCalculations.Sum(x => x.MaterialObligationValue) : null,
+				ObligationToMeet = obligationMaterialCalculations.Count > 0 ? obligationMaterialCalculations.Sum(x => x.MaterialObligationValue) : null,
 				Tonnage = obligationMaterialCalculations.Sum(x => x.Tonnage)
 			};
 

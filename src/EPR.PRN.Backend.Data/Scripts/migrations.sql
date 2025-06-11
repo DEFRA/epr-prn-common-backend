@@ -1968,3 +1968,92 @@ GO
 COMMIT;
 GO
 
+BEGIN TRANSACTION;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250610165559_ModifyObligationCalculationsTableToAddNewCoulmnAndRelatedTable'
+)
+BEGIN
+    ALTER TABLE [ObligationCalculations] ADD [SubmitterId] uniqueidentifier NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000';
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250610165559_ModifyObligationCalculationsTableToAddNewCoulmnAndRelatedTable'
+)
+BEGIN
+    ALTER TABLE [ObligationCalculations] ADD [SubmitterTypeId] int NOT NULL DEFAULT 0;
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250610165559_ModifyObligationCalculationsTableToAddNewCoulmnAndRelatedTable'
+)
+BEGIN
+    CREATE TABLE [ObligationCalculationOrganisationSubmitterType] (
+        [Id] int NOT NULL IDENTITY,
+        [TypeName] nvarchar(450) NOT NULL,
+        CONSTRAINT [PK_ObligationCalculationOrganisationSubmitterType] PRIMARY KEY ([Id])
+    );
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250610165559_ModifyObligationCalculationsTableToAddNewCoulmnAndRelatedTable'
+)
+BEGIN
+    IF EXISTS (SELECT * FROM [sys].[identity_columns] WHERE [name] IN (N'Id', N'TypeName') AND [object_id] = OBJECT_ID(N'[ObligationCalculationOrganisationSubmitterType]'))
+        SET IDENTITY_INSERT [ObligationCalculationOrganisationSubmitterType] ON;
+    EXEC(N'INSERT INTO [ObligationCalculationOrganisationSubmitterType] ([Id], [TypeName])
+    VALUES (1, N''ComplianceScheme''),
+    (2, N''DirectRegistrant'')');
+    IF EXISTS (SELECT * FROM [sys].[identity_columns] WHERE [name] IN (N'Id', N'TypeName') AND [object_id] = OBJECT_ID(N'[ObligationCalculationOrganisationSubmitterType]'))
+        SET IDENTITY_INSERT [ObligationCalculationOrganisationSubmitterType] OFF;
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250610165559_ModifyObligationCalculationsTableToAddNewCoulmnAndRelatedTable'
+)
+BEGIN
+    CREATE INDEX [IX_ObligationCalculations_SubmitterTypeId] ON [ObligationCalculations] ([SubmitterTypeId]);
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250610165559_ModifyObligationCalculationsTableToAddNewCoulmnAndRelatedTable'
+)
+BEGIN
+    CREATE UNIQUE INDEX [IX_ObligationCalculationOrganisationSubmitterType_TypeName] ON [ObligationCalculationOrganisationSubmitterType] ([TypeName]);
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250610165559_ModifyObligationCalculationsTableToAddNewCoulmnAndRelatedTable'
+)
+BEGIN
+    ALTER TABLE [ObligationCalculations] ADD CONSTRAINT [FK_ObligationCalculations_ObligationCalculationOrganisationSubmitterType_SubmitterTypeId] FOREIGN KEY ([SubmitterTypeId]) REFERENCES [ObligationCalculationOrganisationSubmitterType] ([Id]);
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250610165559_ModifyObligationCalculationsTableToAddNewCoulmnAndRelatedTable'
+)
+BEGIN
+    INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+    VALUES (N'20250610165559_ModifyObligationCalculationsTableToAddNewCoulmnAndRelatedTable', N'8.0.8');
+END;
+GO
+
+COMMIT;
+GO
+

@@ -117,14 +117,14 @@ public class PrnController(IPrnService prnService,
 
     #region Post Methods
 
-    [HttpPost("obligationcalculation/{year}")]
+    [HttpGet("obligationcalculation/{year}")]
     [ProducesResponseType(typeof(List<ObligationData>), 200)]
     [ProducesResponseType(400)]
     [ProducesResponseType(500)]
-    public async Task<IActionResult> GetObligationCalculations([FromHeader(Name = "X-EPR-ORGANISATION")] Guid orgId, [FromRoute] int year, [FromBody] List<Guid> organisationIds)
+    public async Task<IActionResult> GetObligationCalculations([FromHeader(Name = "X-EPR-ORGANISATION")] Guid organisationId, [FromRoute] int year)
     {
         logger.LogInformation("{Logprefix}: PrnController - GetObligationCalculation: Api Route api/v1/prn/obligationcalculations/{Year}", logPrefix, year);
-        logger.LogInformation("{Logprefix}: PrnController - GetObligationCalculation: request to get Obligation Calculation for organisations {Organisation} for {Year}", logPrefix, string.Join(", ", organisationIds), year);
+        logger.LogInformation("{Logprefix}: PrnController - GetObligationCalculation: request to get Obligation Calculation for {Year}", logPrefix, year);
 
         if (year < _config.StartYear || year > _config.EndYear)
         {
@@ -132,7 +132,7 @@ public class PrnController(IPrnService prnService,
             return BadRequest($"Invalid year provided: {year}.");
         }
 
-        var obligationCalculation = await obligationCalculatorService.GetObligationCalculation(orgId, organisationIds, year);
+        var obligationCalculation = await obligationCalculatorService.GetObligationCalculation(organisationId, year);
 
         if (!obligationCalculation.IsSuccess)
         {
@@ -174,15 +174,15 @@ public class PrnController(IPrnService prnService,
         }
     }
 
-    [HttpPost("organisation/{organisationId}/calculate")]
+    [HttpPost("organisation/{submitterId}/calculate")]
     [ProducesResponseType(StatusCodes.Status202Accepted)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [ProducesResponseType(StatusCodes.Status504GatewayTimeout)]
-    public async Task<IActionResult> CalculateAsync(Guid organisationId, [FromBody] List<SubmissionCalculationRequest> request)
+    public async Task<IActionResult> CalculateAsync(Guid submitterId, [FromBody] List<SubmissionCalculationRequest> request)
     {
-        logger.LogInformation("{Logprefix}: PrnController - CalculateAsync: Api Route api/v1/prn/organisation/{OrganisationId}/calculate", logPrefix, organisationId);
-        logger.LogInformation("{Logprefix}: PrnController - CalculateAsync: request for user organisation {Organisation} submissions {SubmissionsRequest}", logPrefix, organisationId, JsonConvert.SerializeObject(request));
+        logger.LogInformation("{Logprefix}: PrnController - CalculateAsync: Api Route api/v1/prn/organisation/{SubmitterId}/calculate", logPrefix, submitterId);
+        logger.LogInformation("{Logprefix}: PrnController - CalculateAsync: request for user organisation {SubmitterId} submissions {SubmissionsRequest}", logPrefix, submitterId, JsonConvert.SerializeObject(request));
 
         if (request == null || request.Count == 0)
         {
@@ -198,7 +198,7 @@ public class PrnController(IPrnService prnService,
 
         try
         {
-            var calculationResult = await obligationCalculatorService.CalculateAsync(organisationId, request);
+            var calculationResult = await obligationCalculatorService.CalculateAsync(submitterId, request);
 
             if (!calculationResult.Success)
             {
@@ -208,7 +208,9 @@ public class PrnController(IPrnService prnService,
             logger.LogInformation("{Logprefix}: PrnController - CalculateAsync: Obligation Calculation returned {CalculationResult}", logPrefix, JsonConvert.SerializeObject(calculationResult.Calculations));
 
             logger.LogInformation("{Logprefix}: PrnController - CalculateAsync: calling UpsertCalculatedPomDataAsync ", logPrefix);
-            await obligationCalculatorService.UpsertCalculatedPomDataAsync(organisationId, calculationResult.Calculations);
+
+            await obligationCalculatorService.RemoveAndAddObligationCalculationAsync(submitterId, calculationResult.Calculations);
+
             logger.LogInformation("{Logprefix}: PrnController - CalculateAsync: Obligation Calculation Successful {Calculations}", logPrefix, JsonConvert.SerializeObject(calculationResult.Calculations));
 
             return Accepted(new { message = "Calculation successful.", data = calculationResult.Calculations });
