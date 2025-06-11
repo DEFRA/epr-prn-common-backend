@@ -6,11 +6,12 @@ namespace EPR.PRN.Backend.API.Dto.Regulator;
 [ExcludeFromCodeCoverage]
 public class RegistrationOverviewDto
 {
-    public int Id { get; set; }
+    public Guid Id { get; set; }
 
-    public required string OrganisationName { get; set; } = string.Empty;
+    public Guid OrganisationId { get; set; }
 
     public string? SiteAddress { get; init; }
+    public string? SiteGridReference { get; init; }
 
     public ApplicationOrganisationType OrganisationType { get; set; }
 

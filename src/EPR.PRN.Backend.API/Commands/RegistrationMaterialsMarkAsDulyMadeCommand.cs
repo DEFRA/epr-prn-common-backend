@@ -10,7 +10,7 @@ public class RegistrationMaterialsMarkAsDulyMadeCommand : IRequest
 {
     [BindNever]
     [SwaggerIgnore]
-    public int RegistrationMaterialId { get; set; }
+    public Guid RegistrationMaterialId { get; set; }
     public DateTime DulyMadeDate { get; set; }
     public DateTime DeterminationDate { get; set; }
     public Guid DulyMadeBy { get; set; } 

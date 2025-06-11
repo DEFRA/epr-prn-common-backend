@@ -7,5 +7,5 @@ namespace EPR.PRN.Backend.API.Commands;
 public class CreateRegistrationCommand : IRequest<int>
 {
     public int ApplicationTypeId { get; set; }
-    public int OrganisationId { get; set; }
+    public Guid OrganisationId { get; set; }
 }
