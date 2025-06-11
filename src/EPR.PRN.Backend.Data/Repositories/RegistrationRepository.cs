@@ -5,6 +5,7 @@ using EPR.PRN.Backend.Data.DataModels.Registrations;
 using EPR.PRN.Backend.Data.DTO;
 using EPR.PRN.Backend.Data.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.Extensions.Logging;
 
 namespace EPR.PRN.Backend.Data.Repositories;
@@ -59,26 +60,21 @@ public class RegistrationRepository(EprContext context, ILogger<RegistrationRepo
         return registration.Id;
     }
 
-    public async Task<Registration?> GetAsync(int registrationId) 
-        => await context.Registrations
-            .Include(o => o.Materials)
-            .SingleOrDefaultAsync(o => o.Id == registrationId);
+    public async Task<Registration?> GetAsync(int registrationId)
+    {
+        var registrations = LoadRegistrationWithRelatedEntities();
+        return await registrations.SingleOrDefaultAsync(o => o.Id == registrationId);
+    }
 
-    public async Task<Registration?> GetByOrganisationAsync(int applicationTypeId, int organisationId) =>
-        await context.Registrations
-            .AsNoTracking()
-            .AsSplitQuery()
-            .Include(r => r.BusinessAddress)
-            .Include(r => r.ReprocessingSiteAddress)
-            .Include(r => r.LegalDocumentAddress)
-            .Include(r => r.RegistrationTasks)!
-                .ThenInclude(t => t.TaskStatus)
-            .Include(r => r.RegistrationTasks)!
-                .ThenInclude(t => t.Task)
-            .Include(o => o.Materials)
+    public async Task<Registration?> GetByOrganisationAsync(int applicationTypeId, int organisationId)
+    {
+        var registrations = LoadRegistrationWithRelatedEntities();
+
+        return await registrations
             .Where(o => o.ApplicationTypeId == applicationTypeId)
             .Where(o => o.OrganisationId == organisationId)
             .FirstOrDefaultAsync();
+    }
 
     public async Task<RegistrationTaskStatus?> GetTaskStatusAsync(string taskName, int registrationId)
     {
@@ -295,5 +291,19 @@ public class RegistrationRepository(EprContext context, ILogger<RegistrationRepo
 
         registration.ReprocessingSiteAddressId = reprocessingSiteAddress.Id;
         await context.SaveChangesAsync();
+    }
+
+    private IIncludableQueryable<Registration,List<RegistrationMaterial>?> LoadRegistrationWithRelatedEntities()
+    {
+        return context.Registrations
+            .AsSplitQuery()
+            .Include(r => r.BusinessAddress)
+            .Include(r => r.ReprocessingSiteAddress)
+            .Include(r => r.LegalDocumentAddress)
+            .Include(r => r.RegistrationTasks)!
+                .ThenInclude(t => t.TaskStatus)
+            .Include(r => r.RegistrationTasks)!
+                .ThenInclude(t => t.Task)
+            .Include(r => r.Materials);
     }
 }
