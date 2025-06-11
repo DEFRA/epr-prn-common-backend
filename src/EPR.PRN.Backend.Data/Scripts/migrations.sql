@@ -3562,7 +3562,7 @@ IF NOT EXISTS (
     WHERE [MigrationId] = N'20250610165559_ModifyObligationCalculationsTableToAddNewCoulmnAndRelatedTable'
 )
 BEGIN
-    ALTER TABLE [ObligationCalculations] ADD [SubmitterTypeId] int NOT NULL DEFAULT 0;
+    ALTER TABLE [ObligationCalculations] ADD [SubmitterTypeId] int NOT NULL DEFAULT 1;
 END;
 GO
 
