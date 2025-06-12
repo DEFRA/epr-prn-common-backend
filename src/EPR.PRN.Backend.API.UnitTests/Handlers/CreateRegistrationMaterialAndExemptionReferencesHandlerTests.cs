@@ -1,4 +1,5 @@
-﻿using EPR.PRN.Backend.API.Commands;
+﻿using AutoMapper;
+using EPR.PRN.Backend.API.Commands;
 using EPR.PRN.Backend.API.Dto.Regulator;
 using EPR.PRN.Backend.API.Handlers;
 using EPR.PRN.Backend.Data.DataModels.Registrations;
@@ -12,13 +13,15 @@ namespace EPR.PRN.Backend.API.UnitTests.Handlers;
 public class CreateRegistrationMaterialAndExemptionReferencesHandlerTests
 {
     private Mock<IRegistrationMaterialRepository> _repositoryMock;
+    private Mock<IMapper> _mapperMock;
     private CreateRegistrationMaterialAndExemptionReferencesHandler _handler;
 
     [TestInitialize]
     public void Setup()
     {
         _repositoryMock = new Mock<IRegistrationMaterialRepository>();
-        _handler = new CreateRegistrationMaterialAndExemptionReferencesHandler(_repositoryMock.Object);
+        _mapperMock = new Mock<IMapper>();
+        _handler = new CreateRegistrationMaterialAndExemptionReferencesHandler(_repositoryMock.Object, _mapperMock.Object);
     }
 
     [TestMethod]
@@ -28,7 +31,7 @@ public class CreateRegistrationMaterialAndExemptionReferencesHandlerTests
         var command = new CreateRegistrationMaterialAndExemptionReferencesCommand
         {
             RegistrationMaterial = new RegistrationMaterialDto
-            {                
+            {
                 RegistrationId = Guid.NewGuid(),
                 MaterialId = 10,
                 MaterialName = "SampleMaterial",
@@ -43,11 +46,35 @@ public class CreateRegistrationMaterialAndExemptionReferencesHandlerTests
                 IsMaterialRegistered = true,
                 CreatedDate = DateTime.UtcNow
             },
-            MaterialExemptionReferences = new List<MaterialExemptionReferenceRequest>()
+            MaterialExemptionReferences = new List<MaterialExemptionReferenceDto>()
         };
 
+        var mappedMaterial = new RegistrationMaterial
+        {
+            MaterialId = command.RegistrationMaterial.MaterialId,
+            StatusId = command.RegistrationMaterial.StatusId,
+            PermitTypeId = command.RegistrationMaterial.PermitTypeId,
+            PPCReprocessingCapacityTonne = command.RegistrationMaterial.PPCReprocessingCapacityTonne,
+            WasteManagementReprocessingCapacityTonne = command.RegistrationMaterial.WasteManagementReprocessingCapacityTonne,
+            InstallationReprocessingTonne = command.RegistrationMaterial.InstallationReprocessingTonne,
+            EnvironmentalPermitWasteManagementTonne = command.RegistrationMaterial.EnvironmentalPermitWasteManagementTonne,
+            MaximumReprocessingCapacityTonne = command.RegistrationMaterial.MaximumReprocessingCapacityTonne,
+            IsMaterialRegistered = command.RegistrationMaterial.IsMaterialRegistered,
+            CreatedDate = command.RegistrationMaterial.CreatedDate
+        };
+
+        var mappedExemptions = new List<MaterialExemptionReference>();
+
+        _mapperMock
+            .Setup(m => m.Map<RegistrationMaterial>(command.RegistrationMaterial))
+            .Returns(mappedMaterial);
+
+        _mapperMock
+            .Setup(m => m.Map<List<MaterialExemptionReference>>(command.MaterialExemptionReferences))
+            .Returns(mappedExemptions);
+
         _repositoryMock
-            .Setup(r => r.CreateRegistrationMaterialWithExemptionsAsync(It.IsAny<RegistrationMaterial>(), 
+            .Setup(r => r.CreateRegistrationMaterialWithExemptionsAsync(It.IsAny<RegistrationMaterial>(),
             It.IsAny<List<MaterialExemptionReference>>()))
             .Returns(Task.CompletedTask)
             .Verifiable();
@@ -57,11 +84,10 @@ public class CreateRegistrationMaterialAndExemptionReferencesHandlerTests
 
         // Assert  
         _repositoryMock.Verify();
-        // Assert  
         _repositoryMock.Verify(r => r.CreateRegistrationMaterialWithExemptionsAsync(
-            It.IsAny<RegistrationMaterial>(),
-            It.IsAny<List<MaterialExemptionReference>>()),
-            Times.Once);        
+            mappedMaterial,
+            mappedExemptions),
+            Times.Once);
     }
     
     [TestMethod]
@@ -85,7 +111,7 @@ public class CreateRegistrationMaterialAndExemptionReferencesHandlerTests
             CreatedDate = DateTime.UtcNow.AddDays(-2)
         };
 
-        var expectedExemptions = new List<MaterialExemptionReferenceRequest>
+        var expectedExemptions = new List<MaterialExemptionReferenceDto>
         {
             new() { ReferenceNumber = "EX-001" },
             new() { ReferenceNumber = "EX-002" }
@@ -97,8 +123,34 @@ public class CreateRegistrationMaterialAndExemptionReferencesHandlerTests
             MaterialExemptionReferences = expectedExemptions
         };
 
+        var mappedMaterial = new RegistrationMaterial
+        {
+            MaterialId = expectedMaterial.MaterialId,
+            StatusId = expectedMaterial.StatusId,
+            PermitTypeId = expectedMaterial.PermitTypeId,
+            PPCReprocessingCapacityTonne = expectedMaterial.PPCReprocessingCapacityTonne,
+            WasteManagementReprocessingCapacityTonne = expectedMaterial.WasteManagementReprocessingCapacityTonne,
+            InstallationReprocessingTonne = expectedMaterial.InstallationReprocessingTonne,
+            EnvironmentalPermitWasteManagementTonne = expectedMaterial.EnvironmentalPermitWasteManagementTonne,
+            MaximumReprocessingCapacityTonne = expectedMaterial.MaximumReprocessingCapacityTonne,
+            IsMaterialRegistered = expectedMaterial.IsMaterialRegistered,
+            CreatedDate = expectedMaterial.CreatedDate
+        };
+
+        var mappedExemptions = expectedExemptions
+            .Select(dto => new MaterialExemptionReference { ReferenceNo = dto.ReferenceNumber })
+            .ToList();
+
         RegistrationMaterial actualMaterial = null;
         List<MaterialExemptionReference> actualExemptions = null;
+
+        _mapperMock
+            .Setup(m => m.Map<RegistrationMaterial>(expectedMaterial))
+            .Returns(mappedMaterial);
+
+        _mapperMock
+            .Setup(m => m.Map<List<MaterialExemptionReference>>(expectedExemptions))
+            .Returns(mappedExemptions);
 
         _repositoryMock
             .Setup(r => r.CreateRegistrationMaterialWithExemptionsAsync(
@@ -115,8 +167,8 @@ public class CreateRegistrationMaterialAndExemptionReferencesHandlerTests
         await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        Assert.IsNotNull(actualMaterial);              
-        Assert.AreEqual(command.RegistrationMaterial.MaterialId, actualMaterial.MaterialId);        
+        Assert.IsNotNull(actualMaterial);
+        Assert.AreEqual(command.RegistrationMaterial.MaterialId, actualMaterial.MaterialId);
         Assert.AreEqual(command.RegistrationMaterial.StatusId, actualMaterial.StatusId);
         Assert.AreEqual(command.RegistrationMaterial.PermitTypeId, actualMaterial.PermitTypeId);
         Assert.AreEqual(command.RegistrationMaterial.PPCReprocessingCapacityTonne, actualMaterial.PPCReprocessingCapacityTonne);
@@ -129,9 +181,9 @@ public class CreateRegistrationMaterialAndExemptionReferencesHandlerTests
 
         Assert.IsNotNull(actualExemptions);
         Assert.AreEqual(expectedExemptions.Count, actualExemptions.Count);
-        
+
         for (int i = 0; i < expectedExemptions.Count; i++)
-        {           
+        {
             Assert.AreEqual(expectedExemptions[i].ReferenceNumber, actualExemptions[i].ReferenceNo);
         }
     }

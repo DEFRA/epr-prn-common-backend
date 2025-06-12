@@ -427,7 +427,7 @@ public class RegistrationMaterialControllerTests
             {
                 MaterialName = "Test Material"
             },
-            MaterialExemptionReferences = new List<MaterialExemptionReferenceRequest>()
+            MaterialExemptionReferences = new List<MaterialExemptionReferenceDto>()
         };
 
         _mediatorMock

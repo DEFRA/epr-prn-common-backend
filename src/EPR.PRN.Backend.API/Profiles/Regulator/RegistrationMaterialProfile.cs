@@ -192,6 +192,24 @@ public class RegistrationMaterialProfile : Profile
            .ForMember(dest => dest.RegulatorApplicationTaskStatusId, opt => opt.MapFrom(src => GetApplicationTaskExternalId(src.Tasks, RegulatorTaskNames.CheckRegistrationStatus)))
            .ForMember(dest => dest.TaskStatus, opt => opt.MapFrom(src => GetApplicationTaskStatus(src.Tasks, RegulatorTaskNames.CheckRegistrationStatus)))
            .ForMember(dest => dest.QueryNotes, opt => opt.MapFrom(src => GetApplicationTaskNotes(src.Tasks, RegulatorTaskNames.CheckRegistrationStatus)));
+
+        CreateMap<RegistrationMaterialDto, RegistrationMaterial>()
+           .ForMember(dest => dest.Id, opt => opt.Ignore())
+           .ForMember(dest => dest.RegistrationId, opt => opt.Ignore())
+           .ForMember(dest => dest.Status, opt => opt.Ignore())
+           .ForMember(dest => dest.DeterminationDate, opt => opt.Ignore())
+           .ForMember(dest => dest.Accreditations, opt => opt.Ignore())
+           .ForMember(dest => dest.MaterialId, opt => opt.MapFrom(src => src.MaterialId))
+           .ForMember(dest => dest.StatusId, opt => opt.MapFrom(src => src.StatusId))
+           .ForMember(dest => dest.StatusUpdatedDate, opt => opt.MapFrom(src => src.StatusUpdatedDate ?? DateTime.UtcNow))
+           .ForMember(dest => dest.PermitTypeId, opt => opt.MapFrom(src => src.PermitTypeId))
+           .ForMember(dest => dest.PPCReprocessingCapacityTonne, opt => opt.MapFrom(src => src.PPCReprocessingCapacityTonne))
+           .ForMember(dest => dest.WasteManagementReprocessingCapacityTonne, opt => opt.MapFrom(src => src.WasteManagementReprocessingCapacityTonne))
+           .ForMember(dest => dest.InstallationReprocessingTonne, opt => opt.MapFrom(src => src.InstallationReprocessingTonne))
+           .ForMember(dest => dest.EnvironmentalPermitWasteManagementTonne, opt => opt.MapFrom(src => src.EnvironmentalPermitWasteManagementTonne))
+           .ForMember(dest => dest.MaximumReprocessingCapacityTonne, opt => opt.MapFrom(src => src.MaximumReprocessingCapacityTonne))
+           .ForMember(dest => dest.IsMaterialRegistered, opt => opt.MapFrom(src => src.IsMaterialRegistered))
+           .ForMember(dest => dest.CreatedDate, opt => opt.MapFrom(src => src.CreatedDate));                  
     }
 
     private List<QueryNoteDto> GetRegistrationTaskNotes(List<RegulatorRegistrationTaskStatus>? srcTasks, string taskName)

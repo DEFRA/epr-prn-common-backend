@@ -158,8 +158,7 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
         await eprContext.RegistrationMaterials.AddAsync(registrationMaterial);
 
         foreach (var exemption in exemptionReferences)
-        {
-            exemption.RegistrationMaterialId = registrationMaterial.Id;
+        {            
             exemption.RegistrationMaterial = registrationMaterial;
         }
 
