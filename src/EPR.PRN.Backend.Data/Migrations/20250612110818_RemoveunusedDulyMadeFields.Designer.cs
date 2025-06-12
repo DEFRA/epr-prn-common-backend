@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EPR.PRN.Backend.Data.Migrations
 {
     [DbContext(typeof(EprContext))]
-    [Migration("20250610163320_RemoveunusedDulyMadeFields")]
+    [Migration("20250612110818_RemoveunusedDulyMadeFields")]
     partial class RemoveunusedDulyMadeFields
     {
         /// <inheritdoc />

@@ -126,7 +126,7 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
                 ExternalId = Guid.NewGuid(),
                 RegulatorTaskId = taskId,
                 StatusCreatedDate = DateTime.UtcNow,
-                StatusCreatedBy= DulyMadeBy               
+                StatusCreatedBy = dulyMadeBy
             };
             await eprContext.RegulatorApplicationTaskStatus.AddAsync(taskStatus);
         }
