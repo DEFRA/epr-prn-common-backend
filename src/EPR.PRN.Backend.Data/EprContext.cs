@@ -269,10 +269,11 @@ namespace EPR.PRN.Backend.Data
                 base.OnModelCreating(modelBuilder);
 
             modelBuilder.Entity<CarrierBrokerDealerPermit>()
-                .HasOne(p => p.Registration)
+                .HasOne<Registration>()
                 .WithMany()
-                .HasForeignKey(p => p.RegistrationId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .HasForeignKey("RegistrationId")
+                .OnDelete(DeleteBehavior.NoAction);
+
 
         }
 

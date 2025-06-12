@@ -27,8 +27,7 @@ namespace EPR.PRN.Backend.Data.Migrations
                     CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    UpdatedOn = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    RegistrationId1 = table.Column<int>(type: "int", nullable: true)
+                    UpdatedOn = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -37,12 +36,6 @@ namespace EPR.PRN.Backend.Data.Migrations
                         name: "FK_Public.CarrierBrokerDealerPermits_Public.Registration_RegistrationId",
                         column: x => x.RegistrationId,
                         principalTable: "Public.Registration",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Public.CarrierBrokerDealerPermits_Public.Registration_RegistrationId1",
-                        column: x => x.RegistrationId1,
-                        principalTable: "Public.Registration",
                         principalColumn: "Id");
                 });
 
@@ -50,11 +43,6 @@ namespace EPR.PRN.Backend.Data.Migrations
                 name: "IX_Public.CarrierBrokerDealerPermits_RegistrationId",
                 table: "Public.CarrierBrokerDealerPermits",
                 column: "RegistrationId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Public.CarrierBrokerDealerPermits_RegistrationId1",
-                table: "Public.CarrierBrokerDealerPermits",
-                column: "RegistrationId1");
         }
 
         /// <inheritdoc />

@@ -1077,9 +1077,6 @@ namespace EPR.PRN.Backend.Data.Migrations
                     b.Property<int>("RegistrationId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("RegistrationId1")
-                        .HasColumnType("int");
-
                     b.Property<Guid>("UpdatedBy")
                         .HasColumnType("uniqueidentifier");
 
@@ -1104,8 +1101,6 @@ namespace EPR.PRN.Backend.Data.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("RegistrationId");
-
-                    b.HasIndex("RegistrationId1");
 
                     b.ToTable("Public.CarrierBrokerDealerPermits");
                 });
@@ -2593,17 +2588,11 @@ namespace EPR.PRN.Backend.Data.Migrations
 
             modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.CarrierBrokerDealerPermit", b =>
                 {
-                    b.HasOne("EPR.PRN.Backend.Data.DataModels.Registrations.Registration", "Registration")
+                    b.HasOne("EPR.PRN.Backend.Data.DataModels.Registrations.Registration", null)
                         .WithMany()
                         .HasForeignKey("RegistrationId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
-
-                    b.HasOne("EPR.PRN.Backend.Data.DataModels.Registrations.Registration", null)
-                        .WithMany("CarrierBrokerDealerPermits")
-                        .HasForeignKey("RegistrationId1");
-
-                    b.Navigation("Registration");
                 });
 
             modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.DeterminationDate", b =>
@@ -2927,8 +2916,6 @@ namespace EPR.PRN.Backend.Data.Migrations
             modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.Registration", b =>
                 {
                     b.Navigation("AccreditationTasks");
-
-                    b.Navigation("CarrierBrokerDealerPermits");
 
                     b.Navigation("Materials");
 
