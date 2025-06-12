@@ -2705,42 +2705,6 @@ IF NOT EXISTS (
     WHERE [MigrationId] = N'20250530121131_Accreditation_Updates'
 )
 BEGIN
-    DROP INDEX [IX_Public.RegulatorAccreditationTaskStatus_AccreditationId] ON [Public.RegulatorAccreditationTaskStatus];
-    DECLARE @var17 sysname;
-    SELECT @var17 = [d].[name]
-    FROM [sys].[default_constraints] [d]
-    INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
-    WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Public.RegulatorAccreditationTaskStatus]') AND [c].[name] = N'AccreditationId');
-    IF @var17 IS NOT NULL EXEC(N'ALTER TABLE [Public.RegulatorAccreditationTaskStatus] DROP CONSTRAINT [' + @var17 + '];');
-    EXEC(N'UPDATE [Public.RegulatorAccreditationTaskStatus] SET [AccreditationId] = 0 WHERE [AccreditationId] IS NULL');
-    ALTER TABLE [Public.RegulatorAccreditationTaskStatus] ALTER COLUMN [AccreditationId] int NOT NULL;
-    ALTER TABLE [Public.RegulatorAccreditationTaskStatus] ADD DEFAULT 0 FOR [AccreditationId];
-    CREATE INDEX [IX_Public.RegulatorAccreditationTaskStatus_AccreditationId] ON [Public.RegulatorAccreditationTaskStatus] ([AccreditationId]);
-END;
-GO
-
-IF NOT EXISTS (
-    SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250530121131_Accreditation_Updates'
-)
-BEGIN
-    DECLARE @var18 sysname;
-    SELECT @var18 = [d].[name]
-    FROM [sys].[default_constraints] [d]
-    INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
-    WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Public.AccreditationDeterminationDate]') AND [c].[name] = N'DeterminationDate');
-    IF @var18 IS NOT NULL EXEC(N'ALTER TABLE [Public.AccreditationDeterminationDate] DROP CONSTRAINT [' + @var18 + '];');
-    EXEC(N'UPDATE [Public.AccreditationDeterminationDate] SET [DeterminationDate] = ''0001-01-01T00:00:00.0000000'' WHERE [DeterminationDate] IS NULL');
-    ALTER TABLE [Public.AccreditationDeterminationDate] ALTER COLUMN [DeterminationDate] datetime2 NOT NULL;
-    ALTER TABLE [Public.AccreditationDeterminationDate] ADD DEFAULT '0001-01-01T00:00:00.0000000' FOR [DeterminationDate];
-END;
-GO
-
-IF NOT EXISTS (
-    SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250530121131_Accreditation_Updates'
-)
-BEGIN
     IF EXISTS (SELECT * FROM [sys].[identity_columns] WHERE [name] IN (N'Id', N'ApplicationTypeId', N'IsMaterialSpecific', N'JourneyTypeId', N'Name') AND [object_id] = OBJECT_ID(N'[Lookup.RegulatorTask]'))
         SET IDENTITY_INSERT [Lookup.RegulatorTask] ON;
     EXEC(N'INSERT INTO [Lookup.RegulatorTask] ([Id], [ApplicationTypeId], [IsMaterialSpecific], [JourneyTypeId], [Name])
@@ -3060,12 +3024,12 @@ IF NOT EXISTS (
     WHERE [MigrationId] = N'20250602134517_CheckRegistrationStatus'
 )
 BEGIN
-    DECLARE @var19 sysname;
-    SELECT @var19 = [d].[name]
+    DECLARE @var17 sysname;
+    SELECT @var17 = [d].[name]
     FROM [sys].[default_constraints] [d]
     INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
     WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Public.DulyMade]') AND [c].[name] = N'DeterminationDate');
-    IF @var19 IS NOT NULL EXEC(N'ALTER TABLE [Public.DulyMade] DROP CONSTRAINT [' + @var19 + '];');
+    IF @var17 IS NOT NULL EXEC(N'ALTER TABLE [Public.DulyMade] DROP CONSTRAINT [' + @var17 + '];');
     ALTER TABLE [Public.DulyMade] DROP COLUMN [DeterminationDate];
 END;
 GO
@@ -3075,12 +3039,12 @@ IF NOT EXISTS (
     WHERE [MigrationId] = N'20250602134517_CheckRegistrationStatus'
 )
 BEGIN
-    DECLARE @var20 sysname;
-    SELECT @var20 = [d].[name]
+    DECLARE @var18 sysname;
+    SELECT @var18 = [d].[name]
     FROM [sys].[default_constraints] [d]
     INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
     WHERE ([d].[parent_object_id] = OBJECT_ID(N'[public.FileUpload]') AND [c].[name] = N'UpdatedBy');
-    IF @var20 IS NOT NULL EXEC(N'ALTER TABLE [public.FileUpload] DROP CONSTRAINT [' + @var20 + '];');
+    IF @var18 IS NOT NULL EXEC(N'ALTER TABLE [public.FileUpload] DROP CONSTRAINT [' + @var18 + '];');
     ALTER TABLE [public.FileUpload] ALTER COLUMN [UpdatedBy] nvarchar(50) NOT NULL;
 END;
 GO
@@ -3140,12 +3104,12 @@ IF NOT EXISTS (
     WHERE [MigrationId] = N'20250603090928_AddNoteTable'
 )
 BEGIN
-    DECLARE @var21 sysname;
-    SELECT @var21 = [d].[name]
+    DECLARE @var19 sysname;
+    SELECT @var19 = [d].[name]
     FROM [sys].[default_constraints] [d]
     INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
     WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Public.RegulatorRegistrationTaskStatus]') AND [c].[name] = N'Comments');
-    IF @var21 IS NOT NULL EXEC(N'ALTER TABLE [Public.RegulatorRegistrationTaskStatus] DROP CONSTRAINT [' + @var21 + '];');
+    IF @var19 IS NOT NULL EXEC(N'ALTER TABLE [Public.RegulatorRegistrationTaskStatus] DROP CONSTRAINT [' + @var19 + '];');
     ALTER TABLE [Public.RegulatorRegistrationTaskStatus] DROP COLUMN [Comments];
 END;
 GO
@@ -3155,12 +3119,12 @@ IF NOT EXISTS (
     WHERE [MigrationId] = N'20250603090928_AddNoteTable'
 )
 BEGIN
-    DECLARE @var22 sysname;
-    SELECT @var22 = [d].[name]
+    DECLARE @var20 sysname;
+    SELECT @var20 = [d].[name]
     FROM [sys].[default_constraints] [d]
     INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
     WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Public.RegulatorApplicationTaskStatus]') AND [c].[name] = N'Comments');
-    IF @var22 IS NOT NULL EXEC(N'ALTER TABLE [Public.RegulatorApplicationTaskStatus] DROP CONSTRAINT [' + @var22 + '];');
+    IF @var20 IS NOT NULL EXEC(N'ALTER TABLE [Public.RegulatorApplicationTaskStatus] DROP CONSTRAINT [' + @var20 + '];');
     ALTER TABLE [Public.RegulatorApplicationTaskStatus] DROP COLUMN [Comments];
 END;
 GO
@@ -3270,12 +3234,12 @@ IF NOT EXISTS (
     WHERE [MigrationId] = N'20250603161139_RemoveRegistrationTaskStatusId'
 )
 BEGIN
-    DECLARE @var23 sysname;
-    SELECT @var23 = [d].[name]
+    DECLARE @var21 sysname;
+    SELECT @var21 = [d].[name]
     FROM [sys].[default_constraints] [d]
     INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
     WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Public.RegistrationTaskStatusQueryNote]') AND [c].[name] = N'RegistrationTaskStatusId');
-    IF @var23 IS NOT NULL EXEC(N'ALTER TABLE [Public.RegistrationTaskStatusQueryNote] DROP CONSTRAINT [' + @var23 + '];');
+    IF @var21 IS NOT NULL EXEC(N'ALTER TABLE [Public.RegistrationTaskStatusQueryNote] DROP CONSTRAINT [' + @var21 + '];');
     ALTER TABLE [Public.RegistrationTaskStatusQueryNote] DROP COLUMN [RegistrationTaskStatusId];
 END;
 GO
@@ -3435,13 +3399,43 @@ IF NOT EXISTS (
     WHERE [MigrationId] = N'20250605124846_RemoveColumnsFromAccreditationDulyMade'
 )
 BEGIN
+    DECLARE @var22 sysname;
+    SELECT @var22 = [d].[name]
+    FROM [sys].[default_constraints] [d]
+    INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+    WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Public.AccreditationDulyMade]') AND [c].[name] = N'DeterminationDate');
+    IF @var22 IS NOT NULL EXEC(N'ALTER TABLE [Public.AccreditationDulyMade] DROP CONSTRAINT [' + @var22 + '];');
+    ALTER TABLE [Public.AccreditationDulyMade] DROP COLUMN [DeterminationDate];
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250605124846_RemoveColumnsFromAccreditationDulyMade'
+)
+BEGIN
+    DECLARE @var23 sysname;
+    SELECT @var23 = [d].[name]
+    FROM [sys].[default_constraints] [d]
+    INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+    WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Public.AccreditationDulyMade]') AND [c].[name] = N'DeterminationNote');
+    IF @var23 IS NOT NULL EXEC(N'ALTER TABLE [Public.AccreditationDulyMade] DROP CONSTRAINT [' + @var23 + '];');
+    ALTER TABLE [Public.AccreditationDulyMade] DROP COLUMN [DeterminationNote];
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250605124846_RemoveColumnsFromAccreditationDulyMade'
+)
+BEGIN
     DECLARE @var24 sysname;
     SELECT @var24 = [d].[name]
     FROM [sys].[default_constraints] [d]
     INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
-    WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Public.AccreditationDulyMade]') AND [c].[name] = N'DeterminationDate');
+    WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Public.AccreditationDulyMade]') AND [c].[name] = N'DeterminationUpdatedBy');
     IF @var24 IS NOT NULL EXEC(N'ALTER TABLE [Public.AccreditationDulyMade] DROP CONSTRAINT [' + @var24 + '];');
-    ALTER TABLE [Public.AccreditationDulyMade] DROP COLUMN [DeterminationDate];
+    ALTER TABLE [Public.AccreditationDulyMade] DROP COLUMN [DeterminationUpdatedBy];
 END;
 GO
 
@@ -3454,9 +3448,9 @@ BEGIN
     SELECT @var25 = [d].[name]
     FROM [sys].[default_constraints] [d]
     INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
-    WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Public.AccreditationDulyMade]') AND [c].[name] = N'DeterminationNote');
+    WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Public.AccreditationDulyMade]') AND [c].[name] = N'DeterminationUpdatedDate');
     IF @var25 IS NOT NULL EXEC(N'ALTER TABLE [Public.AccreditationDulyMade] DROP CONSTRAINT [' + @var25 + '];');
-    ALTER TABLE [Public.AccreditationDulyMade] DROP COLUMN [DeterminationNote];
+    ALTER TABLE [Public.AccreditationDulyMade] DROP COLUMN [DeterminationUpdatedDate];
 END;
 GO
 
@@ -3469,38 +3463,8 @@ BEGIN
     SELECT @var26 = [d].[name]
     FROM [sys].[default_constraints] [d]
     INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
-    WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Public.AccreditationDulyMade]') AND [c].[name] = N'DeterminationUpdatedBy');
-    IF @var26 IS NOT NULL EXEC(N'ALTER TABLE [Public.AccreditationDulyMade] DROP CONSTRAINT [' + @var26 + '];');
-    ALTER TABLE [Public.AccreditationDulyMade] DROP COLUMN [DeterminationUpdatedBy];
-END;
-GO
-
-IF NOT EXISTS (
-    SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250605124846_RemoveColumnsFromAccreditationDulyMade'
-)
-BEGIN
-    DECLARE @var27 sysname;
-    SELECT @var27 = [d].[name]
-    FROM [sys].[default_constraints] [d]
-    INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
-    WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Public.AccreditationDulyMade]') AND [c].[name] = N'DeterminationUpdatedDate');
-    IF @var27 IS NOT NULL EXEC(N'ALTER TABLE [Public.AccreditationDulyMade] DROP CONSTRAINT [' + @var27 + '];');
-    ALTER TABLE [Public.AccreditationDulyMade] DROP COLUMN [DeterminationUpdatedDate];
-END;
-GO
-
-IF NOT EXISTS (
-    SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250605124846_RemoveColumnsFromAccreditationDulyMade'
-)
-BEGIN
-    DECLARE @var28 sysname;
-    SELECT @var28 = [d].[name]
-    FROM [sys].[default_constraints] [d]
-    INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
     WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Public.AccreditationDulyMade]') AND [c].[name] = N'DulyMadeNote');
-    IF @var28 IS NOT NULL EXEC(N'ALTER TABLE [Public.AccreditationDulyMade] DROP CONSTRAINT [' + @var28 + '];');
+    IF @var26 IS NOT NULL EXEC(N'ALTER TABLE [Public.AccreditationDulyMade] DROP CONSTRAINT [' + @var26 + '];');
     ALTER TABLE [Public.AccreditationDulyMade] DROP COLUMN [DulyMadeNote];
 END;
 GO
