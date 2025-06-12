@@ -5,9 +5,8 @@ namespace EPR.PRN.Backend.API.Dto.Regulator;
 [ExcludeFromCodeCoverage]
 public class RegistrationMaterialDto
 {
-    public int Id { get; set; } 
-    public Guid ExternalId { get; set; }
-    public int RegistrationId { get; set; }
+    public Guid Id { get; set; } 
+    public Guid RegistrationId { get; set; }
     public required string MaterialName { get; set; }
     public int MaterialId { get; set; } 
     public string? Status { get; set; }
@@ -27,4 +26,5 @@ public class RegistrationMaterialDto
     public decimal MaximumReprocessingCapacityTonne { get; set; }
     public bool IsMaterialRegistered { get; set; }
     public DateTime CreatedDate { get; set; }
+    public List<AccreditationDto> Accreditations { get; set; } = [];
 }

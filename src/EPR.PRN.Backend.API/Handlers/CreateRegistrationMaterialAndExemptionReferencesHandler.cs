@@ -12,8 +12,8 @@ public class CreateRegistrationMaterialAndExemptionReferencesHandler(IRegistrati
     {
         var registrationMaterial = new RegistrationMaterial
         {
-            ExternalId = command.RegistrationMaterial.ExternalId,
-            RegistrationId = command.RegistrationMaterial.RegistrationId,
+            ExternalId = Guid.NewGuid(),
+            RegistrationId = command.RegistrationId,
             MaterialId = command.RegistrationMaterial.MaterialId,
             StatusId = command.RegistrationMaterial.StatusId,            
             StatusUpdatedDate = command.RegistrationMaterial.StatusUpdatedDate ?? DateTime.UtcNow,            
@@ -29,8 +29,8 @@ public class CreateRegistrationMaterialAndExemptionReferencesHandler(IRegistrati
 
         var exemptionReferences = command.MaterialExemptionReferences?.Select(x => new MaterialExemptionReference
         {
-            ExternalId = x.ExternalId,
-            RegistrationMaterialId = x.RegistrationMaterialId,
+            ExternalId = registrationMaterial.ExternalId,
+            RegistrationMaterialId = registrationMaterial.MaterialId,
             ReferenceNo = x.ReferenceNumber
         }).ToList() ?? new List<MaterialExemptionReference>();
 

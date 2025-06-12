@@ -28,9 +28,8 @@ public class CreateRegistrationMaterialAndExemptionReferencesHandlerTests
         var command = new CreateRegistrationMaterialAndExemptionReferencesCommand
         {
             RegistrationMaterial = new RegistrationMaterialDto
-            {
-                ExternalId = Guid.NewGuid(),
-                RegistrationId = 1,
+            {                
+                RegistrationId = Guid.NewGuid(),
                 MaterialId = 10,
                 MaterialName = "SampleMaterial",
                 StatusId = 2,
@@ -71,8 +70,7 @@ public class CreateRegistrationMaterialAndExemptionReferencesHandlerTests
         // Arrange
         var expectedMaterial = new RegistrationMaterialDto
         {
-            ExternalId = Guid.NewGuid(),
-            RegistrationId = 42,
+            RegistrationId = Guid.NewGuid(),
             MaterialId = 99,
             MaterialName = "TestMaterial",
             StatusId = 5,
@@ -89,8 +87,8 @@ public class CreateRegistrationMaterialAndExemptionReferencesHandlerTests
 
         var expectedExemptions = new List<MaterialExemptionReferenceRequest>
         {
-            new() { ExternalId = expectedMaterial.ExternalId, RegistrationMaterialId = expectedMaterial.MaterialId, ReferenceNumber = "EX-001" },
-            new() { ExternalId = expectedMaterial.ExternalId, RegistrationMaterialId = expectedMaterial.MaterialId, ReferenceNumber = "EX-002" }
+            new() { ReferenceNumber = "EX-001" },
+            new() { ReferenceNumber = "EX-002" }
         };
 
         var command = new CreateRegistrationMaterialAndExemptionReferencesCommand
@@ -117,9 +115,7 @@ public class CreateRegistrationMaterialAndExemptionReferencesHandlerTests
         await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        Assert.IsNotNull(actualMaterial);
-        Assert.AreEqual(command.RegistrationMaterial.ExternalId, actualMaterial.ExternalId);
-        Assert.AreEqual(command.RegistrationMaterial.RegistrationId, actualMaterial.RegistrationId);
+        Assert.IsNotNull(actualMaterial);              
         Assert.AreEqual(command.RegistrationMaterial.MaterialId, actualMaterial.MaterialId);        
         Assert.AreEqual(command.RegistrationMaterial.StatusId, actualMaterial.StatusId);
         Assert.AreEqual(command.RegistrationMaterial.PermitTypeId, actualMaterial.PermitTypeId);
@@ -135,9 +131,7 @@ public class CreateRegistrationMaterialAndExemptionReferencesHandlerTests
         Assert.AreEqual(expectedExemptions.Count, actualExemptions.Count);
         
         for (int i = 0; i < expectedExemptions.Count; i++)
-        {
-            Assert.AreEqual(expectedExemptions[i].RegistrationMaterialId, actualExemptions[i].RegistrationMaterialId);
-            Assert.AreEqual(expectedExemptions[i].ExternalId, actualExemptions[i].ExternalId);
+        {           
             Assert.AreEqual(expectedExemptions[i].ReferenceNumber, actualExemptions[i].ReferenceNo);
         }
     }

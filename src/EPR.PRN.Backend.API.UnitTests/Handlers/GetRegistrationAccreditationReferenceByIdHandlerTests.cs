@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using EPR.PRN.Backend.API.Common.Enums;
-using EPR.PRN.Backend.API.Handlers;
+using EPR.PRN.Backend.API.Handlers.Regulator;
 using EPR.PRN.Backend.API.Queries;
 using EPR.PRN.Backend.Data.DataModels.Registrations;
 using EPR.PRN.Backend.Data.Interfaces.Regulator;
@@ -29,9 +29,9 @@ public class GetRegistrationAccreditationReferenceByIdHandlerTests
     {
         var material = CreateMaterial(ApplicationOrganisationType.Exporter, 1, "PLS");
 
-        _rmRepositoryMock.Setup(x => x.GetRegistrationMaterialById(1)).ReturnsAsync(material);
+        _rmRepositoryMock.Setup(x => x.GetRegistrationMaterialById(Guid.Parse("a9421fc1-a912-42ee-85a5-3e06408759a9"))).ReturnsAsync(material);
 
-        var result = await _handler.Handle(new GetRegistrationAccreditationReferenceByIdQuery { Id = 1 }, default);
+        var result = await _handler.Handle(new GetRegistrationAccreditationReferenceByIdQuery { Id = Guid.Parse("a9421fc1-a912-42ee-85a5-3e06408759a9") }, default);
 
         result.Should().NotBeNull();
         result.ApplicationType.Should().Be("E");
@@ -45,9 +45,9 @@ public class GetRegistrationAccreditationReferenceByIdHandlerTests
     {
         var material = CreateMaterial(ApplicationOrganisationType.Reprocessor, 2, "MTL");
 
-        _rmRepositoryMock.Setup(x => x.GetRegistrationMaterialById(1)).ReturnsAsync(material);
+        _rmRepositoryMock.Setup(x => x.GetRegistrationMaterialById(Guid.Parse("a9421fc1-a912-42ee-85a5-3e06408759a9"))).ReturnsAsync(material);
 
-        var result = await _handler.Handle(new GetRegistrationAccreditationReferenceByIdQuery { Id = 1 }, default);
+        var result = await _handler.Handle(new GetRegistrationAccreditationReferenceByIdQuery { Id = Guid.Parse("a9421fc1-a912-42ee-85a5-3e06408759a9") }, default);
 
         result.Should().NotBeNull();
         result.ApplicationType.Should().Be("R");
@@ -59,9 +59,9 @@ public class GetRegistrationAccreditationReferenceByIdHandlerTests
     [TestMethod]
     public async Task Handle_MaterialEntityIsNull_Throws()
     {
-        _rmRepositoryMock.Setup(x => x.GetRegistrationMaterialById(1)).ReturnsAsync((RegistrationMaterial)null!);
+        _rmRepositoryMock.Setup(x => x.GetRegistrationMaterialById(Guid.Parse("a9421fc1-a912-42ee-85a5-3e06408759a9"))).ReturnsAsync((RegistrationMaterial)null!);
 
-        var act = async () => await _handler.Handle(new GetRegistrationAccreditationReferenceByIdQuery { Id = 1 }, default);
+        var act = async () => await _handler.Handle(new GetRegistrationAccreditationReferenceByIdQuery { Id = Guid.Parse("a9421fc1-a912-42ee-85a5-3e06408759a9") }, default);
 
         await act.Should().ThrowAsync<InvalidOperationException>()
             .WithMessage("Material entity or its registration is null.");
@@ -71,9 +71,9 @@ public class GetRegistrationAccreditationReferenceByIdHandlerTests
     public async Task Handle_RegistrationIsNull_Throws()
     {
         var material = new RegistrationMaterial { Id = 1, Registration = null! };
-        _rmRepositoryMock.Setup(x => x.GetRegistrationMaterialById(1)).ReturnsAsync(material);
+        _rmRepositoryMock.Setup(x => x.GetRegistrationMaterialById(Guid.Parse("a9421fc1-a912-42ee-85a5-3e06408759a9"))).ReturnsAsync(material);
 
-        var act = async () => await _handler.Handle(new GetRegistrationAccreditationReferenceByIdQuery { Id = 1 }, default);
+        var act = async () => await _handler.Handle(new GetRegistrationAccreditationReferenceByIdQuery { Id = Guid.Parse("a9421fc1-a912-42ee-85a5-3e06408759a9") }, default);
 
         await act.Should().ThrowAsync<InvalidOperationException>()
             .WithMessage("Material entity or its registration is null.");
@@ -84,9 +84,9 @@ public class GetRegistrationAccreditationReferenceByIdHandlerTests
     {
         var material = CreateMaterial(ApplicationOrganisationType.Exporter, null, "PLS", businessAddressNull: true);
 
-        _rmRepositoryMock.Setup(x => x.GetRegistrationMaterialById(1)).ReturnsAsync(material);
+        _rmRepositoryMock.Setup(x => x.GetRegistrationMaterialById(Guid.Parse("a9421fc1-a912-42ee-85a5-3e06408759a9"))).ReturnsAsync(material);
 
-        var act = async () => await _handler.Handle(new GetRegistrationAccreditationReferenceByIdQuery { Id = 1 }, default);
+        var act = async () => await _handler.Handle(new GetRegistrationAccreditationReferenceByIdQuery { Id = Guid.Parse("a9421fc1-a912-42ee-85a5-3e06408759a9") }, default);
 
         await act.Should().ThrowAsync<InvalidOperationException>()
             .WithMessage("Business address NationId is null.");
@@ -97,9 +97,9 @@ public class GetRegistrationAccreditationReferenceByIdHandlerTests
     {
         var material = CreateMaterial(ApplicationOrganisationType.Exporter, null, "PLS");
 
-        _rmRepositoryMock.Setup(x => x.GetRegistrationMaterialById(1)).ReturnsAsync(material);
+        _rmRepositoryMock.Setup(x => x.GetRegistrationMaterialById(Guid.Parse("a9421fc1-a912-42ee-85a5-3e06408759a9"))).ReturnsAsync(material);
 
-        var act = async () => await _handler.Handle(new GetRegistrationAccreditationReferenceByIdQuery { Id = 1 }, default);
+        var act = async () => await _handler.Handle(new GetRegistrationAccreditationReferenceByIdQuery { Id = Guid.Parse("a9421fc1-a912-42ee-85a5-3e06408759a9") }, default);
 
         await act.Should().ThrowAsync<InvalidOperationException>()
             .WithMessage("Business address NationId is null.");
@@ -110,9 +110,9 @@ public class GetRegistrationAccreditationReferenceByIdHandlerTests
     {
         var material = CreateMaterial(ApplicationOrganisationType.Reprocessor, null, "MTL", reprocessingAddressNull: true);
 
-        _rmRepositoryMock.Setup(x => x.GetRegistrationMaterialById(1)).ReturnsAsync(material);
+        _rmRepositoryMock.Setup(x => x.GetRegistrationMaterialById(Guid.Parse("a9421fc1-a912-42ee-85a5-3e06408759a9"))).ReturnsAsync(material);
 
-        var act = async () => await _handler.Handle(new GetRegistrationAccreditationReferenceByIdQuery { Id = 1 }, default);
+        var act = async () => await _handler.Handle(new GetRegistrationAccreditationReferenceByIdQuery { Id = Guid.Parse("a9421fc1-a912-42ee-85a5-3e06408759a9") }, default);
 
         await act.Should().ThrowAsync<InvalidOperationException>()
             .WithMessage("Reprocessing site address NationId is null.");
@@ -123,9 +123,9 @@ public class GetRegistrationAccreditationReferenceByIdHandlerTests
     {
         var material = CreateMaterial(ApplicationOrganisationType.Reprocessor, null, "MTL");
 
-        _rmRepositoryMock.Setup(x => x.GetRegistrationMaterialById(1)).ReturnsAsync(material);
+        _rmRepositoryMock.Setup(x => x.GetRegistrationMaterialById(Guid.Parse("a9421fc1-a912-42ee-85a5-3e06408759a9"))).ReturnsAsync(material);
 
-        var act = async () => await _handler.Handle(new GetRegistrationAccreditationReferenceByIdQuery { Id = 1 }, default);
+        var act = async () => await _handler.Handle(new GetRegistrationAccreditationReferenceByIdQuery { Id = Guid.Parse("a9421fc1-a912-42ee-85a5-3e06408759a9") }, default);
 
         await act.Should().ThrowAsync<InvalidOperationException>()
             .WithMessage("Reprocessing site address NationId is null.");
