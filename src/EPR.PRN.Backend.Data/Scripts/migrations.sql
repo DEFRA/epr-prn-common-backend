@@ -3535,13 +3535,43 @@ IF NOT EXISTS (
     WHERE [MigrationId] = N'20250610163320_RemoveunusedDulyMadeFields'
 )
 BEGIN
+    DECLARE @var27 sysname;
+    SELECT @var27 = [d].[name]
+    FROM [sys].[default_constraints] [d]
+    INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+    WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Public.DulyMade]') AND [c].[name] = N'DeterminationNote');
+    IF @var27 IS NOT NULL EXEC(N'ALTER TABLE [Public.DulyMade] DROP CONSTRAINT [' + @var27 + '];');
+    ALTER TABLE [Public.DulyMade] DROP COLUMN [DeterminationNote];
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250610163320_RemoveunusedDulyMadeFields'
+)
+BEGIN
+    DECLARE @var28 sysname;
+    SELECT @var28 = [d].[name]
+    FROM [sys].[default_constraints] [d]
+    INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+    WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Public.DulyMade]') AND [c].[name] = N'DeterminationUpdatedBy');
+    IF @var28 IS NOT NULL EXEC(N'ALTER TABLE [Public.DulyMade] DROP CONSTRAINT [' + @var28 + '];');
+    ALTER TABLE [Public.DulyMade] DROP COLUMN [DeterminationUpdatedBy];
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250610163320_RemoveunusedDulyMadeFields'
+)
+BEGIN
     DECLARE @var29 sysname;
     SELECT @var29 = [d].[name]
     FROM [sys].[default_constraints] [d]
     INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
-    WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Public.DulyMade]') AND [c].[name] = N'DeterminationNote');
+    WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Public.DulyMade]') AND [c].[name] = N'DeterminationUpdatedDate');
     IF @var29 IS NOT NULL EXEC(N'ALTER TABLE [Public.DulyMade] DROP CONSTRAINT [' + @var29 + '];');
-    ALTER TABLE [Public.DulyMade] DROP COLUMN [DeterminationNote];
+    ALTER TABLE [Public.DulyMade] DROP COLUMN [DeterminationUpdatedDate];
 END;
 GO
 
@@ -3554,9 +3584,9 @@ BEGIN
     SELECT @var30 = [d].[name]
     FROM [sys].[default_constraints] [d]
     INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
-    WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Public.DulyMade]') AND [c].[name] = N'DeterminationUpdatedBy');
+    WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Public.DulyMade]') AND [c].[name] = N'DulyMadeNote');
     IF @var30 IS NOT NULL EXEC(N'ALTER TABLE [Public.DulyMade] DROP CONSTRAINT [' + @var30 + '];');
-    ALTER TABLE [Public.DulyMade] DROP COLUMN [DeterminationUpdatedBy];
+    ALTER TABLE [Public.DulyMade] DROP COLUMN [DulyMadeNote];
 END;
 GO
 
@@ -3569,9 +3599,9 @@ BEGIN
     SELECT @var31 = [d].[name]
     FROM [sys].[default_constraints] [d]
     INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
-    WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Public.DulyMade]') AND [c].[name] = N'DeterminationUpdatedDate');
+    WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Public.DulyMade]') AND [c].[name] = N'TaskStatusId');
     IF @var31 IS NOT NULL EXEC(N'ALTER TABLE [Public.DulyMade] DROP CONSTRAINT [' + @var31 + '];');
-    ALTER TABLE [Public.DulyMade] DROP COLUMN [DeterminationUpdatedDate];
+    ALTER TABLE [Public.DulyMade] DROP COLUMN [TaskStatusId];
 END;
 GO
 
@@ -3584,9 +3614,11 @@ BEGIN
     SELECT @var32 = [d].[name]
     FROM [sys].[default_constraints] [d]
     INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
-    WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Public.DulyMade]') AND [c].[name] = N'DulyMadeNote');
+    WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Public.DulyMade]') AND [c].[name] = N'DulyMadeDate');
     IF @var32 IS NOT NULL EXEC(N'ALTER TABLE [Public.DulyMade] DROP CONSTRAINT [' + @var32 + '];');
-    ALTER TABLE [Public.DulyMade] DROP COLUMN [DulyMadeNote];
+    EXEC(N'UPDATE [Public.DulyMade] SET [DulyMadeDate] = ''0001-01-01T00:00:00.0000000'' WHERE [DulyMadeDate] IS NULL');
+    ALTER TABLE [Public.DulyMade] ALTER COLUMN [DulyMadeDate] datetime2 NOT NULL;
+    ALTER TABLE [Public.DulyMade] ADD DEFAULT '0001-01-01T00:00:00.0000000' FOR [DulyMadeDate];
 END;
 GO
 
@@ -3599,9 +3631,11 @@ BEGIN
     SELECT @var33 = [d].[name]
     FROM [sys].[default_constraints] [d]
     INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
-    WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Public.DulyMade]') AND [c].[name] = N'TaskStatusId');
+    WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Public.DulyMade]') AND [c].[name] = N'DulyMadeBy');
     IF @var33 IS NOT NULL EXEC(N'ALTER TABLE [Public.DulyMade] DROP CONSTRAINT [' + @var33 + '];');
-    ALTER TABLE [Public.DulyMade] DROP COLUMN [TaskStatusId];
+    EXEC(N'UPDATE [Public.DulyMade] SET [DulyMadeBy] = ''00000000-0000-0000-0000-000000000000'' WHERE [DulyMadeBy] IS NULL');
+    ALTER TABLE [Public.DulyMade] ALTER COLUMN [DulyMadeBy] uniqueidentifier NOT NULL;
+    ALTER TABLE [Public.DulyMade] ADD DEFAULT '00000000-0000-0000-0000-000000000000' FOR [DulyMadeBy];
 END;
 GO
 
@@ -3614,42 +3648,8 @@ BEGIN
     SELECT @var34 = [d].[name]
     FROM [sys].[default_constraints] [d]
     INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
-    WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Public.DulyMade]') AND [c].[name] = N'DulyMadeDate');
-    IF @var34 IS NOT NULL EXEC(N'ALTER TABLE [Public.DulyMade] DROP CONSTRAINT [' + @var34 + '];');
-    EXEC(N'UPDATE [Public.DulyMade] SET [DulyMadeDate] = ''0001-01-01T00:00:00.0000000'' WHERE [DulyMadeDate] IS NULL');
-    ALTER TABLE [Public.DulyMade] ALTER COLUMN [DulyMadeDate] datetime2 NOT NULL;
-    ALTER TABLE [Public.DulyMade] ADD DEFAULT '0001-01-01T00:00:00.0000000' FOR [DulyMadeDate];
-END;
-GO
-
-IF NOT EXISTS (
-    SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250610163320_RemoveunusedDulyMadeFields'
-)
-BEGIN
-    DECLARE @var35 sysname;
-    SELECT @var35 = [d].[name]
-    FROM [sys].[default_constraints] [d]
-    INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
-    WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Public.DulyMade]') AND [c].[name] = N'DulyMadeBy');
-    IF @var35 IS NOT NULL EXEC(N'ALTER TABLE [Public.DulyMade] DROP CONSTRAINT [' + @var35 + '];');
-    EXEC(N'UPDATE [Public.DulyMade] SET [DulyMadeBy] = ''00000000-0000-0000-0000-000000000000'' WHERE [DulyMadeBy] IS NULL');
-    ALTER TABLE [Public.DulyMade] ALTER COLUMN [DulyMadeBy] uniqueidentifier NOT NULL;
-    ALTER TABLE [Public.DulyMade] ADD DEFAULT '00000000-0000-0000-0000-000000000000' FOR [DulyMadeBy];
-END;
-GO
-
-IF NOT EXISTS (
-    SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250610163320_RemoveunusedDulyMadeFields'
-)
-BEGIN
-    DECLARE @var36 sysname;
-    SELECT @var36 = [d].[name]
-    FROM [sys].[default_constraints] [d]
-    INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
     WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Public.DeterminationDate]') AND [c].[name] = N'DeterminateDate');
-    IF @var36 IS NOT NULL EXEC(N'ALTER TABLE [Public.DeterminationDate] DROP CONSTRAINT [' + @var36 + '];');
+    IF @var34 IS NOT NULL EXEC(N'ALTER TABLE [Public.DeterminationDate] DROP CONSTRAINT [' + @var34 + '];');
     EXEC(N'UPDATE [Public.DeterminationDate] SET [DeterminateDate] = ''0001-01-01T00:00:00.0000000'' WHERE [DeterminateDate] IS NULL');
     ALTER TABLE [Public.DeterminationDate] ALTER COLUMN [DeterminateDate] datetime2 NOT NULL;
     ALTER TABLE [Public.DeterminationDate] ADD DEFAULT '0001-01-01T00:00:00.0000000' FOR [DeterminateDate];
