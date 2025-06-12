@@ -3509,3 +3509,65 @@ GO
 COMMIT;
 GO
 
+BEGIN TRANSACTION;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250612131301_AddTableCarrierBrokerDealerPermits'
+)
+BEGIN
+    CREATE TABLE [Public.CarrierBrokerDealerPermits] (
+        [Id] int NOT NULL IDENTITY,
+        [ExternalId] uniqueidentifier NOT NULL,
+        [RegistrationId] int NOT NULL,
+        [WasteCarrierBrokerDealerRegistrstion] varchar(20) NOT NULL,
+        [WasteManagementorEnvironmentPermitNumber] varchar(20) NOT NULL,
+        [InstallationPermitorPPCNumber] varchar(20) NOT NULL,
+        [WasteExemptionReference] varchar(150) NOT NULL,
+        [RegisteredWasteCarrierBrokerDealerFlag] bit NOT NULL,
+        [CreatedBy] uniqueidentifier NOT NULL,
+        [CreatedOn] datetime2 NOT NULL,
+        [UpdatedBy] uniqueidentifier NOT NULL,
+        [UpdatedOn] datetime2 NULL,
+        [RegistrationId1] int NULL,
+        CONSTRAINT [PK_Public.CarrierBrokerDealerPermits] PRIMARY KEY ([Id]),
+        CONSTRAINT [FK_Public.CarrierBrokerDealerPermits_Public.Registration_RegistrationId] FOREIGN KEY ([RegistrationId]) REFERENCES [Public.Registration] ([Id]) ON DELETE CASCADE,
+        CONSTRAINT [FK_Public.CarrierBrokerDealerPermits_Public.Registration_RegistrationId1] FOREIGN KEY ([RegistrationId1]) REFERENCES [Public.Registration] ([Id])
+    );
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250612131301_AddTableCarrierBrokerDealerPermits'
+)
+BEGIN
+    CREATE INDEX [IX_Public.CarrierBrokerDealerPermits_RegistrationId] ON [Public.CarrierBrokerDealerPermits] ([RegistrationId]);
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250612131301_AddTableCarrierBrokerDealerPermits'
+)
+BEGIN
+    CREATE INDEX [IX_Public.CarrierBrokerDealerPermits_RegistrationId1] ON [Public.CarrierBrokerDealerPermits] ([RegistrationId1]);
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250612131301_AddTableCarrierBrokerDealerPermits'
+)
+BEGIN
+    INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+    VALUES (N'20250612131301_AddTableCarrierBrokerDealerPermits', N'8.0.8');
+END;
+GO
+
+COMMIT;
+GO
+
+
+
