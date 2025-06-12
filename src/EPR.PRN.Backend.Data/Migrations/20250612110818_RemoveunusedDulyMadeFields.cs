@@ -39,35 +39,35 @@ namespace EPR.PRN.Backend.Data.Migrations
                 name: "TaskStatusId",
                 table: "Public.DulyMade");
 
-            migrationBuilder.AlterColumn<DateTime>(
-                name: "DulyMadeDate",
-                table: "Public.DulyMade",
-                type: "datetime2",
-                nullable: false,
-                defaultValue: new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                oldClrType: typeof(DateTime),
-                oldType: "datetime2",
-                oldNullable: true);
+            //migrationBuilder.AlterColumn<DateTime>(
+            //    name: "DulyMadeDate",
+            //    table: "Public.DulyMade",
+            //    type: "datetime2",
+            //    nullable: false,
+            //    defaultValue: new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+            //    oldClrType: typeof(DateTime),
+            //    oldType: "datetime2",
+            //    oldNullable: true);
 
-            migrationBuilder.AlterColumn<Guid>(
-                name: "DulyMadeBy",
-                table: "Public.DulyMade",
-                type: "uniqueidentifier",
-                nullable: false,
-                defaultValue: new Guid("00000000-0000-0000-0000-000000000000"),
-                oldClrType: typeof(Guid),
-                oldType: "uniqueidentifier",
-                oldNullable: true);
+            //migrationBuilder.AlterColumn<Guid>(
+            //    name: "DulyMadeBy",
+            //    table: "Public.DulyMade",
+            //    type: "uniqueidentifier",
+            //    nullable: false,
+            //    defaultValue: new Guid("00000000-0000-0000-0000-000000000000"),
+            //    oldClrType: typeof(Guid),
+            //    oldType: "uniqueidentifier",
+            //    oldNullable: true);
 
-            migrationBuilder.AlterColumn<DateTime>(
-                name: "DeterminateDate",
-                table: "Public.DeterminationDate",
-                type: "datetime2",
-                nullable: false,
-                defaultValue: new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                oldClrType: typeof(DateTime),
-                oldType: "datetime2",
-                oldNullable: true);
+            //migrationBuilder.AlterColumn<DateTime>(
+            //    name: "DeterminateDate",
+            //    table: "Public.DeterminationDate",
+            //    type: "datetime2",
+            //    nullable: false,
+            //    defaultValue: new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+            //    oldClrType: typeof(DateTime),
+            //    oldType: "datetime2",
+            //    oldNullable: true);
         }
 
         /// <inheritdoc />
