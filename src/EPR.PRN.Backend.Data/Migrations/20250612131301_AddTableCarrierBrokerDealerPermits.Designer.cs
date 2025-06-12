@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EPR.PRN.Backend.Data.Migrations
 {
     [DbContext(typeof(EprContext))]
-    [Migration("20250612131301_Add-table-CarrierBrokerDealerPermits")]
+    [Migration("20250612131301_AddTableCarrierBrokerDealerPermits")]
     partial class AddtableCarrierBrokerDealerPermits
     {
         /// <inheritdoc />
