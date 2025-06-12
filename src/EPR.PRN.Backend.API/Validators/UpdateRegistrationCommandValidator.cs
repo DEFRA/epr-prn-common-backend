@@ -17,15 +17,15 @@ public class UpdateRegistrationCommandValidator : AbstractValidator<UpdateRegist
 
         When(x => x.BusinessAddress?.Id.GetValueOrDefault() == 0, () => {
 
-            RuleFor(x => x.ReprocessingSiteAddress.AddressLine1)
+            RuleFor(x => x.BusinessAddress.AddressLine1)
                 .NotEmpty()
                 .WithMessage("AddressLine1 is required");
 
-            RuleFor(x => x.ReprocessingSiteAddress.TownCity)
+            RuleFor(x => x.BusinessAddress.TownCity)
                 .NotEmpty()
                 .WithMessage("TownCity is required");
 
-            RuleFor(x => x.ReprocessingSiteAddress.PostCode)
+            RuleFor(x => x.BusinessAddress.PostCode)
                 .NotEmpty()
                 .WithMessage("PostCode is required");
         });

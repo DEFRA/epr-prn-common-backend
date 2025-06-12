@@ -451,4 +451,38 @@ public class RegistrationMaterialControllerTests
             Times.AtLeastOnce
         );
     }
+
+    [TestMethod]
+    public async Task CreateRegistrationMaterialExpectedCreatedResult()
+    {
+        // Arrange
+        var expectedResult = new CreatedResult(string.Empty, 10);
+        var validator = new InlineValidator<RegistrationMaterialsOutcomeCommand>();
+        validator.RuleFor(x => x.Status).Must(_ => false).WithMessage("Validation failed");
+
+        var registrationId = 1;
+        var command = new CreateRegistrationMaterialCommand
+        {
+            RegistrationId = 1,
+            Material = "Steel"
+        };
+
+        var controller = new RegistrationMaterialController(
+            _mediatorMock.Object,
+            validator,
+            _validatorMockdual.Object,
+            _loggerMock.Object
+        );
+
+        // Expectations
+        _mediatorMock
+            .Setup(m => m.Send(command, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(10);
+
+        // Act
+        var result = await controller.CreateRegistrationMaterial(registrationId, command);
+
+        // Assert
+        result.Should().BeEquivalentTo(expectedResult);
+    }
 }

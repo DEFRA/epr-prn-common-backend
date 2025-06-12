@@ -30,6 +30,35 @@ public class RegistrationRepositoryTests
     }
 
     [TestMethod]
+    public async Task GetAsync_ShouldReturnNull_WhenNoMatchFound()
+    {
+        // Act
+        var result = await _repository.GetAsync(1);
+
+        // Assert
+        result.Should().BeNull();
+    }
+
+    [TestMethod]
+    public async Task GetAsync_ShouldReturnEntity_WhenMatchFound()
+    {
+        // Arrange
+        var existing = new Registration
+        {
+            Id = 1
+        };
+
+        await _context.Registrations.AddAsync(existing);
+        await _context.SaveChangesAsync();
+
+        // Act
+        var result = await _repository.GetAsync(1);
+
+        // Assert
+        result.Should().NotBeNull();
+    }
+
+    [TestMethod]
     public async Task GetTaskStatusAsync_ShouldReturnNull_WhenNoMatchFound()
     {
         // Act
@@ -231,6 +260,29 @@ public class RegistrationRepositoryTests
     }
 
     [TestMethod]
+    public async Task UpdateAsync_NoRegistration_ShouldThrowException()
+    {
+        // Arrange
+
+        // Negative data
+        var registration = new Registration { Id = 2, ExternalId = Guid.NewGuid() };
+
+        _context.Registrations.Add(registration);
+
+        await _context.SaveChangesAsync();
+
+        var businessAddress = new AddressDto { Id = 101, AddressLine1 = "Address line 1" };
+        var reprocessingAddress = new AddressDto { Id = 101, AddressLine1 = "Address line 1" };
+        var legalAddress = new AddressDto { Id = 101, AddressLine1 = "Address line 1" };
+
+        // Act
+        Func<Task> act = async () => await _repository.UpdateAsync(3, businessAddress, reprocessingAddress, legalAddress);
+
+        // Assert
+        await act.Should().ThrowAsync<KeyNotFoundException>();
+    }
+
+    [TestMethod]
     public async Task UpdateAsync_NoExistingAddresses_ShouldUpdateAccordingly()
     {
         // Arrange
@@ -252,6 +304,42 @@ public class RegistrationRepositoryTests
         updatedRegistration!.BusinessAddressId.Should().Be(1);
         updatedRegistration!.ReprocessingSiteAddressId.Should().Be(2);
         updatedRegistration!.LegalDocumentAddressId.Should().Be(3);
+    }
+
+    [TestMethod]
+    public async Task UpdateAsync_WithExistingABusinessAddress_ShouldUpdateAccordingly()
+    {
+        // Arrange
+        var registration = new Registration { Id = 2, ExternalId = Guid.NewGuid() };
+        var address = new Address
+        {
+            Id = 101,
+            AddressLine1 = "Address line 1",
+            PostCode = "postcode",
+            TownCity = "town"
+        };
+
+        registration.BusinessAddressId = address.Id;
+        registration.LegalDocumentAddressId = address.Id;
+        registration.ReprocessingSiteAddressId = address.Id;
+
+        _context.Registrations.Add(registration);
+        _context.LookupAddresses.Add(address);
+
+        await _context.SaveChangesAsync();
+
+        var businessAddress = new AddressDto { Id = 101, AddressLine1 = "new Address line 1" };
+        var reprocessingAddress = new AddressDto { Id = 101, AddressLine1 = "new Address line 1" };
+        var legalAddress = new AddressDto { Id = 101, AddressLine1 = "new Address line 1" };
+
+        // Act
+        await _repository.UpdateAsync(registration.Id, businessAddress, reprocessingAddress, legalAddress);
+
+        // Assert
+        var updatedRegistration = await _context.Registrations.FindAsync(registration.Id);
+        updatedRegistration!.BusinessAddressId.Should().Be(101);
+        updatedRegistration!.ReprocessingSiteAddressId.Should().Be(101);
+        updatedRegistration!.LegalDocumentAddressId.Should().Be(101);
     }
 
     [TestMethod]

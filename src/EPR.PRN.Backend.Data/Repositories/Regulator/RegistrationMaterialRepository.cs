@@ -168,7 +168,7 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
 
     public async Task<int> CreateAsync(int registrationId, string material)
     {
-        var existingRegistration = await eprContext.Registrations.SingleAsync(o => o.Id == registrationId);
+        var existingRegistration = await eprContext.Registrations.FindAsync(registrationId);
         if (existingRegistration == null)
         {
             throw new KeyNotFoundException("Registration not found.");
