@@ -12,7 +12,7 @@ namespace EPR.PRN.Backend.Data.Repositories;
 public class RegistrationRepository(EprContext context, ILogger<RegistrationRepository> logger) : IRegistrationRepository
 {
     [ExcludeFromCodeCoverage(Justification = "TODO: To be done as part of create registration user story")]
-    public async Task<int> CreateRegistrationAsync(int applicationTypeId, int organisationId)
+    public async Task<int> CreateRegistrationAsync(int applicationTypeId, Guid organisationId)
     {
         logger.LogInformation("Creating registration for ApplicationTypeId: {ApplicationTypeId} and OrganisationId: {OrganisationId}", applicationTypeId, organisationId);
 

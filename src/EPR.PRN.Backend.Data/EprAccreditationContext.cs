@@ -1,8 +1,7 @@
-﻿using System.Data;
-using System.Diagnostics.CodeAnalysis;
-using EPR.PRN.Backend.Data.DataModels.Accreditations;
+﻿using EPR.PRN.Backend.Data.DataModels.Accreditations;
 using EPR.PRN.Backend.Data.DataModels.Registrations;
 using Microsoft.EntityFrameworkCore;
+using System.Diagnostics.CodeAnalysis;
 
 namespace EPR.PRN.Backend.Data;
 
@@ -27,7 +26,7 @@ public class EprAccreditationContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<Accreditation>(e =>
+        modelBuilder.Entity<AccreditationEntity>(e =>
         {
             e.HasOne(x => x.ApplicationType)
                 .WithMany()
@@ -82,7 +81,7 @@ public class EprAccreditationContext : DbContext
 
     public virtual DbSet<ApplicationType> ApplicationTypes { get; set; }
     public virtual DbSet<AccreditationStatus> AccreditationStatuses { get; set; }
-    public virtual DbSet<Accreditation> Accreditations { get; set; }
+    public virtual DbSet<AccreditationEntity> Accreditations { get; set; }
     public virtual DbSet<AccreditationPrnIssueAuth> AccreditationPrnIssueAuths { get; set; }
 }
 

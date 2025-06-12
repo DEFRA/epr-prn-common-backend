@@ -49,7 +49,7 @@ public class AccreditationServiceTests
         var materialId = 2;
         var applicationTypeId = 1;
         var accreditationStatusId = 1;
-        Accreditation accreditation = null!;
+        AccreditationEntity accreditation = null!;
 
         _repositoryMock
             .Setup(r => r.GetAccreditationDetails(organisationId,materialId,applicationTypeId))
@@ -62,7 +62,7 @@ public class AccreditationServiceTests
             applicationTypeId);
 
         // Assert
-        _repositoryMock.Verify(r => r.Create(It.Is<Accreditation>(x =>
+        _repositoryMock.Verify(r => r.Create(It.Is<AccreditationEntity>(x =>
             x.OrganisationId == organisationId &&
             x.RegistrationMaterialId == materialId &&
             x.ApplicationTypeId == applicationTypeId &&
@@ -81,7 +81,7 @@ public class AccreditationServiceTests
         var applicationTypeId = 1;
         var accreditationStatusId = 1;
 
-        var accreditation = new Accreditation
+        var accreditation = new AccreditationEntity
         {
             ExternalId = id,
             OrganisationId = organisationId,
@@ -104,7 +104,7 @@ public class AccreditationServiceTests
         _repositoryMock.Verify(r => r.GetAccreditationDetails(organisationId, materialId, applicationTypeId), Times.Once);
         result.Should().Be(id);
 
-        _repositoryMock.Verify(r => r.Create(It.IsAny<Accreditation>()), Times.Never);
+        _repositoryMock.Verify(r => r.Create(It.IsAny<AccreditationEntity>()), Times.Never);
     }
 
     [TestMethod]
@@ -112,7 +112,7 @@ public class AccreditationServiceTests
     {
         // Arrange
         var id = Guid.NewGuid();
-        var entity = new Accreditation
+        var entity = new AccreditationEntity
         {
             ExternalId = id,
             OrganisationId = Guid.NewGuid(),
@@ -146,7 +146,7 @@ public class AccreditationServiceTests
     {
         // Arrange
         var id = Guid.NewGuid();
-        _repositoryMock.Setup(r => r.GetById(id)).ReturnsAsync((Accreditation)null);
+        _repositoryMock.Setup(r => r.GetById(id)).ReturnsAsync((AccreditationEntity)null);
 
         // Act
         var result = await _service.GetAccreditationById(id);
@@ -173,7 +173,7 @@ public class AccreditationServiceTests
         await _service.CreateAccreditation(requestDto);
 
         // Assert
-        _repositoryMock.Verify(r => r.Create(It.Is<Accreditation>(x => 
+        _repositoryMock.Verify(r => r.Create(It.Is<AccreditationEntity>(x => 
             x.OrganisationId == requestDto.OrganisationId &&
             x.RegistrationMaterialId == requestDto.RegistrationMaterialId &&
             x.ApplicationTypeId == requestDto.ApplicationTypeId &&
@@ -198,7 +198,7 @@ public class AccreditationServiceTests
         await _service.UpdateAccreditation(requestDto);
 
         // Assert
-        _repositoryMock.Verify(r => r.Update(It.Is<Accreditation>(x =>
+        _repositoryMock.Verify(r => r.Update(It.Is<AccreditationEntity>(x =>
             x.ExternalId == requestDto.ExternalId &&
             x.OrganisationId == requestDto.OrganisationId &&
             x.RegistrationMaterialId == requestDto.RegistrationMaterialId &&

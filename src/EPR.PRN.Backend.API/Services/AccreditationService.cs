@@ -34,7 +34,7 @@ public class AccreditationService(
             return entity.ExternalId;
         }
 
-        entity = mapper.Map<Accreditation>(
+        entity = mapper.Map<AccreditationEntity>(
             new AccreditationRequestDto
             {
                 OrganisationId = organisationId,
@@ -63,7 +63,7 @@ public class AccreditationService(
     {
         logger.LogInformation("{Logprefix}: AccreditationService - CreateAccreditation: request to create accreditation {Accreditation}", logPrefix, JsonConvert.SerializeObject(accreditationDto));
 
-        var entity = mapper.Map<Accreditation>(accreditationDto);
+        var entity = mapper.Map<AccreditationEntity>(accreditationDto);
 
         await repository.Create(entity);
 
@@ -74,7 +74,7 @@ public class AccreditationService(
     {
         logger.LogInformation("{Logprefix}: AccreditationService - UpdateAccreditation: request to update accreditation {Accreditation}", logPrefix, JsonConvert.SerializeObject(accreditationDto));
 
-        var entity = mapper.Map<Accreditation>(accreditationDto);
+        var entity = mapper.Map<AccreditationEntity>(accreditationDto);
 
         await repository.Update(entity);
     }

@@ -5,6 +5,7 @@ using EPR.PRN.Backend.API.Repositories.Interfaces;
 using EPR.PRN.Backend.API.Services;
 using EPR.PRN.Backend.API.Services.Interfaces;
 using EPR.PRN.Backend.API.Validators;
+using EPR.PRN.Backend.API.Validators.Regulator;
 using EPR.PRN.Backend.Data.Interfaces;
 using EPR.PRN.Backend.Data.Interfaces.Accreditations;
 using EPR.PRN.Backend.Data.Interfaces.Regulator;
@@ -45,6 +46,8 @@ namespace EPR.PRN.Backend.API.Helpers
                 .AddScoped<IRegulatorRegistrationTaskStatusRepository, RegulatorRegistrationTaskStatusRepository>()
                 .AddScoped<IValidator<SavePrnDetailsRequest>, SavePrnDetailsRequestValidator>()
                 .AddScoped<IRegistrationMaterialRepository, RegistrationMaterialRepository>()
+                .AddScoped<IRegulatorAccreditationRepository, RegulatorAccreditationRepository>()
+                .AddScoped<IRegulatorAccreditationTaskStatusRepository, RegulatorAccreditationTaskStatusRepository>()
                 .AddScoped<IDateTimeProvider, DateTimeProvider>()
                 .AddScoped<IAccreditationService, AccreditationService>()
                 .AddScoped<IAccreditationPrnIssueAuthService, AccreditationPrnIssueAuthService>()

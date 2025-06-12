@@ -10,9 +10,9 @@ public class AccreditationProfile : Profile
 {
     public AccreditationProfile()
     {
-        CreateMap<Accreditation, AccreditationDto>()
+        CreateMap<AccreditationEntity, AccreditationDto>()
             .ForMember(dest => dest.MaterialName, opt => opt.MapFrom(src => src.RegistrationMaterial.Material.MaterialName));
-        CreateMap<AccreditationRequestDto, Accreditation>();
+        CreateMap<AccreditationRequestDto, AccreditationEntity>();
 
         CreateMap<AccreditationPrnIssueAuth, AccreditationPrnIssueAuthDto>();
         CreateMap<AccreditationPrnIssueAuthRequestDto, AccreditationPrnIssueAuth>();

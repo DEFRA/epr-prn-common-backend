@@ -35,9 +35,9 @@ public class AccreditationRepositoryTests
         };
 
         _dbContext.Accreditations.AddRange(
-            new List<Accreditation>
+            new List<AccreditationEntity>
             {
-                new Accreditation 
+                new AccreditationEntity
                 {
                     Id = 1,
                     ExternalId = new Guid("11111111-1111-1111-1111-111111111111"), 
@@ -49,7 +49,7 @@ public class AccreditationRepositoryTests
                     RegistrationMaterialId = 1,
                     RegistrationMaterial = registrationMaterial
                 },
-                new Accreditation
+                new AccreditationEntity
                 {
                     Id = 2,
                     ExternalId = new Guid("22222222-2222-2222-2222-222222222222"),
@@ -101,7 +101,7 @@ public class AccreditationRepositoryTests
     public async Task Create_ShouldAddNewEntity()
     {
         // Arrange
-        var accreditation = new Accreditation { AccreditationYear = 2026 };
+        var accreditation = new AccreditationEntity { AccreditationYear = 2026 };
 
         // Act
         await _repository.Create(accreditation);
@@ -119,7 +119,7 @@ public class AccreditationRepositoryTests
     {
         // Arrange
         var accreditationId = new Guid("11111111-1111-1111-1111-111111111111");
-        var accreditation = new Accreditation { Id = 1, ExternalId = accreditationId, AccreditationYear = 2027 };
+        var accreditation = new AccreditationEntity { Id = 1, ExternalId = accreditationId, AccreditationYear = 2027 };
 
         // Act
         await _repository.Update(accreditation);

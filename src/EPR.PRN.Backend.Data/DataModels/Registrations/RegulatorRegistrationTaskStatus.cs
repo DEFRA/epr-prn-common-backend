@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics.CodeAnalysis;
 
@@ -7,5 +8,8 @@ namespace EPR.PRN.Backend.Data.DataModels.Registrations;
 [ExcludeFromCodeCoverage]
 public class RegulatorRegistrationTaskStatus: RegulatorTaskStatusBase
 {
+    public Registration Registration { get; set; }
+    [ForeignKey("Registration")]
     public int? RegistrationId { get; set; }
+    public List<RegistrationTaskStatusQueryNote> RegistrationTaskStatusQueryNotes { get; set; } = new();
 }

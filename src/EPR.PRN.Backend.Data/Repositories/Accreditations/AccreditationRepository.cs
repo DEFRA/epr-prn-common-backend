@@ -7,7 +7,7 @@ namespace EPR.PRN.Backend.Data.Repositories.Accreditations;
 
 public class AccreditationRepository(EprAccreditationContext eprContext) : IAccreditationRepository
 {
-    public async Task<Accreditation?> GetById(Guid accreditationId)
+    public async Task<AccreditationEntity?> GetById(Guid accreditationId)
     {
         return await eprContext.Accreditations
             .AsNoTracking()
@@ -18,7 +18,7 @@ public class AccreditationRepository(EprAccreditationContext eprContext) : IAccr
             .SingleOrDefaultAsync(x => x.ExternalId.Equals(accreditationId));
     }
 
-    public async Task<Accreditation?> GetAccreditationDetails(
+    public async Task<AccreditationEntity?> GetAccreditationDetails(
         Guid organisationId,
         int materialId,
         int applicationTypeId)
@@ -32,7 +32,7 @@ public class AccreditationRepository(EprAccreditationContext eprContext) : IAccr
             .SingleOrDefaultAsync();
     }
 
-    public async Task Create(Accreditation accreditation)
+    public async Task Create(AccreditationEntity accreditation)
     {
         var currentTimestamp = DateTime.UtcNow;
         accreditation.CreatedDate = currentTimestamp;
@@ -43,7 +43,7 @@ public class AccreditationRepository(EprAccreditationContext eprContext) : IAccr
         await eprContext.SaveChangesAsync();
     }
 
-    public async Task Update(Accreditation accreditation)
+    public async Task Update(AccreditationEntity accreditation)
     {
         var existingAccreditation = await eprContext.Accreditations.SingleAsync(x => x.ExternalId.Equals(accreditation.ExternalId));
 

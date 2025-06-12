@@ -4,16 +4,16 @@ namespace EPR.PRN.Backend.Data.Interfaces.Accreditations;
 
 public interface IAccreditationRepository
 {    
-    Task<Accreditation?> GetById(Guid accreditationId);
+    Task<AccreditationEntity?> GetById(Guid accreditationId);
 
-    Task<Accreditation?> GetAccreditationDetails(
+    Task<AccreditationEntity?> GetAccreditationDetails(
         Guid organisationId,
         int materialId,
         int applicationTypeId);
 
-    Task Create(Accreditation accreditation);
+    Task Create(AccreditationEntity accreditation);
 
-    Task Update(Accreditation accreditation);
+    Task Update(AccreditationEntity accreditation);
 
     Task ClearDownDatabase();
 }

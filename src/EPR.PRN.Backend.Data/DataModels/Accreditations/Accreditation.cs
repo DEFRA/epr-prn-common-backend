@@ -4,7 +4,7 @@ using EPR.PRN.Backend.Data.DataModels.Registrations;
 
 namespace EPR.PRN.Backend.Data.DataModels.Accreditations;
 
-public class Accreditation
+public class AccreditationEntity
 {
     public int Id { get; set; }
     public Guid ExternalId { get; set; }
