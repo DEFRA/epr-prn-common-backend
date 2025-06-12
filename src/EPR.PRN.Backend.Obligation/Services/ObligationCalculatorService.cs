@@ -23,59 +23,60 @@ namespace EPR.PRN.Backend.Obligation.Services
 		public async Task<CalculationResult> CalculateAsync(Guid submitterId, List<SubmissionCalculationRequest> request)
 		{
 			var recyclingTargets = await recyclingTargetDataService.GetRecyclingTargetsAsync();
-			var submitterTypeId = 0;
-			if (request[0].SubmitterType.IsNullOrEmpty() ||
+			var result = new CalculationResult();
+			var calculations = new List<ObligationCalculation>();
+			var submitterType = request.FirstOrDefault(r => !r.SubmitterType.IsNullOrEmpty())?.SubmitterType;
+			if (submitterType.IsNullOrEmpty() ||
 				!Enum.TryParse(request[0].SubmitterType, true, out ObligationCalculationOrganisationSubmitterTypeName submitterTypeName))
 			{
-				logger.LogWarning("SubmitterType provided is not valid: {SubmitterType} for SubmitterId: {SubmitterId}.",
+				logger.LogError("SubmitterType provided is not valid: {SubmitterType} for SubmitterId: {SubmitterId}.",
 					request[0].SubmitterType, submitterId);
+				result.Success = false;
 			}
 			else
 			{
-				submitterTypeId = await submitterTypeRepository.GetSubmitterTypeIdByTypeName(submitterTypeName);
-			}
-			var materials = await materialRepository.GetAllMaterials();
-			var result = new CalculationResult();
-			var calculations = new List<ObligationCalculation>();
+				var submitterTypeId = await submitterTypeRepository.GetSubmitterTypeIdByTypeName(submitterTypeName);
+				var materials = await materialRepository.GetAllMaterials();
 
-			foreach (var submission in request)
-			{
-				if (string.IsNullOrEmpty(submission.PackagingMaterial))
+				foreach (var submission in request)
 				{
-					logger.LogError("Material was null or empty for OrganisationId: {OrganisationId} and SubmitterId: {SubmitterId}.", submission.OrganisationId, submitterId);
-					result.Success = false;
-					continue;
+					if (string.IsNullOrEmpty(submission.PackagingMaterial))
+					{
+						logger.LogError("Material was null or empty for OrganisationId: {OrganisationId} and SubmitterId: {SubmitterId}.", submission.OrganisationId, submitterId);
+						result.Success = false;
+						continue;
+					}
+
+					var materialName = materials.FirstOrDefault(m => m.MaterialCode == submission.PackagingMaterial)?.MaterialName;
+					if (materialName.IsNullOrEmpty() || !Enum.TryParse(materialName, true, out MaterialType materialType))
+					{
+						logger.LogError("Material provided was not valid: {PackagingMaterial} for OrganisationId: {OrganisationId} and SubmitterId: {SubmitterId}.",
+							submission.PackagingMaterial, submission.OrganisationId, submitterId);
+						result.Success = false;
+						continue;
+					}
+
+					var strategy = strategyResolver.Resolve(materialType);
+					if (strategy == null)
+					{
+						logger.LogError("Could not find handler for Material Type: {PackagingMaterial} for OrganisationId: {OrganisationId} and SubmitterId: {SubmitterId}.",
+							submission.PackagingMaterial, submission.OrganisationId, submitterId);
+						result.Success = false;
+						continue;
+					}
+
+					var calculationRequest = new CalculationRequestDto
+					{
+						SubmitterId = submission.SubmitterId,
+						SubmissionCalculationRequest = submission,
+						MaterialType = materialType,
+						Materials = [.. materials],
+						SubmitterTypeId = submitterTypeId,
+						RecyclingTargets = recyclingTargets
+					};
+
+					calculations.AddRange(strategy.Calculate(calculationRequest));
 				}
-
-				var materialName = materials.FirstOrDefault(m => m.MaterialCode == submission.PackagingMaterial)?.MaterialName;
-                if (materialName.IsNullOrEmpty() || !Enum.TryParse(materialName, true, out MaterialType materialType))
-                {
-                    logger.LogError("Material provided was not valid: {PackagingMaterial} for OrganisationId: {OrganisationId} and SubmitterId: {SubmitterId}.",
-                        submission.PackagingMaterial, submission.OrganisationId, submitterId);
-                    result.Success = false;
-                    continue;
-                }
-
-                var strategy = strategyResolver.Resolve(materialType);
-                if (strategy == null)
-                {
-                    logger.LogError("Could not find handler for Material Type: {PackagingMaterial} for OrganisationId: {OrganisationId} and SubmitterId: {SubmitterId}.",
-						submission.PackagingMaterial, submission.OrganisationId, submitterId);
-                    result.Success = false;
-                    continue;
-                }
-
-                var calculationRequest = new CalculationRequestDto
-				{
-					SubmitterId = submission.SubmitterId,
-					SubmissionCalculationRequest = submission,
-					MaterialType = materialType,
-					Materials = [.. materials],
-					SubmitterTypeId = submitterTypeId,
-					RecyclingTargets = recyclingTargets
-				};
-
-				calculations.AddRange(strategy.Calculate(calculationRequest));
 			}
 
 			if (calculations.Count == 0)

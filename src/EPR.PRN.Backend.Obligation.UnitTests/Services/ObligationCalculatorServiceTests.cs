@@ -303,10 +303,16 @@ public class ObligationCalculatorServiceTests
         var organisationId = Guid.NewGuid();
         var submissions = new List<SubmissionCalculationRequest>
         {
-            new() { OrganisationId = organisationId, PackagingMaterial = null, SubmitterId = submitterId }
+            new()
+			{
+				OrganisationId = organisationId,
+				PackagingMaterial = null,
+				SubmitterId = submitterId,
+				SubmitterType = ObligationCalculationOrganisationSubmitterTypeName.DirectRegistrant.ToString()
+			}
         };
         _mockRecyclingTargetDataService.Setup(x => x.GetRecyclingTargetsAsync()).ReturnsAsync([]);
-		var loggedMessages = MockLogger(LogLevel.Error);
+		var loggedMessages = MockLogger();
 
 		// Act
 		var result = await _service.CalculateAsync(submitterId, submissions);
@@ -325,10 +331,16 @@ public class ObligationCalculatorServiceTests
         var packagingMaterial = "InvalidMaterial";
         var submissions = new List<SubmissionCalculationRequest>
         {
-            new() { OrganisationId = organisationId, PackagingMaterial = packagingMaterial, SubmitterId = submitterId }
+            new()
+			{
+				OrganisationId = organisationId,
+				PackagingMaterial = packagingMaterial,
+				SubmitterId = submitterId,
+				SubmitterType = ObligationCalculationOrganisationSubmitterTypeName.DirectRegistrant.ToString()
+			}
         };
         _mockRecyclingTargetDataService.Setup(x => x.GetRecyclingTargetsAsync()).ReturnsAsync([]);
-        var loggedMessages = MockLogger(LogLevel.Error);
+        var loggedMessages = MockLogger();
 
 		// Act
 		var result = await _service.CalculateAsync(submitterId, submissions);
@@ -348,12 +360,18 @@ public class ObligationCalculatorServiceTests
 		var materials = GetMaterials();
 		var submissions = new List<SubmissionCalculationRequest>
 		{
-			new() { OrganisationId = organisationId, PackagingMaterial = packagingMaterial, SubmitterId = organisationId }
+			new()
+			{
+				OrganisationId = organisationId,
+				PackagingMaterial = packagingMaterial,
+				SubmitterId = organisationId,
+				SubmitterType = ObligationCalculationOrganisationSubmitterTypeName.DirectRegistrant.ToString()
+			}
 		};
 		_mockRecyclingTargetDataService.Setup(x => x.GetRecyclingTargetsAsync()).ReturnsAsync([]);
 		_mockMaterialRepository.Setup(repo => repo.GetAllMaterials()).ReturnsAsync(materials);
 		_mockStrategyResolver.Setup(x => x.Resolve(MaterialType.Plastic)).Returns((IMaterialCalculationStrategy)null);
-		var loggedMessages = MockLogger(LogLevel.Error);
+		var loggedMessages = MockLogger();
 
 		// Act
 		var result = await _service.CalculateAsync(organisationId, submissions);
@@ -385,7 +403,7 @@ public class ObligationCalculatorServiceTests
 		var mockStrategy = new Mock<IMaterialCalculationStrategy>();
 		mockStrategy.Setup(x => x.Calculate(It.IsAny<CalculationRequestDto>())).Returns([]);
 		_mockStrategyResolver.Setup(x => x.Resolve(MaterialType.Plastic)).Returns(mockStrategy.Object);
-		var loggedMessages = MockLogger(LogLevel.Error);
+		var loggedMessages = MockLogger();
 
 		// Act
 		var result = await _service.CalculateAsync(submitterId, submissions);
@@ -397,6 +415,7 @@ public class ObligationCalculatorServiceTests
 
 	[TestMethod]
 	[DataRow("")]
+	[DataRow(null)]
 	[DataRow("Random")]
 	public async Task CalculatePomDataAsync_WhenCalculationsAreEmpty_ShouldLogWarning(string submitterType)
 	{
@@ -418,13 +437,14 @@ public class ObligationCalculatorServiceTests
 		var mockStrategy = new Mock<IMaterialCalculationStrategy>();
 		mockStrategy.Setup(x => x.Calculate(It.IsAny<CalculationRequestDto>())).Returns([]);
 		_mockStrategyResolver.Setup(x => x.Resolve(MaterialType.Plastic)).Returns(mockStrategy.Object);
-		var loggedMessages = MockLogger(LogLevel.Warning);
+		var loggedMessages = MockLogger();
 
 		// Act
-		await _service.CalculateAsync(submitterId, submissions);
+		var result = await _service.CalculateAsync(submitterId, submissions);
 
 		// Assert
-		loggedMessages.Should().Contain($"SubmitterType provided is not valid: {submitterType} for SubmitterId: {submitterId}.");
+		result.Success.Should().BeFalse();
+		loggedMessages.Should().Contain(msg => msg.Contains("SubmitterType provided is not valid"));
 	}
 
 	[TestMethod]
@@ -491,11 +511,11 @@ public class ObligationCalculatorServiceTests
 		_mockObligationCalculationRepository.Verify(x => x.RemoveAndAddObligationCalculationBySubmitterIdAsync(submitterId, calculations), Times.Once);
 	}
 
-	private List<string> MockLogger(LogLevel logLevel)
+	private List<string> MockLogger()
 	{
 		var loggedMessages = new List<string>();
 		_mockLogger.Setup(x => x.Log(
-			logLevel,
+			LogLevel.Error,
 			It.IsAny<EventId>(),
 			It.Is<It.IsAnyType>((v, t) => true),
 			It.IsAny<Exception>(),
