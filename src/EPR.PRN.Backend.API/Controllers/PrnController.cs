@@ -207,7 +207,7 @@ public class PrnController(IPrnService prnService,
             }
             logger.LogInformation("{Logprefix}: PrnController - CalculateAsync: Obligation Calculation returned {CalculationResult}", logPrefix, JsonConvert.SerializeObject(calculationResult.Calculations));
 
-            logger.LogInformation("{Logprefix}: PrnController - CalculateAsync: calling UpsertCalculatedPomDataAsync ", logPrefix);
+            logger.LogInformation("{Logprefix}: PrnController - CalculateAsync: calling RemoveAndAddObligationCalculationAsync ", logPrefix);
 
             await obligationCalculatorService.RemoveAndAddObligationCalculationAsync(submitterId, calculationResult.Calculations);
 
