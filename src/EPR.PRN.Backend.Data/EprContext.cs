@@ -267,6 +267,13 @@ namespace EPR.PRN.Backend.Data
                 new LookupFileUploadStatus { Id = 5, Name = "File deleted(Soft delete of record in database – will physically remove from blob storage)" });
 
                 base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<CarrierBrokerDealerPermit>()
+                .HasOne(p => p.Registration)
+                .WithMany()
+                .HasForeignKey(p => p.RegistrationId)
+                .OnDelete(DeleteBehavior.Cascade);
+
         }
 
         public virtual DbSet<Eprn> Prn { get; set; }
@@ -309,6 +316,7 @@ namespace EPR.PRN.Backend.Data
         public virtual DbSet<RegulatorAccreditationTaskStatus> RegulatorAccreditationTaskStatus { get; set; }
         public virtual DbSet<AccreditationTaskStatusQueryNote> AccreditationTaskStatusQueryNote { get; set; }
         public virtual DbSet<AccreditationDeterminationDate> AccreditationDeterminationDate { get; set; }
+        public virtual DbSet<CarrierBrokerDealerPermit> CarrierBrokerDealerPermits { get; set; }
 
     }
 }

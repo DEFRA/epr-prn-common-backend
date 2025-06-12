@@ -44,4 +44,6 @@ public class Registration
     public List<RegulatorAccreditationRegistrationTaskStatus>? AccreditationTasks { get; set; }
 
     public List<RegistrationMaterial>? Materials { get; set; }
+
+    public ICollection<CarrierBrokerDealerPermit> CarrierBrokerDealerPermits { get; set; }
 }
