@@ -3514,18 +3514,18 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250612152154_Add-table-CarrierBrokerDealerPermits'
+    WHERE [MigrationId] = N'20250612174542_Add-table-CarrierBrokerDealerPermits'
 )
 BEGIN
     CREATE TABLE [Public.CarrierBrokerDealerPermits] (
         [Id] int NOT NULL IDENTITY,
         [ExternalId] uniqueidentifier NOT NULL,
         [RegistrationId] int NOT NULL,
-        [WasteCarrierBrokerDealerRegistrstion] varchar(20) NOT NULL,
-        [WasteManagementorEnvironmentPermitNumber] varchar(20) NOT NULL,
-        [InstallationPermitorPPCNumber] varchar(20) NOT NULL,
-        [WasteExemptionReference] varchar(150) NOT NULL,
-        [RegisteredWasteCarrierBrokerDealerFlag] bit NOT NULL,
+        [WasteCarrierBrokerDealerRegistrstion] varchar(20) NULL,
+        [WasteManagementorEnvironmentPermitNumber] varchar(20) NULL,
+        [InstallationPermitorPPCNumber] varchar(20) NULL,
+        [WasteExemptionReference] varchar(150) NULL,
+        [RegisteredWasteCarrierBrokerDealerFlag] bit NULL,
         [CreatedBy] uniqueidentifier NOT NULL,
         [CreatedOn] datetime2 NOT NULL,
         [UpdatedBy] uniqueidentifier NOT NULL,
@@ -3538,7 +3538,7 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250612152154_Add-table-CarrierBrokerDealerPermits'
+    WHERE [MigrationId] = N'20250612174542_Add-table-CarrierBrokerDealerPermits'
 )
 BEGIN
     CREATE INDEX [IX_Public.CarrierBrokerDealerPermits_RegistrationId] ON [Public.CarrierBrokerDealerPermits] ([RegistrationId]);
@@ -3547,14 +3547,13 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250612152154_Add-table-CarrierBrokerDealerPermits'
+    WHERE [MigrationId] = N'20250612174542_Add-table-CarrierBrokerDealerPermits'
 )
 BEGIN
     INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
-    VALUES (N'20250612152154_Add-table-CarrierBrokerDealerPermits', N'8.0.8');
+    VALUES (N'20250612174542_Add-table-CarrierBrokerDealerPermits', N'8.0.8');
 END;
 GO
 
 COMMIT;
 GO
-

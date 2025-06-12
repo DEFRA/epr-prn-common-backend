@@ -1067,11 +1067,10 @@ namespace EPR.PRN.Backend.Data.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("InstallationPermitorPPCNumber")
-                        .IsRequired()
                         .HasMaxLength(20)
                         .HasColumnType("varchar(20)");
 
-                    b.Property<bool>("RegisteredWasteCarrierBrokerDealerFlag")
+                    b.Property<bool?>("RegisteredWasteCarrierBrokerDealerFlag")
                         .HasColumnType("bit");
 
                     b.Property<int>("RegistrationId")
@@ -1084,17 +1083,14 @@ namespace EPR.PRN.Backend.Data.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("WasteCarrierBrokerDealerRegistrstion")
-                        .IsRequired()
                         .HasMaxLength(20)
                         .HasColumnType("varchar(20)");
 
                     b.Property<string>("WasteExemptionReference")
-                        .IsRequired()
                         .HasMaxLength(150)
                         .HasColumnType("varchar(150)");
 
                     b.Property<string>("WasteManagementorEnvironmentPermitNumber")
-                        .IsRequired()
                         .HasMaxLength(20)
                         .HasColumnType("varchar(20)");
 

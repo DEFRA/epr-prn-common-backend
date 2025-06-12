@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EPR.PRN.Backend.Data.Migrations
 {
     [DbContext(typeof(EprContext))]
-    [Migration("20250612152154_Add-table-CarrierBrokerDealerPermits")]
+    [Migration("20250612174542_Add-table-CarrierBrokerDealerPermits")]
     partial class AddtableCarrierBrokerDealerPermits
     {
         /// <inheritdoc />
@@ -1070,11 +1070,10 @@ namespace EPR.PRN.Backend.Data.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("InstallationPermitorPPCNumber")
-                        .IsRequired()
                         .HasMaxLength(20)
                         .HasColumnType("varchar(20)");
 
-                    b.Property<bool>("RegisteredWasteCarrierBrokerDealerFlag")
+                    b.Property<bool?>("RegisteredWasteCarrierBrokerDealerFlag")
                         .HasColumnType("bit");
 
                     b.Property<int>("RegistrationId")
@@ -1087,17 +1086,14 @@ namespace EPR.PRN.Backend.Data.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("WasteCarrierBrokerDealerRegistrstion")
-                        .IsRequired()
                         .HasMaxLength(20)
                         .HasColumnType("varchar(20)");
 
                     b.Property<string>("WasteExemptionReference")
-                        .IsRequired()
                         .HasMaxLength(150)
                         .HasColumnType("varchar(150)");
 
                     b.Property<string>("WasteManagementorEnvironmentPermitNumber")
-                        .IsRequired()
                         .HasMaxLength(20)
                         .HasColumnType("varchar(20)");
 

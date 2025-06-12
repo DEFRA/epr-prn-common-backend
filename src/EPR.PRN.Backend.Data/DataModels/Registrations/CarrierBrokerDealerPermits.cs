@@ -14,19 +14,19 @@ public class CarrierBrokerDealerPermit
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public Guid ExternalId { get; set; }
     public int RegistrationId { get; set; }
-    [MaxLength(20), AllowNull]
+    [MaxLength(20)]
     [Column(TypeName = "varchar(20)")]
-    public string WasteCarrierBrokerDealerRegistrstion { get; set; }
-    [MaxLength(20), AllowNull]
+    public string? WasteCarrierBrokerDealerRegistrstion { get; set; }
+    [MaxLength(20)]
     [Column(TypeName = "varchar(20)")]
-    public string WasteManagementorEnvironmentPermitNumber { get; set; }
-    [MaxLength(20), AllowNull]
+    public string? WasteManagementorEnvironmentPermitNumber { get; set; }
+    [MaxLength(20)]
     [Column(TypeName = "varchar(20)")]
-    public string InstallationPermitorPPCNumber { get; set; }
-    [MaxLength(150), AllowNull]
+    public string? InstallationPermitorPPCNumber { get; set; }
+    [MaxLength(150)]
     [Column(TypeName = "varchar(150)")]
-    public string WasteExemptionReference { get; set; }
-    public bool RegisteredWasteCarrierBrokerDealerFlag { get; set; }
+    public string? WasteExemptionReference { get; set; }
+    public bool? RegisteredWasteCarrierBrokerDealerFlag { get; set; }
     public Guid CreatedBy { get; set; }
     public DateTime CreatedOn { get; set; }
     public Guid UpdatedBy { get; set; }
