@@ -3610,57 +3610,6 @@ IF NOT EXISTS (
     WHERE [MigrationId] = N'20250612110818_RemoveunusedDulyMadeFields'
 )
 BEGIN
-    DECLARE @var32 sysname;
-    SELECT @var32 = [d].[name]
-    FROM [sys].[default_constraints] [d]
-    INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
-    WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Public.DulyMade]') AND [c].[name] = N'DulyMadeDate');
-    IF @var32 IS NOT NULL EXEC(N'ALTER TABLE [Public.DulyMade] DROP CONSTRAINT [' + @var32 + '];');
-    EXEC(N'UPDATE [Public.DulyMade] SET [DulyMadeDate] = ''0001-01-01T00:00:00.0000000'' WHERE [DulyMadeDate] IS NULL');
-    ALTER TABLE [Public.DulyMade] ALTER COLUMN [DulyMadeDate] datetime2 NOT NULL;
-    ALTER TABLE [Public.DulyMade] ADD DEFAULT '0001-01-01T00:00:00.0000000' FOR [DulyMadeDate];
-END;
-GO
-
-IF NOT EXISTS (
-    SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250612110818_RemoveunusedDulyMadeFields'
-)
-BEGIN
-    DECLARE @var33 sysname;
-    SELECT @var33 = [d].[name]
-    FROM [sys].[default_constraints] [d]
-    INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
-    WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Public.DulyMade]') AND [c].[name] = N'DulyMadeBy');
-    IF @var33 IS NOT NULL EXEC(N'ALTER TABLE [Public.DulyMade] DROP CONSTRAINT [' + @var33 + '];');
-    EXEC(N'UPDATE [Public.DulyMade] SET [DulyMadeBy] = ''00000000-0000-0000-0000-000000000000'' WHERE [DulyMadeBy] IS NULL');
-    ALTER TABLE [Public.DulyMade] ALTER COLUMN [DulyMadeBy] uniqueidentifier NOT NULL;
-    ALTER TABLE [Public.DulyMade] ADD DEFAULT '00000000-0000-0000-0000-000000000000' FOR [DulyMadeBy];
-END;
-GO
-
-IF NOT EXISTS (
-    SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250612110818_RemoveunusedDulyMadeFields'
-)
-BEGIN
-    DECLARE @var34 sysname;
-    SELECT @var34 = [d].[name]
-    FROM [sys].[default_constraints] [d]
-    INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
-    WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Public.DeterminationDate]') AND [c].[name] = N'DeterminateDate');
-    IF @var34 IS NOT NULL EXEC(N'ALTER TABLE [Public.DeterminationDate] DROP CONSTRAINT [' + @var34 + '];');
-    EXEC(N'UPDATE [Public.DeterminationDate] SET [DeterminateDate] = ''0001-01-01T00:00:00.0000000'' WHERE [DeterminateDate] IS NULL');
-    ALTER TABLE [Public.DeterminationDate] ALTER COLUMN [DeterminateDate] datetime2 NOT NULL;
-    ALTER TABLE [Public.DeterminationDate] ADD DEFAULT '0001-01-01T00:00:00.0000000' FOR [DeterminateDate];
-END;
-GO
-
-IF NOT EXISTS (
-    SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250612110818_RemoveunusedDulyMadeFields'
-)
-BEGIN
     INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
     VALUES (N'20250612110818_RemoveunusedDulyMadeFields', N'8.0.8');
 END;
