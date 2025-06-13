@@ -47,6 +47,7 @@ namespace EPR.PRN.Backend.API.Helpers
                 .AddScoped<IRegulatorAccreditationRepository, RegulatorAccreditationRepository>()
                 .AddScoped<IRegulatorAccreditationTaskStatusRepository, RegulatorAccreditationTaskStatusRepository>()
                 .AddScoped<IRegistrationRepository, RegistrationRepository>()
+                .AddScoped<ICarrierBrokerDealerPermitRepository, CarrierBrokerDealerPermitRepository>()
                 .AddScoped<IDateTimeProvider, DateTimeProvider>();
 
             return services;

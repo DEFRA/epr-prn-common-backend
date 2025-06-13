@@ -209,7 +209,14 @@ public class RegistrationMaterialProfile : Profile
            .ForMember(dest => dest.EnvironmentalPermitWasteManagementTonne, opt => opt.MapFrom(src => src.EnvironmentalPermitWasteManagementTonne))
            .ForMember(dest => dest.MaximumReprocessingCapacityTonne, opt => opt.MapFrom(src => src.MaximumReprocessingCapacityTonne))
            .ForMember(dest => dest.IsMaterialRegistered, opt => opt.MapFrom(src => src.IsMaterialRegistered))
-           .ForMember(dest => dest.CreatedDate, opt => opt.MapFrom(src => src.CreatedDate));                  
+           .ForMember(dest => dest.CreatedDate, opt => opt.MapFrom(src => src.CreatedDate));
+
+        CreateMap<CarrierBrokerDealerPermit, GetOtherPermitsResultDto>()
+            .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.ExternalId))
+            .ForMember(dest => dest.RegistrationId, opt => opt.MapFrom(src => src.Registration.ExternalId))
+            .ForMember(dest => dest.WasteLicenseOrPermitNumber, opt => opt.MapFrom(src => src.WasteManagementorEnvironmentPermitNumber))
+            .ForMember(dest => dest.PpcNumber, opt => opt.MapFrom(src => src.InstallationPermitorPPCNumber))
+            .ForMember(dest => dest.WasteExemptionReference, opt => opt.MapFrom(src => CreateWasteExemptionReferenceList(src.WasteExemptionReference)));
     }
 
     private List<QueryNoteDto> GetRegistrationTaskNotes(List<RegulatorRegistrationTaskStatus>? srcTasks, string taskName)
@@ -350,4 +357,14 @@ public class RegistrationMaterialProfile : Profile
                 reprocessingSiteAddress.County,
                 reprocessingSiteAddress.PostCode
             }.Where(addressPart => !string.IsNullOrEmpty(addressPart)));
+
+    private List<string> CreateWasteExemptionReferenceList(string? wasteExemptionReference)
+    {
+        if (string.IsNullOrEmpty(wasteExemptionReference))
+        {
+            return new List<string>();
+        }
+
+        return [.. wasteExemptionReference.Split(',')];
+    }
 }
