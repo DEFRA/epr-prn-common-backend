@@ -92,7 +92,7 @@ public class GetRegistrationByOrganisationQueryHandlerTests
             Id = 1
         };
 
-        var tasks = new RegistrationTaskStatus
+        var tasks = new ApplicantRegistrationTaskStatus
         {
             Id = 1,
             ExternalId = externalId,

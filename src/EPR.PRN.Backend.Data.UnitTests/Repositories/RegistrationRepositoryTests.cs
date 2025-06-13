@@ -74,7 +74,7 @@ public class RegistrationRepositoryTests
         // Arrange
         var task = new LookupRegulatorTask { Name = "TestTask", ApplicationTypeId = 1 };
         var taskStatusEntity = new LookupTaskStatus { Name = "InProgress" };
-        var status = new RegistrationTaskStatus
+        var status = new ApplicantRegistrationTaskStatus
         {
             RegistrationId = 1,
             Task = task,
@@ -130,7 +130,7 @@ public class RegistrationRepositoryTests
         await _context.LookupTasks.AddAsync(task);
         await _context.LookupTaskStatuses.AddRangeAsync(oldStatus, newStatus);
 
-        var taskStatus = new RegistrationTaskStatus
+        var taskStatus = new ApplicantRegistrationTaskStatus
         {
             RegistrationId = 2,
             Task = task,

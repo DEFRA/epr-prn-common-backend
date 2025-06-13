@@ -73,7 +73,7 @@ public class RegistrationRepository(EprContext context, ILogger<RegistrationRepo
             .FirstOrDefaultAsync();
     }
 
-    public async Task<RegistrationTaskStatus?> GetTaskStatusAsync(string taskName, int registrationId)
+    public async Task<ApplicantRegistrationTaskStatus?> GetTaskStatusAsync(string taskName, int registrationId)
     {
         var taskStatus = await context
             .RegistrationTaskStatus
@@ -233,7 +233,7 @@ public class RegistrationRepository(EprContext context, ILogger<RegistrationRepo
             }
 
             // Create a new entity if it doesn't exist
-            taskStatus = new RegistrationTaskStatus
+            taskStatus = new ApplicantRegistrationTaskStatus
             {
                 ExternalId = Guid.NewGuid(),
                 RegistrationId = registrationId,
