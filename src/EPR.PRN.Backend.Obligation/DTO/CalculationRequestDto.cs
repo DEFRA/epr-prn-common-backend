@@ -6,7 +6,7 @@ namespace EPR.PRN.Backend.Obligation.Dto
 {
     public class CalculationRequestDto
     {
-        public Guid OrganisationId { get; set; }
+        public Guid SubmitterId { get; set; }
 
         public SubmissionCalculationRequest SubmissionCalculationRequest { get; set; } = new();
 
@@ -14,6 +14,8 @@ namespace EPR.PRN.Backend.Obligation.Dto
 
         public List<Material> Materials { get; set; } = [];
 
-        public Dictionary<int, Dictionary<MaterialType, double>> RecyclingTargets { get; set; } = [];
+		public int SubmitterTypeId { get; set; }
+
+		public Dictionary<int, Dictionary<MaterialType, double>> RecyclingTargets { get; set; } = [];
     }
 }

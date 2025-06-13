@@ -68,8 +68,10 @@ public class GlassCalculationStrategyTests
             SubmissionPeriod = submissionPeriod,
             PackagingMaterial = "GL",
             PackagingMaterialWeight = materialWeight,
-            OrganisationId = organisationId
-        };
+            OrganisationId = organisationId,
+            SubmitterId = organisationId,
+            SubmitterType = ObligationCalculationOrganisationSubmitterTypeName.DirectRegistrant.ToString()
+		};
 
 		var materials = new List<Material>()
         {
@@ -102,7 +104,7 @@ public class GlassCalculationStrategyTests
             MaterialType = MaterialType.Glass,
 			Materials = materials,
 			SubmissionCalculationRequest = calculationRequest,
-            OrganisationId = organisationId,
+            SubmitterId = organisationId,
             RecyclingTargets = recyclingTargets
         };
 

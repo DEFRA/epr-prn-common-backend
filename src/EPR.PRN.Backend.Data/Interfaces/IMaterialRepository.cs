@@ -1,9 +1,8 @@
 ﻿using EPR.PRN.Backend.Data.DataModels;
 
-namespace EPR.PRN.Backend.Data.Interfaces
+namespace EPR.PRN.Backend.Data.Interfaces;
+
+public interface IMaterialRepository
 {
-    public interface IMaterialRepository
-    {
-		Task<IEnumerable<Material>> GetAllMaterials();
-	}
+    Task<IEnumerable<Material>> GetAllMaterials();
 }

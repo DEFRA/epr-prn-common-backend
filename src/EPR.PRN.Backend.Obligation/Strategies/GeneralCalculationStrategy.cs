@@ -28,15 +28,17 @@ public class GeneralCalculationStrategy : IMaterialCalculationStrategy
         {
             MaterialId = calculationRequest.Materials.First(m => m.MaterialName == calculationRequest.MaterialType.ToString()).Id,
             CalculatedOn = calculatedOn,
-            OrganisationId = calculationRequest.OrganisationId,
-            MaterialObligationValue = _calculationService.Calculate
+			OrganisationId = calculationRequest.SubmissionCalculationRequest.OrganisationId,
+			MaterialObligationValue = _calculationService.Calculate
             (
                 calculationRequest.RecyclingTargets[currentYear][calculationRequest.MaterialType],
                 calculationRequest.SubmissionCalculationRequest.PackagingMaterialWeight
             ),
             Year = currentYear,
-            Tonnage = calculationRequest.SubmissionCalculationRequest.PackagingMaterialWeight
-        };
+            Tonnage = calculationRequest.SubmissionCalculationRequest.PackagingMaterialWeight,
+			SubmitterId = calculationRequest.SubmitterId,
+            SubmitterTypeId = calculationRequest.SubmitterTypeId
+		};
 
         return [calculation];
     }

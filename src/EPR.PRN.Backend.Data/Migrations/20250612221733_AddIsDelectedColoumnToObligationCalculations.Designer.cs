@@ -4,6 +4,7 @@ using EPR.PRN.Backend.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EPR.PRN.Backend.Data.Migrations
 {
     [DbContext(typeof(EprContext))]
-    partial class EprContextModelSnapshot : ModelSnapshot
+    [Migration("20250612221733_AddIsDelectedColoumnToObligationCalculations")]
+    partial class AddIsDelectedColoumnToObligationCalculations
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1037,6 +1040,7 @@ namespace EPR.PRN.Backend.Data.Migrations
                         .HasColumnType("nvarchar(200)");
 
                     b.Property<string>("AddressLine2")
+                        .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
@@ -1045,6 +1049,7 @@ namespace EPR.PRN.Backend.Data.Migrations
                         .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("GridReference")
+                        .IsRequired()
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
@@ -2738,7 +2743,7 @@ namespace EPR.PRN.Backend.Data.Migrations
             modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.RegistrationTaskStatus", b =>
                 {
                     b.HasOne("EPR.PRN.Backend.Data.DataModels.Registrations.Registration", "Registration")
-                        .WithMany("RegistrationTasks")
+                        .WithMany()
                         .HasForeignKey("RegistrationId");
 
                     b.HasOne("EPR.PRN.Backend.Data.DataModels.Registrations.LookupRegulatorTask", "Task")
@@ -2901,8 +2906,6 @@ namespace EPR.PRN.Backend.Data.Migrations
                     b.Navigation("AccreditationTasks");
 
                     b.Navigation("Materials");
-
-                    b.Navigation("RegistrationTasks");
 
                     b.Navigation("Tasks");
                 });

@@ -61,6 +61,7 @@ public class GeneralCalculationStrategyTests
     {
         // Arrange
         var organisationId = Guid.NewGuid();
+        var submitterId = Guid.NewGuid();
 		var currentYear = DateTime.UtcNow.Year + yearOffSet;
 		var calculatedOn = DateTime.UtcNow.AddYears(yearOffSet);
 		_mockDateTimeProvider.Setup(m => m.UtcNow).Returns(calculatedOn);
@@ -72,7 +73,9 @@ public class GeneralCalculationStrategyTests
             PackagingMaterial = "PL",
             PackagingMaterialWeight = materialWeight,
             OrganisationId = organisationId,
-            SubmissionPeriod = submissionPeriod
+            SubmissionPeriod = submissionPeriod,
+			SubmitterId = submitterId,
+			SubmitterType = ObligationCalculationOrganisationSubmitterTypeName.DirectRegistrant.ToString()
 		};
 
         var materialType = MaterialType.Plastic;
@@ -100,7 +103,7 @@ public class GeneralCalculationStrategyTests
             RecyclingTargets = recyclingTargets,
             MaterialType = materialType,
             Materials = [material],
-            OrganisationId = organisationId,
+            SubmitterId = submitterId,
         };
 
         _strategy = new GeneralCalculationStrategy(new MaterialCalculationService(), _mockDateTimeProvider.Object);
@@ -119,21 +122,22 @@ public class GeneralCalculationStrategyTests
 		result[0].CalculatedOn.Should().Be(calculatedOn);
     }
 
-    [TestMethod]
-    [ExpectedException(typeof(KeyNotFoundException))]
-    public void Calculate_ShouldThrowKeyNotFoundException_WhenRecyclingTargetYearNotFound()
-    {
-        // Arrange
-        var organisationId = Guid.NewGuid();
-        var calculationRequest = new SubmissionCalculationRequest
-        {
-            PackagingMaterial = "PL",
-            PackagingMaterialWeight = 100,
-            OrganisationId = Guid.NewGuid(),
-            SubmissionPeriod = "2025-P1"
-        };
+	[TestMethod]
+	public void Calculate_ShouldThrowKeyNotFoundException_WhenRecyclingTargetYearNotFound()
+	{
+		// Arrange
+		var organisationId = Guid.NewGuid();
+		var calculationRequest = new SubmissionCalculationRequest
+		{
+			PackagingMaterial = "PL",
+			PackagingMaterialWeight = 100,
+			OrganisationId = organisationId,
+			SubmissionPeriod = "2025",
+            SubmitterId = organisationId,
+			SubmitterType = ObligationCalculationOrganisationSubmitterTypeName.DirectRegistrant.ToString()
+		};
 
-        var materialType = MaterialType.Plastic;
+		var materialType = MaterialType.Plastic;
 		var material = new Material
 		{
 			Id = 1,
@@ -142,26 +146,28 @@ public class GeneralCalculationStrategyTests
 		};
 
 		var recyclingTargets = new Dictionary<int, Dictionary<MaterialType, double>>
-        {
-            {
-                DateTime.UtcNow.Year - 1, // Use a past year to trigger the exception
+		{
+			{
+				DateTime.UtcNow.Year - 1, // Use a past year to trigger the exception
                 new Dictionary<MaterialType, double>
-                {
-                    { materialType, 0.7 }
-                }
-            }
-        };
-        var request = new CalculationRequestDto
-        {
-            SubmissionCalculationRequest = calculationRequest,
-            RecyclingTargets = recyclingTargets,
-            MaterialType = materialType,
-			Materials = [material],
-			OrganisationId = organisationId
-        };
-        // Act
-        _strategy.Calculate(request);
+				{
+					{ materialType, 0.7 }
+				}
+			}
+		};
 
-        // Assert is handled by ExpectedException
-    }
+		var request = new CalculationRequestDto
+		{
+			SubmissionCalculationRequest = calculationRequest,
+			RecyclingTargets = recyclingTargets,
+			MaterialType = materialType,
+			Materials = [material],
+			SubmitterId = organisationId
+		};
+
+		// Act & Assert
+		Action act = () => _strategy.Calculate(request);
+
+		act.Should().Throw<KeyNotFoundException>();
+	}
 }
