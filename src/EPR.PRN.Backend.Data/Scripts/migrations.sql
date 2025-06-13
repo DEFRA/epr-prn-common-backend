@@ -3514,7 +3514,7 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250612174542_Add-table-CarrierBrokerDealerPermits'
+    WHERE [MigrationId] = N'20250613100456_Add-table-CarrierBrokerDealerPermits'
 )
 BEGIN
     CREATE TABLE [Public.CarrierBrokerDealerPermits] (
@@ -3538,20 +3538,20 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250612174542_Add-table-CarrierBrokerDealerPermits'
+    WHERE [MigrationId] = N'20250613100456_Add-table-CarrierBrokerDealerPermits'
 )
 BEGIN
-    CREATE INDEX [IX_Public.CarrierBrokerDealerPermits_RegistrationId] ON [Public.CarrierBrokerDealerPermits] ([RegistrationId]);
+    CREATE UNIQUE INDEX [IX_Public.CarrierBrokerDealerPermits_RegistrationId] ON [Public.CarrierBrokerDealerPermits] ([RegistrationId]);
 END;
 GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250612174542_Add-table-CarrierBrokerDealerPermits'
+    WHERE [MigrationId] = N'20250613100456_Add-table-CarrierBrokerDealerPermits'
 )
 BEGIN
     INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
-    VALUES (N'20250612174542_Add-table-CarrierBrokerDealerPermits', N'8.0.8');
+    VALUES (N'20250613100456_Add-table-CarrierBrokerDealerPermits', N'8.0.8');
 END;
 GO
 

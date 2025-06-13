@@ -42,7 +42,8 @@ namespace EPR.PRN.Backend.Data.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Public.CarrierBrokerDealerPermits_RegistrationId",
                 table: "Public.CarrierBrokerDealerPermits",
-                column: "RegistrationId");
+                column: "RegistrationId",
+                unique: true);
         }
 
         /// <inheritdoc />

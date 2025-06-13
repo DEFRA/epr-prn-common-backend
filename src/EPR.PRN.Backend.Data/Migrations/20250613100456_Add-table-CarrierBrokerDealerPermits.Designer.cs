@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EPR.PRN.Backend.Data.Migrations
 {
     [DbContext(typeof(EprContext))]
-    [Migration("20250612174542_Add-table-CarrierBrokerDealerPermits")]
+    [Migration("20250613100456_Add-table-CarrierBrokerDealerPermits")]
     partial class AddtableCarrierBrokerDealerPermits
     {
         /// <inheritdoc />
@@ -1099,7 +1099,8 @@ namespace EPR.PRN.Backend.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("RegistrationId");
+                    b.HasIndex("RegistrationId")
+                        .IsUnique();
 
                     b.ToTable("Public.CarrierBrokerDealerPermits");
                 });
@@ -2588,8 +2589,8 @@ namespace EPR.PRN.Backend.Data.Migrations
             modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.CarrierBrokerDealerPermit", b =>
                 {
                     b.HasOne("EPR.PRN.Backend.Data.DataModels.Registrations.Registration", null)
-                        .WithMany()
-                        .HasForeignKey("RegistrationId")
+                        .WithOne()
+                        .HasForeignKey("EPR.PRN.Backend.Data.DataModels.Registrations.CarrierBrokerDealerPermit", "RegistrationId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
                 });
