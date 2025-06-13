@@ -26,24 +26,20 @@ public class RegistrationMaterialControllerTests
     }
     
     [TestMethod]
-    public async Task CreateRegistrationMaterialAndExemptionReferences_ValidCommand_ReturnsNoContent()
+    public async Task CreateExemptionReferences_ValidCommand_ReturnsNoContent()
     {
         // Arrange  
-        var command = new CreateRegistrationMaterialAndExemptionReferencesCommand
-        {
-            RegistrationMaterial = new RegistrationMaterialDto
-            {
-                MaterialName = "Test Material"
-            },
+        var command = new CreateExemptionReferencesCommand
+        {           
             MaterialExemptionReferences = new List<MaterialExemptionReferenceDto>()
         };
 
         _mediatorMock
-            .Setup(m => m.Send(It.IsAny<CreateRegistrationMaterialAndExemptionReferencesCommand>(), It.IsAny<CancellationToken>()))
+            .Setup(m => m.Send(It.IsAny<CreateExemptionReferencesCommand>(), It.IsAny<CancellationToken>()))
             .Returns(Task.FromResult(Unit.Value));
 
         // Act  
-        var result = await _controller.CreateRegistrationMaterialAndExemptionReferences(command);
+        var result = await _controller.CreateExemptionReferences(command);
 
         // Assert  
         result.Should().BeOfType<OkResult>();

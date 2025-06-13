@@ -37,10 +37,20 @@ public class RegistrationMaterialController(
         return new CreatedResult(string.Empty, registrationMaterialId);
     }
 
-    [HttpPost("registrationMaterials/createRegistrationMaterialAndExemptionReferences")]
-    public async Task<IActionResult> CreateRegistrationMaterialAndExemptionReferences([FromBody] CreateRegistrationMaterialAndExemptionReferencesCommand command)
+    [HttpPost("registrationMaterials/createExemptionReferences")]
+    [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(CreatedResult))]
+    [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
+    [SwaggerOperation(
+        Summary = "create exemption references",
+        Description = "attempting to create exemption references"
+    )]
+    [SwaggerResponse(StatusCodes.Status201Created)]
+    [SwaggerResponse(StatusCodes.Status400BadRequest, "If the request is invalid or a validation error occurs.", typeof(ProblemDetails))]
+    [SwaggerResponse(StatusCodes.Status500InternalServerError, "If an unexpected error occurs.", typeof(ContentResult))]
+    public async Task<IActionResult> CreateExemptionReferences([FromBody] CreateExemptionReferencesCommand command)
     {
-        logger.LogInformation(LogMessages.CreateRegistrationMaterialAndExemptionReferences);
+        logger.LogInformation(LogMessages.CreateExemptionReferences);
         await mediator.Send(command);
         return Ok();
     }

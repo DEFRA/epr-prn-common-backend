@@ -456,8 +456,8 @@ public class RegistrationMaterialRepositoryTests
         var materialStatus = new LookupRegistrationMaterialStatus { Id = 4, Name = "Pending" };
         var exemptionReferences = new List<MaterialExemptionReference>
         {
-            new MaterialExemptionReference { ReferenceNo = "EXEMPT456" },
-            new MaterialExemptionReference { ReferenceNo = "EXEMPT789" }
+            new MaterialExemptionReference { ReferenceNo = "EXEMPT456", RegistrationMaterialId = 3 },
+            new MaterialExemptionReference { ReferenceNo = "EXEMPT789", RegistrationMaterialId = 3 }
         };
         var registrationMaterial = new RegistrationMaterial
         {
@@ -476,10 +476,11 @@ public class RegistrationMaterialRepositoryTests
         _context.Registrations.Add(registration);
         _context.LookupMaterials.Add(lookupMaterial);
         _context.LookupRegistrationMaterialStatuses.Add(materialStatus);
+        _context.RegistrationMaterials.Add(registrationMaterial);
         await _context.SaveChangesAsync();
 
         // Act
-        await _repository.CreateRegistrationMaterialWithExemptionsAsync(registrationMaterial, exemptionReferences);
+        await _repository.CreateExemptionReferencesAsync(exemptionReferences);
 
         // Assert
         var createdMaterial = await _context.RegistrationMaterials
@@ -495,14 +496,7 @@ public class RegistrationMaterialRepositoryTests
             createdMaterial.MaterialExemptionReferences!.Select(x => x.ReferenceNo).Should().Contain("EXEMPT789");
         }
     }
-
-    [TestMethod]
-    public async Task CreateRegistrationMaterialWithExemptionsAsync_ShouldThrow_WhenRegistrationMaterialIsNull()
-    {
-        await Assert.ThrowsExceptionAsync<ArgumentNullException>(async () =>
-            await _repository.CreateRegistrationMaterialWithExemptionsAsync(null, new List<MaterialExemptionReference>()));
-    }
-
+    
     [TestMethod]
     public async Task CreateRegistrationMaterialWithExemptionsAsync_ShouldAllowEmptyExemptions()
     {
@@ -532,10 +526,11 @@ public class RegistrationMaterialRepositoryTests
         _context.Registrations.Add(registration);
         _context.LookupMaterials.Add(lookupMaterial);
         _context.LookupRegistrationMaterialStatuses.Add(materialStatus);
+        _context.RegistrationMaterials.Add(registrationMaterial);
         await _context.SaveChangesAsync();
 
         // Act
-        await _repository.CreateRegistrationMaterialWithExemptionsAsync(registrationMaterial, new List<MaterialExemptionReference>());
+        await _repository.CreateExemptionReferencesAsync(new List<MaterialExemptionReference>());
 
         // Assert
         var createdMaterial = await _context.RegistrationMaterials
