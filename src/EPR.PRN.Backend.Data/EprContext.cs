@@ -280,6 +280,13 @@ namespace EPR.PRN.Backend.Data
                 .ValueGeneratedOnAdd()
                 .IsRequired();
 
+            modelBuilder.Entity<Registration>()
+                .HasOne(r => r.CarrierBrokerDealerPermit)
+                .WithOne(p => p.Registration)
+                .HasForeignKey<CarrierBrokerDealerPermit>(p => p.RegistrationId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+
 
         }
 
