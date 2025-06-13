@@ -13,6 +13,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
 using Moq;
+using EPR.PRN.Backend.Data.DataModels.Registrations;
+using EPR.PRN.Backend.API.Handlers;
+using EPR.PRN.Backend.Obligation.Models;
 
 namespace EPR.PRN.Backend.API.UnitTests.Controllers;
 
@@ -240,6 +243,29 @@ public class RegistrationMaterialControllerTests
         okResult.Should().NotBeNull();
         okResult!.Value.Should().BeEquivalentTo(expectedDto);
     }
+
+    [TestMethod]
+    public async Task GetWasteCarrierDetailsByRegistrationId_ReturnsOk_WithExpectedResult()
+    {
+        // Arrange
+        var registrationId = Guid.Parse("4bac12f7-f7a9-4df4-b7b5-9c4221860c4d");
+
+
+        var expectedDto = new RegistrationWasteCarrierDto();
+
+        _mediatorMock
+            .Setup(m => m.Send(It.IsAny<GetRegistrationWasteCarrierDetailsByIdQuery>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(expectedDto);
+
+        // Act
+        var result = await _controller.GetWasteCarrierDetailsByRegistrationId(registrationId);
+
+        // Assert
+        var okResult = result as OkObjectResult;
+        okResult.Should().NotBeNull();
+        okResult!.Value.Should().BeEquivalentTo(expectedDto);
+    }
+
     [TestMethod]
     public async Task GetMaterialsAuthorisedOnSiteId_ReturnsOk_WithExpectedResult()
     {
@@ -413,6 +439,39 @@ public class RegistrationMaterialControllerTests
             controller.RegistrationMaterialsMarkAsDulyMade(materialId, command)
         ).Should().ThrowAsync<ValidationException>();
     }
+    
+    [TestMethod]
+    public async Task CreateRegistrationMaterialAndExemptionReferences_ValidCommand_ReturnsNoContent()
+    {
+        // Arrange  
+        var command = new CreateRegistrationMaterialAndExemptionReferencesCommand
+        {
+            RegistrationMaterial = new RegistrationMaterialDto
+            {
+                MaterialName = "Test Material"
+            },
+            MaterialExemptionReferences = new List<MaterialExemptionReferenceDto>()
+        };
 
+        _mediatorMock
+            .Setup(m => m.Send(It.IsAny<CreateRegistrationMaterialAndExemptionReferencesCommand>(), It.IsAny<CancellationToken>()))
+            .Returns(Task.FromResult(Unit.Value));
 
+        // Act  
+        var result = await _controller.CreateRegistrationMaterialAndExemptionReferences(command);
+
+        // Assert  
+        result.Should().BeOfType<OkResult>();
+       
+
+        _loggerMock.Verify(
+            x => x.Log(
+                LogLevel.Information,
+                It.IsAny<EventId>(),
+                It.Is<It.IsAnyType>((v, t) => true), 
+                It.IsAny<Exception>(),
+                It.IsAny<Func<It.IsAnyType, Exception, string>>()),
+            Times.AtLeastOnce
+        );
+    }
 }

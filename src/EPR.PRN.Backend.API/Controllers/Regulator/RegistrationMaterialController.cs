@@ -108,6 +108,24 @@ public class RegistrationMaterialController(IMediator mediator
         return Ok(result);
     }
 
+    [HttpGet("registrations/{Id}/wasteCarrier")]
+    [ProducesResponseType(typeof(RegistrationWasteCarrierDto), 200)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [SwaggerOperation(
+        Summary = "get waste carrier details",
+        Description = "attempting to get waste carrier details.  "
+    )]
+    [SwaggerResponse(StatusCodes.Status200OK, "Returns waste carrier details for registration.", typeof(RegistrationWasteCarrierDto))]
+    [SwaggerResponse(StatusCodes.Status400BadRequest, "If the request is invalid or a validation error occurs.", typeof(ProblemDetails))]
+    [SwaggerResponse(StatusCodes.Status500InternalServerError, "If an unexpected error occurs.", typeof(ContentResult))]
+    public async Task<IActionResult> GetWasteCarrierDetailsByRegistrationId(Guid Id)
+    {
+        logger.LogInformation(LogMessages.RegistrationWasteCarrier, Id);
+        var result = await mediator.Send(new GetRegistrationWasteCarrierDetailsByIdQuery() { Id = Id });
+        return Ok(result);
+    }
+
     [HttpGet("registrations/{Id}/authorisedMaterials")]
     [ProducesResponseType(typeof(MaterialsAuthorisedOnSiteDto), 200)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -162,6 +180,14 @@ public class RegistrationMaterialController(IMediator mediator
     #endregion Get Methods
 
     #region Post Methods
+    [HttpPost("registrationMaterials/createRegistrationMaterialAndExemptionReferences")]
+    public async Task<IActionResult> CreateRegistrationMaterialAndExemptionReferences([FromBody] CreateRegistrationMaterialAndExemptionReferencesCommand command)
+    {
+        logger.LogInformation(LogMessages.CreateRegistrationMaterialAndExemptionReferences);        
+        await mediator.Send(command);
+        return Ok();
+    }
+
     [HttpPost("registrationMaterials/{Id}/outcome")]
     [ProducesResponseType(StatusCodes.Status204NoContent, Type = typeof(NoContentResult))]
     [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]

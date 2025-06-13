@@ -39,6 +39,8 @@ public class Registration
     public Guid UpdatedBy { get; set; }
     public DateTime? UpdatedDate { get; set; }
 
+    public CarrierBrokerDealerPermits CarrierBrokerDealerPermit { get; set; }
+
     public List<RegulatorRegistrationTaskStatus>? Tasks { get; set; }
 
     public List<RegulatorAccreditationRegistrationTaskStatus>? AccreditationTasks { get; set; }

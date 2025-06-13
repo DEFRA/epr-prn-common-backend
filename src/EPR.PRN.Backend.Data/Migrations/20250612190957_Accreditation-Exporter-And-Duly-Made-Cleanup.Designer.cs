@@ -4,6 +4,7 @@ using EPR.PRN.Backend.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EPR.PRN.Backend.Data.Migrations
 {
     [DbContext(typeof(EprContext))]
-    partial class EprContextModelSnapshot : ModelSnapshot
+    [Migration("20250612190957_Accreditation-Exporter-And-Duly-Made-Cleanup")]
+    partial class AccreditationExporterAndDulyMadeCleanup
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1047,56 +1050,6 @@ namespace EPR.PRN.Backend.Data.Migrations
                     b.ToTable("Public.ApplicationTaskStatusQueryNote");
                 });
 
-            modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.CarrierBrokerDealerPermits", b =>
-            {
-                b.Property<int>("Id")
-                    .ValueGeneratedOnAdd()
-                    .HasColumnType("int");
-
-                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                b.Property<Guid>("CreatedBy")
-                    .HasColumnType("uniqueidentifier");
-
-                b.Property<DateTime>("CreatedDate")
-                    .HasColumnType("datetime2");
-
-                b.Property<Guid>("ExternalId")
-                    .ValueGeneratedOnAdd()
-                    .HasColumnType("uniqueidentifier");
-
-                b.Property<string>("InstatallationPermitOrPPCNumber")
-                    .HasColumnType("nvarchar(max)");
-
-                b.Property<bool>("RegisteredWasteCarrierBrokerDealerFlag")
-                    .HasColumnType("bit");
-
-                b.Property<int>("RegistrationId")
-                    .HasColumnType("int");
-
-                b.Property<Guid?>("UpdatedBy")
-                    .HasColumnType("uniqueidentifier");
-
-                b.Property<DateTime?>("UpdatedDate")
-                    .HasColumnType("datetime2");
-
-                b.Property<string>("WasteCarrierBrokerDealerRegistration")
-                    .HasColumnType("nvarchar(max)");
-
-                b.Property<string>("WasteManagementEnvironmentPermitNumber")
-                    .HasColumnType("nvarchar(max)");
-
-                b.HasKey("Id");
-
-                b.HasIndex("ExternalId")
-                    .IsUnique();
-
-                b.HasIndex("RegistrationId")
-                    .IsUnique();
-
-                b.ToTable("Public.CarrierBrokerDealerPermits");
-            });
-
             modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.DeterminationDate", b =>
                 {
                     b.Property<int>("Id")
@@ -1812,14 +1765,6 @@ namespace EPR.PRN.Backend.Data.Migrations
                             IsMaterialSpecific = true,
                             JourneyTypeId = 2,
                             Name = "DulyMade"
-                        },
-                        new
-                        {
-                            Id = 29,
-                            ApplicationTypeId = 1,
-                            IsMaterialSpecific = false,
-                            JourneyTypeId = 1,
-                            Name = "WasteCarrierBrokerDealerNumber"
                         });
                 });
 
@@ -2580,15 +2525,6 @@ namespace EPR.PRN.Backend.Data.Migrations
                     b.Navigation("RegulatorApplicationTaskStatus");
                 });
 
-            modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.CarrierBrokerDealerPermits", b =>
-            {
-                b.HasOne("EPR.PRN.Backend.Data.DataModels.Registrations.Registration", null)
-                    .WithOne("CarrierBrokerDealerPermit")
-                    .HasForeignKey("EPR.PRN.Backend.Data.DataModels.Registrations.CarrierBrokerDealerPermits", "RegistrationId")
-                    .OnDelete(DeleteBehavior.Cascade)
-                    .IsRequired();
-            });
-
             modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.DeterminationDate", b =>
                 {
                     b.HasOne("EPR.PRN.Backend.Data.DataModels.Registrations.RegistrationMaterial", "RegistrationMaterial")
@@ -2902,9 +2838,6 @@ namespace EPR.PRN.Backend.Data.Migrations
             modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.Registration", b =>
                 {
                     b.Navigation("AccreditationTasks");
-
-                    b.Navigation("CarrierBrokerDealerPermit")
-                        .IsRequired();
 
                     b.Navigation("Materials");
 
