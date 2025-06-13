@@ -3514,6 +3514,52 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250611140921_AddressFieldsNullable'
+)
+BEGIN
+    DECLARE @var29 sysname;
+    SELECT @var29 = [d].[name]
+    FROM [sys].[default_constraints] [d]
+    INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+    WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Public.Address]') AND [c].[name] = N'GridReference');
+    IF @var29 IS NOT NULL EXEC(N'ALTER TABLE [Public.Address] DROP CONSTRAINT [' + @var29 + '];');
+    ALTER TABLE [Public.Address] ALTER COLUMN [GridReference] nvarchar(20) NULL;
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250611140921_AddressFieldsNullable'
+)
+BEGIN
+    DECLARE @var30 sysname;
+    SELECT @var30 = [d].[name]
+    FROM [sys].[default_constraints] [d]
+    INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+    WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Public.Address]') AND [c].[name] = N'AddressLine2');
+    IF @var30 IS NOT NULL EXEC(N'ALTER TABLE [Public.Address] DROP CONSTRAINT [' + @var30 + '];');
+    ALTER TABLE [Public.Address] ALTER COLUMN [AddressLine2] nvarchar(200) NULL;
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250611140921_AddressFieldsNullable'
+)
+BEGIN
+    INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+    VALUES (N'20250611140921_AddressFieldsNullable', N'8.0.8');
+END;
+GO
+
+COMMIT;
+GO
+
+BEGIN TRANSACTION;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
     WHERE [MigrationId] = N'20250613145225_Add-table-CarrierBrokerDealerPermits'
 )
 BEGIN
@@ -3538,7 +3584,7 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250613145225_Add-table-CarrierBrokerDealerPermits'
+        WHERE [MigrationId] = N'20250613145225_Add-table-CarrierBrokerDealerPermits'
 )
 BEGIN
     CREATE UNIQUE INDEX [IX_Public.CarrierBrokerDealerPermits_RegistrationId] ON [Public.CarrierBrokerDealerPermits] ([RegistrationId]);
@@ -3557,4 +3603,3 @@ GO
 
 COMMIT;
 GO
-
