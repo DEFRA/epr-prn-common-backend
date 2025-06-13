@@ -269,10 +269,17 @@ namespace EPR.PRN.Backend.Data
                 base.OnModelCreating(modelBuilder);
 
             modelBuilder.Entity<CarrierBrokerDealerPermit>()
-                .HasOne<Registration>()
+                .HasOne(c => c.Registration)
                 .WithOne()
-                .HasForeignKey<CarrierBrokerDealerPermit>("RegistrationId")
-                .OnDelete(DeleteBehavior.NoAction);
+                .HasForeignKey<CarrierBrokerDealerPermit>(c => c.RegistrationId)
+                .OnDelete(DeleteBehavior.Cascade); 
+
+            modelBuilder.Entity<CarrierBrokerDealerPermit>()
+                .Property(p => p.ExternalId)
+                .HasDefaultValueSql("NEWID()")
+                .ValueGeneratedOnAdd()
+                .IsRequired();
+
 
         }
 

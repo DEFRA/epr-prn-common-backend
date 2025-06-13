@@ -14,6 +14,8 @@ public class CarrierBrokerDealerPermit
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public Guid ExternalId { get; set; }
     public int RegistrationId { get; set; }
+    public Registration Registration { get; set; }
+
     [MaxLength(20)]
     [Column(TypeName = "varchar(20)")]
     public string? WasteCarrierBrokerDealerRegistrstion { get; set; }

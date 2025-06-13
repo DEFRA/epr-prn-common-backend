@@ -1064,7 +1064,8 @@ namespace EPR.PRN.Backend.Data.Migrations
 
                     b.Property<Guid>("ExternalId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWID()");
 
                     b.Property<string>("InstallationPermitorPPCNumber")
                         .HasMaxLength(20)
@@ -2585,11 +2586,13 @@ namespace EPR.PRN.Backend.Data.Migrations
 
             modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.CarrierBrokerDealerPermit", b =>
                 {
-                    b.HasOne("EPR.PRN.Backend.Data.DataModels.Registrations.Registration", null)
+                    b.HasOne("EPR.PRN.Backend.Data.DataModels.Registrations.Registration", "Registration")
                         .WithOne()
                         .HasForeignKey("EPR.PRN.Backend.Data.DataModels.Registrations.CarrierBrokerDealerPermit", "RegistrationId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Registration");
                 });
 
             modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.DeterminationDate", b =>

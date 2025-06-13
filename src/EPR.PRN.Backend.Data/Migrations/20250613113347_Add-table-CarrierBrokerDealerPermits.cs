@@ -17,7 +17,7 @@ namespace EPR.PRN.Backend.Data.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    ExternalId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ExternalId = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "NEWID()"),
                     RegistrationId = table.Column<int>(type: "int", nullable: false),
                     WasteCarrierBrokerDealerRegistrstion = table.Column<string>(type: "varchar(20)", maxLength: 20, nullable: true),
                     WasteManagementorEnvironmentPermitNumber = table.Column<string>(type: "varchar(20)", maxLength: 20, nullable: true),
@@ -36,7 +36,8 @@ namespace EPR.PRN.Backend.Data.Migrations
                         name: "FK_Public.CarrierBrokerDealerPermits_Public.Registration_RegistrationId",
                         column: x => x.RegistrationId,
                         principalTable: "Public.Registration",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
