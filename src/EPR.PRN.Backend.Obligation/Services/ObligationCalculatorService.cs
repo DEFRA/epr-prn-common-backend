@@ -18,7 +18,8 @@ namespace EPR.PRN.Backend.Obligation.Services
 		ILogger<ObligationCalculatorService> logger,
 		IPrnRepository prnRepository,
 		IMaterialRepository materialRepository,
-		IObligationCalculationOrganisationSubmitterTypeRepository submitterTypeRepository) : IObligationCalculatorService
+		IObligationCalculationOrganisationSubmitterTypeRepository submitterTypeRepository,
+		IDateTimeProvider dateTimeProvider) : IObligationCalculatorService
 	{
 		public async Task<CalculationResult> CalculateAsync(Guid submitterId, List<SubmissionCalculationRequest> request)
 		{
@@ -93,9 +94,14 @@ namespace EPR.PRN.Backend.Obligation.Services
 			return result;
 		}
 
-		public async Task RemoveAndAddObligationCalculationAsync(Guid submitterId, List<ObligationCalculation> calculations)
+		public async Task SoftDeleteAndAddObligationCalculationAsync(Guid submitterId, List<ObligationCalculation> calculations)
 		{
-			await obligationCalculationRepository.RemoveAndAddObligationCalculationBySubmitterIdAsync(submitterId, calculations);
+			if (calculations == null || calculations.Count == 0)
+			{
+				throw new ArgumentException("The calculations list cannot be null or empty.", nameof(calculations));
+			}
+
+			await obligationCalculationRepository.SoftDeleteAndAddObligationCalculationBySubmitterIdAsync(submitterId, dateTimeProvider.CurrentYear, calculations);
 		}
 
 		public async Task<ObligationCalculationResult> GetObligationCalculation(Guid organisationId, int year)

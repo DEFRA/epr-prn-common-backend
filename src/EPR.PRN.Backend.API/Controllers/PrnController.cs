@@ -207,9 +207,9 @@ public class PrnController(IPrnService prnService,
             }
             logger.LogInformation("{Logprefix}: PrnController - CalculateAsync: Obligation Calculation returned {CalculationResult}", logPrefix, JsonConvert.SerializeObject(calculationResult.Calculations));
 
-            logger.LogInformation("{Logprefix}: PrnController - CalculateAsync: calling RemoveAndAddObligationCalculationAsync ", logPrefix);
+            logger.LogInformation("{Logprefix}: PrnController - CalculateAsync: calling SoftDeleteAndAddObligationCalculationAsync ", logPrefix);
 
-            await obligationCalculatorService.RemoveAndAddObligationCalculationAsync(submitterId, calculationResult.Calculations);
+            await obligationCalculatorService.SoftDeleteAndAddObligationCalculationAsync(submitterId, calculationResult.Calculations);
 
             logger.LogInformation("{Logprefix}: PrnController - CalculateAsync: Obligation Calculation Successful {Calculations}", logPrefix, JsonConvert.SerializeObject(calculationResult.Calculations));
 

@@ -25,6 +25,7 @@ public class ObligationCalculatorServiceTests
 	private Mock<IPrnRepository> _mockPrnRepository;
 	private Mock<IMaterialRepository> _mockMaterialRepository;
 	private Mock<IObligationCalculationOrganisationSubmitterTypeRepository> _mockSubmitterTypeRepository;
+	private Mock<IDateTimeProvider> _mockDateTimeProvider;
 	private Mock<ILogger<ObligationCalculatorService>> _mockLogger;
 	private ObligationCalculatorService _service;
 	private Fixture _fixture;
@@ -41,6 +42,7 @@ public class ObligationCalculatorServiceTests
 		_mockPrnRepository = new Mock<IPrnRepository>();
 		_mockMaterialRepository = new Mock<IMaterialRepository>();
 		_mockSubmitterTypeRepository = new Mock<IObligationCalculationOrganisationSubmitterTypeRepository>();
+		_mockDateTimeProvider = new Mock<IDateTimeProvider>();
 		_mockLogger = new Mock<ILogger<ObligationCalculatorService>>();
 		_service = new ObligationCalculatorService(
 			_mockObligationCalculationRepository.Object,
@@ -49,7 +51,8 @@ public class ObligationCalculatorServiceTests
 			_mockLogger.Object,
 			_mockPrnRepository.Object,
 			_mockMaterialRepository.Object,
-			_mockSubmitterTypeRepository.Object);
+			_mockSubmitterTypeRepository.Object,
+			_mockDateTimeProvider.Object);
 	}
 
 	[TestMethod]
@@ -450,6 +453,7 @@ public class ObligationCalculatorServiceTests
 	[TestMethod]
     public async Task CalculatePomDataAsync_WhenCalculationsAreSuccessful_ShouldReturnSuccess()
     {
+		//Arrange
 		var organisationId = Guid.NewGuid();
         var packagingMaterial = "PL";
 		var materialWeight = 120;
@@ -457,7 +461,6 @@ public class ObligationCalculatorServiceTests
 		var materials = GetMaterials();
 		var submitterTypeName = ObligationCalculationOrganisationSubmitterTypeName.ComplianceScheme;
 		var submitterTypeId = (int)submitterTypeName;
-
 
 		var submissions = new List<SubmissionCalculationRequest>
 		{
@@ -482,8 +485,10 @@ public class ObligationCalculatorServiceTests
 		]);
 		_mockStrategyResolver.Setup(x => x.Resolve(MaterialType.Plastic)).Returns(mockStrategy.Object);
 
+		//Act
 		var result = await _service.CalculateAsync(organisationId, submissions);
 
+		//Aseert
 		result.Success.Should().BeTrue();
 		result.Calculations.Should().NotBeNullOrEmpty();
 
@@ -499,16 +504,53 @@ public class ObligationCalculatorServiceTests
 	}
 
 	[TestMethod]
-	public async Task RemoveAndAddObligationCalculationAsync_Should_CallRepository_WhenValidCalculationsAreProvided()
+	public async Task SoftDeleteAndAddObligationCalculationAsync_Should_CallRepository_WhenValidCalculationsAreProvided()
 	{
+		//Arrange
+		var currentYear = DateTime.Now.Year;
 		var calculations = new List<ObligationCalculation>
+		{
+			new()
 			{
-				new()
-			};
+				OrganisationId = Guid.NewGuid(),
+				SubmitterId = submitterId,
+				SubmitterTypeId = (int)ObligationCalculationOrganisationSubmitterTypeName.ComplianceScheme,
+				MaterialId = 1,
+				Year = obligationCalculationYear,
+				Tonnage = 100,
+				MaterialObligationValue = 50
+			}
+		};
+		_mockDateTimeProvider.Setup(m => m.CurrentYear).Returns(currentYear);
 
-		await _service.RemoveAndAddObligationCalculationAsync(submitterId, calculations);
+		//Act
+		await _service.SoftDeleteAndAddObligationCalculationAsync(submitterId, calculations);
 
-		_mockObligationCalculationRepository.Verify(x => x.RemoveAndAddObligationCalculationBySubmitterIdAsync(submitterId, calculations), Times.Once);
+		//Assert
+		_mockObligationCalculationRepository.Verify(x => x.SoftDeleteAndAddObligationCalculationBySubmitterIdAsync(submitterId, currentYear, calculations), Times.Once);
+	}
+
+
+	[TestMethod]
+	public async Task SoftDeleteAndAddObligationCalculationAsync_EmptyCalculations_ShouldThrowArgumentException()
+	{
+		// Arrange
+		var calculations = new List<ObligationCalculation>();
+
+		// Act & Assert
+		await Assert.ThrowsExceptionAsync<ArgumentException>(() =>
+			_service.SoftDeleteAndAddObligationCalculationAsync(Guid.NewGuid(), calculations));
+	}
+
+	[TestMethod]
+	public async Task SoftDeleteAndAddObligationCalculationAsync_NullCalculations_ShouldThrowArgumentException()
+	{
+		// Arrange
+		List<ObligationCalculation> calculations = null;
+
+		// Act & Assert
+		await Assert.ThrowsExceptionAsync<ArgumentException>(() =>
+			_service.SoftDeleteAndAddObligationCalculationAsync(Guid.NewGuid(), calculations));
 	}
 
 	private List<string> MockLogger()

@@ -33,6 +33,9 @@ public class ObligationCalculation
 	[Required]
 	public int SubmitterTypeId { get; set; }
 
+	[Required]
+	public bool IsDeleted { get; set; }
+
 	public Material Material { get; set; } = null!;
 
 	public ObligationCalculationOrganisationSubmitterType ObligationCalculationOrganisationSubmitterType { get; set; } = null!;

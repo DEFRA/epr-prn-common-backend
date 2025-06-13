@@ -22,29 +22,32 @@ public class ObligationCalculationRepositoryTests
 	private readonly DateTime calculatedOn = DateTime.UtcNow;
 
 	// This list will be used to mock the ObligationCalculation DbSet
-	private List<ObligationCalculation> obligationCalculation;
+	private List<ObligationCalculation> obligationCalculations;
 
     [TestInitialize]
     public void TestInitialize()
     {
         var dbContextOptions = new DbContextOptionsBuilder<EprContext>().Options;
-        obligationCalculation =
+        obligationCalculations =
         [
-            new ObligationCalculation { OrganisationId = drOrganisationId1, MaterialId = 5, MaterialObligationValue = 15, Year = currentYear, SubmitterId = csSubmitterId, SubmitterTypeId = 1 },
-            new ObligationCalculation { OrganisationId = drOrganisationId1, MaterialId = 6, MaterialObligationValue = 25, Year = currentYear, SubmitterId = csSubmitterId, SubmitterTypeId = 1 },
-			new ObligationCalculation { OrganisationId = subOrganisationId1, MaterialId = 3, MaterialObligationValue = 35, Year = currentYear, SubmitterId = csSubmitterId, SubmitterTypeId = 1 },
-			new ObligationCalculation { OrganisationId = subOrganisationId1, MaterialId = 4, MaterialObligationValue = 45, Year = currentYear, SubmitterId = csSubmitterId, SubmitterTypeId = 1 },
-			new ObligationCalculation { OrganisationId = subOrganisationId1, MaterialId = 1, MaterialObligationValue = 55, Year = currentYear, SubmitterId = csSubmitterId, SubmitterTypeId = 1 },
-			new ObligationCalculation { OrganisationId = drOrganisationId2, MaterialId = 5, MaterialObligationValue = 15, Year = currentYear, SubmitterId = drOrganisationId2, SubmitterTypeId = 2 },
-			new ObligationCalculation { OrganisationId = drOrganisationId2, MaterialId = 6, MaterialObligationValue = 35, Year = currentYear, SubmitterId = drOrganisationId2, SubmitterTypeId = 2 },
-			new ObligationCalculation { OrganisationId = drOrganisationId2, MaterialId = 3, MaterialObligationValue = 45, Year = currentYear, SubmitterId = drOrganisationId2, SubmitterTypeId = 2 },
-			new ObligationCalculation { OrganisationId = subOrganisationId2, MaterialId = 4, MaterialObligationValue = 65, Year = currentYear, SubmitterId = drOrganisationId2, SubmitterTypeId = 2 },
-			new ObligationCalculation { OrganisationId = subOrganisationId2, MaterialId = 2, MaterialObligationValue = 85, Year = currentYear, SubmitterId = drOrganisationId2, SubmitterTypeId = 2 },
-			new ObligationCalculation { OrganisationId = subOrganisationId2, MaterialId = 1, MaterialObligationValue = 85, Year = currentYear, SubmitterId = drOrganisationId2, SubmitterTypeId = 2 },
-			new ObligationCalculation { OrganisationId = drOrganisationId3, MaterialId = 1, MaterialObligationValue = 175, Year = currentYear, SubmitterId = drOrganisationId3, SubmitterTypeId = 2 }
+            new ObligationCalculation { OrganisationId = drOrganisationId1, MaterialId = 5, MaterialObligationValue = 15, Year = currentYear, SubmitterId = csSubmitterId, SubmitterTypeId = 1, IsDeleted = false },
+            new ObligationCalculation { OrganisationId = drOrganisationId1, MaterialId = 6, MaterialObligationValue = 25, Year = currentYear, SubmitterId = csSubmitterId, SubmitterTypeId = 1, IsDeleted = false  },
+			new ObligationCalculation { OrganisationId = subOrganisationId1, MaterialId = 3, MaterialObligationValue = 35, Year = currentYear, SubmitterId = csSubmitterId, SubmitterTypeId = 1, IsDeleted = false  },
+			new ObligationCalculation { OrganisationId = subOrganisationId1, MaterialId = 4, MaterialObligationValue = 45, Year = currentYear, SubmitterId = csSubmitterId, SubmitterTypeId = 1, IsDeleted = false  },
+			new ObligationCalculation { OrganisationId = subOrganisationId1, MaterialId = 1, MaterialObligationValue = 55, Year = currentYear, SubmitterId = csSubmitterId, SubmitterTypeId = 1, IsDeleted = false  },
+			new ObligationCalculation { OrganisationId = subOrganisationId1, MaterialId = 1, MaterialObligationValue = 55, Year = currentYear, SubmitterId = csSubmitterId, SubmitterTypeId = 1, IsDeleted = true  },
+			new ObligationCalculation { OrganisationId = drOrganisationId2, MaterialId = 5, MaterialObligationValue = 15, Year = currentYear, SubmitterId = drOrganisationId2, SubmitterTypeId = 2, IsDeleted = false  },
+			new ObligationCalculation { OrganisationId = drOrganisationId2, MaterialId = 6, MaterialObligationValue = 35, Year = currentYear, SubmitterId = drOrganisationId2, SubmitterTypeId = 2, IsDeleted = false  },
+			new ObligationCalculation { OrganisationId = drOrganisationId2, MaterialId = 3, MaterialObligationValue = 45, Year = currentYear, SubmitterId = drOrganisationId2, SubmitterTypeId = 2, IsDeleted = false  },
+			new ObligationCalculation { OrganisationId = subOrganisationId2, MaterialId = 4, MaterialObligationValue = 65, Year = currentYear, SubmitterId = drOrganisationId2, SubmitterTypeId = 2, IsDeleted = false  },
+			new ObligationCalculation { OrganisationId = subOrganisationId2, MaterialId = 2, MaterialObligationValue = 85, Year = currentYear, SubmitterId = drOrganisationId2, SubmitterTypeId = 2, IsDeleted = false  },
+			new ObligationCalculation { OrganisationId = subOrganisationId2, MaterialId = 1, MaterialObligationValue = 85, Year = currentYear, SubmitterId = drOrganisationId2, SubmitterTypeId = 2, IsDeleted = false  },
+			new ObligationCalculation { OrganisationId = drOrganisationId3, MaterialId = 1, MaterialObligationValue = 175, Year = currentYear, SubmitterId = drOrganisationId3, SubmitterTypeId = 2, IsDeleted = false  },
+			new ObligationCalculation { OrganisationId = drOrganisationId3, MaterialId = 1, MaterialObligationValue = 175, Year = currentYear, SubmitterId = drOrganisationId3, SubmitterTypeId = 2, IsDeleted = true  },
+			new ObligationCalculation { OrganisationId = drOrganisationId3, MaterialId = 2, MaterialObligationValue = 175, Year = currentYear, SubmitterId = drOrganisationId3, SubmitterTypeId = 2, IsDeleted = true  },
 		];
         _mockEprContext = new Mock<EprContext>(dbContextOptions);
-        _mockEprContext.Setup(context => context.ObligationCalculations).ReturnsDbSet(obligationCalculation);
+        _mockEprContext.Setup(context => context.ObligationCalculations).ReturnsDbSet(obligationCalculations);
         _mockEprContext.Setup(x => x.SaveChangesAsync(It.IsAny<CancellationToken>())).ReturnsAsync(1);
     }
 
@@ -104,7 +107,7 @@ public class ObligationCalculationRepositoryTests
 	}
 
     [TestMethod]
-    public async Task RemoveAndAddObligationCalculationBySubmitterIdAsync_ShouldRemoveExistingCalculations_ThenInsertNewCalculations()
+    public async Task SoftDeleteAndAddObligationCalculationBySubmitterIdAsync_ShouldSoftDeleteExistingCalculations_ThenInsertNewCalculations()
     {
 		// Arrange
 		var obligationCalculationRepository = new ObligationCalculationRepository(_mockEprContext.Object);
@@ -135,16 +138,16 @@ public class ObligationCalculationRepositoryTests
 		];
 
 		// Act
-		await obligationCalculationRepository.RemoveAndAddObligationCalculationBySubmitterIdAsync(csSubmitterId, obligationCalculationAdd);
+		await obligationCalculationRepository.SoftDeleteAndAddObligationCalculationBySubmitterIdAsync(csSubmitterId, currentYear, obligationCalculationAdd);
 		
 		// Assert
+		obligationCalculations.Count(oc => oc.SubmitterId == csSubmitterId && oc.Year == currentYear && oc.IsDeleted).Should().Be(6);
 		_mockEprContext.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
-		_mockEprContext.Verify(x => x.ObligationCalculations.RemoveRange(It.IsAny<List<ObligationCalculation>>()), Times.Once);
 		_mockEprContext.Verify(x => x.ObligationCalculations.AddRangeAsync(It.IsAny<List<ObligationCalculation>>(), It.IsAny<CancellationToken>()), Times.Once);
 	}
 
 	[TestMethod]
-	public async Task RemoveAndAddObligationCalculationBySubmitterIdAsync_ShouldInsertNewCalculations_ButNoExistingCalculationsToRemove()
+	public async Task SoftDeleteAndAddObligationCalculationBySubmitterIdAsync_ShouldInsertNewCalculations_ButNoExistingCalculationsToSoftDelete()
 	{
 		// Arrange
 		var drOrganisationId = Guid.NewGuid();
@@ -176,22 +179,10 @@ public class ObligationCalculationRepositoryTests
 		];
 
 		// Act
-		await obligationCalculationRepository.RemoveAndAddObligationCalculationBySubmitterIdAsync(drOrganisationId, obligationCalculationAdd);
-		
+		await obligationCalculationRepository.SoftDeleteAndAddObligationCalculationBySubmitterIdAsync(drOrganisationId, currentYear, obligationCalculationAdd);
+
 		// Assert
 		_mockEprContext.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
-		_mockEprContext.Verify(x => x.ObligationCalculations.RemoveRange(It.IsAny<List<ObligationCalculation>>()), Times.Never);
 		_mockEprContext.Verify(x => x.ObligationCalculations.AddRangeAsync(It.IsAny<List<ObligationCalculation>>(), It.IsAny<CancellationToken>()), Times.Once);
-	}
-
-    [TestMethod]
-    public async Task RemoveAndAddObligationCalculationBySubmitterIdAsync_NullCalculations_ShouldThrowArgumentException()
-    {
-        // Arrange
-        var obligationCalculationRepository = new ObligationCalculationRepository(_mockEprContext.Object);
-
-		// Act & Assert
-		await Assert.ThrowsExceptionAsync<ArgumentException>(() =>
-			obligationCalculationRepository.RemoveAndAddObligationCalculationBySubmitterIdAsync(Guid.NewGuid(), null));
 	}
 }

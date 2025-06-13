@@ -10,26 +10,21 @@ public class ObligationCalculationRepository(EprContext context) : IObligationCa
 	{
 		return await context.ObligationCalculations
 							.AsNoTracking()
-							.Where(x => x.SubmitterId == submitterId && x.Year == year)
+							.Where(oc => oc.SubmitterId == submitterId && oc.Year == year && !oc.IsDeleted)
 							.ToListAsync();
 	}
 
-    public async Task RemoveAndAddObligationCalculationBySubmitterIdAsync(Guid submitterId, List<ObligationCalculation> calculations)
+    public async Task SoftDeleteAndAddObligationCalculationBySubmitterIdAsync(Guid submitterId, int year, List<ObligationCalculation> calculations)
 	{
-		if (calculations == null || calculations.Count == 0)
-		{
-			throw new ArgumentException("The calculations list cannot be null or empty.", nameof(calculations));
-		}
 		var existingCalculations = await context.ObligationCalculations
-												.Where(oc =>
-                                                    oc.SubmitterId == submitterId &&
-                                                    oc.Year == calculations[0].Year
-												 )
-												.ToListAsync();
+			.Where(oc => oc.SubmitterId == submitterId && oc.Year == year && !oc.IsDeleted)
+			.ToListAsync();
+
 		if (existingCalculations.Count > 0)
 		{
-			context.ObligationCalculations.RemoveRange(existingCalculations);
+			existingCalculations.ForEach(c => c.IsDeleted = true);
 		}
+
 		await context.ObligationCalculations.AddRangeAsync(calculations);
 		await context.SaveChangesAsync();
 	}

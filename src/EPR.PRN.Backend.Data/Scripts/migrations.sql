@@ -3643,3 +3643,28 @@ GO
 COMMIT;
 GO
 
+BEGIN TRANSACTION;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250612221733_AddIsDelectedColoumnToObligationCalculations'
+)
+BEGIN
+    ALTER TABLE [ObligationCalculations] ADD [IsDeleted] bit NOT NULL DEFAULT CAST(0 AS bit);
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250612221733_AddIsDelectedColoumnToObligationCalculations'
+)
+BEGIN
+    INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+    VALUES (N'20250612221733_AddIsDelectedColoumnToObligationCalculations', N'8.0.8');
+END;
+GO
+
+COMMIT;
+GO
+
