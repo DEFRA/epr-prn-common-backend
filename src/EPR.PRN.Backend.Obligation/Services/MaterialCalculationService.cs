@@ -11,10 +11,12 @@ namespace EPR.PRN.Backend.Obligation.Services
 
         public (int remelt, int remainder) CalculateGlass(double target, double remeltTarget, int tonnage)
         {
-            var initialTarget = (int)Math.Ceiling(target * tonnage);
-            var remelt = (int)Math.Ceiling(remeltTarget * initialTarget);
+			var initialTarget = target * tonnage;
+			var glassRemelt = (int)Math.Ceiling(remeltTarget * initialTarget);
+			var glassTotal = (int)Math.Ceiling(initialTarget);
+			var glassOther = glassTotal - glassRemelt;
 
-            return (remelt, initialTarget - remelt);
-        }
+			return (glassRemelt, glassOther);
+		}
     }
 }
