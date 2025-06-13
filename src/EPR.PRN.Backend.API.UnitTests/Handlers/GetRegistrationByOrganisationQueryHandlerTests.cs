@@ -113,7 +113,7 @@ public class GetRegistrationByOrganisationQueryHandlerTests
             BusinessAddress = address,
             ReprocessingSiteAddress = address,
             LegalDocumentAddress = address,
-            RegistrationTasks = [tasks]
+            ApplicantRegistrationTasksStatus = [tasks]
         };
 
         tasks.Registration = registration;

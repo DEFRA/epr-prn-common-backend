@@ -297,9 +297,9 @@ public class RegistrationRepository(EprContext context, ILogger<RegistrationRepo
             .Include(r => r.BusinessAddress)
             .Include(r => r.ReprocessingSiteAddress)
             .Include(r => r.LegalDocumentAddress)
-            .Include(r => r.RegistrationTasks)!
+            .Include(r => r.ApplicantRegistrationTasksStatus)!
                 .ThenInclude(t => t.TaskStatus)
-            .Include(r => r.RegistrationTasks)!
+            .Include(r => r.ApplicantRegistrationTasksStatus)!
                 .ThenInclude(t => t.Task)
             .Include(r => r.Materials);
     }

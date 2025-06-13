@@ -36,9 +36,9 @@ public class GetRegistrationByOrganisationQueryHandler(
             LegalDocumentAddress = MapAddress(result.LegalDocumentAddress)
         };
 
-        if (result.RegistrationTasks is not null)
+        if (result.ApplicantRegistrationTasksStatus is not null)
         {
-            mapped.Tasks = result.RegistrationTasks.Select(t => new RegistrationTaskDto
+            mapped.Tasks = result.ApplicantRegistrationTasksStatus.Select(t => new RegistrationTaskDto
             {
                 Id = t.ExternalId,
                 Status = t.TaskStatus.Name,
