@@ -50,7 +50,7 @@ namespace EPR.PRN.Backend.API.Helpers
                 .AddScoped<IRegistrationRepository, RegistrationRepository>()
                 .AddScoped<IDateTimeProvider, DateTimeProvider>();
 
-			return services;
+            return services;
         }
     }
 }
