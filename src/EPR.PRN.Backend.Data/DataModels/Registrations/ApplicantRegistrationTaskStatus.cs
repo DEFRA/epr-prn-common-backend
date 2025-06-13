@@ -6,7 +6,7 @@ namespace EPR.PRN.Backend.Data.DataModels.Registrations;
 
 [Table("Public.RegistrationTaskStatus")]
 [ExcludeFromCodeCoverage]
-public class RegistrationTaskStatus 
+public class ApplicantRegistrationTaskStatus 
 {
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     [Key]

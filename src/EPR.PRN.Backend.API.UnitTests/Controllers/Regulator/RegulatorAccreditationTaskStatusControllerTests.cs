@@ -11,7 +11,7 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using System.Net;
 
-namespace EPR.PRN.Backend.API.UnitTests.Controllers;
+namespace EPR.PRN.Backend.API.UnitTests.Controllers.Regulator;
 
 [TestClass]
 public class RegulatorAccreditationTaskStatusControllerTests
