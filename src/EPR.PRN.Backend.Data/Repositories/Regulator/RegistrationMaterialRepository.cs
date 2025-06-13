@@ -224,6 +224,7 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
             .AsSplitQuery()
             .Include(r => r.BusinessAddress)
             .Include(r => r.ReprocessingSiteAddress)
+            .Include(r => r.CarrierBrokerDealerPermit)
             .Include(r => r.LegalDocumentAddress)
             .Include(r => r.Tasks)!
                 .ThenInclude(t => t.TaskStatus)

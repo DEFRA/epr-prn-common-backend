@@ -46,6 +46,15 @@ namespace EPR.PRN.Backend.Data
             modelBuilder.Entity<PrnStatus>()
                 .HasData(DataModels.PrnStatus.Data);
 
+            modelBuilder.Entity<Registration>()
+                .HasOne(r => r.CarrierBrokerDealerPermit)
+                .WithOne()
+                .HasForeignKey<CarrierBrokerDealerPermits>(cb => cb.RegistrationId);
+
+            modelBuilder.Entity<CarrierBrokerDealerPermits>()
+                .HasIndex(e => e.ExternalId)
+                .IsUnique(); // Ensures UniqueId is unique
+
             modelBuilder.Entity<RecyclingTarget>()
                 .HasData
                 (
@@ -242,7 +251,7 @@ namespace EPR.PRN.Backend.Data
                 new LookupRegulatorTask { Id = 25, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 2, Name = "AccreditationSamplingAndInspectionPlan" },
                 new LookupRegulatorTask { Id = 26, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 2, Name = "OverseasReprocessingSitesAndEvidenceOfBroadlyEquivalentStandards" },
                 new LookupRegulatorTask { Id = 27, IsMaterialSpecific = true, ApplicationTypeId = 1, JourneyTypeId = 2, Name = "DulyMade" },
-                new LookupRegulatorTask { Id = 28, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 2, Name = "DulyMade" });
+                new LookupRegulatorTask { Id = 29, IsMaterialSpecific = false, ApplicationTypeId = 1, JourneyTypeId = 1, Name = "WasteCarrierBrokerDealerNumber" });
 
             modelBuilder.Entity<LookupMaterialPermit>().HasData(
                 new LookupMaterialPermit { Id = 1, Name = PermitTypes.WasteExemption },
@@ -343,6 +352,7 @@ namespace EPR.PRN.Backend.Data
         public virtual DbSet<RegistrationReprocessingIO> RegistrationReprocessingIO { get; set; }
         public virtual DbSet<DeterminationDate> DeterminationDate { get; set; }
         public virtual DbSet<DulyMade> DulyMade { get; set; }
+        public virtual DbSet<CarrierBrokerDealerPermits> CarrierBrokerDealerPermits { get; set; }
         public virtual DbSet<RegulatorApplicationTaskStatus> RegulatorApplicationTaskStatus { get; set; }
         public virtual DbSet<RegulatorRegistrationTaskStatus> RegulatorRegistrationTaskStatus { get; set; }
         public virtual DbSet<RegistrationTaskStatus> RegistrationTaskStatus { get; set; }

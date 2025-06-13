@@ -164,6 +164,15 @@ public class RegistrationMaterialProfile : Profile
            .ForMember(dest => dest.TaskStatus, opt => opt.MapFrom(src => GetRegistrationTaskStatus(src.Tasks, RegulatorTaskNames.SiteAddressAndContactDetails)))
            .ForMember(dest => dest.QueryNotes, opt => opt.MapFrom(src => GetRegistrationTaskNotes(src.Tasks, RegulatorTaskNames.SiteAddressAndContactDetails)));
 
+        CreateMap<Registration, RegistrationWasteCarrierDto>()
+            .ForMember(dest => dest.RegistrationId, opt => opt.MapFrom(src => src.ExternalId))
+            .ForMember(dest => dest.SiteAddress, opt => opt.MapFrom(src => src.ReprocessingSiteAddress != null ? CreateAddressString(src.ReprocessingSiteAddress) : string.Empty))
+            .ForMember(dest => dest.WasteCarrierBrokerDealerNumber, opt => opt.MapFrom(src => src.CarrierBrokerDealerPermit != null ? src.CarrierBrokerDealerPermit.WasteCarrierBrokerDealerRegistration : null))
+            .ForMember(dest => dest.OrganisationId, opt => opt.MapFrom(src => src.OrganisationId))
+            .ForMember(dest => dest.RegulatorRegistrationTaskStatusId, opt => opt.MapFrom(src => GetRegistrationTaskExternalId(src.Tasks, RegulatorTaskNames.WasteCarrierBrokerDealerNumber)))
+            .ForMember(dest => dest.TaskStatus, opt => opt.MapFrom(src => GetRegistrationTaskStatus(src.Tasks, RegulatorTaskNames.WasteCarrierBrokerDealerNumber)))
+            .ForMember(dest => dest.QueryNotes, opt => opt.MapFrom(src => GetRegistrationTaskNotes(src.Tasks, RegulatorTaskNames.WasteCarrierBrokerDealerNumber)));
+
         CreateMap<Registration, MaterialsAuthorisedOnSiteDto>()
             .ForMember(dest => dest.RegistrationId, opt => opt.MapFrom(src => src.ExternalId))
             .ForMember(dest => dest.OrganisationId, opt => opt.MapFrom(src => src.OrganisationId))
