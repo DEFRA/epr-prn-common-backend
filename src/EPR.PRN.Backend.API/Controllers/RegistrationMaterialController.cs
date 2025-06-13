@@ -36,4 +36,12 @@ public class RegistrationMaterialController(
 
         return new CreatedResult(string.Empty, registrationMaterialId);
     }
+
+    [HttpPost("registrationMaterials/createRegistrationMaterialAndExemptionReferences")]
+    public async Task<IActionResult> CreateRegistrationMaterialAndExemptionReferences([FromBody] CreateRegistrationMaterialAndExemptionReferencesCommand command)
+    {
+        logger.LogInformation(LogMessages.CreateRegistrationMaterialAndExemptionReferences);
+        await mediator.Send(command);
+        return Ok();
+    }
 }

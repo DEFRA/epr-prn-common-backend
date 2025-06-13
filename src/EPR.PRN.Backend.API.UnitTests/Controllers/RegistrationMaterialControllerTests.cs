@@ -1,14 +1,12 @@
 using EPR.PRN.Backend.API.Commands;
 using EPR.PRN.Backend.API.Controllers;
+using EPR.PRN.Backend.API.Dto.Regulator;
 using FluentAssertions;
 using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
-using EPR.PRN.Backend.Data.DataModels.Registrations;
-using EPR.PRN.Backend.API.Handlers;
-using EPR.PRN.Backend.Obligation.Models;
 
 namespace EPR.PRN.Backend.API.UnitTests.Controllers;
 
@@ -83,7 +81,7 @@ public class RegistrationMaterialControllerTests
             .ReturnsAsync(10);
 
         // Act
-        var result = await _controller.CreateRegistrationMaterial(registrationId, command);
+        var result = await _controller.CreateRegistrationMaterial(command);
 
         // Assert
         result.Should().BeEquivalentTo(expectedResult);

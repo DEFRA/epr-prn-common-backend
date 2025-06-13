@@ -453,7 +453,7 @@ public class RegistrationMaterialRepositoryTests
             ExternalId = Guid.NewGuid()
         };
         var lookupMaterial = new LookupMaterial { Id = 2, MaterialCode = "GLASS", MaterialName = "Glass" };
-        var materialStatus = new LookupRegistrationMaterialStatus { Id = 2, Name = "Pending" };
+        var materialStatus = new LookupRegistrationMaterialStatus { Id = 4, Name = "Pending" };
         var exemptionReferences = new List<MaterialExemptionReference>
         {
             new MaterialExemptionReference { ReferenceNo = "EXEMPT456" },
@@ -514,7 +514,7 @@ public class RegistrationMaterialRepositoryTests
             ExternalId = Guid.NewGuid()
         };
         var lookupMaterial = new LookupMaterial { Id = 3, MaterialCode = "PAPER", MaterialName = "Paper" };
-        var materialStatus = new LookupRegistrationMaterialStatus { Id = 3, Name = "Pending" };
+        var materialStatus = new LookupRegistrationMaterialStatus { Id = 4, Name = "Pending" };
         var registrationMaterial = new RegistrationMaterial
         {
             Id = 3,
