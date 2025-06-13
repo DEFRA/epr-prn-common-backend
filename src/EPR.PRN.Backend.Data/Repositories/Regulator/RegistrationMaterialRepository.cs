@@ -152,7 +152,20 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
         await eprContext.SaveChangesAsync();
     }
 
+    public async Task CreateRegistrationMaterialWithExemptionsAsync(
+    RegistrationMaterial registrationMaterial,
+    List<MaterialExemptionReference> exemptionReferences)
+    {
+        await eprContext.RegistrationMaterials.AddAsync(registrationMaterial);
 
+        foreach (var exemption in exemptionReferences)
+        {            
+            exemption.RegistrationMaterial = registrationMaterial;
+        }
+
+        await eprContext.MaterialExemptionReferences.AddRangeAsync(exemptionReferences);
+        await eprContext.SaveChangesAsync();
+    }
 
     private IIncludableQueryable<RegistrationMaterial, LookupRegistrationMaterialStatus> GetRegistrationMaterialsWithRelatedEntities()
     {
