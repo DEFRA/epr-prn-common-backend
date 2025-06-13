@@ -54,6 +54,7 @@ public class RegistrationMaterialRepositoryTests
         };
         var materialStatus = new LookupRegistrationMaterialStatus { Id = 1, Name = "Completed" };
         var pendingMaterialStatus = new LookupRegistrationMaterialStatus { Id = 2, Name = "Pending" };
+        var readyToSubmitMaterialStatus = new LookupRegistrationMaterialStatus { Id = 3, Name = "ReadyToSubmit" };
         var lookupMaterial = new LookupMaterial { Id = 1, MaterialCode = "PLSTC", MaterialName = "Plastic" };
         var lookupPeriod = new LookupPeriod { Id = 1, Name = "Per Year" };
         var lookupMaterialPermit = new LookupMaterialPermit { Id = 1, Name = PermitTypes.WasteManagementLicence };
@@ -250,6 +251,7 @@ public class RegistrationMaterialRepositoryTests
         _context.LookupTasks.Add(task);
         _context.LookupTaskStatuses.Add(taskStatus);
         _context.LookupRegistrationMaterialStatuses.Add(materialStatus);
+        _context.LookupRegistrationMaterialStatuses.Add(readyToSubmitMaterialStatus);
         _context.LookupRegistrationMaterialStatuses.Add(pendingMaterialStatus);
         _context.LookupMaterials.Add(lookupMaterial);
         _context.LookupAddresses.Add(address);

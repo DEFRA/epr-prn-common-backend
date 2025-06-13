@@ -44,8 +44,7 @@ public class RegistrationRepository(EprContext context, ILogger<RegistrationRepo
                 LegalDocumentAddressId = null,
                 AssignedOfficerId = 0,
                 CreatedDate = DateTime.UtcNow,
-                RegistrationStatusId = 1,
-                UpdatedBy = Guid.NewGuid(),
+                RegistrationStatusId = 1
             };
 
             context.Registrations.Add(registration);

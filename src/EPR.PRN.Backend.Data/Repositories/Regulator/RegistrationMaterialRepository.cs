@@ -1,4 +1,5 @@
-﻿using EPR.PRN.Backend.Data.DataModels.Registrations;
+﻿using EPR.PRN.Backend.API.Common.Constants;
+using EPR.PRN.Backend.Data.DataModels.Registrations;
 using EPR.PRN.Backend.Data.Interfaces.Regulator;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
@@ -178,9 +179,17 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
         {
             RegistrationId = registrationId,
             Material = await eprContext.LookupMaterials.SingleAsync(m => m.MaterialName == material),
-            StatusId = (await eprContext.LookupRegistrationMaterialStatuses.SingleAsync(s => s.Name == "Pending")).Id,
+            StatusId = (await eprContext.LookupRegistrationMaterialStatuses.SingleAsync(s => s.Name == "ReadyToSubmit")).Id,
             CreatedDate = DateTime.UtcNow,
-            ExternalId = Guid.NewGuid()
+            ExternalId = Guid.NewGuid(),
+            StatusUpdatedDate = DateTime.UtcNow,
+            EnvironmentalPermitWasteManagementTonne = 0,
+            InstallationReprocessingTonne = 0,
+            WasteManagementReprocessingCapacityTonne = 0,
+            PPCReprocessingCapacityTonne = 0,
+            IsMaterialRegistered = false,
+            // Temp as we need to think about either the journey or the data model as currently we can't insert nulls into the db for this column.
+            PermitType = await eprContext.LookupMaterialPermit.SingleAsync(o => o.Name == PermitTypes.WasteManagementLicence)
         };
 
         await eprContext.RegistrationMaterials.AddAsync(newMaterial);
