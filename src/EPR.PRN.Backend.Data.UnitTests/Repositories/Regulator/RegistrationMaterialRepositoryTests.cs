@@ -657,14 +657,14 @@ public class RegistrationMaterialRepositoryTests
     [TestMethod]
     public async Task CreateAsync_NoExistingRegistration_ShouldThrowException()
     {
-        await Assert.ThrowsExceptionAsync<KeyNotFoundException>(() => _repository.CreateAsync(1232, "Steel"));
+        await Assert.ThrowsExceptionAsync<KeyNotFoundException>(() => _repository.CreateAsync(Guid.NewGuid(), "Steel"));
     }
 
     [TestMethod]
     public async Task CreateAsync_ExistingRegistration_ShouldCreate()
     {
         // Act
-        var result = await _repository.CreateAsync(1, "Plastic");
+        var result = await _repository.CreateAsync(Guid.Parse("4bac12f7-f7a9-4df4-b7b5-9c4221860c4d"), "Plastic");
 
         // Assert
         var loaded = await _context.RegistrationMaterials.FindAsync(result);

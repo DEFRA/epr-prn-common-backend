@@ -11,7 +11,7 @@ namespace EPR.PRN.Backend.Data.Repositories;
 
 public class RegistrationRepository(EprContext context, ILogger<RegistrationRepository> logger) : IRegistrationRepository
 {
-    public async Task<int> CreateRegistrationAsync(int applicationTypeId, Guid organisationId, AddressDto reprocessingSiteAddress)
+    public async Task<Registration> CreateRegistrationAsync(int applicationTypeId, Guid organisationId, AddressDto reprocessingSiteAddress)
     {
         logger.LogInformation("Creating registration for ApplicationTypeId: {ApplicationTypeId} and OrganisationId: {OrganisationId}", applicationTypeId, organisationId);
         var registration = new Registration();
@@ -54,7 +54,7 @@ public class RegistrationRepository(EprContext context, ILogger<RegistrationRepo
 
         logger.LogInformation("Successfully created registration for ApplicationTypeId: {ApplicationTypeId} and OrganisationId: {OrganisationId}", applicationTypeId, organisationId);
 
-        return registration.Id;
+        return registration;
     }
 
     public async Task<Registration?> GetAsync(int registrationId)

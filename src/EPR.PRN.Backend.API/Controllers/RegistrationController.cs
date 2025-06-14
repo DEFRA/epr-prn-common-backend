@@ -72,9 +72,9 @@ public class RegistrationController(IMediator mediator
     {
         logger.LogInformation(LogMessages.CreateRegistration);
 
-        var registrationId = await mediator.Send(command);
+        var registration = await mediator.Send(command);
 
-        return new CreatedResult(string.Empty, registrationId);
+        return new CreatedResult(string.Empty, registration);
     }
 
     [HttpPost("registrations/{registrationId:int}/update")]

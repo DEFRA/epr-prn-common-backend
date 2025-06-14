@@ -1,10 +1,12 @@
-﻿using AutoMapper;
+﻿using System.Linq.Expressions;
+using AutoMapper;
 using EPR.PRN.Backend.API.Common.Constants;
 using EPR.PRN.Backend.API.Common.Enums;
 using EPR.PRN.Backend.API.Common.Exceptions;
+using EPR.PRN.Backend.API.Dto;
 using EPR.PRN.Backend.API.Dto.Regulator;
+using EPR.PRN.Backend.API.Handlers;
 using EPR.PRN.Backend.Data.DataModels.Registrations;
-using Microsoft.Identity.Client;
 
 namespace EPR.PRN.Backend.API.Profiles.Regulator;
 
@@ -12,6 +14,12 @@ public class RegistrationMaterialProfile : Profile
 {
     public RegistrationMaterialProfile()
     {
+        CreateMap<RegistrationMaterial, CreateRegistrationMaterialDto>()
+            .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.ExternalId));
+
+        CreateMap<Registration, CreateRegistrationDto>()
+            .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.ExternalId));
+
         CreateMap<Registration, RegistrationOverviewDto>()
         .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.ExternalId))
         .ForMember(dest => dest.Regulator, opt => opt.MapFrom(_ => "EA"))

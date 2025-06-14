@@ -399,11 +399,11 @@ public class RegistrationRepositoryTests
         });
 
         // Assert
-        var loaded = await _context.Registrations.FindAsync(result);
-        result.Should().Be(1);
+        var loaded = await _context.Registrations.FindAsync(result.Id);
+        result.Id.Should().Be(1);
         loaded.Should().BeEquivalentTo(new Registration
         {
-            Id = result,
+            Id = result.Id,
             RegistrationStatusId = 1,
             ReprocessingSiteAddressId = 1,
             ExternalId = loaded!.ExternalId,

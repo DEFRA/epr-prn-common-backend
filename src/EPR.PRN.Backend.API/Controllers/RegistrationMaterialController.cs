@@ -30,11 +30,11 @@ public class RegistrationMaterialController(
     [SwaggerResponse(StatusCodes.Status500InternalServerError, "If an unexpected error occurs.", typeof(ContentResult))]
     public async Task<IActionResult> CreateRegistrationMaterial([FromBody] CreateRegistrationMaterialCommand command)
     {
-        logger.LogInformation(LogMessages.OutcomeMaterialRegistration, command.RegistrationId);
+        logger.LogInformation(LogMessages.CreateRegistrationMaterial, command.RegistrationId);
 
-        var registrationMaterialId = await mediator.Send(command);
+        var registrationMaterial = await mediator.Send(command);
 
-        return new CreatedResult(string.Empty, registrationMaterialId);
+        return new CreatedResult(string.Empty, registrationMaterial);
     }
 
     [HttpPost("registrationMaterials/createRegistrationMaterialAndExemptionReferences")]
