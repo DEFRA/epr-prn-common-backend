@@ -175,6 +175,16 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
             throw new KeyNotFoundException("Registration not found.");
         }
 
+        var existingMaterial = await eprContext.RegistrationMaterials
+            .Include(o => o.Material)
+            .Include(o => o.Registration)
+            .SingleOrDefaultAsync(o => o.Material.MaterialName == material && o.Registration.ExternalId == registrationId);
+
+        if (existingMaterial is not null)
+        {
+            throw new InvalidOperationException($"Material '{material}' is already registered for this registration {existingRegistration.ExternalId}");
+        }
+
         var newMaterial = new RegistrationMaterial
         {
             RegistrationId = existingRegistration.Id,

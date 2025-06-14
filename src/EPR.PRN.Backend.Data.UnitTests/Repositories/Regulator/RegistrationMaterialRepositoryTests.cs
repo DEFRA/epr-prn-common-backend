@@ -56,6 +56,7 @@ public class RegistrationMaterialRepositoryTests
         var pendingMaterialStatus = new LookupRegistrationMaterialStatus { Id = 2, Name = "Pending" };
         var readyToSubmitMaterialStatus = new LookupRegistrationMaterialStatus { Id = 3, Name = "ReadyToSubmit" };
         var lookupMaterial = new LookupMaterial { Id = 1, MaterialCode = "PLSTC", MaterialName = "Plastic" };
+        var steelMaterial = new LookupMaterial { Id = 5, MaterialCode = "PLSTC", MaterialName = "Steel" };
         var lookupPeriod = new LookupPeriod { Id = 1, Name = "Per Year" };
         var lookupMaterialPermit = new LookupMaterialPermit { Id = 1, Name = PermitTypes.WasteManagementLicence };
 
@@ -254,6 +255,7 @@ public class RegistrationMaterialRepositoryTests
         _context.LookupRegistrationMaterialStatuses.Add(readyToSubmitMaterialStatus);
         _context.LookupRegistrationMaterialStatuses.Add(pendingMaterialStatus);
         _context.LookupMaterials.Add(lookupMaterial);
+        _context.LookupMaterials.Add(steelMaterial);
         _context.LookupAddresses.Add(address);
         _context.Registrations.Add(registration);
 
@@ -661,13 +663,20 @@ public class RegistrationMaterialRepositoryTests
     }
 
     [TestMethod]
+    public async Task CreateAsync_ExistingRegistrationMaterial_ShouldThrow()
+    {
+        // Act & Assert
+        await Assert.ThrowsExceptionAsync<InvalidOperationException>(() => _repository.CreateAsync(Guid.Parse("4bac12f7-f7a9-4df4-b7b5-9c4221860c4d"),"Plastic"));
+    }
+
+    [TestMethod]
     public async Task CreateAsync_ExistingRegistration_ShouldCreate()
     {
         // Act
-        var result = await _repository.CreateAsync(Guid.Parse("4bac12f7-f7a9-4df4-b7b5-9c4221860c4d"), "Plastic");
+        var result = await _repository.CreateAsync(Guid.Parse("4bac12f7-f7a9-4df4-b7b5-9c4221860c4d"), "Steel");
 
         // Assert
-        var loaded = await _context.RegistrationMaterials.FindAsync(result);
+        var loaded = await _context.RegistrationMaterials.FindAsync(result.Id);
         loaded.Should().NotBeNull();
     }
 
