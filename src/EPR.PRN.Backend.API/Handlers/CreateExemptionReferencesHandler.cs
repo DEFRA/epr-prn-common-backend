@@ -9,14 +9,13 @@ public class CreateExemptionReferencesHandler(IRegistrationMaterialRepository re
     : IRequestHandler<CreateExemptionReferencesCommand>
 {
     public async Task Handle(CreateExemptionReferencesCommand command, CancellationToken cancellationToken)
-    {
+    {        
         var exemptionReferences = command.MaterialExemptionReferences?.Select(x => new MaterialExemptionReference
-        {
-            RegistrationMaterialId = command.RegistrationMaterialId,
+        {            
             ExternalId = Guid.NewGuid(),
             ReferenceNo = x.ReferenceNumber
         }).ToList() ?? new List<MaterialExemptionReference>();
 
-        await repository.CreateExemptionReferencesAsync(exemptionReferences);
+        await repository.CreateExemptionReferencesAsync(command.RegistrationMaterialId, exemptionReferences);
     }        
 }

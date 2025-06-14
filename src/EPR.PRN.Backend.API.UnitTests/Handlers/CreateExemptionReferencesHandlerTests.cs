@@ -24,18 +24,21 @@ public class CreateExemptionReferencesHandlerTests
     public async Task Handle_ShouldCallRepositoryWithCorrectParameters()
     {
         // Arrange  
+        var registrationMaterialId = Guid.NewGuid();
         var command = new CreateExemptionReferencesCommand
-        {           
+        {
+            RegistrationMaterialId = registrationMaterialId,
             MaterialExemptionReferences = new List<MaterialExemptionReferenceDto>()
         };
-       
+      
+        var mappedExemptions = command.MaterialExemptionReferences
+            .Select(dto => new MaterialExemptionReference { ReferenceNo = dto.ReferenceNumber })
+            .ToList();
 
-        var mappedExemptions = new List<MaterialExemptionReference>();
-
-       
         _repositoryMock
             .Setup(r => r.CreateExemptionReferencesAsync(
-            It.IsAny<List<MaterialExemptionReference>>()))
+                It.IsAny<Guid>(),
+                It.Is<List<MaterialExemptionReference>>(l => l.Count == mappedExemptions.Count)))
             .Returns(Task.CompletedTask)
             .Verifiable();
 
@@ -44,8 +47,9 @@ public class CreateExemptionReferencesHandlerTests
 
         // Assert  
         _repositoryMock.Verify();
-        _repositoryMock.Verify(r => r.CreateExemptionReferencesAsync(            
-            mappedExemptions),
+        _repositoryMock.Verify(r => r.CreateExemptionReferencesAsync(
+            It.IsAny<Guid>(),
+            It.Is<List<MaterialExemptionReference>>(l => l.Count == mappedExemptions.Count)),
             Times.Once);
     }
     
@@ -53,6 +57,7 @@ public class CreateExemptionReferencesHandlerTests
     public async Task Handle_ShouldPassCorrectExemptionReferencesToRepository()
     {
         // Arrange        
+        var registrationMaterialId = Guid.NewGuid();
         var expectedExemptions = new List<MaterialExemptionReferenceDto>
         {
             new() { ReferenceNumber = "EX-001" },
@@ -61,20 +66,18 @@ public class CreateExemptionReferencesHandlerTests
 
         var command = new CreateExemptionReferencesCommand
         {
+            RegistrationMaterialId = registrationMaterialId,
             MaterialExemptionReferences = expectedExemptions
         };
 
-        var mappedExemptions = expectedExemptions
-            .Select(dto => new MaterialExemptionReference { ReferenceNo = dto.ReferenceNumber })
-            .ToList();
-
         List<MaterialExemptionReference> actualExemptions = null;
-      
+        Guid actualRegistrationMaterialId = Guid.Empty;
 
         _repositoryMock
-            .Setup(r => r.CreateExemptionReferencesAsync(It.IsAny<List<MaterialExemptionReference>>()))
-            .Callback<List<MaterialExemptionReference>>(exs =>
+            .Setup(r => r.CreateExemptionReferencesAsync(It.IsAny<Guid>(), It.IsAny<List<MaterialExemptionReference>>()))
+            .Callback<Guid, List<MaterialExemptionReference>>((id, exs) =>
             {
+                actualRegistrationMaterialId = id;
                 actualExemptions = exs;
             })
             .Returns(Task.CompletedTask);
@@ -83,7 +86,7 @@ public class CreateExemptionReferencesHandlerTests
         await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        Assert.IsNotNull(actualExemptions);
+        Assert.IsNotNull(actualExemptions);        
         Assert.AreEqual(expectedExemptions.Count, actualExemptions.Count);
 
         for (int i = 0; i < expectedExemptions.Count; i++)

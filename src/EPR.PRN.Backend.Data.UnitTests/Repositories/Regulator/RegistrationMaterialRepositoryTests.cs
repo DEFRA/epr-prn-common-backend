@@ -454,11 +454,6 @@ public class RegistrationMaterialRepositoryTests
         };
         var lookupMaterial = new LookupMaterial { Id = 2, MaterialCode = "GLASS", MaterialName = "Glass" };
         var materialStatus = new LookupRegistrationMaterialStatus { Id = 4, Name = "Pending" };
-        var exemptionReferences = new List<MaterialExemptionReference>
-        {
-            new MaterialExemptionReference { ReferenceNo = "EXEMPT456", RegistrationMaterialId = 3 },
-            new MaterialExemptionReference { ReferenceNo = "EXEMPT789", RegistrationMaterialId = 3 }
-        };
         var registrationMaterial = new RegistrationMaterial
         {
             Id = 3,
@@ -472,6 +467,11 @@ public class RegistrationMaterialRepositoryTests
             IsMaterialRegistered = false,
             MaterialExemptionReferences = new List<MaterialExemptionReference>()
         };
+        var exemptionReferences = new List<MaterialExemptionReference>
+        {
+            new MaterialExemptionReference { ReferenceNo = "EXEMPT456", RegistrationMaterialId = 3 },
+            new MaterialExemptionReference { ReferenceNo = "EXEMPT789", RegistrationMaterialId = 3 }
+        };
 
         _context.Registrations.Add(registration);
         _context.LookupMaterials.Add(lookupMaterial);
@@ -480,7 +480,7 @@ public class RegistrationMaterialRepositoryTests
         await _context.SaveChangesAsync();
 
         // Act
-        await _repository.CreateExemptionReferencesAsync(exemptionReferences);
+        await _repository.CreateExemptionReferencesAsync(registrationMaterial.ExternalId, exemptionReferences);
 
         // Assert
         var createdMaterial = await _context.RegistrationMaterials
@@ -503,18 +503,18 @@ public class RegistrationMaterialRepositoryTests
         // Arrange
         var registration = new Registration
         {
-            Id = 3,
+            Id = 4,
             ApplicationTypeId = 1,
             ExternalId = Guid.NewGuid()
         };
-        var lookupMaterial = new LookupMaterial { Id = 3, MaterialCode = "PAPER", MaterialName = "Paper" };
-        var materialStatus = new LookupRegistrationMaterialStatus { Id = 4, Name = "Pending" };
+        var lookupMaterial = new LookupMaterial { Id = 4, MaterialCode = "PAPER", MaterialName = "Paper" };
+        var materialStatus = new LookupRegistrationMaterialStatus { Id = 5, Name = "Pending" };
         var registrationMaterial = new RegistrationMaterial
         {
-            Id = 3,
-            RegistrationId = 3,
-            MaterialId = 3,
-            StatusId = 3,
+            Id = 4,
+            RegistrationId = 4,
+            MaterialId = 4,
+            StatusId = 5,
             RegistrationReferenceNumber = "REF33333",
             Comments = "No exemptions",
             Status = materialStatus,
@@ -530,7 +530,7 @@ public class RegistrationMaterialRepositoryTests
         await _context.SaveChangesAsync();
 
         // Act
-        await _repository.CreateExemptionReferencesAsync(new List<MaterialExemptionReference>());
+        await _repository.CreateExemptionReferencesAsync(registrationMaterial.ExternalId, new List<MaterialExemptionReference>());
 
         // Assert
         var createdMaterial = await _context.RegistrationMaterials

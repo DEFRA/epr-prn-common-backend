@@ -152,8 +152,17 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
         await eprContext.SaveChangesAsync();
     }
 
-    public async Task CreateExemptionReferencesAsync(List<MaterialExemptionReference> exemptionReferences)
-    {        
+    public async Task CreateExemptionReferencesAsync(Guid registrationMaterialId, List<MaterialExemptionReference> exemptionReferences)
+    {
+        var material = await eprContext.RegistrationMaterials.FirstOrDefaultAsync(rm => rm.ExternalId == registrationMaterialId);
+        
+        if (material is null) throw new KeyNotFoundException("Material not found.");
+
+        foreach (var exemptionReference in exemptionReferences)
+        {
+            exemptionReference.RegistrationMaterialId = material.Id;
+        }
+
         await eprContext.MaterialExemptionReferences.AddRangeAsync(exemptionReferences);
         await eprContext.SaveChangesAsync();
     }

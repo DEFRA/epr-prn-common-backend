@@ -37,7 +37,7 @@ public class RegistrationMaterialController(
         return new CreatedResult(string.Empty, registrationMaterialId);
     }
 
-    [HttpPost("registrationMaterials/createExemptionReferences")]
+    [HttpPost("registrationMaterials/{Id}/createExemptionReferences")]
     [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(CreatedResult))]
     [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
@@ -48,9 +48,10 @@ public class RegistrationMaterialController(
     [SwaggerResponse(StatusCodes.Status201Created)]
     [SwaggerResponse(StatusCodes.Status400BadRequest, "If the request is invalid or a validation error occurs.", typeof(ProblemDetails))]
     [SwaggerResponse(StatusCodes.Status500InternalServerError, "If an unexpected error occurs.", typeof(ContentResult))]
-    public async Task<IActionResult> CreateExemptionReferences([FromBody] CreateExemptionReferencesCommand command)
+    public async Task<IActionResult> CreateExemptionReferences(Guid Id, [FromBody] CreateExemptionReferencesCommand command)
     {
         logger.LogInformation(LogMessages.CreateExemptionReferences);
+        command.RegistrationMaterialId = Id;
         await mediator.Send(command);
         return Ok();
     }

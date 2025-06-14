@@ -16,5 +16,5 @@ public interface IRegistrationMaterialRepository
             DateTime DulyMadeDate,Guid DulyMadeBy);
     Task<int> CreateAsync(int registrationId, string material);
 
-    Task CreateExemptionReferencesAsync(List<MaterialExemptionReference> exemptionReferences);
+    Task CreateExemptionReferencesAsync(Guid registrationMaterialId, List<MaterialExemptionReference> exemptionReferences);
 }
