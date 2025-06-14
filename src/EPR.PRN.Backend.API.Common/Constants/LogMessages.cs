@@ -24,5 +24,5 @@ public static class LogMessages
     public const string MarkAsDulyMade = "MarkAsDulyMadeBy id :{Id}";
     public const string MarkAccreditationAsDulyMade = "MarkAccreditationAsDulyMadeBy id :{Id}";
     public const string RegistrationMaterialReference = "Attempting to get reference data registration material id :{Id}";
-    public const string CreateRegistrationMaterialAndExemptionReferences = "Attempting to create new registration material and exemption references";
+    public const string CreateExemptionReferences = "Attempting to create exemption references";
 }
