@@ -39,7 +39,7 @@ public class RegistrationMaterialControllerTests
             .Returns(Task.FromResult(Unit.Value));
 
         // Act  
-        var result = await _controller.CreateExemptionReferences(command);
+        var result = await _controller.CreateExemptionReferences(Guid.NewGuid(), command);
 
         // Assert  
         result.Should().BeOfType<OkResult>();
