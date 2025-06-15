@@ -18,6 +18,8 @@ public static class LogMessages
     public const string AccreditationBusinessPlan = "Attempting to get Business Plan relating to an accreditation";
 
     public const string CreateRegistration = "Attempting to create new registration";
+    public const string UpdateRegistration = "Attempting to create new registration with ID {0}";
+    public const string GetRegistrationByOrganisation = "Attempting to get registration of type {0} for organisation with ID {1}";
     public const string UpdateRegistrationSiteAddress = "Attempting to update registration site address";
     public const string UpdateRegistrationTaskStatus = "Attempting to update registration task status";
     public const string MarkAsDulyMade = "MarkAsDulyMadeBy id :{Id}";

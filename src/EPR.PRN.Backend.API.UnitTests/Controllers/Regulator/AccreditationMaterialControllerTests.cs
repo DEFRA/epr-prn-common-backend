@@ -16,7 +16,7 @@ using Moq;
 using EPR.PRN.Backend.API.Common.Enums;
 using EPR.PRN.Backend.API.Handlers.Regulator;
 
-namespace EPR.PRN.Backend.API.UnitTests.Controllers;
+namespace EPR.PRN.Backend.API.UnitTests.Controllers.Regulator;
 
 [TestClass]
 public class AccreditationMaterialControllerTests

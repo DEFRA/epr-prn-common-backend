@@ -3585,6 +3585,52 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250611140921_AddressFieldsNullable'
+)
+BEGIN
+    DECLARE @var27 sysname;
+    SELECT @var27 = [d].[name]
+    FROM [sys].[default_constraints] [d]
+    INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+    WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Public.Address]') AND [c].[name] = N'GridReference');
+    IF @var27 IS NOT NULL EXEC(N'ALTER TABLE [Public.Address] DROP CONSTRAINT [' + @var27 + '];');
+    ALTER TABLE [Public.Address] ALTER COLUMN [GridReference] nvarchar(20) NULL;
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250611140921_AddressFieldsNullable'
+)
+BEGIN
+    DECLARE @var28 sysname;
+    SELECT @var28 = [d].[name]
+    FROM [sys].[default_constraints] [d]
+    INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+    WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Public.Address]') AND [c].[name] = N'AddressLine2');
+    IF @var28 IS NOT NULL EXEC(N'ALTER TABLE [Public.Address] DROP CONSTRAINT [' + @var28 + '];');
+    ALTER TABLE [Public.Address] ALTER COLUMN [AddressLine2] nvarchar(200) NULL;
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250611140921_AddressFieldsNullable'
+)
+BEGIN
+    INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+    VALUES (N'20250611140921_AddressFieldsNullable', N'8.0.8');
+END;
+GO
+
+COMMIT;
+GO
+
+BEGIN TRANSACTION;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
     WHERE [MigrationId] = N'20250612110818_RemoveunusedDulyMadeFields'
 )
 BEGIN
@@ -3606,43 +3652,13 @@ IF NOT EXISTS (
     WHERE [MigrationId] = N'20250612110818_RemoveunusedDulyMadeFields'
 )
 BEGIN
-    DECLARE @var27 sysname;
-    SELECT @var27 = [d].[name]
-    FROM [sys].[default_constraints] [d]
-    INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
-    WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Public.DulyMade]') AND [c].[name] = N'DeterminationNote');
-    IF @var27 IS NOT NULL EXEC(N'ALTER TABLE [Public.DulyMade] DROP CONSTRAINT [' + @var27 + '];');
-    ALTER TABLE [Public.DulyMade] DROP COLUMN [DeterminationNote];
-END;
-GO
-
-IF NOT EXISTS (
-    SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250612110818_RemoveunusedDulyMadeFields'
-)
-BEGIN
-    DECLARE @var28 sysname;
-    SELECT @var28 = [d].[name]
-    FROM [sys].[default_constraints] [d]
-    INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
-    WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Public.DulyMade]') AND [c].[name] = N'DeterminationUpdatedBy');
-    IF @var28 IS NOT NULL EXEC(N'ALTER TABLE [Public.DulyMade] DROP CONSTRAINT [' + @var28 + '];');
-    ALTER TABLE [Public.DulyMade] DROP COLUMN [DeterminationUpdatedBy];
-END;
-GO
-
-IF NOT EXISTS (
-    SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250612110818_RemoveunusedDulyMadeFields'
-)
-BEGIN
     DECLARE @var29 sysname;
     SELECT @var29 = [d].[name]
     FROM [sys].[default_constraints] [d]
     INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
-    WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Public.DulyMade]') AND [c].[name] = N'DeterminationUpdatedDate');
+    WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Public.DulyMade]') AND [c].[name] = N'DeterminationNote');
     IF @var29 IS NOT NULL EXEC(N'ALTER TABLE [Public.DulyMade] DROP CONSTRAINT [' + @var29 + '];');
-    ALTER TABLE [Public.DulyMade] DROP COLUMN [DeterminationUpdatedDate];
+    ALTER TABLE [Public.DulyMade] DROP COLUMN [DeterminationNote];
 END;
 GO
 
@@ -3655,9 +3671,9 @@ BEGIN
     SELECT @var30 = [d].[name]
     FROM [sys].[default_constraints] [d]
     INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
-    WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Public.DulyMade]') AND [c].[name] = N'DulyMadeNote');
+    WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Public.DulyMade]') AND [c].[name] = N'DeterminationUpdatedBy');
     IF @var30 IS NOT NULL EXEC(N'ALTER TABLE [Public.DulyMade] DROP CONSTRAINT [' + @var30 + '];');
-    ALTER TABLE [Public.DulyMade] DROP COLUMN [DulyMadeNote];
+    ALTER TABLE [Public.DulyMade] DROP COLUMN [DeterminationUpdatedBy];
 END;
 GO
 
@@ -3670,8 +3686,38 @@ BEGIN
     SELECT @var31 = [d].[name]
     FROM [sys].[default_constraints] [d]
     INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
-    WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Public.DulyMade]') AND [c].[name] = N'TaskStatusId');
+    WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Public.DulyMade]') AND [c].[name] = N'DeterminationUpdatedDate');
     IF @var31 IS NOT NULL EXEC(N'ALTER TABLE [Public.DulyMade] DROP CONSTRAINT [' + @var31 + '];');
+    ALTER TABLE [Public.DulyMade] DROP COLUMN [DeterminationUpdatedDate];
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250612110818_RemoveunusedDulyMadeFields'
+)
+BEGIN
+    DECLARE @var32 sysname;
+    SELECT @var32 = [d].[name]
+    FROM [sys].[default_constraints] [d]
+    INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+    WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Public.DulyMade]') AND [c].[name] = N'DulyMadeNote');
+    IF @var32 IS NOT NULL EXEC(N'ALTER TABLE [Public.DulyMade] DROP CONSTRAINT [' + @var32 + '];');
+    ALTER TABLE [Public.DulyMade] DROP COLUMN [DulyMadeNote];
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250612110818_RemoveunusedDulyMadeFields'
+)
+BEGIN
+    DECLARE @var33 sysname;
+    SELECT @var33 = [d].[name]
+    FROM [sys].[default_constraints] [d]
+    INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+    WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Public.DulyMade]') AND [c].[name] = N'TaskStatusId');
+    IF @var33 IS NOT NULL EXEC(N'ALTER TABLE [Public.DulyMade] DROP CONSTRAINT [' + @var33 + '];');
     ALTER TABLE [Public.DulyMade] DROP COLUMN [TaskStatusId];
 END;
 GO
@@ -3733,12 +3779,12 @@ IF NOT EXISTS (
     WHERE [MigrationId] = N'20250612190957_Accreditation-Exporter-And-Duly-Made-Cleanup'
 )
 BEGIN
-    DECLARE @var32 sysname;
-    SELECT @var32 = [d].[name]
+    DECLARE @var34 sysname;
+    SELECT @var34 = [d].[name]
     FROM [sys].[default_constraints] [d]
     INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
     WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Public.AccreditationDulyMade]') AND [c].[name] = N'DeterminationDateId');
-    IF @var32 IS NOT NULL EXEC(N'ALTER TABLE [Public.AccreditationDulyMade] DROP CONSTRAINT [' + @var32 + '];');
+    IF @var34 IS NOT NULL EXEC(N'ALTER TABLE [Public.AccreditationDulyMade] DROP CONSTRAINT [' + @var34 + '];');
     ALTER TABLE [Public.AccreditationDulyMade] DROP COLUMN [DeterminationDateId];
 END;
 GO
@@ -3748,12 +3794,12 @@ IF NOT EXISTS (
     WHERE [MigrationId] = N'20250612190957_Accreditation-Exporter-And-Duly-Made-Cleanup'
 )
 BEGIN
-    DECLARE @var33 sysname;
-    SELECT @var33 = [d].[name]
+    DECLARE @var35 sysname;
+    SELECT @var35 = [d].[name]
     FROM [sys].[default_constraints] [d]
     INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
     WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Public.AccreditationDulyMade]') AND [c].[name] = N'TaskStatusId');
-    IF @var33 IS NOT NULL EXEC(N'ALTER TABLE [Public.AccreditationDulyMade] DROP CONSTRAINT [' + @var33 + '];');
+    IF @var35 IS NOT NULL EXEC(N'ALTER TABLE [Public.AccreditationDulyMade] DROP CONSTRAINT [' + @var35 + '];');
     ALTER TABLE [Public.AccreditationDulyMade] DROP COLUMN [TaskStatusId];
 END;
 GO
