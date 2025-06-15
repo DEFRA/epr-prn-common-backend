@@ -314,7 +314,7 @@ public class RegistrationMaterialProfile : Profile
 
         if (task != null)
         {
-            return (RegulatorTaskStatus)task.TaskStatusId;
+            return (RegulatorTaskStatus)task.TaskStatus.Id;
         }
 
         return RegulatorTaskStatus.NotStarted;
