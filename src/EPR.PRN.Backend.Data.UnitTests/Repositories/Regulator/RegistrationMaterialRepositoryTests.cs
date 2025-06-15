@@ -338,8 +338,9 @@ public class RegistrationMaterialRepositoryTests
         var newStatusId = 2;
         var comment = "Updated comment";
         var newReference = "REFUPDATED";
+        var userId = Guid.NewGuid();
 
-        await _repository.UpdateRegistrationOutCome(Guid.Parse("a9421fc1-a912-42ee-85a5-3e06408759a9"), newStatusId, comment, newReference);
+        await _repository.UpdateRegistrationOutCome(Guid.Parse("a9421fc1-a912-42ee-85a5-3e06408759a9"), newStatusId, comment, newReference, userId);
         var updated = await _context.RegistrationMaterials.FindAsync(1);
 
         using (new AssertionScope())
@@ -347,6 +348,7 @@ public class RegistrationMaterialRepositoryTests
             Assert.AreEqual(newStatusId, updated.StatusId);
             Assert.AreEqual(comment, updated.Comments);
             Assert.AreEqual(newReference, updated.RegistrationReferenceNumber);
+            Assert.AreEqual(userId, updated.StatusUpdatedBy);
             Assert.IsNotNull(updated.StatusUpdatedDate);
         }
     }
@@ -354,8 +356,9 @@ public class RegistrationMaterialRepositoryTests
     [TestMethod]
     public async Task UpdateRegistrationOutCome_ShouldThrow_WhenMaterialNotFound()
     {
+        var userId = Guid.NewGuid();
         await Assert.ThrowsExceptionAsync<KeyNotFoundException>(() =>
-            _repository.UpdateRegistrationOutCome(Guid.Parse("cd9dcc80-fcf5-4f46-addd-b8a256f735a3"), 1, "Test", "REF"));
+            _repository.UpdateRegistrationOutCome(Guid.Parse("cd9dcc80-fcf5-4f46-addd-b8a256f735a3"), 1, "Test", "REF", userId));
     }
 
     [TestMethod]
@@ -680,7 +683,7 @@ public class RegistrationMaterialRepositoryTests
         var id = Guid.Parse("a9421fc1-a912-42ee-85a5-3e06408759a9");
 
         // Act
-        await _repository.UpdateRegistrationOutCome(id, 2, null, null);
+        await _repository.UpdateRegistrationOutCome(id, 2, null, null,Guid.Empty);
         var updated = await _context.RegistrationMaterials.FindAsync(1);
 
         // Assert

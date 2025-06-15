@@ -5,7 +5,8 @@ public static class ValidationMessages
     public const string RegistrationOutcomeIdRequired = "Id is required.";
     public const string InvalidRegistrationOutcomeStatus = "Invalid registration material status.";
     public const string RegistrationOutcomeCommentsMaxLength = "RegistrationMaterial Comment cannot exceed 500 characters.";
-    public const string RegistrationOutcomeCommentsCommentsRequired = "Comments are required.";
+    public const string RegistrationOutcomeCommentsRequired = "Comments are required.";
+    public const string RegistrationOutcomeUserRequired = "User is required.";
 
     public const string RegistrationMaterialIdRequired = "Id is required.";
     public const string RegistrationAccreditationIdRequired = "Accreditation Id is required.";

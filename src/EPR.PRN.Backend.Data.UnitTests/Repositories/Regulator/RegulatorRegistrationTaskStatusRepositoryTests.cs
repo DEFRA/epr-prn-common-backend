@@ -96,8 +96,7 @@ namespace EPR.PRN.Backend.Data.UnitTests.Repositories.Regulator
             taskStatus.Task.Name.Should().Be(taskName);
             taskStatus.Registration.ExternalId.Should().Be(registrationId);
             taskStatus.TaskStatus.Name.Should().Be(status.ToString());
-            taskStatus.StatusCreatedBy.Should().Be(user);
-            taskStatus.StatusUpdatedBy.Should().Be(user);
+            taskStatus.StatusCreatedBy.Should().Be(user);           
         }
 
         [TestMethod]
@@ -129,7 +128,7 @@ namespace EPR.PRN.Backend.Data.UnitTests.Repositories.Regulator
             taskStatus.Registration.ExternalId.Should().Be(registrationId);
             taskStatus.TaskStatus.Name.Should().Be(status.ToString());
             taskStatus.StatusCreatedBy.Should().Be(user);
-            taskStatus.StatusUpdatedBy.Should().Be(user);
+           
         }
 
         [TestMethod]

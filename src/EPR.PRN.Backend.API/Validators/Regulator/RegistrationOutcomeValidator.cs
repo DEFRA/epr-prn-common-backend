@@ -21,7 +21,11 @@ public class RegistrationOutcomeValidator : AbstractValidator<RegistrationMateri
 
         RuleFor(x => x.Comments)
             .NotEmpty()
-            .WithMessage(ValidationMessages.RegistrationOutcomeCommentsCommentsRequired)
+            .WithMessage(ValidationMessages.RegistrationOutcomeCommentsRequired)
             .When(x => x.Status == RegistrationMaterialStatus.Refused);
+        RuleFor(x => x.User)
+            .NotEmpty()
+            .NotEqual(Guid.Empty)
+            .WithMessage(ValidationMessages.RegistrationOutcomeUserRequired);
     }
 }
