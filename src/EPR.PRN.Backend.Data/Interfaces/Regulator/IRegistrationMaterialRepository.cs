@@ -17,4 +17,5 @@ public interface IRegistrationMaterialRepository
     Task<RegistrationMaterial> CreateAsync(Guid registrationId, string material);
 
     Task CreateExemptionReferencesAsync(Guid registrationMaterialId, List<MaterialExemptionReference> exemptionReferences);
+    Task<IList<RegistrationMaterial>> GetRegistrationMaterialsByRegistrationId(Guid requestRegistrationId);
 }

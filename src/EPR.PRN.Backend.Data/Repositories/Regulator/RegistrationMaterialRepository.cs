@@ -167,6 +167,30 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
         await eprContext.SaveChangesAsync();
     }
 
+    public async Task<IList<RegistrationMaterial>> GetRegistrationMaterialsByRegistrationId(Guid registrationId)
+    {
+        var existingRegistration = await eprContext.Registrations.SingleOrDefaultAsync(o => o.ExternalId == registrationId);
+        if (existingRegistration == null)
+        {
+            throw new KeyNotFoundException("Registration not found.");
+        }
+
+        var existingMaterials = eprContext.RegistrationMaterials
+            .Include(o => o.PermitType)
+            .Include(o => o.Status)
+            .Include(o => o.Material)
+            .Include(o => o.Registration)
+            .Include(o => o.PPCPeriod)
+            .Include(o => o.InstallationPeriod)
+            .Include(o => o.WasteManagementPeriod)
+            .Include(o => o.EnvironmentalPermitWasteManagementPeriod)
+            .Include(o => o.MaterialExemptionReferences)
+            .Where(o => o.Registration.ExternalId == registrationId)
+            .ToList();
+
+        return existingMaterials;
+    }
+
     public async Task<RegistrationMaterial> CreateAsync(Guid registrationId, string material)
     {
         var existingRegistration = await eprContext.Registrations.SingleOrDefaultAsync(o => o.ExternalId == registrationId);

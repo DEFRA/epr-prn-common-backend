@@ -1,7 +1,8 @@
 ﻿using System.Net;
 using EPR.PRN.Backend.API.Commands;
 using EPR.PRN.Backend.API.Common.Constants;
-using FluentValidation;
+using EPR.PRN.Backend.API.Dto.Regulator;
+using EPR.PRN.Backend.API.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.FeatureManagement.Mvc;
@@ -17,6 +18,26 @@ public class RegistrationMaterialController(
     IMediator mediator,
     ILogger<RegistrationMaterialController> logger) : ControllerBase
 {
+    [HttpGet("registrations/{registrationId:guid}/materials")]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<RegistrationMaterialDto>))]
+    [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
+    [SwaggerOperation(
+        Summary = "gets existing registration materials associated with a registration.",
+        Description = "attempting to get existing registration materials associated with a registration."
+    )]
+    [SwaggerResponse(StatusCodes.Status500InternalServerError, "If an unexpected error occurs.", typeof(ContentResult))]
+    public async Task<IActionResult> GetAllRegistrationMaterials([FromRoute]Guid registrationId)
+    {
+        logger.LogInformation(LogMessages.GetAllRegistrationMaterials, registrationId);
+
+        var registrationMaterials = await mediator.Send(new GetAllRegistrationMaterialsQuery
+        {
+            RegistrationId = registrationId
+        });
+
+        return Ok(registrationMaterials);
+    }
+
     [HttpPost("registrationMaterials/create")]
     [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(CreatedResult))]
     [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
@@ -37,7 +58,7 @@ public class RegistrationMaterialController(
         return new CreatedResult(string.Empty, registrationMaterial);
     }
 
-    [HttpPost("registrationMaterials/{Id}/createExemptionReferences")]
+    [HttpPost("registrationMaterials/{Id:guid}/createExemptionReferences")]
     [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(CreatedResult))]
     [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]

@@ -15,6 +15,7 @@ public static class LogMessages
     public const string UpdateRegulatorAccreditationTask = "UpdateRegulatorAccreditationTask";
     public const string AccreditationSamplingPlan = "Attempting to get file uploads relating to an accreditation";
     public const string CreateRegistrationMaterial = "Attempting to create new registration material for registration {0}";
+    public const string GetAllRegistrationMaterials = "Attempting to retrieve all registration materials for registration {0}";
 
     public const string CreateRegistration = "Attempting to create new registration";
     public const string UpdateRegistration = "Attempting to create new registration with ID {0}";

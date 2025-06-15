@@ -267,7 +267,6 @@ public class RegistrationMaterialRepositoryTests
         _context.SaveChanges();
     }
 
-
     [TestMethod]
     public async Task GetRegistrationById_ShouldReturnRegistration_WhenRegistrationExists()
     {
@@ -675,6 +674,61 @@ public class RegistrationMaterialRepositoryTests
         loaded.Should().NotBeNull();
     }
 
+    [TestMethod]
+    public async Task GetRegistrationMaterialsByRegistrationId_RegistrationIdDoesNotExists()
+    { 
+        await Assert.ThrowsExceptionAsync<KeyNotFoundException>(() => _repository.GetRegistrationMaterialsByRegistrationId(Guid.NewGuid()));
+    }
+
+    [TestMethod]
+    public async Task GetRegistrationMaterialsByRegistrationId_RegistrationIdDoesExist_NoRegistrationMaterials_ReturnEmpty()
+    {
+        // Arrange
+        var id = Guid.NewGuid();
+        var registration = new Registration
+        {
+            Id = 10,
+            ExternalId = id
+        };
+
+        await _context.Registrations.AddAsync(registration);
+        await _context.SaveChangesAsync();
+
+        // Act
+        var result = await _repository.GetRegistrationMaterialsByRegistrationId(id);
+
+        // Assert
+        result.Should().BeEmpty();
+    }
+
+    [TestMethod]
+    public async Task GetRegistrationMaterialsByRegistrationId_RegistrationIdDoesExist_RegistrationMaterialsExist_ReturnItems()
+    {
+        // Arrange
+        var id = Guid.NewGuid();
+        var registration = new Registration
+        {
+            Id = 10,
+            ExternalId = id
+        };
+
+        var registrationMaterial = new RegistrationMaterial
+        {
+            Registration = registration,
+            Id = 55,
+            MaterialId = 1
+        };
+
+        await _context.Registrations.AddAsync(registration);
+        await _context.RegistrationMaterials.AddAsync(registrationMaterial);
+        await _context.SaveChangesAsync();
+
+        // Act
+        var result = await _repository.GetRegistrationMaterialsByRegistrationId(id);
+
+        // Assert
+        result.Should().HaveCount(1);
+    }
 
     [TestCleanup]
     public void Cleanup()

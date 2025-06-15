@@ -26,8 +26,7 @@ public class GetRegistrationByOrganisationQueryHandler(
 
         var mapped = new RegistrationDto
         {
-            Id = result.Id,
-            ExternalId = result.ExternalId,
+            Id = result.ExternalId,
             ApplicationTypeId = result.ApplicationTypeId,
             OrganisationId = result.OrganisationId,
             RegistrationStatusId = result.RegistrationStatusId,
