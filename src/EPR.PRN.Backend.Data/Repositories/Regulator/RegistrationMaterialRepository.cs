@@ -167,6 +167,37 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
         await eprContext.SaveChangesAsync();
     }
 
+    public async Task<int> CreateAsync(int registrationId, string material)
+    {
+        var existingRegistration = await eprContext.Registrations.FindAsync(registrationId);
+        if (existingRegistration == null)
+        {
+            throw new KeyNotFoundException("Registration not found.");
+        }
+
+        var newMaterial = new RegistrationMaterial
+        {
+            RegistrationId = registrationId,
+            Material = await eprContext.LookupMaterials.SingleAsync(m => m.MaterialName == material),
+            StatusId = (await eprContext.LookupRegistrationMaterialStatuses.SingleAsync(s => s.Name == "ReadyToSubmit")).Id,
+            CreatedDate = DateTime.UtcNow,
+            ExternalId = Guid.NewGuid(),
+            StatusUpdatedDate = DateTime.UtcNow,
+            EnvironmentalPermitWasteManagementTonne = 0,
+            InstallationReprocessingTonne = 0,
+            WasteManagementReprocessingCapacityTonne = 0,
+            PPCReprocessingCapacityTonne = 0,
+            IsMaterialRegistered = false,
+            // Temp as we need to think about either the journey or the data model as currently we can't insert nulls into the db for this column.
+            PermitType = await eprContext.LookupMaterialPermit.SingleAsync(o => o.Name == PermitTypes.WasteManagementLicence)
+        };
+
+        await eprContext.RegistrationMaterials.AddAsync(newMaterial);
+        await eprContext.SaveChangesAsync();
+
+        return newMaterial.Id;
+    }
+
     private IIncludableQueryable<RegistrationMaterial, LookupRegistrationMaterialStatus> GetRegistrationMaterialsWithRelatedEntities()
     {
         var registrationMaterials =

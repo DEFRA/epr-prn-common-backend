@@ -54,6 +54,8 @@ public class RegistrationMaterialRepositoryTests
             JourneyTypeId = 1
         };
         var materialStatus = new LookupRegistrationMaterialStatus { Id = 1, Name = "Completed" };
+        var pendingMaterialStatus = new LookupRegistrationMaterialStatus { Id = 2, Name = "Pending" };
+        var readyToSubmitMaterialStatus = new LookupRegistrationMaterialStatus { Id = 3, Name = "ReadyToSubmit" };
         var lookupMaterial = new LookupMaterial { Id = 1, MaterialCode = "PLSTC", MaterialName = "Plastic" };
         var lookupPeriod = new LookupPeriod { Id = 1, Name = "Per Year" };
         var lookupMaterialPermit = new LookupMaterialPermit { Id = 1, Name = PermitTypes.WasteManagementLicence };
@@ -250,6 +252,8 @@ public class RegistrationMaterialRepositoryTests
         _context.LookupTasks.Add(task);
         _context.LookupTaskStatuses.Add(taskStatus);
         _context.LookupRegistrationMaterialStatuses.Add(materialStatus);
+        _context.LookupRegistrationMaterialStatuses.Add(readyToSubmitMaterialStatus);
+        _context.LookupRegistrationMaterialStatuses.Add(pendingMaterialStatus);
         _context.LookupMaterials.Add(lookupMaterial);
         _context.LookupAddresses.Add(address);
         _context.Registrations.Add(registration);
@@ -451,7 +455,7 @@ public class RegistrationMaterialRepositoryTests
             ExternalId = Guid.NewGuid()
         };
         var lookupMaterial = new LookupMaterial { Id = 2, MaterialCode = "GLASS", MaterialName = "Glass" };
-        var materialStatus = new LookupRegistrationMaterialStatus { Id = 2, Name = "Pending" };
+        var materialStatus = new LookupRegistrationMaterialStatus { Id = 4, Name = "Pending" };
         var exemptionReferences = new List<MaterialExemptionReference>
         {
             new MaterialExemptionReference { ReferenceNo = "EXEMPT456" },
@@ -512,7 +516,7 @@ public class RegistrationMaterialRepositoryTests
             ExternalId = Guid.NewGuid()
         };
         var lookupMaterial = new LookupMaterial { Id = 3, MaterialCode = "PAPER", MaterialName = "Paper" };
-        var materialStatus = new LookupRegistrationMaterialStatus { Id = 3, Name = "Pending" };
+        var materialStatus = new LookupRegistrationMaterialStatus { Id = 4, Name = "Pending" };
         var registrationMaterial = new RegistrationMaterial
         {
             Id = 3,
@@ -708,6 +712,24 @@ public class RegistrationMaterialRepositoryTests
     {
         await Assert.ThrowsExceptionAsync<KeyNotFoundException>(() => _repository.GetRegistrationMaterial_FileUploadById(Guid.Parse("cd9dcc80-fcf5-4f46-addd-b8a256f735a3")));
     }
+
+    [TestMethod]
+    public async Task CreateAsync_NoExistingRegistration_ShouldThrowException()
+    {
+        await Assert.ThrowsExceptionAsync<KeyNotFoundException>(() => _repository.CreateAsync(1232, "Steel"));
+    }
+
+    [TestMethod]
+    public async Task CreateAsync_ExistingRegistration_ShouldCreate()
+    {
+        // Act
+        var result = await _repository.CreateAsync(1, "Plastic");
+
+        // Assert
+        var loaded = await _context.RegistrationMaterials.FindAsync(result);
+        loaded.Should().NotBeNull();
+    }
+
 
     [TestCleanup]
     public void Cleanup()
