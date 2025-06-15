@@ -37,7 +37,7 @@ public class RegistrationMaterialController(
         return new CreatedResult(string.Empty, registrationMaterial);
     }
 
-    [HttpPost("registrationMaterials/{Id}/createExemptionReferences")]
+    [HttpPost("registrationMaterials/{Id:guid}/createExemptionReferences")]
     [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(CreatedResult))]
     [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
