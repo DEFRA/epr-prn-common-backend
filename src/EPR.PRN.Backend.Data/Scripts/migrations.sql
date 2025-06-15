@@ -3965,3 +3965,154 @@ GO
 COMMIT;
 GO
 
+BEGIN TRANSACTION;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250615135732_UpdateAccreditationBusinessPlan'
+)
+BEGIN
+    ALTER TABLE [Public.Accreditation] ADD [BusinessCollectionsNotes] varchar(500) NULL;
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250615135732_UpdateAccreditationBusinessPlan'
+)
+BEGIN
+    ALTER TABLE [Public.Accreditation] ADD [BusinessCollectionsPercentage] decimal(10,2) NULL;
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250615135732_UpdateAccreditationBusinessPlan'
+)
+BEGIN
+    ALTER TABLE [Public.Accreditation] ADD [CommunicationsNotes] varchar(500) NULL;
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250615135732_UpdateAccreditationBusinessPlan'
+)
+BEGIN
+    ALTER TABLE [Public.Accreditation] ADD [CommunicationsPercentage] decimal(10,2) NULL;
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250615135732_UpdateAccreditationBusinessPlan'
+)
+BEGIN
+    ALTER TABLE [Public.Accreditation] ADD [InfrastructureNotes] varchar(500) NULL;
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250615135732_UpdateAccreditationBusinessPlan'
+)
+BEGIN
+    ALTER TABLE [Public.Accreditation] ADD [InfrastructurePercentage] decimal(10,2) NULL;
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250615135732_UpdateAccreditationBusinessPlan'
+)
+BEGIN
+    ALTER TABLE [Public.Accreditation] ADD [NewMarketsNotes] varchar(500) NULL;
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250615135732_UpdateAccreditationBusinessPlan'
+)
+BEGIN
+    ALTER TABLE [Public.Accreditation] ADD [NewMarketsPercentage] decimal(10,2) NULL;
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250615135732_UpdateAccreditationBusinessPlan'
+)
+BEGIN
+    ALTER TABLE [Public.Accreditation] ADD [NewUsersRecycledPackagingWasteNotes] varchar(500) NULL;
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250615135732_UpdateAccreditationBusinessPlan'
+)
+BEGIN
+    ALTER TABLE [Public.Accreditation] ADD [NewUsersRecycledPackagingWastePercentage] decimal(10,2) NULL;
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250615135732_UpdateAccreditationBusinessPlan'
+)
+BEGIN
+    ALTER TABLE [Public.Accreditation] ADD [NotCoveredOtherCategoriesNotes] varchar(500) NULL;
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250615135732_UpdateAccreditationBusinessPlan'
+)
+BEGIN
+    ALTER TABLE [Public.Accreditation] ADD [NotCoveredOtherCategoriesPercentage] decimal(10,2) NULL;
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250615135732_UpdateAccreditationBusinessPlan'
+)
+BEGIN
+    ALTER TABLE [Public.Accreditation] ADD [RecycledWasteNotes] varchar(500) NULL;
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250615135732_UpdateAccreditationBusinessPlan'
+)
+BEGIN
+    ALTER TABLE [Public.Accreditation] ADD [RecycledWastePercentage] decimal(10,2) NULL;
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250615135732_UpdateAccreditationBusinessPlan'
+)
+BEGIN
+    ALTER TABLE [Public.Accreditation] ADD [TotalPercentage] decimal(10,2) NULL;
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250615135732_UpdateAccreditationBusinessPlan'
+)
+BEGIN
+    INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+    VALUES (N'20250615135732_UpdateAccreditationBusinessPlan', N'8.0.8');
+END;
+GO
+
+COMMIT;
+GO
+

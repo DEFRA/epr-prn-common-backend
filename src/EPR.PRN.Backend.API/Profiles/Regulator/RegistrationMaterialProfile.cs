@@ -120,6 +120,15 @@ public class RegistrationMaterialProfile : Profile
             .ForMember(dest => dest.FileUploadType, opt => opt.MapFrom(src => src.FileUploadType!.Name))
             .ForMember(dest => dest.FileUploadStatus, opt => opt.MapFrom(src => src.FileUploadStatus!.Name));
 
+        CreateMap<Accreditation, AccreditationBusinessPlanDto>()
+            .ForMember(dest => dest.AccreditationId, opt => opt.MapFrom(src => src.ExternalId))
+            .ForMember(dest => dest.MaterialName, opt => opt.MapFrom(src => src.RegistrationMaterial.Material.MaterialName))
+            .ForMember(dest => dest.OrganisationName, opt => opt.MapFrom(src => src.RegistrationMaterial.Registration.OrganisationId))
+            .ForMember(dest => dest.SiteAddress, opt => opt.MapFrom(src =>
+             src.RegistrationMaterial.Registration.ReprocessingSiteAddress != null ? CreateAddressString(src.RegistrationMaterial.Registration.ReprocessingSiteAddress)
+                : string.Empty))
+            .ForMember(dest => dest.TaskStatus, opt => opt.MapFrom(src => GetAccreditationTaskStatus(src.Tasks, RegulatorTaskNames.BusinessPlan)));
+
         CreateMap<Accreditation, AccreditationSamplingPlanDto>()
             .ForMember(dest => dest.MaterialName, opt => opt.MapFrom(src => src.RegistrationMaterial.Material.MaterialName))
             .ForMember(dest => dest.Files, opt => opt.MapFrom(src => src.FileUploads));
@@ -288,6 +297,18 @@ public class RegistrationMaterialProfile : Profile
     }
 
     private RegulatorTaskStatus GetApplicationTaskStatus(List<RegulatorApplicationTaskStatus>? srcTasks, string taskName)
+    {
+        var task = srcTasks?.FirstOrDefault(t => t.Task.Name == taskName);
+
+        if (task != null)
+        {
+            return (RegulatorTaskStatus)task.TaskStatusId;
+        }
+
+        return RegulatorTaskStatus.NotStarted;
+    }
+
+    private RegulatorTaskStatus GetAccreditationTaskStatus(List<RegulatorAccreditationTaskStatus>? srcTasks, string taskName)
     {
         var task = srcTasks?.FirstOrDefault(t => t.Task.Name == taskName);
 
