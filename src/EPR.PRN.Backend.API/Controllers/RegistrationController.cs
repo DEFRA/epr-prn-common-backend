@@ -3,6 +3,8 @@ using System.Net;
 
 using EPR.PRN.Backend.API.Commands;
 using EPR.PRN.Backend.API.Common.Constants;
+using EPR.PRN.Backend.API.Dto.Regulator;
+using EPR.PRN.Backend.API.Queries;
 using EPR.PRN.Backend.API.Services.Interfaces;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -19,7 +21,41 @@ public class RegistrationController(IMediator mediator
     , IValidationService validationService
     , ILogger<RegistrationController> logger) : ControllerBase
 {
+    #region Get Methods
+
+    [HttpGet("registrations/{applicationTypeId:int}/organisations/{organisationId:guid}")]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(RegistrationDto))]
+    [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
+    [SwaggerOperation(
+        Summary = "gets an existing registration by the organisation ID.",
+        Description = "attempting to get an existing registration using the organisation ID."
+    )]
+    [SwaggerResponse(StatusCodes.Status400BadRequest, "If the request is invalid or a validation error occurs.", typeof(ProblemDetails))]
+    [SwaggerResponse(StatusCodes.Status500InternalServerError, "If an unexpected error occurs.", typeof(ContentResult))]
+    [ExcludeFromCodeCoverage(Justification = "TODO: To be done as part of create registration user story")]
+    public async Task<IActionResult> GetRegistrationByOrganisation([FromRoute]int applicationTypeId, [FromRoute]Guid organisationId)
+    {
+        logger.LogInformation(string.Format(LogMessages.GetRegistrationByOrganisation, applicationTypeId, organisationId));
+
+        var registration = await mediator.Send(new GetRegistrationByOrganisationQuery
+        {
+            ApplicationTypeId = applicationTypeId,
+            OrganisationId = organisationId
+        });
+
+        if (registration is null)
+        {
+            return NotFound();
+        }
+
+        return Ok(registration);
+    }
+
+    #endregion
+
     #region Post Methods
+
     [HttpPost("registrations")]
     [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(int))]
     [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
@@ -39,6 +75,48 @@ public class RegistrationController(IMediator mediator
         var registrationId = await mediator.Send(command);
 
         return new CreatedResult(string.Empty, registrationId);
+    }
+
+    [HttpPost("registrations/{registrationId:int}/update")]
+    [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(OkResult))]
+    [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
+    [SwaggerOperation(
+        Summary = "updates an existing registration",
+        Description = "attempting to update the registration application."
+    )]
+    [SwaggerResponse(StatusCodes.Status204NoContent, "Returns No Content", typeof(int))]
+    [SwaggerResponse(StatusCodes.Status400BadRequest, "If the request is invalid or a validation error occurs.", typeof(ProblemDetails))]
+    [SwaggerResponse(StatusCodes.Status404NotFound, "If an existing registration is not found", typeof(ProblemDetails))]
+    [SwaggerResponse(StatusCodes.Status500InternalServerError, "If an unexpected error occurs.", typeof(ContentResult))]
+    [ExcludeFromCodeCoverage(Justification = "TODO: To be done as part of create registration user story")]
+    public async Task<IActionResult> UpdateRegistration([FromRoute]int registrationId, [FromBody] UpdateRegistrationCommand command)
+    {
+        try
+        {
+            logger.LogInformation(string.Format(LogMessages.UpdateRegistration, registrationId.ToString()));
+            command.RegistrationId = registrationId;
+
+            await validationService.ValidateAndThrowAsync(command);
+
+            await mediator.Send(command);
+        }
+        catch (KeyNotFoundException ex)
+        {
+            logger.LogError(ex, "Could not find registration with ID {RegistrationId}", registrationId);
+            return NotFound();
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "An error occurred while updating registration with ID {RegistrationId}", registrationId);
+            return StatusCode(StatusCodes.Status500InternalServerError, new ContentResult
+            {
+                Content = "An unexpected error occurred while processing your request.",
+                ContentType = "text/plain"
+            });
+        }
+
+        return NoContent();
     }
 
     [HttpPost("registrations/{registrationId:int}/taskStatus")]
