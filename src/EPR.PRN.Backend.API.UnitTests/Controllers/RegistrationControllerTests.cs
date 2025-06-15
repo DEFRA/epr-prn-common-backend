@@ -32,7 +32,7 @@ public class RegistrationControllerTests
     public async Task UpdateRegistrationSiteAddress_ValidCommand_ReturnsNoContent()
     {
         // Arrange
-        int registrationId = 1;
+        var registrationId = Guid.NewGuid();
         var command = new UpdateRegistrationSiteAddressCommand();
 
         _mediatorMock

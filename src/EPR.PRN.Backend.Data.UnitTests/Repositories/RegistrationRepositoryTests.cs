@@ -32,8 +32,11 @@ public class RegistrationRepositoryTests
     [TestMethod]
     public async Task GetAsync_ShouldReturnNull_WhenNoMatchFound()
     {
+        // Arrange
+        var registrationId = Guid.NewGuid();
+
         // Act
-        var result = await _repository.GetAsync(1);
+        var result = await _repository.GetAsync(registrationId);
 
         // Assert
         result.Should().BeNull();
@@ -43,16 +46,18 @@ public class RegistrationRepositoryTests
     public async Task GetAsync_ShouldReturnEntity_WhenMatchFound()
     {
         // Arrange
+        var registrationId = Guid.NewGuid();
         var existing = new Registration
         {
-            Id = 1
+            Id = 1,
+            ExternalId = registrationId
         };
 
         await _context.Registrations.AddAsync(existing);
         await _context.SaveChangesAsync();
 
         // Act
-        var result = await _repository.GetAsync(1);
+        var result = await _repository.GetAsync(registrationId);
 
         // Assert
         result.Should().NotBeNull();
@@ -61,8 +66,11 @@ public class RegistrationRepositoryTests
     [TestMethod]
     public async Task GetTaskStatusAsync_ShouldReturnNull_WhenNoMatchFound()
     {
+        // Arrange
+        var registrationId = Guid.NewGuid();
+        
         // Act
-        var result = await _repository.GetTaskStatusAsync("NonExistentTask", 999);
+        var result = await _repository.GetTaskStatusAsync("NonExistentTask", registrationId);
 
         // Assert
         result.Should().BeNull();
@@ -72,6 +80,9 @@ public class RegistrationRepositoryTests
     public async Task GetTaskStatusAsync_ShouldReturnStatus_WhenMatchExists()
     {
         // Arrange
+        var registrationId = Guid.NewGuid();
+        var registration = new Registration { Id = 1, ExternalId = registrationId };
+
         var task = new LookupRegulatorTask { Name = "TestTask", ApplicationTypeId = 1 };
         var taskStatusEntity = new LookupTaskStatus { Name = "InProgress" };
         var status = new ApplicantRegistrationTaskStatus
@@ -81,13 +92,14 @@ public class RegistrationRepositoryTests
             TaskStatus = taskStatusEntity
         };
 
+        await _context.Registrations.AddAsync(registration);
         await _context.LookupTasks.AddAsync(task);
         await _context.LookupTaskStatuses.AddAsync(taskStatusEntity);
         await _context.RegistrationTaskStatus.AddAsync(status);
         await _context.SaveChangesAsync();
 
         // Act
-        var result = await _repository.GetTaskStatusAsync("TestTask", 1);
+        var result = await _repository.GetTaskStatusAsync("TestTask", registrationId);
 
         // Assert
         result.Should().NotBeNull();
@@ -99,7 +111,8 @@ public class RegistrationRepositoryTests
     public async Task UpdateRegistrationTaskStatusAsync_ShouldAddNewStatus_WhenNotExists()
     {
         // Arrange
-        var registration = new Registration { Id = 1, ApplicationTypeId = 1 };
+        var registrationId = Guid.NewGuid();
+        var registration = new Registration { Id = 1, ApplicationTypeId = 1, ExternalId = registrationId};
         var task = new LookupRegulatorTask { Name = "NewTask", ApplicationTypeId = 1, IsMaterialSpecific = false };
         var status = new LookupTaskStatus { Name = TaskStatuses.Completed.ToString() };
 
@@ -109,10 +122,10 @@ public class RegistrationRepositoryTests
         await _context.SaveChangesAsync();
 
         // Act
-        await _repository.UpdateRegistrationTaskStatusAsync("NewTask", 1, TaskStatuses.Completed);
+        await _repository.UpdateRegistrationTaskStatusAsync("NewTask", registrationId, TaskStatuses.Completed);
 
         // Assert
-        var result = await _repository.GetTaskStatusAsync("NewTask", 1);
+        var result = await _repository.GetTaskStatusAsync("NewTask", registrationId);
         result.Should().NotBeNull();
         result!.TaskStatus.Name.Should().Be(TaskStatuses.Completed.ToString());
     }
@@ -121,7 +134,8 @@ public class RegistrationRepositoryTests
     public async Task UpdateRegistrationTaskStatusAsync_ShouldUpdateExistingStatus()
     {
         // Arrange
-        var registration = new Registration { Id = 2, ApplicationTypeId = 1 };
+        var registrationId = Guid.NewGuid();
+        var registration = new Registration { Id = 2, ApplicationTypeId = 1, ExternalId = registrationId};
         var task = new LookupRegulatorTask { Name = "ExistingTask", ApplicationTypeId = 1, IsMaterialSpecific = false };
         var oldStatus = new LookupTaskStatus { Name = TaskStatuses.Started.ToString() };
         var newStatus = new LookupTaskStatus { Name = TaskStatuses.Completed.ToString() };
@@ -141,10 +155,10 @@ public class RegistrationRepositoryTests
         await _context.SaveChangesAsync();
 
         // Act
-        await _repository.UpdateRegistrationTaskStatusAsync("ExistingTask", 2, TaskStatuses.Completed);
+        await _repository.UpdateRegistrationTaskStatusAsync("ExistingTask", registrationId, TaskStatuses.Completed);
 
         // Assert
-        var result = await _repository.GetTaskStatusAsync("ExistingTask", 2);
+        var result = await _repository.GetTaskStatusAsync("ExistingTask", registrationId);
         result!.TaskStatus.Name.Should().Be(TaskStatuses.Completed.ToString());
     }
 
@@ -152,12 +166,13 @@ public class RegistrationRepositoryTests
     public async Task UpdateRegistrationTaskStatusAsync_ShouldThrow_WhenRegistrationNotFound()
     {
         // Arrange
+        var registrationId = Guid.NewGuid();
         var status = new LookupTaskStatus { Name = TaskStatuses.Completed.ToString() };
         await _context.LookupTaskStatuses.AddAsync(status);
         await _context.SaveChangesAsync();
 
         // Act
-        Func<Task> act = async () => await _repository.UpdateRegistrationTaskStatusAsync("AnyTask", 9999, TaskStatuses.Completed);
+        Func<Task> act = async () => await _repository.UpdateRegistrationTaskStatusAsync("AnyTask", registrationId, TaskStatuses.Completed);
 
         // Assert
         await act.Should().ThrowAsync<KeyNotFoundException>();
@@ -167,7 +182,8 @@ public class RegistrationRepositoryTests
     public async Task UpdateRegistrationTaskStatusAsync_ShouldThrow_WhenTaskNotFound()
     {
         // Arrange
-        var registration = new Registration { Id = 3, ApplicationTypeId = 10 };
+        var registrationId = Guid.NewGuid();
+        var registration = new Registration { Id = 3, ApplicationTypeId = 10, ExternalId = registrationId};
         var status = new LookupTaskStatus { Name = TaskStatuses.Completed.ToString() };
 
         await _context.Registrations.AddAsync(registration);
@@ -175,7 +191,7 @@ public class RegistrationRepositoryTests
         await _context.SaveChangesAsync();
 
         // Act
-        Func<Task> act = async () => await _repository.UpdateRegistrationTaskStatusAsync("MissingTask", 3, TaskStatuses.Completed);
+        Func<Task> act = async () => await _repository.UpdateRegistrationTaskStatusAsync("MissingTask", registrationId, TaskStatuses.Completed);
 
         // Assert
         await act.Should().ThrowAsync<RegulatorInvalidOperationException>()
@@ -186,7 +202,8 @@ public class RegistrationRepositoryTests
     public async Task UpdateSiteAddressAsync_ShouldUpdateRegistrationWithNewAddresses_WhenAddressesHaveNoId()
     {
         // Arrange
-        var registration = new Registration { Id = 1, ExternalId = Guid.NewGuid() };
+        var registrationId = Guid.NewGuid();
+        var registration = new Registration { Id = 1, ExternalId = registrationId };
         _context.Registrations.Add(registration);
         await _context.SaveChangesAsync();
 
@@ -203,7 +220,7 @@ public class RegistrationRepositoryTests
         };
 
         // Act
-        await _repository.UpdateSiteAddressAsync(registration.Id, reprocessingAddress);
+        await _repository.UpdateSiteAddressAsync(registrationId, reprocessingAddress);
 
         // Assert
         var updatedRegistration = await _context.Registrations.FirstAsync(r => r.Id == registration.Id);
@@ -218,10 +235,11 @@ public class RegistrationRepositoryTests
     public async Task UpdateSiteAddressAsync_ShouldThrowException_WhenRegistrationNotFound()
     {
         // Arrange
+        var registrationId = Guid.NewGuid();
         var reprocessingAddress = new AddressDto();
 
         // Act
-        Func<Task> act = async () => await _repository.UpdateSiteAddressAsync(999, reprocessingAddress);
+        Func<Task> act = async () => await _repository.UpdateSiteAddressAsync(registrationId, reprocessingAddress);
 
         // Assert
         await act.Should().ThrowAsync<KeyNotFoundException>()
@@ -232,7 +250,8 @@ public class RegistrationRepositoryTests
     public async Task UpdateSiteAddressAsync_ShouldReuseAddressIds_WhenAddressDtosContainIds()
     {
         // Arrange
-        var registration = new Registration { Id = 2, ExternalId = Guid.NewGuid() };
+        var registrationId = Guid.NewGuid();
+        var registration = new Registration { Id = 2, ExternalId = registrationId };
         var lookupAddress = new Address
         {
             Id = 101,
@@ -252,7 +271,7 @@ public class RegistrationRepositoryTests
         var reprocessingAddress = new AddressDto { Id = 101 };
 
         // Act
-        await _repository.UpdateSiteAddressAsync(registration.Id, reprocessingAddress);
+        await _repository.UpdateSiteAddressAsync(registrationId, reprocessingAddress);
 
         // Assert
         var updatedRegistration = await _context.Registrations.FindAsync(registration.Id);
@@ -263,8 +282,10 @@ public class RegistrationRepositoryTests
     public async Task UpdateAsync_NoRegistration_ShouldThrowException()
     {
         // Arrange
+        var registrationId = Guid.NewGuid();
 
-        // Negative data
+        // Negative data, purposely using a different ExternalId than the one in the above variable as we don't want to match on this.
+        // We want to have one non-matching item in the database as negative data,
         var registration = new Registration { Id = 2, ExternalId = Guid.NewGuid() };
 
         _context.Registrations.Add(registration);
@@ -276,7 +297,7 @@ public class RegistrationRepositoryTests
         var legalAddress = new AddressDto { Id = 101, AddressLine1 = "Address line 1" };
 
         // Act
-        Func<Task> act = async () => await _repository.UpdateAsync(3, businessAddress, reprocessingAddress, legalAddress);
+        Func<Task> act = async () => await _repository.UpdateAsync(registrationId, businessAddress, reprocessingAddress, legalAddress);
 
         // Assert
         await act.Should().ThrowAsync<KeyNotFoundException>();
@@ -286,7 +307,8 @@ public class RegistrationRepositoryTests
     public async Task UpdateAsync_NoExistingAddresses_ShouldUpdateAccordingly()
     {
         // Arrange
-        var registration = new Registration { Id = 2, ExternalId = Guid.NewGuid()};
+        var registrationId = Guid.NewGuid();
+        var registration = new Registration { Id = 2, ExternalId = registrationId};
 
         _context.Registrations.Add(registration);
 
@@ -297,7 +319,7 @@ public class RegistrationRepositoryTests
         var legalAddress = new AddressDto { Id = 101, AddressLine1 = "Address line 1" };
 
         // Act
-        await _repository.UpdateAsync(registration.Id, businessAddress, reprocessingAddress, legalAddress);
+        await _repository.UpdateAsync(registrationId, businessAddress, reprocessingAddress, legalAddress);
 
         // Assert
         var updatedRegistration = await _context.Registrations.FindAsync(registration.Id);
@@ -310,7 +332,8 @@ public class RegistrationRepositoryTests
     public async Task UpdateAsync_WithExistingABusinessAddress_ShouldUpdateAccordingly()
     {
         // Arrange
-        var registration = new Registration { Id = 2, ExternalId = Guid.NewGuid() };
+        var registrationId = Guid.NewGuid();
+        var registration = new Registration { Id = 2, ExternalId = registrationId };
         var address = new Address
         {
             Id = 101,
@@ -333,7 +356,7 @@ public class RegistrationRepositoryTests
         var legalAddress = new AddressDto { Id = 101, AddressLine1 = "new Address line 1" };
 
         // Act
-        await _repository.UpdateAsync(registration.Id, businessAddress, reprocessingAddress, legalAddress);
+        await _repository.UpdateAsync(registrationId, businessAddress, reprocessingAddress, legalAddress);
 
         // Assert
         var updatedRegistration = await _context.Registrations.FindAsync(registration.Id);

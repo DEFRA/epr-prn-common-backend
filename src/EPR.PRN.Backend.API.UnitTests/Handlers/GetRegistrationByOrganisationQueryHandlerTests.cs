@@ -31,9 +31,8 @@ public class GetRegistrationByOrganisationQueryHandlerTests
         var query = new GetRegistrationByOrganisationQuery { ApplicationTypeId = 1, OrganisationId = organisationId };
         var expectedDto = new RegistrationDto
         {
-            Id = 1,
+            Id = externalId,
             ApplicationTypeId = 1,
-            ExternalId = externalId,
             OrganisationId = organisationId,
             BusinessAddress = new AddressDto
             {

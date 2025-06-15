@@ -12,5 +12,5 @@ public class UpdateRegistrationTaskStatusCommand : IRequest
 
     [BindNever]
     [SwaggerIgnore]
-    public int RegistrationId { get; set; }
+    public Guid RegistrationId { get; set; }
 }

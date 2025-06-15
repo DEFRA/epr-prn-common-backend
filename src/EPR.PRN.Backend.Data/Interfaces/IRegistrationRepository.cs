@@ -7,9 +7,9 @@ namespace EPR.PRN.Backend.Data.Interfaces;
 public interface IRegistrationRepository
 {
     Task<Registration> CreateRegistrationAsync(int applicationTypeId, Guid organisationId, AddressDto address);
-    Task<ApplicantRegistrationTaskStatus?> GetTaskStatusAsync(string taskName, int registrationId);
+    Task<ApplicantRegistrationTaskStatus?> GetTaskStatusAsync(string taskName, Guid registrationId);
     Task<Registration?> GetByOrganisationAsync(int applicationTypeId, Guid organisationId);
-    Task UpdateAsync(int registrationId, AddressDto businessAddress, AddressDto reprocessingSiteAddress, AddressDto legalDocumentsAddress);
-    Task UpdateRegistrationTaskStatusAsync(string taskName, int registrationId, TaskStatuses status);
-    Task UpdateSiteAddressAsync(int registrationId, AddressDto reprocessingSiteAddress);
+    Task UpdateAsync(Guid registrationId, AddressDto businessAddress, AddressDto reprocessingSiteAddress, AddressDto legalDocumentsAddress);
+    Task UpdateRegistrationTaskStatusAsync(string taskName, Guid registrationId, TaskStatuses status);
+    Task UpdateSiteAddressAsync(Guid registrationId, AddressDto reprocessingSiteAddress);
 }

@@ -17,7 +17,7 @@ public class CreateRegistrationHandler(IRegistrationRepository repository, IMapp
         var registration = await repository.CreateRegistrationAsync(command.ApplicationTypeId, command.OrganisationId, command.ReprocessingSiteAddress);
 
         await repository.UpdateRegistrationTaskStatusAsync(nameof(RegistrationTaskType.SiteAddressAndContactDetails),
-            registration.Id, TaskStatuses.Started);
+            registration.ExternalId, TaskStatuses.Started);
 
         return mapper.Map<CreateRegistrationDto>(registration);
     }

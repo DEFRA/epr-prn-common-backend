@@ -23,10 +23,11 @@ public class UpdateRegistrationTaskStatusCommandValidatorTests
     public async Task Validate_ShouldPass_ForAllowedStatuses(TaskStatuses validStatus)
     {
         // Arrange
+        var registrationId = Guid.NewGuid();
         var command = new UpdateRegistrationTaskStatusCommand 
         { 
             Status = validStatus, 
-            RegistrationId = 1, 
+            RegistrationId = registrationId, 
             TaskName = "Test Task" };
 
         // Act
@@ -42,10 +43,11 @@ public class UpdateRegistrationTaskStatusCommandValidatorTests
     public async Task Validate_ShouldFail_ForDisallowedStatuses(TaskStatuses invalidStatus)
     {
         // Arrange
+        var registrationId = Guid.NewGuid();
         var command = new UpdateRegistrationTaskStatusCommand 
         { 
             Status = invalidStatus,
-            RegistrationId = 1,
+            RegistrationId = registrationId,
             TaskName = "Test Task"
         };
     

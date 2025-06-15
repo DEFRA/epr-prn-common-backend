@@ -14,7 +14,7 @@ public class UpdateRegistrationCommand : IRequest
     /// </summary>
     [BindNever]
     [SwaggerIgnore]
-    public int RegistrationId { get; set; }
+    public Guid RegistrationId { get; set; }
 
     /// <summary>
     /// Gets or sets the business address

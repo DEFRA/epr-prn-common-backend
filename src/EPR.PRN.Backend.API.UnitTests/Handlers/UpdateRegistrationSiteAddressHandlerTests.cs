@@ -24,9 +24,10 @@ public class UpdateRegistrationSiteAddressHandlerTests
     public async Task Handle_ShouldCallRepositoryUpdateSiteAddress_WithCorrectParameters()
     {
         // Arrange
+        var registrationId = Guid.NewGuid();
         var command = new UpdateRegistrationSiteAddressCommand
         {
-            RegistrationId = 1,
+            RegistrationId = registrationId,
             ReprocessingSiteAddress = new AddressDto
             {
                 AddressLine1 = "123 Main St",
@@ -50,15 +51,16 @@ public class UpdateRegistrationSiteAddressHandlerTests
     public async Task Handle_ShouldCompleteSuccessfully_WhenRepositoryCallSucceeds()
     {
         // Arrange
+        var registrationId = Guid.NewGuid();
         var command = new UpdateRegistrationSiteAddressCommand
         {
-            RegistrationId = 1,
+            RegistrationId = registrationId,
             ReprocessingSiteAddress = new AddressDto() { Id = 101 },
         };
 
         int? reprocessingSiteAddressId = 0;
-        _repositoryMock.Setup(r => r.UpdateSiteAddressAsync(It.IsAny<int>(), It.IsAny<AddressDto>()))
-            .Callback<int, AddressDto>((_, reprocessingSiteAddress) => reprocessingSiteAddressId = reprocessingSiteAddress.Id)
+        _repositoryMock.Setup(r => r.UpdateSiteAddressAsync(It.IsAny<Guid>(), It.IsAny<AddressDto>()))
+            .Callback<Guid, AddressDto>((_, reprocessingSiteAddress) => reprocessingSiteAddressId = reprocessingSiteAddress.Id)
             .Returns(Task.CompletedTask);
 
         // Act
@@ -72,14 +74,16 @@ public class UpdateRegistrationSiteAddressHandlerTests
     public async Task Handle_ShouldThrowException_WhenRepositoryThrows()
     {
         // Arrange
+        var registrationId = Guid.NewGuid();
         var command = new UpdateRegistrationSiteAddressCommand
         {
-            RegistrationId = 1,
+            RegistrationId = registrationId,
             ReprocessingSiteAddress = new AddressDto(),
         };
 
-        _repositoryMock.Setup(r => r.UpdateSiteAddressAsync(It.IsAny<int>(), It.IsAny<AddressDto>()))
-                       .ThrowsAsync(new KeyNotFoundException("Registration not found."));
+        _repositoryMock
+            .Setup(r => r.UpdateSiteAddressAsync(It.IsAny<Guid>(), It.IsAny<AddressDto>()))
+            .ThrowsAsync(new KeyNotFoundException("Registration not found."));
 
         // Act
         Func<Task> act = async () => await _handler.Handle(command, CancellationToken.None);
