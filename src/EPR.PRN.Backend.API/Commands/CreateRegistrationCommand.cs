@@ -1,11 +1,12 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using EPR.PRN.Backend.API.Dto;
 using EPR.PRN.Backend.Data.DTO;
 using MediatR;
 
 namespace EPR.PRN.Backend.API.Commands;
 
 [ExcludeFromCodeCoverage(Justification = "TODO: To be done as part of create registration user story")]
-public class CreateRegistrationCommand : IRequest<int>
+public class CreateRegistrationCommand : IRequest<CreateRegistrationDto>
 {
     /// <summary>
     /// The ID for the type of application i.e. Producer, Reprocessor, etc.

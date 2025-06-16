@@ -152,32 +152,67 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
         await eprContext.SaveChangesAsync();
     }
 
-    public async Task CreateRegistrationMaterialWithExemptionsAsync(
-    RegistrationMaterial registrationMaterial,
-    List<MaterialExemptionReference> exemptionReferences)
+    public async Task CreateExemptionReferencesAsync(Guid registrationMaterialId, List<MaterialExemptionReference> exemptionReferences)
     {
-        await eprContext.RegistrationMaterials.AddAsync(registrationMaterial);
+        var material = await eprContext.RegistrationMaterials.FirstOrDefaultAsync(rm => rm.ExternalId == registrationMaterialId);
+        
+        if (material is null) throw new KeyNotFoundException("Material not found.");
 
-        foreach (var exemption in exemptionReferences)
-        {            
-            exemption.RegistrationMaterial = registrationMaterial;
+        foreach (var exemptionReference in exemptionReferences)
+        {
+            exemptionReference.RegistrationMaterialId = material.Id;
         }
 
         await eprContext.MaterialExemptionReferences.AddRangeAsync(exemptionReferences);
         await eprContext.SaveChangesAsync();
     }
 
-    public async Task<int> CreateAsync(int registrationId, string material)
+    public async Task<IList<RegistrationMaterial>> GetRegistrationMaterialsByRegistrationId(Guid registrationId)
     {
-        var existingRegistration = await eprContext.Registrations.FindAsync(registrationId);
+        var existingRegistration = await eprContext.Registrations.SingleOrDefaultAsync(o => o.ExternalId == registrationId);
         if (existingRegistration == null)
         {
             throw new KeyNotFoundException("Registration not found.");
         }
 
+        var existingMaterials = eprContext.RegistrationMaterials
+            .AsNoTracking()
+            .Include(o => o.PermitType)
+            .Include(o => o.Status)
+            .Include(o => o.Material)
+            .Include(o => o.Registration)
+            .Include(o => o.PPCPeriod)
+            .Include(o => o.InstallationPeriod)
+            .Include(o => o.WasteManagementPeriod)
+            .Include(o => o.EnvironmentalPermitWasteManagementPeriod)
+            .Include(o => o.MaterialExemptionReferences)
+            .Where(o => o.Registration.ExternalId == registrationId)
+            .ToList();
+
+        return existingMaterials;
+    }
+
+    public async Task<RegistrationMaterial> CreateAsync(Guid registrationId, string material)
+    {
+        var existingRegistration = await eprContext.Registrations.SingleOrDefaultAsync(o => o.ExternalId == registrationId);
+        if (existingRegistration == null)
+        {
+            throw new KeyNotFoundException("Registration not found.");
+        }
+
+        var existingMaterial = await eprContext.RegistrationMaterials
+            .Include(o => o.Material)
+            .Include(o => o.Registration)
+            .SingleOrDefaultAsync(o => o.Material.MaterialName == material && o.Registration.ExternalId == registrationId);
+
+        if (existingMaterial is not null)
+        {
+            throw new InvalidOperationException($"Material '{material}' is already registered for this registration {existingRegistration.ExternalId}");
+        }
+
         var newMaterial = new RegistrationMaterial
         {
-            RegistrationId = registrationId,
+            RegistrationId = existingRegistration.Id,
             Material = await eprContext.LookupMaterials.SingleAsync(m => m.MaterialName == material),
             StatusId = (await eprContext.LookupRegistrationMaterialStatuses.SingleAsync(s => s.Name == "ReadyToSubmit")).Id,
             CreatedDate = DateTime.UtcNow,
@@ -195,7 +230,7 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
         await eprContext.RegistrationMaterials.AddAsync(newMaterial);
         await eprContext.SaveChangesAsync();
 
-        return newMaterial.Id;
+        return newMaterial;
     }
 
     public async Task<RegistrationMaterial?> GetRegistrationMaterialByExternalId(Guid externalId)

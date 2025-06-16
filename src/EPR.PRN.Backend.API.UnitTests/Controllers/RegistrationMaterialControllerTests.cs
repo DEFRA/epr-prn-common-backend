@@ -1,6 +1,7 @@
 using EPR.PRN.Backend.API.Commands;
 using EPR.PRN.Backend.API.Controllers;
 using EPR.PRN.Backend.API.Dto.Regulator;
+using EPR.PRN.Backend.API.Handlers;
 using FluentAssertions;
 using FluentValidation;
 using MediatR;
@@ -26,24 +27,20 @@ public class RegistrationMaterialControllerTests
     }
     
     [TestMethod]
-    public async Task CreateRegistrationMaterialAndExemptionReferences_ValidCommand_ReturnsNoContent()
+    public async Task CreateExemptionReferences_ValidCommand_ReturnsNoContent()
     {
         // Arrange  
-        var command = new CreateRegistrationMaterialAndExemptionReferencesCommand
-        {
-            RegistrationMaterial = new RegistrationMaterialDto
-            {
-                MaterialName = "Test Material"
-            },
+        var command = new CreateExemptionReferencesCommand
+        {           
             MaterialExemptionReferences = new List<MaterialExemptionReferenceDto>()
         };
 
         _mediatorMock
-            .Setup(m => m.Send(It.IsAny<CreateRegistrationMaterialAndExemptionReferencesCommand>(), It.IsAny<CancellationToken>()))
+            .Setup(m => m.Send(It.IsAny<CreateExemptionReferencesCommand>(), It.IsAny<CancellationToken>()))
             .Returns(Task.FromResult(Unit.Value));
 
         // Act  
-        var result = await _controller.CreateRegistrationMaterialAndExemptionReferences(command);
+        var result = await _controller.CreateExemptionReferences(Guid.NewGuid(), command);
 
         // Assert  
         result.Should().BeOfType<OkResult>();
@@ -64,21 +61,27 @@ public class RegistrationMaterialControllerTests
     public async Task CreateRegistrationMaterialExpectedCreatedResult()
     {
         // Arrange
-        var expectedResult = new CreatedResult(string.Empty, 10);
+        var externalId = Guid.NewGuid();
+        var expectedResult = new CreatedResult(string.Empty, new CreateRegistrationMaterialDto
+        {
+            Id = externalId
+        });
         var validator = new InlineValidator<RegistrationMaterialsOutcomeCommand>();
         validator.RuleFor(x => x.Status).Must(_ => false).WithMessage("Validation failed");
 
-        var registrationId = 1;
         var command = new CreateRegistrationMaterialCommand
         {
-            RegistrationId = 1,
+            RegistrationId = externalId,
             Material = "Steel"
         };
 
         // Expectations
         _mediatorMock
             .Setup(m => m.Send(command, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(10);
+            .ReturnsAsync(new CreateRegistrationMaterialDto
+            {
+                Id = externalId
+            });
 
         // Act
         var result = await _controller.CreateRegistrationMaterial(command);

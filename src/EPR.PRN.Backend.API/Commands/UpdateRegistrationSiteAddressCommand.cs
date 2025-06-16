@@ -11,7 +11,7 @@ public class UpdateRegistrationSiteAddressCommand : IRequest
 {
     [BindNever]
     [SwaggerIgnore]
-    public int RegistrationId { get; set; }
+    public Guid RegistrationId { get; set; }
 
     /// <summary>
     /// Gets or sets the identifier for the reprocessing site address

@@ -14,9 +14,10 @@ public interface IRegistrationMaterialRepository
     Task UpdateRegistrationOutCome(Guid registrationMaterialId, int statusId, string? comment, string? registrationReferenceNumber);
     Task RegistrationMaterialsMarkAsDulyMade(Guid registrationMaterialId, int statusId, DateTime DeterminationDate,
             DateTime DulyMadeDate,Guid DulyMadeBy);
-    Task<int> CreateAsync(int registrationId, string material);
+    Task<RegistrationMaterial> CreateAsync(Guid registrationId, string material);
 
-    Task CreateRegistrationMaterialWithExemptionsAsync(RegistrationMaterial registrationMaterial, List<MaterialExemptionReference> exemptionReferences);
+    Task CreateExemptionReferencesAsync(Guid registrationMaterialId, List<MaterialExemptionReference> exemptionReferences);
+    Task<IList<RegistrationMaterial>> GetRegistrationMaterialsByRegistrationId(Guid requestRegistrationId);
     Task<RegistrationMaterial?> GetRegistrationMaterialByExternalId(Guid externalId);
     Task<RegistrationMaterial> SaveAsync(RegistrationMaterial registrationMaterial);
 

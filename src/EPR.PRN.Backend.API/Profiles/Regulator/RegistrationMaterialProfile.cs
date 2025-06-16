@@ -1,10 +1,12 @@
-﻿using AutoMapper;
+﻿using System.Linq.Expressions;
+using AutoMapper;
 using EPR.PRN.Backend.API.Common.Constants;
 using EPR.PRN.Backend.API.Common.Enums;
 using EPR.PRN.Backend.API.Common.Exceptions;
+using EPR.PRN.Backend.API.Dto;
 using EPR.PRN.Backend.API.Dto.Regulator;
+using EPR.PRN.Backend.API.Handlers;
 using EPR.PRN.Backend.Data.DataModels.Registrations;
-using Microsoft.Identity.Client;
 
 namespace EPR.PRN.Backend.API.Profiles.Regulator;
 
@@ -12,6 +14,12 @@ public class RegistrationMaterialProfile : Profile
 {
     public RegistrationMaterialProfile()
     {
+        CreateMap<RegistrationMaterial, CreateRegistrationMaterialDto>()
+            .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.ExternalId));
+
+        CreateMap<Registration, CreateRegistrationDto>()
+            .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.ExternalId));
+
         CreateMap<Registration, RegistrationOverviewDto>()
         .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.ExternalId))
         .ForMember(dest => dest.Regulator, opt => opt.MapFrom(_ => "EA"))
@@ -209,7 +217,45 @@ public class RegistrationMaterialProfile : Profile
            .ForMember(dest => dest.EnvironmentalPermitWasteManagementTonne, opt => opt.MapFrom(src => src.EnvironmentalPermitWasteManagementTonne))
            .ForMember(dest => dest.MaximumReprocessingCapacityTonne, opt => opt.MapFrom(src => src.MaximumReprocessingCapacityTonne))
            .ForMember(dest => dest.IsMaterialRegistered, opt => opt.MapFrom(src => src.IsMaterialRegistered))
-           .ForMember(dest => dest.CreatedDate, opt => opt.MapFrom(src => src.CreatedDate));                  
+           .ForMember(dest => dest.CreatedDate, opt => opt.MapFrom(src => src.CreatedDate));
+
+        CreateMap<RegistrationMaterial, ApplicantRegistrationMaterialDto>()
+            .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.ExternalId))
+            .ForMember(dest => dest.RegistrationId, opt => opt.MapFrom(src => src.Registration.ExternalId))
+            .ForMember(dest => dest.PPCReprocessingCapacityTonne, opt => opt.MapFrom(src => src.PPCReprocessingCapacityTonne))
+            .ForMember(dest => dest.WasteManagementReprocessingCapacityTonne, opt => opt.MapFrom(src => src.WasteManagementReprocessingCapacityTonne))
+            .ForMember(dest => dest.InstallationReprocessingTonne, opt => opt.MapFrom(src => src.InstallationReprocessingTonne))
+            .ForMember(dest => dest.EnvironmentalPermitWasteManagementTonne, opt => opt.MapFrom(src => src.EnvironmentalPermitWasteManagementTonne))
+            .ForMember(dest => dest.MaximumReprocessingCapacityTonne, opt => opt.MapFrom(src => src.MaximumReprocessingCapacityTonne))
+            .ForMember(dest => dest.IsMaterialRegistered, opt => opt.MapFrom(src => src.IsMaterialRegistered))
+            .ForMember(dest => dest.PPCPermitNumber, opt => opt.MapFrom(src => src.PPCPermitNumber))
+            .ForMember(dest => dest.InstallationPermitNumber, opt => opt.MapFrom(src => src.InstallationPermitNumber))
+            .ForMember(dest => dest.EnvironmentalPermitWasteManagementNumber, opt => opt.MapFrom(src => src.EnvironmentalPermitWasteManagementNumber))
+            .ForMember(dest => dest.WasteManagementLicenceNumber, opt => opt.MapFrom(src => src.WasteManagementLicenceNumber))
+            .ForMember(dest => dest.MaterialLookup, opt => opt.MapFrom(src => src.Material))
+            .ForMember(dest => dest.StatusLookup, opt => opt.MapFrom(src => src.Status))
+            .ForMember(dest => dest.PermitType, opt => opt.MapFrom(src => src.PermitType))
+            .ForMember(dest => dest.ExemptionReferences, opt => opt.MapFrom(src => src.MaterialExemptionReferences))
+            .ForMember(dest => dest.PPCPeriodId, opt => opt.MapFrom(src => src.PPCPeriodId))
+            .ForMember(dest => dest.InstallationPeriodId, opt => opt.MapFrom(src => src.InstallationPeriodId))
+            .ForMember(dest => dest.WasteManagementPeriodId, opt => opt.MapFrom(src => src.WasteManagementPeriodId))
+            .ForMember(dest => dest.EnvironmentalPeriodId, opt => opt.MapFrom(src => src.EnvironmentalPermitWasteManagementPeriodId));
+
+        CreateMap<MaterialExemptionReference, ExemptionReferencesLookupDto>()
+            .ForMember(dest => dest.ReferenceNumber, opt => opt.MapFrom(src => src.ReferenceNo));
+
+        CreateMap<LookupMaterial, MaterialLookupDto>()
+            .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
+            .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.MaterialName));
+
+        CreateMap<LookupMaterialPermit, PermitTypeLookupDto>()
+            .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
+            .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name));
+
+        CreateMap<LookupRegistrationMaterialStatus, MaterialStatusLookupDto>()
+            .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
+            .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Name));
+
     }
 
     private List<QueryNoteDto> GetRegistrationTaskNotes(List<RegulatorRegistrationTaskStatus>? srcTasks, string taskName)
