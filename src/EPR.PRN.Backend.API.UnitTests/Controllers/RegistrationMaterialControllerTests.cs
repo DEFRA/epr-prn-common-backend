@@ -19,7 +19,7 @@ public class RegistrationMaterialControllerTests
     private Mock<IMediator> _mediatorMock;
     private Mock<ILogger<RegistrationMaterialController>> _loggerMock;
     private RegistrationMaterialController _controller;
-    private static readonly IFixture _fixture = new Fixture();
+    private static readonly Fixture _fixture = new();
 
     [TestInitialize]
     public void TestInitialize()

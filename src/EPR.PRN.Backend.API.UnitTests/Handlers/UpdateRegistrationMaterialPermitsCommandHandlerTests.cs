@@ -14,7 +14,7 @@ public class UpdateRegistrationMaterialPermitsCommandHandlerTests
 {
     private Mock<IRegistrationMaterialRepository> _repositoryMock;
     private UpdateRegistrationMaterialPermitsHandler _handler;
-    private static readonly IFixture _fixture = new Fixture();
+    private static readonly Fixture _fixture = new();
 
     [TestInitialize]
     public void TestInitialize()
@@ -50,7 +50,7 @@ public class UpdateRegistrationMaterialPermitsCommandHandlerTests
 
         // Assert
         _repositoryMock.Verify(r => r.GetRegistrationMaterialById(registrationMaterialId), Times.Once);
-        _repositoryMock.Verify(r => r.UpdateRegistrationMaterialPermits(It.IsAny<Guid>(), It.IsAny<int>(), It.IsAny<string?>()), Times.Once);
+        _repositoryMock.Verify(r => r.UpdateRegistrationMaterialPermits(It.IsAny<Guid>(), It.IsAny<int>(), It.IsAny<string>()), Times.Once);
     }
 
     [TestMethod]
