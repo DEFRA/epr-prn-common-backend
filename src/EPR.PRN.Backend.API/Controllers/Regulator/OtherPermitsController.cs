@@ -43,7 +43,7 @@ public class OtherPermitsController(IMediator mediator) : ControllerBase
            Description = "create other permits of registration."
        )]
     [SwaggerResponse(StatusCodes.Status200OK, "Confirms that resource exists.")]
-    [SwaggerResponse(StatusCodes.Status201Created, "Creates resource.")]
+    [SwaggerResponse(StatusCodes.Status201Created, "Creates other permits.")]
     [SwaggerResponse(StatusCodes.Status404NotFound, "If registration not found.", typeof(ProblemDetails))]
     [SwaggerResponse(StatusCodes.Status500InternalServerError, "If an unexpected error occurs.", typeof(ContentResult))]
     public async Task<IActionResult> CreateOtherPermits(
@@ -77,7 +77,7 @@ public class OtherPermitsController(IMediator mediator) : ControllerBase
            Summary = "update other permits of registration",
            Description = "update other permits of registration."
        )]
-    [SwaggerResponse(StatusCodes.Status200OK, "Updates resource.")]
+    [SwaggerResponse(StatusCodes.Status200OK, "Updates other permits.")]
     [SwaggerResponse(StatusCodes.Status404NotFound, "If other permits not found.", typeof(ProblemDetails))]
     [SwaggerResponse(StatusCodes.Status500InternalServerError, "If an unexpected error occurs.", typeof(ContentResult))]
     public async Task<IActionResult> UpdateOtherPermits(
