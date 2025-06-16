@@ -5,7 +5,6 @@ using EPR.PRN.Backend.Data.Repositories.Regulator;
 using FluentAssertions;
 using FluentAssertions.Execution;
 using Microsoft.EntityFrameworkCore;
-using System.Threading.Tasks;
 
 namespace EPR.PRN.Backend.Data.UnitTests.Repositories.Regulator;
 
@@ -19,8 +18,8 @@ public class RegistrationMaterialRepositoryTests
     public void TestInitialize()
     {
         var options = new DbContextOptionsBuilder<EprContext>()
-                        .UseInMemoryDatabase(databaseName: "TestDb")
-                        .Options;
+            .UseInMemoryDatabase(databaseName: "TestDb")
+            .Options;
 
         _context = new EprContext(options);
         _repository = new RegistrationMaterialRepository(_context);
@@ -56,6 +55,7 @@ public class RegistrationMaterialRepositoryTests
         var pendingMaterialStatus = new LookupRegistrationMaterialStatus { Id = 2, Name = "Pending" };
         var readyToSubmitMaterialStatus = new LookupRegistrationMaterialStatus { Id = 3, Name = "ReadyToSubmit" };
         var lookupMaterial = new LookupMaterial { Id = 1, MaterialCode = "PLSTC", MaterialName = "Plastic" };
+        var steelMaterial = new LookupMaterial { Id = 5, MaterialCode = "PLSTC", MaterialName = "Steel" };
         var lookupPeriod = new LookupPeriod { Id = 1, Name = "Per Year" };
         var lookupMaterialPermit = new LookupMaterialPermit { Id = 1, Name = PermitTypes.WasteManagementLicence };
 
@@ -254,6 +254,7 @@ public class RegistrationMaterialRepositoryTests
         _context.LookupRegistrationMaterialStatuses.Add(readyToSubmitMaterialStatus);
         _context.LookupRegistrationMaterialStatuses.Add(pendingMaterialStatus);
         _context.LookupMaterials.Add(lookupMaterial);
+        _context.LookupMaterials.Add(steelMaterial);
         _context.LookupAddresses.Add(address);
         _context.Registrations.Add(registration);
 
@@ -264,7 +265,6 @@ public class RegistrationMaterialRepositoryTests
 
         _context.SaveChanges();
     }
-
 
     [TestMethod]
     public async Task GetRegistrationById_ShouldReturnRegistration_WhenRegistrationExists()
@@ -454,11 +454,6 @@ public class RegistrationMaterialRepositoryTests
         };
         var lookupMaterial = new LookupMaterial { Id = 2, MaterialCode = "GLASS", MaterialName = "Glass" };
         var materialStatus = new LookupRegistrationMaterialStatus { Id = 4, Name = "Pending" };
-        var exemptionReferences = new List<MaterialExemptionReference>
-        {
-            new MaterialExemptionReference { ReferenceNo = "EXEMPT456" },
-            new MaterialExemptionReference { ReferenceNo = "EXEMPT789" }
-        };
         var registrationMaterial = new RegistrationMaterial
         {
             Id = 3,
@@ -472,14 +467,20 @@ public class RegistrationMaterialRepositoryTests
             IsMaterialRegistered = false,
             MaterialExemptionReferences = new List<MaterialExemptionReference>()
         };
+        var exemptionReferences = new List<MaterialExemptionReference>
+        {
+            new MaterialExemptionReference { ReferenceNo = "EXEMPT456", RegistrationMaterialId = 3 },
+            new MaterialExemptionReference { ReferenceNo = "EXEMPT789", RegistrationMaterialId = 3 }
+        };
 
         _context.Registrations.Add(registration);
         _context.LookupMaterials.Add(lookupMaterial);
         _context.LookupRegistrationMaterialStatuses.Add(materialStatus);
+        _context.RegistrationMaterials.Add(registrationMaterial);
         await _context.SaveChangesAsync();
 
         // Act
-        await _repository.CreateRegistrationMaterialWithExemptionsAsync(registrationMaterial, exemptionReferences);
+        await _repository.CreateExemptionReferencesAsync(registrationMaterial.ExternalId, exemptionReferences);
 
         // Assert
         var createdMaterial = await _context.RegistrationMaterials
@@ -495,32 +496,25 @@ public class RegistrationMaterialRepositoryTests
             createdMaterial.MaterialExemptionReferences!.Select(x => x.ReferenceNo).Should().Contain("EXEMPT789");
         }
     }
-
-    [TestMethod]
-    public async Task CreateRegistrationMaterialWithExemptionsAsync_ShouldThrow_WhenRegistrationMaterialIsNull()
-    {
-        await Assert.ThrowsExceptionAsync<ArgumentNullException>(async () =>
-            await _repository.CreateRegistrationMaterialWithExemptionsAsync(null, new List<MaterialExemptionReference>()));
-    }
-
+    
     [TestMethod]
     public async Task CreateRegistrationMaterialWithExemptionsAsync_ShouldAllowEmptyExemptions()
     {
         // Arrange
         var registration = new Registration
         {
-            Id = 3,
+            Id = 4,
             ApplicationTypeId = 1,
             ExternalId = Guid.NewGuid()
         };
-        var lookupMaterial = new LookupMaterial { Id = 3, MaterialCode = "PAPER", MaterialName = "Paper" };
-        var materialStatus = new LookupRegistrationMaterialStatus { Id = 4, Name = "Pending" };
+        var lookupMaterial = new LookupMaterial { Id = 4, MaterialCode = "PAPER", MaterialName = "Paper" };
+        var materialStatus = new LookupRegistrationMaterialStatus { Id = 5, Name = "Pending" };
         var registrationMaterial = new RegistrationMaterial
         {
-            Id = 3,
-            RegistrationId = 3,
-            MaterialId = 3,
-            StatusId = 3,
+            Id = 4,
+            RegistrationId = 4,
+            MaterialId = 4,
+            StatusId = 5,
             RegistrationReferenceNumber = "REF33333",
             Comments = "No exemptions",
             Status = materialStatus,
@@ -532,10 +526,11 @@ public class RegistrationMaterialRepositoryTests
         _context.Registrations.Add(registration);
         _context.LookupMaterials.Add(lookupMaterial);
         _context.LookupRegistrationMaterialStatuses.Add(materialStatus);
+        _context.RegistrationMaterials.Add(registrationMaterial);
         await _context.SaveChangesAsync();
 
         // Act
-        await _repository.CreateRegistrationMaterialWithExemptionsAsync(registrationMaterial, new List<MaterialExemptionReference>());
+        await _repository.CreateExemptionReferencesAsync(registrationMaterial.ExternalId, new List<MaterialExemptionReference>());
 
         // Assert
         var createdMaterial = await _context.RegistrationMaterials
@@ -657,20 +652,89 @@ public class RegistrationMaterialRepositoryTests
     [TestMethod]
     public async Task CreateAsync_NoExistingRegistration_ShouldThrowException()
     {
-        await Assert.ThrowsExceptionAsync<KeyNotFoundException>(() => _repository.CreateAsync(1232, "Steel"));
+        await Assert.ThrowsExceptionAsync<KeyNotFoundException>(() => _repository.CreateAsync(Guid.NewGuid(), "Steel"));
+    }
+
+    [TestMethod]
+    public async Task CreateAsync_ExistingRegistrationMaterial_ShouldThrow()
+    {
+        // Act & Assert
+        await Assert.ThrowsExceptionAsync<InvalidOperationException>(() => _repository.CreateAsync(Guid.Parse("4bac12f7-f7a9-4df4-b7b5-9c4221860c4d"),"Plastic"));
     }
 
     [TestMethod]
     public async Task CreateAsync_ExistingRegistration_ShouldCreate()
     {
         // Act
-        var result = await _repository.CreateAsync(1, "Plastic");
+        var result = await _repository.CreateAsync(Guid.Parse("4bac12f7-f7a9-4df4-b7b5-9c4221860c4d"), "Steel");
 
         // Assert
-        var loaded = await _context.RegistrationMaterials.FindAsync(result);
+        var loaded = await _context.RegistrationMaterials.FindAsync(result.Id);
         loaded.Should().NotBeNull();
     }
 
+    [TestMethod]
+    public async Task GetRegistrationMaterialsByRegistrationId_RegistrationIdDoesNotExists()
+    { 
+        await Assert.ThrowsExceptionAsync<KeyNotFoundException>(() => _repository.GetRegistrationMaterialsByRegistrationId(Guid.NewGuid()));
+    }
+
+    [TestMethod]
+    public async Task GetRegistrationMaterialsByRegistrationId_RegistrationIdDoesExist_NoRegistrationMaterials_ReturnEmpty()
+    {
+        // Arrange
+        var id = Guid.NewGuid();
+        var registration = new Registration
+        {
+            Id = 10,
+            ExternalId = id
+        };
+
+        await _context.Registrations.AddAsync(registration);
+        await _context.SaveChangesAsync();
+
+        // Act
+        var result = await _repository.GetRegistrationMaterialsByRegistrationId(id);
+
+        // Assert
+        result.Should().BeEmpty();
+    }
+
+    [TestMethod]
+    public async Task GetRegistrationMaterialsByRegistrationId_RegistrationIdDoesExist_RegistrationMaterialsExist_ReturnItems()
+    {
+        // Arrange
+        var id = Guid.NewGuid();
+        var registration = new Registration
+        {
+            Id = 10,
+            ExternalId = id
+        };
+
+        var registrationMaterial = new RegistrationMaterial
+        {
+            Registration = registration,
+            RegistrationId = registration.Id,
+            Id = 55,
+            MaterialId = 1,
+            PermitTypeId = 1,
+            StatusId = 1,
+            InstallationPeriodId = 1,
+            PPCPeriodId = 1,
+            EnvironmentalPermitWasteManagementPeriodId = 1,
+            WasteManagementPeriodId = 1
+        };
+
+        await _context.Registrations.AddAsync(registration);
+        await _context.RegistrationMaterials.AddAsync(registrationMaterial);
+        await _context.SaveChangesAsync();
+
+        // Act
+        var result = await _repository.GetRegistrationMaterialsByRegistrationId(id);
+
+        // Assert
+        result.Should().HaveCount(1);
+    }
 
     [TestCleanup]
     public void Cleanup()

@@ -14,6 +14,8 @@ public static class LogMessages
     public const string UpdateRegulatorRegistrationTask = "UpdateRegulatorRegistrationTask";
     public const string UpdateRegulatorAccreditationTask = "UpdateRegulatorAccreditationTask";
     public const string AccreditationSamplingPlan = "Attempting to get file uploads relating to an accreditation";
+    public const string CreateRegistrationMaterial = "Attempting to create new registration material for registration {0}";
+    public const string GetAllRegistrationMaterials = "Attempting to retrieve all registration materials for registration {0}";
 
     public const string CreateRegistration = "Attempting to create new registration";
     public const string UpdateRegistration = "Attempting to create new registration with ID {0}";
@@ -23,5 +25,5 @@ public static class LogMessages
     public const string MarkAsDulyMade = "MarkAsDulyMadeBy id :{Id}";
     public const string MarkAccreditationAsDulyMade = "MarkAccreditationAsDulyMadeBy id :{Id}";
     public const string RegistrationMaterialReference = "Attempting to get reference data registration material id :{Id}";
-    public const string CreateRegistrationMaterialAndExemptionReferences = "Attempting to create new registration material and exemption references";
+    public const string CreateExemptionReferences = "Attempting to create exemption references";
 }
