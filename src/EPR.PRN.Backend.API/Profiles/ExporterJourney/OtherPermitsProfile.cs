@@ -18,11 +18,8 @@ public class OtherPermitsProfile : Profile
 
     private static List<string> CreateWasteExemptionReferenceList(string? wasteExemptionReference)
     {
-        if (string.IsNullOrEmpty(wasteExemptionReference))
-        {
-            return new List<string>();
-        }
-
-        return wasteExemptionReference.Split(',').ToList();
+        return !string.IsNullOrEmpty(wasteExemptionReference)
+            ? wasteExemptionReference.Split(',').ToList()
+            : new List<string>();
     }
 }
