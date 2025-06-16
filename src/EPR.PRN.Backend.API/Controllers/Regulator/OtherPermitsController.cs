@@ -67,4 +67,38 @@ public class OtherPermitsController(IMediator mediator) : ControllerBase
             return NotFound();
         }
     }
+
+    [HttpPut("registrations/{Id}/other-permits")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [SwaggerOperation(
+           Summary = "update other permits of registration",
+           Description = "update other permits of registration."
+       )]
+    [SwaggerResponse(StatusCodes.Status200OK, "Updates resource.")]
+    [SwaggerResponse(StatusCodes.Status404NotFound, "If other permits not found.", typeof(ProblemDetails))]
+    [SwaggerResponse(StatusCodes.Status500InternalServerError, "If an unexpected error occurs.", typeof(ContentResult))]
+    public async Task<IActionResult> UpdateOtherPermits(
+        [FromRoute] Guid id,
+        [FromHeader(Name = "X-EPR-USER")] Guid userId,
+        [FromBody] UpdateOtherPermitsDto dto)
+    {
+        try
+        {
+            await mediator.Send(new UpdateOtherPermitsCommand
+            {
+                UserId = userId,
+                RegistrationId = id,
+                Dto = dto
+            });
+
+            return Ok();
+        }
+        catch (KeyNotFoundException)
+        {
+            return NotFound();
+        }
+    }
 }

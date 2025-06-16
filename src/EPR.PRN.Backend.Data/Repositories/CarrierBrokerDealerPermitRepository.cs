@@ -22,4 +22,10 @@ public class CarrierBrokerDealerPermitRepository(EprContext context) : ICarrierB
         context.CarrierBrokerDealerPermits.Add(entity);
         await context.SaveChangesAsync(cancellationToken);
     }
+
+    public async Task Update(CarrierBrokerDealerPermit entity, CancellationToken cancellationToken)
+    {
+        context.CarrierBrokerDealerPermits.Update(entity);
+        await context.SaveChangesAsync(cancellationToken);
+    }
 }

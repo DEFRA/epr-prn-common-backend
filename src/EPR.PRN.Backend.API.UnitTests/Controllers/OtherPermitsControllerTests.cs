@@ -102,4 +102,31 @@ public class OtherPermitsControllerTests
         // Assert
         result.Should().BeOfType<NotFoundResult>();
     }
+
+    [TestMethod]
+    public async Task UpdateOtherPermits_ReturnsNotFound_WhenCarrierBrokerDealerPermitDoesNotExist()
+    {
+        // Arrange
+        _mediatorMock.Setup(m => m.Send(It.IsAny<UpdateOtherPermitsCommand>(), It.IsAny<CancellationToken>()))
+            .ThrowsAsync(new KeyNotFoundException());
+
+        // Act
+        var result = await _controller.UpdateOtherPermits(Guid.Empty, Guid.Empty, new UpdateOtherPermitsDto());
+
+        // Assert
+        result.Should().BeOfType<NotFoundResult>();
+    }
+
+    [TestMethod]
+    public async Task UpdateOtherPermits_ReturnsOk_WhenCarrierBrokerDealerPermitUpdated()
+    {
+        // Arrange
+        _mediatorMock.Setup(m => m.Send(It.IsAny<UpdateOtherPermitsCommand>(), It.IsAny<CancellationToken>()));
+
+        // Act
+        var result = await _controller.UpdateOtherPermits(Guid.Empty, Guid.Empty, new UpdateOtherPermitsDto());
+
+        // Assert
+        result.Should().BeOfType<OkResult>();
+    }
 }
