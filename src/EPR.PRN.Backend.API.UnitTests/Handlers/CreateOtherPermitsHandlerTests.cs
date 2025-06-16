@@ -64,16 +64,24 @@ public class CreateOtherPermitsHandlerTests
     {
         // Arrange
         var registration = new Registration { ExternalId = Guid.NewGuid() };
+        CarrierBrokerDealerPermit createdCarrierBrokerDealerPermit = null;
 
         _registrationRepository.Setup(x => x.GetRegistrationByExternalId(registration.ExternalId, CancellationToken.None))
             .ReturnsAsync(registration);
 
-        _carrierBrokerDealerPermitRepositoryMock.Setup(x => x.Add(It.IsAny<CarrierBrokerDealerPermit>(), CancellationToken.None));
+        _carrierBrokerDealerPermitRepositoryMock.Setup(x => x.Add(It.IsAny<CarrierBrokerDealerPermit>(), CancellationToken.None))
+            .Callback<CarrierBrokerDealerPermit, CancellationToken>((x, y) => createdCarrierBrokerDealerPermit = x);
 
         var command = new CreateOtherPermitsCommand
         {
+            UserId = Guid.NewGuid(),
             RegistrationId = registration.ExternalId,
-            Dto = new CreateOtherPermitsDto()
+            Dto = new CreateOtherPermitsDto
+            {
+                WasteLicenseOrPermitNumber = "test 1",
+                PpcNumber = "test 2",
+                WasteExemptionReference = new List<string> { "test 3", "test 4" }
+            }
         };
 
         // Act
@@ -81,5 +89,10 @@ public class CreateOtherPermitsHandlerTests
 
         // Assert
         result.Should().BeTrue();
+        createdCarrierBrokerDealerPermit.Should().NotBeNull();
+        createdCarrierBrokerDealerPermit.WasteManagementorEnvironmentPermitNumber.Should().Be(command.Dto.WasteLicenseOrPermitNumber);
+        createdCarrierBrokerDealerPermit.InstallationPermitorPPCNumber.Should().Be(command.Dto.PpcNumber);
+        createdCarrierBrokerDealerPermit.WasteExemptionReference.Should().Be("test 3,test 4");
+        createdCarrierBrokerDealerPermit.CreatedBy.Should().Be(command.UserId);
     }
 }
