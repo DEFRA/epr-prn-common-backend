@@ -1,8 +1,8 @@
-﻿using EPR.PRN.Backend.API.Dto.Regulator;
+﻿using EPR.PRN.Backend.API.Dto.ExporterJourney;
 using MediatR;
 using System.Diagnostics.CodeAnalysis;
 
-namespace EPR.PRN.Backend.API.Commands;
+namespace EPR.PRN.Backend.API.Commands.ExporterJourney;
 
 [ExcludeFromCodeCoverage]
 public class UpdateOtherPermitsCommand : IRequest

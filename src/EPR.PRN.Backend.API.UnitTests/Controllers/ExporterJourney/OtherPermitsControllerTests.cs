@@ -1,13 +1,14 @@
-﻿using EPR.PRN.Backend.API.Commands;
-using EPR.PRN.Backend.API.Controllers.Regulator;
+﻿using EPR.PRN.Backend.API.Commands.ExporterJourney;
+using EPR.PRN.Backend.API.Controllers.ExporterJourney;
+using EPR.PRN.Backend.API.Dto.ExporterJourney;
 using EPR.PRN.Backend.API.Dto.Regulator;
-using EPR.PRN.Backend.API.Queries;
+using EPR.PRN.Backend.API.Queries.ExporterJourney;
 using FluentAssertions;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 
-namespace EPR.PRN.Backend.API.UnitTests.Controllers;
+namespace EPR.PRN.Backend.API.UnitTests.Controllers.ExporterJourney;
 
 [TestClass]
 public class OtherPermitsControllerTests

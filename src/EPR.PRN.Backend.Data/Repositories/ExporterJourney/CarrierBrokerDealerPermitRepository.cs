@@ -1,9 +1,9 @@
-﻿using EPR.PRN.Backend.Data.DataModels.Registrations;
+﻿using EPR.PRN.Backend.Data.DataModels.ExporterJourney;
 using EPR.PRN.Backend.Data.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics.CodeAnalysis;
 
-namespace EPR.PRN.Backend.Data.Repositories;
+namespace EPR.PRN.Backend.Data.Repositories.ExporterJourney;
 
 [ExcludeFromCodeCoverage]
 public class CarrierBrokerDealerPermitRepository(EprContext context) : ICarrierBrokerDealerPermitRepository

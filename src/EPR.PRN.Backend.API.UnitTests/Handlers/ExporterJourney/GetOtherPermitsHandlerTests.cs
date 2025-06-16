@@ -1,13 +1,14 @@
 ﻿using AutoMapper;
-using EPR.PRN.Backend.API.Handlers.Regulator;
+using EPR.PRN.Backend.API.Handlers.ExporterJourney;
 using EPR.PRN.Backend.API.Profiles.Regulator;
-using EPR.PRN.Backend.API.Queries;
+using EPR.PRN.Backend.API.Queries.ExporterJourney;
+using EPR.PRN.Backend.Data.DataModels.ExporterJourney;
 using EPR.PRN.Backend.Data.DataModels.Registrations;
 using EPR.PRN.Backend.Data.Interfaces;
 using FluentAssertions;
 using Moq;
 
-namespace EPR.PRN.Backend.API.UnitTests.Handlers;
+namespace EPR.PRN.Backend.API.UnitTests.Handlers.ExporterJourney;
 
 [TestClass]
 public class GetOtherPermitsHandlerTests
@@ -23,7 +24,7 @@ public class GetOtherPermitsHandlerTests
 
         var config = new MapperConfiguration(cfg =>
         {
-            cfg.AddProfile<RegistrationMaterialProfile>();
+            cfg.AddProfile<OtherPermitsProfile>();
         });
         _mapper = config.CreateMapper();
 

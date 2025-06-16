@@ -1,10 +1,10 @@
 ﻿using AutoMapper;
-using EPR.PRN.Backend.API.Dto.Regulator;
-using EPR.PRN.Backend.API.Queries;
+using EPR.PRN.Backend.API.Dto.ExporterJourney;
+using EPR.PRN.Backend.API.Queries.ExporterJourney;
 using EPR.PRN.Backend.Data.Interfaces;
 using MediatR;
 
-namespace EPR.PRN.Backend.API.Handlers.Regulator;
+namespace EPR.PRN.Backend.API.Handlers.ExporterJourney;
 
 public class GetOtherPermitsHandler(
     ICarrierBrokerDealerPermitRepository carrierBrokerDealerPermitRepository,

@@ -1,12 +1,13 @@
-﻿using EPR.PRN.Backend.API.Commands;
-using EPR.PRN.Backend.API.Dto.Regulator;
-using EPR.PRN.Backend.API.Handlers;
+﻿using EPR.PRN.Backend.API.Commands.ExporterJourney;
+using EPR.PRN.Backend.API.Dto.ExporterJourney;
+using EPR.PRN.Backend.API.Handlers.ExporterJourney;
+using EPR.PRN.Backend.Data.DataModels.ExporterJourney;
 using EPR.PRN.Backend.Data.DataModels.Registrations;
 using EPR.PRN.Backend.Data.Interfaces;
 using FluentAssertions;
 using Moq;
 
-namespace EPR.PRN.Backend.API.UnitTests.Handlers;
+namespace EPR.PRN.Backend.API.UnitTests.Handlers.ExporterJourney;
 
 [TestClass]
 public class UpdateOtherPermitsHandlerTests

@@ -1,8 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics.CodeAnalysis;
+using EPR.PRN.Backend.Data.DataModels.Registrations;
 
-namespace EPR.PRN.Backend.Data.DataModels.Registrations;
+namespace EPR.PRN.Backend.Data.DataModels.ExporterJourney;
 
 [Table("Public.CarrierBrokerDealerPermits")]
 [ExcludeFromCodeCoverage]

@@ -1,4 +1,4 @@
-﻿using EPR.PRN.Backend.Data.DataModels.Registrations;
+﻿using EPR.PRN.Backend.Data.DataModels.ExporterJourney;
 
 namespace EPR.PRN.Backend.Data.Interfaces;
 

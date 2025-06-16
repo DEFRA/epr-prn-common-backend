@@ -1,13 +1,13 @@
-﻿using EPR.PRN.Backend.API.Commands;
+﻿using EPR.PRN.Backend.API.Commands.ExporterJourney;
 using EPR.PRN.Backend.API.Common.Constants;
-using EPR.PRN.Backend.API.Dto.Regulator;
-using EPR.PRN.Backend.API.Queries;
+using EPR.PRN.Backend.API.Dto.ExporterJourney;
+using EPR.PRN.Backend.API.Queries.ExporterJourney;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.FeatureManagement.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 
-namespace EPR.PRN.Backend.API.Controllers.Regulator;
+namespace EPR.PRN.Backend.API.Controllers.ExporterJourney;
 
 [ApiController]
 [ApiVersion("1.0")]

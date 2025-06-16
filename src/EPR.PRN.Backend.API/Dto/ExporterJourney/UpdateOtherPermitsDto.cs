@@ -1,9 +1,9 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 
-namespace EPR.PRN.Backend.API.Dto.Regulator;
+namespace EPR.PRN.Backend.API.Dto.ExporterJourney;
 
 [ExcludeFromCodeCoverage]
-public class CreateOtherPermitsDto
+public class UpdateOtherPermitsDto
 {
     public string? WasteLicenseOrPermitNumber { get; set; }
 
