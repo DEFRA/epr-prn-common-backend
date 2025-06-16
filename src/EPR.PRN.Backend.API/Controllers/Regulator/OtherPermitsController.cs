@@ -1,4 +1,5 @@
-﻿using EPR.PRN.Backend.API.Common.Constants;
+﻿using EPR.PRN.Backend.API.Commands;
+using EPR.PRN.Backend.API.Common.Constants;
 using EPR.PRN.Backend.API.Dto.Regulator;
 using EPR.PRN.Backend.API.Queries;
 using MediatR;
@@ -25,10 +26,45 @@ public class OtherPermitsController(IMediator mediator) : ControllerBase
     [SwaggerResponse(StatusCodes.Status200OK, "Returns other permits of registration.", typeof(GetOtherPermitsResultDto))]
     [SwaggerResponse(StatusCodes.Status404NotFound, "If other permits not found.", typeof(ProblemDetails))]
     [SwaggerResponse(StatusCodes.Status500InternalServerError, "If an unexpected error occurs.", typeof(ContentResult))]
-    public async Task<IActionResult> GetOtherPermits(Guid Id)
+    public async Task<IActionResult> GetOtherPermits(Guid id)
     {
-        var result = await mediator.Send(new GetOtherPermitsQuery() { RegistrationId = Id });
+        var result = await mediator.Send(new GetOtherPermitsQuery() { RegistrationId = id });
 
         return result != null ? Ok(result) : NotFound();
+    }
+
+    [HttpPost("registrations/{Id}/other-permits")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [SwaggerOperation(
+           Summary = "create other permits of registration",
+           Description = "create other permits of registration."
+       )]
+    [SwaggerResponse(StatusCodes.Status200OK, "Confirms that resource exists.")]
+    [SwaggerResponse(StatusCodes.Status201Created, "Creates resource.")]
+    [SwaggerResponse(StatusCodes.Status404NotFound, "If registration not found.", typeof(ProblemDetails))]
+    [SwaggerResponse(StatusCodes.Status500InternalServerError, "If an unexpected error occurs.", typeof(ContentResult))]
+    public async Task<IActionResult> CreateOtherPermits(
+        [FromRoute] Guid id,
+        [FromHeader(Name = "X-EPR-USER")] Guid userId,
+        [FromBody] CreateOtherPermitsDto dto)
+    {
+        try
+        {
+            var created = await mediator.Send(new CreateOtherPermitsCommand
+            {
+                UserId = userId,
+                RegistrationId = id,
+                Dto = dto
+            });
+
+            return created ? CreatedAtAction(nameof(GetOtherPermits), new { id }, null) : Ok();
+        }
+        catch (KeyNotFoundException)
+        {
+            return NotFound();
+        }
     }
 }

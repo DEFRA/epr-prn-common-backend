@@ -1,4 +1,5 @@
-﻿using EPR.PRN.Backend.API.Controllers.Regulator;
+﻿using EPR.PRN.Backend.API.Commands;
+using EPR.PRN.Backend.API.Controllers.Regulator;
 using EPR.PRN.Backend.API.Dto.Regulator;
 using EPR.PRN.Backend.API.Queries;
 using FluentAssertions;
@@ -58,5 +59,47 @@ public class OtherPermitsControllerTests
         var okResult = result as OkObjectResult;
         okResult.Should().NotBeNull();
         okResult.Value.Should().BeEquivalentTo(expectedDto);
+    }
+
+    [TestMethod]
+    public async Task CreateOtherPermits_ReturnsCreated_WhenResourceCreated()
+    {
+        // Arrange
+        _mediatorMock.Setup(m => m.Send(It.IsAny<CreateOtherPermitsCommand>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(true);
+
+        // Act
+        var result = await _controller.CreateOtherPermits(Guid.Empty, Guid.Empty, new CreateOtherPermitsDto());
+
+        // Assert
+        result.Should().BeOfType<CreatedResult>();
+    }
+
+    [TestMethod]
+    public async Task CreateOtherPermits_ReturnsOk_WhenResourceExists()
+    {
+        // Arrange
+        _mediatorMock.Setup(m => m.Send(It.IsAny<CreateOtherPermitsCommand>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(false);
+
+        // Act
+        var result = await _controller.CreateOtherPermits(Guid.Empty, Guid.Empty, new CreateOtherPermitsDto());
+
+        // Assert
+        result.Should().BeOfType<OkResult>();
+    }
+
+    [TestMethod]
+    public async Task CreateOtherPermits_ReturnsNotFound_WhenRegistrationDoesNotExist()
+    {
+        // Arrange
+        _mediatorMock.Setup(m => m.Send(It.IsAny<CreateOtherPermitsCommand>(), It.IsAny<CancellationToken>()))
+            .ThrowsAsync(new KeyNotFoundException());
+
+        // Act
+        var result = await _controller.CreateOtherPermits(Guid.Empty, Guid.Empty, new CreateOtherPermitsDto());
+
+        // Assert
+        result.Should().BeOfType<NotFoundResult>();
     }
 }

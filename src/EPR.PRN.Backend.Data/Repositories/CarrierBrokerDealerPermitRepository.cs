@@ -16,4 +16,10 @@ public class CarrierBrokerDealerPermitRepository(EprContext context) : ICarrierB
             .Where(x => x.Registration.ExternalId == registrationId)
             .FirstOrDefaultAsync(cancellationToken);
     }
+
+    public async Task Add(CarrierBrokerDealerPermit entity, CancellationToken cancellationToken)
+    {
+        context.CarrierBrokerDealerPermits.Add(entity);
+        await context.SaveChangesAsync(cancellationToken);
+    }
 }
