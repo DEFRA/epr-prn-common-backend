@@ -1,7 +1,9 @@
+using AutoFixture;
 using EPR.PRN.Backend.API.Commands;
 using EPR.PRN.Backend.API.Controllers;
 using EPR.PRN.Backend.API.Dto.Regulator;
 using EPR.PRN.Backend.API.Handlers;
+using EPR.PRN.Backend.API.Queries;
 using FluentAssertions;
 using FluentValidation;
 using MediatR;
@@ -17,6 +19,7 @@ public class RegistrationMaterialControllerTests
     private Mock<IMediator> _mediatorMock;
     private Mock<ILogger<RegistrationMaterialController>> _loggerMock;
     private RegistrationMaterialController _controller;
+    private static readonly IFixture _fixture = new Fixture();
 
     [TestInitialize]
     public void TestInitialize()
@@ -88,5 +91,44 @@ public class RegistrationMaterialControllerTests
 
         // Assert
         result.Should().BeEquivalentTo(expectedResult);
+    }
+
+    [TestMethod]
+    public async Task UpdateRegistrationMaterialPermits_ShouldReturnNoContent()
+    {
+        // Arrange
+        var id = Guid.NewGuid();
+        var command = _fixture.Build<UpdateRegistrationMaterialPermitsCommand>()
+                              .Without(c => c.RegistrationMaterialId)
+                              .Create();
+
+        _mediatorMock.Setup(m => m.Send(It.IsAny<UpdateRegistrationMaterialPermitsCommand>(), It.IsAny<CancellationToken>()))
+                     .Returns(Task.CompletedTask);
+
+        // Act
+        var result = await _controller.UpdateRegistrationMaterialPermits(id, command);
+
+        // Assert
+        result.Should().BeOfType<NoContentResult>();
+        command.RegistrationMaterialId.Should().Be(id);
+        _mediatorMock.Verify(m => m.Send(command, It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [TestMethod]
+    public async Task GetMaterialsPermitTypes_ShouldReturnOkWithResult()
+    {
+        // Arrange
+        var expectedList = _fixture.Create<List<MaterialsPermitTypeDto>>();
+
+        _mediatorMock.Setup(m => m.Send(It.IsAny<GetMaterialsPermitTypesQuery>(), It.IsAny<CancellationToken>()))
+                     .ReturnsAsync(expectedList);
+
+        // Act
+        var result = await _controller.GetMaterialsPermitTypes();
+
+        // Assert
+        result.Should().BeOfType<OkObjectResult>();
+        var okResult = result as OkObjectResult;
+        okResult!.Value.Should().BeEquivalentTo(expectedList);
     }
 }

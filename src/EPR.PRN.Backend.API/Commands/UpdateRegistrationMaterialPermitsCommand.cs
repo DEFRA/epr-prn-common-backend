@@ -19,7 +19,7 @@ public sealed class UpdateRegistrationMaterialPermitsCommand : IRequest
     /// <summary>
     /// Gets or sets the ID of the permit type.
     /// </summary>
-    public int? PermitTypeId { get; set; }
+    public int PermitTypeId { get; set; }
 
     /// <summary>
     /// Gets or sets the permit number.

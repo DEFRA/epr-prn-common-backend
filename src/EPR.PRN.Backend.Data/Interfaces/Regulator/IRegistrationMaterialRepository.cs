@@ -1,4 +1,5 @@
-﻿using EPR.PRN.Backend.Data.DataModels.Registrations;
+﻿using EPR.PRN.Backend.API.Common.Enums;
+using EPR.PRN.Backend.Data.DataModels.Registrations;
 
 namespace EPR.PRN.Backend.Data.Interfaces.Regulator;
 
@@ -18,8 +19,6 @@ public interface IRegistrationMaterialRepository
 
     Task CreateExemptionReferencesAsync(Guid registrationMaterialId, List<MaterialExemptionReference> exemptionReferences);
     Task<IList<RegistrationMaterial>> GetRegistrationMaterialsByRegistrationId(Guid requestRegistrationId);
-    Task<RegistrationMaterial?> GetRegistrationMaterialByExternalId(Guid externalId);
-    Task<RegistrationMaterial> SaveAsync(RegistrationMaterial registrationMaterial);
-
+    Task UpdateRegistrationMaterialPermits(Guid registrationMaterialId, int permitTypeId, string? permitNumber);
     Task<IEnumerable<LookupMaterialPermit>> GetMaterialPermitTypes();
 }
