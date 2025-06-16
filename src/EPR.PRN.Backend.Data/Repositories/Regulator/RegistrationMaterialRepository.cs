@@ -1,8 +1,10 @@
 ﻿using EPR.PRN.Backend.API.Common.Constants;
+using EPR.PRN.Backend.API.Common.Enums;
 using EPR.PRN.Backend.Data.DataModels.Registrations;
 using EPR.PRN.Backend.Data.Interfaces.Regulator;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace EPR.PRN.Backend.Data.Repositories.Regulator;
 
@@ -67,6 +69,7 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
 
         await eprContext.SaveChangesAsync();
     }
+
     public async Task RegistrationMaterialsMarkAsDulyMade(Guid registrationMaterialId, int statusId, DateTime DeterminationDate, DateTime DulyMadeDate, Guid DulyMadeBy)
     {
         var material = await eprContext.RegistrationMaterials.FirstOrDefaultAsync(rm => rm.ExternalId == registrationMaterialId);
@@ -231,6 +234,44 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
         await eprContext.SaveChangesAsync();
 
         return newMaterial;
+    }
+
+    public async Task UpdateRegistrationMaterialPermits(Guid registrationMaterialId, int permitTypeId, string? permitNumber)
+    {
+        var registrationMaterial = await eprContext.RegistrationMaterials
+                                        .FirstOrDefaultAsync(rm => rm.ExternalId == registrationMaterialId) ?? throw new KeyNotFoundException("Material not found.");
+
+        // Permit Type Id
+        registrationMaterial.PermitTypeId = permitTypeId;
+
+        // Permit Number
+        switch ((MaterialPermitType)permitTypeId)
+        {
+            case MaterialPermitType.WasteExemption:
+                break;
+            case MaterialPermitType.PollutionPreventionAndControlPermit:
+                registrationMaterial.PPCPermitNumber = permitNumber;
+                break;
+            case MaterialPermitType.WasteManagementLicence:
+                registrationMaterial.WasteManagementLicenceNumber = permitNumber;
+                break;
+            case MaterialPermitType.InstallationPermit:
+                registrationMaterial.InstallationPermitNumber = permitNumber;
+                break;
+            case MaterialPermitType.EnvironmentalPermitOrWasteManagementLicence:
+                registrationMaterial.EnvironmentalPermitWasteManagementNumber = permitNumber;
+                break;
+        }
+
+        await eprContext.SaveChangesAsync();
+    }
+
+
+    public async Task<IEnumerable<LookupMaterialPermit>> GetMaterialPermitTypes()
+    {
+        return await eprContext.LookupMaterialPermit
+                            .AsNoTracking()
+                            .ToListAsync();
     }
 
     private IIncludableQueryable<RegistrationMaterial, LookupRegistrationMaterialStatus> GetRegistrationMaterialsWithRelatedEntities()

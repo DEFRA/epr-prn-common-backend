@@ -1,4 +1,5 @@
 ﻿using EPR.PRN.Backend.API.Common.Constants;
+using EPR.PRN.Backend.API.Common.Enums;
 using EPR.PRN.Backend.Data.DataModels.Registrations;
 using EPR.PRN.Backend.Data.Interfaces.Regulator;
 using EPR.PRN.Backend.Data.Repositories.Regulator;
@@ -735,6 +736,70 @@ public class RegistrationMaterialRepositoryTests
         // Assert
         result.Should().HaveCount(1);
     }
+
+    [TestMethod]
+    [DataRow(1, "")] 
+    [DataRow(2, "PPC-123")]
+    [DataRow(3, "WML-123")]
+    [DataRow(4, "IP-123")]
+    [DataRow(5, "EP-123")]
+    public async Task UpdateRegistrationMaterialPermits_ShouldUpdate_WhenExists(int permitTypeId, string permitNumber)
+    {
+        // Arrange
+        var registrationMaterialId = Guid.Parse("a9421fc1-a912-42ee-85a5-3e06408759a9");
+
+        // Act
+        await _repository.UpdateRegistrationMaterialPermits(registrationMaterialId, permitTypeId, permitNumber);
+        var registrationMaterial = await _context.RegistrationMaterials.FirstOrDefaultAsync(x => x.ExternalId == registrationMaterialId);
+
+
+        // Assert
+        registrationMaterial.PermitTypeId.Should().Be(permitTypeId);
+
+        switch ((MaterialPermitType)permitTypeId)
+        {
+            case MaterialPermitType.PollutionPreventionAndControlPermit:
+                registrationMaterial.PPCPermitNumber.Should().Be(permitNumber);
+                break;
+            case MaterialPermitType.WasteManagementLicence:
+                registrationMaterial.WasteManagementLicenceNumber.Should().Be(permitNumber);
+                break;
+            case MaterialPermitType.InstallationPermit:
+                registrationMaterial.InstallationPermitNumber.Should().Be(permitNumber);
+                break;
+            case MaterialPermitType.EnvironmentalPermitOrWasteManagementLicence:
+                registrationMaterial.EnvironmentalPermitWasteManagementNumber.Should().Be(permitNumber);
+                break;
+        }
+    }
+
+    [TestMethod]
+    public async Task UpdateRegistrationMaterialPermits_ShouldThrow_WhenNotFound()
+    {
+        var registrationMaterialId = Guid.NewGuid();
+
+        await Assert.ThrowsExceptionAsync<KeyNotFoundException>(() => _repository.UpdateRegistrationMaterialPermits(registrationMaterialId, 2, "TestPermit"));
+    }
+
+    [TestMethod]
+    public async Task GetMaterialPermitTypes_ShouldReturnExpectedValues()
+    {
+        // Arrange
+        var expectedMaterialPermitTypes = new List<LookupMaterialPermit> {
+            new() { Id = 1, Name = PermitTypes.WasteManagementLicence }
+        };
+
+        // Act
+        var result = await _repository.GetMaterialPermitTypes();
+
+        // Assert
+        using (new AssertionScope())
+        {
+            result.Should().NotBeNull();
+            result.Should().BeEquivalentTo(expectedMaterialPermitTypes);
+        }
+    }
+
 
     [TestCleanup]
     public void Cleanup()
