@@ -365,6 +365,6 @@ public class RegistrationMaterialProfile : Profile
             return new List<string>();
         }
 
-        return [.. wasteExemptionReference.Split(',')];
+        return wasteExemptionReference.Split(',').ToList();
     }
 }
