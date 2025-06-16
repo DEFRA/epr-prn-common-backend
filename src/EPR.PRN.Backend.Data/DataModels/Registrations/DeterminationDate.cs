@@ -16,5 +16,6 @@ namespace EPR.PRN.Backend.Data.DataModels.Registrations
         public int RegistrationMaterialId { get; set; }
         public RegistrationMaterial? RegistrationMaterial { get; set; }
         public DateTime DeterminateDate { get; set; }
+        public bool IsOverdue { get; set; } = false;
     }
 }

@@ -4011,3 +4011,28 @@ GO
 COMMIT;
 GO
 
+BEGIN TRANSACTION;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250616130653_AddIsOverdueColumn'
+)
+BEGIN
+    ALTER TABLE [Public.DeterminationDate] ADD [IsOverdue] bit NOT NULL DEFAULT CAST(0 AS bit);
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250616130653_AddIsOverdueColumn'
+)
+BEGIN
+    INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+    VALUES (N'20250616130653_AddIsOverdueColumn', N'8.0.8');
+END;
+GO
+
+COMMIT;
+GO
+
