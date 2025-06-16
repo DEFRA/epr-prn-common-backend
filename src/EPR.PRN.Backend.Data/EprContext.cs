@@ -16,13 +16,13 @@ namespace EPR.PRN.Backend.Data
 
         public EprContext()
         {
-           
+
         }
 
         public EprContext(DbContextOptions<EprContext> options)
             : base(options)
         {
-           
+
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -125,45 +125,45 @@ namespace EPR.PRN.Backend.Data
                 .IsUnique();
 
                 entity.HasData
-				(
-					new Material { Id = 1, MaterialCode = "PL", MaterialName = MaterialType.Plastic.ToString() },
-					new Material { Id = 2, MaterialCode = "WD", MaterialName = MaterialType.Wood.ToString() },
-					new Material { Id = 3, MaterialCode = "AL", MaterialName = MaterialType.Aluminium.ToString() },
-					new Material { Id = 4, MaterialCode = "ST", MaterialName = MaterialType.Steel.ToString() },
-					new Material { Id = 5, MaterialCode = "PC", MaterialName = MaterialType.Paper.ToString() },
-					new Material { Id = 6, MaterialCode = "GL", MaterialName = MaterialType.Glass.ToString() },
-					new Material { Id = 7, MaterialCode = "GR", MaterialName = MaterialType.GlassRemelt.ToString() },
-					new Material { Id = 8, MaterialCode = "FC", MaterialName = MaterialType.FibreComposite.ToString() }
-				);
-			});
+                (
+                    new Material { Id = 1, MaterialCode = "PL", MaterialName = MaterialType.Plastic.ToString() },
+                    new Material { Id = 2, MaterialCode = "WD", MaterialName = MaterialType.Wood.ToString() },
+                    new Material { Id = 3, MaterialCode = "AL", MaterialName = MaterialType.Aluminium.ToString() },
+                    new Material { Id = 4, MaterialCode = "ST", MaterialName = MaterialType.Steel.ToString() },
+                    new Material { Id = 5, MaterialCode = "PC", MaterialName = MaterialType.Paper.ToString() },
+                    new Material { Id = 6, MaterialCode = "GL", MaterialName = MaterialType.Glass.ToString() },
+                    new Material { Id = 7, MaterialCode = "GR", MaterialName = MaterialType.GlassRemelt.ToString() },
+                    new Material { Id = 8, MaterialCode = "FC", MaterialName = MaterialType.FibreComposite.ToString() }
+                );
+            });
 
-			modelBuilder.Entity<PrnMaterialMapping>()
-				.HasData
-				(
-					new PrnMaterialMapping { Id = 1, PRNMaterialId = 1, NPWDMaterialName = PrnConstants.Materials.Plastic },
-					new PrnMaterialMapping { Id = 2, PRNMaterialId = 2, NPWDMaterialName = PrnConstants.Materials.Wood },
-					new PrnMaterialMapping { Id = 3, PRNMaterialId = 2, NPWDMaterialName = PrnConstants.Materials.WoodComposting },
-					new PrnMaterialMapping { Id = 4, PRNMaterialId = 3, NPWDMaterialName = PrnConstants.Materials.Aluminium },
-					new PrnMaterialMapping { Id = 5, PRNMaterialId = 4, NPWDMaterialName = PrnConstants.Materials.Steel },
-					new PrnMaterialMapping { Id = 6, PRNMaterialId = 5, NPWDMaterialName = PrnConstants.Materials.PaperFiber },
-					new PrnMaterialMapping { Id = 7, PRNMaterialId = 5, NPWDMaterialName = PrnConstants.Materials.PaperComposting },
-					new PrnMaterialMapping { Id = 8, PRNMaterialId = 6, NPWDMaterialName = PrnConstants.Materials.GlassOther },
-					new PrnMaterialMapping { Id = 9, PRNMaterialId = 7, NPWDMaterialName = PrnConstants.Materials.GlassMelt }
-				);
+            modelBuilder.Entity<PrnMaterialMapping>()
+                .HasData
+                (
+                    new PrnMaterialMapping { Id = 1, PRNMaterialId = 1, NPWDMaterialName = PrnConstants.Materials.Plastic },
+                    new PrnMaterialMapping { Id = 2, PRNMaterialId = 2, NPWDMaterialName = PrnConstants.Materials.Wood },
+                    new PrnMaterialMapping { Id = 3, PRNMaterialId = 2, NPWDMaterialName = PrnConstants.Materials.WoodComposting },
+                    new PrnMaterialMapping { Id = 4, PRNMaterialId = 3, NPWDMaterialName = PrnConstants.Materials.Aluminium },
+                    new PrnMaterialMapping { Id = 5, PRNMaterialId = 4, NPWDMaterialName = PrnConstants.Materials.Steel },
+                    new PrnMaterialMapping { Id = 6, PRNMaterialId = 5, NPWDMaterialName = PrnConstants.Materials.PaperFiber },
+                    new PrnMaterialMapping { Id = 7, PRNMaterialId = 5, NPWDMaterialName = PrnConstants.Materials.PaperComposting },
+                    new PrnMaterialMapping { Id = 8, PRNMaterialId = 6, NPWDMaterialName = PrnConstants.Materials.GlassOther },
+                    new PrnMaterialMapping { Id = 9, PRNMaterialId = 7, NPWDMaterialName = PrnConstants.Materials.GlassMelt }
+                );
 
-			modelBuilder.Entity<Eprn>(entity =>
+            modelBuilder.Entity<Eprn>(entity =>
             {
                 entity.HasMany(prn => prn.PrnStatusHistories)
                 .WithOne()
                 .HasForeignKey(s => s.PrnIdFk)
                 .OnDelete(DeleteBehavior.NoAction);
             });
-            
+
             modelBuilder.Entity<ObligationCalculation>()
-			.HasOne(c => c.Material)
-			.WithMany()
-			.HasForeignKey(c => c.MaterialId)
-			.OnDelete(DeleteBehavior.NoAction);
+            .HasOne(c => c.Material)
+            .WithMany()
+            .HasForeignKey(c => c.MaterialId)
+            .OnDelete(DeleteBehavior.NoAction);
 
             modelBuilder.Entity<LookupMaterial>().HasData(
                 new LookupMaterial { Id = 1, MaterialName = "Plastic", MaterialCode = "PL" },
@@ -172,7 +172,7 @@ namespace EPR.PRN.Backend.Data
                 new LookupMaterial { Id = 4, MaterialName = "Glass", MaterialCode = "GL" },
                 new LookupMaterial { Id = 5, MaterialName = "Paper/Board", MaterialCode = "PA" },
                 new LookupMaterial { Id = 6, MaterialName = "Wood", MaterialCode = "WO" });
-            
+
 
             modelBuilder.Entity<LookupRegistrationMaterialStatus>().HasData(
                 new LookupRegistrationMaterialStatus { Id = 1, Name = "Granted" },
@@ -245,11 +245,11 @@ namespace EPR.PRN.Backend.Data
                 new LookupRegulatorTask { Id = 28, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 2, Name = "DulyMade" });
 
             modelBuilder.Entity<LookupMaterialPermit>().HasData(
-                new LookupMaterialPermit { Id = 1, Name = PermitTypes.WasteExemption },
-                new LookupMaterialPermit { Id = 2, Name = PermitTypes.PollutionPreventionAndControlPermit },
-                new LookupMaterialPermit { Id = 3, Name = PermitTypes.WasteManagementLicence },
-                new LookupMaterialPermit { Id = 4, Name = PermitTypes.InstallationPermit },
-                new LookupMaterialPermit { Id = 5, Name = PermitTypes.EnvironmentalPermitOrWasteManagementLicence });
+                new LookupMaterialPermit { Id = (int)MaterialPermitType.WasteExemption, Name = PermitTypes.WasteExemption },
+                new LookupMaterialPermit { Id = (int)MaterialPermitType.PollutionPreventionAndControlPermit, Name = PermitTypes.PollutionPreventionAndControlPermit },
+                new LookupMaterialPermit { Id = (int)MaterialPermitType.WasteManagementLicence, Name = PermitTypes.WasteManagementLicence },
+                new LookupMaterialPermit { Id = (int)MaterialPermitType.InstallationPermit, Name = PermitTypes.InstallationPermit },
+                new LookupMaterialPermit { Id = (int)MaterialPermitType.EnvironmentalPermitOrWasteManagementLicence, Name = PermitTypes.EnvironmentalPermitOrWasteManagementLicence });
 
             modelBuilder.Entity<LookupPeriod>().HasData(
                new LookupPeriod { Id = 1, Name = "Per Year" },
@@ -266,7 +266,7 @@ namespace EPR.PRN.Backend.Data
                 new LookupFileUploadStatus { Id = 4, Name = "Upload failed" },
                 new LookupFileUploadStatus { Id = 5, Name = "File deleted(Soft delete of record in database – will physically remove from blob storage)" });
 
-                base.OnModelCreating(modelBuilder);
+            base.OnModelCreating(modelBuilder);
         }
 
         public virtual DbSet<Eprn> Prn { get; set; }

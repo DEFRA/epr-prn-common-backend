@@ -17,6 +17,7 @@ public static class LogMessages
 
     public const string CreateRegistration = "Attempting to create new registration";
     public const string UpdateRegistration = "Attempting to create new registration with ID {0}";
+    public const string UpdateRegistrationMaterial = "Attempting to update registration material with External ID {ExternalId}";
     public const string GetRegistrationByOrganisation = "Attempting to get registration of type {0} for organisation with ID {1}";
     public const string UpdateRegistrationSiteAddress = "Attempting to update registration site address";
     public const string UpdateRegistrationTaskStatus = "Attempting to update registration task status";
@@ -24,4 +25,5 @@ public static class LogMessages
     public const string MarkAccreditationAsDulyMade = "MarkAccreditationAsDulyMadeBy id :{Id}";
     public const string RegistrationMaterialReference = "Attempting to get reference data registration material id :{Id}";
     public const string CreateRegistrationMaterialAndExemptionReferences = "Attempting to create new registration material and exemption references";
+    public const string GetMaterialsPermitTypes = "Attempting to get material permit types";
 }

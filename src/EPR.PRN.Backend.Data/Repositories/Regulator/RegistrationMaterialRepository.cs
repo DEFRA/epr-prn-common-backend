@@ -198,6 +198,28 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
         return newMaterial.Id;
     }
 
+    public async Task<RegistrationMaterial?> GetRegistrationMaterialByExternalId(Guid externalId)
+    {
+        var registrationMaterials = GetRegistrationMaterialsWithRelatedEntities();
+        return await registrationMaterials.FirstOrDefaultAsync(x => x.ExternalId == externalId);
+    }
+
+    public async Task<RegistrationMaterial> SaveAsync(RegistrationMaterial registrationMaterial)
+    {
+        eprContext.RegistrationMaterials.Update(registrationMaterial);
+
+        await eprContext.SaveChangesAsync();
+
+        return registrationMaterial;
+    }
+
+    public async Task<IEnumerable<LookupMaterialPermit>> GetMaterialPermitTypes()
+    {
+        return await eprContext.LookupMaterialPermit
+                            .AsNoTracking()
+                            .ToListAsync();
+    }
+
     private IIncludableQueryable<RegistrationMaterial, LookupRegistrationMaterialStatus> GetRegistrationMaterialsWithRelatedEntities()
     {
         var registrationMaterials =
