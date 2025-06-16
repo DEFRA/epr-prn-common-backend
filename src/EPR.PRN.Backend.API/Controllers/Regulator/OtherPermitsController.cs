@@ -15,7 +15,7 @@ namespace EPR.PRN.Backend.API.Controllers.Regulator;
 [FeatureGate(FeatureFlags.ReprocessorExporter)]
 public class OtherPermitsController(IMediator mediator) : ControllerBase
 {
-    [HttpGet("registrations/{Id}/other-permits")]
+    [HttpGet("registrations/{registrationId}/other-permits")]
     [ProducesResponseType(typeof(GetOtherPermitsResultDto), 200)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -26,14 +26,14 @@ public class OtherPermitsController(IMediator mediator) : ControllerBase
     [SwaggerResponse(StatusCodes.Status200OK, "Returns other permits of registration.", typeof(GetOtherPermitsResultDto))]
     [SwaggerResponse(StatusCodes.Status404NotFound, "If other permits not found.", typeof(ProblemDetails))]
     [SwaggerResponse(StatusCodes.Status500InternalServerError, "If an unexpected error occurs.", typeof(ContentResult))]
-    public async Task<IActionResult> GetOtherPermits(Guid id)
+    public async Task<IActionResult> GetOtherPermits(Guid registrationId)
     {
-        var result = await mediator.Send(new GetOtherPermitsQuery { RegistrationId = id });
+        var result = await mediator.Send(new GetOtherPermitsQuery { RegistrationId = registrationId });
 
         return result != null ? Ok(result) : NotFound();
     }
 
-    [HttpPost("registrations/{Id}/other-permits")]
+    [HttpPost("registrations/{registrationId}/other-permits")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -47,7 +47,7 @@ public class OtherPermitsController(IMediator mediator) : ControllerBase
     [SwaggerResponse(StatusCodes.Status404NotFound, "If registration not found.", typeof(ProblemDetails))]
     [SwaggerResponse(StatusCodes.Status500InternalServerError, "If an unexpected error occurs.", typeof(ContentResult))]
     public async Task<IActionResult> CreateOtherPermits(
-        [FromRoute] Guid id,
+        [FromRoute] Guid registrationId,
         [FromHeader(Name = "X-EPR-USER")] Guid userId,
         [FromBody] CreateOtherPermitsDto dto)
     {
@@ -56,11 +56,11 @@ public class OtherPermitsController(IMediator mediator) : ControllerBase
             var created = await mediator.Send(new CreateOtherPermitsCommand
             {
                 UserId = userId,
-                RegistrationId = id,
+                RegistrationId = registrationId,
                 Dto = dto
             });
 
-            return created ? CreatedAtAction(nameof(GetOtherPermits), new { id }, null) : Ok();
+            return created ? CreatedAtAction(nameof(GetOtherPermits), new { registrationId }, null) : Ok();
         }
         catch (KeyNotFoundException)
         {
@@ -68,7 +68,7 @@ public class OtherPermitsController(IMediator mediator) : ControllerBase
         }
     }
 
-    [HttpPut("registrations/{Id}/other-permits")]
+    [HttpPut("registrations/{registrationId}/other-permits")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -81,7 +81,7 @@ public class OtherPermitsController(IMediator mediator) : ControllerBase
     [SwaggerResponse(StatusCodes.Status404NotFound, "If other permits not found.", typeof(ProblemDetails))]
     [SwaggerResponse(StatusCodes.Status500InternalServerError, "If an unexpected error occurs.", typeof(ContentResult))]
     public async Task<IActionResult> UpdateOtherPermits(
-        [FromRoute] Guid id,
+        [FromRoute] Guid registrationId,
         [FromHeader(Name = "X-EPR-USER")] Guid userId,
         [FromBody] UpdateOtherPermitsDto dto)
     {
@@ -90,7 +90,7 @@ public class OtherPermitsController(IMediator mediator) : ControllerBase
             await mediator.Send(new UpdateOtherPermitsCommand
             {
                 UserId = userId,
-                RegistrationId = id,
+                RegistrationId = registrationId,
                 Dto = dto
             });
 
