@@ -72,7 +72,7 @@ public class OtherPermitsControllerTests
         var result = await _controller.CreateOtherPermits(Guid.Empty, Guid.Empty, new CreateOtherPermitsDto());
 
         // Assert
-        result.Should().BeOfType<CreatedResult>();
+        result.Should().BeOfType<CreatedAtActionResult>();
     }
 
     [TestMethod]
