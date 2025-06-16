@@ -36,7 +36,22 @@ public record ApplicantRegistrationMaterialDto
     /// <summary>
     /// The ID of the period that the permit applies to, this is only applicable for when the permit type is one of Installation, PPC or environment.
     /// </summary>
-    public int? PermitPeriodId { get; set; }
+    public int? PPCPeriodId { get; set; }
+
+    /// <summary>
+    /// The ID of the installation period that the registration material applies to.
+    /// </summary>
+    public int? InstallationPeriodId { get; set; }
+
+    /// <summary>
+    /// The ID of the waste management period that the registration material applies to.
+    /// </summary>
+    public int? WasteManagementPeriodId { get; set; }
+
+    /// <summary>
+    /// The ID of the environmental period that the registration material applies to.
+    /// </summary>
+    public int? EnvironmentalPeriodId { get; set; }
 
     /// <summary>
     /// The capacity in tonnes that the reprocessing site can recycle for the material, only applicable if the permit is a PPC permit.

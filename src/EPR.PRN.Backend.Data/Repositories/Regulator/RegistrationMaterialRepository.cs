@@ -176,6 +176,7 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
         }
 
         var existingMaterials = eprContext.RegistrationMaterials
+            .AsNoTracking()
             .Include(o => o.PermitType)
             .Include(o => o.Status)
             .Include(o => o.Material)

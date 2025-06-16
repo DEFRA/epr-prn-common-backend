@@ -39,7 +39,7 @@ public class RegistrationMaterialProfileMappingTests : MappingTestsBase<Registra
         // Arrange
         var externalId = Guid.NewGuid();
         var mapper = CreateMapper();
-        var source = new Data.DataModels.Registrations.RegistrationMaterial
+        var source = new RegistrationMaterial
         {
             Id = 1,
             ExternalId = externalId
@@ -74,6 +74,9 @@ public class RegistrationMaterialProfileMappingTests : MappingTestsBase<Registra
                 ExternalId = registrationId
             },
             PPCPeriodId = 1,
+            InstallationPeriodId = 1,
+            WasteManagementPeriodId = 1,
+            EnvironmentalPermitWasteManagementPeriodId = 1,
             EnvironmentalPermitWasteManagementNumber = "env",
             PPCPermitNumber = "ppc",
             WasteManagementLicenceNumber = "waste",
@@ -122,7 +125,10 @@ public class RegistrationMaterialProfileMappingTests : MappingTestsBase<Registra
             PPCPermitNumber = "ppc",
             WasteManagementLicenceNumber = "waste",
             InstallationPermitNumber = "install",
-            PermitPeriodId = 1,
+            PPCPeriodId = 1,
+            InstallationPeriodId = 1,
+            WasteManagementPeriodId = 1,
+            EnvironmentalPeriodId = 1,
             PermitType = new PermitTypeLookupDto
             {
                 Id = 1,

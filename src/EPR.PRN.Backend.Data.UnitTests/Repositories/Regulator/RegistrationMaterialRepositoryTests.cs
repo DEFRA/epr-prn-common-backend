@@ -5,7 +5,6 @@ using EPR.PRN.Backend.Data.Repositories.Regulator;
 using FluentAssertions;
 using FluentAssertions.Execution;
 using Microsoft.EntityFrameworkCore;
-using System.Threading.Tasks;
 
 namespace EPR.PRN.Backend.Data.UnitTests.Repositories.Regulator;
 
@@ -19,8 +18,8 @@ public class RegistrationMaterialRepositoryTests
     public void TestInitialize()
     {
         var options = new DbContextOptionsBuilder<EprContext>()
-                        .UseInMemoryDatabase(databaseName: "TestDb")
-                        .Options;
+            .UseInMemoryDatabase(databaseName: "TestDb")
+            .Options;
 
         _context = new EprContext(options);
         _repository = new RegistrationMaterialRepository(_context);
@@ -715,8 +714,15 @@ public class RegistrationMaterialRepositoryTests
         var registrationMaterial = new RegistrationMaterial
         {
             Registration = registration,
+            RegistrationId = registration.Id,
             Id = 55,
-            MaterialId = 1
+            MaterialId = 1,
+            PermitTypeId = 1,
+            StatusId = 1,
+            InstallationPeriodId = 1,
+            PPCPeriodId = 1,
+            EnvironmentalPermitWasteManagementPeriodId = 1,
+            WasteManagementPeriodId = 1
         };
 
         await _context.Registrations.AddAsync(registration);

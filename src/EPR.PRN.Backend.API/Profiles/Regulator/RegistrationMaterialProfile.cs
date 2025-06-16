@@ -236,7 +236,10 @@ public class RegistrationMaterialProfile : Profile
             .ForMember(dest => dest.StatusLookup, opt => opt.MapFrom(src => src.Status))
             .ForMember(dest => dest.PermitType, opt => opt.MapFrom(src => src.PermitType))
             .ForMember(dest => dest.ExemptionReferences, opt => opt.MapFrom(src => src.MaterialExemptionReferences))
-            .ForMember(dest => dest.PermitPeriodId, opt => opt.MapFrom(src => src.PPCPeriodId));
+            .ForMember(dest => dest.PPCPeriodId, opt => opt.MapFrom(src => src.PPCPeriodId))
+            .ForMember(dest => dest.InstallationPeriodId, opt => opt.MapFrom(src => src.InstallationPeriodId))
+            .ForMember(dest => dest.WasteManagementPeriodId, opt => opt.MapFrom(src => src.WasteManagementPeriodId))
+            .ForMember(dest => dest.EnvironmentalPeriodId, opt => opt.MapFrom(src => src.EnvironmentalPermitWasteManagementPeriodId));
 
         CreateMap<MaterialExemptionReference, ExemptionReferencesLookupDto>()
             .ForMember(dest => dest.ReferenceNumber, opt => opt.MapFrom(src => src.ReferenceNo));
