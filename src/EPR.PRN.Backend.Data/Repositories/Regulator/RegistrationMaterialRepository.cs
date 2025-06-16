@@ -54,7 +54,7 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
                ?? throw new KeyNotFoundException("Accreditation not found.");
     }
 
-    public async Task UpdateRegistrationOutCome(Guid registrationMaterialId, int statusId, string? comment, string registrationReferenceNumber)
+    public async Task UpdateRegistrationOutCome(Guid registrationMaterialId, int statusId, string? comment, string registrationReferenceNumber, Guid User)
     {
         var material = await eprContext.RegistrationMaterials.FirstOrDefaultAsync(rm => rm.ExternalId == registrationMaterialId);
         if (material is null) throw new KeyNotFoundException("Material not found.");
@@ -63,7 +63,7 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
         material.Comments = comment;
         material.RegistrationReferenceNumber = registrationReferenceNumber;
         material.StatusUpdatedDate = DateTime.UtcNow;
-        material.StatusUpdatedBy = Guid.NewGuid();
+        material.StatusUpdatedBy = User;
 
         await eprContext.SaveChangesAsync();
     }
