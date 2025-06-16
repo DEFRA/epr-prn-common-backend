@@ -28,7 +28,7 @@ public class OtherPermitsController(IMediator mediator) : ControllerBase
     [SwaggerResponse(StatusCodes.Status500InternalServerError, "If an unexpected error occurs.", typeof(ContentResult))]
     public async Task<IActionResult> GetOtherPermits(Guid id)
     {
-        var result = await mediator.Send(new GetOtherPermitsQuery() { RegistrationId = id });
+        var result = await mediator.Send(new GetOtherPermitsQuery { RegistrationId = id });
 
         return result != null ? Ok(result) : NotFound();
     }
