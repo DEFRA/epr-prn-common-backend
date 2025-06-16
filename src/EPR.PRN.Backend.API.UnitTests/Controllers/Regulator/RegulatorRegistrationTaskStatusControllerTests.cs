@@ -11,37 +11,37 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using System.Net;
 
-namespace EPR.PRN.Backend.API.UnitTests.Controllers;
+namespace EPR.PRN.Backend.API.UnitTests.Controllers.Regulator;
 
 [TestClass]
-public class RegulatorApplicationTaskStatusControllerTests
+public class RegulatorRegistrationTaskStatusControllerTests
 {
-    private RegulatorApplicationTaskStatusController _systemUnderTest;
+    private RegulatorRegistrationTaskStatusController _systemUnderTest;
 
     private Mock<IMediator> _mockMediator;
-    private Mock<ILogger<RegulatorApplicationTaskStatusController>> _mockLogger;
-    private Mock<IValidator<UpdateRegulatorApplicationTaskCommand>> _updateRegulatorApplicationTaskCommandValidatorMock;
+    private Mock<ILogger<RegulatorRegistrationTaskStatusController>> _mockLogger;
+    private Mock<IValidator<UpdateRegulatorRegistrationTaskCommand>> _updateRegulatorRegistrationTaskCommandValidatorMock;
     private static readonly IFixture _fixture = new Fixture();
 
     [TestInitialize]
     public void TestInitialize()
     {
         _mockMediator = new Mock<IMediator>();
-        _mockLogger = new Mock<ILogger<RegulatorApplicationTaskStatusController>>();
+        _mockLogger = new Mock<ILogger<RegulatorRegistrationTaskStatusController>>();
 
-        _updateRegulatorApplicationTaskCommandValidatorMock = new();
+        _updateRegulatorRegistrationTaskCommandValidatorMock = new();
 
-        _systemUnderTest = new RegulatorApplicationTaskStatusController(_mockMediator.Object, _updateRegulatorApplicationTaskCommandValidatorMock.Object, _mockLogger.Object);
+        _systemUnderTest = new RegulatorRegistrationTaskStatusController(_mockMediator.Object, _updateRegulatorRegistrationTaskCommandValidatorMock.Object, _mockLogger.Object);
     }
 
     [TestMethod]
     public async Task Patch_RegulatorApplicationTaskStatus_ReturnsOk_WhenValidUpdateTaskStatusRequestDto()
     {
         //Arrange
-        var expectedTaskStatus = _fixture.Create<UpdateRegulatorApplicationTaskCommand>();
+        var expectedTaskStatus = _fixture.Create<UpdateRegulatorRegistrationTaskCommand>();
 
         var validationResult = new ValidationResult();
-        _updateRegulatorApplicationTaskCommandValidatorMock.Setup(x => x.Validate(It.IsAny<UpdateRegulatorApplicationTaskCommand>())).Returns(validationResult);
+        _updateRegulatorRegistrationTaskCommandValidatorMock.Setup(x => x.Validate(It.IsAny<UpdateRegulatorRegistrationTaskCommand>())).Returns(validationResult);
 
         //Act
         var result = await _systemUnderTest.UpdateRegistrationTaskStatus(expectedTaskStatus);
@@ -52,18 +52,18 @@ public class RegulatorApplicationTaskStatusControllerTests
     }
 
     [TestMethod]
-    public async Task Patch_RegulatorApplicationTaskStatus_ThrowsValidationException_WhenValidationFails()
+    public async Task Patch_RegulatorRegistrationTaskStatus_ThrowsValidationException_WhenValidationFails()
     {
         // Arrange
-        var validator = new InlineValidator<UpdateRegulatorApplicationTaskCommand>();
+        var validator = new InlineValidator<UpdateRegulatorRegistrationTaskCommand>();
         validator.RuleFor(x => x.Status).Must(_ => false).WithMessage("Validation failed");
 
-        _systemUnderTest = new RegulatorApplicationTaskStatusController(_mockMediator.Object, validator, _mockLogger.Object);
+        _systemUnderTest = new RegulatorRegistrationTaskStatusController(_mockMediator.Object, validator, _mockLogger.Object);
 
         var registrationMaterialId = Guid.Parse("a9421fc1-a912-42ee-85a5-3e06408759a9");
-        var requestDto = new UpdateRegulatorApplicationTaskCommand
+        var requestDto = new UpdateRegulatorRegistrationTaskCommand
         {
-            RegistrationMaterialId = registrationMaterialId,
+            RegistrationId = registrationMaterialId,
             TaskName = "Test Task",
             Status = (RegulatorTaskStatus)999,
             UserName = "UserName"
@@ -79,8 +79,8 @@ public class RegulatorApplicationTaskStatusControllerTests
     public async Task Patch_RegulatorApplicationTaskStatus_ThrowsException_WhenMediatorThrowsException()
     {
         // Arrange
-        var expectedTaskStatus = _fixture.Create<UpdateRegulatorApplicationTaskCommand>();
-        _mockMediator.Setup(m => m.Send(It.IsAny<UpdateRegulatorApplicationTaskCommand>(), It.IsAny<CancellationToken>())).ThrowsAsync(new Exception("Test exception"));
+        var expectedTaskStatus = _fixture.Create<UpdateRegulatorRegistrationTaskCommand>();
+        _mockMediator.Setup(m => m.Send(It.IsAny<UpdateRegulatorRegistrationTaskCommand>(), It.IsAny<CancellationToken>())).ThrowsAsync(new Exception("Test exception"));
 
         // Act
         Func<Task> act = async () => await _systemUnderTest.UpdateRegistrationTaskStatus(expectedTaskStatus);
@@ -89,59 +89,62 @@ public class RegulatorApplicationTaskStatusControllerTests
         await act.Should().ThrowAsync<Exception>().WithMessage("Test exception");
     }
     [TestMethod]
-    public async Task AddApplicationTaskQueryNote_ReturnsNoContent_WhenValidInput()
+    public async Task AddRegistrationTaskQueryNote_ReturnsNoContent_WhenValidInput()
     {
         // Arrange
-        var validator = new InlineValidator<UpdateRegulatorApplicationTaskCommand>();
+        var validator = new InlineValidator<UpdateRegulatorRegistrationTaskCommand>();
         var taskId = Guid.NewGuid();
-        var command = new AddApplicationTaskQueryNoteCommand
+        var command = new AddRegistrationTaskQueryNoteCommand
         {
             Note = "This is a valid note",
             CreatedBy = Guid.NewGuid()
         };
 
         // Act
-        _systemUnderTest = new RegulatorApplicationTaskStatusController(_mockMediator.Object, validator, _mockLogger.Object);
-        var result = await _systemUnderTest.AddApplicationTaskQueryNote(taskId, command);
+        _systemUnderTest = new RegulatorRegistrationTaskStatusController(_mockMediator.Object, validator, _mockLogger.Object);
+        var result = await _systemUnderTest.RegistrationTaskQueryNote(taskId, command);
 
         // Assert
         result.Should().BeOfType<NoContentResult>();
     }
 
     [TestMethod]
-    public async Task AddApplicationTaskQueryNote_ReturnsBadRequest_WhenValidationFails()
+    public async Task AddRegistrationTaskQueryNote_ReturnsBadRequest_WhenValidationFails()
     {
         // Arrange
         var taskId = Guid.Empty;
-        var command = new AddApplicationTaskQueryNoteCommand
+        var command = new AddRegistrationTaskQueryNoteCommand()
         {
             Note = "", // Invalid note
             CreatedBy = Guid.Empty // Invalid QueryBy
         };
 
-        // Act
-        Func<Task> act = () => _systemUnderTest.AddApplicationTaskQueryNote(taskId, command);
+        // Assert
+        
+        Func<Task> act = () => _systemUnderTest.RegistrationTaskQueryNote(taskId, command);
+
         await act.Should().ThrowAsync<ValidationException>();
     }
 
     [TestMethod]
-    public async Task AddApplicationTaskQueryNote_ReturnsInternalServerError_WhenMediatorThrows()
+    public async Task AddRegistrationTaskQueryNote_ReturnsInternalServerError_WhenMediatorThrows()
     {
         // Arrange
         var taskId = Guid.NewGuid();
-        var command = new AddApplicationTaskQueryNoteCommand
+        var command = new AddRegistrationTaskQueryNoteCommand
         {
             Note = "Some valid note",
             CreatedBy = Guid.NewGuid()
         };
 
-        _mockMediator.Setup(x => x.Send(It.IsAny<AddApplicationTaskQueryNoteCommand>(), It.IsAny<CancellationToken>()))
+        _mockMediator.Setup(x => x.Send(It.IsAny<AddRegistrationTaskQueryNoteCommand>(), It.IsAny<CancellationToken>()))
             .ThrowsAsync(new Exception("Unexpected failure"));
 
         // Act
-        Func<Task> act = async () => await _systemUnderTest.AddApplicationTaskQueryNote(taskId, command);
+        Func<Task> act = async () => await _systemUnderTest.RegistrationTaskQueryNote(taskId, command);
 
         // Assert
         await act.Should().ThrowAsync<Exception>().WithMessage("Unexpected failure");
     }
+
 }
