@@ -38,6 +38,7 @@ namespace EPR.PRN.Backend.API.Helpers
                 .AddScoped<IMaterialRepository, MaterialRepository>()
                 .AddScoped<IPrnRepository, PrnRepository>()
                 .AddScoped<IValidator<SavePrnDetailsRequest>, SavePrnDetailsRequestValidator>()
+                .AddScoped<IValidator<UpdateRegistrationCommand>, UpdateRegistrationCommandValidator>()
                 .AddScoped<IValidator<UpdateRegulatorRegistrationTaskCommand>, UpdateRegulatorRegistrationTaskCommandValidator>()
                 .AddScoped<IValidator<UpdateRegulatorApplicationTaskCommand>, UpdateRegulatorApplicationTaskCommandValidator>()
                 .AddScoped<IRegulatorApplicationTaskStatusRepository, RegulatorApplicationTaskStatusRepository>()

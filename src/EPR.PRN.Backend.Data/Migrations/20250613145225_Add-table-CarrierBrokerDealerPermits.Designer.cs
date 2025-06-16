@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EPR.PRN.Backend.Data.Migrations
 {
     [DbContext(typeof(EprContext))]
-    [Migration("20250613113347_Add-table-CarrierBrokerDealerPermits")]
+    [Migration("20250613145225_Add-table-CarrierBrokerDealerPermits")]
     partial class AddtableCarrierBrokerDealerPermits
     {
         /// <inheritdoc />
@@ -1080,7 +1080,7 @@ namespace EPR.PRN.Backend.Data.Migrations
                     b.Property<int>("RegistrationId")
                         .HasColumnType("int");
 
-                    b.Property<Guid>("UpdatedBy")
+                    b.Property<Guid?>("UpdatedBy")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime?>("UpdatedOn")
@@ -2590,7 +2590,7 @@ namespace EPR.PRN.Backend.Data.Migrations
             modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.CarrierBrokerDealerPermit", b =>
                 {
                     b.HasOne("EPR.PRN.Backend.Data.DataModels.Registrations.Registration", "Registration")
-                        .WithOne()
+                        .WithOne("CarrierBrokerDealerPermit")
                         .HasForeignKey("EPR.PRN.Backend.Data.DataModels.Registrations.CarrierBrokerDealerPermit", "RegistrationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -2919,6 +2919,8 @@ namespace EPR.PRN.Backend.Data.Migrations
             modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.Registration", b =>
                 {
                     b.Navigation("AccreditationTasks");
+
+                    b.Navigation("CarrierBrokerDealerPermit");
 
                     b.Navigation("Materials");
 

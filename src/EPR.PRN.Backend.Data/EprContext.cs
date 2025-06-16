@@ -280,6 +280,13 @@ namespace EPR.PRN.Backend.Data
                 .ValueGeneratedOnAdd()
                 .IsRequired();
 
+            modelBuilder.Entity<Registration>()
+                .HasOne(r => r.CarrierBrokerDealerPermit)
+                .WithOne(p => p.Registration)
+                .HasForeignKey<CarrierBrokerDealerPermit>(p => p.RegistrationId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+
 
         }
 
@@ -307,7 +314,7 @@ namespace EPR.PRN.Backend.Data
         public virtual DbSet<DulyMade> DulyMade { get; set; }
         public virtual DbSet<RegulatorApplicationTaskStatus> RegulatorApplicationTaskStatus { get; set; }
         public virtual DbSet<RegulatorRegistrationTaskStatus> RegulatorRegistrationTaskStatus { get; set; }
-        public virtual DbSet<RegistrationTaskStatus> RegistrationTaskStatus { get; set; }
+        public virtual DbSet<ApplicantRegistrationTaskStatus> RegistrationTaskStatus { get; set; }
         public virtual DbSet<LookupMaterial> LookupMaterials { get; set; }
         public virtual DbSet<LookupRegistrationMaterialStatus> LookupRegistrationMaterialStatuses { get; set; }
         public virtual DbSet<LookupRegulatorTask> LookupTasks { get; set; }
