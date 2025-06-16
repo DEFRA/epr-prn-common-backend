@@ -30,6 +30,35 @@ public class RegistrationRepositoryTests
     }
 
     [TestMethod]
+    public async Task GetAsync_ShouldReturnNull_WhenNoMatchFound()
+    {
+        // Act
+        var result = await _repository.GetAsync(1);
+
+        // Assert
+        result.Should().BeNull();
+    }
+
+    [TestMethod]
+    public async Task GetAsync_ShouldReturnEntity_WhenMatchFound()
+    {
+        // Arrange
+        var existing = new Registration
+        {
+            Id = 1
+        };
+
+        await _context.Registrations.AddAsync(existing);
+        await _context.SaveChangesAsync();
+
+        // Act
+        var result = await _repository.GetAsync(1);
+
+        // Assert
+        result.Should().NotBeNull();
+    }
+
+    [TestMethod]
     public async Task GetTaskStatusAsync_ShouldReturnNull_WhenNoMatchFound()
     {
         // Act
@@ -45,7 +74,7 @@ public class RegistrationRepositoryTests
         // Arrange
         var task = new LookupRegulatorTask { Name = "TestTask", ApplicationTypeId = 1 };
         var taskStatusEntity = new LookupTaskStatus { Name = "InProgress" };
-        var status = new RegistrationTaskStatus
+        var status = new ApplicantRegistrationTaskStatus
         {
             RegistrationId = 1,
             Task = task,
@@ -101,7 +130,7 @@ public class RegistrationRepositoryTests
         await _context.LookupTasks.AddAsync(task);
         await _context.LookupTaskStatuses.AddRangeAsync(oldStatus, newStatus);
 
-        var taskStatus = new RegistrationTaskStatus
+        var taskStatus = new ApplicantRegistrationTaskStatus
         {
             RegistrationId = 2,
             Task = task,
@@ -182,7 +211,7 @@ public class RegistrationRepositoryTests
 
         var reprocAddress = await _context.LookupAddresses.FindAsync(updatedRegistration.ReprocessingSiteAddressId);
 
-        reprocAddress.AddressLine1.Should().Be("123 Test St");
+        reprocAddress!.AddressLine1.Should().Be("123 Test St");
     }
 
     [TestMethod]
@@ -227,7 +256,174 @@ public class RegistrationRepositoryTests
 
         // Assert
         var updatedRegistration = await _context.Registrations.FindAsync(registration.Id);
-        updatedRegistration.ReprocessingSiteAddressId.Should().Be(101);
+        updatedRegistration!.ReprocessingSiteAddressId.Should().Be(101);
+    }
+
+    [TestMethod]
+    public async Task UpdateAsync_NoRegistration_ShouldThrowException()
+    {
+        // Arrange
+
+        // Negative data
+        var registration = new Registration { Id = 2, ExternalId = Guid.NewGuid() };
+
+        _context.Registrations.Add(registration);
+
+        await _context.SaveChangesAsync();
+
+        var businessAddress = new AddressDto { Id = 101, AddressLine1 = "Address line 1" };
+        var reprocessingAddress = new AddressDto { Id = 101, AddressLine1 = "Address line 1" };
+        var legalAddress = new AddressDto { Id = 101, AddressLine1 = "Address line 1" };
+
+        // Act
+        Func<Task> act = async () => await _repository.UpdateAsync(3, businessAddress, reprocessingAddress, legalAddress);
+
+        // Assert
+        await act.Should().ThrowAsync<KeyNotFoundException>();
+    }
+
+    [TestMethod]
+    public async Task UpdateAsync_NoExistingAddresses_ShouldUpdateAccordingly()
+    {
+        // Arrange
+        var registration = new Registration { Id = 2, ExternalId = Guid.NewGuid()};
+
+        _context.Registrations.Add(registration);
+
+        await _context.SaveChangesAsync();
+
+        var businessAddress = new AddressDto { Id = 101, AddressLine1 = "Address line 1" };
+        var reprocessingAddress = new AddressDto { Id = 101, AddressLine1 = "Address line 1" };
+        var legalAddress = new AddressDto { Id = 101, AddressLine1 = "Address line 1" };
+
+        // Act
+        await _repository.UpdateAsync(registration.Id, businessAddress, reprocessingAddress, legalAddress);
+
+        // Assert
+        var updatedRegistration = await _context.Registrations.FindAsync(registration.Id);
+        updatedRegistration!.BusinessAddressId.Should().Be(1);
+        updatedRegistration!.ReprocessingSiteAddressId.Should().Be(2);
+        updatedRegistration!.LegalDocumentAddressId.Should().Be(3);
+    }
+
+    [TestMethod]
+    public async Task UpdateAsync_WithExistingABusinessAddress_ShouldUpdateAccordingly()
+    {
+        // Arrange
+        var registration = new Registration { Id = 2, ExternalId = Guid.NewGuid() };
+        var address = new Address
+        {
+            Id = 101,
+            AddressLine1 = "Address line 1",
+            PostCode = "postcode",
+            TownCity = "town"
+        };
+
+        registration.BusinessAddressId = address.Id;
+        registration.LegalDocumentAddressId = address.Id;
+        registration.ReprocessingSiteAddressId = address.Id;
+
+        _context.Registrations.Add(registration);
+        _context.LookupAddresses.Add(address);
+
+        await _context.SaveChangesAsync();
+
+        var businessAddress = new AddressDto { Id = 101, AddressLine1 = "new Address line 1" };
+        var reprocessingAddress = new AddressDto { Id = 101, AddressLine1 = "new Address line 1" };
+        var legalAddress = new AddressDto { Id = 101, AddressLine1 = "new Address line 1" };
+
+        // Act
+        await _repository.UpdateAsync(registration.Id, businessAddress, reprocessingAddress, legalAddress);
+
+        // Assert
+        var updatedRegistration = await _context.Registrations.FindAsync(registration.Id);
+        updatedRegistration!.BusinessAddressId.Should().Be(101);
+        updatedRegistration!.ReprocessingSiteAddressId.Should().Be(101);
+        updatedRegistration!.LegalDocumentAddressId.Should().Be(101);
+    }
+
+    [TestMethod]
+    public async Task GetByOrganisationAsync_Exists_ReturnRegistration()
+    {
+        // Arrange
+        var organisationId = Guid.NewGuid();
+        var registration = new Registration { Id = 2, ApplicationTypeId = 1, ExternalId = Guid.NewGuid(), OrganisationId = organisationId };
+
+        _context.Registrations.Add(registration);
+
+        await _context.SaveChangesAsync();
+
+        // Act
+        var result = await _repository.GetByOrganisationAsync(1, organisationId);
+
+        // Assert
+        result.Should().NotBeNull();
+    }
+
+    [TestMethod]
+    public async Task GetByOrganisationAsync_DoesNotExist_ReturnNull()
+    {
+        // Arrange
+        var organisationId = Guid.NewGuid();
+        // Negative data
+        var registration = new Registration { Id = 2, ApplicationTypeId = 1, ExternalId = Guid.NewGuid(), OrganisationId = organisationId };
+
+        _context.Registrations.Add(registration);
+
+        await _context.SaveChangesAsync();
+
+        // Act
+        var result = await _repository.GetByOrganisationAsync(2, organisationId);
+
+        // Assert
+        result.Should().BeNull();
+    }
+
+    [TestMethod]
+    public async Task CreateRegistrationAsync_ShouldCreateNewRecord()
+    {
+        // Arrange
+        var organisationId = Guid.NewGuid();
+
+        // Act
+        var result = await _repository.CreateRegistrationAsync(1, organisationId, new AddressDto
+        {
+            AddressLine1 = "address line 1",
+            AddressLine2 = "address line 2",
+            PostCode = "cv1 2tt",
+            TownCity = "town",
+            Country = "country",
+            County = "county",
+            GridReference = "grid ref",
+            NationId = 1
+        });
+
+        // Assert
+        var loaded = await _context.Registrations.FindAsync(result);
+        result.Should().Be(1);
+        loaded.Should().BeEquivalentTo(new Registration
+        {
+            Id = result,
+            RegistrationStatusId = 1,
+            ReprocessingSiteAddressId = 1,
+            ExternalId = loaded!.ExternalId,
+            ApplicationTypeId = 1,
+            OrganisationId = organisationId,
+            ReprocessingSiteAddress = new Address
+            {
+                Id = 1,
+                AddressLine1 = "address line 1",
+                AddressLine2 = "address line 2",
+                PostCode = "cv1 2tt",
+                TownCity = "town",
+                County = "county",
+                GridReference = "grid ref",
+                NationId = 1
+            },
+            CreatedBy = loaded.CreatedBy,
+            CreatedDate = loaded.CreatedDate,
+            UpdatedBy = loaded.UpdatedBy
+        });
     }
 
     [TestMethod]

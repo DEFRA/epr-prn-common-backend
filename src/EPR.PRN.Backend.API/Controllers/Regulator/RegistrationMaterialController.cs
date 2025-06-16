@@ -162,14 +162,7 @@ public class RegistrationMaterialController(IMediator mediator
     #endregion Get Methods
 
     #region Post Methods
-    [HttpPost("registrationMaterials/createRegistrationMaterialAndExemptionReferences")]
-    public async Task<IActionResult> CreateRegistrationMaterialAndExemptionReferences([FromBody] CreateRegistrationMaterialAndExemptionReferencesCommand command)
-    {
-        logger.LogInformation(LogMessages.CreateRegistrationMaterialAndExemptionReferences);        
-        await mediator.Send(command);
-        return Ok();
-    }
-
+    
     [HttpPost("registrationMaterials/{Id}/outcome")]
     [ProducesResponseType(StatusCodes.Status204NoContent, Type = typeof(NoContentResult))]
     [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
