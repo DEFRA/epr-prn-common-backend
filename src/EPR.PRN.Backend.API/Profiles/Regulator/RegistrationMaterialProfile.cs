@@ -123,7 +123,7 @@ public class RegistrationMaterialProfile : Profile
         CreateMap<Accreditation, AccreditationBusinessPlanDto>()
             .ForMember(dest => dest.AccreditationId, opt => opt.MapFrom(src => src.ExternalId))
             .ForMember(dest => dest.MaterialName, opt => opt.MapFrom(src => src.RegistrationMaterial.Material.MaterialName))
-            .ForMember(dest => dest.OrganisationName, opt => opt.MapFrom(src => src.RegistrationMaterial.Registration.OrganisationId))
+            .ForMember(dest => dest.OrganisationId, opt => opt.MapFrom(src => src.RegistrationMaterial.Registration.OrganisationId))
             .ForMember(dest => dest.SiteAddress, opt => opt.MapFrom(src =>
              src.RegistrationMaterial.Registration.ReprocessingSiteAddress != null ? CreateAddressString(src.RegistrationMaterial.Registration.ReprocessingSiteAddress)
                 : string.Empty))
@@ -314,7 +314,7 @@ public class RegistrationMaterialProfile : Profile
 
         if (task != null)
         {
-            return (RegulatorTaskStatus)task.TaskStatus.Id;
+            return (RegulatorTaskStatus)task.TaskStatusId;
         }
 
         return RegulatorTaskStatus.NotStarted;

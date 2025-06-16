@@ -109,7 +109,7 @@ namespace EPR.PRN.Backend.API.UnitTests.Handlers
                 result.NewUsersRecycledPackagingWasteNotes.Should().Be("New users recycled packaging waste notes");
                 result.NotCoveredOtherCategoriesPercentage.Should().Be(5.0m);
                 result.NotCoveredOtherCategoriesNotes.Should().Be("Not covered other categories notes");
-                result.TaskStatus.Should().Be("NotStarted"); 
+                result.TaskStatus.Should().Be(RegulatorTaskStatus.NotStarted); 
             }
         }
 
@@ -185,7 +185,7 @@ namespace EPR.PRN.Backend.API.UnitTests.Handlers
                 result.NewUsersRecycledPackagingWasteNotes.Should().Be("New users recycled packaging waste notes");
                 result.NotCoveredOtherCategoriesPercentage.Should().Be(5.0m);
                 result.NotCoveredOtherCategoriesNotes.Should().Be("Not covered other categories notes");
-                result.TaskStatus.Should().Be("NotStarted");
+                result.TaskStatus.Should().Be(RegulatorTaskStatus.NotStarted);
             }
         }
 
@@ -227,6 +227,7 @@ namespace EPR.PRN.Backend.API.UnitTests.Handlers
                             Id = 1,
                             Name = RegulatorTaskNames.BusinessPlan
                         },
+                        TaskStatusId =  (int)RegulatorTaskStatus.Completed,
                         TaskStatus = new LookupTaskStatus
                         {
                             Id = (int)RegulatorTaskStatus.Completed,
@@ -244,8 +245,7 @@ namespace EPR.PRN.Backend.API.UnitTests.Handlers
             using (new AssertionScope())
             {
                 result.Should().NotBeNull();
-                result.TaskStatus.Should().NotBeNull();
-                result.TaskStatus.Should().Be("Completed");
+                result.TaskStatus.Should().Be(RegulatorTaskStatus.Completed);
             }
         }
     }

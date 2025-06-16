@@ -126,7 +126,7 @@ public class AccreditationMaterialControllerTests
         var dto = new AccreditationBusinessPlanDto
         {
             AccreditationId = accreditationId,
-            OrganisationName = "Test Org",
+            OrganisationId = new Guid(),
             SiteAddress = "123 Test St, Testville, TS1 1AA",
         };
 
