@@ -11,11 +11,7 @@ public class UpdateRegistrationMaterialPermitsHandler(IRegistrationMaterialRepos
 {
     public async Task Handle(UpdateRegistrationMaterialPermitsCommand command, CancellationToken cancellationToken)
     {
-        var registrationMaterial = await repository.GetRegistrationMaterialByExternalId(command.ExternalId);
-        if (registrationMaterial is null)
-        {
-            throw new KeyNotFoundException($"Registration Material not found for external id: {command.ExternalId}");
-        }
+        var registrationMaterial = await repository.GetRegistrationMaterialByExternalId(command.RegistrationMaterialId) ?? throw new KeyNotFoundException($"Registration Material not found for external id: {command.RegistrationMaterialId}");
 
         // Permit Type
         SetPermitType(command, registrationMaterial);

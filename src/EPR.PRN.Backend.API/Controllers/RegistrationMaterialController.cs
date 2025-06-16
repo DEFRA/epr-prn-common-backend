@@ -77,7 +77,7 @@ public class RegistrationMaterialController(
         return Ok();
     }
 
-    [HttpPost("registrationMaterials/{externalId:Guid}/permits")]
+    [HttpPost("registrationMaterials/{Id:Guid}/permits")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(OkResult))]
     [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
@@ -89,12 +89,12 @@ public class RegistrationMaterialController(
     [SwaggerResponse(StatusCodes.Status400BadRequest, "If the request is invalid or a validation error occurs.", typeof(ProblemDetails))]
     [SwaggerResponse(StatusCodes.Status404NotFound, "If an existing registration is not found", typeof(ProblemDetails))]
     [SwaggerResponse(StatusCodes.Status500InternalServerError, "If an unexpected error occurs.", typeof(ContentResult))]
-    public async Task<IActionResult> UpdateRegistrationMaterialPermits([FromRoute] Guid externalId, [FromBody] UpdateRegistrationMaterialPermitsCommand command)
+    public async Task<IActionResult> UpdateRegistrationMaterialPermits([FromRoute] Guid Id, [FromBody] UpdateRegistrationMaterialPermitsCommand command)
     {
 
-        logger.LogInformation(LogMessages.UpdateRegistrationMaterial, externalId);
+        logger.LogInformation(LogMessages.UpdateRegistrationMaterial, Id);
 
-        command.ExternalId = externalId;
+        command.RegistrationMaterialId = Id;
 
         await mediator.Send(command);
 

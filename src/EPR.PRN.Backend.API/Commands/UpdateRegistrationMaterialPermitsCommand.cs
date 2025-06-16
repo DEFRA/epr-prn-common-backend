@@ -14,7 +14,7 @@ public sealed class UpdateRegistrationMaterialPermitsCommand : IRequest
     /// </summary>
     [BindNever]
     [SwaggerIgnore]
-    public Guid ExternalId { get; set; }
+    public Guid RegistrationMaterialId { get; set; }
 
     /// <summary>
     /// Gets or sets the ID of the permit type.
