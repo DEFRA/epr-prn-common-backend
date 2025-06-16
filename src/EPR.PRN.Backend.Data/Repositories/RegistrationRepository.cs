@@ -135,13 +135,14 @@ public class RegistrationRepository(EprContext context, ILogger<RegistrationRepo
     public async Task<IEnumerable<RegistrationOverviewDto>> GetRegistrationsOverviewForOrgIdAsync(Guid organisationId)
     {
         return await context.Registrations
-            .Where(r => r.OrganisationId == organisationId) // Apply filter early
-            .SelectMany(r => r.Materials.Select(m => new RegistrationOverviewDto
+            .Where(r => r.OrganisationId == organisationId)
+            .SelectMany(r => r.Materials.DefaultIfEmpty(), (r, m) => new RegistrationOverviewDto
             {
                 RegistrationId = r.ExternalId,
-                RegistrationMaterialId = m.Id,
-                MaterialId = m.Material.Id,
-                Material = m.Material.MaterialName,
+                RegistrationMaterialId = m != null ? m.Id : 0, // Handle null material
+                MaterialId = m != null && m.Material != null ? m.Material.Id : 0, // Handle null material
+                Material = m != null && m.Material != null ? m.Material.MaterialName : string.Empty, // Handle null material
+                MaterialCode = m != null && m.Material != null ? m.Material.MaterialCode : string.Empty, // Include MaterialCode
                 ApplicationTypeId = r.ApplicationTypeId,
                 RegistrationStatus = r.RegistrationStatusId,
                 AccreditationStatus = 0,
@@ -154,11 +155,13 @@ public class RegistrationRepository(EprContext context, ILogger<RegistrationRepo
                     TownCity = r.ReprocessingSiteAddress.TownCity,
                     County = r.ReprocessingSiteAddress.County,
                     PostCode = r.ReprocessingSiteAddress.PostCode,
-                    NationId = (int)r.ReprocessingSiteAddress.NationId,
+                    NationId = r.ReprocessingSiteAddress.NationId.HasValue ? r.ReprocessingSiteAddress.NationId.Value : 0,
                     GridReference = r.ReprocessingSiteAddress.GridReference
                 } : null,
                 Year = DateTime.Today.Year // Map the year from each material
-            }))
+            })
             .ToListAsync();
     }
+
+
 }

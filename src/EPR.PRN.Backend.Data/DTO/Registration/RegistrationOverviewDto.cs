@@ -11,6 +11,8 @@
         public int MaterialId { get; set; }
 
         public string? Material { get; set; }
+        
+         public string? MaterialCode { get; set; }       
 
         public int ApplicationTypeId { get; set; }
 

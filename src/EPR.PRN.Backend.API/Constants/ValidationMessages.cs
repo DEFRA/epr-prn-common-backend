@@ -13,4 +13,5 @@ public static class ValidationMessages
     public const string InvalidDeterminationDate = "Invalid registration material DeterminationDate is invalid.";
     public const string DeterminationDate12WeekRule = "DeterminationDate must be at least 12 weeks after DulyMadeDate.";
     public const string DulyMadeByRequired= "DulyMadeBy is required.";
+    public const string RegistrationOrganisationIdRequired = "Orgnaisation Id is required.";   
 }

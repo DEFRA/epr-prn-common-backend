@@ -29,3 +29,4 @@ appsettings.Test.json
 
 **/appsettings.Development.json
 **/appsettings.development.json
+*.user
