@@ -32,6 +32,7 @@ public class MaterialCalculationServiceTests
     [DataRow(0.6, 0.75, 128, 58, 19)]
     [DataRow(0.7, 0.7, 123, 61, 26)]
     [DataRow(0.78, 0.77, 170, 103, 30)]
+    [DataRow(0.74, 0.75, 33045, 18340, 6114)]
     public void CalculateObligation_WhenGlassRemelt_ThenObligationIsReturned(double target, double remeltTarget, int tonnage, int expectedRemelt, int expectedRemainder)
     {
         var (remeltResult, remainderResult) = _service.CalculateGlass(target, remeltTarget, tonnage);
