@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
-using EPR.PRN.Backend.API.Handlers;
-using EPR.PRN.Backend.API.Profiles;
+using EPR.PRN.Backend.API.Common.Constants;
+using EPR.PRN.Backend.API.Common.Enums;
+using EPR.PRN.Backend.API.Handlers.Regulator;
+using EPR.PRN.Backend.API.Profiles.Regulator;
 using EPR.PRN.Backend.API.Queries;
 using EPR.PRN.Backend.Data.DataModels.Registrations;
 using EPR.PRN.Backend.Data.Interfaces.Regulator;
@@ -34,14 +36,14 @@ public class GetMaterialsAuthorisedOnSiteByIdHandlerTests
     public async Task Handle_ShouldMapRegistrationAndMaterialsCorrectly()
     {
         // Arrange
-        int registrationId = 101;
+        var registrationId = Guid.Parse("4bac12f7-f7a9-4df4-b7b5-9c4221860c4d");
         var query = new GetMaterialsAuthorisedOnSiteByIdQuery { Id = registrationId };
 
         var registration = new Registration
         {
-            Id = registrationId,
-            OrganisationId = 10,
-            ReprocessingSiteAddress = new LookupAddress
+            ExternalId = registrationId,
+            OrganisationId = Guid.NewGuid(),
+            ReprocessingSiteAddress = new Address
             {
                 AddressLine1 = "Unit 7",
                 TownCity = "Greenwich",
@@ -77,7 +79,7 @@ public class GetMaterialsAuthorisedOnSiteByIdHandlerTests
         // Assert
         result.Should().NotBeNull();
         result.RegistrationId.Should().Be(registrationId);
-        result.SiteAddress.Should().Contain("Unit 7"); 
+        result.SiteAddress.Should().Contain("Unit 7");
         result.MaterialsAuthorisation.Should().HaveCount(2);
 
         var paper = result.MaterialsAuthorisation.First(m => m.MaterialName == "Plastic");

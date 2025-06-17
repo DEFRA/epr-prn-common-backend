@@ -11,12 +11,24 @@ public abstract class LookupBase
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int Id { get; set; }
     [Required]
-    [MaxLength(255)]
-    public required string Name { get; set; }
+    [MaxLength(200)]
+    public virtual required string Name { get; set; }
 }
 
+[Table("Lookup.RegistrationMaterialStatus")]
+[ExcludeFromCodeCoverage]
 public class LookupRegistrationMaterialStatus : LookupBase{}
 
+[Table("Lookup.AccreditationStatus")]
+[ExcludeFromCodeCoverage]
+public class LookupAccreditationStatus : LookupBase
+{
+    [MaxLength(100)]
+    public override required string Name { get; set; }
+}
+
+[Table("Lookup.RegulatorTask")]
+[ExcludeFromCodeCoverage]
 public class LookupRegulatorTask : LookupBase
 {
     public bool IsMaterialSpecific { get; set; }
@@ -26,18 +38,44 @@ public class LookupRegulatorTask : LookupBase
     public int JourneyTypeId { get; set; }
 }
 
-public class LookupRegistrationStatus : LookupBase{}
+[Table("Lookup.TaskStatus")]
+[ExcludeFromCodeCoverage]
+public class LookupTaskStatus : LookupBase {
+    [MaxLength(100)]
+    public override required string Name { get; set; }
+}
 
-public class LookupTaskStatus : LookupBase { public bool IsMaterialSpecific { get; set; } }
-
-public class LookupApplicationType : LookupBase { }
-
-public class LookupPrincipleType : LookupBase { }
-
+[Table("Lookup.MaterialPermit")]
+[ExcludeFromCodeCoverage]
 public class LookupMaterialPermit : LookupBase { }
 
-public class LookupPeriod : LookupBase { }
+[Table("Lookup.ApplicationType")]
+[ExcludeFromCodeCoverage]
+public class LookupApplicationType : LookupBase { 
+    [MaxLength(100)]
+    public override required string Name { get; set; }
+}
 
-public class LookupJourneyType : LookupBase { }
+[Table("Lookup.Period")]
+[ExcludeFromCodeCoverage]
+public class LookupPeriod : LookupBase
+{
+    [MaxLength(100)]
+    public override required string Name { get; set; }
+}
+
+[Table("Lookup.JourneyType")]
+[ExcludeFromCodeCoverage]
+public class LookupJourneyType : LookupBase
+{
+    [MaxLength(30)]
+    public override required string Name { get; set; }
+}
+
+[Table("Lookup.FileUploadType")]
+[ExcludeFromCodeCoverage]
 public class LookupFileUploadType : LookupBase { }
+
+[Table("Lookup.FileUploadStatus")]
+[ExcludeFromCodeCoverage]
 public class LookupFileUploadStatus : LookupBase { }

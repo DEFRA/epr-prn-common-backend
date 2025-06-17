@@ -9,6 +9,8 @@
 		<Exec Condition="$(Configuration) == Release" Command="dotnet-ef migrations script --configuration Release --verbose --no-build --context EPR.PRN.Backend.Data.EprContext --idempotent --output Scripts/migrations.sql" />
 	</Target>
 	<ItemGroup>
+	</ItemGroup>
+	<ItemGroup>
 		<PackageReference Include="AutoMapper" Version="14.0.0" />
 		<PackageReference Include="Azure.Identity" Version="1.12.0" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.8" />
@@ -42,7 +44,7 @@
 
 	<ItemGroup>
 		<SonarQubeSetting Include="sonar.exclusions">
-			<Value>Scripts/*</Value>
+			<Value>Scripts/*,SeedData/**</Value>
 		</SonarQubeSetting>
 	</ItemGroup>
 </Project>

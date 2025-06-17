@@ -2,8 +2,10 @@
 using EPR.PRN.Backend.API.Common.Constants;
 using EPR.PRN.Backend.API.Common.Enums;
 using EPR.PRN.Backend.Data.DataModels;
+using EPR.PRN.Backend.Data.DataModels.Registrations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace EPR.PRN.Backend.Data
 {
@@ -14,12 +16,13 @@ namespace EPR.PRN.Backend.Data
 
         public EprContext()
         {
-
+           
         }
 
-        public EprContext(DbContextOptions<EprContext> options) : base(options)
+        public EprContext(DbContextOptions<EprContext> options)
+            : base(options)
         {
-
+           
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -162,7 +165,108 @@ namespace EPR.PRN.Backend.Data
 			.HasForeignKey(c => c.MaterialId)
 			.OnDelete(DeleteBehavior.NoAction);
 
-			base.OnModelCreating(modelBuilder);
+            modelBuilder.Entity<LookupMaterial>().HasData(
+                new LookupMaterial { Id = 1, MaterialName = "Plastic", MaterialCode = "PL" },
+                new LookupMaterial { Id = 2, MaterialName = "Steel", MaterialCode = "ST" },
+                new LookupMaterial { Id = 3, MaterialName = "Aluminium", MaterialCode = "AL" },
+                new LookupMaterial { Id = 4, MaterialName = "Glass", MaterialCode = "GL" },
+                new LookupMaterial { Id = 5, MaterialName = "Paper/Board", MaterialCode = "PA" },
+                new LookupMaterial { Id = 6, MaterialName = "Wood", MaterialCode = "WO" });
+            
+
+            modelBuilder.Entity<LookupRegistrationMaterialStatus>().HasData(
+                new LookupRegistrationMaterialStatus { Id = 1, Name = "Granted" },
+                new LookupRegistrationMaterialStatus { Id = 2, Name = "Refused" },
+                new LookupRegistrationMaterialStatus { Id = 3, Name = "Started" },
+                new LookupRegistrationMaterialStatus { Id = 4, Name = "Submitted" },
+                new LookupRegistrationMaterialStatus { Id = 5, Name = "RegulatorReviewing" },
+                new LookupRegistrationMaterialStatus { Id = 6, Name = "Queried" },
+                new LookupRegistrationMaterialStatus { Id = 8, Name = "Withdrawn" },
+                new LookupRegistrationMaterialStatus { Id = 9, Name = "Suspended" },
+                new LookupRegistrationMaterialStatus { Id = 10, Name = "Cancelled" },
+                new LookupRegistrationMaterialStatus { Id = 11, Name = "ReadyToSubmit" });
+
+            modelBuilder.Entity<LookupAccreditationStatus>().HasData(
+                new LookupAccreditationStatus { Id = 1, Name = "Started" },
+                new LookupAccreditationStatus { Id = 2, Name = "Submitted" },
+                new LookupAccreditationStatus { Id = 3, Name = "RegulatorReviewing" },
+                new LookupAccreditationStatus { Id = 4, Name = "Queried" },
+                new LookupAccreditationStatus { Id = 5, Name = "Updated" },
+                new LookupAccreditationStatus { Id = 6, Name = "Granted" },
+                new LookupAccreditationStatus { Id = 7, Name = "Refused" },
+                new LookupAccreditationStatus { Id = 8, Name = "Withdrawn" },
+                new LookupAccreditationStatus { Id = 9, Name = "Suspended" },
+                new LookupAccreditationStatus { Id = 10, Name = "Cancelled" },
+                new LookupAccreditationStatus { Id = 11, Name = "ReadyToSubmit" });
+
+            modelBuilder.Entity<LookupTaskStatus>().HasData(
+                new LookupTaskStatus { Id = 1, Name = "NotStarted" },
+                new LookupTaskStatus { Id = 2, Name = "Started" },
+                new LookupTaskStatus { Id = 3, Name = "CannotStartYet" },
+                new LookupTaskStatus { Id = 4, Name = "Queried" },
+                new LookupTaskStatus { Id = 5, Name = "Completed" });
+
+            modelBuilder.Entity<LookupApplicationType>().HasData(
+                new LookupApplicationType { Id = 1, Name = "Reprocessor" },
+                new LookupApplicationType { Id = 2, Name = "Exporter" });
+
+            modelBuilder.Entity<LookupJourneyType>().HasData(
+                new LookupJourneyType { Id = 1, Name = "Registration" },
+                new LookupJourneyType { Id = 2, Name = "Accreditation" });
+
+            modelBuilder.Entity<LookupRegulatorTask>().HasData(
+                new LookupRegulatorTask { Id = 1, IsMaterialSpecific = false, ApplicationTypeId = 1, JourneyTypeId = 1, Name = "SiteAddressAndContactDetails" },
+                new LookupRegulatorTask { Id = 2, IsMaterialSpecific = false, ApplicationTypeId = 1, JourneyTypeId = 1, Name = "MaterialsAuthorisedOnSite" },
+                new LookupRegulatorTask { Id = 3, IsMaterialSpecific = false, ApplicationTypeId = 1, JourneyTypeId = 1, Name = "RegistrationDulyMade" },
+                new LookupRegulatorTask { Id = 4, IsMaterialSpecific = true, ApplicationTypeId = 1, JourneyTypeId = 1, Name = "WasteLicensesPermitsAndExemptions" },
+                new LookupRegulatorTask { Id = 5, IsMaterialSpecific = true, ApplicationTypeId = 1, JourneyTypeId = 1, Name = "ReprocessingInputsAndOutputs" },
+                new LookupRegulatorTask { Id = 6, IsMaterialSpecific = true, ApplicationTypeId = 1, JourneyTypeId = 1, Name = "SamplingAndInspectionPlan" },
+                new LookupRegulatorTask { Id = 7, IsMaterialSpecific = true, ApplicationTypeId = 1, JourneyTypeId = 1, Name = "AssignOfficer" },
+                new LookupRegulatorTask { Id = 8, IsMaterialSpecific = false, ApplicationTypeId = 2, JourneyTypeId = 1, Name = "BusinessAddress" },
+                new LookupRegulatorTask { Id = 9, IsMaterialSpecific = false, ApplicationTypeId = 2, JourneyTypeId = 1, Name = "WasteLicensesPermitsAndExemptions" },
+                new LookupRegulatorTask { Id = 10, IsMaterialSpecific = false, ApplicationTypeId = 2, JourneyTypeId = 1, Name = "RegistrationDulyMade" },
+                new LookupRegulatorTask { Id = 11, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 1, Name = "SamplingAndInspectionPlan" },
+                new LookupRegulatorTask { Id = 12, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 1, Name = "AssignOfficer" },
+                new LookupRegulatorTask { Id = 13, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 1, Name = "MaterialDetailsAndContact" },
+                new LookupRegulatorTask { Id = 14, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 1, Name = "OverseasReprocessorAndInterimSiteDetails" },
+                new LookupRegulatorTask { Id = 15, IsMaterialSpecific = true, ApplicationTypeId = 1, JourneyTypeId = 1, Name = "CheckRegistrationStatus" },
+                new LookupRegulatorTask { Id = 16, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 1, Name = "CheckRegistrationStatus" },
+                new LookupRegulatorTask { Id = 17, IsMaterialSpecific = false, ApplicationTypeId = 1, JourneyTypeId = 2, Name = "AssignOfficer" },
+                new LookupRegulatorTask { Id = 18, IsMaterialSpecific = true, ApplicationTypeId = 1, JourneyTypeId = 2, Name = "PRNs tonnage and authority to issue PRNs" },
+                new LookupRegulatorTask { Id = 19, IsMaterialSpecific = true, ApplicationTypeId = 1, JourneyTypeId = 2, Name = "Business Plan" },
+                new LookupRegulatorTask { Id = 20, IsMaterialSpecific = true, ApplicationTypeId = 1, JourneyTypeId = 2, Name = "Accreditation sampling and inspection plan" },
+
+                new LookupRegulatorTask { Id = 22, IsMaterialSpecific = false, ApplicationTypeId = 2, JourneyTypeId = 2, Name = "AssignOfficer" },
+                new LookupRegulatorTask { Id = 23, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 2, Name = "PRNs tonnage and authority to issue PRNs" },
+                new LookupRegulatorTask { Id = 24, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 2, Name = "Business Plan" },
+                new LookupRegulatorTask { Id = 25, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 2, Name = "Accreditation sampling and inspection plan" },
+                new LookupRegulatorTask { Id = 26, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 2, Name = "Overseas reprocessing sites and broadly equivalent evidence" },
+                new LookupRegulatorTask { Id = 27, IsMaterialSpecific = true, ApplicationTypeId = 1, JourneyTypeId = 2, Name = "DulyMade" },
+                new LookupRegulatorTask { Id = 28, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 2, Name = "DulyMade" });
+
+            modelBuilder.Entity<LookupMaterialPermit>().HasData(
+                new LookupMaterialPermit { Id = 1, Name = PermitTypes.WasteExemption },
+                new LookupMaterialPermit { Id = 2, Name = PermitTypes.PollutionPreventionAndControlPermit },
+                new LookupMaterialPermit { Id = 3, Name = PermitTypes.WasteManagementLicence },
+                new LookupMaterialPermit { Id = 4, Name = PermitTypes.InstallationPermit },
+                new LookupMaterialPermit { Id = 5, Name = PermitTypes.EnvironmentalPermitOrWasteManagementLicence });
+
+            modelBuilder.Entity<LookupPeriod>().HasData(
+               new LookupPeriod { Id = 1, Name = "Per Year" },
+               new LookupPeriod { Id = 2, Name = "Per Month" },
+               new LookupPeriod { Id = 3, Name = "Per Week" });
+
+            modelBuilder.Entity<LookupFileUploadType>().HasData(
+                new LookupFileUploadType { Id = 1, Name = "SamplingAndInspectionPlan" });
+
+            modelBuilder.Entity<LookupFileUploadStatus>().HasData(
+                new LookupFileUploadStatus { Id = 1, Name = "Virus check failed" },
+                new LookupFileUploadStatus { Id = 2, Name = "Virus check succeeded" },
+                new LookupFileUploadStatus { Id = 3, Name = "Upload complete" },
+                new LookupFileUploadStatus { Id = 4, Name = "Upload failed" },
+                new LookupFileUploadStatus { Id = 5, Name = "File deleted(Soft delete of record in database – will physically remove from blob storage)" });
+
+                base.OnModelCreating(modelBuilder);
         }
 
         public virtual DbSet<Eprn> Prn { get; set; }
@@ -180,5 +284,31 @@ namespace EPR.PRN.Backend.Data
         public virtual DbSet<PEprNpwdSync> PEprNpwdSync { get; set; }
 
         public virtual DbSet<PrnMaterialMapping> PrnMaterialMapping { get; set; }
+
+        public virtual DbSet<Registration> Registrations { get; set; }
+        public virtual DbSet<RegistrationMaterial> RegistrationMaterials { get; set; }
+        public virtual DbSet<MaterialExemptionReference> MaterialExemptionReferences { get; set; }
+        public virtual DbSet<RegistrationReprocessingIO> RegistrationReprocessingIO { get; set; }
+        public virtual DbSet<DeterminationDate> DeterminationDate { get; set; }
+        public virtual DbSet<DulyMade> DulyMade { get; set; }
+        public virtual DbSet<RegulatorApplicationTaskStatus> RegulatorApplicationTaskStatus { get; set; }
+        public virtual DbSet<RegulatorRegistrationTaskStatus> RegulatorRegistrationTaskStatus { get; set; }
+        public virtual DbSet<ApplicantRegistrationTaskStatus> RegistrationTaskStatus { get; set; }
+        public virtual DbSet<LookupMaterial> LookupMaterials { get; set; }
+        public virtual DbSet<LookupRegistrationMaterialStatus> LookupRegistrationMaterialStatuses { get; set; }
+        public virtual DbSet<LookupRegulatorTask> LookupTasks { get; set; }
+        public virtual DbSet<LookupTaskStatus> LookupTaskStatuses { get; set; }
+        public virtual DbSet<Address> LookupAddresses { get; set; }
+        public virtual DbSet<LookupPeriod> LookupPeriod { get; set; }
+        public virtual DbSet<LookupMaterialPermit> LookupMaterialPermit { get; set; }
+        public virtual DbSet<Note> QueryNote { get; set; }
+        public virtual DbSet<ApplicationTaskStatusQueryNote> ApplicationTaskStatusQueryNotes { get; set; }
+        public virtual DbSet<RegistrationTaskStatusQueryNote> RegistrationTaskStatusQueryNotes { get; set; }
+        public virtual DbSet<Accreditation> Accreditations { get; set; }
+        public virtual DbSet<AccreditationDulyMade> AccreditationDulyMade { get; set; }
+        public virtual DbSet<RegulatorAccreditationTaskStatus> RegulatorAccreditationTaskStatus { get; set; }
+        public virtual DbSet<AccreditationTaskStatusQueryNote> AccreditationTaskStatusQueryNote { get; set; }
+        public virtual DbSet<AccreditationDeterminationDate> AccreditationDeterminationDate { get; set; }
+
     }
 }

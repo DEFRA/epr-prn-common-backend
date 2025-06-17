@@ -1,6 +1,6 @@
 ﻿using EPR.PRN.Backend.API.Commands;
 using EPR.PRN.Backend.API.Common.Enums;
-using EPR.PRN.Backend.API.Handlers;
+using EPR.PRN.Backend.API.Handlers.Regulator;
 using EPR.PRN.Backend.Data.DataModels.Registrations;
 using EPR.PRN.Backend.Data.Interfaces.Regulator;
 using FluentAssertions;
@@ -22,98 +22,17 @@ public class RegistrationMaterialsOutcomeHandlerTests
     }
 
     [TestMethod]
-    public async Task Handle_Exporter_Granted_GeneratesReference()
-    {
-        // Arrange
-        var material = CreateMaterial(RegistrationMaterialStatus.Refused, ApplicationOrganisationType.Exporter, "USA", "XYZ");
-
-        var command = new RegistrationMaterialsOutcomeCommand
-        {
-            Id = material.Id,
-            Status = RegistrationMaterialStatus.Granted,
-            Comments = "Valid update"
-        };
-
-        _rmRepositoryMock.Setup(r => r.GetRegistrationMaterialById(command.Id)).ReturnsAsync(material);
-
-        string capturedRef = null;
-        _rmRepositoryMock.Setup(r => r.UpdateRegistrationOutCome(command.Id, (int)command.Status, command.Comments, It.IsAny<string>()))
-                         .Callback<int, int, string, string>((_, _, _, reference) => capturedRef = reference)
-                         .Returns(Task.CompletedTask);
-
-        // Act
-        await _handler.Handle(command, CancellationToken.None);
-
-        // Assert
-        capturedRef.Should().NotBeNull();
-        capturedRef.Should().Contain("USA").And.Contain("E").And.Contain("XYZ");
-    }
-
-    [TestMethod]
-    public async Task Handle_Reprocessor_Granted_GeneratesReference()
-    {
-        // Arrange
-        var material = CreateMaterial(RegistrationMaterialStatus.Refused, ApplicationOrganisationType.Reprocessor, "DEU", "ALU");
-
-        var command = new RegistrationMaterialsOutcomeCommand
-        {
-            Id = material.Id,
-            Status = RegistrationMaterialStatus.Granted,
-            Comments = "Reprocess granted"
-        };
-
-        _rmRepositoryMock.Setup(r => r.GetRegistrationMaterialById(command.Id)).ReturnsAsync(material);
-
-        string capturedRef = null;
-        _rmRepositoryMock.Setup(r => r.UpdateRegistrationOutCome(command.Id, (int)command.Status, command.Comments, It.IsAny<string>()))
-                         .Callback<int, int, string, string>((_, _, _, reference) => capturedRef = reference)
-                         .Returns(Task.CompletedTask);
-
-        // Act
-        await _handler.Handle(command, CancellationToken.None);
-
-        // Assert
-        capturedRef.Should().Contain("DEU").And.Contain("R").And.Contain("ALU");
-    }
-
-    [TestMethod]
-    public async Task Handle_RefusedStatus_DoesNotGenerateReference()
-    {
-        // Arrange
-        var material = CreateMaterial(null, ApplicationOrganisationType.Exporter, "GBR", "COP");
-
-        var command = new RegistrationMaterialsOutcomeCommand
-        {
-            Id = material.Id,
-            Status = RegistrationMaterialStatus.Refused,
-            Comments = "Refused on check"
-        };
-
-        _rmRepositoryMock.Setup(r => r.GetRegistrationMaterialById(command.Id)).ReturnsAsync(material);
-
-        string capturedRef = "INITIAL";
-        _rmRepositoryMock.Setup(r => r.UpdateRegistrationOutCome(command.Id, (int)command.Status, command.Comments, It.IsAny<string>()))
-                         .Callback<int, int, string, string>((_, _, _, reference) => capturedRef = reference)
-                         .Returns(Task.CompletedTask);
-
-        // Act
-        await _handler.Handle(command, CancellationToken.None);
-
-        // Assert
-        capturedRef.Should().BeNull();
-    }
-
-    [TestMethod]
     public async Task Handle_InvalidTransition_Throws()
     {
         // Arrange
-        var material = CreateMaterial(RegistrationMaterialStatus.Granted, ApplicationOrganisationType.Exporter, "USA", "XYZ");
+        var material = CreateMaterial(RegistrationMaterialStatus.Granted, ApplicationOrganisationType.Exporter, 1, "XYZ");
 
         var command = new RegistrationMaterialsOutcomeCommand
         {
-            Id = material.Id,
+            Id = material.ExternalId,
             Status = RegistrationMaterialStatus.Granted,
-            Comments = "No change"
+            Comments = "No change",
+            RegistrationReferenceNumber = "REF0005-03"
         };
 
         _rmRepositoryMock.Setup(r => r.GetRegistrationMaterialById(command.Id)).ReturnsAsync(material);
@@ -130,13 +49,14 @@ public class RegistrationMaterialsOutcomeHandlerTests
     public async Task Handle_InvalidTransition_RevertFromGranted_Throws()
     {
         // Arrange
-        var material = CreateMaterial(RegistrationMaterialStatus.Granted, ApplicationOrganisationType.Exporter, "USA", "XYZ");
+        var material = CreateMaterial(RegistrationMaterialStatus.Granted, ApplicationOrganisationType.Exporter, 1, "XYZ");
 
         var command = new RegistrationMaterialsOutcomeCommand
         {
-            Id = material.Id,
+            Id = material.ExternalId,
             Status = RegistrationMaterialStatus.Refused,
-            Comments = "Trying to revert"
+            Comments = "Trying to revert",
+            RegistrationReferenceNumber = "REF0005-03"
         };
 
         _rmRepositoryMock.Setup(r => r.GetRegistrationMaterialById(command.Id)).ReturnsAsync(material);
@@ -150,38 +70,83 @@ public class RegistrationMaterialsOutcomeHandlerTests
     }
 
     [TestMethod]
-    public async Task Handle_GenerateReference_WithNullCountry_GeneratesUNK()
+    public async Task Handle_TransitionFromNullStatus_AllowsAnyValidChange()
     {
         // Arrange
-        var material = CreateMaterial(null, ApplicationOrganisationType.Reprocessor, null, "GLS");
+        var material = CreateMaterial(null, ApplicationOrganisationType.Exporter, 1, "PLST");
 
         var command = new RegistrationMaterialsOutcomeCommand
         {
-            Id = material.Id,
-            Status = RegistrationMaterialStatus.Granted,
-            Comments = "Testing null country"
+            Id = material.ExternalId,
+            Status = RegistrationMaterialStatus.Refused,
+            Comments = "Initial setting",
+            RegistrationReferenceNumber = "REF-NULL"
         };
 
         _rmRepositoryMock.Setup(r => r.GetRegistrationMaterialById(command.Id)).ReturnsAsync(material);
-
-        string capturedRef = null;
-        _rmRepositoryMock.Setup(r => r.UpdateRegistrationOutCome(command.Id, (int)command.Status, command.Comments, It.IsAny<string>()))
-                         .Callback<int, int, string, string>((_, _, _, reference) => capturedRef = reference)
-                         .Returns(Task.CompletedTask);
+        _rmRepositoryMock.Setup(r => r.UpdateRegistrationOutCome(command.Id, (int)command.Status, command.Comments, command.RegistrationReferenceNumber)).Returns(Task.CompletedTask);
 
         // Act
         await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        capturedRef.Should().Contain("UNK").And.Contain("R").And.Contain("GLS");
+        _rmRepositoryMock.Verify(r => r.UpdateRegistrationOutCome(command.Id, (int)command.Status, command.Comments, "REF-NULL"), Times.Once);
+    }
+    [TestMethod]
+    public async Task Handle_TransitionToGranted_SetsRegistrationReferenceNumber()
+    {
+        // Arrange
+        var material = CreateMaterial(null, ApplicationOrganisationType.Reprocessor, 1, "ALUM");
+
+        var command = new RegistrationMaterialsOutcomeCommand
+        {
+            Id = material.ExternalId,
+            Status = RegistrationMaterialStatus.Granted,
+            Comments = "All good",
+            RegistrationReferenceNumber = "REF-GRANTED"
+        };
+
+        _rmRepositoryMock.Setup(r => r.GetRegistrationMaterialById(command.Id)).ReturnsAsync(material);
+        _rmRepositoryMock.Setup(r => r.UpdateRegistrationOutCome(command.Id, (int)command.Status, command.Comments, command.RegistrationReferenceNumber)).Returns(Task.CompletedTask);
+
+        // Act
+        await _handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        _rmRepositoryMock.Verify(r => r.UpdateRegistrationOutCome(command.Id, (int)command.Status, command.Comments, "REF-GRANTED"), Times.Once);
+    }
+    [TestMethod]
+    public async Task Handle_ValidTransition_CallsUpdateRegistrationOutCome()
+    {
+        // Arrange
+        var material = CreateMaterial(null, ApplicationOrganisationType.Exporter, 1, "PLST");
+
+        var command = new RegistrationMaterialsOutcomeCommand
+        {
+            Id = material.ExternalId,
+            Status = RegistrationMaterialStatus.Refused,
+            Comments = "Valid update",
+            RegistrationReferenceNumber = "REF0001"
+        };
+
+        _rmRepositoryMock.Setup(r => r.GetRegistrationMaterialById(command.Id)).ReturnsAsync(material);
+        _rmRepositoryMock.Setup(r => r.UpdateRegistrationOutCome(command.Id, (int)command.Status, command.Comments, command.RegistrationReferenceNumber)).Returns(Task.CompletedTask);
+
+        // Act
+        await _handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        _rmRepositoryMock.Verify(r => r.UpdateRegistrationOutCome(command.Id, (int)command.Status, command.Comments, command.RegistrationReferenceNumber), Times.Once);
     }
 
-    private RegistrationMaterial CreateMaterial(RegistrationMaterialStatus? status, ApplicationOrganisationType orgType, string country, string materialCode)
+
+
+    private RegistrationMaterial CreateMaterial(RegistrationMaterialStatus? status, ApplicationOrganisationType orgType, int? nationId, string materialCode)
     {
         return new RegistrationMaterial
         {
             Id = 1,
-            StatusID = status.HasValue ? (int)status : null,
+            StatusId = status.HasValue ? (int)status : null,
             MaterialId = 10,
             Material = new LookupMaterial { Id = 10, MaterialCode = materialCode },
             RegistrationId = 456,
@@ -189,8 +154,8 @@ public class RegistrationMaterialsOutcomeHandlerTests
             {
                 Id = 456,
                 ApplicationTypeId = (int)orgType,
-                BusinessAddress = orgType == ApplicationOrganisationType.Exporter ? new LookupAddress { Country = country } : null,
-                ReprocessingSiteAddress = orgType == ApplicationOrganisationType.Reprocessor ? new LookupAddress { Country = country } : null
+                BusinessAddress = orgType == ApplicationOrganisationType.Exporter ? new Address { NationId = nationId } : null,
+                ReprocessingSiteAddress = orgType == ApplicationOrganisationType.Reprocessor ? new Address { NationId = nationId } : null
             }
         };
     }

@@ -1,6 +1,15 @@
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Diagnostics.CodeAnalysis;
+
 namespace EPR.PRN.Backend.Data.DataModels.Registrations;
 
+[Table("Public.RegulatorApplicationTaskStatus")]
+[ExcludeFromCodeCoverage]
 public class RegulatorApplicationTaskStatus : RegulatorTaskStatusBase
 {
-    public int? RegistrationMaterialId { get; set; } // Identifier for the registration material associated with the task
+    public RegistrationMaterial RegistrationMaterial { get; set; }
+    [ForeignKey("RegistrationMaterial")]
+    public int? RegistrationMaterialId { get; set; }
+    public List<ApplicationTaskStatusQueryNote> ApplicationTaskStatusQueryNotes { get; set; } = new(); 
 }

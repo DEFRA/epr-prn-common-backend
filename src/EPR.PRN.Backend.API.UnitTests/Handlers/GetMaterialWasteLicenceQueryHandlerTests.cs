@@ -1,16 +1,14 @@
 ﻿using AutoMapper;
 using EPR.PRN.Backend.API.Common.Constants;
-using EPR.PRN.Backend.API.Common.Enums;
 using EPR.PRN.Backend.API.Common.Exceptions;
-using EPR.PRN.Backend.API.Handlers;
-using EPR.PRN.Backend.API.Profiles;
+using EPR.PRN.Backend.API.Handlers.Regulator;
+using EPR.PRN.Backend.API.Profiles.Regulator;
 using EPR.PRN.Backend.API.Queries;
 using EPR.PRN.Backend.Data.DataModels.Registrations;
 using EPR.PRN.Backend.Data.Interfaces.Regulator;
 using FluentAssertions;
 using FluentAssertions.Execution;
 using Moq;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace EPR.PRN.Backend.API.UnitTests.Handlers;
 
@@ -39,16 +37,16 @@ public class GetMaterialWasteLicenceQueryHandlerTests
     public async Task Handle_ShouldReturnMappedDto_WhenMaterialWithExemptionsExists()
     {
         // Arrange
-        int materialId = 1;
+        var materialId = Guid.Parse("a9421fc1-a912-42ee-85a5-3e06408759a9");
         var query = new GetMaterialWasteLicencesQuery { Id = materialId };
 
         var materialEntity = new RegistrationMaterial
         {
-            Id = materialId,
-            RegistrationId = 10,
+            ExternalId = materialId,
+            Registration = new Registration { ExternalId = Guid.Parse("4bac12f7-f7a9-4df4-b7b5-9c4221860c4d") },
             MaterialId = 2,
             Material = new LookupMaterial { MaterialName = "Plastic" },
-            StatusID = 1,
+            StatusId = 1,
             Status = new LookupRegistrationMaterialStatus { Id = 1, Name = "Granted" },
             PermitType = new LookupMaterialPermit { Name = PermitTypes.WasteExemption },
             MaterialExemptionReferences = new List<MaterialExemptionReference>
@@ -67,7 +65,7 @@ public class GetMaterialWasteLicenceQueryHandlerTests
         };
 
         _rmRepositoryMock
-            .Setup(r => r.GetRegistrationMaterial_WasteLicencesById(materialId))
+            .Setup(r => r.GetRegistrationMaterialById(materialId))
             .ReturnsAsync(materialEntity);
 
         // Act
@@ -94,16 +92,16 @@ public class GetMaterialWasteLicenceQueryHandlerTests
     public async Task Handle_ShouldReturnMappedDto_WhenMaterialWithExemptionsExistsNoReference()
     {
         // Arrange
-        int materialId = 1;
+        var materialId = Guid.Parse("a9421fc1-a912-42ee-85a5-3e06408759a9");
         var query = new GetMaterialWasteLicencesQuery { Id = materialId };
 
         var materialEntity = new RegistrationMaterial
         {
-            Id = materialId,
-            RegistrationId = 10,
+            ExternalId = materialId,
+            Registration = new Registration { ExternalId = Guid.Parse("4bac12f7-f7a9-4df4-b7b5-9c4221860c4d") },
             MaterialId = 2,
             Material = new LookupMaterial { MaterialName = "Plastic" },
-            StatusID = 1,
+            StatusId = 1,
             Status = new LookupRegistrationMaterialStatus { Id = 1, Name = "Granted" },
             PermitType = new LookupMaterialPermit { Name = PermitTypes.WasteExemption },
             MaterialExemptionReferences = null,
@@ -112,7 +110,7 @@ public class GetMaterialWasteLicenceQueryHandlerTests
         };
 
         _rmRepositoryMock
-            .Setup(r => r.GetRegistrationMaterial_WasteLicencesById(materialId))
+            .Setup(r => r.GetRegistrationMaterialById(materialId))
             .ReturnsAsync(materialEntity);
 
         // Act
@@ -138,16 +136,16 @@ public class GetMaterialWasteLicenceQueryHandlerTests
     public async Task Handle_ShouldReturnMappedDto_WhenMaterialWasteManagementLicenceExists()
     {
         // Arrange
-        int materialId = 1;
+        var materialId = Guid.Parse("a9421fc1-a912-42ee-85a5-3e06408759a9");
         var query = new GetMaterialWasteLicencesQuery { Id = materialId };
 
         var materialEntity = new RegistrationMaterial
         {
-            Id = materialId,
-            RegistrationId = 10,
+            ExternalId = materialId,
+            Registration = new Registration { ExternalId = Guid.Parse("4bac12f7-f7a9-4df4-b7b5-9c4221860c4d") },
             MaterialId = 2,
             Material = new LookupMaterial { MaterialName = "Plastic" },
-            StatusID = 1,
+            StatusId = 1,
             Status = new LookupRegistrationMaterialStatus { Id = 1, Name = "Granted" },
             PermitType = new LookupMaterialPermit { Name = PermitTypes.WasteManagementLicence },
             WasteManagementLicenceNumber = "1",
@@ -158,7 +156,7 @@ public class GetMaterialWasteLicenceQueryHandlerTests
         };
 
         _rmRepositoryMock
-            .Setup(r => r.GetRegistrationMaterial_WasteLicencesById(materialId))
+            .Setup(r => r.GetRegistrationMaterialById(materialId))
             .ReturnsAsync(materialEntity);
 
         // Act
@@ -183,16 +181,16 @@ public class GetMaterialWasteLicenceQueryHandlerTests
     public async Task Handle_ShouldReturnMappedDto_WhenMaterialWasteManagementLicenceExistsNoReference()
     {
         // Arrange
-        int materialId = 1;
+        var materialId = Guid.Parse("a9421fc1-a912-42ee-85a5-3e06408759a9");
         var query = new GetMaterialWasteLicencesQuery { Id = materialId };
 
         var materialEntity = new RegistrationMaterial
         {
-            Id = materialId,
-            RegistrationId = 10,
+            ExternalId = materialId,
+            Registration = new Registration { ExternalId = Guid.Parse("4bac12f7-f7a9-4df4-b7b5-9c4221860c4d") },
             MaterialId = 2,
             Material = new LookupMaterial { MaterialName = "Plastic" },
-            StatusID = 1,
+            StatusId = 1,
             Status = new LookupRegistrationMaterialStatus { Id = 1, Name = "Granted" },
             PermitType = new LookupMaterialPermit { Name = PermitTypes.WasteManagementLicence },
             WasteManagementLicenceNumber = null,
@@ -203,7 +201,7 @@ public class GetMaterialWasteLicenceQueryHandlerTests
         };
 
         _rmRepositoryMock
-            .Setup(r => r.GetRegistrationMaterial_WasteLicencesById(materialId))
+            .Setup(r => r.GetRegistrationMaterialById(materialId))
             .ReturnsAsync(materialEntity);
 
         // Act
@@ -227,16 +225,16 @@ public class GetMaterialWasteLicenceQueryHandlerTests
     public async Task Handle_ShouldReturnMappedDto_WhenMaterialEnvironmentalPermitOrWasteManagementLicenceExists()
     {
         // Arrange
-        int materialId = 1;
+        var materialId = Guid.Parse("a9421fc1-a912-42ee-85a5-3e06408759a9");
         var query = new GetMaterialWasteLicencesQuery { Id = materialId };
 
         var materialEntity = new RegistrationMaterial
         {
-            Id = materialId,
-            RegistrationId = 10,
+            ExternalId = materialId,
+            Registration = new Registration { ExternalId = Guid.Parse("4bac12f7-f7a9-4df4-b7b5-9c4221860c4d") },
             MaterialId = 2,
             Material = new LookupMaterial { MaterialName = "Plastic" },
-            StatusID = 1,
+            StatusId = 1,
             Status = new LookupRegistrationMaterialStatus { Id = 1, Name = "Granted" },
             PermitType = new LookupMaterialPermit { Name = PermitTypes.EnvironmentalPermitOrWasteManagementLicence },
             EnvironmentalPermitWasteManagementNumber = "1",
@@ -248,7 +246,7 @@ public class GetMaterialWasteLicenceQueryHandlerTests
         };
 
         _rmRepositoryMock
-            .Setup(r => r.GetRegistrationMaterial_WasteLicencesById(materialId))
+            .Setup(r => r.GetRegistrationMaterialById(materialId))
             .ReturnsAsync(materialEntity);
 
         // Act
@@ -273,16 +271,16 @@ public class GetMaterialWasteLicenceQueryHandlerTests
     public async Task Handle_ShouldReturnMappedDto_WhenMaterialEnvironmentalPermitOrWasteManagementLicenceExistsNoReference()
     {
         // Arrange
-        int materialId = 1;
+        var materialId = Guid.Parse("a9421fc1-a912-42ee-85a5-3e06408759a9");
         var query = new GetMaterialWasteLicencesQuery { Id = materialId };
 
         var materialEntity = new RegistrationMaterial
         {
-            Id = materialId,
-            RegistrationId = 10,
+            ExternalId = materialId,
+            Registration = new Registration { ExternalId = Guid.Parse("4bac12f7-f7a9-4df4-b7b5-9c4221860c4d") },
             MaterialId = 2,
             Material = new LookupMaterial { MaterialName = "Plastic" },
-            StatusID = 1,
+            StatusId = 1,
             Status = new LookupRegistrationMaterialStatus { Id = 1, Name = "Granted" },
             PermitType = new LookupMaterialPermit { Name = PermitTypes.EnvironmentalPermitOrWasteManagementLicence },
             EnvironmentalPermitWasteManagementNumber = null,
@@ -294,7 +292,7 @@ public class GetMaterialWasteLicenceQueryHandlerTests
         };
 
         _rmRepositoryMock
-            .Setup(r => r.GetRegistrationMaterial_WasteLicencesById(materialId))
+            .Setup(r => r.GetRegistrationMaterialById(materialId))
             .ReturnsAsync(materialEntity);
 
         // Act
@@ -318,16 +316,16 @@ public class GetMaterialWasteLicenceQueryHandlerTests
     public async Task Handle_ShouldReturnMappedDto_WhenMaterialInstallationPermitExists()
     {
         // Arrange
-        int materialId = 1;
+        var materialId = Guid.Parse("a9421fc1-a912-42ee-85a5-3e06408759a9");
         var query = new GetMaterialWasteLicencesQuery { Id = materialId };
 
         var materialEntity = new RegistrationMaterial
         {
-            Id = materialId,
-            RegistrationId = 10,
+            ExternalId = materialId,
+            Registration = new Registration { ExternalId = Guid.Parse("4bac12f7-f7a9-4df4-b7b5-9c4221860c4d") },
             MaterialId = 2,
             Material = new LookupMaterial { MaterialName = "Plastic" },
-            StatusID = 1,
+            StatusId = 1,
             Status = new LookupRegistrationMaterialStatus { Id = 1, Name = "Granted" },
             PermitType = new LookupMaterialPermit { Name = PermitTypes.InstallationPermit },
             InstallationPermitNumber = "1",
@@ -338,7 +336,7 @@ public class GetMaterialWasteLicenceQueryHandlerTests
         };
 
         _rmRepositoryMock
-            .Setup(r => r.GetRegistrationMaterial_WasteLicencesById(materialId))
+            .Setup(r => r.GetRegistrationMaterialById(materialId))
             .ReturnsAsync(materialEntity);
 
         // Act
@@ -363,16 +361,16 @@ public class GetMaterialWasteLicenceQueryHandlerTests
     public async Task Handle_ShouldReturnMappedDto_WhenMaterialInstallationPermitExistsNoReference()
     {
         // Arrange
-        int materialId = 1;
+        var materialId = Guid.Parse("a9421fc1-a912-42ee-85a5-3e06408759a9");
         var query = new GetMaterialWasteLicencesQuery { Id = materialId };
 
         var materialEntity = new RegistrationMaterial
         {
-            Id = materialId,
-            RegistrationId = 10,
+            ExternalId = materialId,
+            Registration = new Registration { ExternalId = Guid.Parse("4bac12f7-f7a9-4df4-b7b5-9c4221860c4d") },
             MaterialId = 2,
             Material = new LookupMaterial { MaterialName = "Plastic" },
-            StatusID = 1,
+            StatusId = 1,
             Status = new LookupRegistrationMaterialStatus { Id = 1, Name = "Granted" },
             PermitType = new LookupMaterialPermit { Name = PermitTypes.InstallationPermit },
             InstallationPermitNumber = null,
@@ -383,7 +381,7 @@ public class GetMaterialWasteLicenceQueryHandlerTests
         };
 
         _rmRepositoryMock
-            .Setup(r => r.GetRegistrationMaterial_WasteLicencesById(materialId))
+            .Setup(r => r.GetRegistrationMaterialById(materialId))
             .ReturnsAsync(materialEntity);
 
         // Act
@@ -407,16 +405,16 @@ public class GetMaterialWasteLicenceQueryHandlerTests
     public async Task Handle_ShouldReturnMappedDto_WhenMaterialPollutionPreventionAndControlPermitExists()
     {
         // Arrange
-        int materialId = 1;
+        var materialId = Guid.Parse("a9421fc1-a912-42ee-85a5-3e06408759a9");
         var query = new GetMaterialWasteLicencesQuery { Id = materialId };
 
         var materialEntity = new RegistrationMaterial
         {
-            Id = materialId,
-            RegistrationId = 10,
+            ExternalId = materialId,
+            Registration = new Registration { ExternalId = Guid.Parse("4bac12f7-f7a9-4df4-b7b5-9c4221860c4d") },
             MaterialId = 2,
             Material = new LookupMaterial { MaterialName = "Plastic" },
-            StatusID = 1,
+            StatusId = 1,
             Status = new LookupRegistrationMaterialStatus { Id = 1, Name = "Granted" },
             PermitType = new LookupMaterialPermit { Name = PermitTypes.PollutionPreventionAndControlPermit },
             PPCPermitNumber = "1",
@@ -427,7 +425,7 @@ public class GetMaterialWasteLicenceQueryHandlerTests
         };
 
         _rmRepositoryMock
-            .Setup(r => r.GetRegistrationMaterial_WasteLicencesById(materialId))
+            .Setup(r => r.GetRegistrationMaterialById(materialId))
             .ReturnsAsync(materialEntity);
 
         // Act
@@ -452,16 +450,16 @@ public class GetMaterialWasteLicenceQueryHandlerTests
     public async Task Handle_ShouldReturnMappedDto_WhenMaterialPollutionPreventionAndControlPermitExistsNoReference()
     {
         // Arrange
-        int materialId = 1;
+        var materialId = Guid.Parse("a9421fc1-a912-42ee-85a5-3e06408759a9");
         var query = new GetMaterialWasteLicencesQuery { Id = materialId };
 
         var materialEntity = new RegistrationMaterial
         {
-            Id = materialId,
-            RegistrationId = 10,
+            ExternalId = materialId,
+            Registration = new Registration { ExternalId = Guid.Parse("4bac12f7-f7a9-4df4-b7b5-9c4221860c4d") },
             MaterialId = 2,
             Material = new LookupMaterial { MaterialName = "Plastic" },
-            StatusID = 1,
+            StatusId = 1,
             Status = new LookupRegistrationMaterialStatus { Id = 1, Name = "Granted" },
             PermitType = new LookupMaterialPermit { Name = PermitTypes.PollutionPreventionAndControlPermit },
             PPCPermitNumber = null,
@@ -472,7 +470,7 @@ public class GetMaterialWasteLicenceQueryHandlerTests
         };
 
         _rmRepositoryMock
-            .Setup(r => r.GetRegistrationMaterial_WasteLicencesById(materialId))
+            .Setup(r => r.GetRegistrationMaterialById(materialId))
             .ReturnsAsync(materialEntity);
 
         // Act
@@ -496,16 +494,16 @@ public class GetMaterialWasteLicenceQueryHandlerTests
     public async Task Handle_ShouldThrowRegulatorInvalidOperationException_WhenMaterialNullPermitExists()
     {
         // Arrange
-        int materialId = 1;
+        var materialId = Guid.Parse("a9421fc1-a912-42ee-85a5-3e06408759a9");
         var query = new GetMaterialWasteLicencesQuery { Id = materialId };
 
         var materialEntity = new RegistrationMaterial
         {
-            Id = materialId,
-            RegistrationId = 10,
+            ExternalId = materialId,
+            Registration = new Registration { ExternalId = Guid.Parse("4bac12f7-f7a9-4df4-b7b5-9c4221860c4d") },
             MaterialId = 2,
             Material = new LookupMaterial { MaterialName = "Plastic" },
-            StatusID = 1,
+            StatusId = 1,
             Status = new LookupRegistrationMaterialStatus { Id = 1, Name = "Granted" },
             PermitType = null,
             MaterialExemptionReferences = new List<MaterialExemptionReference>
@@ -524,7 +522,7 @@ public class GetMaterialWasteLicenceQueryHandlerTests
         };
 
         _rmRepositoryMock
-            .Setup(r => r.GetRegistrationMaterial_WasteLicencesById(materialId))
+            .Setup(r => r.GetRegistrationMaterialById(materialId))
             .ReturnsAsync(materialEntity);
 
         // Act

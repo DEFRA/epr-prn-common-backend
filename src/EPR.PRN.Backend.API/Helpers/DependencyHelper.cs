@@ -5,6 +5,7 @@ using EPR.PRN.Backend.API.Repositories.Interfaces;
 using EPR.PRN.Backend.API.Services;
 using EPR.PRN.Backend.API.Services.Interfaces;
 using EPR.PRN.Backend.API.Validators;
+using EPR.PRN.Backend.API.Validators.Regulator;
 using EPR.PRN.Backend.Data.Interfaces;
 using EPR.PRN.Backend.Data.Interfaces.Regulator;
 using EPR.PRN.Backend.Data.Repositories;
@@ -25,6 +26,7 @@ namespace EPR.PRN.Backend.API.Helpers
         {
             services.AddScoped<IRepository, Repository>()
                 .AddScoped<IPrnService, PrnService>()
+                .AddScoped<IValidationService, ValidationService>()
                 .AddScoped<IObligationCalculatorService, ObligationCalculatorService>()
                 .AddScoped<IObligationCalculationRepository, ObligationCalculationRepository>()
                 .AddScoped<IRecyclingTargetDataService, RecyclingTargetDataService>()
@@ -36,15 +38,19 @@ namespace EPR.PRN.Backend.API.Helpers
                 .AddScoped<IMaterialRepository, MaterialRepository>()
                 .AddScoped<IPrnRepository, PrnRepository>()
                 .AddScoped<IValidator<SavePrnDetailsRequest>, SavePrnDetailsRequestValidator>()
+                .AddScoped<IValidator<UpdateRegistrationCommand>, UpdateRegistrationCommandValidator>()
                 .AddScoped<IValidator<UpdateRegulatorRegistrationTaskCommand>, UpdateRegulatorRegistrationTaskCommandValidator>()
                 .AddScoped<IValidator<UpdateRegulatorApplicationTaskCommand>, UpdateRegulatorApplicationTaskCommandValidator>()
                 .AddScoped<IRegulatorApplicationTaskStatusRepository, RegulatorApplicationTaskStatusRepository>()
                 .AddScoped<IRegulatorRegistrationTaskStatusRepository, RegulatorRegistrationTaskStatusRepository>()
                 .AddScoped<IValidator<SavePrnDetailsRequest>, SavePrnDetailsRequestValidator>()
                 .AddScoped<IRegistrationMaterialRepository, RegistrationMaterialRepository>()
+                .AddScoped<IRegulatorAccreditationRepository, RegulatorAccreditationRepository>()
+                .AddScoped<IRegulatorAccreditationTaskStatusRepository, RegulatorAccreditationTaskStatusRepository>()
+                .AddScoped<IRegistrationRepository, RegistrationRepository>()
                 .AddScoped<IDateTimeProvider, DateTimeProvider>();
 
-			return services;
+            return services;
         }
     }
 }
