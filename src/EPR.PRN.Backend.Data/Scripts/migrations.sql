@@ -4162,3 +4162,34 @@ GO
 COMMIT;
 GO
 
+BEGIN TRANSACTION;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250617105930_AddIsOverdueColumn'
+)
+BEGIN
+
+                        ALTER TABLE [Public.DeterminationDate]
+                        ADD [IsOverdue] AS CASE 
+                            WHEN [DeterminateDate] > GETUTCDATE() THEN CAST(0 AS BIT)
+                            ELSE CAST(1 AS BIT)
+                        END
+                    
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250617105930_AddIsOverdueColumn'
+)
+BEGIN
+    INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+    VALUES (N'20250617105930_AddIsOverdueColumn', N'8.0.8');
+END;
+GO
+
+COMMIT;
+GO
+

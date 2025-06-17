@@ -191,11 +191,10 @@ public class RegistrationMaterialProfile : Profile
             .ForMember(dest => dest.TaskStatus, opt => opt.MapFrom(src => GetRegistrationTaskStatus(src.Tasks, RegulatorTaskNames.MaterialsAuthorisedOnSite)))
             .ForMember(dest => dest.QueryNotes, opt => opt.MapFrom(src => GetRegistrationTaskNotes(src.Tasks, RegulatorTaskNames.MaterialsAuthorisedOnSite)));
 
-
         CreateMap<RegistrationMaterial, MaterialsAuthorisedOnSiteInfoDto>()
-           .ForMember(dest => dest.MaterialName, opt => opt.MapFrom(src => src.Material.MaterialName))
-           .ForMember(dest => dest.Reason, opt => opt.MapFrom(src => src.ReasonforNotreg))
-           .ForMember(dest => dest.IsMaterialRegistered, opt => opt.MapFrom(src => src.IsMaterialRegistered));
+             .ForMember(dest => dest.MaterialName,opt => opt.MapFrom(src => src.Material.MaterialName))
+             .ForMember(dest => dest.IsMaterialRegistered, opt => opt.MapFrom(src => src.IsMaterialRegistered))
+             .ForMember(dest => dest.Reason, opt => opt.MapFrom(src => src.IsMaterialRegistered == false ? src.ReasonforNotreg : string.Empty));
 
         CreateMap<RegistrationMaterial, MaterialPaymentFeeDto>()
            .ForMember(dest => dest.RegistrationId, opt => opt.MapFrom(src => src.Registration.ExternalId))
