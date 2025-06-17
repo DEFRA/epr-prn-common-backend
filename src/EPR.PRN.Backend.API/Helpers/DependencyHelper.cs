@@ -51,8 +51,10 @@ namespace EPR.PRN.Backend.API.Helpers
                 .AddScoped<IDateTimeProvider, DateTimeProvider>()
                 .AddScoped<IAccreditationService, AccreditationService>()
                 .AddScoped<IAccreditationPrnIssueAuthService, AccreditationPrnIssueAuthService>()
+                .AddScoped<IAccreditationFileUploadService, AccreditationFileUploadService>()
                 .AddScoped<IAccreditationRepository, AccreditationRepository>()
                 .AddScoped<IAccreditationPrnIssueAuthRepository, AccreditationPrnIssueAuthRepository>()
+                .AddScoped<IAccreditationFileUploadRepository, AccreditationFileUploadRepository>()
                 .AddScoped<IRegistrationRepository, RegistrationRepository>()
                 .AddScoped<IDateTimeProvider, DateTimeProvider>();
 

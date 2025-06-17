@@ -43,6 +43,10 @@ public class EprAccreditationContext : DbContext
             e.HasMany(x => x.AccreditationPrnIssueAuths)
                 .WithOne()
                 .HasForeignKey(x => x.AccreditationId);
+
+            e.HasMany(x => x.FileUploads)
+                .WithOne()
+                .HasForeignKey(x => x.AccreditationId);
         });
 
         modelBuilder.Entity<AccreditationPrnIssueAuth>(e =>
@@ -68,6 +72,15 @@ public class EprAccreditationContext : DbContext
             new ApplicationType { Id = 1, Name = "Reprocessor" },
             new ApplicationType { Id = 2, Name = "Exporter" });
 
+        modelBuilder.Entity<FileUploadType>().HasData(
+            new ApplicationType { Id = 1, Name = "SamplingAndInspectionPlan" },
+            new ApplicationType { Id = 2, Name = "OverseasSiteEvidence" });
+
+        modelBuilder.Entity<FileUploadStatus>().HasData(
+            new ApplicationType { Id = 1, Name = "Upload complete" },
+            new ApplicationType { Id = 2, Name = "Upload failed" },
+            new ApplicationType { Id = 3, Name = "File deleted" });
+
         // TEMP:
         modelBuilder.Entity<LookupMaterial>().HasData(
             new LookupMaterial { Id = 1, MaterialName = "Plastic", MaterialCode = "PL" },
@@ -83,5 +96,6 @@ public class EprAccreditationContext : DbContext
     public virtual DbSet<AccreditationStatus> AccreditationStatuses { get; set; }
     public virtual DbSet<AccreditationEntity> Accreditations { get; set; }
     public virtual DbSet<AccreditationPrnIssueAuth> AccreditationPrnIssueAuths { get; set; }
+    public virtual DbSet<DataModels.Accreditations.AccreditationFileUpload> AccreditationFileUploads { get; set; }
 }
 
