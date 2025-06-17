@@ -46,6 +46,15 @@ namespace EPR.PRN.Backend.Data
             modelBuilder.Entity<PrnStatus>()
                 .HasData(DataModels.PrnStatus.Data);
 
+            modelBuilder.Entity<Registration>()
+                .HasOne(r => r.CarrierBrokerDealerPermit)
+                .WithOne()
+                .HasForeignKey<CarrierBrokerDealerPermits>(cb => cb.RegistrationId);
+
+            modelBuilder.Entity<CarrierBrokerDealerPermits>()
+                .HasIndex(e => e.ExternalId)
+                .IsUnique(); // Ensures UniqueId is unique
+
             modelBuilder.Entity<RecyclingTarget>()
                 .HasData
                 (
@@ -258,17 +267,17 @@ namespace EPR.PRN.Backend.Data
                 new LookupRegulatorTask { Id = 15, IsMaterialSpecific = true, ApplicationTypeId = 1, JourneyTypeId = 1, Name = "CheckRegistrationStatus" },
                 new LookupRegulatorTask { Id = 16, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 1, Name = "CheckRegistrationStatus" },
                 new LookupRegulatorTask { Id = 17, IsMaterialSpecific = false, ApplicationTypeId = 1, JourneyTypeId = 2, Name = "AssignOfficer" },
-                new LookupRegulatorTask { Id = 18, IsMaterialSpecific = true, ApplicationTypeId = 1, JourneyTypeId = 2, Name = "PRNs tonnage and authority to issue PRNs" },
-                new LookupRegulatorTask { Id = 19, IsMaterialSpecific = true, ApplicationTypeId = 1, JourneyTypeId = 2, Name = "Business Plan" },
-                new LookupRegulatorTask { Id = 20, IsMaterialSpecific = true, ApplicationTypeId = 1, JourneyTypeId = 2, Name = "Accreditation sampling and inspection plan" },
+                new LookupRegulatorTask { Id = 18, IsMaterialSpecific = true, ApplicationTypeId = 1, JourneyTypeId = 2, Name = "PRNsTonnageAndAuthorityToIssuePRNs" },
+                new LookupRegulatorTask { Id = 19, IsMaterialSpecific = true, ApplicationTypeId = 1, JourneyTypeId = 2, Name = "BusinessPlan" },
+                new LookupRegulatorTask { Id = 20, IsMaterialSpecific = true, ApplicationTypeId = 1, JourneyTypeId = 2, Name = "AccreditationSamplingAndInspectionPlan" },
 
                 new LookupRegulatorTask { Id = 22, IsMaterialSpecific = false, ApplicationTypeId = 2, JourneyTypeId = 2, Name = "AssignOfficer" },
-                new LookupRegulatorTask { Id = 23, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 2, Name = "PRNs tonnage and authority to issue PRNs" },
-                new LookupRegulatorTask { Id = 24, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 2, Name = "Business Plan" },
-                new LookupRegulatorTask { Id = 25, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 2, Name = "Accreditation sampling and inspection plan" },
-                new LookupRegulatorTask { Id = 26, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 2, Name = "Overseas reprocessing sites and broadly equivalent evidence" },
+                new LookupRegulatorTask { Id = 23, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 2, Name = "PERNsTonnageAndAuthorityToIssuePERNs" },
+                new LookupRegulatorTask { Id = 24, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 2, Name = "BusinessPlan" },
+                new LookupRegulatorTask { Id = 25, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 2, Name = "AccreditationSamplingAndInspectionPlan" },
+                new LookupRegulatorTask { Id = 26, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 2, Name = "OverseasReprocessingSitesAndEvidenceOfBroadlyEquivalentStandards" },
                 new LookupRegulatorTask { Id = 27, IsMaterialSpecific = true, ApplicationTypeId = 1, JourneyTypeId = 2, Name = "DulyMade" },
-                new LookupRegulatorTask { Id = 28, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 2, Name = "DulyMade" });
+                new LookupRegulatorTask { Id = 29, IsMaterialSpecific = false, ApplicationTypeId = 1, JourneyTypeId = 1, Name = "WasteCarrierBrokerDealerNumber" });
 
             modelBuilder.Entity<LookupMaterialPermit>().HasData(
                 new LookupMaterialPermit { Id = 1, Name = PermitTypes.WasteExemption },
@@ -292,7 +301,59 @@ namespace EPR.PRN.Backend.Data
                 new LookupFileUploadStatus { Id = 4, Name = "Upload failed" },
                 new LookupFileUploadStatus { Id = 5, Name = "File deleted(Soft delete of record in database – will physically remove from blob storage)" });
 
-                base.OnModelCreating(modelBuilder);
+            modelBuilder.Entity<Accreditation>()
+                .HasIndex(e => e.ExternalId)
+                .IsUnique(); // Ensures UniqueId is unique
+
+            modelBuilder.Entity<AccreditationDeterminationDate>()
+                .HasIndex(e => e.ExternalId)
+                .IsUnique(); // Ensures UniqueId is unique
+
+            modelBuilder.Entity<AccreditationDulyMade>()
+                .HasIndex(e => e.ExternalId)
+                .IsUnique(); // Ensures UniqueId is unique
+
+            modelBuilder.Entity<DeterminationDate>()
+                .HasIndex(e => e.ExternalId)
+                .IsUnique(); // Ensures UniqueId is unique
+
+            modelBuilder.Entity<MaterialExemptionReference>()
+                .HasIndex(e => e.ExternalId)
+                .IsUnique(); // Ensures UniqueId is unique
+
+            modelBuilder.Entity<Registration>()
+                .HasIndex(e => e.ExternalId)
+                .IsUnique(); // Ensures UniqueId is unique
+
+            modelBuilder.Entity<RegistrationMaterial>()
+                .HasIndex(e => e.ExternalId)
+                .IsUnique(); // Ensures UniqueId is unique
+
+            modelBuilder.Entity<RegistrationReprocessingIO>()
+                .HasIndex(e => e.ExternalId)
+                .IsUnique(); // Ensures UniqueId is unique
+
+            modelBuilder.Entity<ApplicantRegistrationTaskStatus>()
+                .HasIndex(e => e.ExternalId)
+                .IsUnique(); // Ensures UniqueId is unique
+
+            modelBuilder.Entity<RegulatorAccreditationRegistrationTaskStatus>()
+                .HasIndex(e => e.ExternalId)
+                .IsUnique(); // Ensures UniqueId is unique
+
+            modelBuilder.Entity<RegulatorAccreditationTaskStatus>()
+                .HasIndex(e => e.ExternalId)
+                .IsUnique(); // Ensures UniqueId is unique
+
+            modelBuilder.Entity<RegulatorApplicationTaskStatus>()
+                .HasIndex(e => e.ExternalId)
+                .IsUnique(); // Ensures UniqueId is unique
+
+            modelBuilder.Entity<RegulatorRegistrationTaskStatus>()
+                .HasIndex(e => e.ExternalId)
+                .IsUnique(); // Ensures UniqueId is unique
+
+            base.OnModelCreating(modelBuilder);
         }
 
         public virtual DbSet<Eprn> Prn { get; set; }
@@ -319,6 +380,7 @@ namespace EPR.PRN.Backend.Data
         public virtual DbSet<RegistrationReprocessingIO> RegistrationReprocessingIO { get; set; }
         public virtual DbSet<DeterminationDate> DeterminationDate { get; set; }
         public virtual DbSet<DulyMade> DulyMade { get; set; }
+        public virtual DbSet<CarrierBrokerDealerPermits> CarrierBrokerDealerPermits { get; set; }
         public virtual DbSet<RegulatorApplicationTaskStatus> RegulatorApplicationTaskStatus { get; set; }
         public virtual DbSet<RegulatorRegistrationTaskStatus> RegulatorRegistrationTaskStatus { get; set; }
         public virtual DbSet<ApplicantRegistrationTaskStatus> RegistrationTaskStatus { get; set; }

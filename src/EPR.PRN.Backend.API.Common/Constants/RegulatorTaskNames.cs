@@ -23,5 +23,6 @@ namespace EPR.PRN.Backend.API.Common.Constants
         public const string SamplingAndInspectionPlan = "SamplingAndInspectionPlan";
         public const string SiteAddressAndContactDetails = "SiteAddressAndContactDetails";
         public const string WasteLicensesPermitsAndExemptions = "WasteLicensesPermitsAndExemptions";
+        public const string WasteCarrierBrokerDealerNumber = "WasteCarrierBrokerDealerNumber";
     }
 }
