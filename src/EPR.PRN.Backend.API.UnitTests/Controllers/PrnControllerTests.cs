@@ -22,7 +22,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
 using System.Net;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace EPR.PRN.Backend.API.UnitTests.Controllers;
 
