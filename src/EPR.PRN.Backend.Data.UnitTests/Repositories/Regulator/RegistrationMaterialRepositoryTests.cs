@@ -5,6 +5,7 @@ using EPR.PRN.Backend.Data.Repositories.Regulator;
 using FluentAssertions;
 using FluentAssertions.Execution;
 using Microsoft.EntityFrameworkCore;
+using System.Configuration;
 using System.Threading.Tasks;
 
 namespace EPR.PRN.Backend.Data.UnitTests.Repositories.Regulator;
@@ -70,7 +71,7 @@ public class RegistrationMaterialRepositoryTests
             Status = materialStatus,
             Material = lookupMaterial,
             IsMaterialRegistered = true,
-          
+
             Tasks = new List<RegulatorApplicationTaskStatus>
         {
             new RegulatorApplicationTaskStatus
@@ -337,8 +338,9 @@ public class RegistrationMaterialRepositoryTests
         var newStatusId = 2;
         var comment = "Updated comment";
         var newReference = "REFUPDATED";
+        var userId = Guid.NewGuid();
 
-        await _repository.UpdateRegistrationOutCome(Guid.Parse("a9421fc1-a912-42ee-85a5-3e06408759a9"), newStatusId, comment, newReference);
+        await _repository.UpdateRegistrationOutCome(Guid.Parse("a9421fc1-a912-42ee-85a5-3e06408759a9"), newStatusId, comment, newReference, userId);
         var updated = await _context.RegistrationMaterials.FindAsync(1);
 
         using (new AssertionScope())
@@ -346,6 +348,7 @@ public class RegistrationMaterialRepositoryTests
             Assert.AreEqual(newStatusId, updated.StatusId);
             Assert.AreEqual(comment, updated.Comments);
             Assert.AreEqual(newReference, updated.RegistrationReferenceNumber);
+            Assert.AreEqual(userId, updated.StatusUpdatedBy);
             Assert.IsNotNull(updated.StatusUpdatedDate);
         }
     }
@@ -353,8 +356,9 @@ public class RegistrationMaterialRepositoryTests
     [TestMethod]
     public async Task UpdateRegistrationOutCome_ShouldThrow_WhenMaterialNotFound()
     {
+        var userId = Guid.NewGuid();
         await Assert.ThrowsExceptionAsync<KeyNotFoundException>(() =>
-            _repository.UpdateRegistrationOutCome(Guid.Parse("cd9dcc80-fcf5-4f46-addd-b8a256f735a3"), 1, "Test", "REF"));
+            _repository.UpdateRegistrationOutCome(Guid.Parse("cd9dcc80-fcf5-4f46-addd-b8a256f735a3"), 1, "Test", "REF", userId));
     }
 
     [TestMethod]
@@ -393,7 +397,7 @@ public class RegistrationMaterialRepositoryTests
     {
         await Assert.ThrowsExceptionAsync<KeyNotFoundException>(() => _repository.GetAccreditation_FileUploadById(Guid.Parse("cd9dcc80-fcf5-4f46-addd-b8a256f735a3")));
     }
-   
+
     [TestMethod]
     public async Task RegistrationMaterialsMarkAsDulyMade_ShouldSetDulyMadeCorrectly()
     {
@@ -432,12 +436,10 @@ public class RegistrationMaterialRepositoryTests
             dulyMadeEntry!.DulyMadeBy.Should().Be(userId);
             dulyMadeEntry!.DulyMadeDate.Should().Be(dulyMadeDate);
             savedDeterminationDate.DeterminateDate.Should().Be(determinationDate);
-            dulyMadeEntry.TaskStatusId.Should().Be(statusId);
-
             taskStatusEntry.Should().NotBeNull();
             taskStatusEntry!.TaskStatusId.Should().Be(statusId);
             taskStatusEntry.RegulatorTaskId.Should().Be(2);
-            taskStatusEntry.StatusUpdatedBy.Should().Be(userId);
+            taskStatusEntry.StatusCreatedBy.Should().Be(userId);
             taskStatusEntry.StatusCreatedDate.Date.Should().Be(DateTime.UtcNow.Date);
         }
     }
@@ -567,7 +569,7 @@ public class RegistrationMaterialRepositoryTests
             Task = new LookupRegulatorTask
             {
                 Id = 2,
-                Name = "CheckRegistrationStatus",
+                Name = RegulatorTaskNames.CheckRegistrationStatus,
                 ApplicationTypeId = 1,
                 JourneyTypeId = 1,
                 IsMaterialSpecific = true,
@@ -593,8 +595,6 @@ public class RegistrationMaterialRepositoryTests
             dulyMadeEntry!.DulyMadeBy.Should().Be(userId);
             dulyMadeEntry!.DulyMadeDate.Should().Be(dulyMadeDate);
             savedDeterminationDate.DeterminateDate.Should().Be(determinationDate);
-            dulyMadeEntry.TaskStatusId.Should().Be(statusId);
-
             taskStatusEntry.Should().NotBeNull();
             taskStatusEntry!.TaskStatusId.Should().Be(statusId);
             taskStatusEntry.RegulatorTaskId.Should().Be(2);
@@ -617,6 +617,65 @@ public class RegistrationMaterialRepositoryTests
         await Assert.ThrowsExceptionAsync<KeyNotFoundException>(() =>
             _repository.RegistrationMaterialsMarkAsDulyMade(nonExistentId, statusId, determinationDate, dulyMadeDate, userId));
     }
+
+    [TestMethod]
+    public async Task RegistrationMaterialsMarkAsDulyMade_ShouldThrow_WhenRegistrationNotFound()
+    {
+        // Arrange: Material exists but its Registration does not  
+        var materialId = Guid.NewGuid();
+        var newMaterial = new RegistrationMaterial
+        {
+            ExternalId = materialId,
+            RegistrationId = 9999 // No such Registration seeded  
+        };
+        _context.RegistrationMaterials.Add(newMaterial);
+        await _context.SaveChangesAsync();
+
+        // Act & Assert  
+        await Assert.ThrowsExceptionAsync<KeyNotFoundException>(() =>
+            _repository.RegistrationMaterialsMarkAsDulyMade(materialId, 3, DateTime.UtcNow.AddDays(84), DateTime.UtcNow, Guid.NewGuid()));
+    }
+  
+    [TestMethod]
+    public async Task RegistrationMaterialsMarkAsDulyMade_ShouldUpdateDeterminationDate_WhenItAlreadyExists()
+    {
+        // Arrange
+        var materialId = Guid.Parse("a9421fc1-a912-42ee-85a5-3e06408759a9");
+        var userId = Guid.NewGuid();
+        var dulyMadeDate = DateTime.UtcNow.Date;
+        var determinationDate = dulyMadeDate.AddDays(84);
+
+        _context.DeterminationDate.Add(new DeterminationDate
+        {
+            Id = 1,
+            ExternalId = Guid.NewGuid(),
+            RegistrationMaterialId = 1,
+            DeterminateDate = DateTime.UtcNow.AddDays(-84)
+        });
+
+        _context.LookupTasks.Add(new LookupRegulatorTask
+        {
+            Id = 2,
+            Name = RegulatorTaskNames.CheckRegistrationStatus,
+            ApplicationTypeId = 1,
+            JourneyTypeId = 1,
+            IsMaterialSpecific = true
+        });
+
+        await _context.SaveChangesAsync();
+
+        // Act
+        await _repository.RegistrationMaterialsMarkAsDulyMade(materialId, 3, determinationDate, dulyMadeDate, userId);
+
+        // Assert
+        using (new AssertionScope())
+        {
+
+            var updatedDeterminationDate = await _context.DeterminationDate.FirstOrDefaultAsync(x => x.RegistrationMaterialId == 1);
+            updatedDeterminationDate!.DeterminateDate.Should().Be(determinationDate);
+        }
+    }
+
     [TestMethod]
     public async Task UpdateRegistrationOutCome_ShouldHandleNullCommentAndReference()
     {
@@ -624,7 +683,7 @@ public class RegistrationMaterialRepositoryTests
         var id = Guid.Parse("a9421fc1-a912-42ee-85a5-3e06408759a9");
 
         // Act
-        await _repository.UpdateRegistrationOutCome(id, 2, null, null);
+        await _repository.UpdateRegistrationOutCome(id, 2, null, null,Guid.Empty);
         var updated = await _context.RegistrationMaterials.FindAsync(1);
 
         // Assert

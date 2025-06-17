@@ -80,17 +80,19 @@ public class RegistrationMaterialsOutcomeHandlerTests
             Id = material.ExternalId,
             Status = RegistrationMaterialStatus.Refused,
             Comments = "Initial setting",
-            RegistrationReferenceNumber = "REF-NULL"
+            RegistrationReferenceNumber = "REF-NULL",
+            User = Guid.NewGuid()
+
         };
 
         _rmRepositoryMock.Setup(r => r.GetRegistrationMaterialById(command.Id)).ReturnsAsync(material);
-        _rmRepositoryMock.Setup(r => r.UpdateRegistrationOutCome(command.Id, (int)command.Status, command.Comments, command.RegistrationReferenceNumber)).Returns(Task.CompletedTask);
+        _rmRepositoryMock.Setup(r => r.UpdateRegistrationOutCome(command.Id, (int)command.Status, command.Comments, command.RegistrationReferenceNumber,command.User)).Returns(Task.CompletedTask);
 
         // Act
         await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        _rmRepositoryMock.Verify(r => r.UpdateRegistrationOutCome(command.Id, (int)command.Status, command.Comments, "REF-NULL"), Times.Once);
+        _rmRepositoryMock.Verify(r => r.UpdateRegistrationOutCome(command.Id, (int)command.Status, command.Comments, "REF-NULL", command.User), Times.Once);
     }
     [TestMethod]
     public async Task Handle_TransitionToGranted_SetsRegistrationReferenceNumber()
@@ -103,17 +105,18 @@ public class RegistrationMaterialsOutcomeHandlerTests
             Id = material.ExternalId,
             Status = RegistrationMaterialStatus.Granted,
             Comments = "All good",
-            RegistrationReferenceNumber = "REF-GRANTED"
+            RegistrationReferenceNumber = "REF-GRANTED",
+            User = Guid.NewGuid()
         };
 
         _rmRepositoryMock.Setup(r => r.GetRegistrationMaterialById(command.Id)).ReturnsAsync(material);
-        _rmRepositoryMock.Setup(r => r.UpdateRegistrationOutCome(command.Id, (int)command.Status, command.Comments, command.RegistrationReferenceNumber)).Returns(Task.CompletedTask);
+        _rmRepositoryMock.Setup(r => r.UpdateRegistrationOutCome(command.Id, (int)command.Status, command.Comments, command.RegistrationReferenceNumber, command.User)).Returns(Task.CompletedTask);
 
         // Act
         await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        _rmRepositoryMock.Verify(r => r.UpdateRegistrationOutCome(command.Id, (int)command.Status, command.Comments, "REF-GRANTED"), Times.Once);
+        _rmRepositoryMock.Verify(r => r.UpdateRegistrationOutCome(command.Id, (int)command.Status, command.Comments, "REF-GRANTED", command.User), Times.Once);
     }
     [TestMethod]
     public async Task Handle_ValidTransition_CallsUpdateRegistrationOutCome()
@@ -126,17 +129,18 @@ public class RegistrationMaterialsOutcomeHandlerTests
             Id = material.ExternalId,
             Status = RegistrationMaterialStatus.Refused,
             Comments = "Valid update",
-            RegistrationReferenceNumber = "REF0001"
+            RegistrationReferenceNumber = "REF0001",
+            User = Guid.NewGuid()
         };
 
         _rmRepositoryMock.Setup(r => r.GetRegistrationMaterialById(command.Id)).ReturnsAsync(material);
-        _rmRepositoryMock.Setup(r => r.UpdateRegistrationOutCome(command.Id, (int)command.Status, command.Comments, command.RegistrationReferenceNumber)).Returns(Task.CompletedTask);
+        _rmRepositoryMock.Setup(r => r.UpdateRegistrationOutCome(command.Id, (int)command.Status, command.Comments, command.RegistrationReferenceNumber, command.User)).Returns(Task.CompletedTask);
 
         // Act
         await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        _rmRepositoryMock.Verify(r => r.UpdateRegistrationOutCome(command.Id, (int)command.Status, command.Comments, command.RegistrationReferenceNumber), Times.Once);
+        _rmRepositoryMock.Verify(r => r.UpdateRegistrationOutCome(command.Id, (int)command.Status, command.Comments, command.RegistrationReferenceNumber, command.User), Times.Once);
     }
 
 

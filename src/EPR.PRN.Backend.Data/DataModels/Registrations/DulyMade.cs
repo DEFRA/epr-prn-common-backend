@@ -15,15 +15,6 @@ public class DulyMade
     [ForeignKey("RegistrationMaterial")]
     public int RegistrationMaterialId { get; set; }   
     public RegistrationMaterial? RegistrationMaterial { get; set; }     
-    [ForeignKey("TaskStatus")]
-    public int TaskStatusId { get; set; }
-    public LookupTaskStatus? TaskStatus { get; set; }
-    public DateTime? DulyMadeDate { get; set; }
-    public Guid? DulyMadeBy { get; set; }
-    [MaxLength(500)]
-    public string? DulyMadeNote { get; set; }
-    [MaxLength(500)]
-    public string? DeterminationNote { get; set; }
-    public Guid? DeterminationUpdatedBy { get; set; }
-    public DateTime? DeterminationUpdatedDate { get; set; }  
+    public DateTime DulyMadeDate { get; set; }
+    public Guid DulyMadeBy { get; set; }
   }

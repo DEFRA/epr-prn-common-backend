@@ -24,7 +24,7 @@ public class RegistrationMaterialControllerTests
         _loggerMock = new Mock<ILogger<RegistrationMaterialController>>();
         _controller = new RegistrationMaterialController(_mediatorMock.Object, _loggerMock.Object);
     }
-    
+
     [TestMethod]
     public async Task CreateRegistrationMaterialAndExemptionReferences_ValidCommand_ReturnsNoContent()
     {
@@ -47,13 +47,13 @@ public class RegistrationMaterialControllerTests
 
         // Assert  
         result.Should().BeOfType<OkResult>();
-       
+
 
         _loggerMock.Verify(
             x => x.Log(
                 LogLevel.Information,
                 It.IsAny<EventId>(),
-                It.Is<It.IsAnyType>((v, t) => true), 
+                It.Is<It.IsAnyType>((v, t) => true),
                 It.IsAny<Exception>(),
                 It.IsAny<Func<It.IsAnyType, Exception, string>>()),
             Times.AtLeastOnce

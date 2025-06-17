@@ -20,7 +20,8 @@ public class RegistrationMaterialsOutcomeHandler(
             request.Id,
             (int)request.Status,
             request.Comments,
-            request.RegistrationReferenceNumber
+            request.RegistrationReferenceNumber,
+            request.User
         );
     }
 
