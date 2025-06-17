@@ -3,11 +3,13 @@
 namespace EPR.PRN.Backend.API.Dto.ExporterJourney;
 
 [ExcludeFromCodeCoverage]
-public class GetOtherPermitsResultDto
+public class GetCarrierBrokerDealerPermitsResultDto
 {
     public Guid Id { get; set; }
 
     public Guid RegistrationId { get; set; }
+
+    public string WasteCarrierBrokerDealerRegistration { get; set; }
 
     public string? WasteLicenseOrPermitNumber { get; set; }
 

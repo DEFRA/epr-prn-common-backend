@@ -15,7 +15,7 @@ public class GetOtherPermitsHandlerTests
 {
     private Mock<ICarrierBrokerDealerPermitRepository> _carrierBrokerDealerPermitRepositoryMock;
     private IMapper _mapper;
-    private GetOtherPermitsHandler _handler;
+    private GetCarrierBrokerDealerPermitsHandler _handler;
 
     [TestInitialize]
     public void TestInitialize()
@@ -28,7 +28,7 @@ public class GetOtherPermitsHandlerTests
         });
         _mapper = config.CreateMapper();
 
-        _handler = new GetOtherPermitsHandler(_carrierBrokerDealerPermitRepositoryMock.Object, _mapper);
+        _handler = new GetCarrierBrokerDealerPermitsHandler(_carrierBrokerDealerPermitRepositoryMock.Object, _mapper);
     }
 
     [TestMethod]
@@ -45,7 +45,7 @@ public class GetOtherPermitsHandlerTests
             .Setup(r => r.GetByRegistrationId(registration.ExternalId, CancellationToken.None))
             .ReturnsAsync((CarrierBrokerDealerPermit)null);
 
-        var query = new GetOtherPermitsQuery { RegistrationId = registration.ExternalId };
+        var query = new CarrierBrokerDealerPermitsQuery { RegistrationId = registration.ExternalId };
 
         // Act
         var result = await _handler.Handle(query, CancellationToken.None);
@@ -79,7 +79,7 @@ public class GetOtherPermitsHandlerTests
             .Setup(r => r.GetByRegistrationId(registration.ExternalId, CancellationToken.None))
             .ReturnsAsync(carrierBrokerDealerPermit);
 
-        var query = new GetOtherPermitsQuery { RegistrationId = registration.ExternalId };
+        var query = new CarrierBrokerDealerPermitsQuery { RegistrationId = registration.ExternalId };
 
         // Act
         var result = await _handler.Handle(query, CancellationToken.None);
@@ -117,7 +117,7 @@ public class GetOtherPermitsHandlerTests
             .Setup(r => r.GetByRegistrationId(registration.ExternalId, CancellationToken.None))
             .ReturnsAsync(carrierBrokerDealerPermit);
 
-        var query = new GetOtherPermitsQuery { RegistrationId = registration.ExternalId };
+        var query = new CarrierBrokerDealerPermitsQuery { RegistrationId = registration.ExternalId };
 
         // Act
         var result = await _handler.Handle(query, CancellationToken.None);

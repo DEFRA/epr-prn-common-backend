@@ -13,14 +13,14 @@ namespace EPR.PRN.Backend.API.UnitTests.Handlers.ExporterJourney;
 public class UpdateOtherPermitsHandlerTests
 {
     private Mock<ICarrierBrokerDealerPermitRepository> _carrierBrokerDealerPermitRepositoryMock;
-    private UpdateOtherPermitsHandler _handler;
+    private UpdateCarrierBrokerDealerPermitsHandler _handler;
 
     [TestInitialize]
     public void TestInitialize()
     {
         _carrierBrokerDealerPermitRepositoryMock = new Mock<ICarrierBrokerDealerPermitRepository>();
 
-        _handler = new UpdateOtherPermitsHandler(_carrierBrokerDealerPermitRepositoryMock.Object);
+        _handler = new UpdateCarrierBrokerDealerPermitsHandler(_carrierBrokerDealerPermitRepositoryMock.Object);
     }
 
     [TestMethod]
@@ -30,7 +30,7 @@ public class UpdateOtherPermitsHandlerTests
         _carrierBrokerDealerPermitRepositoryMock.Setup(x => x.GetByRegistrationId(Guid.Empty, CancellationToken.None))
             .ReturnsAsync((CarrierBrokerDealerPermit)null);
 
-        var command = new UpdateOtherPermitsCommand();
+        var command = new UpdateCarrierBrokerDealerPermitsCommand();
 
         // Act, Assert
         await Assert.ThrowsExceptionAsync<KeyNotFoundException>(() => _handler.Handle(command, CancellationToken.None));
@@ -54,11 +54,11 @@ public class UpdateOtherPermitsHandlerTests
         _carrierBrokerDealerPermitRepositoryMock.Setup(x => x.Update(registration.CarrierBrokerDealerPermit, CancellationToken.None))
             .Callback<CarrierBrokerDealerPermit, CancellationToken>((x, y) => updatedCarrierBrokerDealerPermit = x);
 
-        var command = new UpdateOtherPermitsCommand
+        var command = new UpdateCarrierBrokerDealerPermitsCommand
         {
             UserId = Guid.NewGuid(),
             RegistrationId = registration.ExternalId,
-            Dto = new UpdateOtherPermitsDto
+            Dto = new UpdateCarrierBrokerDealerPermitsDto
             {
                 WasteLicenseOrPermitNumber = "test 1",
                 PpcNumber = "test 2",

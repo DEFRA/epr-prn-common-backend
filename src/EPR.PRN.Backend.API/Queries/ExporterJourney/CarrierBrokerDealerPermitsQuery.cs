@@ -6,7 +6,7 @@ using System.Diagnostics.CodeAnalysis;
 namespace EPR.PRN.Backend.API.Queries.ExporterJourney;
 
 [ExcludeFromCodeCoverage]
-public class GetOtherPermitsQuery : IRequest<GetOtherPermitsResultDto>
+public class CarrierBrokerDealerPermitsQuery : IRequest<GetCarrierBrokerDealerPermitsResultDto>
 {
     [Required]
     public Guid RegistrationId { get; set; }

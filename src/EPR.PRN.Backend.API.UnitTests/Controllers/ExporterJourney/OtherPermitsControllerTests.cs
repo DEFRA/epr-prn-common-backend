@@ -14,21 +14,21 @@ namespace EPR.PRN.Backend.API.UnitTests.Controllers.ExporterJourney;
 public class OtherPermitsControllerTests
 {
     private Mock<IMediator> _mediatorMock;
-    private OtherPermitsController _controller;
+    private CarrierBrokerDealerPermitsController _controller;
 
     [TestInitialize]
     public void TestInitialize()
     {
         _mediatorMock = new Mock<IMediator>();
-        _controller = new OtherPermitsController(_mediatorMock.Object);
+        _controller = new CarrierBrokerDealerPermitsController(_mediatorMock.Object);
     }
 
     [TestMethod]
     public async Task GetOtherPermits_ReturnsNotFound_WhenResourceDoesNotExist()
     {
         // Arrange
-        _mediatorMock.Setup(m => m.Send(It.IsAny<GetOtherPermitsQuery>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync((GetOtherPermitsResultDto)null);
+        _mediatorMock.Setup(m => m.Send(It.IsAny<CarrierBrokerDealerPermitsQuery>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync((GetCarrierBrokerDealerPermitsResultDto)null);
 
         // Act
         var result = await _controller.GetOtherPermits(Guid.Empty);
@@ -41,7 +41,7 @@ public class OtherPermitsControllerTests
     public async Task GetOtherPermits_ReturnsOk_WhenResourceExists()
     {
         // Arrange
-        var expectedDto = new GetOtherPermitsResultDto
+        var expectedDto = new GetCarrierBrokerDealerPermitsResultDto
         {
             Id = Guid.NewGuid(),
             RegistrationId = Guid.NewGuid(),
@@ -50,7 +50,7 @@ public class OtherPermitsControllerTests
             WasteExemptionReference = new List<string> { "test 3", "test 4" }
         };
 
-        _mediatorMock.Setup(m => m.Send(It.IsAny<GetOtherPermitsQuery>(), It.IsAny<CancellationToken>()))
+        _mediatorMock.Setup(m => m.Send(It.IsAny<CarrierBrokerDealerPermitsQuery>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(expectedDto);
 
         // Act
@@ -66,11 +66,11 @@ public class OtherPermitsControllerTests
     public async Task CreateOtherPermits_ReturnsCreated_WhenResourceCreated()
     {
         // Arrange
-        _mediatorMock.Setup(m => m.Send(It.IsAny<CreateOtherPermitsCommand>(), It.IsAny<CancellationToken>()))
+        _mediatorMock.Setup(m => m.Send(It.IsAny<CreateCarrierBrokerDealerPermitsCommand>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(true);
 
         // Act
-        var result = await _controller.CreateOtherPermits(Guid.Empty, Guid.Empty, new CreateOtherPermitsDto());
+        var result = await _controller.CreateOtherPermits(Guid.Empty, Guid.Empty, new CreateCarrierBrokerDealerPermitsDto());
 
         // Assert
         result.Should().BeOfType<CreatedAtActionResult>();
@@ -80,11 +80,11 @@ public class OtherPermitsControllerTests
     public async Task CreateOtherPermits_ReturnsOk_WhenResourceExists()
     {
         // Arrange
-        _mediatorMock.Setup(m => m.Send(It.IsAny<CreateOtherPermitsCommand>(), It.IsAny<CancellationToken>()))
+        _mediatorMock.Setup(m => m.Send(It.IsAny<CreateCarrierBrokerDealerPermitsCommand>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(false);
 
         // Act
-        var result = await _controller.CreateOtherPermits(Guid.Empty, Guid.Empty, new CreateOtherPermitsDto());
+        var result = await _controller.CreateOtherPermits(Guid.Empty, Guid.Empty, new CreateCarrierBrokerDealerPermitsDto());
 
         // Assert
         result.Should().BeOfType<OkResult>();
@@ -94,11 +94,11 @@ public class OtherPermitsControllerTests
     public async Task CreateOtherPermits_ReturnsNotFound_WhenRegistrationDoesNotExist()
     {
         // Arrange
-        _mediatorMock.Setup(m => m.Send(It.IsAny<CreateOtherPermitsCommand>(), It.IsAny<CancellationToken>()))
+        _mediatorMock.Setup(m => m.Send(It.IsAny<CreateCarrierBrokerDealerPermitsCommand>(), It.IsAny<CancellationToken>()))
             .ThrowsAsync(new KeyNotFoundException());
 
         // Act
-        var result = await _controller.CreateOtherPermits(Guid.Empty, Guid.Empty, new CreateOtherPermitsDto());
+        var result = await _controller.CreateOtherPermits(Guid.Empty, Guid.Empty, new CreateCarrierBrokerDealerPermitsDto());
 
         // Assert
         result.Should().BeOfType<NotFoundResult>();
@@ -108,11 +108,11 @@ public class OtherPermitsControllerTests
     public async Task UpdateOtherPermits_ReturnsNotFound_WhenCarrierBrokerDealerPermitDoesNotExist()
     {
         // Arrange
-        _mediatorMock.Setup(m => m.Send(It.IsAny<UpdateOtherPermitsCommand>(), It.IsAny<CancellationToken>()))
+        _mediatorMock.Setup(m => m.Send(It.IsAny<UpdateCarrierBrokerDealerPermitsCommand>(), It.IsAny<CancellationToken>()))
             .ThrowsAsync(new KeyNotFoundException());
 
         // Act
-        var result = await _controller.UpdateOtherPermits(Guid.Empty, Guid.Empty, new UpdateOtherPermitsDto());
+        var result = await _controller.UpdateOtherPermits(Guid.Empty, Guid.Empty, new UpdateCarrierBrokerDealerPermitsDto());
 
         // Assert
         result.Should().BeOfType<NotFoundResult>();
@@ -122,10 +122,10 @@ public class OtherPermitsControllerTests
     public async Task UpdateOtherPermits_ReturnsOk_WhenCarrierBrokerDealerPermitUpdated()
     {
         // Arrange
-        _mediatorMock.Setup(m => m.Send(It.IsAny<UpdateOtherPermitsCommand>(), It.IsAny<CancellationToken>()));
+        _mediatorMock.Setup(m => m.Send(It.IsAny<UpdateCarrierBrokerDealerPermitsCommand>(), It.IsAny<CancellationToken>()));
 
         // Act
-        var result = await _controller.UpdateOtherPermits(Guid.Empty, Guid.Empty, new UpdateOtherPermitsDto());
+        var result = await _controller.UpdateOtherPermits(Guid.Empty, Guid.Empty, new UpdateCarrierBrokerDealerPermitsDto());
 
         // Assert
         result.Should().BeOfType<OkResult>();
