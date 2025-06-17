@@ -9,6 +9,7 @@ using EPR.PRN.Backend.API.Validators.Regulator;
 using EPR.PRN.Backend.Data.Interfaces;
 using EPR.PRN.Backend.Data.Interfaces.Regulator;
 using EPR.PRN.Backend.Data.Repositories;
+using EPR.PRN.Backend.Data.Repositories.ExporterJourney;
 using EPR.PRN.Backend.Data.Repositories.Regulator;
 using EPR.PRN.Backend.Obligation.Interfaces;
 using EPR.PRN.Backend.Obligation.Providers;
@@ -48,6 +49,7 @@ namespace EPR.PRN.Backend.API.Helpers
                 .AddScoped<IRegulatorAccreditationRepository, RegulatorAccreditationRepository>()
                 .AddScoped<IRegulatorAccreditationTaskStatusRepository, RegulatorAccreditationTaskStatusRepository>()
                 .AddScoped<IRegistrationRepository, RegistrationRepository>()
+                .AddScoped<ICarrierBrokerDealerPermitRepository, CarrierBrokerDealerPermitRepository>()
                 .AddScoped<IDateTimeProvider, DateTimeProvider>();
 
             return services;

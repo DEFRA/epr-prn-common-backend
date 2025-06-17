@@ -6,6 +6,7 @@ namespace EPR.PRN.Backend.Data.Interfaces;
 
 public interface IRegistrationRepository
 {
+    Task<Registration?> GetRegistrationByExternalId(Guid externalId, CancellationToken cancellationToken);
     Task<int> CreateRegistrationAsync(int applicationTypeId, Guid organisationId, AddressDto address);
     Task<ApplicantRegistrationTaskStatus?> GetTaskStatusAsync(string taskName, int registrationId);
     Task<Registration?> GetByOrganisationAsync(int applicationTypeId, Guid organisationId);
