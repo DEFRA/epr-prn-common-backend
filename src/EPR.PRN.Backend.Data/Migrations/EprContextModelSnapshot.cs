@@ -1145,6 +1145,7 @@ namespace EPR.PRN.Backend.Data.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<bool>("IsOverdue")
+                        .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("bit");
 
                     b.Property<int>("RegistrationMaterialId")

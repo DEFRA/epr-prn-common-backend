@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EPR.PRN.Backend.Data.Migrations
 {
     [DbContext(typeof(EprContext))]
-    [Migration("20250616130653_AddIsOverdueColumn")]
+    [Migration("20250617105930_AddIsOverdueColumn")]
     partial class AddIsOverdueColumn
     {
         /// <inheritdoc />
@@ -1148,6 +1148,7 @@ namespace EPR.PRN.Backend.Data.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<bool>("IsOverdue")
+                        .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("bit");
 
                     b.Property<int>("RegistrationMaterialId")
