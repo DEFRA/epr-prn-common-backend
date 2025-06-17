@@ -13,51 +13,51 @@ namespace EPR.PRN.Backend.API.Controllers.ExporterJourney;
 [ApiVersion("1.0")]
 [Route("api/v{version:apiVersion}")]
 [FeatureGate(FeatureFlags.ReprocessorExporter)]
-public class OtherPermitsController(IMediator mediator) : ControllerBase
+public class CarrierBrokerDealerPermitsController(IMediator mediator) : ControllerBase
 {
-    [HttpGet("registrations/{registrationId}/other-permits")]
-    [ProducesResponseType(typeof(GetOtherPermitsResultDto), 200)]
+    [HttpGet("registrations/{registrationId}/carrier-broker-dealer-permits")]
+    [ProducesResponseType(typeof(GetCarrierBrokerDealerPermitsResultDto), 200)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [SwaggerOperation(
-           Summary = "get other permits of registration",
-           Description = "get other permits of registration."
-       )]
-    [SwaggerResponse(StatusCodes.Status200OK, "Returns other permits of registration.", typeof(GetOtherPermitsResultDto))]
-    [SwaggerResponse(StatusCodes.Status404NotFound, "If other permits not found.", typeof(ProblemDetails))]
+           Summary = "get carrier broker dealer permits data for given registration",
+           Description = "get carrier broker dealer permits data for given registration."
+	   )]
+    [SwaggerResponse(StatusCodes.Status200OK, "Returns get carrier broker dealer permits data for given registration.", typeof(GetCarrierBrokerDealerPermitsResultDto))]
+    [SwaggerResponse(StatusCodes.Status404NotFound, "If no record found.", typeof(ProblemDetails))]
     [SwaggerResponse(StatusCodes.Status500InternalServerError, "If an unexpected error occurs.", typeof(ContentResult))]
     public async Task<IActionResult> GetOtherPermits(Guid registrationId)
     {
-        var result = await mediator.Send(new GetOtherPermitsQuery { RegistrationId = registrationId });
+        var result = await mediator.Send(new CarrierBrokerDealerPermitsQuery { RegistrationId = registrationId });
 
         return result != null ? Ok(result) : NotFound();
     }
 
-    [HttpPost("registrations/{registrationId}/other-permits")]
+    [HttpPost("registrations/{registrationId}/carrier-broker-dealer-permits")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [SwaggerOperation(
-           Summary = "create other permits of registration",
-           Description = "create other permits of registration."
-       )]
-    [SwaggerResponse(StatusCodes.Status200OK, "Confirms that resource exists.")]
-    [SwaggerResponse(StatusCodes.Status201Created, "Creates other permits.")]
-    [SwaggerResponse(StatusCodes.Status404NotFound, "If registration not found.", typeof(ProblemDetails))]
+           Summary = "create carrier broker dealer permits record for given registration",
+           Description = "create carrier broker dealer permits record for given registration."
+	   )]
+    [SwaggerResponse(StatusCodes.Status200OK, "Confirms that resource already exists.")]
+    [SwaggerResponse(StatusCodes.Status201Created, "Create carrier broker dealer permits record for given registration.")]
+    [SwaggerResponse(StatusCodes.Status404NotFound, "If registration parent record not found.", typeof(ProblemDetails))]
     [SwaggerResponse(StatusCodes.Status500InternalServerError, "If an unexpected error occurs.", typeof(ContentResult))]
     public async Task<IActionResult> CreateOtherPermits(
         [FromRoute] Guid registrationId,
         [FromHeader(Name = "X-EPR-USER")] Guid userId,
-        [FromBody] CreateOtherPermitsDto dto)
+        [FromBody] CreateCarrierBrokerDealerPermitsDto dto)
     {
         try
         {
-            var created = await mediator.Send(new CreateOtherPermitsCommand
+            var created = await mediator.Send(new CreateCarrierBrokerDealerPermitsCommand
             {
                 UserId = userId,
-                RegistrationId = registrationId,
-                Dto = dto
+                RegistrationId = registrationId, 
+                WasteCarrierBrokerDealerRegistration = dto.WasteCarrierBrokerDealerRegistration
             });
 
             return created ? CreatedAtAction(nameof(GetOtherPermits), new { registrationId }, null) : Ok();
@@ -68,26 +68,26 @@ public class OtherPermitsController(IMediator mediator) : ControllerBase
         }
     }
 
-    [HttpPut("registrations/{registrationId}/other-permits")]
+    [HttpPut("registrations/{registrationId}/carrier-broker-dealer-permits")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [SwaggerOperation(
-           Summary = "update other permits of registration",
-           Description = "update other permits of registration."
-       )]
-    [SwaggerResponse(StatusCodes.Status200OK, "Updates other permits.")]
-    [SwaggerResponse(StatusCodes.Status404NotFound, "If other permits not found.", typeof(ProblemDetails))]
+           Summary = "update carrier broker dealer permits record for given registration",
+           Description = "update carrier broker dealer permits record for given registration."
+	   )]
+    [SwaggerResponse(StatusCodes.Status200OK, "update carrier broker dealer permits record for given registration.")]
+    [SwaggerResponse(StatusCodes.Status404NotFound, "If no record found.", typeof(ProblemDetails))]
     [SwaggerResponse(StatusCodes.Status500InternalServerError, "If an unexpected error occurs.", typeof(ContentResult))]
     public async Task<IActionResult> UpdateOtherPermits(
         [FromRoute] Guid registrationId,
         [FromHeader(Name = "X-EPR-USER")] Guid userId,
-        [FromBody] UpdateOtherPermitsDto dto)
+        [FromBody] UpdateCarrierBrokerDealerPermitsDto dto)
     {
         try
         {
-            await mediator.Send(new UpdateOtherPermitsCommand
+            await mediator.Send(new UpdateCarrierBrokerDealerPermitsCommand
             {
                 UserId = userId,
                 RegistrationId = registrationId,

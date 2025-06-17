@@ -6,14 +6,14 @@ using MediatR;
 
 namespace EPR.PRN.Backend.API.Handlers.ExporterJourney;
 
-public class GetOtherPermitsHandler(
+public class GetCarrierBrokerDealerPermitsHandler(
     ICarrierBrokerDealerPermitRepository carrierBrokerDealerPermitRepository,
-    IMapper mapper) : IRequestHandler<GetOtherPermitsQuery, GetOtherPermitsResultDto>
+    IMapper mapper) : IRequestHandler<CarrierBrokerDealerPermitsQuery, GetCarrierBrokerDealerPermitsResultDto>
 {
-    public async Task<GetOtherPermitsResultDto?> Handle(GetOtherPermitsQuery request, CancellationToken cancellationToken)
+    public async Task<GetCarrierBrokerDealerPermitsResultDto?> Handle(CarrierBrokerDealerPermitsQuery request, CancellationToken cancellationToken)
     {
         var model = await carrierBrokerDealerPermitRepository.GetByRegistrationId(request.RegistrationId, cancellationToken);
 
-        return model != null ? mapper.Map<GetOtherPermitsResultDto>(model) : null;
+        return model != null ? mapper.Map<GetCarrierBrokerDealerPermitsResultDto>(model) : null;
     }
 }

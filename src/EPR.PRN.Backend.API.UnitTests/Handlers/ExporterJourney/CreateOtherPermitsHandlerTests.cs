@@ -1,5 +1,4 @@
-﻿using EPR.PRN.Backend.API.Commands;
-using EPR.PRN.Backend.API.Commands.ExporterJourney;
+﻿using EPR.PRN.Backend.API.Commands.ExporterJourney;
 using EPR.PRN.Backend.API.Dto.ExporterJourney;
 using EPR.PRN.Backend.API.Handlers.ExporterJourney;
 using EPR.PRN.Backend.Data.DataModels.ExporterJourney;
@@ -15,7 +14,7 @@ public class CreateOtherPermitsHandlerTests
 {
     private Mock<ICarrierBrokerDealerPermitRepository> _carrierBrokerDealerPermitRepositoryMock;
     private Mock<IRegistrationRepository> _registrationRepository;
-    private CreateOtherPermitsHandler _handler;
+    private CreateCarrierBrokerDealerPermitsHandler _handler;
 
     [TestInitialize]
     public void TestInitialize()
@@ -23,7 +22,7 @@ public class CreateOtherPermitsHandlerTests
         _carrierBrokerDealerPermitRepositoryMock = new Mock<ICarrierBrokerDealerPermitRepository>();
         _registrationRepository = new Mock<IRegistrationRepository>();
 
-        _handler = new CreateOtherPermitsHandler(_carrierBrokerDealerPermitRepositoryMock.Object, _registrationRepository.Object);
+        _handler = new CreateCarrierBrokerDealerPermitsHandler(_carrierBrokerDealerPermitRepositoryMock.Object, _registrationRepository.Object);
     }
 
     [TestMethod]
@@ -33,7 +32,7 @@ public class CreateOtherPermitsHandlerTests
         _registrationRepository.Setup(x => x.GetRegistrationByExternalId(Guid.Empty, CancellationToken.None))
             .ReturnsAsync((Registration)null);
 
-        var command = new CreateOtherPermitsCommand();
+        var command = new CreateCarrierBrokerDealerPermitsCommand();
 
         // Act, Assert
         await Assert.ThrowsExceptionAsync<KeyNotFoundException>(() => _handler.Handle(command, CancellationToken.None));
@@ -52,7 +51,7 @@ public class CreateOtherPermitsHandlerTests
         _registrationRepository.Setup(x => x.GetRegistrationByExternalId(registration.ExternalId, CancellationToken.None))
             .ReturnsAsync(registration);
 
-        var command = new CreateOtherPermitsCommand { RegistrationId = registration.ExternalId };
+        var command = new CreateCarrierBrokerDealerPermitsCommand { RegistrationId = registration.ExternalId };
 
         // Act
         var result = await _handler.Handle(command, CancellationToken.None);
@@ -74,16 +73,11 @@ public class CreateOtherPermitsHandlerTests
         _carrierBrokerDealerPermitRepositoryMock.Setup(x => x.Add(It.IsAny<CarrierBrokerDealerPermit>(), CancellationToken.None))
             .Callback<CarrierBrokerDealerPermit, CancellationToken>((x, y) => createdCarrierBrokerDealerPermit = x);
 
-        var command = new CreateOtherPermitsCommand
+        var command = new CreateCarrierBrokerDealerPermitsCommand
         {
             UserId = Guid.NewGuid(),
             RegistrationId = registration.ExternalId,
-            Dto = new CreateOtherPermitsDto
-            {
-                WasteLicenseOrPermitNumber = "test 1",
-                PpcNumber = "test 2",
-                WasteExemptionReference = new List<string> { "test 3", "test 4" }
-            }
+			WasteCarrierBrokerDealerRegistration = "Test 1"
         };
 
         // Act
@@ -92,9 +86,7 @@ public class CreateOtherPermitsHandlerTests
         // Assert
         result.Should().BeTrue();
         createdCarrierBrokerDealerPermit.Should().NotBeNull();
-        createdCarrierBrokerDealerPermit.WasteManagementorEnvironmentPermitNumber.Should().Be(command.Dto.WasteLicenseOrPermitNumber);
-        createdCarrierBrokerDealerPermit.InstallationPermitorPPCNumber.Should().Be(command.Dto.PpcNumber);
-        createdCarrierBrokerDealerPermit.WasteExemptionReference.Should().Be("test 3,test 4");
+        createdCarrierBrokerDealerPermit.WasteCarrierBrokerDealerRegistrstion.Should().Be("Test 1");
         createdCarrierBrokerDealerPermit.CreatedBy.Should().Be(command.UserId);
     }
 }

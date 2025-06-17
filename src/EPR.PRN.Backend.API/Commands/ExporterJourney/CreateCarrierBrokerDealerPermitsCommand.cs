@@ -5,11 +5,11 @@ using System.Diagnostics.CodeAnalysis;
 namespace EPR.PRN.Backend.API.Commands.ExporterJourney;
 
 [ExcludeFromCodeCoverage]
-public class UpdateOtherPermitsCommand : IRequest
+public class CreateCarrierBrokerDealerPermitsCommand : IRequest<bool>
 {
     public Guid UserId { get; set; }
 
     public Guid RegistrationId { get; set; }
 
-    public UpdateOtherPermitsDto Dto { get; set; }
+	public string WasteCarrierBrokerDealerRegistration { get; set; }
 }

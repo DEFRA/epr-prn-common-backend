@@ -3,9 +3,11 @@
 namespace EPR.PRN.Backend.API.Dto.ExporterJourney;
 
 [ExcludeFromCodeCoverage]
-public class CreateOtherPermitsDto
+public class UpdateCarrierBrokerDealerPermitsDto
 {
-    public string? WasteLicenseOrPermitNumber { get; set; }
+	public string? WasteCarrierBrokerDealerRegistration { get; set; }
+
+	public string? WasteLicenseOrPermitNumber { get; set; }
 
     public string? PpcNumber { get; set; }
 
