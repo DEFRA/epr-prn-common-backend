@@ -7,5 +7,4 @@ namespace EPR.PRN.Backend.Obligation.Models
         public bool Success { get; set; }
         public List<ObligationCalculation> Calculations { get; set; } = new();
     }
-
 }
