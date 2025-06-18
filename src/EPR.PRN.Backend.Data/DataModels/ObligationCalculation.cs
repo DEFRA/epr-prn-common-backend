@@ -1,7 +1,6 @@
 ﻿#nullable disable
 
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EPR.PRN.Backend.Data.DataModels;
 
@@ -28,5 +27,16 @@ public class ObligationCalculation
     [Required]
     public int Tonnage { get; set; }
 
-    public Material Material { get; set; } = null!;
+	[Required]
+	public Guid SubmitterId { get; set; }
+
+	[Required]
+	public int SubmitterTypeId { get; set; }
+
+	[Required]
+	public bool IsDeleted { get; set; }
+
+	public Material Material { get; set; } = null!;
+
+	public ObligationCalculationOrganisationSubmitterType ObligationCalculationOrganisationSubmitterType { get; set; } = null!;
 }
