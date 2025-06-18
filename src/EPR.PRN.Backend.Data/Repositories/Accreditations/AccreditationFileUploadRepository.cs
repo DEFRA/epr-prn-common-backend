@@ -9,9 +9,14 @@ public class AccreditationFileUploadRepository(EprAccreditationContext eprContex
 {
     public async Task<AccreditationFileUpload> GetByExternalId(Guid accreditationFileUploadId)
     {
-        return await eprContext.AccreditationFileUploads
+        var entity = await eprContext.AccreditationFileUploads
             .AsNoTracking()
             .SingleOrDefaultAsync(x => x.ExternalId.Equals(accreditationFileUploadId));
+
+        if (entity == null)
+            throw new KeyNotFoundException("Accreditation file upload not found");
+
+        return entity;
     }
 
     public async Task<List<AccreditationFileUpload>> GetByAccreditationId(Guid accreditationId, int fileUploadTypeId, int fileUploadStatusId)
@@ -51,22 +56,22 @@ public class AccreditationFileUploadRepository(EprAccreditationContext eprContex
     {
         var existingEntity = await eprContext.AccreditationFileUploads
             .AsNoTracking()
-            .SingleAsync(x => x.ExternalId.Equals(fileUpload.ExternalId));
+            .SingleOrDefaultAsync(x => x.ExternalId.Equals(fileUpload.ExternalId));
 
-        if (existingEntity != null)
-        {
-            existingEntity.AccreditationId = await GetAccreditationIntegerId(accreditationId);
-            existingEntity.OverseasSiteId = fileUpload.OverseasSiteId;
-            existingEntity.Filename = fileUpload.Filename;
-            existingEntity.FileId = fileUpload.FileId;
-            existingEntity.UploadedOn = fileUpload.UploadedOn;
-            existingEntity.UploadedBy = fileUpload.UploadedBy;
-            existingEntity.FileUploadTypeId = fileUpload.FileUploadTypeId;
-            existingEntity.FileUploadStatusId = fileUpload.FileUploadStatusId;
+        if (existingEntity == null)
+            throw new KeyNotFoundException("Accreditation file upload not found");
 
-            eprContext.Entry(existingEntity).State = EntityState.Modified;
-            await eprContext.SaveChangesAsync();
-        }
+        existingEntity.AccreditationId = await GetAccreditationIntegerId(accreditationId);
+        existingEntity.OverseasSiteId = fileUpload.OverseasSiteId;
+        existingEntity.Filename = fileUpload.Filename;
+        existingEntity.FileId = fileUpload.FileId;
+        existingEntity.UploadedOn = fileUpload.UploadedOn;
+        existingEntity.UploadedBy = fileUpload.UploadedBy;
+        existingEntity.FileUploadTypeId = fileUpload.FileUploadTypeId;
+        existingEntity.FileUploadStatusId = fileUpload.FileUploadStatusId;
+
+        eprContext.Entry(existingEntity).State = EntityState.Modified;
+        await eprContext.SaveChangesAsync();
     }
 
     public async Task Delete(Guid accreditationId, Guid fileId)
@@ -75,19 +80,23 @@ public class AccreditationFileUploadRepository(EprAccreditationContext eprContex
 
         var existingEntity = await eprContext.AccreditationFileUploads
             .AsNoTracking()
-            .SingleAsync(x => x.AccreditationId == accreditationIdInt && x.FileId.Equals(fileId));
+            .FirstOrDefaultAsync(x => x.AccreditationId == accreditationIdInt && x.FileId.Equals(fileId));
 
-        if (existingEntity != null)
-        {
-            existingEntity.FileUploadStatusId = (int)AccreditationFileUploadStatus.FileDeleted;
+        if (existingEntity == null)
+            throw new KeyNotFoundException("Accreditation file upload not found");
 
-            eprContext.Entry(existingEntity).State = EntityState.Modified;
-            await eprContext.SaveChangesAsync();
-        }
+        existingEntity.FileUploadStatusId = (int)AccreditationFileUploadStatus.FileDeleted;
+        eprContext.Entry(existingEntity).State = EntityState.Modified;
+        await eprContext.SaveChangesAsync();
     }
 
     private async Task<int> GetAccreditationIntegerId(Guid accreditationId)
     {
-        return await eprContext.Accreditations.Where(x => x.ExternalId == accreditationId).Select(x => x.Id).SingleAsync();
+        var accreditationIdInt = await eprContext.Accreditations.Where(x => x.ExternalId == accreditationId).Select(x => x.Id).SingleOrDefaultAsync();
+
+        if (accreditationIdInt == 0)
+            throw new KeyNotFoundException("Accreditation not found");
+
+        return accreditationIdInt;
     }
 }

@@ -34,20 +34,20 @@ public class AccreditationFileUploadService(
         return dtos;
     }
 
-    public async Task<Guid> CreateFileUpload(Guid accreditationId, AccreditationFileUploadDto accreditationFileUploadDto)
+    public async Task<Guid> CreateFileUpload(Guid accreditationId, AccreditationFileUploadDto requestDto)
     {
-        logger.LogInformation("{Logprefix}: AccreditationFileUploadService - Create. AccreditationId: {AccreditationId}, Request DTO: {Dto}", logPrefix, accreditationId, JsonConvert.SerializeObject(accreditationFileUploadDto));
+        logger.LogInformation("{Logprefix}: AccreditationFileUploadService - Create. AccreditationId: {AccreditationId}, Request DTO: {Dto}", logPrefix, accreditationId, JsonConvert.SerializeObject(requestDto));
 
-        var entity = MapDtoToEntity(accreditationFileUploadDto);
+        var entity = MapDtoToEntity(requestDto);
 
         return await repository.Create(accreditationId, entity);
     }
 
-    public async Task UpdateFileUpload(Guid accreditationId, AccreditationFileUploadDto accreditationFileUploadDto)
+    public async Task UpdateFileUpload(Guid accreditationId, AccreditationFileUploadDto requestDto)
     {
-        logger.LogInformation("{Logprefix}: AccreditationFileUploadService - Update. AccreditationId: {AccreditationId}, Request DTO: {Dto}", logPrefix, accreditationId, JsonConvert.SerializeObject(accreditationFileUploadDto));
+        logger.LogInformation("{Logprefix}: AccreditationFileUploadService - Update. AccreditationId: {AccreditationId}, Request DTO: {Dto}", logPrefix, accreditationId, JsonConvert.SerializeObject(requestDto));
 
-        var entity = MapDtoToEntity(accreditationFileUploadDto);
+        var entity = MapDtoToEntity(requestDto);
 
         await repository.Update(accreditationId, entity);
     }

@@ -84,12 +84,13 @@ public class AccreditationController(
         [FromRoute] int fileUploadTypeId,
         [FromRoute] int fileUploadStatusId = (int)AccreditationFileUploadStatus.UploadComplete)
     {
-        List<AccreditationFileUploadDto> fileUploads = await accreditationFileUploadService.GetByAccreditationId(accreditationId, fileUploadTypeId, fileUploadStatusId);
+        if (!Enum.IsDefined(typeof(AccreditationFileUploadType), fileUploadTypeId))
+            return BadRequest("FileUploadTypeId is invalid");
 
-        if (fileUploads == null)
-        {
-            return NotFound();
-        }
+        if (!Enum.IsDefined(typeof(AccreditationFileUploadStatus), fileUploadStatusId))
+            return BadRequest("FileUploadStatusId is invalid");
+
+        List<AccreditationFileUploadDto> fileUploads = await accreditationFileUploadService.GetByAccreditationId(accreditationId, fileUploadTypeId, fileUploadStatusId);
 
         return Ok(fileUploads);
     }
