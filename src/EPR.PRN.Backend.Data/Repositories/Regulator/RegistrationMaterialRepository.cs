@@ -210,7 +210,7 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
 
         if (existingMaterial is not null)
         {
-            throw new InvalidOperationException($"Material '{material}' is already registered for this registration {existingRegistration.ExternalId}");
+            return existingMaterial;
         }
 
         var newMaterial = new RegistrationMaterial
@@ -272,6 +272,21 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
         return await eprContext.LookupMaterialPermit
                             .AsNoTracking()
                             .ToListAsync();
+    }
+
+    public async Task DeleteAsync(Guid registrationMaterialId)
+    {
+        var existing =
+            await eprContext.RegistrationMaterials.SingleOrDefaultAsync(o => o.ExternalId == registrationMaterialId);
+
+        if (existing is null)
+        {
+            throw new KeyNotFoundException("Registration material not found.");
+        }
+
+        eprContext.RegistrationMaterials.Remove(existing);
+
+        await eprContext.SaveChangesAsync();
     }
 
     private IIncludableQueryable<RegistrationMaterial, LookupRegistrationMaterialStatus> GetRegistrationMaterialsWithRelatedEntities()

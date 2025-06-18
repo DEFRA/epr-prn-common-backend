@@ -131,4 +131,27 @@ public class RegistrationMaterialControllerTests
         var okResult = result as OkObjectResult;
         okResult!.Value.Should().BeEquivalentTo(expectedList);
     }
+
+    [TestMethod]
+    public async Task DeleteRegistrationMaterial_EnsureCorrectResult()
+    {
+        // Arrange
+        var externalId = Guid.NewGuid();
+        var expectedResult = new OkResult();
+
+        var command = new DeleteRegistrationMaterialCommand
+        {
+            RegistrationMaterialId = externalId
+        };
+
+        // Expectations
+        _mediatorMock
+            .Setup(m => m.Send(command, It.IsAny<CancellationToken>()));
+
+        // Act
+        var result = await _controller.DeleteRegistrationMaterial(externalId);
+
+        // Assert
+        result.Should().BeEquivalentTo(expectedResult);
+    }
 }

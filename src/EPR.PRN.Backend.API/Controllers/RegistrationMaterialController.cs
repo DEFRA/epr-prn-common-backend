@@ -117,4 +117,25 @@ public class RegistrationMaterialController(
         var result = await mediator.Send(new GetMaterialsPermitTypesQuery());
         return Ok(result);
     }
+
+    [HttpDelete("registrationMaterials/{registrationMaterialId:guid}")]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(OkResult))]
+    [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
+    [SwaggerOperation(
+        Summary = "delete a registration material",
+        Description = "attempting to delete a material registration."
+    )]
+    [SwaggerResponse(StatusCodes.Status200OK)]
+    [SwaggerResponse(StatusCodes.Status500InternalServerError, "If an unexpected error occurs.", typeof(ContentResult))]
+    public async Task<IActionResult> DeleteRegistrationMaterial([FromRoute]Guid registrationMaterialId)
+    {
+        logger.LogInformation(LogMessages.DeleteRegistrationMaterial, registrationMaterialId);
+
+        await mediator.Send(new DeleteRegistrationMaterialCommand
+        {
+            RegistrationMaterialId = registrationMaterialId
+        });
+
+        return Ok();
+    }
 }

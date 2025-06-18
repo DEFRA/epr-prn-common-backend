@@ -21,4 +21,5 @@ public interface IRegistrationMaterialRepository
     Task<IList<RegistrationMaterial>> GetRegistrationMaterialsByRegistrationId(Guid requestRegistrationId);
     Task UpdateRegistrationMaterialPermits(Guid registrationMaterialId, int permitTypeId, string? permitNumber);
     Task<IEnumerable<LookupMaterialPermit>> GetMaterialPermitTypes();
+    Task DeleteAsync(Guid registrationMaterialId);
 }
