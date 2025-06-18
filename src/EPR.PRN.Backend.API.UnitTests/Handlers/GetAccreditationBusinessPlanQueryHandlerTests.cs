@@ -43,43 +43,11 @@ namespace EPR.PRN.Backend.API.UnitTests.Handlers
             var query = new GetRegistrationAccreditationBusinessPlanByIdQuery { Id = accreditationId };
             var updatedBy = "Test user";
 
-            var materialEntity = new RegistrationMaterial
-            {
-                ExternalId = materialId,
-                RegistrationId = 10,
-                MaterialId = 2,
-                Material = new LookupMaterial { MaterialName = "Plastic" },
-                StatusId = 1,
-                Status = new LookupRegistrationMaterialStatus { Id = 1, Name = "Granted" },
-            };
+            Accreditation accreditationEntity = CreateAccreditation(accreditationId);
 
-            var accreditationEntity = new Accreditation
+            accreditationEntity.Tasks = new List<RegulatorAccreditationTaskStatus>
             {
-                ApplicationReferenceNumber = "APP12345",
-                ExternalId = accreditationId,
-                RegistrationMaterial = materialEntity,
-                AccreditationYear = 2025,
-                AccreditationStatusId = 1,
-                PRNTonnage = 1000,
-                InfrastructurePercentage = 25.0m,
-                BusinessCollectionsPercentage = 15.0m,
-                RecycledWastePercentage = 20.0m,
-                NewMarketsPercentage = 10.0m,
-                CommunicationsPercentage = 5.0m,
-                NewUsersRecycledPackagingWastePercentage = 10.0m,
-                NotCoveredOtherCategoriesPercentage = 5.0m,
-                TotalPercentage = 100.0m,
-                InfrastructureNotes = "Infrastructure notes",
-                BusinessCollectionsNotes = "Business collections notes",
-                RecycledWasteNotes = "Recycled waste notes",
-                NewMarketsNotes = "New markets notes",
-                CommunicationsNotes = "Communications notes",
-                NewUsersRecycledPackagingWasteNotes = "New users recycled packaging waste notes",
-                NotCoveredOtherCategoriesNotes = "Not covered other categories notes",
-                Tasks = new List<RegulatorAccreditationTaskStatus>
-                {
 
-                }
             };
 
             _raRepositoryMock
@@ -123,40 +91,8 @@ namespace EPR.PRN.Backend.API.UnitTests.Handlers
             var query = new GetRegistrationAccreditationBusinessPlanByIdQuery { Id = accreditationId };
             var updatedBy = "Test user";
 
-            var materialEntity = new RegistrationMaterial
-            {
-                ExternalId = materialId,
-                RegistrationId = 10,
-                MaterialId = 2,
-                Material = new LookupMaterial { MaterialName = "Plastic" },
-                StatusId = 1,
-                Status = new LookupRegistrationMaterialStatus { Id = 1, Name = "Granted" },
-            };
 
-            var accreditationEntity = new Accreditation
-            {
-                ApplicationReferenceNumber = "APP12345",
-                ExternalId = accreditationId,
-                RegistrationMaterial = materialEntity,
-                AccreditationYear = 2025,
-                AccreditationStatusId = 1,
-                PRNTonnage = 1000,
-                InfrastructurePercentage = 25.0m,
-                BusinessCollectionsPercentage = 15.0m,
-                RecycledWastePercentage = 20.0m,
-                NewMarketsPercentage = 10.0m,
-                CommunicationsPercentage = 5.0m,
-                NewUsersRecycledPackagingWastePercentage = 10.0m,
-                NotCoveredOtherCategoriesPercentage = 5.0m,
-                TotalPercentage = 100.0m,
-                InfrastructureNotes = "Infrastructure notes",
-                BusinessCollectionsNotes = "Business collections notes",
-                RecycledWasteNotes = "Recycled waste notes",
-                NewMarketsNotes = "New markets notes",
-                CommunicationsNotes = "Communications notes",
-                NewUsersRecycledPackagingWasteNotes = "New users recycled packaging waste notes",
-                NotCoveredOtherCategoriesNotes = "Not covered other categories notes"
-            };
+            Accreditation accreditationEntity = CreateAccreditation(accreditationId);
 
             _raRepositoryMock
                 .Setup(r => r.GetAccreditationPaymentFeesById(accreditationId))
@@ -190,15 +126,63 @@ namespace EPR.PRN.Backend.API.UnitTests.Handlers
         }
 
         [TestMethod]
-        public async Task Handle_ShouldReturnCorrectTaskStatusinDto_WhenTaskExists()
+        public async Task Handle_ShouldReturnCompletedTaskStatus_WhenBusinessPlanTaskIsCompleted()
         {
             // Arrange
             var accreditationId = Guid.Parse("a9421fc1-a912-42ee-85a5-3e06408759a8");
             var query = new GetRegistrationAccreditationBusinessPlanByIdQuery { Id = accreditationId };
-            var accreditationEntity = new Accreditation
+
+
+            Accreditation accreditationEntity = CreateAccreditation(accreditationId);
+
+            accreditationEntity.Tasks = new List<RegulatorAccreditationTaskStatus>
+                {
+                    new RegulatorAccreditationTaskStatus
+                    {
+                        RegulatorTaskId = 1,
+                        Task = new LookupRegulatorTask
+                        {
+                            Id = 1,
+                            Name = RegulatorTaskNames.BusinessPlan
+                        },
+                        TaskStatusId =  (int)RegulatorTaskStatus.Completed,
+                        TaskStatus = new LookupTaskStatus
+                        {
+                            Id = (int)RegulatorTaskStatus.Completed,
+                            Name = "Completed"
+                        }
+                    }
+                };
+            
+            _raRepositoryMock
+                .Setup(r => r.GetAccreditationPaymentFeesById(accreditationId))
+                .ReturnsAsync(accreditationEntity);
+            // Act
+            var result = await _handler.Handle(query, CancellationToken.None);
+            // Assert
+            using (new AssertionScope())
+            {
+                result.Should().NotBeNull();
+                result.TaskStatus.Should().Be(RegulatorTaskStatus.Completed);
+            }
+        }
+
+
+        private static Accreditation CreateAccreditation(Guid accreditationId)
+        {
+            return new Accreditation
             {
                 ApplicationReferenceNumber = "APP12345",
                 ExternalId = accreditationId,
+                RegistrationMaterial = new RegistrationMaterial
+                {
+                    ExternalId = Guid.NewGuid(),
+                    RegistrationId = 10,
+                    MaterialId = 2,
+                    Material = new LookupMaterial { MaterialName = "Plastic" },
+                    StatusId = 1,
+                    Status = new LookupRegistrationMaterialStatus { Id = 1, Name = "Granted" },
+                },
                 AccreditationYear = 2025,
                 AccreditationStatusId = 1,
                 PRNTonnage = 1000,
@@ -216,37 +200,9 @@ namespace EPR.PRN.Backend.API.UnitTests.Handlers
                 NewMarketsNotes = "New markets notes",
                 CommunicationsNotes = "Communications notes",
                 NewUsersRecycledPackagingWasteNotes = "New users recycled packaging waste notes",
-                NotCoveredOtherCategoriesNotes = "Not covered other categories notes",
-                Tasks = new List<RegulatorAccreditationTaskStatus>
-                {
-                    new RegulatorAccreditationTaskStatus
-                    {
-                        RegulatorTaskId = 1,
-                        Task = new LookupRegulatorTask
-                        {
-                            Id = 1,
-                            Name = RegulatorTaskNames.BusinessPlan
-                        },
-                        TaskStatusId =  (int)RegulatorTaskStatus.Completed,
-                        TaskStatus = new LookupTaskStatus
-                        {
-                            Id = (int)RegulatorTaskStatus.Completed,
-                            Name = "Completed"
-                        }
-                    }
-                }
+                NotCoveredOtherCategoriesNotes = "Not covered other categories notes"
             };
-            _raRepositoryMock
-                .Setup(r => r.GetAccreditationPaymentFeesById(accreditationId))
-                .ReturnsAsync(accreditationEntity);
-            // Act
-            var result = await _handler.Handle(query, CancellationToken.None);
-            // Assert
-            using (new AssertionScope())
-            {
-                result.Should().NotBeNull();
-                result.TaskStatus.Should().Be(RegulatorTaskStatus.Completed);
-            }
         }
+
     }
 }
