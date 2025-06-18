@@ -118,6 +118,31 @@ public class AccreditationMaterialControllerTests
     }
 
     [TestMethod]
+    public async Task GetRegistrationAccreditationBusinessPlanById_ReturnsOk_WhenResultFound()
+    {
+        // Arrange
+        var accreditationId = Guid.NewGuid();
+        var dto = new AccreditationBusinessPlanDto
+        {
+            AccreditationId = accreditationId,
+            OrganisationId = new Guid(),
+            SiteAddress = "123 Test St, Testville, TS1 1AA",
+        };
+
+        _mediatorMock
+            .Setup(m => m.Send(It.Is<GetRegistrationAccreditationBusinessPlanByIdQuery>(q => q.Id == accreditationId), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(dto);
+
+        // Act
+        var result = await _controller.GetRegistrationAccreditationBusinessPlanById(accreditationId);
+
+        // Assert
+        result.Should().BeOfType<OkObjectResult>();
+        var okResult = result as OkObjectResult;
+        okResult!.Value.Should().BeEquivalentTo(dto);
+    }
+
+    [TestMethod]
     public async Task RegistrationAccreditationMarkAsDulyMade_ValidCommand_ReturnsNoContent()
     {
         // Arrange
