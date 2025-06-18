@@ -4,7 +4,6 @@ using EPR.PRN.Backend.API.Common.Enums;
 using EPR.PRN.Backend.API.Common.Exceptions;
 using EPR.PRN.Backend.API.Dto.Regulator;
 using EPR.PRN.Backend.Data.DataModels.Registrations;
-using Microsoft.Identity.Client;
 
 namespace EPR.PRN.Backend.API.Profiles.Regulator;
 

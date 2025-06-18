@@ -14,7 +14,6 @@ using Microsoft.Extensions.Logging;
 
 using Moq;
 using EPR.PRN.Backend.API.Common.Enums;
-using EPR.PRN.Backend.API.Handlers.Regulator;
 
 namespace EPR.PRN.Backend.API.UnitTests.Controllers.Regulator;
 
