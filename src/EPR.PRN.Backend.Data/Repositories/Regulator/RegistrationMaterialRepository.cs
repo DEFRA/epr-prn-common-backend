@@ -247,8 +247,6 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
         // Permit Number
         switch ((MaterialPermitType)permitTypeId)
         {
-            case MaterialPermitType.WasteExemption:
-                break;
             case MaterialPermitType.PollutionPreventionAndControlPermit:
                 registrationMaterial.PPCPermitNumber = permitNumber;
                 break;
@@ -274,8 +272,6 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
         // Capacity in tonnes and period Ids
         switch ((MaterialPermitType)permitTypeId)
         {
-            case MaterialPermitType.WasteExemption:
-                break;
             case MaterialPermitType.PollutionPreventionAndControlPermit:
                 registrationMaterial.PPCReprocessingCapacityTonne = capacityInTonnes ?? 0;
                 registrationMaterial.PPCPeriodId = periodId;

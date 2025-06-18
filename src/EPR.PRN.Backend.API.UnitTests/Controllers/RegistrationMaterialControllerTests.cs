@@ -4,12 +4,15 @@ using EPR.PRN.Backend.API.Controllers;
 using EPR.PRN.Backend.API.Dto.Regulator;
 using EPR.PRN.Backend.API.Handlers;
 using EPR.PRN.Backend.API.Queries;
+using EPR.PRN.Backend.API.Services;
+using EPR.PRN.Backend.API.Services.Interfaces;
 using FluentAssertions;
 using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace EPR.PRN.Backend.API.UnitTests.Controllers;
 
@@ -17,6 +20,7 @@ namespace EPR.PRN.Backend.API.UnitTests.Controllers;
 public class RegistrationMaterialControllerTests
 {
     private Mock<IMediator> _mediatorMock;
+    private Mock<IValidationService> _validationServiceMock;
     private Mock<ILogger<RegistrationMaterialController>> _loggerMock;
     private RegistrationMaterialController _controller;
     private static readonly Fixture _fixture = new();
@@ -25,8 +29,9 @@ public class RegistrationMaterialControllerTests
     public void TestInitialize()
     {
         _mediatorMock = new Mock<IMediator>();
+        _validationServiceMock = new Mock<IValidationService>();
         _loggerMock = new Mock<ILogger<RegistrationMaterialController>>();
-        _controller = new RegistrationMaterialController(_mediatorMock.Object, _loggerMock.Object);
+        _controller = new RegistrationMaterialController(_mediatorMock.Object, _validationServiceMock.Object, _loggerMock.Object);
     }
     
     [TestMethod]
@@ -103,10 +108,37 @@ public class RegistrationMaterialControllerTests
                               .Create();
 
         _mediatorMock.Setup(m => m.Send(It.IsAny<UpdateRegistrationMaterialPermitsCommand>(), It.IsAny<CancellationToken>()))
-                     .Returns(Task.CompletedTask);
+        .Returns(Task.CompletedTask);
+
+        _validationServiceMock.Setup(v => v.ValidateAsync(command, default))
+            .ReturnsAsync(new FluentValidation.Results.ValidationResult());
 
         // Act
         var result = await _controller.UpdateRegistrationMaterialPermits(id, command);
+
+        // Assert
+        result.Should().BeOfType<NoContentResult>();
+        command.RegistrationMaterialId.Should().Be(id);
+        _mediatorMock.Verify(m => m.Send(command, It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [TestMethod]
+    public async Task UpdateRegistrationMaterialPermitCapacity_ShouldReturnNoContent()
+    {
+        // Arrange
+        var id = Guid.NewGuid();
+        var command = _fixture.Build<UpdateRegistrationMaterialPermitCapacityCommand>()
+                              .Without(c => c.RegistrationMaterialId)
+                              .Create();
+
+        _mediatorMock.Setup(m => m.Send(It.IsAny<UpdateRegistrationMaterialPermitCapacityCommand>(), It.IsAny<CancellationToken>()))
+        .Returns(Task.CompletedTask);
+
+        _validationServiceMock.Setup(v => v.ValidateAsync(command, default))
+            .ReturnsAsync(new FluentValidation.Results.ValidationResult());
+
+        // Act
+        var result = await _controller.UpdateRegistrationMaterialPermitCapacity(id, command);
 
         // Assert
         result.Should().BeOfType<NoContentResult>();
@@ -121,7 +153,7 @@ public class RegistrationMaterialControllerTests
         var expectedList = _fixture.Create<List<MaterialsPermitTypeDto>>();
 
         _mediatorMock.Setup(m => m.Send(It.IsAny<GetMaterialsPermitTypesQuery>(), It.IsAny<CancellationToken>()))
-                     .ReturnsAsync(expectedList);
+        .ReturnsAsync(expectedList);
 
         // Act
         var result = await _controller.GetMaterialsPermitTypes();

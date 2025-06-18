@@ -3,6 +3,7 @@ using EPR.PRN.Backend.API.Commands;
 using EPR.PRN.Backend.API.Common.Constants;
 using EPR.PRN.Backend.API.Dto.Regulator;
 using EPR.PRN.Backend.API.Queries;
+using EPR.PRN.Backend.API.Services.Interfaces;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.FeatureManagement.Mvc;
@@ -16,6 +17,7 @@ namespace EPR.PRN.Backend.API.Controllers;
 [FeatureGate(FeatureFlags.ReprocessorExporter)]
 public class RegistrationMaterialController(
     IMediator mediator,
+    IValidationService validationService,
     ILogger<RegistrationMaterialController> logger) : ControllerBase
 {
     [HttpGet("registrations/{registrationId:guid}/materials")]
@@ -96,6 +98,8 @@ public class RegistrationMaterialController(
 
         command.RegistrationMaterialId = id;
 
+        await validationService.ValidateAndThrowAsync(command);
+
         await mediator.Send(command);
 
         return NoContent();
@@ -119,6 +123,8 @@ public class RegistrationMaterialController(
         logger.LogInformation(LogMessages.UpdateRegistrationMaterialPermitCapacity, id);
 
         command.RegistrationMaterialId = id;
+
+        await validationService.ValidateAndThrowAsync(command);
 
         await mediator.Send(command);
 
