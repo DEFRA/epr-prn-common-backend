@@ -86,7 +86,7 @@ public class GetOtherPermitsHandlerTests
 
         // Assert
         result.Should().NotBeNull();
-        result.Id.Should().Be(carrierBrokerDealerPermit.ExternalId);
+        result.CarrierBrokerDealerPermitId.Should().Be(carrierBrokerDealerPermit.ExternalId);
         result.RegistrationId.Should().Be(registration.ExternalId);
         result.WasteLicenseOrPermitNumber.Should().Be(carrierBrokerDealerPermit.WasteManagementorEnvironmentPermitNumber);
         result.WasteExemptionReference.Should().BeEquivalentTo(new List<string> { "test 3", "test 4", "test 5" });
@@ -124,7 +124,7 @@ public class GetOtherPermitsHandlerTests
 
         // Assert
         result.Should().NotBeNull();
-        result.Id.Should().Be(carrierBrokerDealerPermit.ExternalId);
+        result.CarrierBrokerDealerPermitId.Should().Be(carrierBrokerDealerPermit.ExternalId);
         result.RegistrationId.Should().Be(registration.ExternalId);
         result.WasteLicenseOrPermitNumber.Should().Be(carrierBrokerDealerPermit.WasteManagementorEnvironmentPermitNumber);
         result.WasteExemptionReference.Should().BeEmpty();
