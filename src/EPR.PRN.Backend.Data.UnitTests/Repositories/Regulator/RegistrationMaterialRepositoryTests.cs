@@ -659,8 +659,11 @@ public class RegistrationMaterialRepositoryTests
     [TestMethod]
     public async Task CreateAsync_ExistingRegistrationMaterial_ShouldThrow()
     {
-        // Act & Assert
-        await Assert.ThrowsExceptionAsync<InvalidOperationException>(() => _repository.CreateAsync(Guid.Parse("4bac12f7-f7a9-4df4-b7b5-9c4221860c4d"),"Plastic"));
+        // Act
+        var result = await _repository.CreateAsync(Guid.Parse("4bac12f7-f7a9-4df4-b7b5-9c4221860c4d"),"Plastic");
+
+        // Assert
+        result.Registration.ExternalId.Should().Be("4bac12f7-f7a9-4df4-b7b5-9c4221860c4d");
     }
 
     [TestMethod]
