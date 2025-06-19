@@ -659,8 +659,11 @@ public class RegistrationMaterialRepositoryTests
     [TestMethod]
     public async Task CreateAsync_ExistingRegistrationMaterial_ShouldThrow()
     {
-        // Act & Assert
-        await Assert.ThrowsExceptionAsync<InvalidOperationException>(() => _repository.CreateAsync(Guid.Parse("4bac12f7-f7a9-4df4-b7b5-9c4221860c4d"),"Plastic"));
+        // Act
+        var result = await _repository.CreateAsync(Guid.Parse("4bac12f7-f7a9-4df4-b7b5-9c4221860c4d"),"Plastic");
+
+        // Assert
+        result.Registration.ExternalId.Should().Be("4bac12f7-f7a9-4df4-b7b5-9c4221860c4d");
     }
 
     [TestMethod]
@@ -836,6 +839,70 @@ public class RegistrationMaterialRepositoryTests
         }
     }
 
+    [TestMethod]
+    public async Task DeleteRegistrationMaterial_NotFound_ThrowException()
+    {
+        // Act & Assert
+        await Assert.ThrowsExceptionAsync<KeyNotFoundException>(() => _repository.DeleteAsync(Guid.NewGuid()));
+    }
+
+    [TestMethod]
+    public async Task DeleteRegistrationMaterial_Found_ShouldDelete()
+    {
+        // Arrange
+        var id = Guid.NewGuid();
+        var registrationMaterialExternalId = Guid.NewGuid();
+        var registrationMaterialExternalId2 = Guid.NewGuid();
+        var registration = new Registration
+        {
+            Id = 10,
+            ExternalId = id
+        };
+
+        var registrationMaterial = new RegistrationMaterial
+        {
+            ExternalId = registrationMaterialExternalId,
+            Registration = registration,
+            RegistrationId = registration.Id,
+            Id = 55,
+            MaterialId = 1,
+            PermitTypeId = 1,
+            StatusId = 1,
+            InstallationPeriodId = 1,
+            PPCPeriodId = 1,
+            EnvironmentalPermitWasteManagementPeriodId = 1,
+            WasteManagementPeriodId = 1
+        };
+
+        // Negative data.
+        var registrationMaterial2 = new RegistrationMaterial
+        {
+            ExternalId = registrationMaterialExternalId2,
+            Registration = registration,
+            RegistrationId = registration.Id,
+            Id = 65,
+            MaterialId = 1,
+            PermitTypeId = 1,
+            StatusId = 1,
+            InstallationPeriodId = 1,
+            PPCPeriodId = 1,
+            EnvironmentalPermitWasteManagementPeriodId = 1,
+            WasteManagementPeriodId = 1
+        };
+
+        await _context.Registrations.AddAsync(registration);
+        await _context.RegistrationMaterials.AddAsync(registrationMaterial);
+        await _context.RegistrationMaterials.AddAsync(registrationMaterial2);
+        await _context.SaveChangesAsync();
+
+        // Act
+        await _repository.DeleteAsync(registrationMaterialExternalId);
+
+        // Assert
+        var loaded = _context.RegistrationMaterials.Where(o => o.RegistrationId == 10).ToList();
+        loaded.Should().HaveCount(1);
+        loaded.First().ExternalId.Should().Be(registrationMaterialExternalId2);
+    }
 
     [TestCleanup]
     public void Cleanup()

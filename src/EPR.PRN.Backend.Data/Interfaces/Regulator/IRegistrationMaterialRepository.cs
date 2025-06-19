@@ -23,4 +23,5 @@ public interface IRegistrationMaterialRepository
     Task UpdateRegistrationMaterialPermitCapacity(Guid registrationMaterialId, int permitTypeId, decimal? capacityInTonnes, int? periodId);
 
     Task<IEnumerable<LookupMaterialPermit>> GetMaterialPermitTypes();
+    Task DeleteAsync(Guid registrationMaterialId);
 }
