@@ -247,8 +247,6 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
         // Permit Number
         switch ((MaterialPermitType)permitTypeId)
         {
-            case MaterialPermitType.WasteExemption:
-                break;
             case MaterialPermitType.PollutionPreventionAndControlPermit:
                 registrationMaterial.PPCPermitNumber = permitNumber;
                 break;
@@ -260,6 +258,35 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
                 break;
             case MaterialPermitType.EnvironmentalPermitOrWasteManagementLicence:
                 registrationMaterial.EnvironmentalPermitWasteManagementNumber = permitNumber;
+                break;
+        }
+
+        await eprContext.SaveChangesAsync();
+    }
+
+    public async Task UpdateRegistrationMaterialPermitCapacity(Guid registrationMaterialId, int permitTypeId, decimal? capacityInTonnes, int? periodId)
+    {
+        var registrationMaterial = await eprContext.RegistrationMaterials
+                                        .FirstOrDefaultAsync(rm => rm.ExternalId == registrationMaterialId) ?? throw new KeyNotFoundException("Material not found.");
+
+        // Capacity in tonnes and period Ids
+        switch ((MaterialPermitType)permitTypeId)
+        {
+            case MaterialPermitType.PollutionPreventionAndControlPermit:
+                registrationMaterial.PPCReprocessingCapacityTonne = capacityInTonnes ?? 0;
+                registrationMaterial.PPCPeriodId = periodId;
+                break;
+            case MaterialPermitType.WasteManagementLicence:
+                registrationMaterial.WasteManagementReprocessingCapacityTonne = capacityInTonnes ?? 0;
+                registrationMaterial.WasteManagementPeriodId = periodId;
+                break;
+            case MaterialPermitType.InstallationPermit:
+                registrationMaterial.InstallationReprocessingTonne = capacityInTonnes ?? 0;
+                registrationMaterial.InstallationPeriodId = periodId;
+                break;
+            case MaterialPermitType.EnvironmentalPermitOrWasteManagementLicence:
+                registrationMaterial.EnvironmentalPermitWasteManagementTonne = capacityInTonnes ?? 0;
+                registrationMaterial.EnvironmentalPermitWasteManagementPeriodId = periodId;
                 break;
         }
 

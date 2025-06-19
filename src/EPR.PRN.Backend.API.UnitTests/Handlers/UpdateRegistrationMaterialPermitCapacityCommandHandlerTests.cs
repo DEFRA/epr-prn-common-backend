@@ -8,17 +8,17 @@ using Moq;
 namespace EPR.PRN.Backend.API.UnitTests.Handlers;
 
 [TestClass]
-public class UpdateRegistrationMaterialPermitsCommandHandlerTests
+public class UpdateRegistrationMaterialPermitCapacityCommandHandlerTests
 {
     private Mock<IRegistrationMaterialRepository> _repositoryMock;
-    private UpdateRegistrationMaterialPermitsHandler _handler;
+    private UpdateRegistrationMaterialPermitCapacityHandler _handler;
     private static readonly Fixture _fixture = new();
 
     [TestInitialize]
     public void TestInitialize()
     {
         _repositoryMock = new Mock<IRegistrationMaterialRepository>();
-        _handler = new UpdateRegistrationMaterialPermitsHandler(_repositoryMock.Object);
+        _handler = new UpdateRegistrationMaterialPermitCapacityHandler(_repositoryMock.Object);
     }
 
     [TestMethod]
@@ -27,9 +27,10 @@ public class UpdateRegistrationMaterialPermitsCommandHandlerTests
         // Arrange
         var registrationMaterialId = Guid.NewGuid();
 
-        var command = _fixture.Build<UpdateRegistrationMaterialPermitsCommand>()
+        var command = _fixture.Build<UpdateRegistrationMaterialPermitCapacityCommand>()
             .With(x => x.PermitTypeId, (int)MaterialPermitType.PollutionPreventionAndControlPermit)
-            .With(x => x.PermitNumber, "PPC-1234567890")
+            .With(x => x.CapacityInTonnes, 1000)
+            .With(x => x.PeriodId, 1)
             .With(x => x.RegistrationMaterialId, registrationMaterialId)
             .Create();
 
@@ -37,6 +38,6 @@ public class UpdateRegistrationMaterialPermitsCommandHandlerTests
         await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        _repositoryMock.Verify(r => r.UpdateRegistrationMaterialPermits(It.IsAny<Guid>(), It.IsAny<int>(), It.IsAny<string>()), Times.Once);
+        _repositoryMock.Verify(r => r.UpdateRegistrationMaterialPermitCapacity(It.IsAny<Guid>(), It.IsAny<int>(), It.IsAny<decimal>(), It.IsAny<int?>()), Times.Once);
     }
 }

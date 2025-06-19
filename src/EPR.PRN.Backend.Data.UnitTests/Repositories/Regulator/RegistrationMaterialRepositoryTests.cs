@@ -752,7 +752,6 @@ public class RegistrationMaterialRepositoryTests
         await _repository.UpdateRegistrationMaterialPermits(registrationMaterialId, permitTypeId, permitNumber);
         var registrationMaterial = await _context.RegistrationMaterials.FirstOrDefaultAsync(x => x.ExternalId == registrationMaterialId);
 
-
         // Assert
         registrationMaterial.PermitTypeId.Should().Be(permitTypeId);
 
@@ -769,6 +768,43 @@ public class RegistrationMaterialRepositoryTests
                 break;
             case MaterialPermitType.EnvironmentalPermitOrWasteManagementLicence:
                 registrationMaterial.EnvironmentalPermitWasteManagementNumber.Should().Be(permitNumber);
+                break;
+        }
+    }
+
+    [DataTestMethod]
+    [DataRow(MaterialPermitType.PollutionPreventionAndControlPermit, 2000, 2)]
+    [DataRow(MaterialPermitType.WasteManagementLicence, 3000, 3)]
+    [DataRow(MaterialPermitType.InstallationPermit, 4000, 4)]
+    [DataRow(MaterialPermitType.EnvironmentalPermitOrWasteManagementLicence, 5000, 5)]
+    public async Task UpdateRegistrationMaterialPermitCapacity_ShouldUpdate_WhenExists(MaterialPermitType permitTypeId, double capacityInTonnes, int? periodId)
+    {
+        // Arrange
+        var capacityInTonnesAsDecimal = (decimal)capacityInTonnes;
+        var registrationMaterialId = Guid.Parse("a9421fc1-a912-42ee-85a5-3e06408759a9");
+
+        // Act
+        await _repository.UpdateRegistrationMaterialPermitCapacity(registrationMaterialId, (int)permitTypeId, capacityInTonnesAsDecimal, periodId);
+        var registrationMaterial = await _context.RegistrationMaterials.FirstOrDefaultAsync(x => x.ExternalId == registrationMaterialId);
+
+        // Assert
+        switch (permitTypeId)
+        {
+            case MaterialPermitType.PollutionPreventionAndControlPermit:
+                registrationMaterial.PPCReprocessingCapacityTonne.Should().Be(capacityInTonnesAsDecimal);
+                registrationMaterial.PPCPeriodId.Should().Be(periodId);
+                break;
+            case MaterialPermitType.WasteManagementLicence:
+                registrationMaterial.WasteManagementReprocessingCapacityTonne.Should().Be(capacityInTonnesAsDecimal);
+                registrationMaterial.WasteManagementPeriodId.Should().Be(periodId);
+                break;
+            case MaterialPermitType.InstallationPermit:
+                registrationMaterial.InstallationReprocessingTonne.Should().Be(capacityInTonnesAsDecimal);
+                registrationMaterial.InstallationPeriodId.Should().Be(periodId);
+                break;
+            case MaterialPermitType.EnvironmentalPermitOrWasteManagementLicence:
+                registrationMaterial.EnvironmentalPermitWasteManagementTonne.Should().Be(capacityInTonnesAsDecimal);
+                registrationMaterial.EnvironmentalPermitWasteManagementPeriodId.Should().Be(periodId);
                 break;
         }
     }

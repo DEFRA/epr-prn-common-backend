@@ -3,6 +3,7 @@ using EPR.PRN.Backend.API.Commands;
 using EPR.PRN.Backend.API.Common.Constants;
 using EPR.PRN.Backend.API.Dto.Regulator;
 using EPR.PRN.Backend.API.Queries;
+using EPR.PRN.Backend.API.Services.Interfaces;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.FeatureManagement.Mvc;
@@ -16,6 +17,7 @@ namespace EPR.PRN.Backend.API.Controllers;
 [FeatureGate(FeatureFlags.ReprocessorExporter)]
 public class RegistrationMaterialController(
     IMediator mediator,
+    IValidationService validationService,
     ILogger<RegistrationMaterialController> logger) : ControllerBase
 {
     [HttpGet("registrations/{registrationId:guid}/materials")]
@@ -82,8 +84,8 @@ public class RegistrationMaterialController(
     [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     [SwaggerOperation(
-        Summary = "updates an existing registration material",
-        Description = "attempting to update the registration material."
+        Summary = "updates an existing registration material permits",
+        Description = "attempting to update the registration material permits."
     )]
     [SwaggerResponse(StatusCodes.Status204NoContent, "Returns No Content")]
     [SwaggerResponse(StatusCodes.Status400BadRequest, "If the request is invalid or a validation error occurs.", typeof(ProblemDetails))]
@@ -92,9 +94,37 @@ public class RegistrationMaterialController(
     public async Task<IActionResult> UpdateRegistrationMaterialPermits([FromRoute] Guid id, [FromBody] UpdateRegistrationMaterialPermitsCommand command)
     {
 
-        logger.LogInformation(LogMessages.UpdateRegistrationMaterial, id);
+        logger.LogInformation(LogMessages.UpdateRegistrationMaterialPermits, id);
 
         command.RegistrationMaterialId = id;
+
+        await validationService.ValidateAndThrowAsync(command);
+
+        await mediator.Send(command);
+
+        return NoContent();
+    }
+
+    [HttpPost("registrationMaterials/{id:Guid}/permitCapacity")]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(OkResult))]
+    [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
+    [SwaggerOperation(
+        Summary = "updates an existing registration material permit capacity",
+        Description = "attempting to update the registration material permit capacity."
+    )]
+    [SwaggerResponse(StatusCodes.Status204NoContent, "Returns No Content")]
+    [SwaggerResponse(StatusCodes.Status400BadRequest, "If the request is invalid or a validation error occurs.", typeof(ProblemDetails))]
+    [SwaggerResponse(StatusCodes.Status404NotFound, "If an existing registration is not found", typeof(ProblemDetails))]
+    [SwaggerResponse(StatusCodes.Status500InternalServerError, "If an unexpected error occurs.", typeof(ContentResult))]
+    public async Task<IActionResult> UpdateRegistrationMaterialPermitCapacity([FromRoute] Guid id, [FromBody] UpdateRegistrationMaterialPermitCapacityCommand command)
+    {
+
+        logger.LogInformation(LogMessages.UpdateRegistrationMaterialPermitCapacity, id);
+
+        command.RegistrationMaterialId = id;
+
+        await validationService.ValidateAndThrowAsync(command);
 
         await mediator.Send(command);
 
