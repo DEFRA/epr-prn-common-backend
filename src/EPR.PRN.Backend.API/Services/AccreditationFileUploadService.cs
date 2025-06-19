@@ -9,7 +9,7 @@ using Newtonsoft.Json;
 
 public class AccreditationFileUploadService(
     IAccreditationFileUploadRepository repository,
-    ILogger<AccreditationService> logger,
+    ILogger<AccreditationFileUploadService> logger,
     IConfiguration configuration) : IAccreditationFileUploadService
 {
     private readonly string logPrefix = string.IsNullOrEmpty(configuration["LogPrefix"]) ? "[EPR.PRN.Backend]" : configuration["LogPrefix"]!;
