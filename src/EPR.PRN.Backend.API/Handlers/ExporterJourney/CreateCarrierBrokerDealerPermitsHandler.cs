@@ -23,7 +23,7 @@ public class CreateCarrierBrokerDealerPermitsHandler(
         var carrierBrokerDealerPermit = new CarrierBrokerDealerPermit
         {
             RegistrationId = registration.Id, 
-            WasteCarrierBrokerDealerRegistrstion = request.WasteCarrierBrokerDealerRegistration,
+            WasteCarrierBrokerDealerRegistration = request.WasteCarrierBrokerDealerRegistration,
             CreatedBy = request.UserId,
             CreatedOn = DateTime.UtcNow
         };

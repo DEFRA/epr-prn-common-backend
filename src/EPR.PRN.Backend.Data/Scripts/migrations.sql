@@ -3567,7 +3567,7 @@ BEGIN
         [Id] int NOT NULL IDENTITY,
         [ExternalId] uniqueidentifier NOT NULL DEFAULT (NEWID()),
         [RegistrationId] int NOT NULL,
-        [WasteCarrierBrokerDealerRegistrstion] varchar(20) NULL,
+        [WasteCarrierBrokerDealerRegistration] varchar(20) NULL,
         [WasteManagementorEnvironmentPermitNumber] varchar(20) NULL,
         [InstallationPermitorPPCNumber] varchar(20) NULL,
         [WasteExemptionReference] varchar(150) NULL,

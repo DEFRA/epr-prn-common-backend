@@ -1081,7 +1081,7 @@ namespace EPR.PRN.Backend.Data.Migrations
                     b.Property<DateTime?>("UpdatedOn")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("WasteCarrierBrokerDealerRegistrstion")
+                    b.Property<string>("WasteCarrierBrokerDealerRegistration")
                         .HasMaxLength(20)
                         .HasColumnType("varchar(20)");
 

@@ -86,7 +86,7 @@ public class CreateOtherPermitsHandlerTests
         // Assert
         result.Should().BeTrue();
         createdCarrierBrokerDealerPermit.Should().NotBeNull();
-        createdCarrierBrokerDealerPermit.WasteCarrierBrokerDealerRegistrstion.Should().Be("Test 1");
+        createdCarrierBrokerDealerPermit.WasteCarrierBrokerDealerRegistration.Should().Be("Test 1");
         createdCarrierBrokerDealerPermit.CreatedBy.Should().Be(command.UserId);
     }
 }

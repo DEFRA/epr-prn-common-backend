@@ -12,7 +12,12 @@ public class UpdateCarrierBrokerDealerPermitsHandler(ICarrierBrokerDealerPermitR
         var carrierBrokerDealerPermit = await carrierBrokerDealerPermitRepository.GetByRegistrationId(request.RegistrationId, cancellationToken)
             ?? throw new KeyNotFoundException();
 
-        if(!string.IsNullOrWhiteSpace(request.Dto.WasteLicenseOrPermitNumber))
+		if (!string.IsNullOrWhiteSpace(request.Dto.WasteCarrierBrokerDealerRegistration))
+		{
+			carrierBrokerDealerPermit.WasteCarrierBrokerDealerRegistration = request.Dto.WasteCarrierBrokerDealerRegistration;
+		}
+
+		if (!string.IsNullOrWhiteSpace(request.Dto.WasteLicenseOrPermitNumber))
         {
 			carrierBrokerDealerPermit.WasteManagementorEnvironmentPermitNumber = request.Dto.WasteLicenseOrPermitNumber;
 		}
