@@ -55,7 +55,6 @@ public class AccreditationFileUploadRepository(EprAccreditationContext eprContex
     public async Task Update(Guid accreditationId, AccreditationFileUpload fileUpload)
     {
         var existingEntity = await eprContext.AccreditationFileUploads
-            .AsNoTracking()
             .SingleOrDefaultAsync(x => x.ExternalId.Equals(fileUpload.ExternalId));
 
         if (existingEntity == null)
@@ -79,7 +78,6 @@ public class AccreditationFileUploadRepository(EprAccreditationContext eprContex
         int accreditationIdInt = await GetAccreditationIntegerId(accreditationId);
 
         var existingEntity = await eprContext.AccreditationFileUploads
-            .AsNoTracking()
             .FirstOrDefaultAsync(x => x.AccreditationId == accreditationIdInt && x.FileId.Equals(fileId));
 
         if (existingEntity == null)
