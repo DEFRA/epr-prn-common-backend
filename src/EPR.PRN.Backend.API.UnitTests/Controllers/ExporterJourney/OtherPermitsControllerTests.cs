@@ -43,7 +43,7 @@ public class OtherPermitsControllerTests
         // Arrange
         var expectedDto = new GetCarrierBrokerDealerPermitsResultDto
         {
-            Id = Guid.NewGuid(),
+            CarrierBrokerDealerPermitId = Guid.NewGuid(),
             RegistrationId = Guid.NewGuid(),
             WasteLicenseOrPermitNumber = "test 1",
             PpcNumber = "test 2",

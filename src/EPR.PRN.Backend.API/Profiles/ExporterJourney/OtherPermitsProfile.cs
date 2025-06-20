@@ -9,7 +9,7 @@ public class OtherPermitsProfile : Profile
     public OtherPermitsProfile()
     {
         CreateMap<CarrierBrokerDealerPermit, GetCarrierBrokerDealerPermitsResultDto>()
-            .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.ExternalId))
+            .ForMember(dest => dest.CarrierBrokerDealerPermitId, opt => opt.MapFrom(src => src.ExternalId))
             .ForMember(dest => dest.RegistrationId, opt => opt.MapFrom(src => src.Registration.ExternalId))
             .ForMember(dest => dest.WasteLicenseOrPermitNumber, opt => opt.MapFrom(src => src.WasteManagementorEnvironmentPermitNumber))
             .ForMember(dest => dest.PpcNumber, opt => opt.MapFrom(src => src.InstallationPermitorPPCNumber))
