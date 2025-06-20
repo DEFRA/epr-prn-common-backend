@@ -72,7 +72,7 @@ public class AccreditationService(
 
     public async Task UpdateAccreditation(AccreditationRequestDto accreditationDto)
     {
-        logger.LogInformation("{Logprefix}: AccreditationService - UpdateAccreditation: request to update accreditation {AccreditationId}", logPrefix, accreditationDto.ExternalId);
+        logger.LogInformation("{Logprefix}: AccreditationService - UpdateAccreditation: request to update accreditation", logPrefix);
 
         var entity = mapper.Map<AccreditationEntity>(accreditationDto);
 
