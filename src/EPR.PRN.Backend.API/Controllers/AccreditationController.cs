@@ -2,6 +2,7 @@
 
 using System.Diagnostics.CodeAnalysis;
 using EPR.PRN.Backend.API.Common.Constants;
+using EPR.PRN.Backend.API.Common.Enums;
 using EPR.PRN.Backend.API.Dto.Accreditation;
 using EPR.PRN.Backend.API.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -11,7 +12,9 @@ using Microsoft.FeatureManagement.Mvc;
 [ApiVersion("1.0")]
 [Route("api/v{version:apiVersion}/Accreditation")]
 [FeatureGate(FeatureFlags.EnableAccreditation)]
-public class AccreditationController(IAccreditationService accreditationService) : ControllerBase
+public class AccreditationController(
+    IAccreditationService accreditationService,
+    IAccreditationFileUploadService accreditationFileUploadService) : ControllerBase
 {
     [HttpGet("{organisationId}/{materialId}/{applicationTypeId}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -70,6 +73,53 @@ public class AccreditationController(IAccreditationService accreditationService)
     {
         // Temporary: Aid to QA whilst Accreditation uses in-memory database.
         await accreditationService.ClearDownDatabase();
+
+        return Ok();
+    }
+
+    [HttpGet("{accreditationId}/Files/{fileUploadTypeId}/{fileUploadStatusId?}")]
+    [ProducesResponseType(typeof(List<AccreditationDto>), 200)]
+    public async Task<IActionResult> GetFileUploads(
+        [FromRoute] Guid accreditationId,
+        [FromRoute] int fileUploadTypeId,
+        [FromRoute] int fileUploadStatusId = (int)AccreditationFileUploadStatus.UploadComplete)
+    {
+        if (!Enum.IsDefined(typeof(AccreditationFileUploadType), fileUploadTypeId))
+            return BadRequest("FileUploadTypeId is invalid");
+
+        if (!Enum.IsDefined(typeof(AccreditationFileUploadStatus), fileUploadStatusId))
+            return BadRequest("FileUploadStatusId is invalid");
+
+        List<AccreditationFileUploadDto> fileUploads = await accreditationFileUploadService.GetByAccreditationId(accreditationId, fileUploadTypeId, fileUploadStatusId);
+
+        return Ok(fileUploads);
+    }
+
+    [HttpPost("{accreditationId}/Files")]
+    [ProducesResponseType(typeof(AccreditationFileUploadDto), 200)]
+    public async Task<IActionResult> UpsertFileUpload([FromRoute] Guid accreditationId, [FromBody] AccreditationFileUploadDto request)
+    {
+        Guid externalId;
+        if (!request.ExternalId.HasValue || request.ExternalId == Guid.Empty)
+        {
+            externalId = await accreditationFileUploadService.CreateFileUpload(accreditationId, request);
+        }
+        else
+        {
+            externalId = request.ExternalId.Value;
+            await accreditationFileUploadService.UpdateFileUpload(accreditationId, request);
+        }
+
+        var fileUpload = await accreditationFileUploadService.GetByExternalId(externalId);
+        
+        return Ok(fileUpload);
+    }
+
+    [HttpDelete("{accreditationId}/Files/{fileId}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> DeleteFileUpload([FromRoute] Guid accreditationId, [FromRoute] Guid fileId)
+    {
+        await accreditationFileUploadService.DeleteFileUpload(accreditationId, fileId);
 
         return Ok();
     }
