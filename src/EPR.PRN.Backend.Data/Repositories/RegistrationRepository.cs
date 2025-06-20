@@ -304,8 +304,6 @@ public class RegistrationRepository(EprContext context, ILogger<RegistrationRepo
                 .ThenInclude(t => t.Task)
             .Include(r => r.Materials);
     }
-}
-
 
     public async Task<IEnumerable<RegistrationOverviewDto>> GetRegistrationsOverviewForOrgIdAsync(Guid organisationId)
     {
@@ -330,7 +328,7 @@ public class RegistrationRepository(EprContext context, ILogger<RegistrationRepo
                     TownCity = r.ReprocessingSiteAddress.TownCity,
                     County = r.ReprocessingSiteAddress.County,
                     PostCode = r.ReprocessingSiteAddress.PostCode,
-                    NationId = r.ReprocessingSiteAddress.NationId.HasValue ? r.ReprocessingSiteAddress.NationId.Value : 0,
+                    NationId = r.ReprocessingSiteAddress.NationId ?? 0,
                     GridReference = r.ReprocessingSiteAddress.GridReference
                 } : null,
                 Year = DateTime.Today.Year // Map the year from each material

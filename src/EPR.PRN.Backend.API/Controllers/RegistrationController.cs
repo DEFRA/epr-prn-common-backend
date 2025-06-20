@@ -178,7 +178,7 @@ public class RegistrationController(IMediator mediator
     [SwaggerResponse(StatusCodes.Status204NoContent, $"Returns No Content", typeof(NoContentResult))]
     [SwaggerResponse(StatusCodes.Status400BadRequest, "If the request is invalid or a validation error occurs.", typeof(ProblemDetails))]
     [SwaggerResponse(StatusCodes.Status500InternalServerError, "If an unexpected error occurs.", typeof(ContentResult))]
-    public async Task<IActionResult> GetRegistrationsOverviewForOrg([FromRoute] Guid organisationId)
+    public async Task<IActionResult> GetRegistrationsOverviewForOrgId([FromRoute] Guid organisationId)
     {
         logger.LogInformation(LogMessages.RegistrationsOverview, organisationId);
         
