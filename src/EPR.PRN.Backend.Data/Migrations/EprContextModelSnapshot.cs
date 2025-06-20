@@ -994,7 +994,6 @@ namespace EPR.PRN.Backend.Data.Migrations
                         .HasColumnType("nvarchar(200)");
 
                     b.Property<string>("AddressLine2")
-                        .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
@@ -1003,7 +1002,6 @@ namespace EPR.PRN.Backend.Data.Migrations
                         .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("GridReference")
-                        .IsRequired()
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
@@ -2689,7 +2687,7 @@ namespace EPR.PRN.Backend.Data.Migrations
             modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.RegistrationTaskStatus", b =>
                 {
                     b.HasOne("EPR.PRN.Backend.Data.DataModels.Registrations.Registration", "Registration")
-                        .WithMany()
+                        .WithMany("RegistrationTasks")
                         .HasForeignKey("RegistrationId");
 
                     b.HasOne("EPR.PRN.Backend.Data.DataModels.Registrations.LookupRegulatorTask", "Task")
@@ -2852,6 +2850,8 @@ namespace EPR.PRN.Backend.Data.Migrations
                     b.Navigation("AccreditationTasks");
 
                     b.Navigation("Materials");
+
+                    b.Navigation("RegistrationTasks");
 
                     b.Navigation("Tasks");
                 });

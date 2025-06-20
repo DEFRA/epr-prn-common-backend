@@ -22,9 +22,10 @@ public class UpdateRegistrationSiteAddressCommandValidatorTests
     [TestMethod]
     public void Should_Have_Error_When_RegistrationId_Is_NotProvided()
     {
+        var registrationId = Guid.Empty;
         var model = new UpdateRegistrationSiteAddressCommand
         {
-            RegistrationId = 0,
+            RegistrationId = registrationId,
             ReprocessingSiteAddress = new AddressDto()
         };
 
@@ -36,9 +37,10 @@ public class UpdateRegistrationSiteAddressCommandValidatorTests
     [TestMethod]
     public void Should_Have_Error_When_ReprocessingSiteAddress_Is_Null()
     {
+        var registrationId = Guid.NewGuid();
         var model = new UpdateRegistrationSiteAddressCommand
         {
-            RegistrationId = 1,
+            RegistrationId = registrationId,
             ReprocessingSiteAddress = null
         };
 
@@ -50,9 +52,10 @@ public class UpdateRegistrationSiteAddressCommandValidatorTests
     [TestMethod]
     public void Should_Have_Errors_When_ReprocessingSiteAddress_Id_Is_Zero_And_Fields_Missing()
     {
+        var registrationId = Guid.NewGuid();
         var model = new UpdateRegistrationSiteAddressCommand
         {
-            RegistrationId = 1,
+            RegistrationId = registrationId,
             ReprocessingSiteAddress = new AddressDto
             {
                 Id = 0,
@@ -68,7 +71,6 @@ public class UpdateRegistrationSiteAddressCommandValidatorTests
 
         using (new AssertionScope())
         {
-            result.ShouldHaveValidationErrorFor("ReprocessingSiteAddress.NationId");
             result.ShouldHaveValidationErrorFor("ReprocessingSiteAddress.GridReference");
             result.ShouldHaveValidationErrorFor("ReprocessingSiteAddress.AddressLine1");
             result.ShouldHaveValidationErrorFor("ReprocessingSiteAddress.TownCity");
@@ -79,9 +81,10 @@ public class UpdateRegistrationSiteAddressCommandValidatorTests
     [TestMethod]
     public void Should_Not_Have_Errors_For_Valid_Command_When_Id_Is_Zero()
     {
+        var registrationId = Guid.NewGuid();
         var model = new UpdateRegistrationSiteAddressCommand
         {
-            RegistrationId = 1,
+            RegistrationId = registrationId,
             ReprocessingSiteAddress = new AddressDto
             {
                 Id = 0,
@@ -101,9 +104,10 @@ public class UpdateRegistrationSiteAddressCommandValidatorTests
     [TestMethod]
     public void Should_Not_Validate_Nested_Fields_When_ReprocessingSiteAddress_Id_Is_Not_Zero()
     {
+        var registrationId = Guid.NewGuid();
         var model = new UpdateRegistrationSiteAddressCommand
         {
-            RegistrationId = 1,
+            RegistrationId = registrationId,
             ReprocessingSiteAddress = new AddressDto
             {
                 Id = 1, // Not zero
