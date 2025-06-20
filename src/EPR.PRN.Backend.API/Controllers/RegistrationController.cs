@@ -1,15 +1,15 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using System.Net;
-
-using EPR.PRN.Backend.API.Commands;
+﻿using EPR.PRN.Backend.API.Commands;
 using EPR.PRN.Backend.API.Common.Constants;
 using EPR.PRN.Backend.API.Dto.Regulator;
+using EPR.PRN.Backend.API.Handlers.Regulator;
 using EPR.PRN.Backend.API.Queries;
 using EPR.PRN.Backend.API.Services.Interfaces;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.FeatureManagement.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
+using System.Diagnostics.CodeAnalysis;
+using System.Net;
 
 namespace EPR.PRN.Backend.API.Controllers;
 
@@ -52,6 +52,30 @@ public class RegistrationController(IMediator mediator
         return Ok(registration);
     }
 
+    [HttpGet("registrations/{registrationId:Guid}")]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(RegistrationOverviewDto))]
+    [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
+    [SwaggerOperation(
+        Summary = "gets an existing registration overview ID.",
+        Description = "attempting to get an existing registration overview using the registration ID."
+    )]
+    [SwaggerResponse(StatusCodes.Status400BadRequest, "If the request is invalid or a validation error occurs.", typeof(ProblemDetails))]
+    [SwaggerResponse(StatusCodes.Status500InternalServerError, "If an unexpected error occurs.", typeof(ContentResult))]
+    [ExcludeFromCodeCoverage(Justification = "TODO: To be done as part of create registration user story")]
+    public async Task<IActionResult> GetRegistrationById([FromRoute] Guid registrationId)
+    {
+        logger.LogInformation( LogMessages.GetRegistrationOverviewById, registrationId) ;
+
+        var registration = await mediator.Send(new GetRegistrationByIdQuery{Id = registrationId} );
+
+        if (registration is null)
+        {
+            return NotFound();
+        }
+
+        return Ok(registration);
+    }
     #endregion
 
     #region Post Methods

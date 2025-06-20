@@ -6,6 +6,8 @@ using EPR.PRN.Backend.Data.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Immutable;
 
 namespace EPR.PRN.Backend.Data.Repositories;
 
@@ -62,6 +64,12 @@ public class RegistrationRepository(EprContext context, ILogger<RegistrationRepo
         var registrations = LoadRegistrationWithRelatedEntities();
         return await registrations.SingleOrDefaultAsync(o => o.ExternalId == registrationId);
     }
+
+
+    public async Task<List<LookupRegulatorTask>> GetRequiredTasks(int applicationTypeId, bool isMaterialSpecific, int journeyTypeId) =>
+        await context.LookupTasks
+            .Where(t => t.ApplicationTypeId == applicationTypeId && t.IsMaterialSpecific == isMaterialSpecific && t.JourneyTypeId == journeyTypeId)
+            .ToListAsync();
 
     public async Task<Registration?> GetByOrganisationAsync(int applicationTypeId, Guid organisationId)
     {
@@ -293,15 +301,20 @@ public class RegistrationRepository(EprContext context, ILogger<RegistrationRepo
 
     private IIncludableQueryable<Registration,List<RegistrationMaterial>?> LoadRegistrationWithRelatedEntities()
     {
-        return context.Registrations
+        var data = context.Registrations
             .AsSplitQuery()
             .Include(r => r.BusinessAddress)
             .Include(r => r.ReprocessingSiteAddress)
             .Include(r => r.LegalDocumentAddress)
-            .Include(r => r.ApplicantRegistrationTasksStatus)!
-                .ThenInclude(t => t.TaskStatus)
-            .Include(r => r.ApplicantRegistrationTasksStatus)!
-                .ThenInclude(t => t.Task)
+             
+            .Include(r => r.ApplicantRegistrationTasksStatus)
+            .ThenInclude( t=>t.Task)
+
+            .Include(r => r.ApplicantRegistrationTasksStatus)
+            .ThenInclude(t => t.TaskStatus)
+             
             .Include(r => r.Materials);
+
+        return data;
     }
 }
