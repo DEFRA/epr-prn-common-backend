@@ -6,10 +6,8 @@ namespace EPR.PRN.Backend.API.Dto.Regulator;
 [ExcludeFromCodeCoverage]
 public class RegistrationDto
 {
-    public int Id { get; set; }
-    
-    public Guid ExternalId { get; set; }
-    
+    public Guid Id { get; set; }
+
     public int ApplicationTypeId { get; set; }
     
     public Guid OrganisationId { get; set; }
