@@ -1,4 +1,5 @@
-﻿using EPR.PRN.Backend.Data.DataModels.Registrations;
+﻿using EPR.PRN.Backend.API.Common.Enums;
+using EPR.PRN.Backend.Data.DataModels.Registrations;
 
 namespace EPR.PRN.Backend.Data.Interfaces.Regulator;
 
@@ -14,7 +15,13 @@ public interface IRegistrationMaterialRepository
     Task UpdateRegistrationOutCome(Guid registrationMaterialId, int statusId, string? comment, string? registrationReferenceNumber , Guid User);
     Task RegistrationMaterialsMarkAsDulyMade(Guid registrationMaterialId, int statusId, DateTime DeterminationDate,
             DateTime DulyMadeDate,Guid DulyMadeBy);
-    Task<int> CreateAsync(int registrationId, string material);
+    Task<RegistrationMaterial> CreateAsync(Guid registrationId, string material);
 
-    Task CreateRegistrationMaterialWithExemptionsAsync(RegistrationMaterial registrationMaterial, List<MaterialExemptionReference> exemptionReferences);
+    Task CreateExemptionReferencesAsync(Guid registrationMaterialId, List<MaterialExemptionReference> exemptionReferences);
+    Task<IList<RegistrationMaterial>> GetRegistrationMaterialsByRegistrationId(Guid requestRegistrationId);
+    Task UpdateRegistrationMaterialPermits(Guid registrationMaterialId, int permitTypeId, string? permitNumber);
+    Task UpdateRegistrationMaterialPermitCapacity(Guid registrationMaterialId, int permitTypeId, decimal? capacityInTonnes, int? periodId);
+
+    Task<IEnumerable<LookupMaterialPermit>> GetMaterialPermitTypes();
+    Task DeleteAsync(Guid registrationMaterialId);
 }
