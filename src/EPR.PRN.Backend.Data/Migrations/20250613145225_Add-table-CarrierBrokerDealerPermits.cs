@@ -19,7 +19,7 @@ namespace EPR.PRN.Backend.Data.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     ExternalId = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "NEWID()"),
                     RegistrationId = table.Column<int>(type: "int", nullable: false),
-                    WasteCarrierBrokerDealerRegistrstion = table.Column<string>(type: "varchar(20)", maxLength: 20, nullable: true),
+                    WasteCarrierBrokerDealerRegistration = table.Column<string>(type: "varchar(20)", maxLength: 20, nullable: true),
                     WasteManagementorEnvironmentPermitNumber = table.Column<string>(type: "varchar(20)", maxLength: 20, nullable: true),
                     InstallationPermitorPPCNumber = table.Column<string>(type: "varchar(20)", maxLength: 20, nullable: true),
                     WasteExemptionReference = table.Column<string>(type: "varchar(150)", maxLength: 150, nullable: true),

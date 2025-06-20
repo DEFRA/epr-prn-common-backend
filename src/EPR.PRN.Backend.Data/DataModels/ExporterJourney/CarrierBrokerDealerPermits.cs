@@ -19,7 +19,7 @@ public class CarrierBrokerDealerPermit
 
     [MaxLength(20)]
     [Column(TypeName = "varchar(20)")]
-    public string? WasteCarrierBrokerDealerRegistrstion { get; set; }
+    public string? WasteCarrierBrokerDealerRegistration { get; set; }
     [MaxLength(20)]
     [Column(TypeName = "varchar(20)")]
     public string? WasteManagementorEnvironmentPermitNumber { get; set; }
