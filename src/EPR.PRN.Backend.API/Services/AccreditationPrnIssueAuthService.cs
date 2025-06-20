@@ -30,7 +30,7 @@ public class AccreditationPrnIssueAuthService(
 
     public async Task ReplaceAllByAccreditationId(Guid accreditationId, List<AccreditationPrnIssueAuthRequestDto> request)
     {
-        logger.LogInformation("{Logprefix}: AccreditationPrnIssueAuthService - ReplaceAllByAccreditationId: request for accreditation {AccreditationId}, new list: {List}", logPrefix, accreditationId, JsonConvert.SerializeObject(request));
+        logger.LogInformation("{Logprefix}: AccreditationPrnIssueAuthService - ReplaceAllByAccreditationId: request for accreditation {AccreditationId}", logPrefix, accreditationId);
 
         var entities = mapper.Map<List<AccreditationPrnIssueAuth>>(request);
         await repository.ReplaceAllByAccreditationId(accreditationId, entities);

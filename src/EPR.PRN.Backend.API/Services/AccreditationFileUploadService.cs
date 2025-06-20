@@ -36,7 +36,7 @@ public class AccreditationFileUploadService(
 
     public async Task<Guid> CreateFileUpload(Guid accreditationId, AccreditationFileUploadDto requestDto)
     {
-        logger.LogInformation("{Logprefix}: AccreditationFileUploadService - Create. AccreditationId: {AccreditationId}, Request DTO: {Dto}", logPrefix, accreditationId, JsonConvert.SerializeObject(requestDto));
+        logger.LogInformation("{Logprefix}: AccreditationFileUploadService - Create. AccreditationId: {AccreditationId}, FileId: {FileId}", logPrefix, accreditationId, requestDto.FileId);
 
         var entity = MapDtoToEntity(requestDto);
 
@@ -45,7 +45,7 @@ public class AccreditationFileUploadService(
 
     public async Task UpdateFileUpload(Guid accreditationId, AccreditationFileUploadDto requestDto)
     {
-        logger.LogInformation("{Logprefix}: AccreditationFileUploadService - Update. AccreditationId: {AccreditationId}, Request DTO: {Dto}", logPrefix, accreditationId, JsonConvert.SerializeObject(requestDto));
+        logger.LogInformation("{Logprefix}: AccreditationFileUploadService - Update. AccreditationId: {AccreditationId}, AccreditationFileUploadId: {AccreditationFileUploadId}", logPrefix, accreditationId, requestDto.ExternalId);
 
         var entity = MapDtoToEntity(requestDto);
 

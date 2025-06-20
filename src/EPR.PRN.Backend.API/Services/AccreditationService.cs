@@ -61,7 +61,7 @@ public class AccreditationService(
 
     public async Task<Guid> CreateAccreditation(AccreditationRequestDto accreditationDto)
     {
-        logger.LogInformation("{Logprefix}: AccreditationService - CreateAccreditation: request to create accreditation {Accreditation}", logPrefix, JsonConvert.SerializeObject(accreditationDto));
+        logger.LogInformation("{Logprefix}: AccreditationService - CreateAccreditation: request to create accreditation", logPrefix);
 
         var entity = mapper.Map<AccreditationEntity>(accreditationDto);
 
@@ -72,7 +72,7 @@ public class AccreditationService(
 
     public async Task UpdateAccreditation(AccreditationRequestDto accreditationDto)
     {
-        logger.LogInformation("{Logprefix}: AccreditationService - UpdateAccreditation: request to update accreditation {Accreditation}", logPrefix, JsonConvert.SerializeObject(accreditationDto));
+        logger.LogInformation("{Logprefix}: AccreditationService - UpdateAccreditation: request to update accreditation {AccreditationId}", logPrefix, accreditationDto.ExternalId);
 
         var entity = mapper.Map<AccreditationEntity>(accreditationDto);
 
