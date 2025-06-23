@@ -3,21 +3,21 @@
     public class AccreditationBusinessPlanDto : NoteBase
     {
         public Guid AccreditationId { get; set; }
-        public string SiteAddress { get; set; }
-        public string MaterialName { get; set; }
+        public required string SiteAddress { get; set; }
+        public required string MaterialName { get; set; }
         public decimal InfrastructurePercentage { get; set; }
-        public string InfrastructureNotes { get; set; }
+        public required string InfrastructureNotes { get; set; }
         public decimal RecycledWastePercentage { get; set; }
-        public string RecycledWasteNotes { get; set; }
+        public required string RecycledWasteNotes { get; set; }
         public decimal BusinessCollectionsPercentage { get; set; }
-        public string BusinessCollectionsNotes { get; set; }
+        public required string BusinessCollectionsNotes { get; set; }
         public decimal CommunicationsPercentage { get; set; }
-        public string CommunicationsNotes { get; set; }
+        public required string CommunicationsNotes { get; set; }
         public decimal NewMarketsPercentage { get; set; }
-        public string NewMarketsNotes { get; set; }
+        public required string NewMarketsNotes { get; set; }
         public decimal NewUsersRecycledPackagingWastePercentage { get; set; }
-        public string NewUsersRecycledPackagingWasteNotes { get; set; }
+        public required string NewUsersRecycledPackagingWasteNotes { get; set; }
         public decimal NotCoveredOtherCategoriesPercentage { get; set; }
-        public string NotCoveredOtherCategoriesNotes { get; set; }
+        public required string NotCoveredOtherCategoriesNotes { get; set; }
     }
 }

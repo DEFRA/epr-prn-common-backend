@@ -41,7 +41,6 @@ public class GetAccreditationBusinessPlanQueryHandlerTests
         var materialId = Guid.Parse("a9421fc1-a912-42ee-85a5-3e06408759a9");
         DateTime dateUploaded = DateTime.UtcNow;
         var query = new GetRegistrationAccreditationBusinessPlanByIdQuery { Id = accreditationId };
-        var updatedBy = "Test user";
 
         Accreditation accreditationEntity = CreateAccreditation(accreditationId);
 
@@ -77,7 +76,7 @@ public class GetAccreditationBusinessPlanQueryHandlerTests
             result.NewUsersRecycledPackagingWasteNotes.Should().Be("New users recycled packaging waste notes");
             result.NotCoveredOtherCategoriesPercentage.Should().Be(5.0m);
             result.NotCoveredOtherCategoriesNotes.Should().Be("Not covered other categories notes");
-            result.TaskStatus.Should().Be(RegulatorTaskStatus.NotStarted); 
+            result.TaskStatus.Should().Be(RegulatorTaskStatus.NotStarted);
         }
     }
 
@@ -89,8 +88,6 @@ public class GetAccreditationBusinessPlanQueryHandlerTests
         var materialId = Guid.Parse("a9421fc1-a912-42ee-85a5-3e06408759a9");
         DateTime dateUploaded = DateTime.UtcNow;
         var query = new GetRegistrationAccreditationBusinessPlanByIdQuery { Id = accreditationId };
-        var updatedBy = "Test user";
-
 
         Accreditation accreditationEntity = CreateAccreditation(accreditationId);
 
@@ -153,7 +150,7 @@ public class GetAccreditationBusinessPlanQueryHandlerTests
                     }
                 }
             };
-        
+
         _raRepositoryMock
             .Setup(r => r.GetAccreditationPaymentFeesById(accreditationId))
             .ReturnsAsync(accreditationEntity);
