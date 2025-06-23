@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using EPR.PRN.Backend.Data.DataModels.Accreditations;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics.CodeAnalysis;
 
@@ -24,7 +25,7 @@ public class Accreditation
 
     [ForeignKey("AccreditationStatus")]
     public int AccreditationStatusId { get; set; }
-    public LookupAccreditationStatus AccreditationStatus { get;  set; }
+    public LookupAccreditationStatus AccreditationStatus { get; set; }
     public List<AccreditationDeterminationDate> AccreditationDulyMade { get; set; }
     public DateTime? CreatedOn { get; set; }
     public int PRNTonnage { get; set; }
