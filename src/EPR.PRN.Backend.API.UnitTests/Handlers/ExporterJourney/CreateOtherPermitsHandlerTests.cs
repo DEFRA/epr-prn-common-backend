@@ -1,7 +1,6 @@
 ﻿using EPR.PRN.Backend.API.Commands.ExporterJourney;
 using EPR.PRN.Backend.API.Dto.ExporterJourney;
 using EPR.PRN.Backend.API.Handlers.ExporterJourney;
-using EPR.PRN.Backend.Data.DataModels.ExporterJourney;
 using EPR.PRN.Backend.Data.DataModels.Registrations;
 using EPR.PRN.Backend.Data.Interfaces;
 using FluentAssertions;
@@ -45,7 +44,7 @@ public class CreateOtherPermitsHandlerTests
         var registration = new Registration
         {
             ExternalId = Guid.NewGuid(),
-            CarrierBrokerDealerPermit = new CarrierBrokerDealerPermit()
+            CarrierBrokerDealerPermit = new CarrierBrokerDealerPermits()
         };
 
         _registrationRepository.Setup(x => x.GetRegistrationByExternalId(registration.ExternalId, CancellationToken.None))
@@ -65,13 +64,13 @@ public class CreateOtherPermitsHandlerTests
     {
         // Arrange
         var registration = new Registration { ExternalId = Guid.NewGuid() };
-        CarrierBrokerDealerPermit createdCarrierBrokerDealerPermit = null;
+        CarrierBrokerDealerPermits createdCarrierBrokerDealerPermit = null;
 
         _registrationRepository.Setup(x => x.GetRegistrationByExternalId(registration.ExternalId, CancellationToken.None))
             .ReturnsAsync(registration);
 
-        _carrierBrokerDealerPermitRepositoryMock.Setup(x => x.Add(It.IsAny<CarrierBrokerDealerPermit>(), CancellationToken.None))
-            .Callback<CarrierBrokerDealerPermit, CancellationToken>((x, y) => createdCarrierBrokerDealerPermit = x);
+        _carrierBrokerDealerPermitRepositoryMock.Setup(x => x.Add(It.IsAny<CarrierBrokerDealerPermits>(), CancellationToken.None))
+            .Callback<CarrierBrokerDealerPermits, CancellationToken>((x, y) => createdCarrierBrokerDealerPermit = x);
 
         var command = new CreateCarrierBrokerDealerPermitsCommand
         {

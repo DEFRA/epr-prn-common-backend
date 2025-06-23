@@ -19,12 +19,12 @@ public class UpdateCarrierBrokerDealerPermitsHandler(ICarrierBrokerDealerPermitR
 
 		if (!string.IsNullOrWhiteSpace(request.Dto.WasteLicenseOrPermitNumber))
         {
-			carrierBrokerDealerPermit.WasteManagementorEnvironmentPermitNumber = request.Dto.WasteLicenseOrPermitNumber;
+			carrierBrokerDealerPermit.WasteManagementEnvironmentPermitNumber = request.Dto.WasteLicenseOrPermitNumber;
 		}
 
 		if (!string.IsNullOrWhiteSpace(request.Dto.PpcNumber))
 		{
-			carrierBrokerDealerPermit.InstallationPermitorPPCNumber = request.Dto.PpcNumber;
+			carrierBrokerDealerPermit.InstallationPermitOrPPCNumber = request.Dto.PpcNumber;
 		}
 
 		if (request.Dto.WasteExemptionReference != null)
@@ -33,7 +33,7 @@ public class UpdateCarrierBrokerDealerPermitsHandler(ICarrierBrokerDealerPermitR
 		}
 
         carrierBrokerDealerPermit.UpdatedBy = request.UserId;
-        carrierBrokerDealerPermit.UpdatedOn = DateTime.UtcNow;
+        carrierBrokerDealerPermit.UpdatedDate = DateTime.UtcNow;
 
         await carrierBrokerDealerPermitRepository.Update(carrierBrokerDealerPermit, cancellationToken);
     }

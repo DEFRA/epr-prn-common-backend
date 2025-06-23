@@ -1,10 +1,11 @@
-﻿using EPR.PRN.Backend.Data.DataModels.ExporterJourney;
+﻿//using EPR.PRN.Backend.Data.DataModels.ExporterJourney;
+using EPR.PRN.Backend.Data.DataModels.Registrations;
 
 namespace EPR.PRN.Backend.Data.Interfaces;
 
 public interface ICarrierBrokerDealerPermitRepository
 {
-    Task<CarrierBrokerDealerPermit?> GetByRegistrationId(Guid registrationId, CancellationToken cancellationToken);
-    Task Add(CarrierBrokerDealerPermit entity, CancellationToken cancellationToken);
-    Task Update(CarrierBrokerDealerPermit entity, CancellationToken cancellationToken);
+    Task<CarrierBrokerDealerPermits?> GetByRegistrationId(Guid registrationId, CancellationToken cancellationToken);
+    Task Add(CarrierBrokerDealerPermits entity, CancellationToken cancellationToken);
+    Task Update(CarrierBrokerDealerPermits entity, CancellationToken cancellationToken);
 }

@@ -22,7 +22,7 @@ public class RegistrationRepository(EprContext context, ILogger<RegistrationRepo
              .FirstOrDefaultAsync(cancellationToken);
     }
 
-    public async Task<int> CreateRegistrationAsync(int applicationTypeId, Guid organisationId, AddressDto reprocessingSiteAddress)
+    public async Task<Registration> CreateRegistrationAsync(int applicationTypeId, Guid organisationId, AddressDto reprocessingSiteAddress)
     {
         logger.LogInformation("Creating registration for ApplicationTypeId: {ApplicationTypeId} and OrganisationId: {OrganisationId}", applicationTypeId, organisationId);
         var registration = new Registration();

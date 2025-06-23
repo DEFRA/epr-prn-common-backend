@@ -2,7 +2,6 @@
 using EPR.PRN.Backend.API.Common.Constants;
 using EPR.PRN.Backend.API.Common.Enums;
 using EPR.PRN.Backend.Data.DataModels;
-//using EPR.PRN.Backend.Data.DataModels.ExporterJourney;
 using EPR.PRN.Backend.Data.DataModels.Registrations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -355,26 +354,6 @@ namespace EPR.PRN.Backend.Data
                 .IsUnique(); // Ensures UniqueId is unique
 
             base.OnModelCreating(modelBuilder);
-                base.OnModelCreating(modelBuilder);
-
-            modelBuilder.Entity<CarrierBrokerDealerPermits>()
-                .HasOne(c => c.Registration)
-                .WithOne()
-                .HasForeignKey<CarrierBrokerDealerPermits>(c => c.RegistrationId)
-                .OnDelete(DeleteBehavior.Cascade); 
-
-            modelBuilder.Entity<CarrierBrokerDealerPermits>()
-                .Property(p => p.ExternalId)
-                .HasDefaultValueSql("NEWID()")
-                .ValueGeneratedOnAdd()
-                .IsRequired();
-
-            modelBuilder.Entity<Registration>()
-                .HasOne(r => r.CarrierBrokerDealerPermit)
-                .WithOne(p => p.Registration)
-                .HasForeignKey<CarrierBrokerDealerPermits>(p => p.RegistrationId)
-                .OnDelete(DeleteBehavior.Cascade);
-
         }
 
         public virtual DbSet<Eprn> Prn { get; set; }

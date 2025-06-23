@@ -2,7 +2,6 @@
 using EPR.PRN.Backend.API.Handlers.ExporterJourney;
 using EPR.PRN.Backend.API.Profiles.Regulator;
 using EPR.PRN.Backend.API.Queries.ExporterJourney;
-using EPR.PRN.Backend.Data.DataModels.ExporterJourney;
 using EPR.PRN.Backend.Data.DataModels.Registrations;
 using EPR.PRN.Backend.Data.Interfaces;
 using FluentAssertions;
@@ -43,7 +42,7 @@ public class GetOtherPermitsHandlerTests
 
         _carrierBrokerDealerPermitRepositoryMock
             .Setup(r => r.GetByRegistrationId(registration.ExternalId, CancellationToken.None))
-            .ReturnsAsync((CarrierBrokerDealerPermit)null);
+            .ReturnsAsync((CarrierBrokerDealerPermits)null);
 
         var query = new CarrierBrokerDealerPermitsQuery { RegistrationId = registration.ExternalId };
 
@@ -64,14 +63,13 @@ public class GetOtherPermitsHandlerTests
             ExternalId = Guid.NewGuid()
         };
 
-        var carrierBrokerDealerPermit = new CarrierBrokerDealerPermit
+        var carrierBrokerDealerPermit = new CarrierBrokerDealerPermits
         {
             Id = 1,
             ExternalId = Guid.NewGuid(),
             RegistrationId = registration.Id,
-            Registration = registration,
-            WasteManagementorEnvironmentPermitNumber = "test 1",
-            InstallationPermitorPPCNumber = "test 2",
+            WasteManagementEnvironmentPermitNumber = "test 1",
+            InstallationPermitOrPPCNumber = "test 2",
             WasteExemptionReference = "test 3,test 4,test 5"
         };
 
@@ -88,7 +86,7 @@ public class GetOtherPermitsHandlerTests
         result.Should().NotBeNull();
         result.CarrierBrokerDealerPermitId.Should().Be(carrierBrokerDealerPermit.ExternalId);
         result.RegistrationId.Should().Be(registration.ExternalId);
-        result.WasteLicenseOrPermitNumber.Should().Be(carrierBrokerDealerPermit.WasteManagementorEnvironmentPermitNumber);
+        result.WasteLicenseOrPermitNumber.Should().Be(carrierBrokerDealerPermit.WasteManagementEnvironmentPermitNumber);
         result.WasteExemptionReference.Should().BeEquivalentTo(new List<string> { "test 3", "test 4", "test 5" });
     }
 
@@ -102,14 +100,13 @@ public class GetOtherPermitsHandlerTests
             ExternalId = Guid.NewGuid()
         };
 
-        var carrierBrokerDealerPermit = new CarrierBrokerDealerPermit
+        var carrierBrokerDealerPermit = new CarrierBrokerDealerPermits
         {
             Id = 1,
             ExternalId = Guid.NewGuid(),
             RegistrationId = registration.Id,
-            Registration = registration,
-            WasteManagementorEnvironmentPermitNumber = "test 1",
-            InstallationPermitorPPCNumber = "test 2",
+            WasteManagementEnvironmentPermitNumber = "test 1",
+            InstallationPermitOrPPCNumber = "test 2",
             WasteExemptionReference = null
         };
 
@@ -126,7 +123,7 @@ public class GetOtherPermitsHandlerTests
         result.Should().NotBeNull();
         result.CarrierBrokerDealerPermitId.Should().Be(carrierBrokerDealerPermit.ExternalId);
         result.RegistrationId.Should().Be(registration.ExternalId);
-        result.WasteLicenseOrPermitNumber.Should().Be(carrierBrokerDealerPermit.WasteManagementorEnvironmentPermitNumber);
+        result.WasteLicenseOrPermitNumber.Should().Be(carrierBrokerDealerPermit.WasteManagementEnvironmentPermitNumber);
         result.WasteExemptionReference.Should().BeEmpty();
     }
 }

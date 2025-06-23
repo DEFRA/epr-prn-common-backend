@@ -1,5 +1,5 @@
 ﻿using EPR.PRN.Backend.API.Commands.ExporterJourney;
-using EPR.PRN.Backend.Data.DataModels.ExporterJourney;
+using EPR.PRN.Backend.Data.DataModels.Registrations;
 using EPR.PRN.Backend.Data.Interfaces;
 using MediatR;
 
@@ -20,12 +20,12 @@ public class CreateCarrierBrokerDealerPermitsHandler(
             return false;
         }
 
-        var carrierBrokerDealerPermit = new CarrierBrokerDealerPermit
+        var carrierBrokerDealerPermit = new CarrierBrokerDealerPermits
         {
             RegistrationId = registration.Id, 
             WasteCarrierBrokerDealerRegistration = request.WasteCarrierBrokerDealerRegistration,
             CreatedBy = request.UserId,
-            CreatedOn = DateTime.UtcNow
+            CreatedDate = DateTime.UtcNow
         };
 
         await carrierBrokerDealerPermitRepository.Add(carrierBrokerDealerPermit, cancellationToken);

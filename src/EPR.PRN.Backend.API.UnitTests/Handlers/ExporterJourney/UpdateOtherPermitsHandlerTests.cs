@@ -1,7 +1,6 @@
 ﻿using EPR.PRN.Backend.API.Commands.ExporterJourney;
 using EPR.PRN.Backend.API.Dto.ExporterJourney;
 using EPR.PRN.Backend.API.Handlers.ExporterJourney;
-using EPR.PRN.Backend.Data.DataModels.ExporterJourney;
 using EPR.PRN.Backend.Data.DataModels.Registrations;
 using EPR.PRN.Backend.Data.Interfaces;
 using FluentAssertions;
@@ -28,7 +27,7 @@ public class UpdateOtherPermitsHandlerTests
     {
         // Arrange
         _carrierBrokerDealerPermitRepositoryMock.Setup(x => x.GetByRegistrationId(Guid.Empty, CancellationToken.None))
-            .ReturnsAsync((CarrierBrokerDealerPermit)null);
+            .ReturnsAsync((CarrierBrokerDealerPermits)null);
 
         var command = new UpdateCarrierBrokerDealerPermitsCommand();
 
@@ -43,16 +42,16 @@ public class UpdateOtherPermitsHandlerTests
         var registration = new Registration
         {
             ExternalId = Guid.NewGuid(),
-            CarrierBrokerDealerPermit = new CarrierBrokerDealerPermit()
+            CarrierBrokerDealerPermit = new CarrierBrokerDealerPermits()
         };
 
-        CarrierBrokerDealerPermit updatedCarrierBrokerDealerPermit = null;
+        CarrierBrokerDealerPermits updatedCarrierBrokerDealerPermit = null;
 
         _carrierBrokerDealerPermitRepositoryMock.Setup(x => x.GetByRegistrationId(registration.ExternalId, CancellationToken.None))
             .ReturnsAsync(registration.CarrierBrokerDealerPermit);
 
         _carrierBrokerDealerPermitRepositoryMock.Setup(x => x.Update(registration.CarrierBrokerDealerPermit, CancellationToken.None))
-            .Callback<CarrierBrokerDealerPermit, CancellationToken>((x, y) => updatedCarrierBrokerDealerPermit = x);
+            .Callback<CarrierBrokerDealerPermits, CancellationToken>((x, y) => updatedCarrierBrokerDealerPermit = x);
 
         var command = new UpdateCarrierBrokerDealerPermitsCommand
         {
@@ -71,8 +70,8 @@ public class UpdateOtherPermitsHandlerTests
 
         // Assert
         updatedCarrierBrokerDealerPermit.Should().NotBeNull();
-        updatedCarrierBrokerDealerPermit.WasteManagementorEnvironmentPermitNumber.Should().Be(command.Dto.WasteLicenseOrPermitNumber);
-        updatedCarrierBrokerDealerPermit.InstallationPermitorPPCNumber.Should().Be(command.Dto.PpcNumber);
+        updatedCarrierBrokerDealerPermit.WasteManagementEnvironmentPermitNumber.Should().Be(command.Dto.WasteLicenseOrPermitNumber);
+        updatedCarrierBrokerDealerPermit.InstallationPermitOrPPCNumber.Should().Be(command.Dto.PpcNumber);
         updatedCarrierBrokerDealerPermit.WasteExemptionReference.Should().Be("test 3,test 4");
         updatedCarrierBrokerDealerPermit.UpdatedBy.Should().Be(command.UserId);
     }
