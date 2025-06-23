@@ -7,9 +7,11 @@ using EPR.PRN.Backend.API.Services.Interfaces;
 using EPR.PRN.Backend.API.Validators;
 using EPR.PRN.Backend.API.Validators.Regulator;
 using EPR.PRN.Backend.Data.Interfaces;
+using EPR.PRN.Backend.Data.Interfaces.Accreditations;
 using EPR.PRN.Backend.Data.Interfaces.Regulator;
 using EPR.PRN.Backend.Data.Repositories;
 using EPR.PRN.Backend.Data.Repositories.ExporterJourney;
+using EPR.PRN.Backend.Data.Repositories.Accreditations;
 using EPR.PRN.Backend.Data.Repositories.Regulator;
 using EPR.PRN.Backend.Obligation.Interfaces;
 using EPR.PRN.Backend.Obligation.Providers;
@@ -29,6 +31,7 @@ namespace EPR.PRN.Backend.API.Helpers
                 .AddScoped<IPrnService, PrnService>()
                 .AddScoped<IValidationService, ValidationService>()
                 .AddScoped<IObligationCalculatorService, ObligationCalculatorService>()
+                .AddScoped<IMaterialService, MaterialService>()
                 .AddScoped<IObligationCalculationRepository, ObligationCalculationRepository>()
                 .AddScoped<IRecyclingTargetDataService, RecyclingTargetDataService>()
                 .AddScoped<IRecyclingTargetRepository, RecyclingTargetRepository>()
@@ -37,7 +40,8 @@ namespace EPR.PRN.Backend.API.Helpers
                 .AddScoped<IMaterialCalculationStrategy, GeneralCalculationStrategy>()
                 .AddScoped<IMaterialCalculationService, MaterialCalculationService>()
                 .AddScoped<IMaterialRepository, MaterialRepository>()
-                .AddScoped<IPrnRepository, PrnRepository>()
+				.AddScoped<IObligationCalculationOrganisationSubmitterTypeRepository, ObligationCalculationOrganisationSubmitterTypeRepository>()
+				.AddScoped<IPrnRepository, PrnRepository>()
                 .AddScoped<IValidator<SavePrnDetailsRequest>, SavePrnDetailsRequestValidator>()
                 .AddScoped<IValidator<UpdateRegistrationCommand>, UpdateRegistrationCommandValidator>()
                 .AddScoped<IValidator<UpdateRegulatorRegistrationTaskCommand>, UpdateRegulatorRegistrationTaskCommandValidator>()
@@ -48,6 +52,13 @@ namespace EPR.PRN.Backend.API.Helpers
                 .AddScoped<IRegistrationMaterialRepository, RegistrationMaterialRepository>()
                 .AddScoped<IRegulatorAccreditationRepository, RegulatorAccreditationRepository>()
                 .AddScoped<IRegulatorAccreditationTaskStatusRepository, RegulatorAccreditationTaskStatusRepository>()
+                .AddScoped<IDateTimeProvider, DateTimeProvider>()
+                .AddScoped<IAccreditationService, AccreditationService>()
+                .AddScoped<IAccreditationPrnIssueAuthService, AccreditationPrnIssueAuthService>()
+                .AddScoped<IAccreditationFileUploadService, AccreditationFileUploadService>()
+                .AddScoped<IAccreditationRepository, AccreditationRepository>()
+                .AddScoped<IAccreditationPrnIssueAuthRepository, AccreditationPrnIssueAuthRepository>()
+                .AddScoped<IAccreditationFileUploadRepository, AccreditationFileUploadRepository>()
                 .AddScoped<IRegistrationRepository, RegistrationRepository>()
                 .AddScoped<ICarrierBrokerDealerPermitRepository, CarrierBrokerDealerPermitRepository>()
                 .AddScoped<IDateTimeProvider, DateTimeProvider>();
