@@ -2,7 +2,7 @@
 using EPR.PRN.Backend.API.Common.Constants;
 using EPR.PRN.Backend.API.Common.Enums;
 using EPR.PRN.Backend.Data.DataModels;
-using EPR.PRN.Backend.Data.DataModels.ExporterJourney;
+//using EPR.PRN.Backend.Data.DataModels.ExporterJourney;
 using EPR.PRN.Backend.Data.DataModels.Registrations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -357,13 +357,13 @@ namespace EPR.PRN.Backend.Data
             base.OnModelCreating(modelBuilder);
                 base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Entity<CarrierBrokerDealerPermit>()
+            modelBuilder.Entity<CarrierBrokerDealerPermits>()
                 .HasOne(c => c.Registration)
                 .WithOne()
-                .HasForeignKey<CarrierBrokerDealerPermit>(c => c.RegistrationId)
+                .HasForeignKey<CarrierBrokerDealerPermits>(c => c.RegistrationId)
                 .OnDelete(DeleteBehavior.Cascade); 
 
-            modelBuilder.Entity<CarrierBrokerDealerPermit>()
+            modelBuilder.Entity<CarrierBrokerDealerPermits>()
                 .Property(p => p.ExternalId)
                 .HasDefaultValueSql("NEWID()")
                 .ValueGeneratedOnAdd()
@@ -372,10 +372,8 @@ namespace EPR.PRN.Backend.Data
             modelBuilder.Entity<Registration>()
                 .HasOne(r => r.CarrierBrokerDealerPermit)
                 .WithOne(p => p.Registration)
-                .HasForeignKey<CarrierBrokerDealerPermit>(p => p.RegistrationId)
+                .HasForeignKey<CarrierBrokerDealerPermits>(p => p.RegistrationId)
                 .OnDelete(DeleteBehavior.Cascade);
-
-
 
         }
 
@@ -422,7 +420,5 @@ namespace EPR.PRN.Backend.Data
         public virtual DbSet<RegulatorAccreditationTaskStatus> RegulatorAccreditationTaskStatus { get; set; }
         public virtual DbSet<AccreditationTaskStatusQueryNote> AccreditationTaskStatusQueryNote { get; set; }
         public virtual DbSet<AccreditationDeterminationDate> AccreditationDeterminationDate { get; set; }
-        public virtual DbSet<CarrierBrokerDealerPermit> CarrierBrokerDealerPermits { get; set; }
-
     }
 }
