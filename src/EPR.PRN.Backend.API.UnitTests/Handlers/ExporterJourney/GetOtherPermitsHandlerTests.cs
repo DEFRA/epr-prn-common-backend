@@ -67,6 +67,7 @@ public class GetOtherPermitsHandlerTests
         {
             Id = 1,
             ExternalId = Guid.NewGuid(),
+            Registration = registration, 
             RegistrationId = registration.Id,
             WasteManagementEnvironmentPermitNumber = "test 1",
             InstallationPermitOrPPCNumber = "test 2",
@@ -104,6 +105,7 @@ public class GetOtherPermitsHandlerTests
         {
             Id = 1,
             ExternalId = Guid.NewGuid(),
+            Registration = registration,
             RegistrationId = registration.Id,
             WasteManagementEnvironmentPermitNumber = "test 1",
             InstallationPermitOrPPCNumber = "test 2",

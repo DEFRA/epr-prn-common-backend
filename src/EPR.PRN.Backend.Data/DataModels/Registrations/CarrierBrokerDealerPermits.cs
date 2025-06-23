@@ -14,6 +14,8 @@ public class CarrierBrokerDealerPermits
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public Guid ExternalId { get; set; }
 
+    public Registration Registration { get; set; } = null!; // Navigation property to Registration
+
     public int RegistrationId { get; set; }
 
     [MaxLength(20)]

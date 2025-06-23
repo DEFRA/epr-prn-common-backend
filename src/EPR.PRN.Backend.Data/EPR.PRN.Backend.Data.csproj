@@ -4,6 +4,7 @@
 		<TargetFramework>net8.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
+		<UserSecretsId>39ca631c-eae9-4169-b5a9-b74afed4f160</UserSecretsId>
 	</PropertyGroup>
 	<Target Name="GenerateSqlScript" AfterTargets="AfterBuild" Condition="$(AzureBuild) != true">
 		<Exec Condition="$(Configuration) == Release" Command="dotnet-ef migrations script --configuration Release --verbose --no-build --context EPR.PRN.Backend.Data.EprContext --idempotent --output Scripts/migrations.sql" />
@@ -22,6 +23,7 @@
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
+		<PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="6.0.1" />
 		<PackageReference Include="System.Formats.Asn1" Version="8.0.1" />
 	</ItemGroup>
 	<ItemGroup>
