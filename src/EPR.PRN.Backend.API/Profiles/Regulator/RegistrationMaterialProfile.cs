@@ -22,7 +22,8 @@ public class RegistrationMaterialProfile : Profile
         CreateSamplingPlanMappings();
         CreateBusinessPlanAndPaymentMappings();
         CreateWasteLicencesMappings();
-        CreateSiteAndCarrierMappings();
+        CreateSiteMappings();
+        CreateCarrierMappings();
         CreateMaterialsAuthorisedMappings();
         CreateMaterialPaymentFeeMappings();
         CreateDtoToEntityMappings();
@@ -204,7 +205,7 @@ public class RegistrationMaterialProfile : Profile
             .ForMember(dest => dest.QueryNotes, opt => opt.MapFrom(src => GetApplicationTaskNotes(src.Tasks, RegulatorTaskNames.WasteLicensesPermitsAndExemptions)));
     }
 
-    private void CreateSiteAndCarrierMappings()
+    private void CreateSiteMappings()
     {
         CreateMap<Registration, RegistrationSiteAddressDto>()
             .ForMember(dest => dest.RegistrationId, opt => opt.MapFrom(src => src.ExternalId))
@@ -216,7 +217,10 @@ public class RegistrationMaterialProfile : Profile
             .ForMember(dest => dest.RegulatorRegistrationTaskStatusId, opt => opt.MapFrom(src => GetRegistrationTaskExternalId(src.Tasks, RegulatorTaskNames.SiteAddressAndContactDetails)))
             .ForMember(dest => dest.TaskStatus, opt => opt.MapFrom(src => GetRegistrationTaskStatus(src.Tasks, RegulatorTaskNames.SiteAddressAndContactDetails)))
             .ForMember(dest => dest.QueryNotes, opt => opt.MapFrom(src => GetRegistrationTaskNotes(src.Tasks, RegulatorTaskNames.SiteAddressAndContactDetails)));
+    }
 
+    private void CreateCarrierMappings()
+    {
         CreateMap<Registration, RegistrationWasteCarrierDto>()
             .ForMember(dest => dest.RegistrationId, opt => opt.MapFrom(src => src.ExternalId))
             .ForMember(dest => dest.SiteAddress, opt => opt.MapFrom(src => src.ReprocessingSiteAddress != null ? CreateAddressString(src.ReprocessingSiteAddress) : string.Empty))
