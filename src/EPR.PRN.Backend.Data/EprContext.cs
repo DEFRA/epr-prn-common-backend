@@ -5,7 +5,6 @@ using EPR.PRN.Backend.Data.DataModels;
 using EPR.PRN.Backend.Data.DataModels.Registrations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace EPR.PRN.Backend.Data
 {
@@ -208,6 +207,9 @@ namespace EPR.PRN.Backend.Data
                 new LookupMaterial { Id = 5, MaterialName = "Paper/Board", MaterialCode = "PA" },
                 new LookupMaterial { Id = 6, MaterialName = "Wood", MaterialCode = "WO" });
 
+            modelBuilder.Entity<LookupCountry>().HasData(
+                CountryConstants.Countries.Select(c => new LookupCountry { Id = c.Id, Name = c.Name }).ToArray()
+            );
 
             modelBuilder.Entity<LookupRegistrationMaterialStatus>().HasData(
                 new LookupRegistrationMaterialStatus { Id = 1, Name = "Granted" },
@@ -399,6 +401,6 @@ namespace EPR.PRN.Backend.Data
         public virtual DbSet<RegulatorAccreditationTaskStatus> RegulatorAccreditationTaskStatus { get; set; }
         public virtual DbSet<AccreditationTaskStatusQueryNote> AccreditationTaskStatusQueryNote { get; set; }
         public virtual DbSet<AccreditationDeterminationDate> AccreditationDeterminationDate { get; set; }
-
+        public virtual DbSet<LookupCountry> LookupCountries { get; set; }
     }
 }
