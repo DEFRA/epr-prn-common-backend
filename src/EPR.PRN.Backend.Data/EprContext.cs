@@ -48,7 +48,7 @@ namespace EPR.PRN.Backend.Data
 
             modelBuilder.Entity<Registration>()
                 .HasOne(r => r.CarrierBrokerDealerPermit)
-                .WithOne()
+                .WithOne(c => c.Registration)
                 .HasForeignKey<CarrierBrokerDealerPermits>(cb => cb.RegistrationId);
 
             modelBuilder.Entity<CarrierBrokerDealerPermits>()

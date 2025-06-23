@@ -1151,9 +1151,6 @@ namespace EPR.PRN.Backend.Data.Migrations
                     b.Property<int>("RegistrationId")
                         .HasColumnType("int");
 
-                    b.Property<int>("RegistrationId1")
-                        .HasColumnType("int");
-
                     b.Property<Guid?>("UpdatedBy")
                         .HasColumnType("uniqueidentifier");
 
@@ -1179,8 +1176,6 @@ namespace EPR.PRN.Backend.Data.Migrations
 
                     b.HasIndex("RegistrationId")
                         .IsUnique();
-
-                    b.HasIndex("RegistrationId1");
 
                     b.ToTable("Public.CarrierBrokerDealerPermits");
                 });
@@ -2656,15 +2651,9 @@ namespace EPR.PRN.Backend.Data.Migrations
 
             modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.CarrierBrokerDealerPermits", b =>
                 {
-                    b.HasOne("EPR.PRN.Backend.Data.DataModels.Registrations.Registration", null)
+                    b.HasOne("EPR.PRN.Backend.Data.DataModels.Registrations.Registration", "Registration")
                         .WithOne("CarrierBrokerDealerPermit")
                         .HasForeignKey("EPR.PRN.Backend.Data.DataModels.Registrations.CarrierBrokerDealerPermits", "RegistrationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("EPR.PRN.Backend.Data.DataModels.Registrations.Registration", "Registration")
-                        .WithMany()
-                        .HasForeignKey("RegistrationId1")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
