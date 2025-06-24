@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using EPR.PRN.Backend.Data.DataModels.Accreditations;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics.CodeAnalysis;
 
@@ -24,9 +25,40 @@ public class Accreditation
 
     [ForeignKey("AccreditationStatus")]
     public int AccreditationStatusId { get; set; }
-    public LookupAccreditationStatus AccreditationStatus { get;  set; }
+    public LookupAccreditationStatus AccreditationStatus { get; set; }
     public List<AccreditationDeterminationDate> AccreditationDulyMade { get; set; }
     public DateTime? CreatedOn { get; set; }
     public int PRNTonnage { get; set; }
+
+    [Column(TypeName = "decimal(10,2)")]
+    public decimal? InfrastructurePercentage { get; set; }
+    [Column(TypeName = "decimal(10,2)")]
+    public decimal? BusinessCollectionsPercentage { get; set; }
+    [Column(TypeName = "decimal(10,2)")]
+    public decimal? RecycledWastePercentage { get; set; }
+    [Column(TypeName = "decimal(10,2)")]
+    public decimal? NewMarketsPercentage { get; set; }
+    [Column(TypeName = "decimal(10,2)")]
+    public decimal? CommunicationsPercentage { get; set; }
+    [Column(TypeName = "decimal(10,2)")]
+    public decimal? NewUsersRecycledPackagingWastePercentage { get; set; }
+    [Column(TypeName = "decimal(10,2)")]
+    public decimal? NotCoveredOtherCategoriesPercentage { get; set; }
+    [Column(TypeName = "decimal(10,2)")]
+    public decimal? TotalPercentage { get; set; }
+    [Column(TypeName = "varchar(500)")]
+    public string? InfrastructureNotes { get; set; }
+    [Column(TypeName = "varchar(500)")]
+    public string? BusinessCollectionsNotes { get; set; }
+    [Column(TypeName = "varchar(500)")]
+    public string? RecycledWasteNotes { get; set; }
+    [Column(TypeName = "varchar(500)")]
+    public string? NewMarketsNotes { get; set; }
+    [Column(TypeName = "varchar(500)")]
+    public string? CommunicationsNotes { get; set; }
+    [Column(TypeName = "varchar(500)")]
+    public string? NewUsersRecycledPackagingWasteNotes { get; set; }
+    [Column(TypeName = "varchar(500)")]
+    public string? NotCoveredOtherCategoriesNotes { get; set; }
     public List<AccreditationFileUpload>? FileUploads { get; set; }
 }
