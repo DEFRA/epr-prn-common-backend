@@ -72,12 +72,12 @@ public class RegistrationController(IMediator mediator
     {
         logger.LogInformation(LogMessages.CreateRegistration);
 
-        var registrationId = await mediator.Send(command);
+        var registration = await mediator.Send(command);
 
-        return new CreatedResult(string.Empty, registrationId);
+        return new CreatedResult(string.Empty, registration);
     }
 
-    [HttpPost("registrations/{registrationId:int}/update")]
+    [HttpPost("registrations/{registrationId:guid}/update")]
     [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(OkResult))]
     [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
@@ -90,7 +90,7 @@ public class RegistrationController(IMediator mediator
     [SwaggerResponse(StatusCodes.Status404NotFound, "If an existing registration is not found", typeof(ProblemDetails))]
     [SwaggerResponse(StatusCodes.Status500InternalServerError, "If an unexpected error occurs.", typeof(ContentResult))]
     [ExcludeFromCodeCoverage(Justification = "TODO: To be done as part of create registration user story")]
-    public async Task<IActionResult> UpdateRegistration([FromRoute]int registrationId, [FromBody] UpdateRegistrationCommand command)
+    public async Task<IActionResult> UpdateRegistration([FromRoute]Guid registrationId, [FromBody] UpdateRegistrationCommand command)
     {
         try
         {
@@ -119,7 +119,7 @@ public class RegistrationController(IMediator mediator
         return NoContent();
     }
 
-    [HttpPost("registrations/{registrationId:int}/taskStatus")]
+    [HttpPost("registrations/{registrationId:guid}/taskStatus")]
     [ProducesResponseType(StatusCodes.Status204NoContent, Type = typeof(NoContentResult))]
     [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
@@ -130,7 +130,7 @@ public class RegistrationController(IMediator mediator
     [SwaggerResponse(StatusCodes.Status204NoContent, $"Returns No Content", typeof(NoContentResult))]
     [SwaggerResponse(StatusCodes.Status400BadRequest, "If the request is invalid or a validation error occurs.", typeof(ProblemDetails))]
     [SwaggerResponse(StatusCodes.Status500InternalServerError, "If an unexpected error occurs.", typeof(ContentResult))]
-    public async Task<IActionResult> UpdateRegistrationTaskStatus([FromRoute] int registrationId, [FromBody] UpdateRegistrationTaskStatusCommand command)
+    public async Task<IActionResult> UpdateRegistrationTaskStatus([FromRoute] Guid registrationId, [FromBody] UpdateRegistrationTaskStatusCommand command)
     {
         logger.LogInformation(LogMessages.UpdateRegistrationTaskStatus);
         command.RegistrationId = registrationId;
@@ -143,7 +143,7 @@ public class RegistrationController(IMediator mediator
     }
 
 
-    [HttpPost("registrations/{registrationId:int}/siteAddress")]
+    [HttpPost("registrations/{registrationId:guid}/siteAddress")]
     [ProducesResponseType(StatusCodes.Status204NoContent, Type = typeof(NoContentResult))]
     [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
@@ -154,7 +154,7 @@ public class RegistrationController(IMediator mediator
     [SwaggerResponse(StatusCodes.Status204NoContent, $"Returns No Content", typeof(NoContentResult))]
     [SwaggerResponse(StatusCodes.Status400BadRequest, "If the request is invalid or a validation error occurs.", typeof(ProblemDetails))]
     [SwaggerResponse(StatusCodes.Status500InternalServerError, "If an unexpected error occurs.", typeof(ContentResult))]
-    public async Task<IActionResult> UpdateSiteAddress([FromRoute] int registrationId, [FromBody] UpdateRegistrationSiteAddressCommand command)
+    public async Task<IActionResult> UpdateSiteAddress([FromRoute] Guid registrationId, [FromBody] UpdateRegistrationSiteAddressCommand command)
     {
         logger.LogInformation(LogMessages.UpdateRegistrationSiteAddress);
         command.RegistrationId = registrationId;
@@ -165,6 +165,7 @@ public class RegistrationController(IMediator mediator
 
         return NoContent();
     }
+
     #endregion Post Methods
 
     [HttpGet("registrations/{organisationId:guid}/overview")]

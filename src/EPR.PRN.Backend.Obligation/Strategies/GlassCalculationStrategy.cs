@@ -35,20 +35,24 @@ public class GlassCalculationStrategy : IMaterialCalculationStrategy
             {
                 MaterialId = calculationRequest.Materials.First(m => m.MaterialName == MaterialType.Glass.ToString()).Id,
                 CalculatedOn = calculatedOn,
-                OrganisationId = calculationRequest.OrganisationId,
+                OrganisationId = calculationRequest.SubmissionCalculationRequest.OrganisationId,
                 MaterialObligationValue = remainder,
                 Year = currentYear,
-                Tonnage = calculationRequest.SubmissionCalculationRequest.PackagingMaterialWeight
-            },
+                Tonnage = calculationRequest.SubmissionCalculationRequest.PackagingMaterialWeight,
+                SubmitterId = calculationRequest.SubmitterId,
+				SubmitterTypeId = calculationRequest.SubmitterTypeId
+			},
             new ObligationCalculation
             {
                 MaterialId = calculationRequest.Materials.First(m => m.MaterialName == MaterialType.GlassRemelt.ToString()).Id,
                 CalculatedOn = calculatedOn,
-                OrganisationId = calculationRequest.OrganisationId,
+                OrganisationId = calculationRequest.SubmissionCalculationRequest.OrganisationId,
                 MaterialObligationValue = remelt,
                 Year = currentYear,
-                Tonnage = calculationRequest.SubmissionCalculationRequest.PackagingMaterialWeight
-            }
+                Tonnage = calculationRequest.SubmissionCalculationRequest.PackagingMaterialWeight,
+				SubmitterId = calculationRequest.SubmitterId,
+				SubmitterTypeId = calculationRequest.SubmitterTypeId
+			}
         ];
     }
 }

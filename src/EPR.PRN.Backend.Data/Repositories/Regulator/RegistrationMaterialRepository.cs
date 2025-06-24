@@ -1,8 +1,10 @@
 ﻿using EPR.PRN.Backend.API.Common.Constants;
+using EPR.PRN.Backend.API.Common.Enums;
 using EPR.PRN.Backend.Data.DataModels.Registrations;
 using EPR.PRN.Backend.Data.Interfaces.Regulator;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace EPR.PRN.Backend.Data.Repositories.Regulator;
 
@@ -49,12 +51,12 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
 
     public async Task<Accreditation> GetAccreditation_FileUploadById(Guid accreditationId)
     {
-        var accreditations = GetAccreditation_FileUploadById();        
+        var accreditations = GetAccreditation_FileUploadById();
         return await accreditations.SingleOrDefaultAsync(rm => rm.ExternalId == accreditationId)
                ?? throw new KeyNotFoundException("Accreditation not found.");
     }
 
-    public async Task UpdateRegistrationOutCome(Guid registrationMaterialId, int statusId, string? comment, string registrationReferenceNumber)
+    public async Task UpdateRegistrationOutCome(Guid registrationMaterialId, int statusId, string? comment, string registrationReferenceNumber, Guid User)
     {
         var material = await eprContext.RegistrationMaterials.FirstOrDefaultAsync(rm => rm.ExternalId == registrationMaterialId);
         if (material is null) throw new KeyNotFoundException("Material not found.");
@@ -63,121 +65,156 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
         material.Comments = comment;
         material.RegistrationReferenceNumber = registrationReferenceNumber;
         material.StatusUpdatedDate = DateTime.UtcNow;
-        material.StatusUpdatedBy = Guid.NewGuid();
+        material.StatusUpdatedBy = User;
 
         await eprContext.SaveChangesAsync();
     }
-    public async Task RegistrationMaterialsMarkAsDulyMade(Guid registrationMaterialId, int statusId, DateTime DeterminationDate, DateTime DulyMadeDate, Guid DulyMadeBy)
+    public async Task RegistrationMaterialsMarkAsDulyMade(
+    Guid registrationMaterialId,
+    int statusId,
+    DateTime determinationDateUtc,
+    DateTime dulyMadeDateUtc,
+    Guid dulyMadeBy)
     {
-        var material = await eprContext.RegistrationMaterials.FirstOrDefaultAsync(rm => rm.ExternalId == registrationMaterialId);
-        if (material is null) throw new KeyNotFoundException("Material not found.");
+        var material = await eprContext.RegistrationMaterials
+            .FirstOrDefaultAsync(rm => rm.ExternalId == registrationMaterialId);
+
+        if (material is null)
+            throw new KeyNotFoundException("Material not found.");
+
+        var registration = await eprContext.Registrations
+            .FirstOrDefaultAsync(x => x.Id == material.RegistrationId);
+
+        if (registration is null)
+            throw new KeyNotFoundException("Registration not found.");
+
+        // Get or create DulyMade
         var dulyMade = await eprContext.DulyMade
-            .FirstOrDefaultAsync(rm => rm.RegistrationMaterial!.ExternalId == registrationMaterialId)
+            .FirstOrDefaultAsync(dm => dm.RegistrationMaterial!.ExternalId == registrationMaterialId)
             ?? new DulyMade
             {
                 RegistrationMaterialId = material.Id,
-                RegistrationMaterial = material // Initialize the required member
+                ExternalId = Guid.NewGuid()
             };
 
-        var registration = await eprContext.Registrations
-     .FirstOrDefaultAsync(x => x.Id == material.RegistrationId);
-
-        if (registration == null)
-            throw new KeyNotFoundException("Registration not found.");
-
+        // Get or create DeterminationDate
         var determinationDate = await eprContext.DeterminationDate
-    .FirstOrDefaultAsync(x => x.RegistrationMaterialId == material.RegistrationId)
-    ?? new DeterminationDate
-    {
-        DeterminateDate = DeterminationDate,
-        RegistrationMaterialId = material.RegistrationId,
-        ExternalId = registration.ExternalId,
-        RegistrationMaterial = material
-    };
+            .FirstOrDefaultAsync(dd => dd.RegistrationMaterialId == material.Id)
+            ?? new DeterminationDate
+            {
+                RegistrationMaterialId = material.Id,
+                ExternalId = Guid.NewGuid()
+            };
 
-        var applicationTypeId = registration.ApplicationTypeId;
-        
-        var taskid = await eprContext.LookupTasks
-            .Where(t => t.Name == "CheckRegistrationStatus" && t.ApplicationTypeId == applicationTypeId)
+        // Get task ID
+        var taskId = await eprContext.LookupTasks
+            .Where(t => t.Name == RegulatorTaskNames.CheckRegistrationStatus && t.ApplicationTypeId == registration.ApplicationTypeId)
             .Select(t => t.Id)
             .FirstOrDefaultAsync();
 
-        var regulatorApplicationTaskStatus =
-            await eprContext.RegulatorApplicationTaskStatus.FirstOrDefaultAsync(x =>
-                x.RegistrationMaterialId == material.Id && x.RegulatorTaskId == taskid);
+        if (taskId == 0)
+            throw new InvalidOperationException("CheckRegistrationStatus task not found for the given application type.");
 
-        if (regulatorApplicationTaskStatus != null)
+        // Get or create RegulatorApplicationTaskStatus
+        var taskStatus = await eprContext.RegulatorApplicationTaskStatus
+            .FirstOrDefaultAsync(ts => ts.RegistrationMaterialId == material.Id && ts.RegulatorTaskId == taskId);
+
+        if (taskStatus is null)
         {
-            regulatorApplicationTaskStatus.TaskStatusId = statusId;
-            regulatorApplicationTaskStatus.StatusUpdatedBy = DulyMadeBy;
-            regulatorApplicationTaskStatus.StatusUpdatedDate = DateTime.UtcNow;
-        }
-        else
-        {
-            regulatorApplicationTaskStatus = new RegulatorApplicationTaskStatus
+            taskStatus = new RegulatorApplicationTaskStatus
             {
                 RegistrationMaterialId = material.Id,
                 TaskStatusId = statusId,
                 ExternalId = Guid.NewGuid(),
-                RegulatorTaskId = taskid,
+                RegulatorTaskId = taskId,
                 StatusCreatedDate = DateTime.UtcNow,
-                StatusUpdatedBy = DulyMadeBy
+                StatusCreatedBy = dulyMadeBy
             };
+            await eprContext.RegulatorApplicationTaskStatus.AddAsync(taskStatus);
         }
-
-        // Set/update the fields
-        dulyMade.TaskStatusId = statusId;
-        dulyMade.DulyMadeDate = DulyMadeDate;
-        determinationDate.DeterminateDate = DeterminationDate;
-        dulyMade.DulyMadeBy = DulyMadeBy;
-        dulyMade.ExternalId = Guid.NewGuid();
-
-        // If this is a new entity, add it to the context
-        if (regulatorApplicationTaskStatus.Id == 0)
+        else
         {
-            await eprContext.RegulatorApplicationTaskStatus.AddAsync(regulatorApplicationTaskStatus);
+            taskStatus.TaskStatusId = statusId;
+            taskStatus.StatusUpdatedBy = dulyMadeBy;
+            taskStatus.StatusUpdatedDate = DateTime.UtcNow;
         }
 
+        // Set common fields
+        dulyMade.DulyMadeDate = dulyMadeDateUtc;
+        dulyMade.DulyMadeBy = dulyMadeBy;
+        determinationDate.DeterminateDate = determinationDateUtc;
+
+        // Add new entities if needed
         if (dulyMade.Id == 0)
-        {
             await eprContext.DulyMade.AddAsync(dulyMade);
-        }
 
         if (determinationDate.Id == 0)
-        {
-            determinationDate.RegistrationMaterialId = material.Id;
             await eprContext.DeterminationDate.AddAsync(determinationDate);
-        }
 
         await eprContext.SaveChangesAsync();
     }
 
-    public async Task CreateRegistrationMaterialWithExemptionsAsync(
-    RegistrationMaterial registrationMaterial,
-    List<MaterialExemptionReference> exemptionReferences)
+    public async Task CreateExemptionReferencesAsync(Guid registrationMaterialId, List<MaterialExemptionReference> exemptionReferences)
     {
-        await eprContext.RegistrationMaterials.AddAsync(registrationMaterial);
+        var material = await eprContext.RegistrationMaterials.FirstOrDefaultAsync(rm => rm.ExternalId == registrationMaterialId);
+        
+        if (material is null) throw new KeyNotFoundException("Material not found.");
 
-        foreach (var exemption in exemptionReferences)
-        {            
-            exemption.RegistrationMaterial = registrationMaterial;
+        foreach (var exemptionReference in exemptionReferences)
+        {
+            exemptionReference.RegistrationMaterialId = material.Id;
         }
 
         await eprContext.MaterialExemptionReferences.AddRangeAsync(exemptionReferences);
         await eprContext.SaveChangesAsync();
     }
 
-    public async Task<int> CreateAsync(int registrationId, string material)
+    public async Task<IList<RegistrationMaterial>> GetRegistrationMaterialsByRegistrationId(Guid registrationId)
     {
-        var existingRegistration = await eprContext.Registrations.FindAsync(registrationId);
+        var existingRegistration = await eprContext.Registrations.SingleOrDefaultAsync(o => o.ExternalId == registrationId);
         if (existingRegistration == null)
         {
             throw new KeyNotFoundException("Registration not found.");
         }
 
+        var existingMaterials = eprContext.RegistrationMaterials
+            .AsNoTracking()
+            .Include(o => o.PermitType)
+            .Include(o => o.Status)
+            .Include(o => o.Material)
+            .Include(o => o.Registration)
+            .Include(o => o.PPCPeriod)
+            .Include(o => o.InstallationPeriod)
+            .Include(o => o.WasteManagementPeriod)
+            .Include(o => o.EnvironmentalPermitWasteManagementPeriod)
+            .Include(o => o.MaterialExemptionReferences)
+            .Where(o => o.Registration.ExternalId == registrationId)
+            .ToList();
+
+        return existingMaterials;
+    }
+
+    public async Task<RegistrationMaterial> CreateAsync(Guid registrationId, string material)
+    {
+        var existingRegistration = await eprContext.Registrations.SingleOrDefaultAsync(o => o.ExternalId == registrationId);
+        if (existingRegistration == null)
+        {
+            throw new KeyNotFoundException("Registration not found.");
+        }
+
+        var existingMaterial = await eprContext.RegistrationMaterials
+            .Include(o => o.Material)
+            .Include(o => o.Registration)
+            .SingleOrDefaultAsync(o => o.Material.MaterialName == material && o.Registration.ExternalId == registrationId);
+
+        if (existingMaterial is not null)
+        {
+            return existingMaterial;
+        }
+
         var newMaterial = new RegistrationMaterial
         {
-            RegistrationId = registrationId,
+            RegistrationId = existingRegistration.Id,
             Material = await eprContext.LookupMaterials.SingleAsync(m => m.MaterialName == material),
             StatusId = (await eprContext.LookupRegistrationMaterialStatuses.SingleAsync(s => s.Name == "ReadyToSubmit")).Id,
             CreatedDate = DateTime.UtcNow,
@@ -195,7 +232,87 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
         await eprContext.RegistrationMaterials.AddAsync(newMaterial);
         await eprContext.SaveChangesAsync();
 
-        return newMaterial.Id;
+        return newMaterial;
+    }
+
+    public async Task UpdateRegistrationMaterialPermits(Guid registrationMaterialId, int permitTypeId, string? permitNumber)
+    {
+        var registrationMaterial = await eprContext.RegistrationMaterials
+                                        .FirstOrDefaultAsync(rm => rm.ExternalId == registrationMaterialId) ?? throw new KeyNotFoundException("Material not found.");
+
+        // Permit Type Id
+        registrationMaterial.PermitTypeId = permitTypeId;
+
+        // Permit Number
+        switch ((MaterialPermitType)permitTypeId)
+        {
+            case MaterialPermitType.PollutionPreventionAndControlPermit:
+                registrationMaterial.PPCPermitNumber = permitNumber;
+                break;
+            case MaterialPermitType.WasteManagementLicence:
+                registrationMaterial.WasteManagementLicenceNumber = permitNumber;
+                break;
+            case MaterialPermitType.InstallationPermit:
+                registrationMaterial.InstallationPermitNumber = permitNumber;
+                break;
+            case MaterialPermitType.EnvironmentalPermitOrWasteManagementLicence:
+                registrationMaterial.EnvironmentalPermitWasteManagementNumber = permitNumber;
+                break;
+        }
+
+        await eprContext.SaveChangesAsync();
+    }
+
+    public async Task UpdateRegistrationMaterialPermitCapacity(Guid registrationMaterialId, int permitTypeId, decimal? capacityInTonnes, int? periodId)
+    {
+        var registrationMaterial = await eprContext.RegistrationMaterials
+                                        .FirstOrDefaultAsync(rm => rm.ExternalId == registrationMaterialId) ?? throw new KeyNotFoundException("Material not found.");
+
+        // Capacity in tonnes and period Ids
+        switch ((MaterialPermitType)permitTypeId)
+        {
+            case MaterialPermitType.PollutionPreventionAndControlPermit:
+                registrationMaterial.PPCReprocessingCapacityTonne = capacityInTonnes ?? 0;
+                registrationMaterial.PPCPeriodId = periodId;
+                break;
+            case MaterialPermitType.WasteManagementLicence:
+                registrationMaterial.WasteManagementReprocessingCapacityTonne = capacityInTonnes ?? 0;
+                registrationMaterial.WasteManagementPeriodId = periodId;
+                break;
+            case MaterialPermitType.InstallationPermit:
+                registrationMaterial.InstallationReprocessingTonne = capacityInTonnes ?? 0;
+                registrationMaterial.InstallationPeriodId = periodId;
+                break;
+            case MaterialPermitType.EnvironmentalPermitOrWasteManagementLicence:
+                registrationMaterial.EnvironmentalPermitWasteManagementTonne = capacityInTonnes ?? 0;
+                registrationMaterial.EnvironmentalPermitWasteManagementPeriodId = periodId;
+                break;
+        }
+
+        await eprContext.SaveChangesAsync();
+    }
+
+
+    public async Task<IEnumerable<LookupMaterialPermit>> GetMaterialPermitTypes()
+    {
+        return await eprContext.LookupMaterialPermit
+                            .AsNoTracking()
+                            .ToListAsync();
+    }
+
+    public async Task DeleteAsync(Guid registrationMaterialId)
+    {
+        var existing =
+            await eprContext.RegistrationMaterials.SingleOrDefaultAsync(o => o.ExternalId == registrationMaterialId);
+
+        if (existing is null)
+        {
+            throw new KeyNotFoundException("Registration material not found.");
+        }
+
+        eprContext.RegistrationMaterials.Remove(existing);
+
+        await eprContext.SaveChangesAsync();
     }
 
     private IIncludableQueryable<RegistrationMaterial, LookupRegistrationMaterialStatus> GetRegistrationMaterialsWithRelatedEntities()
@@ -268,6 +385,7 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
             .AsSplitQuery()
             .Include(r => r.BusinessAddress)
             .Include(r => r.ReprocessingSiteAddress)
+            .Include(r => r.CarrierBrokerDealerPermit)
             .Include(r => r.LegalDocumentAddress)
             .Include(r => r.Tasks)!
                 .ThenInclude(t => t.TaskStatus)

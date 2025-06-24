@@ -12,7 +12,7 @@ namespace EPR.PRN.Backend.Data.Repositories;
 
 public class RegistrationRepository(EprContext context, ILogger<RegistrationRepository> logger) : IRegistrationRepository
 {
-    public async Task<int> CreateRegistrationAsync(int applicationTypeId, Guid organisationId, AddressDto reprocessingSiteAddress)
+    public async Task<Registration> CreateRegistrationAsync(int applicationTypeId, Guid organisationId, AddressDto reprocessingSiteAddress)
     {
         logger.LogInformation("Creating registration for ApplicationTypeId: {ApplicationTypeId} and OrganisationId: {OrganisationId}", applicationTypeId, organisationId);
         var registration = new Registration();
@@ -55,13 +55,13 @@ public class RegistrationRepository(EprContext context, ILogger<RegistrationRepo
 
         logger.LogInformation("Successfully created registration for ApplicationTypeId: {ApplicationTypeId} and OrganisationId: {OrganisationId}", applicationTypeId, organisationId);
 
-        return registration.Id;
+        return registration;
     }
 
-    public async Task<Registration?> GetAsync(int registrationId)
+    public async Task<Registration?> GetAsync(Guid registrationId)
     {
         var registrations = LoadRegistrationWithRelatedEntities();
-        return await registrations.SingleOrDefaultAsync(o => o.Id == registrationId);
+        return await registrations.SingleOrDefaultAsync(o => o.ExternalId == registrationId);
     }
 
     public async Task<Registration?> GetByOrganisationAsync(int applicationTypeId, Guid organisationId)
@@ -74,24 +74,25 @@ public class RegistrationRepository(EprContext context, ILogger<RegistrationRepo
             .FirstOrDefaultAsync();
     }
 
-    public async Task<ApplicantRegistrationTaskStatus?> GetTaskStatusAsync(string taskName, int registrationId)
+    public async Task<ApplicantRegistrationTaskStatus?> GetTaskStatusAsync(string taskName, Guid registrationId)
     {
         var taskStatus = await context
             .RegistrationTaskStatus
             .Include(ts => ts.TaskStatus)
-            .FirstOrDefaultAsync(x => x.Task.Name == taskName && x.RegistrationId == registrationId);
+            .Include(o => o.Registration)
+            .FirstOrDefaultAsync(x => x.Task.Name == taskName && x.Registration.ExternalId == registrationId);
 
         return taskStatus;
     }
 
-    public async Task UpdateAsync(int registrationId, AddressDto businessAddress, AddressDto reprocessingSiteAddress,
+    public async Task UpdateAsync(Guid registrationId, AddressDto businessAddress, AddressDto reprocessingSiteAddress,
         AddressDto legalDocumentsAddress)
     {
         var existing = await context.Registrations
             .Include(o => o.BusinessAddress)
             .Include(o => o.ReprocessingSiteAddress)
             .Include(o => o.LegalDocumentAddress)
-            .FirstOrDefaultAsync(o => o.Id == registrationId);
+            .FirstOrDefaultAsync(o => o.ExternalId == registrationId);
 
         if (existing is null)
         {
@@ -209,7 +210,7 @@ public class RegistrationRepository(EprContext context, ILogger<RegistrationRepo
         await context.SaveChangesAsync();
     }
 
-    public async Task UpdateRegistrationTaskStatusAsync(string taskName, int registrationId, TaskStatuses status)
+    public async Task UpdateRegistrationTaskStatusAsync(string taskName, Guid registrationId, TaskStatuses status)
     {
         logger.LogInformation("Updating status for task with TaskName {TaskName} And RegistrationId {RegistrationId} to {Status}", taskName, registrationId, status);
 
@@ -218,7 +219,7 @@ public class RegistrationRepository(EprContext context, ILogger<RegistrationRepo
         var taskStatus = await GetTaskStatusAsync(taskName, registrationId);
         if (taskStatus is null)
         {
-            var registration = await context.Registrations.FindAsync(registrationId);
+            var registration = await context.Registrations.FirstOrDefaultAsync(o => o.ExternalId == registrationId);
             if (registration is null)
             {
                 throw new KeyNotFoundException();
@@ -237,7 +238,7 @@ public class RegistrationRepository(EprContext context, ILogger<RegistrationRepo
             taskStatus = new ApplicantRegistrationTaskStatus
             {
                 ExternalId = Guid.NewGuid(),
-                RegistrationId = registrationId,
+                RegistrationId = registration.Id,
                 Task = task,
                 TaskStatus = statusEntity,
             };
@@ -258,9 +259,9 @@ public class RegistrationRepository(EprContext context, ILogger<RegistrationRepo
     }
 
 
-    public async Task UpdateSiteAddressAsync(int registrationId, AddressDto reprocessingSiteAddress)
+    public async Task UpdateSiteAddressAsync(Guid registrationId, AddressDto reprocessingSiteAddress)
     {
-        var registration = await context.Registrations.FirstOrDefaultAsync(x => x.Id == registrationId);
+        var registration = await context.Registrations.FirstOrDefaultAsync(x => x.ExternalId == registrationId);
 
         if (registration is null)
         {

@@ -1,0 +1,33 @@
+﻿using MediatR;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Swashbuckle.AspNetCore.Annotations;
+
+namespace EPR.PRN.Backend.API.Commands;
+
+/// <summary>
+/// Command to update permit-related information for a registration material permit capacity.
+/// </summary>
+public sealed class UpdateRegistrationMaterialPermitCapacityCommand : IRequest
+{
+    /// <summary>
+    /// Gets or sets the ID of the registration material. This value is bound from the route or context, not the request body.
+    /// </summary>
+    [BindNever]
+    [SwaggerIgnore]
+    public Guid RegistrationMaterialId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the ID of the permit type.
+    /// </summary>
+    public int PermitTypeId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the capacity in tones.
+    /// </summary>
+    public decimal? CapacityInTonnes { get; set; }
+
+    /// <summary>
+    /// Gets or sets the period id.
+    /// </summary>
+    public int? PeriodId { get; set; }
+}

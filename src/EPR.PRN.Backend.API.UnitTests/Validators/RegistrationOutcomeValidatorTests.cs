@@ -69,7 +69,7 @@ public class RegistrationOutcomeValidatorTests
         var result = _validator.Validate(command);
 
         // Assert  
-        Assert.IsTrue(result.Errors.Any(e => e.PropertyName == "Comments" && e.ErrorMessage == ValidationMessages.RegistrationOutcomeCommentsCommentsRequired));
+        Assert.IsTrue(result.Errors.Any(e => e.PropertyName == "Comments" && e.ErrorMessage == ValidationMessages.RegistrationOutcomeCommentsRequired));
     }
 
     [TestMethod]
