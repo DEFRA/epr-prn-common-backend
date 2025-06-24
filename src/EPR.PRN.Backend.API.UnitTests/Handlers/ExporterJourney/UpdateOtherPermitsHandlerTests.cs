@@ -75,4 +75,47 @@ public class UpdateOtherPermitsHandlerTests
         updatedCarrierBrokerDealerPermit.WasteExemptionReference.Should().Be("test 3,test 4");
         updatedCarrierBrokerDealerPermit.UpdatedBy.Should().Be(command.UserId);
     }
+
+    [TestMethod]
+    public async Task Handle_ShouldUpdate_WhenRegistrationIsSupplied()
+    {
+        // Arrange
+        var registration = new Registration
+        {
+            ExternalId = Guid.NewGuid(),
+            CarrierBrokerDealerPermit = new CarrierBrokerDealerPermits()
+        };
+
+        CarrierBrokerDealerPermits updatedCarrierBrokerDealerPermit = null;
+
+        _carrierBrokerDealerPermitRepositoryMock.Setup(x => x.GetByRegistrationId(registration.ExternalId, CancellationToken.None))
+            .ReturnsAsync(registration.CarrierBrokerDealerPermit);
+
+        _carrierBrokerDealerPermitRepositoryMock.Setup(x => x.Update(registration.CarrierBrokerDealerPermit, CancellationToken.None))
+            .Callback<CarrierBrokerDealerPermits, CancellationToken>((x, y) => updatedCarrierBrokerDealerPermit = x);
+
+        var command = new UpdateCarrierBrokerDealerPermitsCommand
+        {
+            UserId = Guid.NewGuid(),
+            RegistrationId = registration.ExternalId,
+            Dto = new UpdateCarrierBrokerDealerPermitsDto
+            {
+                WasteCarrierBrokerDealerRegistration = "123123", 
+                WasteLicenseOrPermitNumber = "test 1",
+                PpcNumber = "test 2",
+                WasteExemptionReference = new List<string> { "test 3", "test 4" },
+            }
+        };
+
+        // Act
+        await _handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        updatedCarrierBrokerDealerPermit.Should().NotBeNull();
+        updatedCarrierBrokerDealerPermit.WasteCarrierBrokerDealerRegistration.Should().Be(command.Dto.WasteCarrierBrokerDealerRegistration);
+        updatedCarrierBrokerDealerPermit.WasteManagementEnvironmentPermitNumber.Should().Be(command.Dto.WasteLicenseOrPermitNumber);
+        updatedCarrierBrokerDealerPermit.InstallationPermitOrPPCNumber.Should().Be(command.Dto.PpcNumber);
+        updatedCarrierBrokerDealerPermit.WasteExemptionReference.Should().Be("test 3,test 4");
+        updatedCarrierBrokerDealerPermit.UpdatedBy.Should().Be(command.UserId);
+    }
 }
