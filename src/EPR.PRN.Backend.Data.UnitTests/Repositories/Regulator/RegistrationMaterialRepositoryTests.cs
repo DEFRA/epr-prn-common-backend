@@ -786,7 +786,8 @@ public class RegistrationMaterialRepositoryTests
             InstallationPeriodId = 1,
             PPCPeriodId = 1,
             EnvironmentalPermitWasteManagementPeriodId = 1,
-            WasteManagementPeriodId = 1
+            WasteManagementPeriodId = 1,
+            MaximumReprocessingPeriodId = 1
         };
 
         await _context.Registrations.AddAsync(registration);
@@ -962,6 +963,72 @@ public class RegistrationMaterialRepositoryTests
         var loaded = _context.RegistrationMaterials.Where(o => o.RegistrationId == 10).ToList();
         loaded.Should().HaveCount(1);
         loaded.First().ExternalId.Should().Be(registrationMaterialExternalId2);
+    }
+
+    [TestMethod]
+    public async Task UpdateMaximumWeight_RegistrationMaterialExists_ShouldUpdate()
+    {
+        // Arrange
+        var id = Guid.NewGuid();
+        var registrationMaterialExternalId = Guid.NewGuid();
+        var registrationMaterialExternalId2 = Guid.NewGuid();
+        var registration = new Registration
+        {
+            Id = 10,
+            ExternalId = id
+        };
+
+        var registrationMaterial = new RegistrationMaterial
+        {
+            ExternalId = registrationMaterialExternalId,
+            Registration = registration,
+            RegistrationId = registration.Id,
+            Id = 55,
+            MaterialId = 1,
+            PermitTypeId = 1,
+            StatusId = 1,
+            InstallationPeriodId = 1,
+            PPCPeriodId = 1,
+            EnvironmentalPermitWasteManagementPeriodId = 1,
+            WasteManagementPeriodId = 1,
+            MaximumReprocessingCapacityTonne = 0,
+            MaximumReprocessingPeriodId = null
+        };
+
+        // Negative data.
+        var registrationMaterial2 = new RegistrationMaterial
+        {
+            ExternalId = registrationMaterialExternalId2,
+            Registration = registration,
+            RegistrationId = registration.Id,
+            Id = 65,
+            MaterialId = 1,
+            PermitTypeId = 1,
+            StatusId = 1,
+            InstallationPeriodId = 1,
+            PPCPeriodId = 1,
+            EnvironmentalPermitWasteManagementPeriodId = 1,
+            WasteManagementPeriodId = 1
+        };
+
+        await _context.Registrations.AddAsync(registration);
+        await _context.RegistrationMaterials.AddAsync(registrationMaterial);
+        await _context.RegistrationMaterials.AddAsync(registrationMaterial2);
+        await _context.SaveChangesAsync();
+
+        // Act
+        await _repository.UpdateMaximumWeightForSiteAsync(registrationMaterialExternalId, 10, 1);
+
+        // Assert
+        var loaded = _context.RegistrationMaterials.First(o => o.ExternalId == registrationMaterialExternalId);
+        loaded.MaximumReprocessingCapacityTonne.Should().Be(10);
+        loaded.MaximumReprocessingPeriodId.Should().Be(1);
+    }
+
+    [TestMethod]
+    public async Task UpdateMaximumWeight_RegistrationMaterialDoesNotExist_ShouldThrow()
+    {
+        await Assert.ThrowsExceptionAsync<KeyNotFoundException>(() => _repository.UpdateMaximumWeightForSiteAsync(Guid.Parse("cd9dcc80-fcf5-4f46-addd-b8a256f735a3"), 10, 1));
     }
 
     [TestCleanup]

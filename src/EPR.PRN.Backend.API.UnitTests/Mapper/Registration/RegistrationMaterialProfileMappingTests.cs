@@ -86,6 +86,7 @@ public class RegistrationMaterialProfileMappingTests : MappingTestsBase<Registra
             InstallationReprocessingTonne = 30,
             WasteManagementReprocessingCapacityTonne = 40,
             MaximumReprocessingCapacityTonne = 100,
+            MaximumReprocessingPeriodId = 1,
             PermitType = new LookupMaterialPermit
             {
                 Name = "permitType",
@@ -129,6 +130,7 @@ public class RegistrationMaterialProfileMappingTests : MappingTestsBase<Registra
             InstallationPeriodId = 1,
             WasteManagementPeriodId = 1,
             EnvironmentalPeriodId = 1,
+            MaximumReprocessingPeriodId = 1,
             PermitType = new PermitTypeLookupDto
             {
                 Id = 1,
