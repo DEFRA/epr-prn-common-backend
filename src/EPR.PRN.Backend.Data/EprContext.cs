@@ -55,6 +55,10 @@ namespace EPR.PRN.Backend.Data
                 .HasIndex(e => e.ExternalId)
                 .IsUnique(); // Ensures UniqueId is unique
 
+            modelBuilder.Entity<CarrierBrokerDealerPermits>()
+                .Property(e => e.ExternalId)
+                .HasDefaultValueSql("NEWID()");
+
             modelBuilder.Entity<RecyclingTarget>()
                 .HasData
                 (

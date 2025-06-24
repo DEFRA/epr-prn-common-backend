@@ -12,7 +12,7 @@ public class CarrierBrokerDealerPermitRepository(EprContext context) : ICarrierB
     {
         return await context.CarrierBrokerDealerPermits
             .AsNoTracking()
-            .Where(x => x.ExternalId == registrationId)
+            .Where(x => x.Registration.ExternalId == registrationId)
             .FirstOrDefaultAsync(cancellationToken);
     }
 
