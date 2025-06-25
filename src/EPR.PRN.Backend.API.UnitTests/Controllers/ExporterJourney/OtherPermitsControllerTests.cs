@@ -1,9 +1,14 @@
-﻿using EPR.PRN.Backend.API.Commands.ExporterJourney;
+﻿using EPR.PRN.Backend.API.Commands;
+using EPR.PRN.Backend.API.Commands.ExporterJourney;
+using EPR.PRN.Backend.API.Common.Enums;
 using EPR.PRN.Backend.API.Controllers.ExporterJourney;
+using EPR.PRN.Backend.API.Controllers.Regulator;
 using EPR.PRN.Backend.API.Dto.ExporterJourney;
 using EPR.PRN.Backend.API.Dto.Regulator;
 using EPR.PRN.Backend.API.Queries.ExporterJourney;
 using FluentAssertions;
+using FluentValidation;
+using FluentValidation.Results;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
@@ -15,12 +20,16 @@ public class OtherPermitsControllerTests
 {
     private Mock<IMediator> _mediatorMock;
     private CarrierBrokerDealerPermitsController _controller;
+    private Mock<IValidator<UpdateCarrierBrokerDealerPermitsCommand>> _validatorMock;
+
 
     [TestInitialize]
     public void TestInitialize()
     {
         _mediatorMock = new Mock<IMediator>();
-        _controller = new CarrierBrokerDealerPermitsController(_mediatorMock.Object);
+        _validatorMock = new();
+
+        _controller = new CarrierBrokerDealerPermitsController(_mediatorMock.Object, _validatorMock.Object);
     }
 
     [TestMethod]
@@ -115,6 +124,9 @@ public class OtherPermitsControllerTests
         _mediatorMock.Setup(m => m.Send(It.IsAny<UpdateCarrierBrokerDealerPermitsCommand>(), It.IsAny<CancellationToken>()))
             .ThrowsAsync(new KeyNotFoundException());
 
+        var validationResult = new ValidationResult();
+        _validatorMock.Setup(x => x.Validate(It.IsAny<UpdateCarrierBrokerDealerPermitsCommand>())).Returns(validationResult);
+
         // Act
         var result = await _controller.UpdateCarrierBrokerDealerPermits(Guid.Empty, Guid.Empty, new UpdateCarrierBrokerDealerPermitsDto());
 
@@ -128,10 +140,39 @@ public class OtherPermitsControllerTests
         // Arrange
         _mediatorMock.Setup(m => m.Send(It.IsAny<UpdateCarrierBrokerDealerPermitsCommand>(), It.IsAny<CancellationToken>()));
 
+        var validationResult = new ValidationResult();
+        _validatorMock.Setup(x => x.Validate(It.IsAny<UpdateCarrierBrokerDealerPermitsCommand>())).Returns(validationResult);
+
         // Act
         var result = await _controller.UpdateCarrierBrokerDealerPermits(Guid.Empty, Guid.Empty, new UpdateCarrierBrokerDealerPermitsDto());
 
         // Assert
         result.Should().BeOfType<OkResult>();
     }
+
+    [TestMethod]
+    public async Task UpdateCarrierBrokerDealerPermits_ReturnsBadRequest_WhenCarrierBrokerDealerPermitDtoIsInvalidUpdated()
+    {
+        // Arrange
+        var validator = new InlineValidator<UpdateCarrierBrokerDealerPermitsCommand>();
+        validator.RuleFor(x => x.Dto.PpcNumber).Must(_ => false).WithMessage("Validation failed");
+        var userId = Guid.NewGuid();
+
+        var _systemUnderTest = new CarrierBrokerDealerPermitsController(_mediatorMock.Object, validator);
+
+        var registrationId = Guid.Parse("a9421fc1-a912-42ee-85a5-3e06408759a9");
+        var requestDto = new UpdateCarrierBrokerDealerPermitsDto
+        {
+            PpcNumber = "xxxxxxxxxxxxxxxxxxxxxxxx", 
+            WasteCarrierBrokerDealerRegistration = "abc", 
+            WasteLicenseOrPermitNumber = "abc", 
+            WasteExemptionReference = new List<string>()
+        };
+
+        // Act & Assert
+        await FluentActions.Invoking(() =>
+            _systemUnderTest.UpdateCarrierBrokerDealerPermits(registrationId, userId, requestDto)
+        ).Should().ThrowAsync<ValidationException>();
+    }
+
 }
