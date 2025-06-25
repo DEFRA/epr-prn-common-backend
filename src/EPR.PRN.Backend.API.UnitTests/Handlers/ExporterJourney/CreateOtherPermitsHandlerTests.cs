@@ -9,7 +9,7 @@ using Moq;
 namespace EPR.PRN.Backend.API.UnitTests.Handlers.ExporterJourney;
 
 [TestClass]
-public class CreateOtherPermitsHandlerTests
+public class CreateCarrierBrokerDealerPermitsHandlerTests
 {
     private Mock<ICarrierBrokerDealerPermitRepository> _carrierBrokerDealerPermitRepositoryMock;
     private Mock<IRegistrationRepository> _registrationRepository;

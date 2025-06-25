@@ -11,6 +11,7 @@ public class CarrierBrokerDealerPermitRepository(EprContext context) : ICarrierB
     public async Task<CarrierBrokerDealerPermits?> GetByRegistrationId(Guid registrationId, CancellationToken cancellationToken)
     {
         return await context.CarrierBrokerDealerPermits
+            .Include(x => x.Registration)
             .AsNoTracking()
             .Where(x => x.Registration.ExternalId == registrationId)
             .FirstOrDefaultAsync(cancellationToken);

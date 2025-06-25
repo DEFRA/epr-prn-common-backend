@@ -27,10 +27,9 @@ public class CarrierBrokerDealerPermitsController(IMediator mediator) : Controll
     [SwaggerResponse(StatusCodes.Status200OK, "Returns get carrier broker dealer permits data for given registration.", typeof(GetCarrierBrokerDealerPermitsResultDto))]
     [SwaggerResponse(StatusCodes.Status404NotFound, "If no record found.", typeof(ProblemDetails))]
     [SwaggerResponse(StatusCodes.Status500InternalServerError, "If an unexpected error occurs.", typeof(ContentResult))]
-    public async Task<IActionResult> GetOtherPermits(Guid registrationId)
+    public async Task<IActionResult> GetCarrierBrokerDealerPermits(Guid registrationId)
     {
         var result = await mediator.Send(new CarrierBrokerDealerPermitsQuery { RegistrationId = registrationId });
-
         return result != null ? Ok(result) : NotFound();
     }
 
@@ -48,7 +47,7 @@ public class CarrierBrokerDealerPermitsController(IMediator mediator) : Controll
     [SwaggerResponse(StatusCodes.Status201Created, "Create carrier broker dealer permits record for given registration.")]
     [SwaggerResponse(StatusCodes.Status404NotFound, "If registration parent record not found.", typeof(ProblemDetails))]
     [SwaggerResponse(StatusCodes.Status500InternalServerError, "If an unexpected error occurs.", typeof(ContentResult))]
-    public async Task<IActionResult> CreateOtherPermits(
+    public async Task<IActionResult> CreateCarrierBrokerDealerPermits(
         [FromRoute] Guid registrationId,
         [FromHeader(Name = "X-EPR-USER")] Guid userId,
         [FromBody] CreateCarrierBrokerDealerPermitsDto dto)
@@ -62,7 +61,7 @@ public class CarrierBrokerDealerPermitsController(IMediator mediator) : Controll
                 WasteCarrierBrokerDealerRegistration = dto.WasteCarrierBrokerDealerRegistration
             });
 
-            return created ? CreatedAtAction(nameof(GetOtherPermits), new { registrationId }, null) : Ok();
+            return created ? CreatedAtAction(nameof(GetCarrierBrokerDealerPermits), new { registrationId }, null) : Ok();
         }
         catch (KeyNotFoundException)
         {
@@ -83,7 +82,7 @@ public class CarrierBrokerDealerPermitsController(IMediator mediator) : Controll
     [SwaggerResponse(StatusCodes.Status200OK, "update carrier broker dealer permits record for given registration.")]
     [SwaggerResponse(StatusCodes.Status404NotFound, "If no record found.", typeof(ProblemDetails))]
     [SwaggerResponse(StatusCodes.Status500InternalServerError, "If an unexpected error occurs.", typeof(ContentResult))]
-    public async Task<IActionResult> UpdateOtherPermits(
+    public async Task<IActionResult> UpdateCarrierBrokerDealerPermits(
         [FromRoute] Guid registrationId,
         [FromHeader(Name = "X-EPR-USER")] Guid userId,
         [FromBody] UpdateCarrierBrokerDealerPermitsDto dto)

@@ -42,6 +42,7 @@
 
   <ItemGroup>
     <Folder Include="Helpers\Comparers\" />
+    <Folder Include="Validators\ExportJourney\" />
   </ItemGroup>
 
   <ItemGroup>

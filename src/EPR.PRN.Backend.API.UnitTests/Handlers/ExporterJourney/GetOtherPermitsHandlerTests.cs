@@ -10,7 +10,7 @@ using Moq;
 namespace EPR.PRN.Backend.API.UnitTests.Handlers.ExporterJourney;
 
 [TestClass]
-public class GetOtherPermitsHandlerTests
+public class GetCarrierBrokerDealerPermitsHandlerTests
 {
     private Mock<ICarrierBrokerDealerPermitRepository> _carrierBrokerDealerPermitRepositoryMock;
     private IMapper _mapper;
