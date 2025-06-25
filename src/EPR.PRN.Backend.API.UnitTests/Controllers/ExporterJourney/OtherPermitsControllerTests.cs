@@ -43,6 +43,7 @@ public class OtherPermitsControllerTests
         // Arrange
         var expectedDto = new GetCarrierBrokerDealerPermitsResultDto
         {
+            WasteCarrierBrokerDealerRegistration = "test 1",
             CarrierBrokerDealerPermitId = Guid.NewGuid(),
             RegistrationId = Guid.NewGuid(),
             WasteLicenseOrPermitNumber = "test 1",
@@ -70,7 +71,8 @@ public class OtherPermitsControllerTests
             .ReturnsAsync(true);
 
         // Act
-        var result = await _controller.CreateOtherPermits(Guid.Empty, Guid.Empty, new CreateCarrierBrokerDealerPermitsDto());
+        var dto = new CreateCarrierBrokerDealerPermitsDto() { WasteCarrierBrokerDealerRegistration = "test 1" };
+        var result = await _controller.CreateOtherPermits(Guid.Empty, Guid.Empty, dto);
 
         // Assert
         result.Should().BeOfType<CreatedAtActionResult>();
@@ -84,7 +86,8 @@ public class OtherPermitsControllerTests
             .ReturnsAsync(false);
 
         // Act
-        var result = await _controller.CreateOtherPermits(Guid.Empty, Guid.Empty, new CreateCarrierBrokerDealerPermitsDto());
+        var carrierDealerBrokerPermitsDto = new CreateCarrierBrokerDealerPermitsDto() { WasteCarrierBrokerDealerRegistration = "test 1" };
+        var result = await _controller.CreateOtherPermits(Guid.Empty, Guid.Empty, carrierDealerBrokerPermitsDto);
 
         // Assert
         result.Should().BeOfType<OkResult>();
@@ -98,7 +101,8 @@ public class OtherPermitsControllerTests
             .ThrowsAsync(new KeyNotFoundException());
 
         // Act
-        var result = await _controller.CreateOtherPermits(Guid.Empty, Guid.Empty, new CreateCarrierBrokerDealerPermitsDto());
+        var dto = new CreateCarrierBrokerDealerPermitsDto() { WasteCarrierBrokerDealerRegistration = "test 1" };
+        var result = await _controller.CreateOtherPermits(Guid.Empty, Guid.Empty, dto);
 
         // Assert
         result.Should().BeOfType<NotFoundResult>();

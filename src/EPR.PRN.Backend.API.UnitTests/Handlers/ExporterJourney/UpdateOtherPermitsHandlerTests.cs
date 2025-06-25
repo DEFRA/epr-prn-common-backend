@@ -29,7 +29,12 @@ public class UpdateOtherPermitsHandlerTests
         _carrierBrokerDealerPermitRepositoryMock.Setup(x => x.GetByRegistrationId(Guid.Empty, CancellationToken.None))
             .ReturnsAsync((CarrierBrokerDealerPermits)null);
 
-        var command = new UpdateCarrierBrokerDealerPermitsCommand();
+        var carrierDealerBrokerPermitsDto = new UpdateCarrierBrokerDealerPermitsDto() { WasteCarrierBrokerDealerRegistration = "test 1" };
+
+        var command = new UpdateCarrierBrokerDealerPermitsCommand()
+        {
+            Dto = carrierDealerBrokerPermitsDto
+        };
 
         // Act, Assert
         await Assert.ThrowsExceptionAsync<KeyNotFoundException>(() => _handler.Handle(command, CancellationToken.None));

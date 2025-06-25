@@ -31,7 +31,10 @@ public class CreateOtherPermitsHandlerTests
         _registrationRepository.Setup(x => x.GetRegistrationByExternalId(Guid.Empty, CancellationToken.None))
             .ReturnsAsync((Registration)null);
 
-        var command = new CreateCarrierBrokerDealerPermitsCommand();
+        var command = new CreateCarrierBrokerDealerPermitsCommand()
+        {
+            WasteCarrierBrokerDealerRegistration = "Test 1"
+        };
 
         // Act, Assert
         await Assert.ThrowsExceptionAsync<KeyNotFoundException>(() => _handler.Handle(command, CancellationToken.None));
@@ -50,7 +53,7 @@ public class CreateOtherPermitsHandlerTests
         _registrationRepository.Setup(x => x.GetRegistrationByExternalId(registration.ExternalId, CancellationToken.None))
             .ReturnsAsync(registration);
 
-        var command = new CreateCarrierBrokerDealerPermitsCommand { RegistrationId = registration.ExternalId };
+        var command = new CreateCarrierBrokerDealerPermitsCommand { RegistrationId = registration.ExternalId, WasteCarrierBrokerDealerRegistration = "test 1" };
 
         // Act
         var result = await _handler.Handle(command, CancellationToken.None);
