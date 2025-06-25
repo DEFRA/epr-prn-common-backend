@@ -8,7 +8,7 @@ namespace EPR.PRN.Backend.API.Handlers.ExporterJourney;
 
 public class GetCarrierBrokerDealerPermitsHandler(
     ICarrierBrokerDealerPermitRepository carrierBrokerDealerPermitRepository,
-    IMapper mapper) : IRequestHandler<CarrierBrokerDealerPermitsQuery, GetCarrierBrokerDealerPermitsResultDto>
+    IMapper mapper) : IRequestHandler<CarrierBrokerDealerPermitsQuery, GetCarrierBrokerDealerPermitsResultDto?>
 {
     public async Task<GetCarrierBrokerDealerPermitsResultDto?> Handle(CarrierBrokerDealerPermitsQuery request, CancellationToken cancellationToken)
     {

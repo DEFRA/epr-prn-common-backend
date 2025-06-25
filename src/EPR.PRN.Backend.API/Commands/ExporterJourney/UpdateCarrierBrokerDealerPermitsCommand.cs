@@ -11,5 +11,5 @@ public class UpdateCarrierBrokerDealerPermitsCommand : IRequest
 
     public Guid RegistrationId { get; set; }
 
-    public UpdateCarrierBrokerDealerPermitsDto Dto { get; set; }
+    public required UpdateCarrierBrokerDealerPermitsDto Dto { get; set; }
 }

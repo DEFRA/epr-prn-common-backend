@@ -5,5 +5,5 @@ namespace EPR.PRN.Backend.API.Dto.ExporterJourney;
 [ExcludeFromCodeCoverage]
 public class CreateCarrierBrokerDealerPermitsDto
 {
-	public string WasteCarrierBrokerDealerRegistration { get; set; }
+	public required string WasteCarrierBrokerDealerRegistration { get; set; }
 }

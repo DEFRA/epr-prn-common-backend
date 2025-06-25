@@ -47,4 +47,8 @@
 			<Value>Scripts/*,SeedData/**</Value>
 		</SonarQubeSetting>
 	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="DataModels\ExporterJourney\" />
+	</ItemGroup>
 </Project>

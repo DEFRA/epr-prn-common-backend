@@ -9,7 +9,7 @@ public class GetCarrierBrokerDealerPermitsResultDto
 
     public Guid RegistrationId { get; set; }
 
-    public string WasteCarrierBrokerDealerRegistration { get; set; }
+    public required string WasteCarrierBrokerDealerRegistration { get; set; }
 
     public string? WasteLicenseOrPermitNumber { get; set; }
 
