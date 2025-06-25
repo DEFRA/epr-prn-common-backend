@@ -208,7 +208,7 @@ namespace EPR.PRN.Backend.Data
                 new LookupMaterial { Id = 6, MaterialName = "Wood", MaterialCode = "WO" });
 
             modelBuilder.Entity<LookupCountry>().HasData(
-                CountryConstants.Countries.Select(c => new LookupCountry { Id = c.Id, Name = c.Name }).ToArray()
+                CountryConstants.Countries.Select(c => new LookupCountry { Id = c.Id, CountryCode = c.Code, Name = c.Name }).ToArray()
             );
 
             modelBuilder.Entity<LookupRegistrationMaterialStatus>().HasData(
