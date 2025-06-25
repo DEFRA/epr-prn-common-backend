@@ -6,6 +6,7 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.FeatureManagement.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
+using FluentValidation;
 
 namespace EPR.PRN.Backend.API.Controllers.ExporterJourney;
 
@@ -13,7 +14,8 @@ namespace EPR.PRN.Backend.API.Controllers.ExporterJourney;
 [ApiVersion("1.0")]
 [Route("api/v{version:apiVersion}")]
 [FeatureGate(FeatureFlags.ReprocessorExporter)]
-public class CarrierBrokerDealerPermitsController(IMediator mediator) : ControllerBase
+public class CarrierBrokerDealerPermitsController(IMediator mediator,
+        IValidator<UpdateCarrierBrokerDealerPermitsCommand> validator) : ControllerBase
 {
     [HttpGet("registrations/{registrationId}/carrier-broker-dealer-permits")]
     [ProducesResponseType(typeof(GetCarrierBrokerDealerPermitsResultDto), 200)]
@@ -89,12 +91,16 @@ public class CarrierBrokerDealerPermitsController(IMediator mediator) : Controll
     {
         try
         {
-            await mediator.Send(new UpdateCarrierBrokerDealerPermitsCommand
+            var command = new UpdateCarrierBrokerDealerPermitsCommand
             {
                 UserId = userId,
                 RegistrationId = registrationId,
                 Dto = dto
-            });
+            };
+
+            await validator.ValidateAndThrowAsync(command);
+
+            await mediator.Send(command);
 
             return Ok();
         }
