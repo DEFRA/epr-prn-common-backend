@@ -206,7 +206,7 @@ public class RegistrationMaterialControllerTests
             .Setup(m => m.Send(command, It.IsAny<CancellationToken>()));
 
         // Act
-        var result = await _controller.UpdateMaximumWeight(command);
+        var result = await _controller.UpdateMaximumWeight(externalId, command);
 
         // Assert
         result.Should().BeEquivalentTo(expectedResult);
