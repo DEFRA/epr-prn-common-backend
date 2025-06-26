@@ -147,4 +147,94 @@ public class RegistrationMaterialController(
         var result = await mediator.Send(new GetMaterialsPermitTypesQuery());
         return Ok(result);
     }
+
+    [HttpDelete("registrationMaterials/{registrationMaterialId:guid}")]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(OkResult))]
+    [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
+    [SwaggerOperation(
+        Summary = "delete a registration material",
+        Description = "attempting to delete a material registration."
+    )]
+    [SwaggerResponse(StatusCodes.Status200OK)]
+    [SwaggerResponse(StatusCodes.Status500InternalServerError, "If an unexpected error occurs.", typeof(ContentResult))]
+    public async Task<IActionResult> DeleteRegistrationMaterial([FromRoute]Guid registrationMaterialId)
+    {
+        logger.LogInformation(LogMessages.DeleteRegistrationMaterial, registrationMaterialId);
+
+        await mediator.Send(new DeleteRegistrationMaterialCommand
+        {
+            RegistrationMaterialId = registrationMaterialId
+        });
+
+        return Ok();
+    }
+
+    [HttpPost("registrationMaterials/{id:Guid}/permits")]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(OkResult))]
+    [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
+    [SwaggerOperation(
+        Summary = "updates an existing registration material permits",
+        Description = "attempting to update the registration material permits."
+    )]
+    [SwaggerResponse(StatusCodes.Status204NoContent, "Returns No Content")]
+    [SwaggerResponse(StatusCodes.Status400BadRequest, "If the request is invalid or a validation error occurs.", typeof(ProblemDetails))]
+    [SwaggerResponse(StatusCodes.Status404NotFound, "If an existing registration is not found", typeof(ProblemDetails))]
+    [SwaggerResponse(StatusCodes.Status500InternalServerError, "If an unexpected error occurs.", typeof(ContentResult))]
+    public async Task<IActionResult> UpdateRegistrationMaterialPermits([FromRoute] Guid id, [FromBody] UpdateRegistrationMaterialPermitsCommand command)
+    {
+
+        logger.LogInformation(LogMessages.UpdateRegistrationMaterialPermits, id);
+
+        command.RegistrationMaterialId = id;
+
+        await validationService.ValidateAndThrowAsync(command);
+
+        await mediator.Send(command);
+
+        return NoContent();
+    }
+
+    [HttpPost("registrationMaterials/{id:Guid}/permitCapacity")]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(OkResult))]
+    [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
+    [SwaggerOperation(
+        Summary = "updates an existing registration material permit capacity",
+        Description = "attempting to update the registration material permit capacity."
+    )]
+    [SwaggerResponse(StatusCodes.Status204NoContent, "Returns No Content")]
+    [SwaggerResponse(StatusCodes.Status400BadRequest, "If the request is invalid or a validation error occurs.", typeof(ProblemDetails))]
+    [SwaggerResponse(StatusCodes.Status404NotFound, "If an existing registration is not found", typeof(ProblemDetails))]
+    [SwaggerResponse(StatusCodes.Status500InternalServerError, "If an unexpected error occurs.", typeof(ContentResult))]
+    public async Task<IActionResult> UpdateRegistrationMaterialPermitCapacity([FromRoute] Guid id, [FromBody] UpdateRegistrationMaterialPermitCapacityCommand command)
+    {
+
+        logger.LogInformation(LogMessages.UpdateRegistrationMaterialPermitCapacity, id);
+
+        command.RegistrationMaterialId = id;
+
+        await validationService.ValidateAndThrowAsync(command);
+
+        await mediator.Send(command);
+
+        return NoContent();
+    }
+
+    [HttpGet("registrationMaterials/permitTypes")]
+    [ProducesResponseType(typeof(List<MaterialsPermitTypeDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ContentResult), StatusCodes.Status500InternalServerError)]
+    [SwaggerOperation(
+        Summary = "Retrieves list of material permit types",
+        Description = "Returns a list of material permit types used during registration."
+    )]
+    [SwaggerResponse(StatusCodes.Status200OK, "Successfully retrieved permit types.", typeof(List<MaterialsPermitTypeDto>))]
+    [SwaggerResponse(StatusCodes.Status500InternalServerError, "An unexpected error occurred.", typeof(ContentResult))]
+    public async Task<IActionResult> GetMaterialsPermitTypes()
+    {
+        logger.LogInformation(LogMessages.GetMaterialsPermitTypes);
+
+        var result = await mediator.Send(new GetMaterialsPermitTypesQuery());
+        return Ok(result);
+    }
 }

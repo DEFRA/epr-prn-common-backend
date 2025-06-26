@@ -39,10 +39,11 @@ public class PrnControllerTests
     private static readonly IFixture _fixture = new Fixture();
     private readonly List<Guid> organisationIds = [];
     private readonly Guid organisationId = Guid.NewGuid();
-    private readonly Guid prnId = Guid.NewGuid();
+	private readonly Guid submitterId = Guid.NewGuid(); // Either ComplianceSchemeId or DR OrganisationId
+	private readonly Guid prnId = Guid.NewGuid();
     private readonly Guid userId = Guid.NewGuid();
 
-    [TestInitialize]
+	[TestInitialize]
     public void TestInitialize()
     {
         _mockPrnService = new Mock<IPrnService>();
@@ -149,12 +150,12 @@ public class PrnControllerTests
 
         result.Should().NotBeNull();
         result.StatusCode.Should().Be((int)HttpStatusCode.InternalServerError);
-    }
+	}
 
-    [TestMethod]
-    public async Task CalculateAsync_WhenRequestIsNull_ReturnsBadRequest()
+	[TestMethod]
+	public async Task CalculateAsync_WhenRequestIsNull_ReturnsBadRequest()
     {
-        var result = await _systemUnderTest.CalculateAsync(organisationId, null);
+        var result = await _systemUnderTest.CalculateAsync(submitterId, null);
 
         result.Should().BeOfType<BadRequestObjectResult>();
 
@@ -165,7 +166,7 @@ public class PrnControllerTests
     [TestMethod]
     public async Task CalculateAsync_WhenRequestIsEmpty_ReturnsBadRequest()
     {
-        var result = await _systemUnderTest.CalculateAsync(organisationId, []);
+        var result = await _systemUnderTest.CalculateAsync(submitterId, []);
 
         result.Should().BeOfType<BadRequestObjectResult>();
 
@@ -178,7 +179,7 @@ public class PrnControllerTests
     {
         _systemUnderTest.ModelState.AddModelError("Key", "Error message");
 
-        var result = await _systemUnderTest.CalculateAsync(organisationId, [new()]);
+        var result = await _systemUnderTest.CalculateAsync(submitterId, [new()]);
 
         result.Should().BeOfType<BadRequestObjectResult>();
     }
@@ -191,7 +192,7 @@ public class PrnControllerTests
             .Setup(x => x.CalculateAsync(It.IsAny<Guid>(), It.IsAny<List<SubmissionCalculationRequest>>()))
             .ReturnsAsync(calculationResult);
 
-        var result = await _systemUnderTest.CalculateAsync(organisationId, [new()]);
+        var result = await _systemUnderTest.CalculateAsync(submitterId, [new()]);
 
         result.Should().BeOfType<ObjectResult>().Which.StatusCode.Should().Be(StatusCodes.Status500InternalServerError);
     }
@@ -210,7 +211,7 @@ public class PrnControllerTests
             .Setup(x => x.CalculateAsync(It.IsAny<Guid>(), It.IsAny<List<SubmissionCalculationRequest>>()))
             .ReturnsAsync(calculationResult);
 
-        var result = await _systemUnderTest.CalculateAsync(organisationId, [new()]);
+        var result = await _systemUnderTest.CalculateAsync(submitterId, [new()]);
 
         result.Should().BeOfType<AcceptedResult>().Which.Value.Should().BeEquivalentTo(new
         {
@@ -241,7 +242,7 @@ public class PrnControllerTests
             .Setup(x => x.CalculateAsync(It.IsAny<Guid>(), It.IsAny<List<SubmissionCalculationRequest>>()))
             .ThrowsAsync(new Exception("Unexpected error"));
 
-        var result = await _systemUnderTest.CalculateAsync(organisationId, [new()]);
+        var result = await _systemUnderTest.CalculateAsync(submitterId, [new()]);
 
         result.Should().BeOfType<ObjectResult>().Which.StatusCode.Should().Be(StatusCodes.Status500InternalServerError);
 
@@ -273,10 +274,10 @@ public class PrnControllerTests
     [TestMethod]
     [DataRow(2023)] // Invalid year
     [DataRow(2030)] // Invalid year
-    public async Task GetObligationCalculation_MultipleOrganisationIds_InvalidYear_ReturnsBadRequest(int year)
+    public async Task GetObligationCalculation_InvalidYear_ReturnsBadRequest(int year)
     {
         // Act
-        var result = await _systemUnderTest.GetObligationCalculations(Guid.NewGuid(), year, organisationIds);
+        var result = await _systemUnderTest.GetObligationCalculations(organisationId, year);
 
         // Assert
         var badRequestResult = result as BadRequestObjectResult;
@@ -286,15 +287,15 @@ public class PrnControllerTests
     }
 
     [TestMethod]
-    public async Task GetObligationCalculation_MultipleOrganisationIds_WhenIsSuccessFalse_Returns500()
+    public async Task GetObligationCalculation_WhenIsSuccessFalse_Returns500()
     {
         // Arrange
         var year = DateTime.UtcNow.Year;
         var obligationResult = new ObligationCalculationResult { Errors = null, IsSuccess = false };
-        _mockObligationCalculatorService.Setup(service => service.GetObligationCalculation(organisationId, organisationIds, year)).ReturnsAsync(obligationResult);
+        _mockObligationCalculatorService.Setup(service => service.GetObligationCalculation(organisationId, year)).ReturnsAsync(obligationResult);
 
         // Act
-        var result = await _systemUnderTest.GetObligationCalculations(organisationId, year, organisationIds);
+        var result = await _systemUnderTest.GetObligationCalculations(organisationId, year);
 
         var statusCodeResult = result as ObjectResult;
         statusCodeResult.Should().NotBeNull();
@@ -302,37 +303,37 @@ public class PrnControllerTests
     }
 
     [TestMethod]
-    public async Task GetObligationCalculation_MultipleOrganisationIds_ValidYear_DataFound_ReturnsOk()
+    public async Task GetObligationCalculation_ValidYear_DataFound_ReturnsOk()
     {
         // Arrange
         var year = DateTime.UtcNow.Year;
         var fixture = new Fixture();
-        var prns = fixture.CreateMany<ObligationData>(10).ToList();
+        var obligationDatas = fixture.CreateMany<ObligationData>(10).ToList();
         for (int i = 0; i < 2; i++)
         {
-            prns[i].MaterialName = "Plastic";
-            prns[i].OrganisationId = organisationId;
+            obligationDatas[i].MaterialName = "Plastic";
+            obligationDatas[i].OrganisationId = organisationId;
 
         }
         for (int i = 2; i < 5; i++)
         {
-            prns[i].MaterialName = "Wood";
-            prns[i].OrganisationId = organisationId;
+            obligationDatas[i].MaterialName = "Wood";
+            obligationDatas[i].OrganisationId = organisationId;
         }
 
-        var obligationResult = new ObligationCalculationResult { Errors = null, IsSuccess = true, ObligationModel = new ObligationModel { NumberOfPrnsAwaitingAcceptance = 8, ObligationData = prns } };
+        var obligationResult = new ObligationCalculationResult { Errors = null, IsSuccess = true, ObligationModel = new ObligationModel { NumberOfPrnsAwaitingAcceptance = 8, ObligationData = obligationDatas } };
 
         // Mock the service to return obligation data
-        _mockObligationCalculatorService.Setup(service => service.GetObligationCalculation(organisationId, organisationIds, year)).ReturnsAsync(obligationResult);
+        _mockObligationCalculatorService.Setup(service => service.GetObligationCalculation(organisationId, year)).ReturnsAsync(obligationResult);
 
         // Act
-        var result = await _systemUnderTest.GetObligationCalculations(organisationId, year, organisationIds);
+        var result = await _systemUnderTest.GetObligationCalculations(organisationId, year);
 
         // Assert
         var okResult = result as OkObjectResult;
         okResult.Should().NotBeNull();
         okResult.StatusCode.Should().Be(200);
-        okResult.Value.Should().BeEquivalentTo(new ObligationModel { ObligationData = prns, NumberOfPrnsAwaitingAcceptance = obligationResult.ObligationModel.NumberOfPrnsAwaitingAcceptance });
+        okResult.Value.Should().BeEquivalentTo(new ObligationModel { ObligationData = obligationDatas, NumberOfPrnsAwaitingAcceptance = obligationResult.ObligationModel.NumberOfPrnsAwaitingAcceptance });
     }
 
     [TestMethod]

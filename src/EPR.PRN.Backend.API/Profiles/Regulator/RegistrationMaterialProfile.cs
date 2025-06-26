@@ -14,24 +14,46 @@ public class RegistrationMaterialProfile : Profile
 {
     public RegistrationMaterialProfile()
     {
+        CreateRegistrationMaterialMappings();
+        CreateRegistrationMappings();
+        CreateRegistrationMaterialDtoMappings();
+        CreateAccreditationMappings();
+        CreateTaskStatusMappings();
+        CreateDetailsAndReprocessingMappings();
+        CreateSamplingPlanMappings();
+        CreateBusinessPlanAndPaymentMappings();
+        CreateWasteLicencesMappings();
+        CreateSiteMappings();
+        CreateCarrierMappings();
+        CreateMaterialsAuthorisedMappings();
+        CreateMaterialPaymentFeeMappings();
+        CreateDtoToEntityMappings();
+        CreateLookupMappings();
+    }
+
+    private void CreateRegistrationMaterialMappings()
+    {
         CreateMap<RegistrationMaterial, CreateRegistrationMaterialDto>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.ExternalId));
+    }
 
+    private void CreateRegistrationMappings()
+    {
         CreateMap<Registration, CreateRegistrationDto>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.ExternalId));
 
         CreateMap<Registration, RegistrationOverviewDto>()
-        .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.ExternalId))
-        .ForMember(dest => dest.Regulator, opt => opt.MapFrom(_ => "EA"))
-        .ForMember(dest => dest.OrganisationType,
-            opt => opt.MapFrom(src => (ApplicationOrganisationType)src.ApplicationTypeId))
-        .ForMember(dest => dest.Tasks, opt => opt.MapFrom((src, dest, _, context) => MapTasks(src.Tasks, src.AccreditationTasks, context)))
-        .ForMember(dest => dest.SiteAddress, opt => opt.MapFrom(src =>
-             src.ReprocessingSiteAddress != null ? CreateAddressString(src.ReprocessingSiteAddress)
-                : string.Empty))
-        .ForMember(dest => dest.SiteGridReference, opt => opt.MapFrom(src => src.ReprocessingSiteAddress != null ? src.ReprocessingSiteAddress.GridReference:string.Empty))
-        .ForMember(dest => dest.Materials, opt => opt.MapFrom(src => src.Materials.Where(m => m.IsMaterialRegistered)));
+            .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.ExternalId))
+            .ForMember(dest => dest.Regulator, opt => opt.MapFrom(_ => "EA"))
+            .ForMember(dest => dest.OrganisationType, opt => opt.MapFrom(src => (ApplicationOrganisationType)src.ApplicationTypeId))
+            .ForMember(dest => dest.Tasks, opt => opt.MapFrom((src, dest, _, context) => MapTasks(src.Tasks, src.AccreditationTasks, context)))
+            .ForMember(dest => dest.SiteAddress, opt => opt.MapFrom(src => src.ReprocessingSiteAddress != null ? CreateAddressString(src.ReprocessingSiteAddress) : string.Empty))
+            .ForMember(dest => dest.SiteGridReference, opt => opt.MapFrom(src => src.ReprocessingSiteAddress != null ? src.ReprocessingSiteAddress.GridReference : string.Empty))
+            .ForMember(dest => dest.Materials, opt => opt.MapFrom(src => src.Materials.Where(m => m.IsMaterialRegistered)));
+    }
 
+    private void CreateRegistrationMaterialDtoMappings()
+    {
         CreateMap<RegistrationMaterial, RegistrationMaterialDto>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.ExternalId))
             .ForMember(dest => dest.RegistrationId, opt => opt.MapFrom(src => src.Registration.ExternalId))
@@ -39,13 +61,19 @@ public class RegistrationMaterialProfile : Profile
             .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.Name))
             .ForMember(dest => dest.ApplicationReferenceNumber, opt => opt.MapFrom(src => src.ApplicationReferenceNumber))
             .ForMember(dest => dest.RegistrationReferenceNumber, opt => opt.MapFrom(src => src.RegistrationReferenceNumber));
+    }
 
+    private void CreateAccreditationMappings()
+    {
         CreateMap<Accreditation, AccreditationDto>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.ExternalId))
             .ForMember(dest => dest.DeterminationDate, opt => opt.MapFrom(src => src.AccreditationDulyMade.FirstOrDefault().DeterminationDate))
             .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.AccreditationStatus.Name))
             .ForMember(dest => dest.ApplicationReference, opt => opt.MapFrom(src => src.ApplicationReferenceNumber));
+    }
 
+    private void CreateTaskStatusMappings()
+    {
         CreateMap<RegulatorAccreditationRegistrationTaskStatus, RegistrationTaskDto>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.ExternalId))
             .ForMember(dest => dest.TaskName, opt => opt.MapFrom(src => src.Task.Name))
@@ -67,7 +95,10 @@ public class RegistrationMaterialProfile : Profile
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.ExternalId))
             .ForMember(dest => dest.TaskName, opt => opt.MapFrom(src => src.Task.Name))
             .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.TaskStatus.Name));
+    }
 
+    private void CreateDetailsAndReprocessingMappings()
+    {
         CreateMap<RegistrationMaterial, RegistrationMaterialDetailsDto>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.ExternalId))
             .ForMember(dest => dest.RegistrationId, opt => opt.MapFrom(src => src.Registration.ExternalId))
@@ -96,7 +127,10 @@ public class RegistrationMaterialProfile : Profile
             .ForMember(dest => dest.RegulatorApplicationTaskStatusId, opt => opt.MapFrom(src => GetApplicationTaskExternalId(src.Tasks, RegulatorTaskNames.ReprocessingInputsAndOutputs)))
             .ForMember(dest => dest.TaskStatus, opt => opt.MapFrom(src => GetApplicationTaskStatus(src.Tasks, RegulatorTaskNames.ReprocessingInputsAndOutputs)))
             .ForMember(dest => dest.QueryNotes, opt => opt.MapFrom(src => GetApplicationTaskNotes(src.Tasks, RegulatorTaskNames.ReprocessingInputsAndOutputs)));
+    }
 
+    private void CreateSamplingPlanMappings()
+    {
         CreateMap<RegistrationMaterial, RegistrationMaterialSamplingPlanDto>()
             .ForMember(dest => dest.MaterialName, opt => opt.MapFrom(src => src.Material.MaterialName))
             .ForMember(dest => dest.Files, opt => opt.MapFrom(src => src.FileUploads))
@@ -127,6 +161,16 @@ public class RegistrationMaterialProfile : Profile
             .ForMember(dest => dest.UpdatedBy, opt => opt.MapFrom(src => src.UpdatedBy))
             .ForMember(dest => dest.FileUploadType, opt => opt.MapFrom(src => src.FileUploadType!.Name))
             .ForMember(dest => dest.FileUploadStatus, opt => opt.MapFrom(src => src.FileUploadStatus!.Name));
+    }
+
+    private void CreateBusinessPlanAndPaymentMappings()
+    {
+        CreateMap<Accreditation, AccreditationBusinessPlanDto>()
+            .ForMember(dest => dest.AccreditationId, opt => opt.MapFrom(src => src.ExternalId))
+            .ForMember(dest => dest.MaterialName, opt => opt.MapFrom(src => src.RegistrationMaterial.Material.MaterialName))
+            .ForMember(dest => dest.OrganisationId, opt => opt.MapFrom(src => src.RegistrationMaterial.Registration.OrganisationId))
+            .ForMember(dest => dest.SiteAddress, opt => opt.MapFrom(src => src.RegistrationMaterial.Registration.ReprocessingSiteAddress != null ? CreateAddressString(src.RegistrationMaterial.Registration.ReprocessingSiteAddress) : string.Empty))
+            .ForMember(dest => dest.TaskStatus, opt => opt.MapFrom(src => GetAccreditationTaskStatus(src.Tasks, RegulatorTaskNames.BusinessPlan)));
 
         CreateMap<Accreditation, AccreditationSamplingPlanDto>()
             .ForMember(dest => dest.MaterialName, opt => opt.MapFrom(src => src.RegistrationMaterial.Material.MaterialName))
@@ -135,16 +179,16 @@ public class RegistrationMaterialProfile : Profile
         CreateMap<Accreditation, AccreditationPaymentFeeDetailsDto>()
             .ForMember(dest => dest.AccreditationId, opt => opt.MapFrom(src => src.ExternalId))
             .ForMember(dest => dest.OrganisationName, opt => opt.MapFrom(src => src.RegistrationMaterial.Registration.OrganisationId))
-            .ForMember(dest => dest.SiteAddress, opt => opt.MapFrom(src =>
-             src.RegistrationMaterial.Registration.ReprocessingSiteAddress != null ? CreateAddressString(src.RegistrationMaterial.Registration.ReprocessingSiteAddress)
-                : string.Empty))
+            .ForMember(dest => dest.SiteAddress, opt => opt.MapFrom(src => src.RegistrationMaterial.Registration.ReprocessingSiteAddress != null ? CreateAddressString(src.RegistrationMaterial.Registration.ReprocessingSiteAddress) : string.Empty))
             .ForMember(dest => dest.ApplicationReferenceNumber, opt => opt.MapFrom(src => src.ApplicationReferenceNumber))
             .ForMember(dest => dest.MaterialName, opt => opt.MapFrom(src => src.RegistrationMaterial.Material.MaterialName))
             .ForMember(dest => dest.SubmittedDate, opt => opt.MapFrom(src => src.CreatedOn))
             .ForMember(dest => dest.ApplicationType, opt => opt.MapFrom(src => src.RegistrationMaterial.Registration.ApplicationTypeId))
             .ForMember(dest => dest.NationId, opt => opt.MapFrom(src => src.RegistrationMaterial.Registration.ReprocessingSiteAddress.NationId != null ? src.RegistrationMaterial.Registration.ReprocessingSiteAddress.NationId : 0));
+    }
 
-
+    private void CreateWasteLicencesMappings()
+    {
         CreateMap<RegistrationMaterial, RegistrationMaterialWasteLicencesDto>()
             .ForMember(dest => dest.PermitType, opt => opt.MapFrom(src => src.PermitType!.Name))
             .ForMember(dest => dest.LicenceNumbers, opt => opt.MapFrom(src => GetReferenceNumber(src)))
@@ -160,18 +204,36 @@ public class RegistrationMaterialProfile : Profile
             .ForMember(dest => dest.RegulatorApplicationTaskStatusId, opt => opt.MapFrom(src => GetApplicationTaskExternalId(src.Tasks, RegulatorTaskNames.WasteLicensesPermitsAndExemptions)))
             .ForMember(dest => dest.TaskStatus, opt => opt.MapFrom(src => GetApplicationTaskStatus(src.Tasks, RegulatorTaskNames.WasteLicensesPermitsAndExemptions)))
             .ForMember(dest => dest.QueryNotes, opt => opt.MapFrom(src => GetApplicationTaskNotes(src.Tasks, RegulatorTaskNames.WasteLicensesPermitsAndExemptions)));
+    }
 
+    private void CreateSiteMappings()
+    {
         CreateMap<Registration, RegistrationSiteAddressDto>()
-           .ForMember(dest => dest.RegistrationId, opt => opt.MapFrom(src => src.ExternalId))
-           .ForMember(dest => dest.NationId, opt => opt.MapFrom(src => src.ReprocessingSiteAddress != null ? src.ReprocessingSiteAddress.NationId : 0))
-           .ForMember(dest => dest.SiteAddress, opt => opt.MapFrom(src => src.ReprocessingSiteAddress != null ? CreateAddressString(src.ReprocessingSiteAddress) : string.Empty))
-           .ForMember(dest => dest.GridReference, opt => opt.MapFrom(src => src.ReprocessingSiteAddress != null ? src.ReprocessingSiteAddress.GridReference : string.Empty))
-           .ForMember(dest => dest.LegalCorrespondenceAddress, opt => opt.MapFrom(src => src.LegalDocumentAddress != null ? CreateAddressString(src.LegalDocumentAddress) : string.Empty))
-           .ForMember(dest => dest.OrganisationId, opt => opt.MapFrom(src => src.OrganisationId))
-           .ForMember(dest => dest.RegulatorRegistrationTaskStatusId, opt => opt.MapFrom(src => GetRegistrationTaskExternalId(src.Tasks, RegulatorTaskNames.SiteAddressAndContactDetails)))
-           .ForMember(dest => dest.TaskStatus, opt => opt.MapFrom(src => GetRegistrationTaskStatus(src.Tasks, RegulatorTaskNames.SiteAddressAndContactDetails)))
-           .ForMember(dest => dest.QueryNotes, opt => opt.MapFrom(src => GetRegistrationTaskNotes(src.Tasks, RegulatorTaskNames.SiteAddressAndContactDetails)));
+            .ForMember(dest => dest.RegistrationId, opt => opt.MapFrom(src => src.ExternalId))
+            .ForMember(dest => dest.NationId, opt => opt.MapFrom(src => src.ReprocessingSiteAddress != null ? src.ReprocessingSiteAddress.NationId : 0))
+            .ForMember(dest => dest.SiteAddress, opt => opt.MapFrom(src => src.ReprocessingSiteAddress != null ? CreateAddressString(src.ReprocessingSiteAddress) : string.Empty))
+            .ForMember(dest => dest.GridReference, opt => opt.MapFrom(src => src.ReprocessingSiteAddress != null ? src.ReprocessingSiteAddress.GridReference : string.Empty))
+            .ForMember(dest => dest.LegalCorrespondenceAddress, opt => opt.MapFrom(src => src.LegalDocumentAddress != null ? CreateAddressString(src.LegalDocumentAddress) : string.Empty))
+            .ForMember(dest => dest.OrganisationId, opt => opt.MapFrom(src => src.OrganisationId))
+            .ForMember(dest => dest.RegulatorRegistrationTaskStatusId, opt => opt.MapFrom(src => GetRegistrationTaskExternalId(src.Tasks, RegulatorTaskNames.SiteAddressAndContactDetails)))
+            .ForMember(dest => dest.TaskStatus, opt => opt.MapFrom(src => GetRegistrationTaskStatus(src.Tasks, RegulatorTaskNames.SiteAddressAndContactDetails)))
+            .ForMember(dest => dest.QueryNotes, opt => opt.MapFrom(src => GetRegistrationTaskNotes(src.Tasks, RegulatorTaskNames.SiteAddressAndContactDetails)));
+    }
 
+    private void CreateCarrierMappings()
+    {
+        CreateMap<Registration, RegistrationWasteCarrierDto>()
+            .ForMember(dest => dest.RegistrationId, opt => opt.MapFrom(src => src.ExternalId))
+            .ForMember(dest => dest.SiteAddress, opt => opt.MapFrom(src => src.ReprocessingSiteAddress != null ? CreateAddressString(src.ReprocessingSiteAddress) : string.Empty))
+            .ForMember(dest => dest.WasteCarrierBrokerDealerNumber, opt => opt.MapFrom(src => src.CarrierBrokerDealerPermit != null ? src.CarrierBrokerDealerPermit.WasteCarrierBrokerDealerRegistration : null))
+            .ForMember(dest => dest.OrganisationId, opt => opt.MapFrom(src => src.OrganisationId))
+            .ForMember(dest => dest.RegulatorRegistrationTaskStatusId, opt => opt.MapFrom(src => GetRegistrationTaskExternalId(src.Tasks, RegulatorTaskNames.WasteCarrierBrokerDealerNumber)))
+            .ForMember(dest => dest.TaskStatus, opt => opt.MapFrom(src => GetRegistrationTaskStatus(src.Tasks, RegulatorTaskNames.WasteCarrierBrokerDealerNumber)))
+            .ForMember(dest => dest.QueryNotes, opt => opt.MapFrom(src => GetRegistrationTaskNotes(src.Tasks, RegulatorTaskNames.WasteCarrierBrokerDealerNumber)));
+    }
+
+    private void CreateMaterialsAuthorisedMappings()
+    {
         CreateMap<Registration, MaterialsAuthorisedOnSiteDto>()
             .ForMember(dest => dest.RegistrationId, opt => opt.MapFrom(src => src.ExternalId))
             .ForMember(dest => dest.OrganisationId, opt => opt.MapFrom(src => src.OrganisationId))
@@ -181,43 +243,48 @@ public class RegistrationMaterialProfile : Profile
             .ForMember(dest => dest.TaskStatus, opt => opt.MapFrom(src => GetRegistrationTaskStatus(src.Tasks, RegulatorTaskNames.MaterialsAuthorisedOnSite)))
             .ForMember(dest => dest.QueryNotes, opt => opt.MapFrom(src => GetRegistrationTaskNotes(src.Tasks, RegulatorTaskNames.MaterialsAuthorisedOnSite)));
 
-
         CreateMap<RegistrationMaterial, MaterialsAuthorisedOnSiteInfoDto>()
-           .ForMember(dest => dest.MaterialName, opt => opt.MapFrom(src => src.Material.MaterialName))
-           .ForMember(dest => dest.Reason, opt => opt.MapFrom(src => src.ReasonforNotreg))
-           .ForMember(dest => dest.IsMaterialRegistered, opt => opt.MapFrom(src => src.IsMaterialRegistered));
+            .ForMember(dest => dest.MaterialName, opt => opt.MapFrom(src => src.Material.MaterialName))
+            .ForMember(dest => dest.IsMaterialRegistered, opt => opt.MapFrom(src => src.IsMaterialRegistered))
+            .ForMember(dest => dest.Reason, opt => opt.MapFrom(src => src.IsMaterialRegistered == false ? src.ReasonforNotreg : string.Empty));
+    }
 
+    private void CreateMaterialPaymentFeeMappings()
+    {
         CreateMap<RegistrationMaterial, MaterialPaymentFeeDto>()
-           .ForMember(dest => dest.RegistrationId, opt => opt.MapFrom(src => src.Registration.ExternalId))
-           .ForMember(dest => dest.OrganisationId, opt => opt.MapFrom(src => src.Registration.OrganisationId))
-           .ForMember(dest => dest.ApplicationType, opt => opt.MapFrom(src => (ApplicationOrganisationType)src.Registration.ApplicationTypeId))
-           .ForMember(dest => dest.CreatedDate, opt => opt.MapFrom(src => src.CreatedDate))
-           .ForMember(dest => dest.SiteAddress, opt => opt.MapFrom(src => src.Registration.ReprocessingSiteAddress != null ? CreateAddressString(src.Registration.ReprocessingSiteAddress) : string.Empty))
-           .ForMember(dest => dest.NationId, opt => opt.MapFrom(src => GetNationId(src.Registration)))
-           .ForMember(dest => dest.MaterialName, opt => opt.MapFrom(src => src.Material.MaterialName))
-           .ForMember(dest => dest.DeterminationDate, opt => opt.MapFrom(src => src.DeterminationDate != null ? src.DeterminationDate.DeterminateDate : null))
-           .ForMember(dest => dest.DulyMadeDate, opt => opt.MapFrom(src => src.DulyMade!.DulyMadeDate))
-           .ForMember(dest => dest.RegulatorApplicationTaskStatusId, opt => opt.MapFrom(src => GetApplicationTaskExternalId(src.Tasks, RegulatorTaskNames.CheckRegistrationStatus)))
-           .ForMember(dest => dest.TaskStatus, opt => opt.MapFrom(src => GetApplicationTaskStatus(src.Tasks, RegulatorTaskNames.CheckRegistrationStatus)))
-           .ForMember(dest => dest.QueryNotes, opt => opt.MapFrom(src => GetApplicationTaskNotes(src.Tasks, RegulatorTaskNames.CheckRegistrationStatus)));
+            .ForMember(dest => dest.RegistrationId, opt => opt.MapFrom(src => src.Registration.ExternalId))
+            .ForMember(dest => dest.OrganisationId, opt => opt.MapFrom(src => src.Registration.OrganisationId))
+            .ForMember(dest => dest.ApplicationType, opt => opt.MapFrom(src => (ApplicationOrganisationType)src.Registration.ApplicationTypeId))
+            .ForMember(dest => dest.CreatedDate, opt => opt.MapFrom(src => src.CreatedDate))
+            .ForMember(dest => dest.SiteAddress, opt => opt.MapFrom(src => src.Registration.ReprocessingSiteAddress != null ? CreateAddressString(src.Registration.ReprocessingSiteAddress) : string.Empty))
+            .ForMember(dest => dest.NationId, opt => opt.MapFrom(src => GetNationId(src.Registration)))
+            .ForMember(dest => dest.MaterialName, opt => opt.MapFrom(src => src.Material.MaterialName))
+            .ForMember(dest => dest.DeterminationDate, opt => opt.MapFrom(src => src.DeterminationDate != null ? src.DeterminationDate.DeterminateDate : (DateTime?)null))
+            .ForMember(dest => dest.DulyMadeDate, opt => opt.MapFrom(src => src.DulyMade!.DulyMadeDate))
+            .ForMember(dest => dest.RegulatorApplicationTaskStatusId, opt => opt.MapFrom(src => GetApplicationTaskExternalId(src.Tasks, RegulatorTaskNames.CheckRegistrationStatus)))
+            .ForMember(dest => dest.TaskStatus, opt => opt.MapFrom(src => GetApplicationTaskStatus(src.Tasks, RegulatorTaskNames.CheckRegistrationStatus)))
+            .ForMember(dest => dest.QueryNotes, opt => opt.MapFrom(src => GetApplicationTaskNotes(src.Tasks, RegulatorTaskNames.CheckRegistrationStatus)));
+    }
 
+    private void CreateDtoToEntityMappings()
+    {
         CreateMap<RegistrationMaterialDto, RegistrationMaterial>()
-           .ForMember(dest => dest.Id, opt => opt.Ignore())
-           .ForMember(dest => dest.RegistrationId, opt => opt.Ignore())
-           .ForMember(dest => dest.Status, opt => opt.Ignore())
-           .ForMember(dest => dest.DeterminationDate, opt => opt.Ignore())
-           .ForMember(dest => dest.Accreditations, opt => opt.Ignore())
-           .ForMember(dest => dest.MaterialId, opt => opt.MapFrom(src => src.MaterialId))
-           .ForMember(dest => dest.StatusId, opt => opt.MapFrom(src => src.StatusId))
-           .ForMember(dest => dest.StatusUpdatedDate, opt => opt.MapFrom(src => src.StatusUpdatedDate ?? DateTime.UtcNow))
-           .ForMember(dest => dest.PermitTypeId, opt => opt.MapFrom(src => src.PermitTypeId))
-           .ForMember(dest => dest.PPCReprocessingCapacityTonne, opt => opt.MapFrom(src => src.PPCReprocessingCapacityTonne))
-           .ForMember(dest => dest.WasteManagementReprocessingCapacityTonne, opt => opt.MapFrom(src => src.WasteManagementReprocessingCapacityTonne))
-           .ForMember(dest => dest.InstallationReprocessingTonne, opt => opt.MapFrom(src => src.InstallationReprocessingTonne))
-           .ForMember(dest => dest.EnvironmentalPermitWasteManagementTonne, opt => opt.MapFrom(src => src.EnvironmentalPermitWasteManagementTonne))
-           .ForMember(dest => dest.MaximumReprocessingCapacityTonne, opt => opt.MapFrom(src => src.MaximumReprocessingCapacityTonne))
-           .ForMember(dest => dest.IsMaterialRegistered, opt => opt.MapFrom(src => src.IsMaterialRegistered))
-           .ForMember(dest => dest.CreatedDate, opt => opt.MapFrom(src => src.CreatedDate));
+            .ForMember(dest => dest.Id, opt => opt.Ignore())
+            .ForMember(dest => dest.RegistrationId, opt => opt.Ignore())
+            .ForMember(dest => dest.Status, opt => opt.Ignore())
+            .ForMember(dest => dest.DeterminationDate, opt => opt.Ignore())
+            .ForMember(dest => dest.Accreditations, opt => opt.Ignore())
+            .ForMember(dest => dest.MaterialId, opt => opt.MapFrom(src => src.MaterialId))
+            .ForMember(dest => dest.StatusId, opt => opt.MapFrom(src => src.StatusId))
+            .ForMember(dest => dest.StatusUpdatedDate, opt => opt.MapFrom(src => src.StatusUpdatedDate ?? DateTime.UtcNow))
+            .ForMember(dest => dest.PermitTypeId, opt => opt.MapFrom(src => src.PermitTypeId))
+            .ForMember(dest => dest.PPCReprocessingCapacityTonne, opt => opt.MapFrom(src => src.PPCReprocessingCapacityTonne))
+            .ForMember(dest => dest.WasteManagementReprocessingCapacityTonne, opt => opt.MapFrom(src => src.WasteManagementReprocessingCapacityTonne))
+            .ForMember(dest => dest.InstallationReprocessingTonne, opt => opt.MapFrom(src => src.InstallationReprocessingTonne))
+            .ForMember(dest => dest.EnvironmentalPermitWasteManagementTonne, opt => opt.MapFrom(src => src.EnvironmentalPermitWasteManagementTonne))
+            .ForMember(dest => dest.MaximumReprocessingCapacityTonne, opt => opt.MapFrom(src => src.MaximumReprocessingCapacityTonne))
+            .ForMember(dest => dest.IsMaterialRegistered, opt => opt.MapFrom(src => src.IsMaterialRegistered))
+            .ForMember(dest => dest.CreatedDate, opt => opt.MapFrom(src => src.CreatedDate));
 
         CreateMap<RegistrationMaterial, ApplicantRegistrationMaterialDto>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.ExternalId))
@@ -240,7 +307,10 @@ public class RegistrationMaterialProfile : Profile
             .ForMember(dest => dest.InstallationPeriodId, opt => opt.MapFrom(src => src.InstallationPeriodId))
             .ForMember(dest => dest.WasteManagementPeriodId, opt => opt.MapFrom(src => src.WasteManagementPeriodId))
             .ForMember(dest => dest.EnvironmentalPeriodId, opt => opt.MapFrom(src => src.EnvironmentalPermitWasteManagementPeriodId));
+    }
 
+    private void CreateLookupMappings()
+    {
         CreateMap<MaterialExemptionReference, ExemptionReferencesLookupDto>()
             .ForMember(dest => dest.ReferenceNumber, opt => opt.MapFrom(src => src.ReferenceNo));
 
@@ -255,8 +325,8 @@ public class RegistrationMaterialProfile : Profile
         CreateMap<LookupRegistrationMaterialStatus, MaterialStatusLookupDto>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
             .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Name));
-
     }
+
 
     private List<QueryNoteDto> GetRegistrationTaskNotes(List<RegulatorRegistrationTaskStatus>? srcTasks, string taskName)
     {
@@ -325,6 +395,18 @@ public class RegistrationMaterialProfile : Profile
     }
 
     private RegulatorTaskStatus GetApplicationTaskStatus(List<RegulatorApplicationTaskStatus>? srcTasks, string taskName)
+    {
+        var task = srcTasks?.FirstOrDefault(t => t.Task.Name == taskName);
+
+        if (task != null)
+        {
+            return (RegulatorTaskStatus)task.TaskStatusId;
+        }
+
+        return RegulatorTaskStatus.NotStarted;
+    }
+
+    private RegulatorTaskStatus GetAccreditationTaskStatus(List<RegulatorAccreditationTaskStatus>? srcTasks, string taskName)
     {
         var task = srcTasks?.FirstOrDefault(t => t.Task.Name == taskName);
 

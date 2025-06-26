@@ -33,7 +33,7 @@ public class RegistrationMaterialControllerTests
         _loggerMock = new Mock<ILogger<RegistrationMaterialController>>();
         _controller = new RegistrationMaterialController(_mediatorMock.Object, _validationServiceMock.Object, _loggerMock.Object);
     }
-    
+
     [TestMethod]
     public async Task CreateExemptionReferences_ValidCommand_ReturnsNoContent()
     {
@@ -52,13 +52,13 @@ public class RegistrationMaterialControllerTests
 
         // Assert  
         result.Should().BeOfType<OkResult>();
-       
+
 
         _loggerMock.Verify(
             x => x.Log(
                 LogLevel.Information,
                 It.IsAny<EventId>(),
-                It.Is<It.IsAnyType>((v, t) => true), 
+                It.Is<It.IsAnyType>((v, t) => true),
                 It.IsAny<Exception>(),
                 It.IsAny<Func<It.IsAnyType, Exception, string>>()),
             Times.AtLeastOnce
@@ -162,5 +162,28 @@ public class RegistrationMaterialControllerTests
         result.Should().BeOfType<OkObjectResult>();
         var okResult = result as OkObjectResult;
         okResult!.Value.Should().BeEquivalentTo(expectedList);
+    }
+
+    [TestMethod]
+    public async Task DeleteRegistrationMaterial_EnsureCorrectResult()
+    {
+        // Arrange
+        var externalId = Guid.NewGuid();
+        var expectedResult = new OkResult();
+
+        var command = new DeleteRegistrationMaterialCommand
+        {
+            RegistrationMaterialId = externalId
+        };
+
+        // Expectations
+        _mediatorMock
+            .Setup(m => m.Send(command, It.IsAny<CancellationToken>()));
+
+        // Act
+        var result = await _controller.DeleteRegistrationMaterial(externalId);
+
+        // Assert
+        result.Should().BeEquivalentTo(expectedResult);
     }
 }

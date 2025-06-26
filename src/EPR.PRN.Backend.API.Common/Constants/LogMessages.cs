@@ -8,6 +8,7 @@ public static class LogMessages
     public const string SummaryInfoMaterial = "Attempting to get summary info for a material";
     public const string OutcomeMaterialRegistration = "UpdateRegistrationOutcome called with Id: {Id}";
     public const string RegistrationSiteAddress = "Attempting to get site address info for registration id :{Id}";
+    public const string RegistrationWasteCarrier = "Attempting to get waste carrier details for registration id :{Id}";
     public const string MaterialAuthorization = "Attempting to get material authorisation  site of registration id :{Id}";
     public const string RegistrationMaterialpaymentFees = "Attempting to get registration material payment fee by id :{Id}";
     public const string UpdateRegulatorApplicationTask = "UpdateRegulatorApplicationTask";
@@ -16,6 +17,8 @@ public static class LogMessages
     public const string AccreditationSamplingPlan = "Attempting to get file uploads relating to an accreditation";
     public const string CreateRegistrationMaterial = "Attempting to create new registration material for registration {0}";
     public const string GetAllRegistrationMaterials = "Attempting to retrieve all registration materials for registration {0}";
+    public const string DeleteRegistrationMaterial = "Attempting to delete registration material with ID {0}";
+    public const string AccreditationBusinessPlan = "Attempting to get Business Plan relating to an accreditation";
 
     public const string CreateRegistration = "Attempting to create new registration";
     public const string UpdateRegistration = "Attempting to create new registration with ID {0}";
