@@ -8,8 +8,6 @@ namespace EPR.PRN.Backend.API.Validators.ExportJourney
     {
         public UpdateCarrierBrokerDealerPermitsCommandValidator()
         {
-            var allowedStatuses = new[] { RegulatorTaskStatus.Queried, RegulatorTaskStatus.Completed };
-
             RuleFor(x => x.Dto.WasteCarrierBrokerDealerRegistration)
                 .MaximumLength(16)
                 .WithMessage("WasteCarrierBrokerDealerRegistration must not exceed 16 characters");
