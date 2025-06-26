@@ -4,6 +4,7 @@ using EPR.PRN.Backend.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EPR.PRN.Backend.Data.Migrations
 {
     [DbContext(typeof(EprContext))]
-    partial class EprContextModelSnapshot : ModelSnapshot
+    [Migration("20250617105930_AddIsOverdueColumn")]
+    partial class AddIsOverdueColumn
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -244,9 +247,6 @@ namespace EPR.PRN.Backend.Data.Migrations
                     b.Property<DateTime>("CalculatedOn")
                         .HasColumnType("datetime2");
 
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
                     b.Property<int>("MaterialId")
                         .HasColumnType("int");
 
@@ -255,12 +255,6 @@ namespace EPR.PRN.Backend.Data.Migrations
 
                     b.Property<Guid>("OrganisationId")
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("SubmitterId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("SubmitterTypeId")
-                        .HasColumnType("int");
 
                     b.Property<int>("Tonnage")
                         .HasColumnType("int");
@@ -272,41 +266,7 @@ namespace EPR.PRN.Backend.Data.Migrations
 
                     b.HasIndex("MaterialId");
 
-                    b.HasIndex("SubmitterTypeId");
-
                     b.ToTable("ObligationCalculations");
-                });
-
-            modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.ObligationCalculationOrganisationSubmitterType", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("TypeName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("TypeName")
-                        .IsUnique();
-
-                    b.ToTable("ObligationCalculationOrganisationSubmitterType");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            TypeName = "ComplianceScheme"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            TypeName = "DirectRegistrant"
-                        });
                 });
 
             modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.PEprNpwdSync", b =>
@@ -872,18 +832,6 @@ namespace EPR.PRN.Backend.Data.Migrations
                         .HasMaxLength(12)
                         .HasColumnType("nvarchar(12)");
 
-                    b.Property<string>("BusinessCollectionsNotes")
-                        .HasColumnType("varchar(500)");
-
-                    b.Property<decimal?>("BusinessCollectionsPercentage")
-                        .HasColumnType("decimal(10,2)");
-
-                    b.Property<string>("CommunicationsNotes")
-                        .HasColumnType("varchar(500)");
-
-                    b.Property<decimal?>("CommunicationsPercentage")
-                        .HasColumnType("decimal(10,2)");
-
                     b.Property<DateTime?>("CreatedOn")
                         .HasColumnType("datetime2");
 
@@ -891,44 +839,11 @@ namespace EPR.PRN.Backend.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("InfrastructureNotes")
-                        .HasColumnType("varchar(500)");
-
-                    b.Property<decimal?>("InfrastructurePercentage")
-                        .HasColumnType("decimal(10,2)");
-
-                    b.Property<string>("NewMarketsNotes")
-                        .HasColumnType("varchar(500)");
-
-                    b.Property<decimal?>("NewMarketsPercentage")
-                        .HasColumnType("decimal(10,2)");
-
-                    b.Property<string>("NewUsersRecycledPackagingWasteNotes")
-                        .HasColumnType("varchar(500)");
-
-                    b.Property<decimal?>("NewUsersRecycledPackagingWastePercentage")
-                        .HasColumnType("decimal(10,2)");
-
-                    b.Property<string>("NotCoveredOtherCategoriesNotes")
-                        .HasColumnType("varchar(500)");
-
-                    b.Property<decimal?>("NotCoveredOtherCategoriesPercentage")
-                        .HasColumnType("decimal(10,2)");
-
                     b.Property<int>("PRNTonnage")
                         .HasColumnType("int");
 
-                    b.Property<string>("RecycledWasteNotes")
-                        .HasColumnType("varchar(500)");
-
-                    b.Property<decimal?>("RecycledWastePercentage")
-                        .HasColumnType("decimal(10,2)");
-
                     b.Property<int>("RegistrationMaterialId")
                         .HasColumnType("int");
-
-                    b.Property<decimal?>("TotalPercentage")
-                        .HasColumnType("decimal(10,2)");
 
                     b.HasKey("Id");
 
@@ -2552,15 +2467,7 @@ namespace EPR.PRN.Backend.Data.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("EPR.PRN.Backend.Data.DataModels.ObligationCalculationOrganisationSubmitterType", "ObligationCalculationOrganisationSubmitterType")
-                        .WithMany()
-                        .HasForeignKey("SubmitterTypeId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
                     b.Navigation("Material");
-
-                    b.Navigation("ObligationCalculationOrganisationSubmitterType");
                 });
 
             modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.PrnMaterialMapping", b =>

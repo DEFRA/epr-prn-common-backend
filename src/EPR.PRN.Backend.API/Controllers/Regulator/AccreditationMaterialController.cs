@@ -1,5 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.Net;
+﻿using System.Net;
 using EPR.PRN.Backend.API.Commands;
 using EPR.PRN.Backend.API.Common.Constants;
 using EPR.PRN.Backend.API.Dto.Regulator;
@@ -72,6 +71,24 @@ public class AccreditationController(IMediator mediator,
     {
         logger.LogInformation(LogMessages.AccreditationMaterialsTasks);
         var result = await mediator.Send(new GetRegistrationAccreditationPaymentFeesByIdQuery() { Id = Id });
+        return Ok(result);
+    }
+
+    [HttpGet("accreditations/{Id}/businessPlan")]
+    [ProducesResponseType(typeof(AccreditationBusinessPlanDto), 200)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [SwaggerOperation(
+    Summary = "get accreditation business plan",
+    Description = "attempting to get business plan."
+)]
+    [SwaggerResponse(StatusCodes.Status200OK, "Returns accreditation business plan.", typeof(AccreditationBusinessPlanDto))]
+    [SwaggerResponse(StatusCodes.Status400BadRequest, "If the request is invalid or a validation error occurs.", typeof(ProblemDetails))]
+    [SwaggerResponse(StatusCodes.Status500InternalServerError, "If an unexpected error occurs.", typeof(ContentResult))]
+    public async Task<IActionResult> GetRegistrationAccreditationBusinessPlanById(Guid Id)
+    {
+        logger.LogInformation(LogMessages.AccreditationBusinessPlan);
+        var result = await mediator.Send(new GetRegistrationAccreditationBusinessPlanByIdQuery() { Id = Id });
         return Ok(result);
     }
     #endregion Get Methods
