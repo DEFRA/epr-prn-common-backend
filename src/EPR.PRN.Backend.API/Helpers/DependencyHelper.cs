@@ -8,6 +8,7 @@ using EPR.PRN.Backend.API.Validators;
 using EPR.PRN.Backend.API.Validators.Regulator;
 using EPR.PRN.Backend.Data.Interfaces;
 using EPR.PRN.Backend.Data.Interfaces.Accreditations;
+using EPR.PRN.Backend.Data.Interfaces.Registrationreprocessingio;
 using EPR.PRN.Backend.Data.Interfaces.Regulator;
 using EPR.PRN.Backend.Data.Repositories;
 using EPR.PRN.Backend.Data.Repositories.Accreditations;
@@ -59,6 +60,7 @@ namespace EPR.PRN.Backend.API.Helpers
                 .AddScoped<IAccreditationPrnIssueAuthRepository, AccreditationPrnIssueAuthRepository>()
                 .AddScoped<IAccreditationFileUploadRepository, AccreditationFileUploadRepository>()
                 .AddScoped<IRegistrationRepository, RegistrationRepository>()
+                .AddScoped<IRegistrationReprocessorIORepository, RegistrationReprocessorIORepository>()
                 .AddScoped<IDateTimeProvider, DateTimeProvider>();
 
             return services;
