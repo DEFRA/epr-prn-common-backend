@@ -3,5 +3,6 @@
 public enum RegistrationMaterialStatus
 {
     Granted = 1,
-    Refused = 2
+    Refused = 2,
+	Started = 3
 }

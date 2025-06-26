@@ -33,4 +33,5 @@ public static class LogMessages
     public const string RegistrationMaterialReference = "Attempting to get reference data registration material id :{Id}";
     public const string CreateExemptionReferences = "Attempting to create exemption references";
     public const string GetMaterialsPermitTypes = "Attempting to get material permit types";
+	public const string UpdateIsMaterialRegistered = "Attempting to update the registration material IsMaterialRegistered flag.";
 }
