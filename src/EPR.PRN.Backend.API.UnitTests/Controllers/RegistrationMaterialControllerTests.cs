@@ -186,4 +186,29 @@ public class RegistrationMaterialControllerTests
         // Assert
         result.Should().BeEquivalentTo(expectedResult);
     }
+
+    [TestMethod]
+    public async Task UpdateMaximumWeight_EnsureCorrectResult()
+    {
+        // Arrange
+        var externalId = Guid.NewGuid();
+        var expectedResult = new OkResult();
+
+        var command = new UpdateMaximumWeightCommand
+        {
+            RegistrationMaterialId = externalId,
+            WeightInTonnes = 10,
+            PeriodId = 1
+        };
+
+        // Expectations
+        _mediatorMock
+            .Setup(m => m.Send(command, It.IsAny<CancellationToken>()));
+
+        // Act
+        var result = await _controller.UpdateMaximumWeight(externalId, command);
+
+        // Assert
+        result.Should().BeEquivalentTo(expectedResult);
+    }
 }
