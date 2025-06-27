@@ -4,8 +4,8 @@ namespace EPR.PRN.Backend.API.Dto.Accreditation;
 
 [ExcludeFromCodeCoverage]
 public class AccreditationFileUploadDto
-{    
-    public Guid? ExternalId { get; set; }    
+{
+    public Guid? ExternalId { get; set; }
     public Guid SubmissionId { get; set; }
     public int? OverseasSiteId { get; set; }
     public required string Filename { get; set; }

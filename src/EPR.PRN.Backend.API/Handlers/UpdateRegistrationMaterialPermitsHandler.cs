@@ -14,6 +14,6 @@ public class UpdateRegistrationMaterialPermitsHandler(IRegistrationMaterialRepos
 
         // Permit Type
         await repository
-            .UpdateRegistrationMaterialPermits(command.RegistrationMaterialId, registrationMaterial.PermitTypeId, command.PermitNumber);
+            .UpdateRegistrationMaterialPermits(command.RegistrationMaterialId, command.PermitTypeId, command.PermitNumber);
     }
 }

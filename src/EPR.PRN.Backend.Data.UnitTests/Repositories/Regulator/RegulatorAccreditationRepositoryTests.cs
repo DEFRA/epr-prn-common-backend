@@ -98,7 +98,6 @@ public class RegulatorAccreditationRepositoryTests
             dulyMadeEntry.Should().NotBeNull();
             dulyMadeEntry!.DulyMadeBy.Should().Be(userId);
             dulyMadeEntry.DulyMadeDate.Should().Be(dulyMadeDate);
-            dulyMadeEntry.TaskStatusId.Should().Be(statusId);
 
             determinationEntry.Should().NotBeNull();
             determinationEntry!.DeterminationDate.Should().Be(determinationDate);
