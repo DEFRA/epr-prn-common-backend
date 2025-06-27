@@ -1,5 +1,6 @@
 ﻿namespace EPR.PRN.Backend.API.Services;
 
+using EPR.PRN.Backend.API.Common.Helpers;
 using EPR.PRN.Backend.API.Dto.Accreditation;
 using EPR.PRN.Backend.API.Services.Interfaces;
 using EPR.PRN.Backend.Data.DataModels.Accreditations;
@@ -36,7 +37,7 @@ public class AccreditationFileUploadService(
 
     public async Task<Guid> CreateFileUpload(Guid accreditationId, AccreditationFileUploadDto requestDto)
     {
-        logger.LogInformation("{Logprefix}: AccreditationFileUploadService - Create. AccreditationId: {AccreditationId}, Request DTO: {Dto}", logPrefix, accreditationId, JsonConvert.SerializeObject(requestDto));
+        logger.LogInformation("{Logprefix}: AccreditationFileUploadService - Create. AccreditationId: {AccreditationId}, Request DTO: {Dto}", logPrefix, accreditationId, LogParameterSanitizer.Sanitize(requestDto));
 
         var entity = MapDtoToEntity(requestDto);
 
