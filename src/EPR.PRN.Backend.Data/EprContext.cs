@@ -403,5 +403,5 @@ public class EprContext : DbContext
         public virtual DbSet<AccreditationTaskStatusQueryNote> AccreditationTaskStatusQueryNote { get; set; }
         public virtual DbSet<AccreditationDeterminationDate> AccreditationDeterminationDate { get; set; }
         public virtual DbSet<LookupCountry> LookupCountries { get; set; }
-    }
+
 }
