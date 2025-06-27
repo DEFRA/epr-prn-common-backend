@@ -993,7 +993,7 @@ public class RegistrationMaterialRepositoryTests
 		// Assert
 		var updatedMaterial = await _context.RegistrationMaterials.SingleAsync(m => m.ExternalId == materialId);
 		updatedMaterial.IsMaterialRegistered.Should().BeTrue();
-		updatedMaterial.StatusId.Should().Be((int)RegistrationMaterialStatus.Started);
+		updatedMaterial.StatusId.Should().Be((int)RegistrationMaterialStatus.InProgress);
 	}
 
 	[TestMethod]

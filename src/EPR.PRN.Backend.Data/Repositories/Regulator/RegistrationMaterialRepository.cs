@@ -329,7 +329,7 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
 			}
 
             existing.IsMaterialRegistered = registrationMaterial.IsMaterialRegistered!.Value;
-            existing.StatusId = (int)RegistrationMaterialStatus.Started;
+            existing.StatusId = (int)RegistrationMaterialStatus.InProgress;
 
 			eprContext.RegistrationMaterials.Update(existing);
 		}
