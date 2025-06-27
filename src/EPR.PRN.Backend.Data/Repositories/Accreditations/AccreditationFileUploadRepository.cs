@@ -38,7 +38,7 @@ public class AccreditationFileUploadRepository(EprAccreditationContext eprContex
             ExternalId = Guid.NewGuid(),
             AccreditationId = await GetAccreditationIntegerId(accreditationId),
             OverseasSiteId = fileUpload.OverseasSiteId,
-            Filename = fileUpload.Filename,
+            FileName = fileUpload.FileName,
             FileId = fileUpload.FileId,
             UploadedOn = fileUpload.UploadedOn,
             UploadedBy = fileUpload.UploadedBy,
@@ -62,7 +62,7 @@ public class AccreditationFileUploadRepository(EprAccreditationContext eprContex
 
         existingEntity.AccreditationId = await GetAccreditationIntegerId(accreditationId);
         existingEntity.OverseasSiteId = fileUpload.OverseasSiteId;
-        existingEntity.Filename = fileUpload.Filename;
+        existingEntity.FileName = fileUpload.FileName;
         existingEntity.FileId = fileUpload.FileId;
         existingEntity.UploadedOn = fileUpload.UploadedOn;
         existingEntity.UploadedBy = fileUpload.UploadedBy;

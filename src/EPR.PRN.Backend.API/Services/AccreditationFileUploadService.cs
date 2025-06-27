@@ -64,8 +64,9 @@ public class AccreditationFileUploadService(
         return new AccreditationFileUploadDto
         {
             ExternalId = entity.ExternalId,
+            SubmissionId = entity.SubmissionId,
             OverseasSiteId = entity.OverseasSiteId,
-            Filename = entity.Filename,
+            Filename = entity.FileName,
             FileId = entity.FileId,
             UploadedOn = entity.UploadedOn,
             UploadedBy = entity.UploadedBy,
@@ -79,8 +80,9 @@ public class AccreditationFileUploadService(
         return new AccreditationFileUpload
         {
             ExternalId = dto.ExternalId.HasValue ? dto.ExternalId.Value : Guid.Empty,
+            SubmissionId = dto.SubmissionId,
             OverseasSiteId = dto.OverseasSiteId,
-            Filename = dto.Filename,
+            FileName = dto.Filename,
             FileId = dto.FileId,
             UploadedOn = dto.UploadedOn,
             UploadedBy = dto.UploadedBy,

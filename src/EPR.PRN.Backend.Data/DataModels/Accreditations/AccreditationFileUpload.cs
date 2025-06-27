@@ -7,10 +7,11 @@ public class AccreditationFileUpload
     public int Id { get; set; }
     public Guid ExternalId { get; set; }
     public int AccreditationId { get; set; }
+    public Guid SubmissionId { get; set; }
     public int? OverseasSiteId { get; set; }
 
     [MaxLength(50)]
-    public string Filename { get; set; }
+    public string FileName { get; set; }
 
     public Guid? FileId { get; set; }
     public DateTime UploadedOn { get; set; }
