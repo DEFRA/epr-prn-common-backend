@@ -13,6 +13,8 @@ namespace EPR.PRN.Backend.Data.UnitTests.Repositories
     [TestClass]
     public class CountryRepositoryTests
     {
+        private const string uk = "UK";
+        private const string france = "France";
         private EprContext _context;
         private CountryRepository _repository;
 
@@ -26,8 +28,8 @@ namespace EPR.PRN.Backend.Data.UnitTests.Repositories
 
             // Seed data
             _context.Set<LookupCountry>().AddRange(
-                new LookupCountry { Id = 1, Name = "UK" },
-                new LookupCountry { Id = 2, Name = "France" }
+                new LookupCountry { Id = 1, Name = uk },
+                new LookupCountry { Id = 2, Name = france }
             );
             _context.SaveChanges();
 
@@ -50,7 +52,7 @@ namespace EPR.PRN.Backend.Data.UnitTests.Repositories
             // Assert
             result.Should().NotBeNull();
             result.Should().HaveCount(2);
-            result.Select(c => c.Name).Should().Contain(new[] { "UK", "France" });
+            result.Select(c => c.Name).Should().Contain(new[] { uk, france});
         }
     }
 }
