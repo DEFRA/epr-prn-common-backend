@@ -308,18 +308,27 @@ public class RegistrationRepository(EprContext context, ILogger<RegistrationRepo
 
     public async Task<IEnumerable<RegistrationOverviewDto>> GetRegistrationsOverviewForOrgIdAsync(Guid organisationId)
     {
-        return await context.Registrations
+        var registrations = await context.Registrations
             .Where(r => r.OrganisationId == organisationId)
-            .SelectMany(r => r.Materials.DefaultIfEmpty(), (r, m) => new RegistrationOverviewDto
+            .Include(r => r.Materials!) // Include related Materials (non-nullable)
+                .ThenInclude(m => m.Material) // Include nested Material
+            .Include(r => r.Materials!) // Include related Materials again (non-nullable)
+                .ThenInclude(m => m.Accreditations) // Include nested Accreditations
+            .Include(r => r.ReprocessingSiteAddress) // Include ReprocessingSiteAddress
+            .ToListAsync();
+        var result = registrations.SelectMany(
+            r => (r.Materials ?? []).DefaultIfEmpty(),
+            (r, m) => new RegistrationOverviewDto
             {
                 RegistrationId = r.ExternalId,
-                RegistrationMaterialId = m != null ? m.Id : 0, // Handle null material
-                MaterialId = m != null && m.Material != null ? m.Material.Id : 0, // Handle null material
-                Material = m != null && m.Material != null ? m.Material.MaterialName : string.Empty, // Handle null material
-                MaterialCode = m != null && m.Material != null ? m.Material.MaterialCode : string.Empty, // Include MaterialCode
+                RegistrationMaterialId = m?.Id ?? 0,
+                MaterialId = m?.Material?.Id ?? 0,
+                Material = m?.Material?.MaterialName ?? string.Empty,
+                MaterialCode = m?.Material?.MaterialCode ?? string.Empty,
                 ApplicationTypeId = r.ApplicationTypeId,
                 RegistrationStatus = r.RegistrationStatusId,
-                AccreditationStatus = 0,
+                AccreditationStatus = m?.Accreditations?.FirstOrDefault()?.AccreditationStatus?.Id ?? 0,
+                AccreditationYear = m?.Accreditations?.FirstOrDefault()?.AccreditationYear,
                 ReprocessingSiteId = r.ReprocessingSiteAddressId,
                 ReprocessingSiteAddress = r.ReprocessingSiteAddress != null ? new AddressDto
                 {
@@ -332,10 +341,10 @@ public class RegistrationRepository(EprContext context, ILogger<RegistrationRepo
                     NationId = r.ReprocessingSiteAddress.NationId ?? 0,
                     GridReference = r.ReprocessingSiteAddress.GridReference
                 } : null,
-                Year = DateTime.Today.Year // Map the year from each material
-            })
-            .ToListAsync();
-    }
+                RegistrationYear = null // not required for MLS
+            });
 
+        return result;
+    }
 
 }
