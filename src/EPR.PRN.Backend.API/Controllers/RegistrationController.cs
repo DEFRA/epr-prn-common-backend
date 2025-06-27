@@ -36,7 +36,7 @@ public class RegistrationController(IMediator mediator
     [ExcludeFromCodeCoverage(Justification = "TODO: To be done as part of create registration user story")]
     public async Task<IActionResult> GetRegistrationByOrganisation([FromRoute]int applicationTypeId, [FromRoute]Guid organisationId)
     {
-        logger.LogInformation(string.Format(LogMessages.GetRegistrationByOrganisation, applicationTypeId, organisationId));
+        logger.LogInformation( LogMessages.GetRegistrationByOrganisation, applicationTypeId, organisationId);
 
         var registration = await mediator.Send(new GetRegistrationByOrganisationQuery
         {
@@ -69,7 +69,7 @@ public class RegistrationController(IMediator mediator
 
         var registration = await mediator.Send(new GetRegistrationByIdQuery{Id = registrationId} );
 
-        if (registration is null)
+        if (registration == null)
         {
             return NotFound();
         }
@@ -95,7 +95,7 @@ public class RegistrationController(IMediator mediator
 
         var registration = await mediator.Send(new GetRegistrationTaskOverviewByIdQuery { Id = registrationId });
 
-        if (registration is null)
+        if (registration == null)
         {
             return NotFound();
         }

@@ -17,17 +17,23 @@ public class GetRegistrationTaskOverviewDetailByIdHandler(
         var registration = await repo.GetAsync(request.Id);
         var registrationDto = mapper.Map<RegistrationTaskOverviewDto>(registration);
 
-        var missingRegistrationTasks = await GetMissingTasks(registration.ApplicationTypeId, false, registrationDto.Tasks);
+        var applicationTypeId = (int)registration?.ApplicationTypeId!;
+        
+        var missingRegistrationTasks = await GetMissingTasks(applicationTypeId, false, registrationDto.Tasks);
         registrationDto.Tasks.AddRange(missingRegistrationTasks);
 
-        foreach (var materialDto in registrationDto.Materials)
+        if (registrationDto?.Materials == null)
         {
-
-            var missingMaterialTasks = await GetMissingTasks(registration.ApplicationTypeId, true, materialDto.Tasks);
-            materialDto.Tasks.AddRange(missingMaterialTasks);
+            if (registrationDto != null) return registrationDto;
         }
 
-        return registrationDto;
+        await Parallel.ForEachAsync(registrationDto?.Materials!, cancellationToken, async (materialDto, _) =>
+        {
+            var missingMaterialTasks = await GetMissingTasks(registration.ApplicationTypeId, true, materialDto.Tasks);
+            materialDto.Tasks.AddRange(missingMaterialTasks);
+        });
+
+        return registrationDto!;
     }
 
     private async Task<IEnumerable<RegistrationTaskDto>> GetMissingTasks(int applicationTypeId, bool isMaterialSpecific, List<RegistrationTaskDto> existingTasks)
@@ -36,7 +42,7 @@ public class GetRegistrationTaskOverviewDetailByIdHandler(
 
         var missingTasks = requiredTasks
             .Where(rt => existingTasks.All(r => r.TaskName != rt.Name))
-            .Select(t => new RegistrationTaskDto { TaskName = t.Name, Status = RegulatorTaskStatus.NotStarted.ToString() });
+            .Select(t => new RegistrationTaskDto { TaskName = t.Name, Status = nameof(RegulatorTaskStatus.NotStarted)});
 
         return missingTasks;
     }
