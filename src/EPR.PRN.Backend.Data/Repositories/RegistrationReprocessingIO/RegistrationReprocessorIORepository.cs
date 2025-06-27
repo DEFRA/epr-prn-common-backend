@@ -35,7 +35,7 @@ public class RegistrationReprocessorIORepository(EprContext eprContext) : IRegis
         {
             reprocessorOutput.RawMaterialorProducts.Add(new ReprocessingIORawMaterialorProducts
             {
-                ExternalID=new Guid(),
+                ExternalID= Guid.NewGuid(),
                 RawMaterialNameorProductName = materialorProduct.Key,
                 TonneValue = materialorProduct.Value,
                 IsInput = false
