@@ -25,11 +25,29 @@ public class MaterialController(
     )]
     [SwaggerResponse(StatusCodes.Status200OK, "Returns a list of materials found.", typeof(IList<MaterialDto>))]
     [SwaggerResponse(StatusCodes.Status500InternalServerError, "If an unexpected error occurs.", typeof(ContentResult))]
-    public async Task<IActionResult> GetAllMaterials()
+    public async Task<IActionResult> GetAllMaterials(Guid? registrationId = null)
     {
-        logger.LogInformation("Attempting to get all materials");
+        if (!registrationId.HasValue)
+        {
+            logger.LogInformation("Attempting to get all materials");
 
-        var result = await mediator.Send(new GetAllMaterialsQuery());
-        return Ok(result);
+            var result = await mediator.Send(new GetAllMaterialsQuery());
+            return Ok(result);
+        }
+        else if (registrationId.HasValue && !Guid.TryParse(registrationId.Value.ToString(), out _))
+        {
+            var errorMessage = $"Invalid Guid format for registrationId : {registrationId}";
+            {
+                logger.LogError(errorMessage);
+            }
+            return BadRequest(new { Message = errorMessage });
+        }
+        else
+        {
+            logger.LogInformation($"Attempting to get filtered list of materials for registrationId : {registrationId}");
+
+            var result = await mediator.Send(new GetMaterialsByRegistrationIdQuery() { RegistrationId = registrationId.Value });
+            return Ok(result);
+        }
     }
 }
