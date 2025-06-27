@@ -3585,6 +3585,104 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250610165559_ModifyObligationCalculationsTableToAddNewCoulmnAndRelatedTable'
+)
+BEGIN
+    DELETE FROM ObligationCalculations
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250610165559_ModifyObligationCalculationsTableToAddNewCoulmnAndRelatedTable'
+)
+BEGIN
+    ALTER TABLE [ObligationCalculations] ADD [SubmitterId] uniqueidentifier NOT NULL;
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250610165559_ModifyObligationCalculationsTableToAddNewCoulmnAndRelatedTable'
+)
+BEGIN
+    ALTER TABLE [ObligationCalculations] ADD [SubmitterTypeId] int NOT NULL;
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250610165559_ModifyObligationCalculationsTableToAddNewCoulmnAndRelatedTable'
+)
+BEGIN
+    CREATE TABLE [ObligationCalculationOrganisationSubmitterType] (
+        [Id] int NOT NULL IDENTITY,
+        [TypeName] nvarchar(450) NOT NULL,
+        CONSTRAINT [PK_ObligationCalculationOrganisationSubmitterType] PRIMARY KEY ([Id])
+    );
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250610165559_ModifyObligationCalculationsTableToAddNewCoulmnAndRelatedTable'
+)
+BEGIN
+    IF EXISTS (SELECT * FROM [sys].[identity_columns] WHERE [name] IN (N'Id', N'TypeName') AND [object_id] = OBJECT_ID(N'[ObligationCalculationOrganisationSubmitterType]'))
+        SET IDENTITY_INSERT [ObligationCalculationOrganisationSubmitterType] ON;
+    EXEC(N'INSERT INTO [ObligationCalculationOrganisationSubmitterType] ([Id], [TypeName])
+    VALUES (1, N''ComplianceScheme''),
+    (2, N''DirectRegistrant'')');
+    IF EXISTS (SELECT * FROM [sys].[identity_columns] WHERE [name] IN (N'Id', N'TypeName') AND [object_id] = OBJECT_ID(N'[ObligationCalculationOrganisationSubmitterType]'))
+        SET IDENTITY_INSERT [ObligationCalculationOrganisationSubmitterType] OFF;
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250610165559_ModifyObligationCalculationsTableToAddNewCoulmnAndRelatedTable'
+)
+BEGIN
+    CREATE INDEX [IX_ObligationCalculations_SubmitterTypeId] ON [ObligationCalculations] ([SubmitterTypeId]);
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250610165559_ModifyObligationCalculationsTableToAddNewCoulmnAndRelatedTable'
+)
+BEGIN
+    CREATE UNIQUE INDEX [IX_ObligationCalculationOrganisationSubmitterType_TypeName] ON [ObligationCalculationOrganisationSubmitterType] ([TypeName]);
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250610165559_ModifyObligationCalculationsTableToAddNewCoulmnAndRelatedTable'
+)
+BEGIN
+    ALTER TABLE [ObligationCalculations] ADD CONSTRAINT [FK_ObligationCalculations_ObligationCalculationOrganisationSubmitterType_SubmitterTypeId] FOREIGN KEY ([SubmitterTypeId]) REFERENCES [ObligationCalculationOrganisationSubmitterType] ([Id]);
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250610165559_ModifyObligationCalculationsTableToAddNewCoulmnAndRelatedTable'
+)
+BEGIN
+    INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+    VALUES (N'20250610165559_ModifyObligationCalculationsTableToAddNewCoulmnAndRelatedTable', N'8.0.8');
+END;
+GO
+
+COMMIT;
+GO
+
+BEGIN TRANSACTION;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
     WHERE [MigrationId] = N'20250611140921_AddressFieldsNullable'
 )
 BEGIN
@@ -4016,104 +4114,6 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250610165559_ModifyObligationCalculationsTableToAddNewCoulmnAndRelatedTable'
-)
-BEGIN
-    DELETE FROM ObligationCalculations
-END;
-GO
-
-IF NOT EXISTS (
-    SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250610165559_ModifyObligationCalculationsTableToAddNewCoulmnAndRelatedTable'
-)
-BEGIN
-    ALTER TABLE [ObligationCalculations] ADD [SubmitterId] uniqueidentifier NOT NULL;
-END;
-GO
-
-IF NOT EXISTS (
-    SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250610165559_ModifyObligationCalculationsTableToAddNewCoulmnAndRelatedTable'
-)
-BEGIN
-    ALTER TABLE [ObligationCalculations] ADD [SubmitterTypeId] int NOT NULL;
-END;
-GO
-
-IF NOT EXISTS (
-    SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250610165559_ModifyObligationCalculationsTableToAddNewCoulmnAndRelatedTable'
-)
-BEGIN
-    CREATE TABLE [ObligationCalculationOrganisationSubmitterType] (
-        [Id] int NOT NULL IDENTITY,
-        [TypeName] nvarchar(450) NOT NULL,
-        CONSTRAINT [PK_ObligationCalculationOrganisationSubmitterType] PRIMARY KEY ([Id])
-    );
-END;
-GO
-
-IF NOT EXISTS (
-    SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250610165559_ModifyObligationCalculationsTableToAddNewCoulmnAndRelatedTable'
-)
-BEGIN
-    IF EXISTS (SELECT * FROM [sys].[identity_columns] WHERE [name] IN (N'Id', N'TypeName') AND [object_id] = OBJECT_ID(N'[ObligationCalculationOrganisationSubmitterType]'))
-        SET IDENTITY_INSERT [ObligationCalculationOrganisationSubmitterType] ON;
-    EXEC(N'INSERT INTO [ObligationCalculationOrganisationSubmitterType] ([Id], [TypeName])
-    VALUES (1, N''ComplianceScheme''),
-    (2, N''DirectRegistrant'')');
-    IF EXISTS (SELECT * FROM [sys].[identity_columns] WHERE [name] IN (N'Id', N'TypeName') AND [object_id] = OBJECT_ID(N'[ObligationCalculationOrganisationSubmitterType]'))
-        SET IDENTITY_INSERT [ObligationCalculationOrganisationSubmitterType] OFF;
-END;
-GO
-
-IF NOT EXISTS (
-    SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250610165559_ModifyObligationCalculationsTableToAddNewCoulmnAndRelatedTable'
-)
-BEGIN
-    CREATE INDEX [IX_ObligationCalculations_SubmitterTypeId] ON [ObligationCalculations] ([SubmitterTypeId]);
-END;
-GO
-
-IF NOT EXISTS (
-    SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250610165559_ModifyObligationCalculationsTableToAddNewCoulmnAndRelatedTable'
-)
-BEGIN
-    CREATE UNIQUE INDEX [IX_ObligationCalculationOrganisationSubmitterType_TypeName] ON [ObligationCalculationOrganisationSubmitterType] ([TypeName]);
-END;
-GO
-
-IF NOT EXISTS (
-    SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250610165559_ModifyObligationCalculationsTableToAddNewCoulmnAndRelatedTable'
-)
-BEGIN
-    ALTER TABLE [ObligationCalculations] ADD CONSTRAINT [FK_ObligationCalculations_ObligationCalculationOrganisationSubmitterType_SubmitterTypeId] FOREIGN KEY ([SubmitterTypeId]) REFERENCES [ObligationCalculationOrganisationSubmitterType] ([Id]);
-END;
-GO
-
-IF NOT EXISTS (
-    SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250610165559_ModifyObligationCalculationsTableToAddNewCoulmnAndRelatedTable'
-)
-BEGIN
-    INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
-    VALUES (N'20250610165559_ModifyObligationCalculationsTableToAddNewCoulmnAndRelatedTable', N'8.0.8');
-END;
-GO
-
-COMMIT;
-GO
-
-BEGIN TRANSACTION;
-GO
-
-IF NOT EXISTS (
-    SELECT * FROM [__EFMigrationsHistory]
     WHERE [MigrationId] = N'20250612221733_AddIsDelectedColoumnToObligationCalculations'
 )
 BEGIN
@@ -4128,6 +4128,188 @@ IF NOT EXISTS (
 BEGIN
     INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
     VALUES (N'20250612221733_AddIsDelectedColoumnToObligationCalculations', N'8.0.8');
+END;
+GO
+
+COMMIT;
+GO
+
+BEGIN TRANSACTION;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250615135732_UpdateAccreditationBusinessPlan'
+)
+BEGIN
+    ALTER TABLE [Public.Accreditation] ADD [BusinessCollectionsNotes] varchar(500) NULL;
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250615135732_UpdateAccreditationBusinessPlan'
+)
+BEGIN
+    ALTER TABLE [Public.Accreditation] ADD [BusinessCollectionsPercentage] decimal(10,2) NULL;
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250615135732_UpdateAccreditationBusinessPlan'
+)
+BEGIN
+    ALTER TABLE [Public.Accreditation] ADD [CommunicationsNotes] varchar(500) NULL;
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250615135732_UpdateAccreditationBusinessPlan'
+)
+BEGIN
+    ALTER TABLE [Public.Accreditation] ADD [CommunicationsPercentage] decimal(10,2) NULL;
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250615135732_UpdateAccreditationBusinessPlan'
+)
+BEGIN
+    ALTER TABLE [Public.Accreditation] ADD [InfrastructureNotes] varchar(500) NULL;
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250615135732_UpdateAccreditationBusinessPlan'
+)
+BEGIN
+    ALTER TABLE [Public.Accreditation] ADD [InfrastructurePercentage] decimal(10,2) NULL;
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250615135732_UpdateAccreditationBusinessPlan'
+)
+BEGIN
+    ALTER TABLE [Public.Accreditation] ADD [NewMarketsNotes] varchar(500) NULL;
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250615135732_UpdateAccreditationBusinessPlan'
+)
+BEGIN
+    ALTER TABLE [Public.Accreditation] ADD [NewMarketsPercentage] decimal(10,2) NULL;
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250615135732_UpdateAccreditationBusinessPlan'
+)
+BEGIN
+    ALTER TABLE [Public.Accreditation] ADD [NewUsersRecycledPackagingWasteNotes] varchar(500) NULL;
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250615135732_UpdateAccreditationBusinessPlan'
+)
+BEGIN
+    ALTER TABLE [Public.Accreditation] ADD [NewUsersRecycledPackagingWastePercentage] decimal(10,2) NULL;
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250615135732_UpdateAccreditationBusinessPlan'
+)
+BEGIN
+    ALTER TABLE [Public.Accreditation] ADD [NotCoveredOtherCategoriesNotes] varchar(500) NULL;
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250615135732_UpdateAccreditationBusinessPlan'
+)
+BEGIN
+    ALTER TABLE [Public.Accreditation] ADD [NotCoveredOtherCategoriesPercentage] decimal(10,2) NULL;
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250615135732_UpdateAccreditationBusinessPlan'
+)
+BEGIN
+    ALTER TABLE [Public.Accreditation] ADD [RecycledWasteNotes] varchar(500) NULL;
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250615135732_UpdateAccreditationBusinessPlan'
+)
+BEGIN
+    ALTER TABLE [Public.Accreditation] ADD [RecycledWastePercentage] decimal(10,2) NULL;
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250615135732_UpdateAccreditationBusinessPlan'
+)
+BEGIN
+    ALTER TABLE [Public.Accreditation] ADD [TotalPercentage] decimal(10,2) NULL;
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250615135732_UpdateAccreditationBusinessPlan'
+)
+BEGIN
+    INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+    VALUES (N'20250615135732_UpdateAccreditationBusinessPlan', N'8.0.8');
+END;
+GO
+
+COMMIT;
+GO
+
+BEGIN TRANSACTION;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250617105930_AddIsOverdueColumn'
+)
+BEGIN
+
+                        ALTER TABLE [Public.DeterminationDate]
+                        ADD [IsOverdue] AS CASE 
+                            WHEN [DeterminateDate] > GETUTCDATE() THEN CAST(0 AS BIT)
+                            ELSE CAST(1 AS BIT)
+                        END
+                    
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250617105930_AddIsOverdueColumn'
+)
+BEGIN
+    INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+    VALUES (N'20250617105930_AddIsOverdueColumn', N'8.0.8');
 END;
 GO
 
