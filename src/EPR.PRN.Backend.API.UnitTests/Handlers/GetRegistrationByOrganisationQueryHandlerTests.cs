@@ -34,39 +34,9 @@ public class GetRegistrationByOrganisationQueryHandlerTests
             Id = externalId,
             ApplicationTypeId = 1,
             OrganisationId = organisationId,
-            BusinessAddress = new AddressDto
-            {
-                AddressLine1 = "address line 1",
-                AddressLine2 = "address line 2",
-                County = "County",
-                PostCode = "Postcode",
-                TownCity = "Town",
-                GridReference = "TQ12345678",
-                NationId = 1,
-                Id = 1
-            },
-            ReprocessingSiteAddress = new AddressDto
-            {
-                AddressLine1 = "address line 1",
-                AddressLine2 = "address line 2",
-                County = "County",
-                PostCode = "Postcode",
-                TownCity = "Town",
-                GridReference = "TQ12345678",
-                NationId = 1,
-                Id = 1
-            },
-            LegalDocumentAddress = new AddressDto
-            {
-                AddressLine1 = "address line 1",
-                AddressLine2 = "address line 2",
-                County = "County",
-                PostCode = "Postcode",
-                TownCity = "Town",
-                GridReference = "TQ12345678",
-                NationId = 1,
-                Id = 1
-            },
+            BusinessAddress = GetTestAddress(),
+            ReprocessingSiteAddress = GetTestAddress(),
+            LegalDocumentAddress = GetTestAddress(),
             RegistrationStatusId = 1,
             Tasks = new List<RegistrationTaskDto>
             {
@@ -78,7 +48,7 @@ public class GetRegistrationByOrganisationQueryHandlerTests
                 }
             }
         };
-    
+
         var address = new Address
         {
             AddressLine1 = "address line 1",
@@ -126,6 +96,21 @@ public class GetRegistrationByOrganisationQueryHandlerTests
 
         // Assert
         result.Should().BeEquivalentTo(expectedDto);
+    }
+
+    private static AddressDto GetTestAddress()
+    {
+        return new AddressDto
+        {
+            AddressLine1 = "address line 1",
+            AddressLine2 = "address line 2",
+            County = "County",
+            PostCode = "Postcode",
+            TownCity = "Town",
+            GridReference = "TQ12345678",
+            NationId = 1,
+            Id = 1
+        };
     }
 
     [TestMethod]
