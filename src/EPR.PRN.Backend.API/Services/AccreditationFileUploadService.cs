@@ -46,7 +46,7 @@ public class AccreditationFileUploadService(
 
     public async Task UpdateFileUpload(Guid accreditationId, AccreditationFileUploadDto requestDto)
     {
-        logger.LogInformation("{Logprefix}: AccreditationFileUploadService - Update. AccreditationId: {AccreditationId}, Request DTO: {Dto}", logPrefix, accreditationId, JsonConvert.SerializeObject(requestDto));
+        logger.LogInformation("{Logprefix}: AccreditationFileUploadService - Update. AccreditationId: {AccreditationId}, Request DTO: {Dto}", logPrefix, accreditationId, LogParameterSanitizer.Sanitize(requestDto));
 
         var entity = MapDtoToEntity(requestDto);
 
