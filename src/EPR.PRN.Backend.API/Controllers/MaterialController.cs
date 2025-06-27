@@ -36,11 +36,7 @@ public class MaterialController(
         }
         else if (registrationId.HasValue && !Guid.TryParse(registrationId.Value.ToString(), out _))
         {
-            var errorMessage = $"Invalid Guid format for registrationId : {registrationId}";
-            {
-                logger.LogError(errorMessage);
-            }
-            return BadRequest(new { Message = errorMessage });
+            return ThrowInvalidRegistrationId(logger, registrationId);
         }
         else
         {
@@ -49,5 +45,11 @@ public class MaterialController(
             var result = await mediator.Send(new GetMaterialsByRegistrationIdQuery() { RegistrationId = registrationId.Value });
             return Ok(result);
         }
+    }
+
+    private IActionResult ThrowInvalidRegistrationId(ILogger<MaterialController> logger, Guid? registrationId)
+    {
+        logger.LogError("Invalid Guid format - {registrationId}", registrationId);
+        return BadRequest(new { Message = $"Invalid Guid format for registrationId : {registrationId}" });
     }
 }
