@@ -172,16 +172,11 @@ public class RegistrationMaterialController(
 
 	[HttpPost("registrationMaterials/UpdateIsMaterialRegistered")]
 	[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(OkResult))]
-	[ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
-	[ProducesResponseType((int)HttpStatusCode.InternalServerError)]
+	[SwaggerResponse(StatusCodes.Status500InternalServerError, "If an unexpected error occurs.", typeof(ContentResult))]
 	[SwaggerOperation(
 	Summary = "updates an existing registration material IsMaterialRegistered flag",
 	Description = "attempting to update the registration material IsMaterialRegistered flag."
-)]
-	[SwaggerResponse(StatusCodes.Status204NoContent, "Returns No Content")]
-	[SwaggerResponse(StatusCodes.Status400BadRequest, "If the request is invalid or a validation error occurs.", typeof(ProblemDetails))]
-	[SwaggerResponse(StatusCodes.Status404NotFound, "If an existing registration is not found", typeof(ProblemDetails))]
-	[SwaggerResponse(StatusCodes.Status500InternalServerError, "If an unexpected error occurs.", typeof(ContentResult))]
+	)]
 	public async Task<IActionResult> UpdateIsMaterialRegisteredAsync([FromBody] List<UpdateIsMaterialRegisteredDto> request)
 	{
 		logger.LogInformation(LogMessages.UpdateIsMaterialRegistered);
