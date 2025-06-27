@@ -1,4 +1,5 @@
-﻿using EPR.PRN.Backend.API.Common.Constants;
+﻿using System.Threading.Tasks;
+using EPR.PRN.Backend.API.Common.Constants;
 using EPR.PRN.Backend.API.Common.Enums;
 using EPR.PRN.Backend.Data.DataModels.Registrations;
 using EPR.PRN.Backend.Data.Interfaces.Regulator;
@@ -313,6 +314,40 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
         eprContext.RegistrationMaterials.Remove(existing);
 
         await eprContext.SaveChangesAsync();
+    }
+
+    public async Task<RegistrationMaterialContact> UpsertRegistrationMaterialContact(Guid registrationMaterialId, Guid userId)
+    {
+        var registrationMaterial = await eprContext.RegistrationMaterials
+            .Include(rm => rm.RegistrationMaterialContact)
+            .SingleOrDefaultAsync(rm => rm.ExternalId == registrationMaterialId);
+
+        if (registrationMaterial is null)
+        {
+            throw new KeyNotFoundException("Registration material not found.");
+        }
+
+        var registrationMaterialContact = registrationMaterial.RegistrationMaterialContact;
+
+        if (registrationMaterialContact is null)
+        {
+            registrationMaterialContact = new RegistrationMaterialContact
+            {
+                ExternalId = Guid.NewGuid(),
+                RegistrationMaterialId = registrationMaterial.Id,
+                UserId = userId
+            };
+
+            await eprContext.RegistrationMaterialContacts.AddAsync(registrationMaterialContact);
+        }
+        else
+        {
+            registrationMaterialContact.UserId = userId;
+        }
+
+        await eprContext.SaveChangesAsync();
+
+        return registrationMaterialContact;
     }
 
     private IIncludableQueryable<RegistrationMaterial, LookupRegistrationMaterialStatus> GetRegistrationMaterialsWithRelatedEntities()

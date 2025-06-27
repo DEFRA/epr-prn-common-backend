@@ -4316,3 +4316,67 @@ GO
 COMMIT;
 GO
 
+BEGIN TRANSACTION;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250627150737_AddRegistrationMaterialContact'
+)
+BEGIN
+    CREATE TABLE [Public.RegistrationMaterialContact] (
+        [Id] int NOT NULL IDENTITY,
+        [ExternalId] uniqueidentifier NOT NULL,
+        [RegistrationMaterialId] int NOT NULL,
+        [UserId] uniqueidentifier NOT NULL,
+        CONSTRAINT [PK_Public.RegistrationMaterialContact] PRIMARY KEY ([Id]),
+        CONSTRAINT [FK_Public.RegistrationMaterialContact_Public.RegistrationMaterial_RegistrationMaterialId] FOREIGN KEY ([RegistrationMaterialId]) REFERENCES [Public.RegistrationMaterial] ([Id]) ON DELETE CASCADE
+    );
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250627150737_AddRegistrationMaterialContact'
+)
+BEGIN
+    IF EXISTS (SELECT * FROM [sys].[identity_columns] WHERE [name] IN (N'Id', N'ApplicationTypeId', N'IsMaterialSpecific', N'JourneyTypeId', N'Name') AND [object_id] = OBJECT_ID(N'[Lookup.RegulatorTask]'))
+        SET IDENTITY_INSERT [Lookup.RegulatorTask] ON;
+    EXEC(N'INSERT INTO [Lookup.RegulatorTask] ([Id], [ApplicationTypeId], [IsMaterialSpecific], [JourneyTypeId], [Name])
+    VALUES (28, 2, CAST(1 AS bit), 2, N''DulyMade'')');
+    IF EXISTS (SELECT * FROM [sys].[identity_columns] WHERE [name] IN (N'Id', N'ApplicationTypeId', N'IsMaterialSpecific', N'JourneyTypeId', N'Name') AND [object_id] = OBJECT_ID(N'[Lookup.RegulatorTask]'))
+        SET IDENTITY_INSERT [Lookup.RegulatorTask] OFF;
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250627150737_AddRegistrationMaterialContact'
+)
+BEGIN
+    CREATE UNIQUE INDEX [IX_Public.RegistrationMaterialContact_ExternalId] ON [Public.RegistrationMaterialContact] ([ExternalId]);
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250627150737_AddRegistrationMaterialContact'
+)
+BEGIN
+    CREATE UNIQUE INDEX [IX_Public.RegistrationMaterialContact_RegistrationMaterialId] ON [Public.RegistrationMaterialContact] ([RegistrationMaterialId]);
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250627150737_AddRegistrationMaterialContact'
+)
+BEGIN
+    INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+    VALUES (N'20250627150737_AddRegistrationMaterialContact', N'8.0.8');
+END;
+GO
+
+COMMIT;
+GO
+

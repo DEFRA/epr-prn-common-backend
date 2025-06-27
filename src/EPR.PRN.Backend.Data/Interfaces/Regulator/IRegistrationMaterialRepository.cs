@@ -24,4 +24,6 @@ public interface IRegistrationMaterialRepository
 
     Task<IEnumerable<LookupMaterialPermit>> GetMaterialPermitTypes();
     Task DeleteAsync(Guid registrationMaterialId);
+
+    Task<RegistrationMaterialContact> UpsertRegistrationMaterialContact(Guid registrationMaterialId, Guid userId);
 }
