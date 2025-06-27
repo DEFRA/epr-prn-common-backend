@@ -33,6 +33,8 @@ public class DeleteRegistrationMaterialHandlerTests
             .Returns(Task.CompletedTask);
 
         // Act & Assert
-        await _handler.Handle(command, CancellationToken.None);
+        var result = _handler.Handle(command, CancellationToken.None);
+        await result;
+        Assert.AreEqual(result.IsCompletedSuccessfully, true);
     }
 }
