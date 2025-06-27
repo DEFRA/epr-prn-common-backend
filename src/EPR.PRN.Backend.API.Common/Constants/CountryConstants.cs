@@ -15,7 +15,7 @@
             (9, "ao", "Angola"),
             (10, "aq", "Antarctica"),
             (11, "ar", "Argentina"),
-            (12, "arpa", "Old style Arpanet"),
+            //(12, "arpa", "Old style Arpanet"),
             (13, "as", "American Samoa"),
             (14, "at", "Austria"),
             (15, "au", "Australia"),
