@@ -60,7 +60,7 @@ public class GetMaterialReprocessingIOHandlerTests
                     TotalInputs = 7,
                     TotalOutputs = 8,
                     PlantEquipmentUsed = "shredder",
-                    TypeOfSupplier = "Shed"
+                    TypeOfSuppliers = "Shed"
                 }
             }
         };
