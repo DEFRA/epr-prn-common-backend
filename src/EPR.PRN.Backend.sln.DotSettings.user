@@ -2,5 +2,4 @@
 	<s:String x:Key="/Default/Environment/Highlighting/HighlightingSourceSnapshotLocation/@EntryValue">C:\Users\a932559\AppData\Local\Temp\JetBrains\ReSharperPlatformVs17\vAny_016d5f32\CoverageData\_EPR.PRN.Backend.-1285669394\Snapshot\snapshot.utdcvr</s:String>
 	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=5c62e12c_002Dbc03_002D446c_002Daffc_002D781ad876a5b6/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="GetAllMaterials_NoDataReturned" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
   &lt;Solution /&gt;&#xD;
-&lt;/SessionState&gt;</s:String>
-	<s:Boolean x:Key="/Default/ResxEditorPersonal/Initialized/@EntryValue">True</s:Boolean></wpf:ResourceDictionary>
+&lt;/SessionState&gt;</s:String></wpf:ResourceDictionary>
