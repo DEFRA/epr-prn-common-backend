@@ -76,6 +76,32 @@ public class RegistrationController(IMediator mediator
 
         return Ok(registration);
     }
+
+
+    [HttpGet("registrations_tasks/{registrationId:Guid}")]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(RegistrationTaskOverviewDto))]
+    [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
+    [SwaggerOperation(
+        Summary = "gets an existing registration task overview ID.",
+        Description = "attempting to get an existing registration task overview using the registration ID."
+    )]
+    [SwaggerResponse(StatusCodes.Status400BadRequest, "If the request is invalid or a validation error occurs.", typeof(ProblemDetails))]
+    [SwaggerResponse(StatusCodes.Status500InternalServerError, "If an unexpected error occurs.", typeof(ContentResult))]
+    [ExcludeFromCodeCoverage(Justification = "TODO: To be done as part of create registration user story")]
+    public async Task<IActionResult> GetRegistrationTaskOverviewById([FromRoute] Guid registrationId)
+    {
+        logger.LogInformation(LogMessages.GetRegistrationOverviewById, registrationId);
+
+        var registration = await mediator.Send(new GetRegistrationTaskOverviewByIdQuery { Id = registrationId });
+
+        if (registration is null)
+        {
+            return NotFound();
+        }
+
+        return Ok(registration);
+    }
     #endregion
 
     #region Post Methods

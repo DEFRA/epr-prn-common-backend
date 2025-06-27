@@ -10,3 +10,8 @@ namespace EPR.PRN.Backend.API.Handlers.Regulator;
         public Guid Id { get; set; }
     }
 
+    public class GetRegistrationTaskOverviewByIdQuery : IRequest<RegistrationTaskOverviewDto>
+    {
+        [Required]
+        public Guid Id { get; set; }
+    }
