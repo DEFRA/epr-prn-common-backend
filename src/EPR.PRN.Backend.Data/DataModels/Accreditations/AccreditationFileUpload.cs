@@ -11,7 +11,7 @@ public class AccreditationFileUpload
     public int? OverseasSiteId { get; set; }
 
     [MaxLength(50)]
-    public string FileName { get; set; }
+    public required string FileName { get; set; }
 
     public Guid? FileId { get; set; }
     public DateTime UploadedOn { get; set; }

@@ -225,7 +225,7 @@ public class AccreditationFileUploadRepositoryTests
         // Arrange
         
         // Act
-        Func<Task> act = async () => await _repository.Create(Guid.NewGuid(), new AccreditationFileUpload());
+        Func<Task> act = async () => await _repository.Create(Guid.NewGuid(), new AccreditationFileUpload { FileName = string.Empty });
 
         // Assert
         await act.Should().ThrowAsync<KeyNotFoundException>()
@@ -277,7 +277,7 @@ public class AccreditationFileUploadRepositoryTests
         // Arrange
         
         // Act
-        Func<Task> act = async () => await _repository.Update(_accreditationId, new AccreditationFileUpload() { ExternalId = Guid.NewGuid() });
+        Func<Task> act = async () => await _repository.Update(_accreditationId, new AccreditationFileUpload { FileName = string.Empty, ExternalId = Guid.NewGuid() });
 
         // Assert
         await act.Should().ThrowAsync<KeyNotFoundException>()
