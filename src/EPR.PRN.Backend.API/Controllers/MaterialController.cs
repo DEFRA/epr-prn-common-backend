@@ -34,22 +34,23 @@ public class MaterialController(
             var result = await mediator.Send(new GetAllMaterialsQuery());
             return Ok(result);
         }
-        else if (registrationId.HasValue && !Guid.TryParse(registrationId.Value.ToString(), out _))
+        else if (!Guid.TryParse(registrationId.Value.ToString(), out _))
         {
             return ThrowInvalidRegistrationId(logger, registrationId);
         }
         else
         {
-            logger.LogInformation($"Attempting to get filtered list of materials for registrationId : {registrationId}");
+            logger.LogInformation("Attempting to get filtered list of materials for registrationId : {registrationId}", registrationId);
 
             var result = await mediator.Send(new GetMaterialsByRegistrationIdQuery() { RegistrationId = registrationId.Value });
             return Ok(result);
         }
     }
 
-    private IActionResult ThrowInvalidRegistrationId(ILogger<MaterialController> logger, Guid? registrationId)
+    private BadRequestObjectResult ThrowInvalidRegistrationId(ILogger<MaterialController> logger, Guid? registrationId)
     {
-        logger.LogError("Invalid Guid format - {registrationId}", registrationId);
+        logger.LogError("Invalid Guid format for registrationId - {registrationId}", registrationId);
+        
         return BadRequest(new { Message = $"Invalid Guid format for registrationId : {registrationId}" });
     }
 }
