@@ -32,6 +32,7 @@ public class UpdateCarrierBrokerDealerPermitsHandler(ICarrierBrokerDealerPermitR
             carrierBrokerDealerPermit.WasteExemptionReference = string.Join(',', request.Dto.WasteExemptionReference);
         }
 
+        carrierBrokerDealerPermit.RegisteredWasteCarrierBrokerDealerFlag = request.Dto.RegisteredWasteCarrierBrokerDealerFlag;
         carrierBrokerDealerPermit.UpdatedBy = request.UserId;
         carrierBrokerDealerPermit.UpdatedDate = DateTime.UtcNow;
 
