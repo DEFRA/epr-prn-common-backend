@@ -46,13 +46,17 @@ public class EprContext : DbContext
             .HasData(DataModels.PrnStatus.Data);
 
         modelBuilder.Entity<Registration>()
-            .HasOne(r => r.CarrierBrokerDealerPermit)
-            .WithOne()
-            .HasForeignKey<CarrierBrokerDealerPermits>(cb => cb.RegistrationId);
+               .HasOne(r => r.CarrierBrokerDealerPermit)
+               .WithOne(c => c.Registration)
+               .HasForeignKey<CarrierBrokerDealerPermits>(cb => cb.RegistrationId);       
 
         modelBuilder.Entity<CarrierBrokerDealerPermits>()
             .HasIndex(e => e.ExternalId)
             .IsUnique(); // Ensures UniqueId is unique
+
+        modelBuilder.Entity<CarrierBrokerDealerPermits>()
+                .Property(e => e.ExternalId)
+                .HasDefaultValueSql("NEWID()");
 
         modelBuilder.Entity<RecyclingTarget>()
             .HasData
