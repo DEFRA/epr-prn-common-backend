@@ -4,6 +4,7 @@ using EPR.PRN.Backend.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EPR.PRN.Backend.Data.Migrations
 {
     [DbContext(typeof(EprContext))]
-    partial class EprContextModelSnapshot : ModelSnapshot
+    [Migration("20250623170955_UpdateCarrierBrokerPermitsTable")]
+    partial class UpdateCarrierBrokerPermitsTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -872,18 +875,6 @@ namespace EPR.PRN.Backend.Data.Migrations
                         .HasMaxLength(12)
                         .HasColumnType("nvarchar(12)");
 
-                    b.Property<string>("BusinessCollectionsNotes")
-                        .HasColumnType("varchar(500)");
-
-                    b.Property<decimal?>("BusinessCollectionsPercentage")
-                        .HasColumnType("decimal(10,2)");
-
-                    b.Property<string>("CommunicationsNotes")
-                        .HasColumnType("varchar(500)");
-
-                    b.Property<decimal?>("CommunicationsPercentage")
-                        .HasColumnType("decimal(10,2)");
-
                     b.Property<DateTime?>("CreatedOn")
                         .HasColumnType("datetime2");
 
@@ -891,44 +882,11 @@ namespace EPR.PRN.Backend.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("InfrastructureNotes")
-                        .HasColumnType("varchar(500)");
-
-                    b.Property<decimal?>("InfrastructurePercentage")
-                        .HasColumnType("decimal(10,2)");
-
-                    b.Property<string>("NewMarketsNotes")
-                        .HasColumnType("varchar(500)");
-
-                    b.Property<decimal?>("NewMarketsPercentage")
-                        .HasColumnType("decimal(10,2)");
-
-                    b.Property<string>("NewUsersRecycledPackagingWasteNotes")
-                        .HasColumnType("varchar(500)");
-
-                    b.Property<decimal?>("NewUsersRecycledPackagingWastePercentage")
-                        .HasColumnType("decimal(10,2)");
-
-                    b.Property<string>("NotCoveredOtherCategoriesNotes")
-                        .HasColumnType("varchar(500)");
-
-                    b.Property<decimal?>("NotCoveredOtherCategoriesPercentage")
-                        .HasColumnType("decimal(10,2)");
-
                     b.Property<int>("PRNTonnage")
                         .HasColumnType("int");
 
-                    b.Property<string>("RecycledWasteNotes")
-                        .HasColumnType("varchar(500)");
-
-                    b.Property<decimal?>("RecycledWastePercentage")
-                        .HasColumnType("decimal(10,2)");
-
                     b.Property<int>("RegistrationMaterialId")
                         .HasColumnType("int");
-
-                    b.Property<decimal?>("TotalPercentage")
-                        .HasColumnType("decimal(10,2)");
 
                     b.HasKey("Id");
 
@@ -1184,8 +1142,7 @@ namespace EPR.PRN.Backend.Data.Migrations
 
                     b.Property<Guid>("ExternalId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier")
-                        .HasDefaultValueSql("NEWID()");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("InstallationPermitOrPPCNumber")
                         .HasMaxLength(20)
@@ -1239,10 +1196,6 @@ namespace EPR.PRN.Backend.Data.Migrations
 
                     b.Property<Guid>("ExternalId")
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<bool>("IsOverdue")
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("bit");
 
                     b.Property<int>("RegistrationMaterialId")
                         .HasColumnType("int");

@@ -63,7 +63,7 @@ public class RegistrationController(IMediator mediator
     [SwaggerOperation(
             Summary = "create the registration application",
             Description = "attempting to create the registration application."
-        )]
+    )]
     [SwaggerResponse(StatusCodes.Status204NoContent, $"Returns No Content", typeof(int))]
     [SwaggerResponse(StatusCodes.Status400BadRequest, "If the request is invalid or a validation error occurs.", typeof(ProblemDetails))]
     [SwaggerResponse(StatusCodes.Status500InternalServerError, "If an unexpected error occurs.", typeof(ContentResult))]

@@ -13,4 +13,6 @@ public interface IMaterialService
     /// <param name="cancellationToken">Propagates a notification that the operation should be cancelled.</param>
     /// <returns>Collection of materials, if any.</returns>
     Task<IList<MaterialDto>> GetAllMaterialsAsync(CancellationToken cancellationToken);
+
+    Task<IList<MaterialDto>> GetMaterialsByRegistrationIdQuery(Guid registrationId);    
 }
