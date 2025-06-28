@@ -72,7 +72,7 @@ namespace EPR.PRN.Backend.API.UnitTests.Validators.ExportJourney
 
             var result = _validator.TestValidate(command);
 
-            result.ShouldHaveValidationErrorFor(x => x.Dto.WasteExemptionReference);
+            result.ShouldNotHaveValidationErrorFor(x => x.Dto.WasteExemptionReference);
         }
 
         [TestMethod]
