@@ -1,5 +1,4 @@
 ﻿using EPR.PRN.Backend.API.Commands.ExporterJourney;
-using EPR.PRN.Backend.API.Common.Enums;
 using FluentValidation;
 using System.Diagnostics.CodeAnalysis;
 
@@ -10,8 +9,6 @@ namespace EPR.PRN.Backend.API.Validators.ExportJourney
     {
         public UpdateCarrierBrokerDealerPermitsCommandValidator()
         {
-            var allowedStatuses = new[] { RegulatorTaskStatus.Queried, RegulatorTaskStatus.Completed };
-
             RuleFor(x => x.Dto.WasteCarrierBrokerDealerRegistration)
                 .MaximumLength(16).WithMessage("WasteCarrierBrokerDealerRegistration must not exceed 16 characters");
 
@@ -23,11 +20,13 @@ namespace EPR.PRN.Backend.API.Validators.ExportJourney
 
 			When(x => x.Dto.WasteExemptionReference != null, () =>
 			{
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
 				RuleFor(x => x.Dto.WasteExemptionReference)
 				.Must(item => item.Count <= 5).WithMessage("WasteExemptionReference must not exceed 5 values")
 				.ForEach(item =>
 					item.MaximumLength(20).WithMessage("WasteExemptionReference must not exceed 20 characters")
 				);
+#pragma warning restore CS8602 // Dereference of a possibly null reference.
 			});
 		}
 	}
