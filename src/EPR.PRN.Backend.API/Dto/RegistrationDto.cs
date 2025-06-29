@@ -1,7 +1,8 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using EPR.PRN.Backend.API.Dto.Regulator;
 using EPR.PRN.Backend.Data.DTO;
 
-namespace EPR.PRN.Backend.API.Dto.Regulator;
+namespace EPR.PRN.Backend.API.Dto;
 
 [ExcludeFromCodeCoverage]
 public class RegistrationDto

@@ -38,6 +38,17 @@ public class LookupRegulatorTask : LookupBase
     public int JourneyTypeId { get; set; }
 }
 
+[Table("Lookup.Task")]
+[ExcludeFromCodeCoverage]
+public class LookupApplicantRegistrationTask : LookupBase
+{
+    public bool IsMaterialSpecific { get; set; }
+
+    public int ApplicationTypeId { get; set; }
+
+    public int JourneyTypeId { get; set; }
+}
+
 [Table("Lookup.TaskStatus")]
 [ExcludeFromCodeCoverage]
 public class LookupTaskStatus : LookupBase {

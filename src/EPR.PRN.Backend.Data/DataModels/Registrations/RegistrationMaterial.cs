@@ -31,7 +31,7 @@ public class RegistrationMaterial
     public string? ReasonforNotreg { get; set; } = string.Empty;
     public LookupMaterialPermit? PermitType { get; set; }
     [ForeignKey("PermitType")]
-    public int PermitTypeId { get; set; }
+    public int? PermitTypeId { get; set; }
     [MaxLength(20)]
     public string? PPCPermitNumber { get; set; }
     [MaxLength(20)]
@@ -43,10 +43,10 @@ public class RegistrationMaterial
     [MaxLength(20)]
     public string? ApplicationReferenceNumber { get; set; }
     public DateTime CreatedDate { get; set; }
-    public decimal PPCReprocessingCapacityTonne { get; set; }
-    public decimal WasteManagementReprocessingCapacityTonne { get; set; }
-    public decimal InstallationReprocessingTonne { get; set; }
-    public decimal EnvironmentalPermitWasteManagementTonne { get; set; }
+    public decimal? PPCReprocessingCapacityTonne { get; set; }
+    public decimal? WasteManagementReprocessingCapacityTonne { get; set; }
+    public decimal? InstallationReprocessingTonne { get; set; }
+    public decimal? EnvironmentalPermitWasteManagementTonne { get; set; }
     [ForeignKey("PPCPeriod")]
     public int? PPCPeriodId { get; set; }
     public LookupPeriod? PPCPeriod { get; set; }
@@ -59,7 +59,7 @@ public class RegistrationMaterial
     [ForeignKey("EnvironmentalPermitWasteManagementPeriod")]
     public int? EnvironmentalPermitWasteManagementPeriodId { get; set; }
     public LookupPeriod? EnvironmentalPermitWasteManagementPeriod { get; set; }
-    public decimal MaximumReprocessingCapacityTonne { get; set; }
+    public decimal? MaximumReprocessingCapacityTonne { get; set; }
     [ForeignKey("MaximumReprocessingPeriod")]
     public int? MaximumReprocessingPeriodId { get; set; }
     public DulyMade? DulyMade { get; set; }
@@ -70,5 +70,6 @@ public class RegistrationMaterial
     public List<RegistrationFileUpload>? FileUploads { get; set; }
     public List<MaterialExemptionReference>? MaterialExemptionReferences { get; set; }
     public List<RegulatorApplicationTaskStatus>? Tasks { get; set; }
+    public List<ApplicantRegistrationTaskStatus>? ApplicantTaskStatuses { get; set; }
     public List<Accreditation>? Accreditations { get; set; }
 }
