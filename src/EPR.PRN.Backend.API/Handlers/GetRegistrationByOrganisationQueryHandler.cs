@@ -1,3 +1,5 @@
+using AutoMapper;
+using EPR.PRN.Backend.API.Dto;
 using EPR.PRN.Backend.API.Dto.Regulator;
 using EPR.PRN.Backend.API.Queries;
 using EPR.PRN.Backend.Data.DataModels.Registrations;
@@ -12,7 +14,8 @@ namespace EPR.PRN.Backend.API.Handlers;
 /// </summary>
 /// <param name="registrationRepository">Repository for handling registrations.</param>
 public class GetRegistrationByOrganisationQueryHandler(
-    IRegistrationRepository registrationRepository
+    IRegistrationRepository registrationRepository,
+    IMapper mapper
 ) : IRequestHandler<GetRegistrationByOrganisationQuery, RegistrationDto?>
 {
     /// <inheritdoc />>.

@@ -17,7 +17,7 @@ public class ApplicantRegistrationTaskStatus
     
     [ForeignKey("Task")]
     public int? TaskId { get; set; }
-    public LookupRegulatorTask Task { get; set; } = null!;
+    public LookupApplicantRegistrationTask Task { get; set; } = null!;
 
     [ForeignKey("TaskStatus")]
     public int? TaskStatusId { get; set; }
@@ -25,4 +25,7 @@ public class ApplicantRegistrationTaskStatus
 
     public int? RegistrationId { get; set; }
     public Registration Registration { get; set; } = null!;
+
+    public int? RegistrationMaterialId { get; set; }
+    public RegistrationMaterial RegistrationMaterial { get; set; } = null!;
 }
