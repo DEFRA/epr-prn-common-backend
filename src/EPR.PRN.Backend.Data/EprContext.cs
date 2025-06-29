@@ -386,9 +386,9 @@ public class EprContext : DbContext
 
     public virtual DbSet<Material> Material { get; set; }
 
-		public virtual DbSet<ObligationCalculationOrganisationSubmitterType> ObligationCalculationOrganisationSubmitterType { get; set; }
+    public virtual DbSet<ObligationCalculationOrganisationSubmitterType> ObligationCalculationOrganisationSubmitterType { get; set; }
 
-		public virtual DbSet<PEprNpwdSync> PEprNpwdSync { get; set; }
+	public virtual DbSet<PEprNpwdSync> PEprNpwdSync { get; set; }
 
     public virtual DbSet<PrnMaterialMapping> PrnMaterialMapping { get; set; }
 
