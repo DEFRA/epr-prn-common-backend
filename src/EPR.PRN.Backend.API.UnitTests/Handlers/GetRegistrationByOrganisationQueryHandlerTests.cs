@@ -1,5 +1,8 @@
-﻿using EPR.PRN.Backend.API.Dto.Regulator;
+﻿using AutoMapper;
+using EPR.PRN.Backend.API.Dto;
+using EPR.PRN.Backend.API.Dto.Regulator;
 using EPR.PRN.Backend.API.Handlers;
+using EPR.PRN.Backend.API.Profiles.Regulator;
 using EPR.PRN.Backend.API.Queries;
 using EPR.PRN.Backend.Data.DataModels.Registrations;
 using EPR.PRN.Backend.Data.DTO;
@@ -14,12 +17,18 @@ public class GetRegistrationByOrganisationQueryHandlerTests
 {
     private Mock<IRegistrationRepository> _mockRegistrationRepository;
     private GetRegistrationByOrganisationQueryHandler _handler;
+    private IMapper _mapper;
 
     [TestInitialize]
     public void TestInitialize()
     {
+        var config = new MapperConfiguration(cfg =>
+        {
+            cfg.AddProfile<RegistrationMaterialProfile>();
+        });
+        _mapper = config.CreateMapper();
         _mockRegistrationRepository = new Mock<IRegistrationRepository>();
-        _handler = new GetRegistrationByOrganisationQueryHandler(_mockRegistrationRepository.Object);
+        _handler = new GetRegistrationByOrganisationQueryHandler(_mockRegistrationRepository.Object, _mapper);
     }
 
     [TestMethod]
@@ -99,7 +108,7 @@ public class GetRegistrationByOrganisationQueryHandlerTests
             RegistrationId = 1,
             TaskId = 1,
             TaskStatusId = 1,
-            Task = new LookupRegulatorTask{ApplicationTypeId = 1, Id = 1, IsMaterialSpecific = false, Name = "SiteDetails"}
+            Task = new LookupApplicantRegistrationTask{ApplicationTypeId = 1, Id = 1, IsMaterialSpecific = false, Name = "SiteDetails"}
         };
 
         var registration = new Registration
@@ -137,7 +146,7 @@ public class GetRegistrationByOrganisationQueryHandlerTests
 
         _mockRegistrationRepository
             .Setup(r => r.GetByOrganisationAsync(1, organisationId))
-            .ReturnsAsync((Registration?)null);
+            .ReturnsAsync((Registration)null);
 
         // Act
         var result = await _handler.Handle(query, CancellationToken.None);
