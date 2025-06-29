@@ -14,8 +14,7 @@ namespace EPR.PRN.Backend.API.Handlers;
 /// </summary>
 /// <param name="registrationRepository">Repository for handling registrations.</param>
 public class GetRegistrationByOrganisationQueryHandler(
-    IRegistrationRepository registrationRepository,
-    IMapper mapper
+    IRegistrationRepository registrationRepository
 ) : IRequestHandler<GetRegistrationByOrganisationQuery, RegistrationDto?>
 {
     /// <inheritdoc />>.
