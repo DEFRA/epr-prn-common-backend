@@ -1,8 +1,6 @@
-﻿using AutoMapper;
-using EPR.PRN.Backend.API.Dto;
+﻿using EPR.PRN.Backend.API.Dto;
 using EPR.PRN.Backend.API.Dto.Regulator;
 using EPR.PRN.Backend.API.Handlers;
-using EPR.PRN.Backend.API.Profiles.Regulator;
 using EPR.PRN.Backend.API.Queries;
 using EPR.PRN.Backend.Data.DataModels.Registrations;
 using EPR.PRN.Backend.Data.DTO;
@@ -17,18 +15,12 @@ public class GetRegistrationByOrganisationQueryHandlerTests
 {
     private Mock<IRegistrationRepository> _mockRegistrationRepository;
     private GetRegistrationByOrganisationQueryHandler _handler;
-    private IMapper _mapper;
 
     [TestInitialize]
     public void TestInitialize()
     {
-        var config = new MapperConfiguration(cfg =>
-        {
-            cfg.AddProfile<RegistrationMaterialProfile>();
-        });
-        _mapper = config.CreateMapper();
         _mockRegistrationRepository = new Mock<IRegistrationRepository>();
-        _handler = new GetRegistrationByOrganisationQueryHandler(_mockRegistrationRepository.Object, _mapper);
+        _handler = new GetRegistrationByOrganisationQueryHandler(_mockRegistrationRepository.Object);
     }
 
     [TestMethod]
