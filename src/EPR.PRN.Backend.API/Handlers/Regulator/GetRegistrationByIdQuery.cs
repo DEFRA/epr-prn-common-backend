@@ -11,10 +11,3 @@ public class GetRegistrationByIdQuery : IRequest<RegistrationOverviewDto>
     [Required]
     public Guid Id { get; set; }
 }
-
-[ExcludeFromCodeCoverage]
-public class GetRegistrationTaskOverviewByIdQuery : IRequest<RegistrationTaskOverviewDto>
-{
-    [Required]
-    public Guid Id { get; set; }
-}

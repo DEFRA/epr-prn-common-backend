@@ -1,12 +1,6 @@
-﻿using EPR.PRN.Backend.API.Dto;
-using EPR.PRN.Backend.API.Dto.Regulator;
+﻿using EPR.PRN.Backend.API.Dto.Regulator;
 using EPR.PRN.Backend.API.Profiles.Regulator;
 using FluentAssertions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace EPR.PRN.Backend.API.UnitTests.Mapper.Registration;
 
@@ -40,4 +34,3 @@ public class RegistrationTaskOverviewProfileTests : MappingTestsBase<Registratio
         result.Should().BeEquivalentTo(expected);
     }
 }
-
