@@ -274,7 +274,7 @@ public class RegistrationRepository(EprContext context, ILogger<RegistrationRepo
             }
 
             var task = await context
-                .LookupTasks
+                .LookupApplicantRegistrationTasks
                 .SingleOrDefaultAsync(t => t.Name == taskName && t.IsMaterialSpecific && t.ApplicationTypeId == registration.ApplicationTypeId);
 
             if (task is null)

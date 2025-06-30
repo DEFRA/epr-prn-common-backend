@@ -204,11 +204,11 @@ public class RegistrationRepositoryTests
         // Arrange
         var registrationId = Guid.NewGuid();
         var registration = new Registration { Id = 1, ApplicationTypeId = 1, ExternalId = registrationId };
-        var task = new LookupRegulatorTask { Name = "NewTask", ApplicationTypeId = 1, IsMaterialSpecific = false };
+        var task = new LookupApplicantRegistrationTask { Name = "NewTask", ApplicationTypeId = 1, IsMaterialSpecific = false };
         var status = new LookupTaskStatus { Name = TaskStatuses.Completed.ToString() };
 
         await _context.Registrations.AddAsync(registration);
-        await _context.LookupTasks.AddAsync(task);
+        await _context.LookupApplicantRegistrationTasks.AddAsync(task);
         await _context.LookupTaskStatuses.AddAsync(status);
         await _context.SaveChangesAsync();
 
@@ -227,12 +227,12 @@ public class RegistrationRepositoryTests
         // Arrange
         var registrationId = Guid.NewGuid();
         var registration = new Registration { Id = 2, ApplicationTypeId = 1, ExternalId = registrationId };
-        var task = new LookupRegulatorTask { Name = "ExistingTask", ApplicationTypeId = 1, IsMaterialSpecific = false };
+        var task = new LookupApplicantRegistrationTask { Name = "ExistingTask", ApplicationTypeId = 1, IsMaterialSpecific = false };
         var oldStatus = new LookupTaskStatus { Name = TaskStatuses.Started.ToString() };
         var newStatus = new LookupTaskStatus { Name = TaskStatuses.Completed.ToString() };
 
         await _context.Registrations.AddAsync(registration);
-        await _context.LookupTasks.AddAsync(task);
+        await _context.LookupApplicantRegistrationTasks.AddAsync(task);
         await _context.LookupTaskStatuses.AddRangeAsync(oldStatus, newStatus);
 
         var taskStatus = new ApplicantRegistrationTaskStatus
