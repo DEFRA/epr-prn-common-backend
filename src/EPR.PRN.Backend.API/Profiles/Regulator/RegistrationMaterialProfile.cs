@@ -329,7 +329,8 @@ public class RegistrationMaterialProfile : Profile
 
     private void CreateRegistrationMaterialContactMappings()
     {
-        CreateMap<RegistrationMaterialContact, RegistrationMaterialContactDto>();
+        CreateMap<RegistrationMaterialContact, RegistrationMaterialContactDto>()
+            .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.ExternalId));
     }
 
     private List<QueryNoteDto> GetRegistrationTaskNotes(List<RegulatorRegistrationTaskStatus>? srcTasks, string taskName)
