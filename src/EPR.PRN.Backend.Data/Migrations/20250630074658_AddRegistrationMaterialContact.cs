@@ -32,11 +32,6 @@ namespace EPR.PRN.Backend.Data.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            migrationBuilder.InsertData(
-                table: "Lookup.RegulatorTask",
-                columns: new[] { "Id", "ApplicationTypeId", "IsMaterialSpecific", "JourneyTypeId", "Name" },
-                values: new object[] { 28, 2, true, 2, "DulyMade" });
-
             migrationBuilder.CreateIndex(
                 name: "IX_Public.RegistrationMaterialContact_ExternalId",
                 table: "Public.RegistrationMaterialContact",
@@ -55,11 +50,6 @@ namespace EPR.PRN.Backend.Data.Migrations
         {
             migrationBuilder.DropTable(
                 name: "Public.RegistrationMaterialContact");
-
-            migrationBuilder.DeleteData(
-                table: "Lookup.RegulatorTask",
-                keyColumn: "Id",
-                keyValue: 28);
         }
     }
 }

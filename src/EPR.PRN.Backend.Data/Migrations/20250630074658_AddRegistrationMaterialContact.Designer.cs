@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EPR.PRN.Backend.Data.Migrations
 {
     [DbContext(typeof(EprContext))]
-    [Migration("20250627150737_AddRegistrationMaterialContact")]
+    [Migration("20250630074658_AddRegistrationMaterialContact")]
     partial class AddRegistrationMaterialContact
     {
         /// <inheritdoc />

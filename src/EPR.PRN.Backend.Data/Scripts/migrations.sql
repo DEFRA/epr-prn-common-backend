@@ -4321,7 +4321,7 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250627150737_AddRegistrationMaterialContact'
+    WHERE [MigrationId] = N'20250630074658_AddRegistrationMaterialContact'
 )
 BEGIN
     CREATE TABLE [Public.RegistrationMaterialContact] (
@@ -4337,21 +4337,7 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250627150737_AddRegistrationMaterialContact'
-)
-BEGIN
-    IF EXISTS (SELECT * FROM [sys].[identity_columns] WHERE [name] IN (N'Id', N'ApplicationTypeId', N'IsMaterialSpecific', N'JourneyTypeId', N'Name') AND [object_id] = OBJECT_ID(N'[Lookup.RegulatorTask]'))
-        SET IDENTITY_INSERT [Lookup.RegulatorTask] ON;
-    EXEC(N'INSERT INTO [Lookup.RegulatorTask] ([Id], [ApplicationTypeId], [IsMaterialSpecific], [JourneyTypeId], [Name])
-    VALUES (28, 2, CAST(1 AS bit), 2, N''DulyMade'')');
-    IF EXISTS (SELECT * FROM [sys].[identity_columns] WHERE [name] IN (N'Id', N'ApplicationTypeId', N'IsMaterialSpecific', N'JourneyTypeId', N'Name') AND [object_id] = OBJECT_ID(N'[Lookup.RegulatorTask]'))
-        SET IDENTITY_INSERT [Lookup.RegulatorTask] OFF;
-END;
-GO
-
-IF NOT EXISTS (
-    SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250627150737_AddRegistrationMaterialContact'
+    WHERE [MigrationId] = N'20250630074658_AddRegistrationMaterialContact'
 )
 BEGIN
     CREATE UNIQUE INDEX [IX_Public.RegistrationMaterialContact_ExternalId] ON [Public.RegistrationMaterialContact] ([ExternalId]);
@@ -4360,7 +4346,7 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250627150737_AddRegistrationMaterialContact'
+    WHERE [MigrationId] = N'20250630074658_AddRegistrationMaterialContact'
 )
 BEGIN
     CREATE UNIQUE INDEX [IX_Public.RegistrationMaterialContact_RegistrationMaterialId] ON [Public.RegistrationMaterialContact] ([RegistrationMaterialId]);
@@ -4369,11 +4355,11 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250627150737_AddRegistrationMaterialContact'
+    WHERE [MigrationId] = N'20250630074658_AddRegistrationMaterialContact'
 )
 BEGIN
     INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
-    VALUES (N'20250627150737_AddRegistrationMaterialContact', N'8.0.8');
+    VALUES (N'20250630074658_AddRegistrationMaterialContact', N'8.0.8');
 END;
 GO
 

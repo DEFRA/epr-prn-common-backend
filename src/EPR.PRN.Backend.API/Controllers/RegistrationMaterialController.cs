@@ -193,8 +193,8 @@ public class RegistrationMaterialController(
         
         await validationService.ValidateAndThrowAsync(command);
 
-        await mediator.Send(command);
+        var result = await mediator.Send(command);
 
-        return NoContent();
+        return Ok(result);
     }
 }
