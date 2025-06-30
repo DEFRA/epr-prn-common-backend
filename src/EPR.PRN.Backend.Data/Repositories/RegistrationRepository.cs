@@ -309,6 +309,7 @@ public class RegistrationRepository(EprContext context, ILogger<RegistrationRepo
     public async Task<IEnumerable<RegistrationOverviewDto>> GetRegistrationsOverviewForOrgIdAsync(Guid organisationId)
     {
         var registrations = await context.Registrations
+            .AsSplitQuery()
             .Where(r => r.OrganisationId == organisationId)
             .Include(r => r.Materials!) // Include related Materials (non-nullable)
                 .ThenInclude(m => m.Material) // Include nested Material
@@ -346,5 +347,4 @@ public class RegistrationRepository(EprContext context, ILogger<RegistrationRepo
 
         return result;
     }
-
 }
