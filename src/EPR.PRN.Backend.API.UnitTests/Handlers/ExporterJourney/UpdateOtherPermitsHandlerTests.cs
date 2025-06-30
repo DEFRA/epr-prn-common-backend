@@ -105,7 +105,6 @@ public class UpdateCarrierBrokerDealerPermitsHandlerTests
             RegistrationId = registration.ExternalId,
             Dto = new UpdateCarrierBrokerDealerPermitsDto
             {
-                WasteCarrierBrokerDealerRegistration = "123123", 
                 WasteLicenseOrPermitNumber = "test 1",
                 PpcNumber = "test 2",
                 WasteExemptionReference = new List<string> { "test 3", "test 4" },
