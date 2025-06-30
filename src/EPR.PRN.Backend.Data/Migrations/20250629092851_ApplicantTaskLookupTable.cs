@@ -38,6 +38,7 @@ namespace EPR.PRN.Backend.Data.Migrations
                     table.PrimaryKey("PK_Lookup.Task", x => x.Id);
                 });
 
+#pragma warning disable S125 // Remove commented out code
             // Hate having to comment this out it really needs to be fixed properly
             // But for now commenting out as due to a previous failed merge that has messed up the migrations to a point where the below keeps getting added in
             // when it already exists in the database.
@@ -45,6 +46,7 @@ namespace EPR.PRN.Backend.Data.Migrations
             //    table: "Lookup.RegulatorTask",
             //    columns: new[] { "Id", "ApplicationTypeId", "IsMaterialSpecific", "JourneyTypeId", "Name" },
             //    values: new object[] { 28, 2, true, 2, "DulyMade" });
+#pragma warning restore S125 // Remove commented out code
 
             migrationBuilder.InsertData(
                 table: "Lookup.Task",
@@ -107,6 +109,7 @@ namespace EPR.PRN.Backend.Data.Migrations
                 name: "IX_Public.RegistrationTaskStatus_RegistrationMaterialId",
                 table: "Public.RegistrationTaskStatus");
 
+#pragma warning disable S125 // Remove commented out code
             // Hate having to comment this out it really needs to be fixed properly
             // But for now commenting out as due to a previous failed merge that has messed up the migrations to a point where the below keeps getting added in
             // when it already exists in the database.
@@ -114,6 +117,7 @@ namespace EPR.PRN.Backend.Data.Migrations
             //    table: "Lookup.RegulatorTask",
             //    keyColumn: "Id",
             //    keyValue: 28);
+#pragma warning restore S125 // Remove commented out code
 
             migrationBuilder.DropColumn(
                 name: "RegistrationMaterialId",
