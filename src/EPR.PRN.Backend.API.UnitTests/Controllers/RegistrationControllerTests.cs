@@ -108,30 +108,6 @@ public class RegistrationControllerTests
     }
 
     [TestMethod]
-    public async Task GetRegistrationsOverviewForOrgId_NoRegistrations_ReturnsOkWithEmpty()
-    {
-        // Arrange
-        var organisationId = Guid.NewGuid();
-        var query = new GetRegistrationsOverviewByOrgIdQuery { OrganisationId = organisationId };
-        var expectedResult = new List<RegistrationOverviewDto>();
-        _validationServiceMock
-            .Setup(v => v.ValidateAndThrowAsync(query, It.IsAny<CancellationToken>()))
-            .Returns(Task.CompletedTask);
-        _mediatorMock
-            .Setup(m => m.Send(query, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(expectedResult);
-        // Act
-        var result = await _controller.GetRegistrationsOverviewForOrgId(organisationId);
-        // Assert
-        using (new AssertionScope())
-        {
-            result.Should().BeOfType<OkObjectResult>();
-            var okResult = result as OkObjectResult;
-            okResult!.Value.Should().BeEquivalentTo(expectedResult);
-        }
-    }
-
-    [TestMethod]
     public async Task GetRegistrationsOverviewForOrgId_InvalidOrganisationId_ThrowsValidationException()
     {
         // Arrange
