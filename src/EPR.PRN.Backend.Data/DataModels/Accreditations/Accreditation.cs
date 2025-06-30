@@ -10,33 +10,33 @@ public class AccreditationEntity
     public Guid ExternalId { get; set; }
     public Guid OrganisationId { get; set; }
     public int RegistrationMaterialId { get; set; }
-    public int ApplicationTypeId { get; set; }
+   
     public int AccreditationStatusId { get; set; }
 
     [MaxLength(50)]
     public string? DecFullName { get; set; }
 
     [MaxLength(50)]
-    public string? DecJobTitle { get; set; }
+    public string? JobTitle { get; set; }
 
     [MaxLength(18)]
-    public string? AccreferenceNumber { get; set; }
+    public string? ApplicationReferenceNumber { get; set; }
 
     public int? AccreditationYear { get; set; }
-    public int? PrnTonnage { get; set; }
+    public int? PRNTonnage { get; set; }
     public bool PrnTonnageAndAuthoritiesConfirmed { get; set; }
 
     [Column(TypeName = "decimal(10,2)")]
     public decimal? InfrastructurePercentage { get; set; }
 
     [Column(TypeName = "decimal(10,2)")] 
-    public decimal? PackagingWastePercentage { get; set; }
+    public decimal? RecycledWastePercentage { get; set; }
 
     [Column(TypeName = "decimal(10,2)")]
     public decimal? BusinessCollectionsPercentage { get; set; }
 
     [Column(TypeName = "decimal(10,2)")]
-    public decimal? NewUsesPercentage { get; set; }
+    public decimal? NewUsersRecycledPackagingWastePercentage { get; set; }
 
     [Column(TypeName = "decimal(10,2)")]
     public decimal? NewMarketsPercentage { get; set; }
@@ -45,19 +45,19 @@ public class AccreditationEntity
     public decimal? CommunicationsPercentage { get; set; }
 
     [Column(TypeName = "decimal(10,2)")]
-    public decimal? OtherPercentage { get; set; }
+    public decimal? NotCoveredOtherCategoriesPercentage { get; set; }
 
     [MaxLength(500)]
     public string? InfrastructureNotes { get; set; }
 
     [MaxLength(500)]
-    public string? PackagingWasteNotes { get; set; }
+    public string? RecycledWasteNotes { get; set; }
 
     [MaxLength(500)]
     public string? BusinessCollectionsNotes { get; set; }
 
     [MaxLength(500)]
-    public string? NewUsesNotes { get; set; }
+    public string? NewUsersRecycledPackagingWasteNotes { get; set; }
 
     [MaxLength(500)]
     public string? NewMarketsNotes { get; set; }
@@ -66,7 +66,7 @@ public class AccreditationEntity
     public string? CommunicationsNotes { get; set; }
 
     [MaxLength(500)]
-    public string? OtherNotes { get; set; }
+    public string? NotCoveredOtherCategoriesNotes { get; set; }
 
     public bool BusinessPlanConfirmed { get; set; }
 
@@ -75,6 +75,8 @@ public class AccreditationEntity
     public Guid UpdatedBy { get; set; }
     public DateTime UpdatedDate { get; set; }
 
+
+    public int ApplicationTypeId { get; set; }
     public ApplicationType? ApplicationType { get; set; }
 
     public AccreditationStatus? AccreditationStatus { get; set; }

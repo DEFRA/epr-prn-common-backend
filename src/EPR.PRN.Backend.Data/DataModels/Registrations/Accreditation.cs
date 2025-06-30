@@ -61,4 +61,53 @@ public class Accreditation
     [Column(TypeName = "varchar(500)")]
     public string? NotCoveredOtherCategoriesNotes { get; set; }
     public List<AccreditationFileUpload>? FileUploads { get; set; }
+
+    /*
+     * 
+     * 
+     * 
+     * File upload differers between accreditation and registration. Accreditation will need to be refactored.
+     * 
+     * 
+     * 
+     */
+
+
+    /////  accreditaiton entity id copied from in memory db
+    ///
+
+
+    public Guid OrganisationId { get; set; }
+
+   
+
+
+    [MaxLength(50)]
+    public string? DecFullName { get; set; }
+
+    [MaxLength(50)]
+    public string? JobTitle { get; set; }
+
+
+
+    public bool PrnTonnageAndAuthoritiesConfirmed { get; set; }
+
+    public bool BusinessPlanConfirmed { get; set; }
+
+    public Guid CreatedBy { get; set; }
+    public DateTime CreatedDate { get; set; }
+    public Guid UpdatedBy { get; set; }
+    public DateTime UpdatedDate { get; set; }
+
+
+    public int ApplicationTypeId { get; set; }
+    public ApplicationType? ApplicationType { get; set; }
+
+    //public AccreditationStatus? AccreditationStatus { get; set; }
+
+    //public RegistrationMaterial? RegistrationMaterial { get; set; }
+
+    public List<AccreditationPrnIssueAuth>? AccreditationPrnIssueAuths { get; set; }
+
+//   public List<AccreditationFileUpload>? FileUploads { get; set; }
 }
