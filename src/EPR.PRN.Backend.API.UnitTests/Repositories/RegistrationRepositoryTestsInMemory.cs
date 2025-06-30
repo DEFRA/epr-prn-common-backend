@@ -236,4 +236,67 @@ public class RegistrationRepositoryTestsInMemory
         secondOverview.ReprocessingSiteAddress.Should().NotBeNull();
         secondOverview.ReprocessingSiteAddress!.AddressLine1.Should().Be("456 Another St");
     }
+
+    [TestMethod]
+    public async Task GetRegistrationsOverviewForOrgIdAsync_HandlesNullAndEmptyMaterials()
+    {
+        // Arrange
+        var organisationId = Guid.NewGuid();
+        var registrationWithNullMaterials = new Registration
+        {
+            ExternalId = Guid.NewGuid(),
+            OrganisationId = organisationId,
+            ApplicationTypeId = 1,
+            RegistrationStatusId = 2,
+            ReprocessingSiteAddress = new Address
+            {
+                Id = 1,
+                AddressLine1 = "123 Test St",
+                AddressLine2 = "Test Area",
+                TownCity = "Testville",
+                County = "Test County",
+                PostCode = "TST 123",
+                NationId = 1,
+                GridReference = "GB1234567890"
+            },
+            Materials = null // Null Materials
+        };
+        var registrationWithEmptyMaterials = new Registration
+        {
+            ExternalId = Guid.NewGuid(),
+            OrganisationId = organisationId,
+            ApplicationTypeId = 1,
+            RegistrationStatusId = 2,
+            ReprocessingSiteAddress = new Address
+            {
+                Id = 2,
+                AddressLine1 = "456 Another St",
+                AddressLine2 = "Another Area",
+                TownCity = "Anotherville",
+                County = "Another County",
+                PostCode = "ANT 456",
+                NationId = 2,
+                GridReference = "GB9876543210"
+            },
+            Materials = new List<RegistrationMaterial>() // Empty Materials
+        };
+        _context.Add(registrationWithNullMaterials);
+        _context.Add(registrationWithEmptyMaterials);
+        await _context.SaveChangesAsync();
+        // Act
+        var result = await _repository.GetRegistrationsOverviewForOrgIdAsync(organisationId);
+        // Assert
+        result.Should().NotBeNull();
+        result.Should().HaveCount(2);
+        var firstOverview = result.First();
+        firstOverview.RegistrationId.Should().Be(registrationWithNullMaterials.ExternalId);
+        firstOverview.Material.Should().Be(string.Empty); // Material should be empty for null Materials
+        firstOverview.ReprocessingSiteAddress.Should().NotBeNull();
+        firstOverview.ReprocessingSiteAddress!.AddressLine1.Should().Be("123 Test St");
+        var secondOverview = result.Last();
+        secondOverview.RegistrationId.Should().Be(registrationWithEmptyMaterials.ExternalId);
+        secondOverview.Material.Should().Be(string.Empty); // Material should be empty for empty Materials
+        secondOverview.ReprocessingSiteAddress.Should().NotBeNull();
+        secondOverview.ReprocessingSiteAddress!.AddressLine1.Should().Be("456 Another St");
+    }
 }
