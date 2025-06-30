@@ -1,4 +1,5 @@
-﻿using EPR.PRN.Backend.API.Common.Enums;
+﻿using System.Diagnostics.CodeAnalysis;
+using EPR.PRN.Backend.API.Common.Enums;
 using EPR.PRN.Backend.API.Common.Exceptions;
 using EPR.PRN.Backend.Data.DataModels.Registrations;
 using EPR.PRN.Backend.Data.DTO;
@@ -11,6 +12,16 @@ namespace EPR.PRN.Backend.Data.Repositories;
 
 public class RegistrationRepository(EprContext context, ILogger<RegistrationRepository> logger) : IRegistrationRepository
 {
+    [ExcludeFromCodeCoverage]
+    public async Task<Registration?> GetRegistrationByExternalId(Guid externalId, CancellationToken cancellationToken)
+    {
+        return await context.Registrations
+             .AsNoTracking()
+             .Where(x => x.ExternalId == externalId)
+             .Include(x => x.CarrierBrokerDealerPermit)
+             .FirstOrDefaultAsync(cancellationToken);
+    }
+
     public async Task<Registration> CreateRegistrationAsync(int applicationTypeId, Guid organisationId, AddressDto reprocessingSiteAddress)
     {
         logger.LogInformation("Creating registration for ApplicationTypeId: {ApplicationTypeId} and OrganisationId: {OrganisationId}", applicationTypeId, organisationId);
