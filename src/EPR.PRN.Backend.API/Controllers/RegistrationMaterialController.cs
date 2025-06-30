@@ -185,4 +185,26 @@ public class RegistrationMaterialController(
 
 		return NoContent();
 	}
+
+    [HttpPost("registrationMaterials/{id:Guid}/registrationReprocessingDetails")]
+    [ProducesResponseType(typeof(RegistrationReprocessingIOResponseDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
+    [SwaggerOperation(
+        Summary = "upserts a registration reprocessing details for a registration material",
+        Description = "attempting to upsert the registration reprocessing details for a registration material."
+    )]
+    [SwaggerResponse(StatusCodes.Status400BadRequest, "If the request is invalid or a validation error occurs.", typeof(ProblemDetails))]
+    [SwaggerResponse(StatusCodes.Status404NotFound, "If an existing registration is not found", typeof(ProblemDetails))]
+    [SwaggerResponse(StatusCodes.Status500InternalServerError, "If an unexpected error occurs.", typeof(ContentResult))]
+    public async Task<IActionResult> UpsertRegistrationReprocessingDetailsAsync([FromRoute] Guid registrationMaterialId, [FromBody] RegistrationReprocessingIORequestDto registrationReprocessingDetails)
+    {
+        logger.LogInformation(LogMessages.UpsertRegistrationReprocessingDetails, registrationMaterialId);
+
+        await validationService.ValidateAndThrowAsync(registrationReprocessingDetails);
+
+        var result = await mediator.Send(registrationReprocessingDetails);
+
+        return Ok(result);
+    }
 }
