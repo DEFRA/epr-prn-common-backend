@@ -302,9 +302,32 @@ public class EprContext : DbContext
             new LookupFileUploadStatus { Id = 4, Name = "Upload failed" },
             new LookupFileUploadStatus { Id = 5, Name = "File deleted(Soft delete of record in database – will physically remove from blob storage)" });
 
-        modelBuilder.Entity<Accreditation>()
-            .HasIndex(e => e.ExternalId)
-            .IsUnique(); // Ensures UniqueId is unique
+
+        modelBuilder.Entity<AccreditationEntity>(e =>
+        {
+            e.HasOne(x => x.ApplicationType)
+                .WithMany()
+                .HasForeignKey(x => x.ApplicationTypeId);
+
+            e.HasOne(x => x.AccreditationStatus)
+                .WithMany()
+                .HasForeignKey(x => x.AccreditationStatusId);
+
+            e.HasOne(x => x.RegistrationMaterial)
+                .WithMany()
+                .HasForeignKey(x => x.RegistrationMaterialId);
+
+            e.HasMany(x => x.AccreditationPrnIssueAuths)
+                .WithOne()
+                .HasForeignKey(x => x.AccreditationId);
+
+            e.HasMany(x => x.FileUploads)
+                .WithOne()
+                .HasForeignKey(x => x.AccreditationId);
+
+
+            e.HasIndex(e => e.ExternalId);
+        });
 
         modelBuilder.Entity<AccreditationDeterminationDate>()
             .HasIndex(e => e.ExternalId)
