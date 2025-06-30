@@ -4321,6 +4321,36 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250627081758_AddInProgressRegistrationMaterialStatus'
+)
+BEGIN
+    IF EXISTS (SELECT * FROM [sys].[identity_columns] WHERE [name] IN (N'Id', N'Name') AND [object_id] = OBJECT_ID(N'[Lookup.RegistrationMaterialStatus]'))
+        SET IDENTITY_INSERT [Lookup.RegistrationMaterialStatus] ON;
+    EXEC(N'INSERT INTO [Lookup.RegistrationMaterialStatus] ([Id], [Name])
+    VALUES (12, N''InProgress'')');
+    IF EXISTS (SELECT * FROM [sys].[identity_columns] WHERE [name] IN (N'Id', N'Name') AND [object_id] = OBJECT_ID(N'[Lookup.RegistrationMaterialStatus]'))
+        SET IDENTITY_INSERT [Lookup.RegistrationMaterialStatus] OFF;
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250627081758_AddInProgressRegistrationMaterialStatus'
+)
+BEGIN
+    INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+    VALUES (N'20250627081758_AddInProgressRegistrationMaterialStatus', N'8.0.8');
+END;
+GO
+
+COMMIT;
+GO
+
+BEGIN TRANSACTION;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
     WHERE [MigrationId] = N'20250627113549_RenamingTypeOfSuppliers'
 )
 BEGIN

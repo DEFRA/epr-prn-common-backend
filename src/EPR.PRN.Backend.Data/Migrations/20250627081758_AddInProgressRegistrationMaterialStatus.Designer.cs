@@ -4,6 +4,7 @@ using EPR.PRN.Backend.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EPR.PRN.Backend.Data.Migrations
 {
     [DbContext(typeof(EprContext))]
-    partial class EprContextModelSnapshot : ModelSnapshot
+    [Migration("20250627081758_AddInProgressRegistrationMaterialStatus")]
+    partial class AddInProgressRegistrationMaterialStatus
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -2326,7 +2329,7 @@ namespace EPR.PRN.Backend.Data.Migrations
                     b.Property<decimal>("TotalOutputs")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<string>("TypeOfSuppliers")
+                    b.Property<string>("TypeOfSupplier")
                         .HasMaxLength(2000)
                         .HasColumnType("nvarchar(2000)");
 
