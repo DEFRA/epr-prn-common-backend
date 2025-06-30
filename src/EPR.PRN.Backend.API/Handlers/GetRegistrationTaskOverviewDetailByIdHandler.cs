@@ -15,25 +15,25 @@ public class GetRegistrationTaskOverviewDetailByIdHandler(
     public async Task<RegistrationTaskOverviewDto> Handle(GetRegistrationTaskOverviewByIdQuery request, CancellationToken cancellationToken)
     {
         var registration = await repo.GetAsync(request.Id);
-        var registrationDto = mapper.Map<RegistrationTaskOverviewDto>(registration);
+        var registrationDto = mapper.Map<RegistrationTaskOverviewDto>(registration!);
 
         var applicationTypeId = (int)registration?.ApplicationTypeId!;
         
         var missingRegistrationTasks = await GetMissingTasks(applicationTypeId, false, registrationDto.Tasks);
         registrationDto.Tasks.AddRange(missingRegistrationTasks);
 
-        if (registrationDto?.Materials == null)
+        if (registrationDto.Materials.Count == 0)
         {
-            if (registrationDto != null) return registrationDto;
+            return registrationDto;
         }
 
-        await Parallel.ForEachAsync(registrationDto?.Materials!, cancellationToken, async (materialDto, _) =>
+        await Parallel.ForEachAsync(registrationDto.Materials, cancellationToken, async (materialDto, _) =>
         {
             var missingMaterialTasks = await GetMissingTasks(registration.ApplicationTypeId, true, materialDto.Tasks);
             materialDto.Tasks.AddRange(missingMaterialTasks);
         });
 
-        return registrationDto!;
+        return registrationDto;
     }
 
     private async Task<IEnumerable<RegistrationTaskDto>> GetMissingTasks(int applicationTypeId, bool isMaterialSpecific, List<RegistrationTaskDto> existingTasks)
@@ -41,7 +41,7 @@ public class GetRegistrationTaskOverviewDetailByIdHandler(
         var requiredTasks = await repo.GetRequiredTasks(applicationTypeId, isMaterialSpecific, 1);
 
         var missingTasks = requiredTasks
-            .Where(rt => existingTasks.All(r => r.TaskName != rt.Name))
+            .Where(rt => existingTasks.TrueForAll(r => r.TaskName != rt.Name))
             .Select(t => new RegistrationTaskDto { TaskName = t.Name, Status = nameof(RegulatorTaskStatus.NotStarted)});
 
         return missingTasks;
