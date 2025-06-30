@@ -187,6 +187,7 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
             .Include(o => o.InstallationPeriod)
             .Include(o => o.WasteManagementPeriod)
             .Include(o => o.EnvironmentalPermitWasteManagementPeriod)
+            .Include(o => o.MaximumReprocessingPeriod)
             .Include(o => o.MaterialExemptionReferences)
             .Where(o => o.Registration.ExternalId == registrationId)
             .ToList();
@@ -292,6 +293,17 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
         await eprContext.SaveChangesAsync();
     }
 
+    public async Task UpdateMaximumWeightForSiteAsync(Guid registrationMaterialId, decimal weightInTonnes, int periodId)
+    {
+        var registrationMaterial = await eprContext.RegistrationMaterials
+            .FirstOrDefaultAsync(rm => rm.ExternalId == registrationMaterialId) ?? throw new KeyNotFoundException("Material not found.");
+
+        registrationMaterial.MaximumReprocessingPeriodId = periodId;
+        registrationMaterial.MaximumReprocessingCapacityTonne = weightInTonnes;
+        registrationMaterial.IsMaterialRegistered = true;
+
+        await eprContext.SaveChangesAsync();
+    }
 
     public async Task<IEnumerable<LookupMaterialPermit>> GetMaterialPermitTypes()
     {
