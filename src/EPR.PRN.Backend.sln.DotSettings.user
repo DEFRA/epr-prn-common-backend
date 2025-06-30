@@ -23,6 +23,7 @@
       &lt;TestId&gt;MSTest::4EE4E46A-2437-468E-BEFE-12C8DE172B3E::net8.0::RegistrationRepositoryTests&lt;/TestId&gt;&#xD;
       &lt;TestId&gt;MSTest::4EE4E46A-2437-468E-BEFE-12C8DE172B3E::net8.0::EPR.PRN.Backend.Data.UnitTests.Repositories.RegistrationRepositoryTestsInMemory&lt;/TestId&gt;&#xD;
       &lt;TestId&gt;MSTest::4EE4E46A-2437-468E-BEFE-12C8DE172B3E::net8.0::EPR.PRN.Backend.API.UnitTests.Controllers.RegistrationControllerTests&lt;/TestId&gt;&#xD;
+      &lt;TestId&gt;MSTest::4EE4E46A-2437-468E-BEFE-12C8DE172B3E::net8.0::EPR.PRN.Backend.API.UnitTests.Handlers.GetRegistrationsOverviewByOrgIdHandlerTests&lt;/TestId&gt;&#xD;
     &lt;/TestAncestor&gt;&#xD;
   &lt;/Or&gt;&#xD;
 &lt;/SessionState&gt;</s:String>
