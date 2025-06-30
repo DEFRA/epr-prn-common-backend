@@ -1,5 +1,6 @@
 ﻿using EPR.PRN.Backend.API.Common.Enums;
 using EPR.PRN.Backend.Data.DataModels.Registrations;
+using EPR.PRN.Backend.Data.DTO;
 
 namespace EPR.PRN.Backend.Data.Interfaces.Regulator;
 
@@ -24,6 +25,7 @@ public interface IRegistrationMaterialRepository
 
     Task<IEnumerable<LookupMaterialPermit>> GetMaterialPermitTypes();
     Task DeleteAsync(Guid registrationMaterialId);
+	Task UpdateIsMaterialRegisteredAsync(List<UpdateIsMaterialRegisteredDto> updateIsMaterialRegisteredDto);
 
     Task<RegistrationMaterialContact> UpsertRegistrationMaterialContact(Guid registrationMaterialId, Guid userId);
 }

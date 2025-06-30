@@ -2,6 +2,7 @@
 using EPR.PRN.Backend.API.Common.Constants;
 using EPR.PRN.Backend.API.Common.Enums;
 using EPR.PRN.Backend.Data.DataModels.Registrations;
+using EPR.PRN.Backend.Data.DTO;
 using EPR.PRN.Backend.Data.Interfaces.Regulator;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
@@ -314,7 +315,28 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
         eprContext.RegistrationMaterials.Remove(existing);
 
         await eprContext.SaveChangesAsync();
-    }
+	}
+
+	public async Task UpdateIsMaterialRegisteredAsync(List<UpdateIsMaterialRegisteredDto> updateIsMaterialRegisteredDto)
+	{
+        foreach (var registrationMaterial in updateIsMaterialRegisteredDto)
+        {
+			var existing =
+			await eprContext.RegistrationMaterials.SingleOrDefaultAsync(o => o.ExternalId == registrationMaterial.RegistrationMaterialId);
+
+			if (existing is null)
+			{
+				throw new KeyNotFoundException("Registration material not found.");
+			}
+
+            existing.IsMaterialRegistered = registrationMaterial.IsMaterialRegistered!.Value;
+            existing.StatusId = (int)RegistrationMaterialStatus.InProgress;
+
+			eprContext.RegistrationMaterials.Update(existing);
+		}
+
+		await eprContext.SaveChangesAsync();
+	}
 
     public async Task<RegistrationMaterialContact> UpsertRegistrationMaterialContact(Guid registrationMaterialId, Guid userId)
     {

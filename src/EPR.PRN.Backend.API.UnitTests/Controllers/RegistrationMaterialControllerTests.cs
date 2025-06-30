@@ -6,6 +6,7 @@ using EPR.PRN.Backend.API.Dto.Regulator;
 using EPR.PRN.Backend.API.Handlers;
 using EPR.PRN.Backend.API.Queries;
 using EPR.PRN.Backend.API.Services.Interfaces;
+using EPR.PRN.Backend.Data.DTO;
 using FluentAssertions;
 using FluentValidation;
 using MediatR;
@@ -185,6 +186,27 @@ public class RegistrationMaterialControllerTests
         // Assert
         result.Should().BeEquivalentTo(expectedResult);
     }
+
+	[TestMethod]
+	public async Task UpdateIsMaterialRegisteredAsync_ShouldReturnNoContent()
+	{
+		// Arrange
+		var dtoList = _fixture.Create<List<UpdateIsMaterialRegisteredDto>>();
+
+		_mediatorMock
+			.Setup(m => m.Send(It.IsAny<UpdateIsMaterialRegisteredCommand>(), It.IsAny<CancellationToken>()))
+			.Returns(Task.CompletedTask);
+
+		// Act
+		var result = await _controller.UpdateIsMaterialRegisteredAsync(dtoList);
+
+		// Assert
+		result.Should().BeOfType<NoContentResult>();
+		_mediatorMock.Verify(m =>
+			m.Send(It.Is<UpdateIsMaterialRegisteredCommand>(cmd =>
+				cmd.UpdateIsMaterialRegisteredDto.SequenceEqual(dtoList)
+			), It.IsAny<CancellationToken>()), Times.Once);
+	}
 
     [TestMethod]
     public async Task UpsertRegistrationMaterialContactAsync_EnsureCorrectResult()

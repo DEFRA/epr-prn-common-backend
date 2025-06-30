@@ -218,7 +218,8 @@ public class EprContext : DbContext
             new LookupRegistrationMaterialStatus { Id = 8, Name = "Withdrawn" },
             new LookupRegistrationMaterialStatus { Id = 9, Name = "Suspended" },
             new LookupRegistrationMaterialStatus { Id = 10, Name = "Cancelled" },
-            new LookupRegistrationMaterialStatus { Id = 11, Name = "ReadyToSubmit" });
+            new LookupRegistrationMaterialStatus { Id = 11, Name = "ReadyToSubmit" },
+			new LookupRegistrationMaterialStatus { Id = 12, Name = "InProgress" });
 
         modelBuilder.Entity<LookupAccreditationStatus>().HasData(
             new LookupAccreditationStatus { Id = 1, Name = "Started" },
