@@ -2,6 +2,7 @@
 using EPR.PRN.Backend.API.Common.Exceptions;
 using EPR.PRN.Backend.Data.DataModels.Registrations;
 using EPR.PRN.Backend.Data.DTO;
+using EPR.PRN.Backend.Data.DTO.Registration;
 using EPR.PRN.Backend.Data.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
@@ -303,5 +304,47 @@ public class RegistrationRepository(EprContext context, ILogger<RegistrationRepo
             .Include(r => r.ApplicantRegistrationTasksStatus)!
                 .ThenInclude(t => t.Task)
             .Include(r => r.Materials);
+    }
+
+    public async Task<IEnumerable<RegistrationOverviewDto>> GetRegistrationsOverviewForOrgIdAsync(Guid organisationId)
+    {
+        var registrations = await context.Registrations
+            .AsSplitQuery()
+            .Where(r => r.OrganisationId == organisationId)
+            .Include(r => r.Materials!) // Include related Materials (non-nullable)
+                .ThenInclude(m => m.Material) // Include nested Material
+            .Include(r => r.Materials!) // Include related Materials again (non-nullable)
+                .ThenInclude(m => m.Accreditations) // Include nested Accreditations
+            .Include(r => r.ReprocessingSiteAddress) // Include ReprocessingSiteAddress
+            .ToListAsync();
+        var result = registrations.SelectMany(
+            r => (r.Materials ?? []).DefaultIfEmpty(),
+            (r, m) => new RegistrationOverviewDto
+            {
+                RegistrationId = r.ExternalId,
+                RegistrationMaterialId = m?.Id ?? 0,
+                MaterialId = m?.Material?.Id ?? 0,
+                Material = m?.Material?.MaterialName ?? string.Empty,
+                MaterialCode = m?.Material?.MaterialCode ?? string.Empty,
+                ApplicationTypeId = r.ApplicationTypeId,
+                RegistrationStatus = r.RegistrationStatusId,
+                AccreditationStatus = m?.Accreditations?.FirstOrDefault()?.AccreditationStatus?.Id ?? 0,
+                AccreditationYear = m?.Accreditations?.FirstOrDefault()?.AccreditationYear,
+                ReprocessingSiteId = r.ReprocessingSiteAddressId,
+                ReprocessingSiteAddress = r.ReprocessingSiteAddress != null ? new AddressDto
+                {
+                    Id = r.ReprocessingSiteAddress.Id,
+                    AddressLine1 = r.ReprocessingSiteAddress.AddressLine1,
+                    AddressLine2 = r.ReprocessingSiteAddress.AddressLine2,
+                    TownCity = r.ReprocessingSiteAddress.TownCity,
+                    County = r.ReprocessingSiteAddress.County,
+                    PostCode = r.ReprocessingSiteAddress.PostCode,
+                    NationId = r.ReprocessingSiteAddress.NationId ?? 0,
+                    GridReference = r.ReprocessingSiteAddress.GridReference
+                } : null,
+                RegistrationYear = null // not required for MLS
+            });
+
+        return result;
     }
 }

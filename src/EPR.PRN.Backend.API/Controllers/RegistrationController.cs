@@ -167,4 +167,27 @@ public class RegistrationController(IMediator mediator
     }
 
     #endregion Post Methods
+
+    [HttpGet("registrations/{organisationId:guid}/overview")]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<RegistrationOverviewDto>))]
+    [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
+    [SwaggerOperation(
+        Summary = "return the registrations overview for a given organisation id",
+        Description = "attempting to return registrations."
+    )]
+    [SwaggerResponse(StatusCodes.Status200OK, "Returns the registrations overview for the given organisation ID", typeof(List<RegistrationOverviewDto>))]
+    [SwaggerResponse(StatusCodes.Status400BadRequest, "If the request is invalid or a validation error occurs.", typeof(ProblemDetails))]
+    [SwaggerResponse(StatusCodes.Status500InternalServerError, "If an unexpected error occurs.", typeof(ContentResult))]
+    public async Task<IActionResult> GetRegistrationsOverviewForOrgId([FromRoute] Guid organisationId)
+    {
+        logger.LogInformation(LogMessages.RegistrationsOverview, organisationId);
+        
+        var request = new GetRegistrationsOverviewByOrgIdQuery { OrganisationId = organisationId };
+        await validationService.ValidateAndThrowAsync(request);
+        
+        var result = await mediator.Send(request);
+
+        return Ok(result);
+    }
 }

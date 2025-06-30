@@ -448,4 +448,190 @@ public class RegistrationRepositoryTests
             UpdatedBy = loaded.UpdatedBy
         });
     }
+
+    [TestMethod]
+    public async Task GetRegistrationsOverviewForOrgIdAsync_ShouldReturnEmptyList_WhenNoRegistrationsExist()
+    {
+        // Act
+        var result = await _repository.GetRegistrationsOverviewForOrgIdAsync(Guid.NewGuid());
+        // Assert
+        result.Should().NotBeNull();
+        result.Should().BeEmpty();
+    }
+
+    [TestMethod]
+    public async Task GetRegistrationsOverviewForOrgIdAsync_ShouldReturnRegistrations_WhenRegistrationsExist()
+    {
+        // Arrange
+        var organisationId = Guid.NewGuid();
+        var registration = new Registration
+        {
+            ExternalId = Guid.NewGuid(),
+            OrganisationId = organisationId,
+            ApplicationTypeId = 1,
+            RegistrationStatusId = 2,
+            ReprocessingSiteAddress = new Address
+            {
+                Id = 1,
+                AddressLine1 = "123 Test St",
+                AddressLine2 = "Test Area",
+                TownCity = "Testville",
+                County = "Test County",
+                PostCode = "TST 123",
+                NationId = 1,
+                GridReference = "GB1234567890"
+            },
+            Materials = new List<RegistrationMaterial>
+            {
+                new RegistrationMaterial
+                {
+                    Id = 1,
+                    Material = new LookupMaterial
+                    {
+                        Id = 1,
+                        MaterialName = "Plastic",
+                        MaterialCode = "PLS" // Set the required MaterialCode property
+                    }
+                }
+            }
+        };
+        await _context.Registrations.AddAsync(registration);
+        await _context.SaveChangesAsync();
+        // Act
+        var result = await _repository.GetRegistrationsOverviewForOrgIdAsync(organisationId);
+        // Assert
+        result.Should().NotBeNull();
+        result.Should().HaveCount(1);
+        var overview = result.First();
+        overview.RegistrationId.Should().Be(registration.ExternalId);
+        overview.Material.Should().Be("Plastic");
+        overview.ReprocessingSiteAddress.Should().NotBeNull();
+        overview.ReprocessingSiteAddress!.AddressLine1.Should().Be("123 Test St");
+    }
+
+
+    [TestMethod]
+    public async Task GetRegistrationsOverviewForOrgIdAsync_ShouldHandleNullMaterials()
+    {
+        // Arrange
+        var organisationId = Guid.NewGuid();
+        var registration = new Registration
+        {
+            ExternalId = Guid.NewGuid(),
+            OrganisationId = organisationId,
+            ApplicationTypeId = 1,
+            RegistrationStatusId = 2,
+            Materials = null
+        };
+        await _context.Registrations.AddAsync(registration);
+        await _context.SaveChangesAsync();
+        // Act
+        var result = await _repository.GetRegistrationsOverviewForOrgIdAsync(organisationId);
+        // Assert
+        result.Should().NotBeNull();
+        result.Should().HaveCount(1);
+        var overview = result.First();
+        overview.RegistrationId.Should().Be(registration.ExternalId);
+        overview.Material.Should().Be(string.Empty);
+    }
+
+    [TestMethod]
+    public async Task GetRegistrationsOverviewForOrgIdAsync_ShouldHandleNullReprocessingSiteAddress()
+    {
+        // Arrange
+        var organisationId = Guid.NewGuid();
+        var registration = new Registration
+        {
+            ExternalId = Guid.NewGuid(),
+            OrganisationId = organisationId,
+            ApplicationTypeId = 1,
+            RegistrationStatusId = 2,
+            ReprocessingSiteAddress = null,
+            Materials = new List<RegistrationMaterial>
+            {
+                new RegistrationMaterial
+                {
+                    Id = 1,
+                    Material = new LookupMaterial
+                    {
+                        Id = 1,
+                        MaterialName = "Glass",
+                        MaterialCode = "GLS" // Set the required MaterialCode property
+                    }
+                }
+            }
+        };
+        await _context.Registrations.AddAsync(registration);
+        await _context.SaveChangesAsync();
+        // Act
+        var result = await _repository.GetRegistrationsOverviewForOrgIdAsync(organisationId);
+        // Assert
+        result.Should().NotBeNull();
+        result.Should().HaveCount(1);
+        var overview = result.First();
+        overview.RegistrationId.Should().Be(registration.ExternalId);
+        overview.Material.Should().Be("Glass");
+        overview.ReprocessingSiteAddress.Should().BeNull();
+    }
+
+
+    [TestMethod]
+    public async Task GetRegistrationsOverviewForOrgIdAsync_ShouldReturnMultipleRegistrations()
+    {
+        // Arrange
+        var organisationId = Guid.NewGuid();
+        var registrations = new List<Registration>
+        {
+            new Registration
+            {
+                ExternalId = Guid.NewGuid(),
+                OrganisationId = organisationId,
+                ApplicationTypeId = 1,
+                RegistrationStatusId = 2,
+                Materials = new List<RegistrationMaterial>
+                {
+                    new RegistrationMaterial
+                    {
+                        Id = 1,
+                        Material = new LookupMaterial
+                        {
+                            Id = 1,
+                            MaterialName = "Metal",
+                            MaterialCode = "MTL" // Set the required MaterialCode property
+                        }
+                    }
+                }
+            },
+            new Registration
+            {
+                ExternalId = Guid.NewGuid(),
+                OrganisationId = organisationId,
+                ApplicationTypeId = 2,
+                RegistrationStatusId = 3,
+                Materials = new List<RegistrationMaterial>
+                {
+                    new RegistrationMaterial
+                    {
+                        Id = 2,
+                        Material = new LookupMaterial
+                        {
+                            Id = 2,
+                            MaterialName = "Paper",
+                            MaterialCode = "PPR" // Set the required MaterialCode property
+                        }
+                    }
+                }
+            }
+        };
+        await _context.Registrations.AddRangeAsync(registrations);
+        await _context.SaveChangesAsync();
+        // Act
+        var result = await _repository.GetRegistrationsOverviewForOrgIdAsync(organisationId);
+        // Assert
+        result.Should().NotBeNull();
+        result.Should().HaveCount(2);
+        result.Should().ContainSingle(r => r.Material == "Metal");
+        result.Should().ContainSingle(r => r.Material == "Paper");
+    }
+
 }
