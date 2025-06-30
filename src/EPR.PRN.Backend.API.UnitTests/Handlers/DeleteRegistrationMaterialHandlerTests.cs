@@ -1,6 +1,7 @@
 ﻿using EPR.PRN.Backend.API.Commands;
 using EPR.PRN.Backend.API.Handlers;
 using EPR.PRN.Backend.Data.Interfaces.Regulator;
+using Microsoft.AspNetCore.Rewrite;
 using Moq;
 
 namespace EPR.PRN.Backend.API.UnitTests.Handlers;
@@ -35,6 +36,6 @@ public class DeleteRegistrationMaterialHandlerTests
         // Act & Assert
         var result = _handler.Handle(command, CancellationToken.None);
         await result;
-        Assert.AreEqual(result.IsCompletedSuccessfully, true);
+        Assert.IsTrue(result.IsCompletedSuccessfully);
     }
 }
