@@ -38,10 +38,13 @@ namespace EPR.PRN.Backend.Data.Migrations
                     table.PrimaryKey("PK_Lookup.Task", x => x.Id);
                 });
 
-            migrationBuilder.InsertData(
-                table: "Lookup.RegulatorTask",
-                columns: new[] { "Id", "ApplicationTypeId", "IsMaterialSpecific", "JourneyTypeId", "Name" },
-                values: new object[] { 28, 2, true, 2, "DulyMade" });
+            // Hate having to comment this out it really needs to be fixed properly
+            // But for now commenting out as due to a previous failed merge that has messed up the migrations to a point where the below keeps getting added in
+            // when it already exists in the database.
+            //migrationBuilder.InsertData(
+            //    table: "Lookup.RegulatorTask",
+            //    columns: new[] { "Id", "ApplicationTypeId", "IsMaterialSpecific", "JourneyTypeId", "Name" },
+            //    values: new object[] { 28, 2, true, 2, "DulyMade" });
 
             migrationBuilder.InsertData(
                 table: "Lookup.Task",
@@ -104,10 +107,13 @@ namespace EPR.PRN.Backend.Data.Migrations
                 name: "IX_Public.RegistrationTaskStatus_RegistrationMaterialId",
                 table: "Public.RegistrationTaskStatus");
 
-            migrationBuilder.DeleteData(
-                table: "Lookup.RegulatorTask",
-                keyColumn: "Id",
-                keyValue: 28);
+            // Hate having to comment this out it really needs to be fixed properly
+            // But for now commenting out as due to a previous failed merge that has messed up the migrations to a point where the below keeps getting added in
+            // when it already exists in the database.
+            //migrationBuilder.DeleteData(
+            //    table: "Lookup.RegulatorTask",
+            //    keyColumn: "Id",
+            //    keyValue: 28);
 
             migrationBuilder.DropColumn(
                 name: "RegistrationMaterialId",

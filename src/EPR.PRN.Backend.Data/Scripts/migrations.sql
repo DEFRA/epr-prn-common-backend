@@ -4358,20 +4358,6 @@ IF NOT EXISTS (
     WHERE [MigrationId] = N'20250629092851_ApplicantTaskLookupTable'
 )
 BEGIN
-    IF EXISTS (SELECT * FROM [sys].[identity_columns] WHERE [name] IN (N'Id', N'ApplicationTypeId', N'IsMaterialSpecific', N'JourneyTypeId', N'Name') AND [object_id] = OBJECT_ID(N'[Lookup.RegulatorTask]'))
-        SET IDENTITY_INSERT [Lookup.RegulatorTask] ON;
-    EXEC(N'INSERT INTO [Lookup.RegulatorTask] ([Id], [ApplicationTypeId], [IsMaterialSpecific], [JourneyTypeId], [Name])
-    VALUES (28, 2, CAST(1 AS bit), 2, N''DulyMade'')');
-    IF EXISTS (SELECT * FROM [sys].[identity_columns] WHERE [name] IN (N'Id', N'ApplicationTypeId', N'IsMaterialSpecific', N'JourneyTypeId', N'Name') AND [object_id] = OBJECT_ID(N'[Lookup.RegulatorTask]'))
-        SET IDENTITY_INSERT [Lookup.RegulatorTask] OFF;
-END;
-GO
-
-IF NOT EXISTS (
-    SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250629092851_ApplicantTaskLookupTable'
-)
-BEGIN
     IF EXISTS (SELECT * FROM [sys].[identity_columns] WHERE [name] IN (N'Id', N'ApplicationTypeId', N'IsMaterialSpecific', N'JourneyTypeId', N'Name') AND [object_id] = OBJECT_ID(N'[Lookup.Task]'))
         SET IDENTITY_INSERT [Lookup.Task] ON;
     EXEC(N'INSERT INTO [Lookup.Task] ([Id], [ApplicationTypeId], [IsMaterialSpecific], [JourneyTypeId], [Name])
