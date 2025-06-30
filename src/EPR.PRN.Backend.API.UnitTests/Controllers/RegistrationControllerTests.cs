@@ -1,9 +1,13 @@
 ﻿using EPR.PRN.Backend.API.Commands;
 using EPR.PRN.Backend.API.Controllers;
+using EPR.PRN.Backend.API.Queries;
 using EPR.PRN.Backend.API.Services.Interfaces;
+using EPR.PRN.Backend.Data.DTO.Registration;
 using FluentAssertions;
 using FluentAssertions.Execution;
+using FluentValidation;
 using MediatR;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -48,5 +52,118 @@ public class RegistrationControllerTests
             result.Should().BeOfType<NoContentResult>();
             command.RegistrationId.Should().Be(registrationId);
         }
+    }
+
+    
+    [TestMethod]
+    public async Task GetRegistrationsOverviewForOrgId_NoRegistrations_ReturnsOkWithEmptyList()
+    {
+        // Arrange
+        var organisationId = Guid.NewGuid();
+        var query = new GetRegistrationsOverviewByOrgIdQuery { OrganisationId = organisationId };
+        var expectedResult = new List<RegistrationOverviewDto>();
+        _validationServiceMock
+            .Setup(v => v.ValidateAndThrowAsync(query, It.IsAny<CancellationToken>()))
+            .Returns(Task.CompletedTask);
+        _mediatorMock
+            .Setup(m => m.Send(query, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(expectedResult);
+        // Act
+        var result = await _controller.GetRegistrationsOverviewForOrgId(organisationId);
+        // Assert
+        using (new AssertionScope())
+        {
+            result.Should().BeOfType<OkObjectResult>();
+            var okResult = result as OkObjectResult;
+            okResult!.Value.Should().BeEquivalentTo(expectedResult);
+        }
+    }
+
+    [TestMethod]
+    public async Task GetRegistrationsOverviewForOrgId_ValidOrganisationId_ReturnsOkResult()
+    {
+        // Arrange
+        var organisationId = Guid.NewGuid();
+        var query = new GetRegistrationsOverviewByOrgIdQuery { OrganisationId = organisationId };
+        var expectedResult = new List<RegistrationOverviewDto>
+        {
+            new RegistrationOverviewDto { RegistrationId = Guid.NewGuid() },
+            new RegistrationOverviewDto { RegistrationId = Guid.NewGuid() }
+        };
+        _validationServiceMock
+            .Setup(v => v.ValidateAndThrowAsync(It.IsAny<GetRegistrationsOverviewByOrgIdQuery>(), It.IsAny<CancellationToken>()))
+            .Returns(Task.CompletedTask);
+        _mediatorMock
+            .Setup(m => m.Send(It.IsAny<GetRegistrationsOverviewByOrgIdQuery>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(expectedResult);
+        // Act
+        var result = await _controller.GetRegistrationsOverviewForOrgId(organisationId);
+        // Assert
+        using (new AssertionScope())
+        {
+            result.Should().BeOfType<OkObjectResult>();
+            var okResult = result as OkObjectResult;
+            okResult!.Value.Should().BeEquivalentTo(expectedResult);
+        }
+    }
+
+    [TestMethod]
+    public async Task GetRegistrationsOverviewForOrgId_NoRegistrations_ReturnsOkWithEmpty()
+    {
+        // Arrange
+        var organisationId = Guid.NewGuid();
+        var query = new GetRegistrationsOverviewByOrgIdQuery { OrganisationId = organisationId };
+        var expectedResult = new List<RegistrationOverviewDto>();
+        _validationServiceMock
+            .Setup(v => v.ValidateAndThrowAsync(query, It.IsAny<CancellationToken>()))
+            .Returns(Task.CompletedTask);
+        _mediatorMock
+            .Setup(m => m.Send(query, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(expectedResult);
+        // Act
+        var result = await _controller.GetRegistrationsOverviewForOrgId(organisationId);
+        // Assert
+        using (new AssertionScope())
+        {
+            result.Should().BeOfType<OkObjectResult>();
+            var okResult = result as OkObjectResult;
+            okResult!.Value.Should().BeEquivalentTo(expectedResult);
+        }
+    }
+
+    [TestMethod]
+    public async Task GetRegistrationsOverviewForOrgId_InvalidOrganisationId_ThrowsValidationException()
+    {
+        // Arrange
+        var organisationId = Guid.NewGuid();
+        var query = new GetRegistrationsOverviewByOrgIdQuery { OrganisationId = organisationId };
+        _validationServiceMock
+            .Setup(v => v.ValidateAndThrowAsync(It.IsAny<GetRegistrationsOverviewByOrgIdQuery>(), It.IsAny<CancellationToken>()))
+            .ThrowsAsync(new FluentValidation.ValidationException("Invalid organisation ID"));
+        // Act
+        Func<Task> act = async () => await _controller.GetRegistrationsOverviewForOrgId(organisationId);
+        // Assert
+        await act.Should().ThrowAsync<FluentValidation.ValidationException>()
+            .WithMessage("Invalid organisation ID");
+    }
+
+
+    [TestMethod]
+    public async Task GetRegistrationsOverviewForOrgId_UnexpectedError_ThrowsException()
+    {
+        // Arrange
+        var organisationId = Guid.NewGuid();
+        var query = new GetRegistrationsOverviewByOrgIdQuery { OrganisationId = organisationId };
+        _validationServiceMock
+            .Setup(v => v.ValidateAndThrowAsync(It.IsAny<GetRegistrationsOverviewByOrgIdQuery>(), It.IsAny<CancellationToken>()))
+            .Returns(Task.CompletedTask);
+        _mediatorMock
+            .Setup(m => m.Send(It.IsAny<GetRegistrationsOverviewByOrgIdQuery>(), It.IsAny<CancellationToken>()))
+            .ThrowsAsync(new Exception("Unexpected error"));
+        // Act
+        Func<Task> act = async () => await _controller.GetRegistrationsOverviewForOrgId(organisationId);
+        // Assert
+        await act.Should().ThrowAsync<Exception>()
+            .WithMessage("Unexpected error");
     }
 }
