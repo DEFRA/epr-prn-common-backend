@@ -303,7 +303,7 @@ public class EprContext : DbContext
             new LookupFileUploadStatus { Id = 5, Name = "File deleted(Soft delete of record in database – will physically remove from blob storage)" });
 
 
-        modelBuilder.Entity<AccreditationEntity>(e =>
+        modelBuilder.Entity<Accreditation>(e =>
         {
             e.HasOne(x => x.ApplicationType)
                 .WithMany()
