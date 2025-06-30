@@ -1,6 +1,9 @@
-﻿namespace EPR.PRN.Backend.Data.DTO.Registration
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace EPR.PRN.Backend.Data.DTO.Registration
 {
 
+    [ExcludeFromCodeCoverage]
     public class RegistrationOverviewDto
 
     {
@@ -28,6 +31,6 @@
 
         public int? RegistrationYear { get; set; }
         
-         public int? AccreditationYear { get; set; }       
+        public int? AccreditationYear { get; set; }       
     }
 }
