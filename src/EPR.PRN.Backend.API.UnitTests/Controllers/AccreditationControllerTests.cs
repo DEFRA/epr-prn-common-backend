@@ -129,6 +129,40 @@ public class AccreditationControllerTests
     }
 
     [TestMethod]
+    public async Task GetFileUpload_ShouldReturnBadRequest_WhenExternalIdIsInvalid()
+    {
+        // Arrange
+        var externalId = Guid.NewGuid();
+
+        // Act
+        var result = await _controller.GetFileUpload(externalId);
+
+        // Assert
+        result.Should().BeOfType<NotFoundResult>();
+    }
+
+    [TestMethod]
+    public async Task GetFileUpload_ShouldReturnOk_WhenParamsAreValid()
+    {
+        // Arrange
+        var externalId = Guid.NewGuid();
+        var fileUpload = _fixture.Create<AccreditationFileUploadDto>();
+
+        _fileUploadServiceMock.Setup(s => s.GetByExternalId(externalId))
+            .ReturnsAsync(fileUpload);
+
+        // Act
+        var result = await _controller.GetFileUpload(externalId);
+
+        // Assert
+        result.Should().BeOfType<OkObjectResult>();
+        var okResult = result as OkObjectResult;
+        okResult!.Value.Should().Be(fileUpload);
+
+        _fileUploadServiceMock.VerifyAll();
+    }
+
+    [TestMethod]
     public async Task GetFileUploads_ShouldReturnBadRequest_WhenFileUploadTypeIdIsInvalid()
     {
         // Arrange

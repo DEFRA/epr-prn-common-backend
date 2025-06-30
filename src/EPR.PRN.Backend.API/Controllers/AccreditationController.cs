@@ -77,8 +77,17 @@ public class AccreditationController(
         return Ok();
     }
 
+    [HttpGet("Files/{externalId}")]
+    [ProducesResponseType(typeof(AccreditationFileUploadDto), 200)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetFileUpload([FromRoute] Guid externalId)
+    {
+        var fileUpload = await accreditationFileUploadService.GetByExternalId(externalId);
+        return fileUpload != null ? Ok(fileUpload) : NotFound();
+    }
+
     [HttpGet("{accreditationId}/Files/{fileUploadTypeId}/{fileUploadStatusId?}")]
-    [ProducesResponseType(typeof(List<AccreditationDto>), 200)]
+    [ProducesResponseType(typeof(List<AccreditationFileUploadDto>), 200)]
     public async Task<IActionResult> GetFileUploads(
         [FromRoute] Guid accreditationId,
         [FromRoute] int fileUploadTypeId,

@@ -2,6 +2,7 @@
 
 using System.Diagnostics.CodeAnalysis;
 using AutoMapper;
+using EPR.PRN.Backend.API.Common.Helpers;
 using EPR.PRN.Backend.API.Dto.Accreditation;
 using EPR.PRN.Backend.API.Services.Interfaces;
 using EPR.PRN.Backend.Data.DataModels.Accreditations;
@@ -61,7 +62,7 @@ public class AccreditationService(
 
     public async Task<Guid> CreateAccreditation(AccreditationRequestDto accreditationDto)
     {
-        logger.LogInformation("{Logprefix}: AccreditationService - CreateAccreditation: request to create accreditation", logPrefix);
+        logger.LogInformation("{Logprefix}: AccreditationService - CreateAccreditation: request to create accreditation {Accreditation}", logPrefix, LogParameterSanitizer.Sanitize(accreditationDto));
 
         var entity = mapper.Map<AccreditationEntity>(accreditationDto);
 
@@ -72,7 +73,7 @@ public class AccreditationService(
 
     public async Task UpdateAccreditation(AccreditationRequestDto accreditationDto)
     {
-        logger.LogInformation("{Logprefix}: AccreditationService - UpdateAccreditation: request to update accreditation", logPrefix);
+        logger.LogInformation("{Logprefix}: AccreditationService - UpdateAccreditation: request to update accreditation {Accreditation}", logPrefix, LogParameterSanitizer.Sanitize(accreditationDto));
 
         var entity = mapper.Map<AccreditationEntity>(accreditationDto);
 

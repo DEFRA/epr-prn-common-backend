@@ -3,6 +3,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
+using EPR.PRN.Backend.API.Common.Helpers;
 using EPR.PRN.Backend.API.Dto.Accreditation;
 using EPR.PRN.Backend.API.Services.Interfaces;
 using EPR.PRN.Backend.Data.DataModels.Accreditations;
@@ -30,7 +31,7 @@ public class AccreditationPrnIssueAuthService(
 
     public async Task ReplaceAllByAccreditationId(Guid accreditationId, List<AccreditationPrnIssueAuthRequestDto> request)
     {
-        logger.LogInformation("{Logprefix}: AccreditationPrnIssueAuthService - ReplaceAllByAccreditationId: request for accreditation {AccreditationId}", logPrefix, accreditationId);
+        logger.LogInformation("{Logprefix}: AccreditationPrnIssueAuthService - ReplaceAllByAccreditationId: request for accreditation {AccreditationId}, new list: {List}", logPrefix, accreditationId, LogParameterSanitizer.Sanitize(request));
 
         var entities = mapper.Map<List<AccreditationPrnIssueAuth>>(request);
         await repository.ReplaceAllByAccreditationId(accreditationId, entities);
