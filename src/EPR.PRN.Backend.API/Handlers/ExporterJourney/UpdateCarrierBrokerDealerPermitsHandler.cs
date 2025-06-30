@@ -16,21 +16,17 @@ public class UpdateCarrierBrokerDealerPermitsHandler(ICarrierBrokerDealerPermitR
 		{
 			carrierBrokerDealerPermit.WasteCarrierBrokerDealerRegistration = request.Dto.WasteCarrierBrokerDealerRegistration;
 		}
-
-		if (!string.IsNullOrWhiteSpace(request.Dto.WasteLicenseOrPermitNumber))
-        {
-			carrierBrokerDealerPermit.WasteManagementEnvironmentPermitNumber = request.Dto.WasteLicenseOrPermitNumber;
-		}
-
-		if (!string.IsNullOrWhiteSpace(request.Dto.PpcNumber))
+		else
 		{
-			carrierBrokerDealerPermit.InstallationPermitOrPPCNumber = request.Dto.PpcNumber;
-		}
+            carrierBrokerDealerPermit.WasteManagementEnvironmentPermitNumber = request.Dto.WasteLicenseOrPermitNumber;
+            carrierBrokerDealerPermit.InstallationPermitOrPPCNumber = request.Dto.PpcNumber;
 
-		if (request.Dto.WasteExemptionReference != null)
-		{
-			carrierBrokerDealerPermit.WasteExemptionReference = string.Join(',', request.Dto.WasteExemptionReference);
-		}
+            if (request.Dto.WasteExemptionReference != null)
+            {
+                carrierBrokerDealerPermit.WasteExemptionReference = string.Join(',', request.Dto.WasteExemptionReference);
+            }
+        }
+
 
         carrierBrokerDealerPermit.UpdatedBy = request.UserId;
         carrierBrokerDealerPermit.UpdatedDate = DateTime.UtcNow;

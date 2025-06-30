@@ -47,6 +47,7 @@ public class MaterialController(
         }
     }
 
+    [NonAction]
     public BadRequestObjectResult ThrowInvalidRegistrationId(ILogger<MaterialController> logger, Guid? registrationId)
     {
         logger.LogError("Invalid Guid format for registrationId - {registrationId}", registrationId);
