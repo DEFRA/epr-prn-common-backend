@@ -204,8 +204,8 @@ public class RegistrationRepositoryTests
         // Arrange
         var registrationId = Guid.NewGuid();
         var registration = new Registration { Id = 1, ApplicationTypeId = 1, ExternalId = registrationId };
-        var task = new LookupApplicantRegistrationTask { Name = "NewTask", ApplicationTypeId = 1, IsMaterialSpecific = false };
-        var status = new LookupTaskStatus { Name = TaskStatuses.Completed.ToString() };
+        var task = new LookupApplicantRegistrationTask { Name = "NewTask", ApplicationTypeId = 1, IsMaterialSpecific = true };
+        var status = new LookupTaskStatus { Name = nameof(TaskStatuses.Completed) };
 
         await _context.Registrations.AddAsync(registration);
         await _context.LookupApplicantRegistrationTasks.AddAsync(task);
@@ -213,7 +213,7 @@ public class RegistrationRepositoryTests
         await _context.SaveChangesAsync();
 
         // Act
-        await _repository.UpdateRegistrationTaskStatusAsync("NewTask", registrationId, TaskStatuses.Completed);
+        await _repository.UpdateApplicantRegistrationTaskStatusAsync("NewTask", registrationId, TaskStatuses.Completed);
 
         // Assert
         var result = await _repository.GetTaskStatusAsync("NewTask", registrationId);
@@ -246,7 +246,7 @@ public class RegistrationRepositoryTests
         await _context.SaveChangesAsync();
 
         // Act
-        await _repository.UpdateRegistrationTaskStatusAsync("ExistingTask", registrationId, TaskStatuses.Completed);
+        await _repository.UpdateApplicantRegistrationTaskStatusAsync("ExistingTask", registrationId, TaskStatuses.Completed);
 
         // Assert
         var result = await _repository.GetTaskStatusAsync("ExistingTask", registrationId);
@@ -263,7 +263,7 @@ public class RegistrationRepositoryTests
         await _context.SaveChangesAsync();
 
         // Act
-        Func<Task> act = async () => await _repository.UpdateRegistrationTaskStatusAsync("AnyTask", registrationId, TaskStatuses.Completed);
+        Func<Task> act = async () => await _repository.UpdateApplicantRegistrationTaskStatusAsync("AnyTask", registrationId, TaskStatuses.Completed);
 
         // Assert
         await act.Should().ThrowAsync<KeyNotFoundException>();
@@ -282,7 +282,7 @@ public class RegistrationRepositoryTests
         await _context.SaveChangesAsync();
 
         // Act
-        Func<Task> act = async () => await _repository.UpdateRegistrationTaskStatusAsync("MissingTask", registrationId, TaskStatuses.Completed);
+        Func<Task> act = async () => await _repository.UpdateApplicantRegistrationTaskStatusAsync("MissingTask", registrationId, TaskStatuses.Completed);
 
         // Assert
         await act.Should().ThrowAsync<RegulatorInvalidOperationException>()
