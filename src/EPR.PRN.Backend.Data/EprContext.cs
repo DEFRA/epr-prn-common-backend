@@ -361,6 +361,11 @@ public class EprContext : DbContext
             .HasIndex(e => e.ExternalId)
             .IsUnique(); // Ensures UniqueId is unique
 
+        modelBuilder.Entity<RegistrationMaterial>()
+           .HasOne(r => r.RegistrationReprocessingIO)
+           .WithOne()
+           .HasForeignKey<RegistrationReprocessingIO>(cb => cb.RegistrationMaterialId);
+
         modelBuilder.Entity<ApplicantRegistrationTaskStatus>()
             .HasIndex(e => e.ExternalId)
             .IsUnique(); // Ensures UniqueId is unique

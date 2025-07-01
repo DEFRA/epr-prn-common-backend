@@ -351,8 +351,7 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
             .Include(rm => rm.Tasks)!
                 .ThenInclude(q => q.Task)
             .Include(rm => rm.Material)
-            .Include(rm => rm.Status)
-            .Include(rm => rm.RegistrationReprocessingIO)!;
+            .Include(rm => rm.Status);
 
         return registrationMaterials;
     }
@@ -510,51 +509,5 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
 
             return registrations;
         }
-    }
-
-    public async Task<RegistrationReprocessingIOResponseDto> UpsertRegistrationReprocessingDetailsAsync(Guid registrationMaterialId, RegistrationReprocessingIO registrationReprocessingIO)
-    {
-        var registrationMaterial = await GetRegistrationMaterialById(registrationMaterialId);
-        var registrationReprocessingIOItem = registrationMaterial?.RegistrationReprocessingIO?
-        .FirstOrDefault(x => x.Id == registrationReprocessingIO.RegistrationMaterialId);
-
-        if (registrationReprocessingIOItem is not null and  )
-        {
-            MapToEntity(registrationReprocessingIOItem, request);
-            eprContext.RegistrationReprocessingIO.Update(registrationReprocessingIOItem);
-        }
-        else
-        {
-            registrationReprocessingIOItem = MapToEntity(new RegistrationReprocessingIO(), request);
-            registrationReprocessingIOItem.RegistrationMaterialId = registrationMaterial.Id;
-            registrationMaterial.RegistrationReprocessingIO ??= [];
-            registrationMaterial.RegistrationReprocessingIO.Add(registrationReprocessingIOItem);
-        }
-
-        await eprContext.SaveChangesAsync();
-
-        return new RegistrationReprocessingIOResponseDto
-        {
-          Id = registrationReprocessingIOItem.Id, 
-        };
-
-    }
-
-    private RegistrationReprocessingIO MapToEntity(RegistrationReprocessingIO entity, RegistrationReprocessingIORequestDto dto)
-    {
-        entity.ExternalId = dto.ExternalId != Guid.Empty ? dto.ExternalId : Guid.NewGuid();
-        entity.TypeOfSuppliers = dto.TypeOfSuppliers;
-        entity.PlantEquipmentUsed = dto.PlantEquipmentUsed;
-        entity.ReprocessingPackagingWasteLastYearFlag = dto.ReprocessingPackagingWasteLastYearFlag;
-        entity.UKPackagingWasteTonne = dto.UKPackagingWasteTonne;
-        entity.NonUKPackagingWasteTonne = dto.NonUKPackagingWasteTonne;
-        entity.NotPackingWasteTonne = dto.NotPackingWasteTonne;
-        entity.SenttoOtherSiteTonne = dto.SenttoOtherSiteTonne;
-        entity.ContaminantsTonne = dto.ContaminantsTonne;
-        entity.ProcessLossTonne = dto.ProcessLossTonne;
-        entity.TotalInputs = dto.TotalInputs;
-        entity.TotalOutputs = dto.TotalOutputs;
-
-        return entity;
     }
 }

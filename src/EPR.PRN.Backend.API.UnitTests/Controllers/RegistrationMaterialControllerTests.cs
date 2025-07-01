@@ -1,4 +1,5 @@
 using AutoFixture;
+using AutoMapper;
 using EPR.PRN.Backend.API.Commands;
 using EPR.PRN.Backend.API.Controllers;
 using EPR.PRN.Backend.API.Dto;
@@ -22,6 +23,7 @@ public class RegistrationMaterialControllerTests
     private Mock<IMediator> _mediatorMock;
     private Mock<IValidationService> _validationServiceMock;
     private Mock<ILogger<RegistrationMaterialController>> _loggerMock;
+    private Mock<IMapper> _mapperMock;
     private RegistrationMaterialController _controller;
     private static readonly Fixture _fixture = new();
 
@@ -31,7 +33,8 @@ public class RegistrationMaterialControllerTests
         _mediatorMock = new Mock<IMediator>();
         _validationServiceMock = new Mock<IValidationService>();
         _loggerMock = new Mock<ILogger<RegistrationMaterialController>>();
-        _controller = new RegistrationMaterialController(_mediatorMock.Object, _validationServiceMock.Object, _loggerMock.Object);
+        _mapperMock = new Mock<IMapper>();
+        _controller = new RegistrationMaterialController(_mediatorMock.Object, _validationServiceMock.Object, _loggerMock.Object, _mapperMock.Object);
     }
 
     [TestMethod]
