@@ -2444,36 +2444,7 @@ namespace EPR.PRN.Backend.Data.Migrations
 
                     b.ToTable("Public.RegistrationMaterial");
                 });
-
-            modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.RegistrationMaterialContact", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<Guid>("ExternalId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("RegistrationMaterialId")
-                        .HasColumnType("int");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ExternalId")
-                        .IsUnique();
-
-                    b.HasIndex("RegistrationMaterialId")
-                        .IsUnique();
-
-                    b.ToTable("Public.RegistrationMaterialContact");
-                });
-
+            
             modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.RegistrationReprocessingIO", b =>
                 {
                     b.Property<int>("Id")
@@ -3045,16 +3016,7 @@ namespace EPR.PRN.Backend.Data.Migrations
 
                     b.Navigation("WasteManagementPeriod");
                 });
-
-            modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.RegistrationMaterialContact", b =>
-                {
-                    b.HasOne("EPR.PRN.Backend.Data.DataModels.Registrations.RegistrationMaterial", null)
-                        .WithOne("RegistrationMaterialContact")
-                        .HasForeignKey("EPR.PRN.Backend.Data.DataModels.Registrations.RegistrationMaterialContact", "RegistrationMaterialId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
+            
             modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.RegistrationReprocessingIO", b =>
                 {
                     b.HasOne("EPR.PRN.Backend.Data.DataModels.Registrations.RegistrationMaterial", "RegistrationMaterial")
@@ -3233,8 +3195,6 @@ namespace EPR.PRN.Backend.Data.Migrations
                     b.Navigation("FileUploads");
 
                     b.Navigation("MaterialExemptionReferences");
-
-                    b.Navigation("RegistrationMaterialContact");
 
                     b.Navigation("RegistrationReprocessingIO");
 
