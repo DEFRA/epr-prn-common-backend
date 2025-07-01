@@ -1,4 +1,5 @@
-﻿using EPR.PRN.Backend.API.Dto.Regulator;
+﻿using EPR.PRN.Backend.API.Dto;
+using EPR.PRN.Backend.API.Dto.Regulator;
 using EPR.PRN.Backend.API.Handlers;
 using EPR.PRN.Backend.API.Queries;
 using EPR.PRN.Backend.Data.DataModels.Registrations;
@@ -99,7 +100,7 @@ public class GetRegistrationByOrganisationQueryHandlerTests
             RegistrationId = 1,
             TaskId = 1,
             TaskStatusId = 1,
-            Task = new LookupRegulatorTask{ApplicationTypeId = 1, Id = 1, IsMaterialSpecific = false, Name = "SiteDetails"}
+            Task = new LookupApplicantRegistrationTask{ApplicationTypeId = 1, Id = 1, IsMaterialSpecific = false, Name = "SiteDetails"}
         };
 
         var registration = new Registration
@@ -137,7 +138,7 @@ public class GetRegistrationByOrganisationQueryHandlerTests
 
         _mockRegistrationRepository
             .Setup(r => r.GetByOrganisationAsync(1, organisationId))
-            .ReturnsAsync((Registration?)null);
+            .ReturnsAsync((Registration)null);
 
         // Act
         var result = await _handler.Handle(query, CancellationToken.None);

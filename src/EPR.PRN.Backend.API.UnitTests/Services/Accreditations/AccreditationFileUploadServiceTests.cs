@@ -55,7 +55,7 @@ public class AccreditationFileUploadServiceTests
         {
             ExternalId = Guid.NewGuid(),
             FileId = Guid.NewGuid(),
-            Filename = "file1.txt",
+            FileName = "file1.txt",
             FileUploadTypeId = fileUploadTypeId,
             FileUploadStatusId = fileUploadStatusId,
             UploadedBy = "A N Other",
@@ -67,7 +67,7 @@ public class AccreditationFileUploadServiceTests
         {
             ExternalId = entity.ExternalId,
             FileId = entity.FileId,
-            Filename = entity.Filename,
+            Filename = entity.FileName,
             FileUploadTypeId = entity.FileUploadTypeId,
             FileUploadStatusId = entity.FileUploadStatusId,
             UploadedBy = entity.UploadedBy,
@@ -100,7 +100,7 @@ public class AccreditationFileUploadServiceTests
             {
                 ExternalId = Guid.NewGuid(),
                 FileId = Guid.NewGuid(),
-                Filename = "file1.txt",
+                FileName = "file1.txt",
                 FileUploadTypeId = fileUploadTypeId,
                 FileUploadStatusId = fileUploadStatusId,
                 UploadedBy = "A N Other",
@@ -111,7 +111,7 @@ public class AccreditationFileUploadServiceTests
             {
                 ExternalId = Guid.NewGuid(),
                 FileId = Guid.NewGuid(),
-                Filename = "file2.txt",
+                FileName = "file2.txt",
                 FileUploadTypeId = fileUploadTypeId,
                 FileUploadStatusId = fileUploadStatusId,
                 UploadedBy = "Joe Bloggs",
@@ -126,7 +126,7 @@ public class AccreditationFileUploadServiceTests
             {
                 ExternalId = entities[0].ExternalId,
                 FileId = entities[0].FileId,
-                Filename = entities[0].Filename,
+                Filename = entities[0].FileName,
                 FileUploadTypeId = entities[0].FileUploadTypeId,
                 FileUploadStatusId = entities[0].FileUploadStatusId,
                 UploadedBy = entities[0].UploadedBy,
@@ -137,7 +137,7 @@ public class AccreditationFileUploadServiceTests
             {
                 ExternalId = entities[1].ExternalId,
                 FileId = entities[1].FileId,
-                Filename = entities[1].Filename,
+                Filename = entities[1].FileName,
                 FileUploadTypeId = entities[1].FileUploadTypeId,
                 FileUploadStatusId = entities[1].FileUploadStatusId,
                 UploadedBy = entities[1].UploadedBy,
@@ -181,7 +181,7 @@ public class AccreditationFileUploadServiceTests
         _repositoryMock.Setup(r => r.Create(accreditationId, It.Is<AccreditationFileUpload>(x =>
                 x.ExternalId == Guid.Empty &&
                 x.FileId == dto.FileId &&
-                x.Filename == dto.Filename &&
+                x.FileName == dto.Filename &&
                 x.FileUploadTypeId == dto.FileUploadTypeId &&
                 x.FileUploadStatusId == dto.FileUploadStatusId &&
                 x.UploadedBy == dto.UploadedBy &&
@@ -221,7 +221,7 @@ public class AccreditationFileUploadServiceTests
         _repositoryMock.Setup(r => r.Update(accreditationId, It.Is<AccreditationFileUpload>(x =>
                 x.ExternalId == fileUploadId &&
                 x.FileId == dto.FileId &&
-                x.Filename == dto.Filename &&
+                x.FileName == dto.Filename &&
                 x.FileUploadTypeId == dto.FileUploadTypeId &&
                 x.FileUploadStatusId == dto.FileUploadStatusId &&
                 x.UploadedBy == dto.UploadedBy &&

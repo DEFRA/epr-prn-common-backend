@@ -4,6 +4,7 @@ using EPR.PRN.Backend.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EPR.PRN.Backend.Data.Migrations
 {
     [DbContext(typeof(EprContext))]
-    partial class EprContextModelSnapshot : ModelSnapshot
+    [Migration("20250629130952_RegistratinoMaterialNullableFields")]
+    partial class RegistratinoMaterialNullableFields
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1854,11 +1857,6 @@ namespace EPR.PRN.Backend.Data.Migrations
                         {
                             Id = 11,
                             Name = "ReadyToSubmit"
-                        },
-                        new
-                        {
-                            Id = 12,
-                            Name = "InProgress"
                         });
                 });
 
@@ -2445,35 +2443,6 @@ namespace EPR.PRN.Backend.Data.Migrations
                     b.ToTable("Public.RegistrationMaterial");
                 });
 
-            modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.RegistrationMaterialContact", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<Guid>("ExternalId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("RegistrationMaterialId")
-                        .HasColumnType("int");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ExternalId")
-                        .IsUnique();
-
-                    b.HasIndex("RegistrationMaterialId")
-                        .IsUnique();
-
-                    b.ToTable("Public.RegistrationMaterialContact");
-                });
-
             modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.RegistrationReprocessingIO", b =>
                 {
                     b.Property<int>("Id")
@@ -2517,7 +2486,7 @@ namespace EPR.PRN.Backend.Data.Migrations
                     b.Property<decimal>("TotalOutputs")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<string>("TypeOfSuppliers")
+                    b.Property<string>("TypeOfSupplier")
                         .HasMaxLength(2000)
                         .HasColumnType("nvarchar(2000)");
 
@@ -3046,15 +3015,6 @@ namespace EPR.PRN.Backend.Data.Migrations
                     b.Navigation("WasteManagementPeriod");
                 });
 
-            modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.RegistrationMaterialContact", b =>
-                {
-                    b.HasOne("EPR.PRN.Backend.Data.DataModels.Registrations.RegistrationMaterial", null)
-                        .WithOne("RegistrationMaterialContact")
-                        .HasForeignKey("EPR.PRN.Backend.Data.DataModels.Registrations.RegistrationMaterialContact", "RegistrationMaterialId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.RegistrationReprocessingIO", b =>
                 {
                     b.HasOne("EPR.PRN.Backend.Data.DataModels.Registrations.RegistrationMaterial", "RegistrationMaterial")
@@ -3233,8 +3193,6 @@ namespace EPR.PRN.Backend.Data.Migrations
                     b.Navigation("FileUploads");
 
                     b.Navigation("MaterialExemptionReferences");
-
-                    b.Navigation("RegistrationMaterialContact");
 
                     b.Navigation("RegistrationReprocessingIO");
 

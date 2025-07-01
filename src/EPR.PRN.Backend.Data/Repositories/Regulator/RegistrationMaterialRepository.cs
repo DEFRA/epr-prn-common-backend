@@ -222,13 +222,7 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
             CreatedDate = DateTime.UtcNow,
             ExternalId = Guid.NewGuid(),
             StatusUpdatedDate = DateTime.UtcNow,
-            EnvironmentalPermitWasteManagementTonne = 0,
-            InstallationReprocessingTonne = 0,
-            WasteManagementReprocessingCapacityTonne = 0,
-            PPCReprocessingCapacityTonne = 0,
-            IsMaterialRegistered = false,
-            // Temp as we need to think about either the journey or the data model as currently we can't insert nulls into the db for this column.
-            PermitType = await eprContext.LookupMaterialPermit.SingleAsync(o => o.Name == PermitTypes.WasteManagementLicence)
+            IsMaterialRegistered = false
         };
 
         await eprContext.RegistrationMaterials.AddAsync(newMaterial);

@@ -23,7 +23,7 @@ public class RegistrationMaterialController(
     ILogger<RegistrationMaterialController> logger) : ControllerBase
 {
     [HttpGet("registrations/{registrationId:guid}/materials")]
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<RegistrationMaterialDto>))]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<ApplicantRegistrationMaterialDto>))]
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     [SwaggerOperation(
         Summary = "gets existing registration materials associated with a registration.",
