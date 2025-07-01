@@ -18,6 +18,7 @@ public static class LogMessages
     public const string CreateRegistrationMaterial = "Attempting to create new registration material for registration {0}";
     public const string GetAllRegistrationMaterials = "Attempting to retrieve all registration materials for registration {0}";
     public const string DeleteRegistrationMaterial = "Attempting to delete registration material with ID {0}";
+    public const string UpsertRegistrationMaterialContact = "Attempting to upsert the contact for registration material with ID {0}";
     public const string AccreditationBusinessPlan = "Attempting to get Business Plan relating to an accreditation";
 
     public const string CreateRegistration = "Attempting to create new registration";
@@ -36,4 +37,5 @@ public static class LogMessages
     public const string GetMaterialsPermitTypes = "Attempting to get material permit types";
     public const string CreateRegistrationMaterialAndExemptionReferences = "Attempting to create new registration material and exemption references";
     public const string RegistrationsOverview = "Attempting to retrieve registrations overview for organisation id :{Id}";    
+	public const string UpdateIsMaterialRegistered = "Attempting to update the registration material IsMaterialRegistered flag.";
 }

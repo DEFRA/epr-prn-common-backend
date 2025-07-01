@@ -5,6 +5,7 @@ using EPR.PRN.Backend.API.Dto;
 using EPR.PRN.Backend.API.Dto.Regulator;
 using EPR.PRN.Backend.API.Queries;
 using EPR.PRN.Backend.API.Services.Interfaces;
+using EPR.PRN.Backend.Data.DTO;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.FeatureManagement.Mvc;
@@ -168,5 +169,49 @@ public class RegistrationMaterialController(
         });
 
         return Ok();
+    }
+
+	[HttpPost("registrationMaterials/UpdateIsMaterialRegistered")]
+	[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(OkResult))]
+	[SwaggerResponse(StatusCodes.Status500InternalServerError, "If an unexpected error occurs.", typeof(ContentResult))]
+	[SwaggerOperation(
+	Summary = "updates an existing registration material IsMaterialRegistered flag",
+	Description = "attempting to update the registration material IsMaterialRegistered flag."
+	)]
+	public async Task<IActionResult> UpdateIsMaterialRegisteredAsync([FromBody] List<UpdateIsMaterialRegisteredDto> request)
+	{
+		logger.LogInformation(LogMessages.UpdateIsMaterialRegistered);
+
+		await mediator.Send(new UpdateIsMaterialRegisteredCommand { UpdateIsMaterialRegisteredDto = request });
+
+		return NoContent();
+	}
+
+    [HttpPost("registrationMaterials/{id:Guid}/contact")]
+    [ProducesResponseType(typeof(RegistrationMaterialContactDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
+    [SwaggerOperation(
+        Summary = "upserts an registration material contact",
+        Description = "attempting to upsert the registration material contact."
+    )]
+    [SwaggerResponse(StatusCodes.Status400BadRequest, "If the request is invalid or a validation error occurs.", typeof(ProblemDetails))]
+    [SwaggerResponse(StatusCodes.Status404NotFound, "If an existing registration is not found", typeof(ProblemDetails))]
+    [SwaggerResponse(StatusCodes.Status500InternalServerError, "If an unexpected error occurs.", typeof(ContentResult))]
+    public async Task<IActionResult> UpsertRegistrationMaterialContactAsync([FromRoute] Guid id, [FromBody] RegistrationMaterialContactDto registrationMaterialContact)
+    {
+        logger.LogInformation(LogMessages.UpsertRegistrationMaterialContact, id);
+
+        var command = new UpsertRegistrationMaterialContactCommand
+        {
+            RegistrationMaterialId = id,
+            UserId = registrationMaterialContact.UserId
+        };
+        
+        await validationService.ValidateAndThrowAsync(command);
+
+        var result = await mediator.Send(command);
+
+        return Ok(result);
     }
 }

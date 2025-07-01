@@ -160,4 +160,28 @@ public class RegistrationMaterialProfileMappingTests : MappingTestsBase<Registra
         // Assert
         result.Should().BeEquivalentTo(expected);
     }
+
+    [TestMethod]
+    public void RegistrationMaterialContact_To_RegistrationMaterialContactDto_EnsureCorrectMapping()
+    {
+        // Arrange
+        var externalId = Guid.NewGuid();
+        var mapper = CreateMapper();
+        var source = new RegistrationMaterialContact
+        {
+            Id = 1,
+            ExternalId = externalId
+        };
+
+        var expected = new RegistrationMaterialContactDto
+        {
+            Id = externalId
+        };
+
+        // Act
+        var result = mapper.Map<RegistrationMaterialContactDto>(source);
+
+        // Assert
+        result.Should().BeEquivalentTo(expected);
+    }
 }
