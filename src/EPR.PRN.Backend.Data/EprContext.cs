@@ -200,13 +200,16 @@ public class EprContext : DbContext
 			.OnDelete(DeleteBehavior.NoAction);
 
 			modelBuilder.Entity<LookupMaterial>().HasData(
-            new LookupMaterial { Id = 1, MaterialName = "Plastic", MaterialCode = "PL" },
-            new LookupMaterial { Id = 2, MaterialName = "Steel", MaterialCode = "ST" },
-            new LookupMaterial { Id = 3, MaterialName = "Aluminium", MaterialCode = "AL" },
-            new LookupMaterial { Id = 4, MaterialName = "Glass", MaterialCode = "GL" },
-            new LookupMaterial { Id = 5, MaterialName = "Paper/Board", MaterialCode = "PA" },
-            new LookupMaterial { Id = 6, MaterialName = "Wood", MaterialCode = "WO" });
-        
+                new LookupMaterial { Id = 1, MaterialName = "Plastic", MaterialCode = "PL" },
+                new LookupMaterial { Id = 2, MaterialName = "Steel", MaterialCode = "ST" },
+                new LookupMaterial { Id = 3, MaterialName = "Aluminium", MaterialCode = "AL" },
+                new LookupMaterial { Id = 4, MaterialName = "Glass", MaterialCode = "GL" },
+                new LookupMaterial { Id = 5, MaterialName = "Paper/Board", MaterialCode = "PA" },
+                new LookupMaterial { Id = 6, MaterialName = "Wood", MaterialCode = "WO" });
+
+            modelBuilder.Entity<LookupCountry>().HasData(
+                CountryConstants.Countries.Select(c => new LookupCountry { Id = c.Id, CountryCode = c.Code, Name = c.Name }).ToArray()
+            );
 
         modelBuilder.Entity<LookupRegistrationMaterialStatus>().HasData(
             new LookupRegistrationMaterialStatus { Id = 1, Name = "Granted" },
@@ -278,7 +281,8 @@ public class EprContext : DbContext
             new LookupRegulatorTask { Id = 26, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 2, Name = RegulatorTaskNames.OverseasReprocessingSitesAndBroadlyEquivalentEvidence },
             new LookupRegulatorTask { Id = 27, IsMaterialSpecific = true, ApplicationTypeId = 1, JourneyTypeId = 2, Name = RegulatorTaskNames.DulyMade },
             new LookupRegulatorTask { Id = 28, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 2, Name = RegulatorTaskNames.DulyMade },
-            new LookupRegulatorTask { Id = 29, IsMaterialSpecific = false, ApplicationTypeId = 1, JourneyTypeId = 1, Name = RegulatorTaskNames.WasteCarrierBrokerDealerNumber });
+            new LookupRegulatorTask { Id = 29, IsMaterialSpecific = false, ApplicationTypeId = 1, JourneyTypeId = 1, Name = RegulatorTaskNames.WasteCarrierBrokerDealerNumber },
+            new LookupRegulatorTask { Id = 30, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 1, Name = RegulatorTaskNames.InterimSites });
 
         modelBuilder.Entity<LookupApplicantRegistrationTask>().HasData(
            new LookupApplicantRegistrationTask { Id = 1, IsMaterialSpecific = false, ApplicationTypeId = 1, JourneyTypeId = 1, Name = ApplicantRegistrationTaskNames.SiteAddressAndContactDetails },
@@ -429,5 +433,6 @@ public class EprContext : DbContext
     public virtual DbSet<RegulatorAccreditationTaskStatus> RegulatorAccreditationTaskStatus { get; set; }
     public virtual DbSet<AccreditationTaskStatusQueryNote> AccreditationTaskStatusQueryNote { get; set; }
     public virtual DbSet<AccreditationDeterminationDate> AccreditationDeterminationDate { get; set; }
+    public virtual DbSet<LookupCountry> LookupCountries { get; set; }
 
 }
