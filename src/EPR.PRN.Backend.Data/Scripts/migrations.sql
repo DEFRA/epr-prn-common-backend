@@ -4346,3 +4346,28 @@ GO
 COMMIT;
 GO
 
+BEGIN TRANSACTION;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250627113549_RenamingTypeOfSuppliers'
+)
+BEGIN
+    EXEC sp_rename N'[Public.RegistrationReprocessingIO].[TypeOfSupplier]', N'TypeOfSuppliers', N'COLUMN';
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250627113549_RenamingTypeOfSuppliers'
+)
+BEGIN
+    INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+    VALUES (N'20250627113549_RenamingTypeOfSuppliers', N'8.0.8');
+END;
+GO
+
+COMMIT;
+GO
+
