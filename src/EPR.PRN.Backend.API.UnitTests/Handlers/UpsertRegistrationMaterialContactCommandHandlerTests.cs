@@ -2,7 +2,7 @@
 using AutoMapper;
 using EPR.PRN.Backend.API.Commands;
 using EPR.PRN.Backend.API.Handlers;
-using EPR.PRN.Backend.Data.Interfaces.Regulator;
+using EPR.PRN.Backend.Data.Interfaces;
 using Moq;
 
 namespace EPR.PRN.Backend.API.UnitTests.Handlers;
@@ -10,7 +10,7 @@ namespace EPR.PRN.Backend.API.UnitTests.Handlers;
 [TestClass]
 public class UpsertRegistrationMaterialContactCommandHandlerTests
 {
-    private Mock<IRegistrationMaterialRepository> _repositoryMock;
+    private Mock<IMaterialRepository> _repositoryMock;
     private UpsertRegistrationMaterialContactHandler _handler;
     private Mock<IMapper> _mapperMock;
     private static readonly Fixture Fixture = new();
@@ -18,7 +18,7 @@ public class UpsertRegistrationMaterialContactCommandHandlerTests
     [TestInitialize]
     public void TestInitialize()
     {
-        _repositoryMock = new Mock<IRegistrationMaterialRepository>();
+        _repositoryMock = new Mock<IMaterialRepository>();
         _mapperMock = new Mock<IMapper>();
         _handler = new UpsertRegistrationMaterialContactHandler(_repositoryMock.Object, _mapperMock.Object);
     }
