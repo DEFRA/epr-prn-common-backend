@@ -1,9 +1,12 @@
 ﻿using System.Net;
+using AutoMapper;
 using EPR.PRN.Backend.API.Commands;
 using EPR.PRN.Backend.API.Common.Constants;
 using EPR.PRN.Backend.API.Dto.Regulator;
+using EPR.PRN.Backend.API.Handlers;
 using EPR.PRN.Backend.API.Queries;
 using EPR.PRN.Backend.API.Services.Interfaces;
+using EPR.PRN.Backend.Data.DataModels;
 using EPR.PRN.Backend.Data.DTO;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -19,7 +22,8 @@ namespace EPR.PRN.Backend.API.Controllers;
 public class RegistrationMaterialController(
     IMediator mediator,
     IValidationService validationService,
-    ILogger<RegistrationMaterialController> logger) : ControllerBase
+    ILogger<RegistrationMaterialController> logger,
+    IMapper mapper) : ControllerBase
 {
     [HttpGet("registrations/{registrationId:guid}/materials")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<RegistrationMaterialDto>))]
@@ -197,13 +201,14 @@ public class RegistrationMaterialController(
     [SwaggerResponse(StatusCodes.Status400BadRequest, "If the request is invalid or a validation error occurs.", typeof(ProblemDetails))]
     [SwaggerResponse(StatusCodes.Status404NotFound, "If an existing registration is not found", typeof(ProblemDetails))]
     [SwaggerResponse(StatusCodes.Status500InternalServerError, "If an unexpected error occurs.", typeof(ContentResult))]
-    public async Task<IActionResult> UpsertRegistrationReprocessingDetailsAsync([FromRoute] Guid registrationMaterialId, [FromBody] RegistrationReprocessingIORequestDto registrationReprocessingDetails)
+    public async Task<IActionResult> UpsertRegistrationReprocessingDetailsAsync([FromRoute] Guid registrationMaterialId, [FromBody] RegistrationReprocessingIORequestDto registrationReprocessingDetailsRequest)
     {
         logger.LogInformation(LogMessages.UpsertRegistrationReprocessingDetails, registrationMaterialId);
 
-        await validationService.ValidateAndThrowAsync(registrationReprocessingDetails);
+        await validationService.ValidateAndThrowAsync(registrationReprocessingDetailsRequest);
 
-        var result = await mediator.Send(registrationReprocessingDetails);
+        var command = mapper.Map<RegistrationReprocessingIOCommand>(registrationReprocessingDetailsRequest);
+        var result = await mediator.Send(command);
 
         return Ok(result);
     }
