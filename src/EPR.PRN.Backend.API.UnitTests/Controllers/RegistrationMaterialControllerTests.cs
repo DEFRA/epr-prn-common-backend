@@ -1,10 +1,10 @@
 using AutoFixture;
 using EPR.PRN.Backend.API.Commands;
 using EPR.PRN.Backend.API.Controllers;
+using EPR.PRN.Backend.API.Dto;
 using EPR.PRN.Backend.API.Dto.Regulator;
 using EPR.PRN.Backend.API.Handlers;
 using EPR.PRN.Backend.API.Queries;
-using EPR.PRN.Backend.API.Services;
 using EPR.PRN.Backend.API.Services.Interfaces;
 using EPR.PRN.Backend.Data.DTO;
 using FluentAssertions;
@@ -13,7 +13,6 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace EPR.PRN.Backend.API.UnitTests.Controllers;
 
@@ -208,4 +207,26 @@ public class RegistrationMaterialControllerTests
 				cmd.UpdateIsMaterialRegisteredDto.SequenceEqual(dtoList)
 			), It.IsAny<CancellationToken>()), Times.Once);
 	}
+
+    [TestMethod]
+    public async Task UpsertRegistrationMaterialContactAsync_EnsureCorrectResult()
+    {
+        // Arrange  
+        var registrationMaterialId = Guid.NewGuid();
+        var registrationMaterialContact = _fixture.Create<RegistrationMaterialContactDto>();
+        
+        // Expectations  
+        _mediatorMock
+            .Setup(m => m.Send(It.IsAny<UpsertRegistrationMaterialContactCommand>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(registrationMaterialContact);
+
+        // Act  
+        var result = await _controller.UpsertRegistrationMaterialContactAsync(registrationMaterialId, registrationMaterialContact);
+
+        // Assert  
+        result.Should().BeOfType<OkObjectResult>();
+        
+        var okResult = result as OkObjectResult;
+        okResult!.Value.Should().BeEquivalentTo(registrationMaterialContact);
+    }
 }

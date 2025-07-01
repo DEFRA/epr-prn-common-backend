@@ -1,5 +1,6 @@
 ﻿namespace EPR.PRN.Backend.API.Services;
 
+using EPR.PRN.Backend.API.Common.Helpers;
 using EPR.PRN.Backend.API.Dto.Accreditation;
 using EPR.PRN.Backend.API.Services.Interfaces;
 using EPR.PRN.Backend.Data.DataModels.Accreditations;
@@ -36,7 +37,7 @@ public class AccreditationFileUploadService(
 
     public async Task<Guid> CreateFileUpload(Guid accreditationId, AccreditationFileUploadDto requestDto)
     {
-        logger.LogInformation("{Logprefix}: AccreditationFileUploadService - Create. AccreditationId: {AccreditationId}", logPrefix, accreditationId);
+        logger.LogInformation("{Logprefix}: AccreditationFileUploadService - Create. AccreditationId: {AccreditationId}, Request DTO: {Dto}", logPrefix, accreditationId, LogParameterSanitizer.Sanitize(requestDto));
 
         var entity = MapDtoToEntity(requestDto);
 
@@ -45,7 +46,7 @@ public class AccreditationFileUploadService(
 
     public async Task UpdateFileUpload(Guid accreditationId, AccreditationFileUploadDto requestDto)
     {
-        logger.LogInformation("{Logprefix}: AccreditationFileUploadService - Update. AccreditationId: {AccreditationId}", logPrefix, accreditationId);
+        logger.LogInformation("{Logprefix}: AccreditationFileUploadService - Update. AccreditationId: {AccreditationId}, Request DTO: {Dto}", logPrefix, accreditationId, LogParameterSanitizer.Sanitize(requestDto));
 
         var entity = MapDtoToEntity(requestDto);
 
@@ -64,8 +65,9 @@ public class AccreditationFileUploadService(
         return new AccreditationFileUploadDto
         {
             ExternalId = entity.ExternalId,
+            SubmissionId = entity.SubmissionId,
             OverseasSiteId = entity.OverseasSiteId,
-            Filename = entity.Filename,
+            Filename = entity.FileName,
             FileId = entity.FileId,
             UploadedOn = entity.UploadedOn,
             UploadedBy = entity.UploadedBy,
@@ -79,8 +81,9 @@ public class AccreditationFileUploadService(
         return new AccreditationFileUpload
         {
             ExternalId = dto.ExternalId.HasValue ? dto.ExternalId.Value : Guid.Empty,
+            SubmissionId = dto.SubmissionId,
             OverseasSiteId = dto.OverseasSiteId,
-            Filename = dto.Filename,
+            FileName = dto.Filename,
             FileId = dto.FileId,
             UploadedOn = dto.UploadedOn,
             UploadedBy = dto.UploadedBy,

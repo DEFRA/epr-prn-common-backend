@@ -4,6 +4,7 @@ using EPR.PRN.Backend.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EPR.PRN.Backend.Data.Migrations
 {
     [DbContext(typeof(EprContext))]
-    partial class EprContextModelSnapshot : ModelSnapshot
+    [Migration("20250629092851_ApplicantTaskLookupTable")]
+    partial class ApplicantTaskLookupTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1854,11 +1857,6 @@ namespace EPR.PRN.Backend.Data.Migrations
                         {
                             Id = 11,
                             Name = "ReadyToSubmit"
-                        },
-                        new
-                        {
-                            Id = 12,
-                            Name = "InProgress"
                         });
                 });
 
@@ -2349,7 +2347,7 @@ namespace EPR.PRN.Backend.Data.Migrations
                     b.Property<int?>("EnvironmentalPermitWasteManagementPeriodId")
                         .HasColumnType("int");
 
-                    b.Property<decimal?>("EnvironmentalPermitWasteManagementTonne")
+                    b.Property<decimal>("EnvironmentalPermitWasteManagementTonne")
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<Guid>("ExternalId")
@@ -2363,7 +2361,7 @@ namespace EPR.PRN.Backend.Data.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
-                    b.Property<decimal?>("InstallationReprocessingTonne")
+                    b.Property<decimal>("InstallationReprocessingTonne")
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<bool>("IsMaterialRegistered")
@@ -2372,7 +2370,7 @@ namespace EPR.PRN.Backend.Data.Migrations
                     b.Property<int>("MaterialId")
                         .HasColumnType("int");
 
-                    b.Property<decimal?>("MaximumReprocessingCapacityTonne")
+                    b.Property<decimal>("MaximumReprocessingCapacityTonne")
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<int?>("MaximumReprocessingPeriodId")
@@ -2385,10 +2383,10 @@ namespace EPR.PRN.Backend.Data.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
-                    b.Property<decimal?>("PPCReprocessingCapacityTonne")
+                    b.Property<decimal>("PPCReprocessingCapacityTonne")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<int?>("PermitTypeId")
+                    b.Property<int>("PermitTypeId")
                         .HasColumnType("int");
 
                     b.Property<string>("ReasonforNotreg")
@@ -2416,7 +2414,7 @@ namespace EPR.PRN.Backend.Data.Migrations
                     b.Property<int?>("WasteManagementPeriodId")
                         .HasColumnType("int");
 
-                    b.Property<decimal?>("WasteManagementReprocessingCapacityTonne")
+                    b.Property<decimal>("WasteManagementReprocessingCapacityTonne")
                         .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
@@ -2443,35 +2441,6 @@ namespace EPR.PRN.Backend.Data.Migrations
                     b.HasIndex("WasteManagementPeriodId");
 
                     b.ToTable("Public.RegistrationMaterial");
-                });
-
-            modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.RegistrationMaterialContact", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<Guid>("ExternalId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("RegistrationMaterialId")
-                        .HasColumnType("int");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ExternalId")
-                        .IsUnique();
-
-                    b.HasIndex("RegistrationMaterialId")
-                        .IsUnique();
-
-                    b.ToTable("Public.RegistrationMaterialContact");
                 });
 
             modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.RegistrationReprocessingIO", b =>
@@ -2517,7 +2486,7 @@ namespace EPR.PRN.Backend.Data.Migrations
                     b.Property<decimal>("TotalOutputs")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<string>("TypeOfSuppliers")
+                    b.Property<string>("TypeOfSupplier")
                         .HasMaxLength(2000)
                         .HasColumnType("nvarchar(2000)");
 
@@ -3011,7 +2980,9 @@ namespace EPR.PRN.Backend.Data.Migrations
 
                     b.HasOne("EPR.PRN.Backend.Data.DataModels.Registrations.LookupMaterialPermit", "PermitType")
                         .WithMany()
-                        .HasForeignKey("PermitTypeId");
+                        .HasForeignKey("PermitTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("EPR.PRN.Backend.Data.DataModels.Registrations.Registration", "Registration")
                         .WithMany("Materials")
@@ -3044,15 +3015,6 @@ namespace EPR.PRN.Backend.Data.Migrations
                     b.Navigation("Status");
 
                     b.Navigation("WasteManagementPeriod");
-                });
-
-            modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.RegistrationMaterialContact", b =>
-                {
-                    b.HasOne("EPR.PRN.Backend.Data.DataModels.Registrations.RegistrationMaterial", null)
-                        .WithOne("RegistrationMaterialContact")
-                        .HasForeignKey("EPR.PRN.Backend.Data.DataModels.Registrations.RegistrationMaterialContact", "RegistrationMaterialId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.RegistrationReprocessingIO", b =>
@@ -3165,7 +3127,7 @@ namespace EPR.PRN.Backend.Data.Migrations
             modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.RegulatorRegistrationTaskStatus", b =>
                 {
                     b.HasOne("EPR.PRN.Backend.Data.DataModels.Registrations.Registration", "Registration")
-                        .WithMany("Tasks")
+                        .WithMany("RegulatorTasks")
                         .HasForeignKey("RegistrationId");
 
                     b.HasOne("EPR.PRN.Backend.Data.DataModels.Registrations.LookupRegulatorTask", "Task")
@@ -3217,7 +3179,7 @@ namespace EPR.PRN.Backend.Data.Migrations
 
                     b.Navigation("Materials");
 
-                    b.Navigation("Tasks");
+                    b.Navigation("RegulatorTasks");
                 });
 
             modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.RegistrationMaterial", b =>
@@ -3233,8 +3195,6 @@ namespace EPR.PRN.Backend.Data.Migrations
                     b.Navigation("FileUploads");
 
                     b.Navigation("MaterialExemptionReferences");
-
-                    b.Navigation("RegistrationMaterialContact");
 
                     b.Navigation("RegistrationReprocessingIO");
 
