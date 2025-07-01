@@ -1,6 +1,8 @@
-﻿using EPR.PRN.Backend.API.Common.Constants;
+﻿using System.Threading.Tasks;
+using EPR.PRN.Backend.API.Common.Constants;
 using EPR.PRN.Backend.API.Common.Enums;
 using EPR.PRN.Backend.Data.DataModels.Registrations;
+using EPR.PRN.Backend.Data.DTO;
 using EPR.PRN.Backend.Data.Interfaces.Regulator;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
@@ -220,13 +222,7 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
             CreatedDate = DateTime.UtcNow,
             ExternalId = Guid.NewGuid(),
             StatusUpdatedDate = DateTime.UtcNow,
-            EnvironmentalPermitWasteManagementTonne = 0,
-            InstallationReprocessingTonne = 0,
-            WasteManagementReprocessingCapacityTonne = 0,
-            PPCReprocessingCapacityTonne = 0,
-            IsMaterialRegistered = false,
-            // Temp as we need to think about either the journey or the data model as currently we can't insert nulls into the db for this column.
-            PermitType = await eprContext.LookupMaterialPermit.SingleAsync(o => o.Name == PermitTypes.WasteManagementLicence)
+            IsMaterialRegistered = false
         };
 
         await eprContext.RegistrationMaterials.AddAsync(newMaterial);
@@ -313,7 +309,28 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
         eprContext.RegistrationMaterials.Remove(existing);
 
         await eprContext.SaveChangesAsync();
-    }
+	}
+
+	public async Task UpdateIsMaterialRegisteredAsync(List<UpdateIsMaterialRegisteredDto> updateIsMaterialRegisteredDto)
+	{
+        foreach (var registrationMaterial in updateIsMaterialRegisteredDto)
+        {
+			var existing =
+			await eprContext.RegistrationMaterials.SingleOrDefaultAsync(o => o.ExternalId == registrationMaterial.RegistrationMaterialId);
+
+			if (existing is null)
+			{
+				throw new KeyNotFoundException("Registration material not found.");
+			}
+
+            existing.IsMaterialRegistered = registrationMaterial.IsMaterialRegistered!.Value;
+            existing.StatusId = (int)RegistrationMaterialStatus.InProgress;
+
+			eprContext.RegistrationMaterials.Update(existing);
+		}
+
+		await eprContext.SaveChangesAsync();
+	}
 
     private IIncludableQueryable<RegistrationMaterial, LookupRegistrationMaterialStatus> GetRegistrationMaterialsWithRelatedEntities()
     {

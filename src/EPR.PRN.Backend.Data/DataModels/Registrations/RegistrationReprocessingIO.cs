@@ -17,7 +17,7 @@ namespace EPR.PRN.Backend.Data.DataModels.Registrations
         [ForeignKey("RegistrationMaterial")]
         public int RegistrationMaterialId { get; set; }
         [MaxLength(2000)]
-        public string? TypeOfSupplier { get; set; }
+        public string? TypeOfSuppliers { get; set; }
         [MaxLength(2000)]
         public string? PlantEquipmentUsed { get; set; }
         public bool ReprocessingPackagingWasteLastYearFlag { get; set; }

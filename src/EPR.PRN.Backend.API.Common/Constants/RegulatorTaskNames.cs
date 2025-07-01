@@ -20,4 +20,5 @@ public static class RegulatorTaskNames
     public const string SiteAddressAndContactDetails = "SiteAddressAndContactDetails";
     public const string WasteLicensesPermitsAndExemptions = "WasteLicensesPermitsAndExemptions";
     public const string WasteCarrierBrokerDealerNumber = "WasteCarrierBrokerDealerNumber";
+    public const string InterimSites = "InterimSites";
 }

@@ -221,7 +221,8 @@ public class EprContext : DbContext
             new LookupRegistrationMaterialStatus { Id = 8, Name = "Withdrawn" },
             new LookupRegistrationMaterialStatus { Id = 9, Name = "Suspended" },
             new LookupRegistrationMaterialStatus { Id = 10, Name = "Cancelled" },
-            new LookupRegistrationMaterialStatus { Id = 11, Name = "ReadyToSubmit" });
+            new LookupRegistrationMaterialStatus { Id = 11, Name = "ReadyToSubmit" },
+			new LookupRegistrationMaterialStatus { Id = 12, Name = "InProgress" });
 
         modelBuilder.Entity<LookupAccreditationStatus>().HasData(
             new LookupAccreditationStatus { Id = 1, Name = "Started" },
@@ -280,7 +281,26 @@ public class EprContext : DbContext
             new LookupRegulatorTask { Id = 26, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 2, Name = RegulatorTaskNames.OverseasReprocessingSitesAndBroadlyEquivalentEvidence },
             new LookupRegulatorTask { Id = 27, IsMaterialSpecific = true, ApplicationTypeId = 1, JourneyTypeId = 2, Name = RegulatorTaskNames.DulyMade },
             new LookupRegulatorTask { Id = 28, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 2, Name = RegulatorTaskNames.DulyMade },
-            new LookupRegulatorTask { Id = 29, IsMaterialSpecific = false, ApplicationTypeId = 1, JourneyTypeId = 1, Name = RegulatorTaskNames.WasteCarrierBrokerDealerNumber });
+            new LookupRegulatorTask { Id = 29, IsMaterialSpecific = false, ApplicationTypeId = 1, JourneyTypeId = 1, Name = RegulatorTaskNames.WasteCarrierBrokerDealerNumber },
+            new LookupRegulatorTask { Id = 30, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 1, Name = RegulatorTaskNames.InterimSites });
+
+        modelBuilder.Entity<LookupApplicantRegistrationTask>().HasData(
+           new LookupApplicantRegistrationTask { Id = 1, IsMaterialSpecific = false, ApplicationTypeId = 1, JourneyTypeId = 1, Name = ApplicantRegistrationTaskNames.SiteAddressAndContactDetails },
+           new LookupApplicantRegistrationTask { Id = 2, IsMaterialSpecific = true, ApplicationTypeId = 1, JourneyTypeId = 1, Name = ApplicantRegistrationTaskNames.WasteLicensesPermitsAndExemptions },
+           new LookupApplicantRegistrationTask { Id = 3, IsMaterialSpecific = true, ApplicationTypeId = 1, JourneyTypeId = 1, Name = ApplicantRegistrationTaskNames.ReprocessingInputsAndOutputs },
+           new LookupApplicantRegistrationTask { Id = 4, IsMaterialSpecific = true, ApplicationTypeId = 1, JourneyTypeId = 1, Name = ApplicantRegistrationTaskNames.SamplingAndInspectionPlan },
+           new LookupApplicantRegistrationTask { Id = 5, IsMaterialSpecific = false, ApplicationTypeId = 2, JourneyTypeId = 1, Name = ApplicantRegistrationTaskNames.WasteLicensesPermitsAndExemptions },
+           new LookupApplicantRegistrationTask { Id = 6, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 1, Name = ApplicantRegistrationTaskNames.SamplingAndInspectionPlan },
+           new LookupApplicantRegistrationTask { Id = 7, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 1, Name = ApplicantRegistrationTaskNames.OverseasReprocessorSiteDetails },
+           new LookupApplicantRegistrationTask { Id = 8, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 1, Name = ApplicantRegistrationTaskNames.InterimSites },
+           new LookupApplicantRegistrationTask { Id = 9, IsMaterialSpecific = true, ApplicationTypeId = 1, JourneyTypeId = 2, Name = ApplicantRegistrationTaskNames.PrnsTonnageAndAuthorityToIssuePrns },
+           new LookupApplicantRegistrationTask { Id = 10, IsMaterialSpecific = true, ApplicationTypeId = 1, JourneyTypeId = 2, Name = ApplicantRegistrationTaskNames.BusinessPlan },
+           new LookupApplicantRegistrationTask { Id = 11, IsMaterialSpecific = true, ApplicationTypeId = 1, JourneyTypeId = 2, Name = ApplicantRegistrationTaskNames.AccreditationSamplingAndInspectionPlan },
+           new LookupApplicantRegistrationTask { Id = 12, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 2, Name = ApplicantRegistrationTaskNames.PERNsTonnageAndAuthorityToIssuePERNs },
+           new LookupApplicantRegistrationTask { Id = 13, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 2, Name = ApplicantRegistrationTaskNames.BusinessPlan },
+           new LookupApplicantRegistrationTask { Id = 14, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 2, Name = ApplicantRegistrationTaskNames.AccreditationSamplingAndInspectionPlan },
+           new LookupApplicantRegistrationTask { Id = 15, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 2, Name = ApplicantRegistrationTaskNames.OverseasReprocessingSitesAndBroadlyEquivalentEvidence },
+           new LookupApplicantRegistrationTask { Id = 16, IsMaterialSpecific = false, ApplicationTypeId = 2, JourneyTypeId = 1, Name = ApplicantRegistrationTaskNames.WasteCarrierBrokerDealerNumber });
 
         modelBuilder.Entity<LookupMaterialPermit>().HasData(
             new LookupMaterialPermit { Id = 1, Name = PermitTypes.WasteExemption },
@@ -332,6 +352,15 @@ public class EprContext : DbContext
             .HasIndex(e => e.ExternalId)
             .IsUnique(); // Ensures UniqueId is unique
 
+        modelBuilder.Entity<RegistrationMaterial>()
+            .HasOne(r => r.RegistrationMaterialContact)
+            .WithOne()
+            .HasForeignKey<RegistrationMaterialContact>(cb => cb.RegistrationMaterialId);
+
+        modelBuilder.Entity<RegistrationMaterialContact>()
+            .HasIndex(e => e.ExternalId)
+            .IsUnique(); // Ensures UniqueId is unique
+
         modelBuilder.Entity<RegistrationReprocessingIO>()
             .HasIndex(e => e.ExternalId)
             .IsUnique(); // Ensures UniqueId is unique
@@ -371,38 +400,41 @@ public class EprContext : DbContext
 
     public virtual DbSet<Material> Material { get; set; }
 
-		public virtual DbSet<ObligationCalculationOrganisationSubmitterType> ObligationCalculationOrganisationSubmitterType { get; set; }
+    public virtual DbSet<ObligationCalculationOrganisationSubmitterType> ObligationCalculationOrganisationSubmitterType { get; set; }
 
-		public virtual DbSet<PEprNpwdSync> PEprNpwdSync { get; set; }
+	public virtual DbSet<PEprNpwdSync> PEprNpwdSync { get; set; }
 
     public virtual DbSet<PrnMaterialMapping> PrnMaterialMapping { get; set; }
 
-        public virtual DbSet<Registration> Registrations { get; set; }
-        public virtual DbSet<RegistrationMaterial> RegistrationMaterials { get; set; }
-        public virtual DbSet<MaterialExemptionReference> MaterialExemptionReferences { get; set; }
-        public virtual DbSet<RegistrationReprocessingIO> RegistrationReprocessingIO { get; set; }
-        public virtual DbSet<DeterminationDate> DeterminationDate { get; set; }
-        public virtual DbSet<DulyMade> DulyMade { get; set; }
-        public virtual DbSet<CarrierBrokerDealerPermits> CarrierBrokerDealerPermits { get; set; }
-        public virtual DbSet<RegulatorApplicationTaskStatus> RegulatorApplicationTaskStatus { get; set; }
-        public virtual DbSet<RegulatorRegistrationTaskStatus> RegulatorRegistrationTaskStatus { get; set; }
-        public virtual DbSet<ApplicantRegistrationTaskStatus> RegistrationTaskStatus { get; set; }
-        public virtual DbSet<LookupMaterial> LookupMaterials { get; set; }
-        public virtual DbSet<LookupRegistrationMaterialStatus> LookupRegistrationMaterialStatuses { get; set; }
-        public virtual DbSet<LookupRegulatorTask> LookupTasks { get; set; }
-        public virtual DbSet<LookupTaskStatus> LookupTaskStatuses { get; set; }
-        public virtual DbSet<Address> LookupAddresses { get; set; }
-        public virtual DbSet<LookupPeriod> LookupPeriod { get; set; }
-        public virtual DbSet<LookupMaterialPermit> LookupMaterialPermit { get; set; }
-        public virtual DbSet<Note> QueryNote { get; set; }
-        public virtual DbSet<ApplicationTaskStatusQueryNote> ApplicationTaskStatusQueryNotes { get; set; }
-        public virtual DbSet<RegistrationTaskStatusQueryNote> RegistrationTaskStatusQueryNotes { get; set; }
-        public virtual DbSet<Accreditation> Accreditations { get; set; }
-        public virtual DbSet<AccreditationDulyMade> AccreditationDulyMade { get; set; }
-        public virtual DbSet<RegulatorAccreditationTaskStatus> RegulatorAccreditationTaskStatus { get; set; }
-        public virtual DbSet<AccreditationTaskStatusQueryNote> AccreditationTaskStatusQueryNote { get; set; }
-        public virtual DbSet<AccreditationDeterminationDate> AccreditationDeterminationDate { get; set; }
-        public virtual DbSet<LookupCountry> LookupCountries { get; set; }
+    public virtual DbSet<Registration> Registrations { get; set; }
+    public virtual DbSet<RegistrationMaterial> RegistrationMaterials { get; set; }
+    public virtual DbSet<RegistrationMaterialContact> RegistrationMaterialContacts { get; set; }
+    public virtual DbSet<MaterialExemptionReference> MaterialExemptionReferences { get; set; }
+    public virtual DbSet<RegistrationReprocessingIO> RegistrationReprocessingIO { get; set; }
+    public virtual DbSet<DeterminationDate> DeterminationDate { get; set; }
+    public virtual DbSet<DulyMade> DulyMade { get; set; }
+    public virtual DbSet<CarrierBrokerDealerPermits> CarrierBrokerDealerPermits { get; set; }
+    public virtual DbSet<RegulatorApplicationTaskStatus> RegulatorApplicationTaskStatus { get; set; }
+    public virtual DbSet<RegulatorRegistrationTaskStatus> RegulatorRegistrationTaskStatus { get; set; }
+    public virtual DbSet<ApplicantRegistrationTaskStatus> RegistrationTaskStatus { get; set; }
+    public virtual DbSet<LookupMaterial> LookupMaterials { get; set; }
+    public virtual DbSet<LookupRegistrationMaterialStatus> LookupRegistrationMaterialStatuses { get; set; }
+    public virtual DbSet<LookupRegulatorTask> LookupTasks { get; set; }
+    public virtual DbSet<LookupApplicantRegistrationTask> LookupApplicantRegistrationTasks { get; set; }
+    public virtual DbSet<LookupTaskStatus> LookupTaskStatuses { get; set; }
+    public virtual DbSet<Address> LookupAddresses { get; set; }
+    public virtual DbSet<LookupPeriod> LookupPeriod { get; set; }
+    public virtual DbSet<LookupMaterialPermit> LookupMaterialPermit { get; set; }
+    public virtual DbSet<Note> QueryNote { get; set; }
+    public virtual DbSet<ApplicationTaskStatusQueryNote> ApplicationTaskStatusQueryNotes { get; set; }
+    public virtual DbSet<RegistrationTaskStatusQueryNote> RegistrationTaskStatusQueryNotes { get; set; }
+    public virtual DbSet<Accreditation> Accreditations { get; set; }
+    public virtual DbSet<AccreditationDulyMade> AccreditationDulyMade { get; set; }
+    public virtual DbSet<RegulatorAccreditationTaskStatus> RegulatorAccreditationTaskStatus { get; set; }
+    public virtual DbSet<AccreditationTaskStatusQueryNote> AccreditationTaskStatusQueryNote { get; set; }
+    public virtual DbSet<AccreditationDeterminationDate> AccreditationDeterminationDate { get; set; }
+    public virtual DbSet<LookupCountry> LookupCountries { get; set; }
+
         public virtual DbSet<OverseasAddress> OverseasAddress { get; set; }
         public virtual DbSet<OverseasAddressContact> OverseasAddressContact { get; set; }
         public virtual DbSet<OverseasAddressWasteCode> OverseasAddressWasteCode { get; set; }
