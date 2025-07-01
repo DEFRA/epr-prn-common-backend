@@ -19,10 +19,10 @@ namespace EPR.PRN.Backend.Data.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DeleteData(
-                table: "Lookup.RegulatorTask",
-                keyColumn: "Id",
-                keyValue: 28);
+            migrationBuilder.RenameColumn(
+                name: "TypeOfSuppliers",
+                table: "Public.RegistrationReprocessingIO",
+                newName: "TypeOfSupplier");
         }
     }
 }
