@@ -1,6 +1,7 @@
 ﻿using System.Net;
 using EPR.PRN.Backend.API.Commands;
 using EPR.PRN.Backend.API.Common.Constants;
+using EPR.PRN.Backend.API.Dto;
 using EPR.PRN.Backend.API.Dto.Regulator;
 using EPR.PRN.Backend.API.Queries;
 using EPR.PRN.Backend.API.Services.Interfaces;
@@ -22,7 +23,7 @@ public class RegistrationMaterialController(
     ILogger<RegistrationMaterialController> logger) : ControllerBase
 {
     [HttpGet("registrations/{registrationId:guid}/materials")]
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<RegistrationMaterialDto>))]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<ApplicantRegistrationMaterialDto>))]
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     [SwaggerOperation(
         Summary = "gets existing registration materials associated with a registration.",
