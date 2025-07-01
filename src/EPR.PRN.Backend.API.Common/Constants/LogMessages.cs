@@ -28,6 +28,7 @@ public static class LogMessages
     public const string GetRegistrationByOrganisation = "Attempting to get registration of type {0} for organisation with ID {1}";
     public const string UpdateRegistrationSiteAddress = "Attempting to update registration site address";
     public const string UpdateRegistrationTaskStatus = "Attempting to update registration task status";
+    public const string UpdateApplicantRegistrationTaskStatus = "Attempting to update applicant registration task status";
     public const string MarkAsDulyMade = "MarkAsDulyMadeBy id :{Id}";
     public const string MarkAccreditationAsDulyMade = "MarkAccreditationAsDulyMadeBy id :{Id}";
     public const string RegistrationMaterialReference = "Attempting to get reference data registration material id :{Id}";
