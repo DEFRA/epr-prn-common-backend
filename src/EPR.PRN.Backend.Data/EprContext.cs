@@ -403,5 +403,8 @@ public class EprContext : DbContext
         public virtual DbSet<AccreditationTaskStatusQueryNote> AccreditationTaskStatusQueryNote { get; set; }
         public virtual DbSet<AccreditationDeterminationDate> AccreditationDeterminationDate { get; set; }
         public virtual DbSet<LookupCountry> LookupCountries { get; set; }
-
+        public virtual DbSet<OverseasAddress> OverseasAddress { get; set; }
+        public virtual DbSet<OverseasAddressContact> OverseasAddressContact { get; set; }
+        public virtual DbSet<OverseasAddressWasteCode> OverseasAddressWasteCode { get; set; }
+        public virtual DbSet<OverseasMaterialReprocessingSite> OverseasMaterialReprocessingSite { get; set; }
 }
