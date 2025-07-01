@@ -9,12 +9,12 @@ using MediatR;
 
 namespace EPR.PRN.Backend.API.Handlers;
 public class UpsertRegistrationReprocessingDetailsHandler(IMaterialRepository repository, IMapper mapper)
-    : IRequestHandler<RegistrationReprocessingIOCommand, RegistrationReprocessingIOResponseDto>
+    : IRequestHandler<RegistrationReprocessingIOCommand>
 {
-    public async Task<RegistrationReprocessingIOResponseDto> Handle(RegistrationReprocessingIOCommand command, CancellationToken cancellationToken)
+    public async Task Handle(RegistrationReprocessingIOCommand command, CancellationToken cancellationToken)
     {
        var registrationReprocessingIO = mapper.Map<RegistrationReprocessingIO>(command);
 
-       return await repository.UpsertRegistrationReprocessingDetailsAsync(command.RegistrationMaterialId, registrationReprocessingIO);
+       await repository.UpsertRegistrationReprocessingDetailsAsync(command.ExternalId, registrationReprocessingIO);
     }
 }

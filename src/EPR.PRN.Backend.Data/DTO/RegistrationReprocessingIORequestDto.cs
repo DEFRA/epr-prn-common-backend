@@ -6,7 +6,7 @@ public class RegistrationReprocessingIORequestDto
 
     public Guid ExternalId { get; set; }
 
-    public Guid RegistrationMaterialId { get; set; }
+    public int RegistrationMaterialId { get; set; }
 
     public bool ReprocessingPackagingWasteLastYearFlag { get; set; }
 

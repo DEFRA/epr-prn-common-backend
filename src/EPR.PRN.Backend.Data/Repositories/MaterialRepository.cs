@@ -52,7 +52,7 @@ namespace EPR.PRN.Backend.Data.Repositories
             return registrationMaterialContact;
         }
 
-        public async Task<RegistrationReprocessingIOResponseDto> UpsertRegistrationReprocessingDetailsAsync(Guid registrationMaterialId, RegistrationReprocessingIO registrationReprocessingIO)
+        public async Task UpsertRegistrationReprocessingDetailsAsync(Guid registrationMaterialId, RegistrationReprocessingIO registrationReprocessingIO)
         {
             var registrationMaterial = await context.RegistrationMaterials
                .Include(rm => rm.RegistrationReprocessingIO)
@@ -77,11 +77,6 @@ namespace EPR.PRN.Backend.Data.Repositories
             }
 
             await context.SaveChangesAsync();
-
-            return new RegistrationReprocessingIOResponseDto
-            {
-                Id = registrationReprocessingIO.Id,
-            };
         }
     }
 }

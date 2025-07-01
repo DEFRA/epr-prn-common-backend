@@ -232,4 +232,23 @@ public class RegistrationMaterialControllerTests
         var okResult = result as OkObjectResult;
         okResult!.Value.Should().BeEquivalentTo(registrationMaterialContact);
     }
+
+    [TestMethod]
+    public async Task UpsertRegistrationReprocessingDetailsAsync_EnsureCorrectResult()
+    {
+        // Arrange  
+        var registrationMaterialId = Guid.NewGuid();
+        var registrationReprocessingIO = _fixture.Create<RegistrationReprocessingIORequestDto>();
+
+        // Expectations  
+        _mediatorMock
+            .Setup(m => m.Send(It.IsAny<RegistrationReprocessingIOCommand>(), It.IsAny<CancellationToken>()))
+            .Returns(Task.CompletedTask);
+
+        // Act  
+        var result = await _controller.UpsertRegistrationReprocessingDetailsAsync(registrationMaterialId, registrationReprocessingIO);
+
+        // Assert  
+        result.Should().BeOfType<OkResult>();
+    }
 }

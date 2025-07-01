@@ -2,13 +2,13 @@
 
 namespace EPR.PRN.Backend.Data.DTO;
 
-public class RegistrationReprocessingIOCommand : IRequest<RegistrationReprocessingIOResponseDto>
+public class RegistrationReprocessingIOCommand : IRequest
 {
     public int Id { get; set; }
 
     public Guid ExternalId { get; set; }
 
-    public Guid RegistrationMaterialId { get; set; }
+    public int RegistrationMaterialId { get; set; }
 
     public bool ReprocessingPackagingWasteLastYearFlag { get; set; }
 

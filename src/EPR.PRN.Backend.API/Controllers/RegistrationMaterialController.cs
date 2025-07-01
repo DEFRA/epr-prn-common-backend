@@ -220,7 +220,7 @@ public class RegistrationMaterialController(
     }
 
     [HttpPost("registrationMaterials/{id:Guid}/registrationReprocessingDetails")]
-    [ProducesResponseType(typeof(RegistrationReprocessingIOResponseDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(OkResult))]
     [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     [SwaggerOperation(
@@ -237,8 +237,8 @@ public class RegistrationMaterialController(
         await validationService.ValidateAndThrowAsync(registrationReprocessingDetailsRequest);
 
         var command = mapper.Map<RegistrationReprocessingIOCommand>(registrationReprocessingDetailsRequest);
-        var result = await mediator.Send(command);
+        await mediator.Send(command);
 
-        return Ok(result);
+        return Ok();
     }
 }
