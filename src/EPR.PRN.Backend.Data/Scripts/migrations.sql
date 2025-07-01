@@ -4601,3 +4601,53 @@ GO
 COMMIT;
 GO
 
+BEGIN TRANSACTION;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250701083202_AddRegistrationMaterialContact'
+)
+BEGIN
+    CREATE TABLE [Public.RegistrationMaterialContact] (
+        [Id] int NOT NULL IDENTITY,
+        [ExternalId] uniqueidentifier NOT NULL,
+        [RegistrationMaterialId] int NOT NULL,
+        [UserId] uniqueidentifier NOT NULL,
+        CONSTRAINT [PK_Public.RegistrationMaterialContact] PRIMARY KEY ([Id]),
+        CONSTRAINT [FK_Public.RegistrationMaterialContact_Public.RegistrationMaterial_RegistrationMaterialId] FOREIGN KEY ([RegistrationMaterialId]) REFERENCES [Public.RegistrationMaterial] ([Id]) ON DELETE CASCADE
+    );
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250701083202_AddRegistrationMaterialContact'
+)
+BEGIN
+    CREATE UNIQUE INDEX [IX_Public.RegistrationMaterialContact_ExternalId] ON [Public.RegistrationMaterialContact] ([ExternalId]);
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250701083202_AddRegistrationMaterialContact'
+)
+BEGIN
+    CREATE UNIQUE INDEX [IX_Public.RegistrationMaterialContact_RegistrationMaterialId] ON [Public.RegistrationMaterialContact] ([RegistrationMaterialId]);
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250701083202_AddRegistrationMaterialContact'
+)
+BEGIN
+    INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+    VALUES (N'20250701083202_AddRegistrationMaterialContact', N'8.0.8');
+END;
+GO
+
+COMMIT;
+GO
+

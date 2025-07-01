@@ -29,6 +29,7 @@ public class RegistrationMaterialProfile : Profile
         CreateMaterialPaymentFeeMappings();
         CreateDtoToEntityMappings();
         CreateLookupMappings();
+        CreateRegistrationMaterialContactMappings();
     }
 
     private void CreateRegistrationMaterialMappings()
@@ -332,6 +333,11 @@ public class RegistrationMaterialProfile : Profile
             .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Name));
     }
 
+    private void CreateRegistrationMaterialContactMappings()
+    {
+        CreateMap<RegistrationMaterialContact, RegistrationMaterialContactDto>()
+            .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.ExternalId));
+    }
 
     private List<QueryNoteDto> GetRegistrationTaskNotes(List<RegulatorRegistrationTaskStatus>? srcTasks, string taskName)
     {

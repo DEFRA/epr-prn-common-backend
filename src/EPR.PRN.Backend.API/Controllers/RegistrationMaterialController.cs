@@ -186,4 +186,32 @@ public class RegistrationMaterialController(
 
 		return NoContent();
 	}
+
+    [HttpPost("registrationMaterials/{id:Guid}/contact")]
+    [ProducesResponseType(typeof(RegistrationMaterialContactDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
+    [SwaggerOperation(
+        Summary = "upserts an registration material contact",
+        Description = "attempting to upsert the registration material contact."
+    )]
+    [SwaggerResponse(StatusCodes.Status400BadRequest, "If the request is invalid or a validation error occurs.", typeof(ProblemDetails))]
+    [SwaggerResponse(StatusCodes.Status404NotFound, "If an existing registration is not found", typeof(ProblemDetails))]
+    [SwaggerResponse(StatusCodes.Status500InternalServerError, "If an unexpected error occurs.", typeof(ContentResult))]
+    public async Task<IActionResult> UpsertRegistrationMaterialContactAsync([FromRoute] Guid id, [FromBody] RegistrationMaterialContactDto registrationMaterialContact)
+    {
+        logger.LogInformation(LogMessages.UpsertRegistrationMaterialContact, id);
+
+        var command = new UpsertRegistrationMaterialContactCommand
+        {
+            RegistrationMaterialId = id,
+            UserId = registrationMaterialContact.UserId
+        };
+        
+        await validationService.ValidateAndThrowAsync(command);
+
+        var result = await mediator.Send(command);
+
+        return Ok(result);
+    }
 }
