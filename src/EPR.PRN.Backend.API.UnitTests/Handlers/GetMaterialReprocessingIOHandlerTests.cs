@@ -47,7 +47,7 @@ public class GetMaterialReprocessingIOHandlerTests
             Material = new LookupMaterial { MaterialName = "Plastic" },
             StatusId = 1,
             Status = new LookupRegistrationMaterialStatus { Id = 1, Name = "Granted" },
-            RegistrationReprocessingIO = 
+            RegistrationReprocessingIO = new List<RegistrationReprocessingIO> {
                 new RegistrationReprocessingIO
                 {
                     ContaminantsTonne = 1,
@@ -62,6 +62,7 @@ public class GetMaterialReprocessingIOHandlerTests
                     PlantEquipmentUsed = "shredder",
                     TypeOfSuppliers = "Shed"
                 }
+            }
         };
 
         _rmRepositoryMock

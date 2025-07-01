@@ -63,7 +63,7 @@ namespace EPR.PRN.Backend.Data.Repositories
                 throw new KeyNotFoundException("Registration material not found.");
             }
 
-            var existingRegistrationReprocessingIO = registrationMaterial.RegistrationReprocessingIO;
+            var existingRegistrationReprocessingIO = registrationMaterial.RegistrationReprocessingIO?.SingleOrDefault();
 
             if (existingRegistrationReprocessingIO is null)
             {
