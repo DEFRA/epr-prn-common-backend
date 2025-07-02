@@ -14,4 +14,6 @@ public interface IRegistrationRepository
     Task UpdateRegistrationTaskStatusAsync(string taskName, Guid registrationId, TaskStatuses status);
     Task UpdateSiteAddressAsync(Guid registrationId, AddressDto reprocessingSiteAddress);
     Task<IEnumerable<RegistrationOverviewDto>> GetRegistrationsOverviewForOrgIdAsync(Guid organisationId);
+    Task<Registration?> GetAsync(Guid registrationId);
+    Task<List<LookupRegulatorTask>> GetRequiredTasks(int applicationTypeId, bool isMaterialSpecific, int journeyTypeId);
 }

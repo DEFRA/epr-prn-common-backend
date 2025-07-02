@@ -2,19 +2,19 @@ using AutoMapper;
 using EPR.PRN.Backend.API.Common.Enums;
 using EPR.PRN.Backend.API.Dto.Regulator;
 using EPR.PRN.Backend.API.Queries;
-using EPR.PRN.Backend.Data.Interfaces.Regulator;
+using EPR.PRN.Backend.Data.Interfaces;
 using MediatR;
 
 namespace EPR.PRN.Backend.API.Handlers.Regulator;
 
 public class GetRegistrationOverviewDetailByIdHandler(
-    IRegistrationMaterialRepository repo,
+    IRegistrationRepository repo,
     IMapper mapper
-) : IRequestHandler<GetRegistrationOverviewDetailByIdQuery, RegistrationOverviewDto>
+) : IRequestHandler<GetRegistrationByIdQuery, RegistrationOverviewDto>
 {
-    public async Task<RegistrationOverviewDto> Handle(GetRegistrationOverviewDetailByIdQuery request, CancellationToken cancellationToken)
+    public async Task<RegistrationOverviewDto> Handle(GetRegistrationByIdQuery request, CancellationToken cancellationToken)
     {
-        var registration = await repo.GetRegistrationById(request.Id);
+        var registration = await repo.GetAsync(request.Id) ;
         var registrationDto = mapper.Map<RegistrationOverviewDto>(registration);
 
         var missingRegistrationTasks = await GetMissingTasks(registration.ApplicationTypeId, false, registrationDto.Tasks);

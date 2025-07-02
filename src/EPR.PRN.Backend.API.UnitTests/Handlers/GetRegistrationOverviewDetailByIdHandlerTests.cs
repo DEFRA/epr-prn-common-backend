@@ -7,20 +7,21 @@ using Moq;
 using EPR.PRN.Backend.API.Common.Enums;
 using EPR.PRN.Backend.API.Handlers.Regulator;
 using EPR.PRN.Backend.API.Profiles.Regulator;
+using EPR.PRN.Backend.Data.Interfaces;
 
 namespace EPR.PRN.Backend.API.UnitTests.Handlers;
 
 [TestClass]
 public class GetRegistrationOverviewDetailByIdHandlerTests
 {
-    private Mock<IRegistrationMaterialRepository> _repoMock;
+    private Mock<IRegistrationRepository> _repoMock;
     private IMapper _mapper;
     private GetRegistrationOverviewDetailByIdHandler _handler;
 
     [TestInitialize]
     public void TestInitialize()
     {
-        _repoMock = new Mock<IRegistrationMaterialRepository>();
+        _repoMock = new Mock<IRegistrationRepository>();
 
         var config = new MapperConfiguration(cfg =>
         {
@@ -77,11 +78,11 @@ public class GetRegistrationOverviewDetailByIdHandlerTests
             new() { Name = "BusinessAddress" }
         };
         
-        _repoMock.Setup(x => x.GetRegistrationById(registrationId)).ReturnsAsync(registration);
+        _repoMock.Setup(x => x.GetAsync(registrationId)).ReturnsAsync(registration);
         _repoMock.Setup(x => x.GetRequiredTasks(101, false, 1)).ReturnsAsync(requiredTasks);
         _repoMock.Setup(x => x.GetRequiredTasks(101, true, 1)).ReturnsAsync(requiredMaterialTasks);
         
-        var query = new GetRegistrationOverviewDetailByIdQuery { Id = registrationId };
+        var query = new GetRegistrationByIdQuery { Id = registrationId };
 
         // Act
         var result = await _handler.Handle(query, CancellationToken.None);
@@ -131,11 +132,11 @@ public class GetRegistrationOverviewDetailByIdHandlerTests
             new() { Name = "BusinessAddress" }
         };
 
-        _repoMock.Setup(x => x.GetRegistrationById(registrationId)).ReturnsAsync(registration);
+        _repoMock.Setup(x => x.GetAsync(registrationId)).ReturnsAsync(registration);
         _repoMock.Setup(x => x.GetRequiredTasks(101, false, 1)).ReturnsAsync(requiredTasks);
         _repoMock.Setup(x => x.GetRequiredTasks(101, true, 1)).ReturnsAsync(requiredMaterialTasks);
 
-        var query = new GetRegistrationOverviewDetailByIdQuery { Id = registrationId };
+        var query = new GetRegistrationByIdQuery { Id = registrationId };
 
         // Act
         var result = await _handler.Handle(query, CancellationToken.None);
@@ -178,10 +179,10 @@ public class GetRegistrationOverviewDetailByIdHandlerTests
             }
         };
 
-        _repoMock.Setup(x => x.GetRegistrationById(registrationId)).ReturnsAsync(registration);
+        _repoMock.Setup(x => x.GetAsync(registrationId)).ReturnsAsync(registration);
         _repoMock.Setup(x => x.GetRequiredTasks(101, false, 1)).ReturnsAsync(requiredTasks);
         
-        var query = new GetRegistrationOverviewDetailByIdQuery { Id = registrationId };
+        var query = new GetRegistrationByIdQuery { Id = registrationId };
 
         // Act
         var result = await _handler.Handle(query, CancellationToken.None);
