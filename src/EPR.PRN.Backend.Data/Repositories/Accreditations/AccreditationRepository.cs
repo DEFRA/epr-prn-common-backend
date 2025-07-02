@@ -35,8 +35,8 @@ public class AccreditationRepository(EprAccreditationContext eprContext) : IAccr
     public async Task Create(AccreditationEntity accreditation)
     {
         var currentTimestamp = DateTime.UtcNow;
-        accreditation.CreatedDate = currentTimestamp;
-        accreditation.UpdatedDate = currentTimestamp;
+        accreditation.CreatedOn = currentTimestamp;
+        accreditation.UpdatedOn = currentTimestamp;
         accreditation.ExternalId = Guid.NewGuid();
 
         eprContext.Accreditations.Add(accreditation);
@@ -73,7 +73,7 @@ public class AccreditationRepository(EprAccreditationContext eprContext) : IAccr
         existingAccreditation.NotCoveredOtherCategoriesNotes = accreditation.NotCoveredOtherCategoriesNotes;
         existingAccreditation.BusinessPlanConfirmed = accreditation.BusinessPlanConfirmed;
         existingAccreditation.UpdatedBy = accreditation.UpdatedBy;
-        existingAccreditation.UpdatedDate = DateTime.UtcNow;
+        existingAccreditation.UpdatedOn = DateTime.UtcNow;
 
         eprContext.Entry(existingAccreditation).State = EntityState.Modified;
         await eprContext.SaveChangesAsync();
