@@ -344,7 +344,8 @@ public class EprContext : DbContext
                 .HasForeignKey(x => x.AccreditationId);
 
 
-            e.HasIndex(e => e.ExternalId);
+            e.HasIndex(e => e.ExternalId)
+            .IsUnique(); // Ensures UniqueId is unique
         });
 
         modelBuilder.Entity<AccreditationDeterminationDate>()
@@ -524,11 +525,11 @@ public class EprContext : DbContext
 
     #region Accreditaiton
 
-    public virtual DbSet<ApplicationType> ApplicationTypes { get; set; }
+    public virtual DbSet<DataModels.Registrations.ApplicationType> ApplicationTypes { get; set; }
     //public virtual DbSet<AccreditationStatus> AccreditationStatuses { get; set; }
   //  public virtual DbSet<AccreditationEntity> Accreditations { get; set; }
-    public virtual DbSet<AccreditationPrnIssueAuth> AccreditationPrnIssueAuths { get; set; }
-    public virtual DbSet<DataModels.Accreditations.AccreditationFileUpload> AccreditationFileUploads { get; set; }
+    public virtual DbSet<DataModels.Registrations.AccreditationPrnIssueAuth> AccreditationPrnIssueAuths { get; set; }
+   // public virtual DbSet<DataModels.Accreditations.AccreditationFileUpload> AccreditationFileUploads { get; set; }
 
     #endregion
 

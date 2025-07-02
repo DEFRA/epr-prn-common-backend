@@ -49,7 +49,7 @@ public class EprAccreditationContext : DbContext
                 .HasForeignKey(x => x.AccreditationId);
         });
 
-        modelBuilder.Entity<AccreditationPrnIssueAuth>(e =>
+        modelBuilder.Entity<DataModels.Accreditations.AccreditationPrnIssueAuth>(e =>
         {
             e.ToTable("AccreditationPRNIssueAuth");
         });
@@ -68,18 +68,18 @@ public class EprAccreditationContext : DbContext
                 new AccreditationStatus { Id = 10, Name = "Cancelled" }
             );
 
-        modelBuilder.Entity<ApplicationType>().HasData(
-            new ApplicationType { Id = 1, Name = "Reprocessor" },
-            new ApplicationType { Id = 2, Name = "Exporter" });
+        modelBuilder.Entity<DataModels.Accreditations.ApplicationType>().HasData(
+            new DataModels.Accreditations.ApplicationType { Id = 1, Name = "Reprocessor" },
+            new DataModels.Accreditations.ApplicationType { Id = 2, Name = "Exporter" });
 
         modelBuilder.Entity<FileUploadType>().HasData(
-            new ApplicationType { Id = 1, Name = "SamplingAndInspectionPlan" },
-            new ApplicationType { Id = 2, Name = "OverseasSiteEvidence" });
+            new DataModels.Accreditations.ApplicationType { Id = 1, Name = "SamplingAndInspectionPlan" },
+            new DataModels.Accreditations.ApplicationType { Id = 2, Name = "OverseasSiteEvidence" });
 
         modelBuilder.Entity<FileUploadStatus>().HasData(
-            new ApplicationType { Id = 1, Name = "Upload complete" },
-            new ApplicationType { Id = 2, Name = "Upload failed" },
-            new ApplicationType { Id = 3, Name = "File deleted" });
+            new DataModels.Accreditations.ApplicationType { Id = 1, Name = "Upload complete" },
+            new DataModels.Accreditations.ApplicationType { Id = 2, Name = "Upload failed" },
+            new DataModels.Accreditations.ApplicationType { Id = 3, Name = "File deleted" });
 
         // TEMP:
         modelBuilder.Entity<LookupMaterial>().HasData(
@@ -92,10 +92,10 @@ public class EprAccreditationContext : DbContext
             new RegistrationMaterial { Id = 3, MaterialId = 3 });
     }
 
-    public virtual DbSet<ApplicationType> ApplicationTypes { get; set; }
+    public virtual DbSet<DataModels.Accreditations.ApplicationType> ApplicationTypes { get; set; }
     public virtual DbSet<AccreditationStatus> AccreditationStatuses { get; set; }
     public virtual DbSet<AccreditationEntity> Accreditations { get; set; }
-    public virtual DbSet<AccreditationPrnIssueAuth> AccreditationPrnIssueAuths { get; set; }
+    public virtual DbSet<DataModels.Accreditations.AccreditationPrnIssueAuth> AccreditationPrnIssueAuths { get; set; }
     public virtual DbSet<DataModels.Accreditations.AccreditationFileUpload> AccreditationFileUploads { get; set; }
 }
 
