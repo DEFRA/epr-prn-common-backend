@@ -6,6 +6,7 @@ using EPR.PRN.Backend.API.Common.Helpers;
 using EPR.PRN.Backend.API.Dto.Accreditation;
 using EPR.PRN.Backend.API.Services.Interfaces;
 using EPR.PRN.Backend.Data.DataModels.Accreditations;
+using EPR.PRN.Backend.Data.DataModels.Registrations;
 using EPR.PRN.Backend.Data.Interfaces.Accreditations;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -35,14 +36,15 @@ public class AccreditationService(
             return entity.ExternalId;
         }
 
-        entity = mapper.Map<AccreditationEntity>(
+        entity = mapper.Map<Accreditation>(
             new AccreditationRequestDto
             {
                 OrganisationId = organisationId,
                 RegistrationMaterialId = materialId,
                 ApplicationTypeId = applicationTypeId,
                 AccreditationStatusId = 1,
-                AccreditationYear = 2026
+                AccreditationYear = 2026,
+                AccreferenceNumber = string.Empty
             });
 
         await repository.Create(entity);
@@ -64,7 +66,7 @@ public class AccreditationService(
     {
         logger.LogInformation("{Logprefix}: AccreditationService - CreateAccreditation: request to create accreditation {Accreditation}", logPrefix, LogParameterSanitizer.Sanitize(accreditationDto));
 
-        var entity = mapper.Map<AccreditationEntity>(accreditationDto);
+        var entity = mapper.Map<Accreditation>(accreditationDto);
 
         await repository.Create(entity);
 
@@ -75,7 +77,7 @@ public class AccreditationService(
     {
         logger.LogInformation("{Logprefix}: AccreditationService - UpdateAccreditation: request to update accreditation {Accreditation}", logPrefix, LogParameterSanitizer.Sanitize(accreditationDto));
 
-        var entity = mapper.Map<AccreditationEntity>(accreditationDto);
+        var entity = mapper.Map<Accreditation>(accreditationDto);
 
         await repository.Update(entity);
     }

@@ -1,13 +1,14 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using EPR.PRN.Backend.Data.DataModels.Accreditations;
+using EPR.PRN.Backend.Data.DataModels.Registrations;
 using EPR.PRN.Backend.Data.Interfaces.Accreditations;
 using Microsoft.EntityFrameworkCore;
 
 namespace EPR.PRN.Backend.Data.Repositories.Accreditations;
 
-public class AccreditationRepository(EprAccreditationContext eprContext) : IAccreditationRepository
+public class AccreditationRepository(EprContext eprContext) : IAccreditationRepository
 {
-    public async Task<AccreditationEntity?> GetById(Guid accreditationId)
+    public async Task<Accreditation?> GetById(Guid accreditationId)
     {
         return await eprContext.Accreditations
             .AsNoTracking()
@@ -18,7 +19,7 @@ public class AccreditationRepository(EprAccreditationContext eprContext) : IAccr
             .SingleOrDefaultAsync(x => x.ExternalId.Equals(accreditationId));
     }
 
-    public async Task<AccreditationEntity?> GetAccreditationDetails(
+    public async Task<Accreditation?> GetAccreditationDetails(
         Guid organisationId,
         int materialId,
         int applicationTypeId)
@@ -32,7 +33,7 @@ public class AccreditationRepository(EprAccreditationContext eprContext) : IAccr
             .SingleOrDefaultAsync();
     }
 
-    public async Task Create(AccreditationEntity accreditation)
+    public async Task Create(Accreditation accreditation)
     {
         var currentTimestamp = DateTime.UtcNow;
         accreditation.CreatedOn = currentTimestamp;
@@ -43,7 +44,7 @@ public class AccreditationRepository(EprAccreditationContext eprContext) : IAccr
         await eprContext.SaveChangesAsync();
     }
 
-    public async Task Update(AccreditationEntity accreditation)
+    public async Task Update(Accreditation accreditation)
     {
         var existingAccreditation = await eprContext.Accreditations.SingleAsync(x => x.ExternalId.Equals(accreditation.ExternalId));
 
@@ -56,7 +57,7 @@ public class AccreditationRepository(EprAccreditationContext eprContext) : IAccr
         existingAccreditation.ApplicationReferenceNumber = accreditation.ApplicationReferenceNumber;
         existingAccreditation.AccreditationYear = accreditation.AccreditationYear;
         existingAccreditation.PRNTonnage = accreditation.PRNTonnage;
-        existingAccreditation.PrnTonnageAndAuthoritiesConfirmed = accreditation.PrnTonnageAndAuthoritiesConfirmed;
+        //existingAccreditation.PrnTonnageAndAuthoritiesConfirmed = accreditation.PrnTonnageAndAuthoritiesConfirmed;
         existingAccreditation.InfrastructurePercentage = accreditation.InfrastructurePercentage;
         existingAccreditation.RecycledWastePercentage = accreditation.RecycledWastePercentage;
         existingAccreditation.BusinessCollectionsPercentage = accreditation.BusinessCollectionsPercentage;
@@ -71,7 +72,7 @@ public class AccreditationRepository(EprAccreditationContext eprContext) : IAccr
         existingAccreditation.NewMarketsNotes = accreditation.NewMarketsNotes;
         existingAccreditation.CommunicationsNotes = accreditation.CommunicationsNotes;
         existingAccreditation.NotCoveredOtherCategoriesNotes = accreditation.NotCoveredOtherCategoriesNotes;
-        existingAccreditation.BusinessPlanConfirmed = accreditation.BusinessPlanConfirmed;
+        //existingAccreditation.BusinessPlanConfirmed = accreditation.BusinessPlanConfirmed;
         existingAccreditation.UpdatedBy = accreditation.UpdatedBy;
         existingAccreditation.UpdatedOn = DateTime.UtcNow;
 

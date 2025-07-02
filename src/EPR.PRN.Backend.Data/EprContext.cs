@@ -485,7 +485,8 @@ public class EprContext : DbContext
     //public virtual DbSet<AccreditationStatus> AccreditationStatuses { get; set; }
   //  public virtual DbSet<AccreditationEntity> Accreditations { get; set; }
     public virtual DbSet<DataModels.Registrations.AccreditationPrnIssueAuth> AccreditationPrnIssueAuths { get; set; }
-   // public virtual DbSet<DataModels.Accreditations.AccreditationFileUpload> AccreditationFileUploads { get; set; }
+    public virtual DbSet<DataModels.Registrations.AccreditationFileUpload> AccreditationFileUploads { get; set; }
+    // public virtual DbSet<DataModels.Accreditations.AccreditationFileUpload> AccreditationFileUploads { get; set; }
 
     #endregion
 

@@ -9,16 +9,16 @@ namespace EPR.PRN.Backend.Data.UnitTests.Repositories.Accreditations;
 [TestClass]
 public class AccreditationRepositoryTests
 {
-    private EprAccreditationContext _dbContext;
+    private EprContext _dbContext;
     private AccreditationRepository _repository;
 
     [TestInitialize]
     public void Setup()
     {
-        var options = new DbContextOptionsBuilder<EprAccreditationContext>()
+        var options = new DbContextOptionsBuilder<EprContext>()
             .UseInMemoryDatabase(databaseName: "TestDatabase" + Guid.NewGuid().ToString())
             .Options;
-        _dbContext = new EprAccreditationContext(options);
+        _dbContext = new EprContext(options);
         _repository = new AccreditationRepository(_dbContext);
 
         LookupMaterial material = new()
@@ -35,31 +35,33 @@ public class AccreditationRepositoryTests
         };
 
         _dbContext.Accreditations.AddRange(
-            new List<AccreditationEntity>
+            new List<Accreditation>
             {
-                new AccreditationEntity
+                new Accreditation
                 {
                     Id = 1,
                     ExternalId = new Guid("11111111-1111-1111-1111-111111111111"), 
                     AccreditationYear = 2026,
                     ApplicationTypeId = 1,
-                    ApplicationType = new(),
+                    //ApplicationType = new(),
                     AccreditationStatusId = 1,
-                    AccreditationStatus = new(),
+                    //AccreditationStatus = new(),
                     RegistrationMaterialId = 1,
-                    RegistrationMaterial = registrationMaterial
+                    RegistrationMaterial = registrationMaterial,
+                    ApplicationReferenceNumber = "APP-123456",
                 },
-                new AccreditationEntity
+                new Accreditation
                 {
                     Id = 2,
                     ExternalId = new Guid("22222222-2222-2222-2222-222222222222"),
                     AccreditationYear = 2026,
                     ApplicationTypeId = 1,
-                    ApplicationType = new(),
+                    //ApplicationType = new(),
                     AccreditationStatusId = 1,
-                    AccreditationStatus = new(),
+                    //AccreditationStatus = new(),
                     RegistrationMaterialId = 1,
-                    RegistrationMaterial = registrationMaterial
+                    RegistrationMaterial = registrationMaterial,
+                    ApplicationReferenceNumber = "APP-123456",
                 }
             });
         _dbContext.SaveChangesAsync();
@@ -101,7 +103,7 @@ public class AccreditationRepositoryTests
     public async Task Create_ShouldAddNewEntity()
     {
         // Arrange
-        var accreditation = new AccreditationEntity { AccreditationYear = 2026 };
+        var accreditation = new Accreditation { AccreditationYear = 2026, ApplicationReferenceNumber = "APP-123456", };
 
         // Act
         await _repository.Create(accreditation);
@@ -119,7 +121,7 @@ public class AccreditationRepositoryTests
     {
         // Arrange
         var accreditationId = new Guid("11111111-1111-1111-1111-111111111111");
-        var accreditation = new AccreditationEntity { Id = 1, ExternalId = accreditationId, AccreditationYear = 2027 };
+        var accreditation = new Accreditation { Id = 1, ExternalId = accreditationId, AccreditationYear = 2027, ApplicationReferenceNumber = "APP-123456", };
 
         // Act
         await _repository.Update(accreditation);

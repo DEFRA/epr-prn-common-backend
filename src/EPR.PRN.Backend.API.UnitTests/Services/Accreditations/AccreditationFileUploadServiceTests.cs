@@ -4,7 +4,7 @@ using EPR.PRN.Backend.API.Common.Enums;
 using EPR.PRN.Backend.API.Dto.Accreditation;
 using EPR.PRN.Backend.API.Profiles;
 using EPR.PRN.Backend.API.Services;
-using EPR.PRN.Backend.Data.DataModels.Accreditations;
+using EPR.PRN.Backend.Data.DataModels.Registrations;
 using EPR.PRN.Backend.Data.Interfaces.Accreditations;
 using FluentAssertions;
 using Microsoft.Extensions.Configuration;
@@ -55,11 +55,11 @@ public class AccreditationFileUploadServiceTests
         {
             ExternalId = Guid.NewGuid(),
             FileId = Guid.NewGuid(),
-            FileName = "file1.txt",
+            Filename = "file1.txt",
             FileUploadTypeId = fileUploadTypeId,
             FileUploadStatusId = fileUploadStatusId,
-            UploadedBy = "A N Other",
-            UploadedOn = DateTime.UtcNow,
+            UpdatedBy = "A N Other",
+            DateUploaded = DateTime.UtcNow,
             OverseasSiteId = 100
         };
 
@@ -67,11 +67,11 @@ public class AccreditationFileUploadServiceTests
         {
             ExternalId = entity.ExternalId,
             FileId = entity.FileId,
-            Filename = entity.FileName,
-            FileUploadTypeId = entity.FileUploadTypeId,
-            FileUploadStatusId = entity.FileUploadStatusId,
-            UploadedBy = entity.UploadedBy,
-            UploadedOn = entity.UploadedOn,
+            Filename = entity.Filename,
+            FileUploadTypeId = entity.FileUploadTypeId.GetValueOrDefault(),
+            FileUploadStatusId = entity.FileUploadStatusId.GetValueOrDefault(),
+            UploadedBy = entity.UpdatedBy,
+            UploadedOn = entity.DateUploaded.GetValueOrDefault(),
             OverseasSiteId = entity.OverseasSiteId
         };
 
@@ -100,22 +100,22 @@ public class AccreditationFileUploadServiceTests
             {
                 ExternalId = Guid.NewGuid(),
                 FileId = Guid.NewGuid(),
-                FileName = "file1.txt",
+                Filename = "file1.txt",
                 FileUploadTypeId = fileUploadTypeId,
                 FileUploadStatusId = fileUploadStatusId,
-                UploadedBy = "A N Other",
-                UploadedOn = DateTime.UtcNow,
+                UpdatedBy = "A N Other",
+                DateUploaded = DateTime.UtcNow,
                 OverseasSiteId = 100
             },
             new AccreditationFileUpload
             {
                 ExternalId = Guid.NewGuid(),
                 FileId = Guid.NewGuid(),
-                FileName = "file2.txt",
+                Filename = "file2.txt",
                 FileUploadTypeId = fileUploadTypeId,
                 FileUploadStatusId = fileUploadStatusId,
-                UploadedBy = "Joe Bloggs",
-                UploadedOn = DateTime.UtcNow,
+                UpdatedBy = "Joe Bloggs",
+                DateUploaded = DateTime.UtcNow,
                 OverseasSiteId = 101
             }
         };
@@ -126,22 +126,22 @@ public class AccreditationFileUploadServiceTests
             {
                 ExternalId = entities[0].ExternalId,
                 FileId = entities[0].FileId,
-                Filename = entities[0].FileName,
-                FileUploadTypeId = entities[0].FileUploadTypeId,
-                FileUploadStatusId = entities[0].FileUploadStatusId,
-                UploadedBy = entities[0].UploadedBy,
-                UploadedOn = entities[0].UploadedOn,
+                Filename = entities[0].Filename,
+                FileUploadTypeId = entities[0].FileUploadTypeId.GetValueOrDefault(),
+                FileUploadStatusId = entities[0].FileUploadStatusId.GetValueOrDefault(),
+                UploadedBy = entities[0].UpdatedBy,
+                UploadedOn = entities[0].DateUploaded.GetValueOrDefault(),
                 OverseasSiteId = entities[0].OverseasSiteId
             },
             new AccreditationFileUploadDto
             {
                 ExternalId = entities[1].ExternalId,
                 FileId = entities[1].FileId,
-                Filename = entities[1].FileName,
-                FileUploadTypeId = entities[1].FileUploadTypeId,
-                FileUploadStatusId = entities[1].FileUploadStatusId,
-                UploadedBy = entities[1].UploadedBy,
-                UploadedOn = entities[1].UploadedOn,
+                Filename = entities[1].Filename,
+                FileUploadTypeId = entities[1].FileUploadTypeId.GetValueOrDefault(),
+                FileUploadStatusId = entities[1].FileUploadStatusId.GetValueOrDefault(),
+                UploadedBy = entities[1].UpdatedBy,
+                UploadedOn = entities[1].DateUploaded.GetValueOrDefault(),
                 OverseasSiteId = entities[1].OverseasSiteId
             }
         };
@@ -181,11 +181,11 @@ public class AccreditationFileUploadServiceTests
         _repositoryMock.Setup(r => r.Create(accreditationId, It.Is<AccreditationFileUpload>(x =>
                 x.ExternalId == Guid.Empty &&
                 x.FileId == dto.FileId &&
-                x.FileName == dto.Filename &&
+                x.Filename == dto.Filename &&
                 x.FileUploadTypeId == dto.FileUploadTypeId &&
                 x.FileUploadStatusId == dto.FileUploadStatusId &&
-                x.UploadedBy == dto.UploadedBy &&
-                x.UploadedOn == dto.UploadedOn &&
+                x.UpdatedBy == dto.UploadedBy &&
+                x.DateUploaded == dto.UploadedOn &&
                 x.OverseasSiteId == dto.OverseasSiteId
             ))).ReturnsAsync(fileUploadId);
 
@@ -221,11 +221,11 @@ public class AccreditationFileUploadServiceTests
         _repositoryMock.Setup(r => r.Update(accreditationId, It.Is<AccreditationFileUpload>(x =>
                 x.ExternalId == fileUploadId &&
                 x.FileId == dto.FileId &&
-                x.FileName == dto.Filename &&
+                x.Filename == dto.Filename &&
                 x.FileUploadTypeId == dto.FileUploadTypeId &&
                 x.FileUploadStatusId == dto.FileUploadStatusId &&
-                x.UploadedBy == dto.UploadedBy &&
-                x.UploadedOn == dto.UploadedOn &&
+                x.UpdatedBy == dto.UploadedBy &&
+                x.DateUploaded == dto.UploadedOn &&
                 x.OverseasSiteId == dto.OverseasSiteId
             )));
 

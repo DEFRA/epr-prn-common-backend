@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using AutoMapper;
 using EPR.PRN.Backend.API.Profiles;
+using EPR.PRN.Backend.Data.DataModels.Registrations;
 
 namespace EPR.PRN.Backend.API.UnitTests.Services.Accreditations;
 
@@ -49,7 +50,7 @@ public class AccreditationServiceTests
         var materialId = 2;
         var applicationTypeId = 1;
         var accreditationStatusId = 1;
-        AccreditationEntity accreditation = null!;
+        Accreditation accreditation = null!;
 
         _repositoryMock
             .Setup(r => r.GetAccreditationDetails(organisationId,materialId,applicationTypeId))
@@ -62,7 +63,7 @@ public class AccreditationServiceTests
             applicationTypeId);
 
         // Assert
-        _repositoryMock.Verify(r => r.Create(It.Is<AccreditationEntity>(x =>
+        _repositoryMock.Verify(r => r.Create(It.Is<Accreditation>(x =>
             x.OrganisationId == organisationId &&
             x.RegistrationMaterialId == materialId &&
             x.ApplicationTypeId == applicationTypeId &&
@@ -81,13 +82,14 @@ public class AccreditationServiceTests
         var applicationTypeId = 1;
         var accreditationStatusId = 1;
 
-        var accreditation = new AccreditationEntity
+        var accreditation = new Accreditation
         {
             ExternalId = id,
             OrganisationId = organisationId,
             RegistrationMaterialId = materialId,
             ApplicationTypeId = applicationTypeId,
-            AccreditationStatusId = accreditationStatusId
+            AccreditationStatusId = accreditationStatusId,
+            ApplicationReferenceNumber = "APP-123456",
         };
 
         _repositoryMock
@@ -104,7 +106,7 @@ public class AccreditationServiceTests
         _repositoryMock.Verify(r => r.GetAccreditationDetails(organisationId, materialId, applicationTypeId), Times.Once);
         result.Should().Be(id);
 
-        _repositoryMock.Verify(r => r.Create(It.IsAny<AccreditationEntity>()), Times.Never);
+        _repositoryMock.Verify(r => r.Create(It.IsAny<Accreditation>()), Times.Never);
     }
 
     [TestMethod]
@@ -112,13 +114,14 @@ public class AccreditationServiceTests
     {
         // Arrange
         var id = Guid.NewGuid();
-        var entity = new AccreditationEntity
+        var entity = new Accreditation
         {
             ExternalId = id,
             OrganisationId = Guid.NewGuid(),
             RegistrationMaterialId = 1,
             ApplicationTypeId = 2,
-            AccreditationStatusId = 3
+            AccreditationStatusId = 3,
+            ApplicationReferenceNumber = "APP-123456",
         };
         var dto = new AccreditationDto
         {
@@ -146,7 +149,7 @@ public class AccreditationServiceTests
     {
         // Arrange
         var id = Guid.NewGuid();
-        _repositoryMock.Setup(r => r.GetById(id)).ReturnsAsync((AccreditationEntity)null);
+        _repositoryMock.Setup(r => r.GetById(id)).ReturnsAsync((Accreditation)null);
 
         // Act
         var result = await _service.GetAccreditationById(id);
@@ -173,7 +176,7 @@ public class AccreditationServiceTests
         await _service.CreateAccreditation(requestDto);
 
         // Assert
-        _repositoryMock.Verify(r => r.Create(It.Is<AccreditationEntity>(x => 
+        _repositoryMock.Verify(r => r.Create(It.Is<Accreditation>(x => 
             x.OrganisationId == requestDto.OrganisationId &&
             x.RegistrationMaterialId == requestDto.RegistrationMaterialId &&
             x.ApplicationTypeId == requestDto.ApplicationTypeId &&
@@ -198,7 +201,7 @@ public class AccreditationServiceTests
         await _service.UpdateAccreditation(requestDto);
 
         // Assert
-        _repositoryMock.Verify(r => r.Update(It.Is<AccreditationEntity>(x =>
+        _repositoryMock.Verify(r => r.Update(It.Is<Accreditation>(x =>
             x.ExternalId == requestDto.ExternalId &&
             x.OrganisationId == requestDto.OrganisationId &&
             x.RegistrationMaterialId == requestDto.RegistrationMaterialId &&

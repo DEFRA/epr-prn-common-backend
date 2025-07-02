@@ -1,10 +1,10 @@
-﻿using EPR.PRN.Backend.Data.DataModels.Accreditations;
+﻿using EPR.PRN.Backend.Data.DataModels.Registrations;
 using EPR.PRN.Backend.Data.Interfaces.Accreditations;
 using Microsoft.EntityFrameworkCore;
 
 namespace EPR.PRN.Backend.Data.Repositories.Accreditations;
 
-public class AccreditationPrnIssueAuthRepository(EprAccreditationContext eprContext) : IAccreditationPrnIssueAuthRepository
+public class AccreditationPrnIssueAuthRepository(EprContext eprContext) : IAccreditationPrnIssueAuthRepository
 {
     public async Task<List<AccreditationPrnIssueAuth>?> GetByAccreditationId(Guid accreditationId)
     {
