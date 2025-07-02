@@ -221,34 +221,6 @@ public class EprContext : DbContext
             new LookupRegistrationMaterialStatus { Id = 10, Name = "Cancelled" },
             new LookupRegistrationMaterialStatus { Id = 11, Name = "ReadyToSubmit" });
 
-        // original list :
-        //modelBuilder.Entity<LookupAccreditationStatus>().HasData(
-        //    new LookupAccreditationStatus { Id = 1, Name = "Started" },
-        //    new LookupAccreditationStatus { Id = 2, Name = "Submitted" },
-        //    new LookupAccreditationStatus { Id = 3, Name = "RegulatorReviewing" },
-        //    new LookupAccreditationStatus { Id = 4, Name = "Queried" },
-        //    new LookupAccreditationStatus { Id = 5, Name = "Updated" },
-        //    new LookupAccreditationStatus { Id = 6, Name = "Granted" },
-        //    new LookupAccreditationStatus { Id = 7, Name = "Refused" },
-        //    new LookupAccreditationStatus { Id = 8, Name = "Withdrawn" },
-        //    new LookupAccreditationStatus { Id = 9, Name = "Suspended" },
-        //    new LookupAccreditationStatus { Id = 10, Name = "Cancelled" },
-        //    new LookupAccreditationStatus { Id = 11, Name = "ReadyToSubmit" });
-
-        //accreditation context version
-        //modelBuilder.Entity<AccreditationStatus>()
-        //    .HasData(
-        //        new AccreditationStatus { Id = 1, Name = "Started" },
-        //        new AccreditationStatus { Id = 2, Name = "Submitted" },
-        //        new AccreditationStatus { Id = 3, Name = "Accepted" },
-        //        new AccreditationStatus { Id = 4, Name = "Queried" },
-        //        new AccreditationStatus { Id = 5, Name = "Updated" },
-        //        new AccreditationStatus { Id = 6, Name = "Granted" },
-        //        new AccreditationStatus { Id = 7, Name = "Refused" },
-        //        new AccreditationStatus { Id = 8, Name = "Withdrawn" },
-        //        new AccreditationStatus { Id = 9, Name = "Suspended" },
-        //        new AccreditationStatus { Id = 10, Name = "Cancelled" }
-        //    );
 
         modelBuilder.Entity<LookupAccreditationStatus>().HasData(
             new LookupAccreditationStatus { Id = 1, Name = "Started" },
@@ -263,7 +235,6 @@ public class EprContext : DbContext
             new LookupAccreditationStatus { Id = 10, Name = "Cancelled" },
             new LookupAccreditationStatus { Id = 11, Name = "ReadyToSubmit" 
             });
-
 
 
         modelBuilder.Entity<LookupTaskStatus>().HasData(
@@ -479,15 +450,10 @@ public class EprContext : DbContext
     public virtual DbSet<AccreditationTaskStatusQueryNote> AccreditationTaskStatusQueryNote { get; set; }
     public virtual DbSet<AccreditationDeterminationDate> AccreditationDeterminationDate { get; set; }
 
-    #region Accreditaiton
-
-    //public virtual DbSet<LookupApplicationType> ApplicationTypes { get; set; }
-    //public virtual DbSet<AccreditationStatus> AccreditationStatuses { get; set; }
-  //  public virtual DbSet<AccreditationEntity> Accreditations { get; set; }
     public virtual DbSet<DataModels.Registrations.AccreditationPrnIssueAuth> AccreditationPrnIssueAuths { get; set; }
     public virtual DbSet<DataModels.Registrations.AccreditationFileUpload> AccreditationFileUploads { get; set; }
-    // public virtual DbSet<DataModels.Accreditations.AccreditationFileUpload> AccreditationFileUploads { get; set; }
 
-    #endregion
+
+
 
 }
