@@ -219,7 +219,7 @@ public class RegistrationMaterialController(
         return Ok(result);
     }
 
-    [HttpPost("registrationMaterials/{id:Guid}/registrationReprocessingDetails")]
+    [HttpPost("registrationMaterials/{registrationMaterialId:Guid}/registrationReprocessingDetails")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(OkResult))]
     [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
