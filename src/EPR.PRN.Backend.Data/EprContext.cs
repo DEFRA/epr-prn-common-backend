@@ -2,7 +2,7 @@
 using EPR.PRN.Backend.API.Common.Constants;
 using EPR.PRN.Backend.API.Common.Enums;
 using EPR.PRN.Backend.Data.DataModels;
-using EPR.PRN.Backend.Data.DataModels.Accreditations;
+
 using EPR.PRN.Backend.Data.DataModels.Registrations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -221,6 +221,35 @@ public class EprContext : DbContext
             new LookupRegistrationMaterialStatus { Id = 10, Name = "Cancelled" },
             new LookupRegistrationMaterialStatus { Id = 11, Name = "ReadyToSubmit" });
 
+        // original list :
+        //modelBuilder.Entity<LookupAccreditationStatus>().HasData(
+        //    new LookupAccreditationStatus { Id = 1, Name = "Started" },
+        //    new LookupAccreditationStatus { Id = 2, Name = "Submitted" },
+        //    new LookupAccreditationStatus { Id = 3, Name = "RegulatorReviewing" },
+        //    new LookupAccreditationStatus { Id = 4, Name = "Queried" },
+        //    new LookupAccreditationStatus { Id = 5, Name = "Updated" },
+        //    new LookupAccreditationStatus { Id = 6, Name = "Granted" },
+        //    new LookupAccreditationStatus { Id = 7, Name = "Refused" },
+        //    new LookupAccreditationStatus { Id = 8, Name = "Withdrawn" },
+        //    new LookupAccreditationStatus { Id = 9, Name = "Suspended" },
+        //    new LookupAccreditationStatus { Id = 10, Name = "Cancelled" },
+        //    new LookupAccreditationStatus { Id = 11, Name = "ReadyToSubmit" });
+
+        //accreditation context version
+        //modelBuilder.Entity<AccreditationStatus>()
+        //    .HasData(
+        //        new AccreditationStatus { Id = 1, Name = "Started" },
+        //        new AccreditationStatus { Id = 2, Name = "Submitted" },
+        //        new AccreditationStatus { Id = 3, Name = "Accepted" },
+        //        new AccreditationStatus { Id = 4, Name = "Queried" },
+        //        new AccreditationStatus { Id = 5, Name = "Updated" },
+        //        new AccreditationStatus { Id = 6, Name = "Granted" },
+        //        new AccreditationStatus { Id = 7, Name = "Refused" },
+        //        new AccreditationStatus { Id = 8, Name = "Withdrawn" },
+        //        new AccreditationStatus { Id = 9, Name = "Suspended" },
+        //        new AccreditationStatus { Id = 10, Name = "Cancelled" }
+        //    );
+
         modelBuilder.Entity<LookupAccreditationStatus>().HasData(
             new LookupAccreditationStatus { Id = 1, Name = "Started" },
             new LookupAccreditationStatus { Id = 2, Name = "Submitted" },
@@ -232,7 +261,10 @@ public class EprContext : DbContext
             new LookupAccreditationStatus { Id = 8, Name = "Withdrawn" },
             new LookupAccreditationStatus { Id = 9, Name = "Suspended" },
             new LookupAccreditationStatus { Id = 10, Name = "Cancelled" },
-            new LookupAccreditationStatus { Id = 11, Name = "ReadyToSubmit" });
+            new LookupAccreditationStatus { Id = 11, Name = "ReadyToSubmit" 
+            });
+
+
 
         modelBuilder.Entity<LookupTaskStatus>().HasData(
             new LookupTaskStatus { Id = 1, Name = "NotStarted" },
@@ -244,6 +276,7 @@ public class EprContext : DbContext
         modelBuilder.Entity<LookupApplicationType>().HasData(
             new LookupApplicationType { Id = 1, Name = "Reprocessor" },
             new LookupApplicationType { Id = 2, Name = "Exporter" });
+
 
         modelBuilder.Entity<LookupJourneyType>().HasData(
             new LookupJourneyType { Id = 1, Name = "Registration" },
@@ -398,83 +431,6 @@ public class EprContext : DbContext
 
 
 
-        //#region Accreditation
-
-        //modelBuilder.Entity<AccreditationEntity>(e =>
-        //{
-        //    e.HasOne(x => x.ApplicationType)
-        //        .WithMany()
-        //        .HasForeignKey(x => x.ApplicationTypeId);
-
-        //    e.HasOne(x => x.AccreditationStatus)
-        //        .WithMany()
-        //        .HasForeignKey(x => x.AccreditationStatusId);
-
-        //    e.HasOne(x => x.RegistrationMaterial)
-        //        .WithMany()
-        //        .HasForeignKey(x => x.RegistrationMaterialId);
-
-        //    e.HasMany(x => x.AccreditationPrnIssueAuths)
-        //        .WithOne()
-        //        .HasForeignKey(x => x.AccreditationId);
-
-        //    e.HasMany(x => x.FileUploads)
-        //        .WithOne()
-        //        .HasForeignKey(x => x.AccreditationId);
-        //});
-
-        //modelBuilder.Entity<AccreditationPrnIssueAuth>(e =>
-        //{
-        //    e.ToTable("AccreditationPRNIssueAuth");
-        //});
-
-        //modelBuilder.Entity<AccreditationStatus>()
-        //    .HasData(
-        //        new AccreditationStatus { Id = 1, Name = "Started" },
-        //        new AccreditationStatus { Id = 2, Name = "Submitted" },
-        //        new AccreditationStatus { Id = 3, Name = "Accepted" },
-        //        new AccreditationStatus { Id = 4, Name = "Queried" },
-        //        new AccreditationStatus { Id = 5, Name = "Updated" },
-        //        new AccreditationStatus { Id = 6, Name = "Granted" },
-        //        new AccreditationStatus { Id = 7, Name = "Refused" },
-        //        new AccreditationStatus { Id = 8, Name = "Withdrawn" },
-        //        new AccreditationStatus { Id = 9, Name = "Suspended" },
-        //        new AccreditationStatus { Id = 10, Name = "Cancelled" }
-        //    );
-
-        //modelBuilder.Entity<ApplicationType>().HasData(
-        //    new ApplicationType { Id = 1, Name = "Reprocessor" },
-        //    new ApplicationType { Id = 2, Name = "Exporter" });
-
-        //modelBuilder.Entity<FileUploadType>().HasData(
-        //    new ApplicationType { Id = 1, Name = "SamplingAndInspectionPlan" },
-        //    new ApplicationType { Id = 2, Name = "OverseasSiteEvidence" });
-
-        //modelBuilder.Entity<FileUploadStatus>().HasData(
-        //    new ApplicationType { Id = 1, Name = "Upload complete" },
-        //    new ApplicationType { Id = 2, Name = "Upload failed" },
-        //    new ApplicationType { Id = 3, Name = "File deleted" });
-
-        //// TEMP:
-        //modelBuilder.Entity<LookupMaterial>().HasData(
-        //    new LookupMaterial { Id = 1, MaterialName = "Plastic", MaterialCode = "PL" },
-        //    new LookupMaterial { Id = 2, MaterialName = "Steel", MaterialCode = "GL" },
-        //    new LookupMaterial { Id = 3, MaterialName = "Aluminium", MaterialCode = "AL" });
-        //modelBuilder.Entity<RegistrationMaterial>().HasData(
-        //    new RegistrationMaterial { Id = 1, MaterialId = 1 },
-        //    new RegistrationMaterial { Id = 2, MaterialId = 2 },
-        //    new RegistrationMaterial { Id = 3, MaterialId = 3 });
-
-
-
-
-        //#endregion 
-
-
-
-
-
-
         base.OnModelCreating(modelBuilder);
     }
 
@@ -525,7 +481,7 @@ public class EprContext : DbContext
 
     #region Accreditaiton
 
-    public virtual DbSet<DataModels.Registrations.ApplicationType> ApplicationTypes { get; set; }
+    //public virtual DbSet<LookupApplicationType> ApplicationTypes { get; set; }
     //public virtual DbSet<AccreditationStatus> AccreditationStatuses { get; set; }
   //  public virtual DbSet<AccreditationEntity> Accreditations { get; set; }
     public virtual DbSet<DataModels.Registrations.AccreditationPrnIssueAuth> AccreditationPrnIssueAuths { get; set; }

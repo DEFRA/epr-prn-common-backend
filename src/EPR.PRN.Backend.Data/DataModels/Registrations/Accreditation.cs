@@ -99,9 +99,12 @@ public class Accreditation
     public Guid UpdatedBy { get; set; }
     public DateTime UpdatedDate { get; set; }
 
-
+    [ForeignKey("ApplicationType")]
     public int ApplicationTypeId { get; set; }
-    public ApplicationType? ApplicationType { get; set; }
+    public LookupApplicationType? ApplicationType { get; set; }
+
+
+    //public ApplicationType? ApplicationType { get; set; }
 
     //public AccreditationStatus? AccreditationStatus { get; set; }
 
