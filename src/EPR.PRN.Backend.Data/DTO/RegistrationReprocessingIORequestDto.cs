@@ -6,7 +6,7 @@ public class RegistrationReprocessingIORequestDto
 
     public Guid ExternalId { get; set; }
 
-    public int RegistrationMaterialId { get; set; }
+    public Guid RegistrationMaterialId { get; set; }
 
     public bool ReprocessingPackagingWasteLastYearFlag { get; set; }
 
@@ -30,5 +30,5 @@ public class RegistrationReprocessingIORequestDto
 
     public string? TypeOfSuppliers { get; set; }
 
-    public List<RegistrationReprocessingIORawMaterialOrProductsDto> RegistrationReprocessingIORawMaterialOrProducts { get; set; } = [];
+    public List<RegistrationReprocessingIORawMaterialOrProductsDto>? RegistrationReprocessingIORawMaterialOrProducts { get; set; }
 }

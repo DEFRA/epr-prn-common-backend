@@ -237,6 +237,7 @@ public class RegistrationMaterialController(
         await validationService.ValidateAndThrowAsync(registrationReprocessingDetailsRequest);
 
         var command = mapper.Map<RegistrationReprocessingIOCommand>(registrationReprocessingDetailsRequest);
+        command.RegistrationMaterialId = registrationMaterialId;
         await mediator.Send(command);
 
         return Ok();
