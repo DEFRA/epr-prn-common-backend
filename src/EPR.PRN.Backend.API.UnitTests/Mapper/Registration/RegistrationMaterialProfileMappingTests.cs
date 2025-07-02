@@ -212,56 +212,6 @@ public class RegistrationMaterialProfileMappingTests : MappingTestsBase<Registra
     }
 
     [TestMethod]
-    public void RegistrationReprocessingIORequestDto_To_RegistrationReprocessingIOCommand_EnsureCorrectMapping()
-    {
-        // Arrange
-        var externalId = Guid.NewGuid();
-        var mapper = CreateMapper();
-
-        var source = new RegistrationReprocessingIORequestDto
-        {
-            ExternalId = externalId,
-            TypeOfSuppliers = "Suppliers List"
-        };
-
-        var expected = new RegistrationReprocessingIOCommand
-        {
-            ExternalId = externalId,
-            TypeOfSuppliers = "Suppliers List"
-        };
-
-        // Act
-        var result = mapper.Map<RegistrationReprocessingIOCommand>(source);
-
-        // Assert
-        result.Should().BeEquivalentTo(expected);
-    }
-
-    [TestMethod]
-    public void RegistrationReprocessingIO_To_RegistrationReprocessingIOCommand_EnsureCorrectMapping()
-    {
-        // Arrange
-        var externalId = Guid.NewGuid();
-        var mapper = CreateMapper();
-
-        var source = new RegistrationReprocessingIO
-        {
-            TypeOfSuppliers = "Suppliers List"
-        };
-
-        var expected = new RegistrationReprocessingIOCommand
-        {
-            TypeOfSuppliers = "Suppliers List"
-        };
-
-        // Act
-        var result = mapper.Map<RegistrationReprocessingIOCommand>(source);
-
-        // Assert
-        result.Should().BeEquivalentTo(expected);
-    }
-
-    [TestMethod]
     public void RegistrationReprocessingIOCommand_To_RegistrationReprocessingIO_EnsureCorrectMapping()
     {
         // Arrange

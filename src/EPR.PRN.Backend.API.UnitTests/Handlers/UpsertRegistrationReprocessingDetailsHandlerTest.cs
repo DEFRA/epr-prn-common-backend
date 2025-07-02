@@ -34,6 +34,6 @@ public class UpsertRegistrationReprocessingDetailsHandlerTest
         await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        _repositoryMock.Verify(r => r.UpsertRegistrationReprocessingDetailsAsync(command.ExternalId, It.IsAny<RegistrationReprocessingIO>()), Times.Once);
+        _repositoryMock.Verify(r => r.UpsertRegistrationReprocessingDetailsAsync(command.RegistrationMaterialId, It.IsAny<RegistrationReprocessingIO>()), Times.Once);
     }
 }

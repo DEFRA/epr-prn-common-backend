@@ -239,11 +239,16 @@ public class RegistrationMaterialControllerTests
         // Arrange  
         var registrationMaterialId = Guid.NewGuid();
         var registrationReprocessingIO = _fixture.Create<RegistrationReprocessingIORequestDto>();
+        var command = _fixture.Create<RegistrationReprocessingIOCommand>();
 
         // Expectations  
         _mediatorMock
             .Setup(m => m.Send(It.IsAny<RegistrationReprocessingIOCommand>(), It.IsAny<CancellationToken>()))
             .Returns(Task.CompletedTask);
+
+        _mapperMock
+            .Setup(m => m.Map<RegistrationReprocessingIOCommand>(It.IsAny<RegistrationReprocessingIORequestDto>()))
+            .Returns(command);
 
         // Act  
         var result = await _controller.UpsertRegistrationReprocessingDetailsAsync(registrationMaterialId, registrationReprocessingIO);
