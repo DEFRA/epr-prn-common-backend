@@ -17,7 +17,7 @@ namespace EPR.PRN.Backend.API.UnitTests.Handlers
         public async Task Handle_CallsUpdateApplicantRegistrationTaskStatusAsync()
         {
             // Arrange
-            var mockRepo = new Mock<IRegistrationRepository>();
+            var mockRepo = new Mock<IMaterialRepository>();
             var handler = new UpdateApplicantRegistrationTaskStatusHandler(mockRepo.Object);
             var command = new UpdateApplicantRegistrationTaskStatusCommand
             {
