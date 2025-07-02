@@ -335,18 +335,9 @@ public class EprContext : DbContext
                 .WithMany()
                 .HasForeignKey(x => x.AccreditationStatusId);
 
-            e.HasOne(x => x.RegistrationMaterial)
-                .WithMany()
-                .HasForeignKey(x => x.RegistrationMaterialId);
-
             e.HasMany(x => x.AccreditationPrnIssueAuths)
                 .WithOne()
                 .HasForeignKey(x => x.AccreditationId);
-
-            e.HasMany(x => x.FileUploads)
-                .WithOne()
-                .HasForeignKey(x => x.AccreditationId);
-
 
             e.HasIndex(e => e.ExternalId)
             .IsUnique(); // Ensures UniqueId is unique
