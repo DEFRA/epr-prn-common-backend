@@ -4316,3 +4316,233 @@ GO
 COMMIT;
 GO
 
+BEGIN TRANSACTION;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250629092851_ApplicantTaskLookupTable'
+)
+BEGIN
+    ALTER TABLE [Public.RegistrationTaskStatus] DROP CONSTRAINT [FK_Public.RegistrationTaskStatus_Lookup.RegulatorTask_TaskId];
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250629092851_ApplicantTaskLookupTable'
+)
+BEGIN
+    ALTER TABLE [Public.RegistrationTaskStatus] ADD [RegistrationMaterialId] int NULL;
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250629092851_ApplicantTaskLookupTable'
+)
+BEGIN
+    CREATE TABLE [Lookup.Task] (
+        [Id] int NOT NULL IDENTITY,
+        [IsMaterialSpecific] bit NOT NULL,
+        [ApplicationTypeId] int NOT NULL,
+        [JourneyTypeId] int NOT NULL,
+        [Name] nvarchar(200) NOT NULL,
+        CONSTRAINT [PK_Lookup.Task] PRIMARY KEY ([Id])
+    );
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250629092851_ApplicantTaskLookupTable'
+)
+BEGIN
+    IF EXISTS (SELECT * FROM [sys].[identity_columns] WHERE [name] IN (N'Id', N'ApplicationTypeId', N'IsMaterialSpecific', N'JourneyTypeId', N'Name') AND [object_id] = OBJECT_ID(N'[Lookup.Task]'))
+        SET IDENTITY_INSERT [Lookup.Task] ON;
+    EXEC(N'INSERT INTO [Lookup.Task] ([Id], [ApplicationTypeId], [IsMaterialSpecific], [JourneyTypeId], [Name])
+    VALUES (1, 1, CAST(0 AS bit), 1, N''SiteAddressAndContactDetails''),
+    (2, 1, CAST(1 AS bit), 1, N''WasteLicensesPermitsAndExemptions''),
+    (3, 1, CAST(1 AS bit), 1, N''ReprocessingInputsAndOutputs''),
+    (4, 1, CAST(1 AS bit), 1, N''SamplingAndInspectionPlan''),
+    (5, 2, CAST(0 AS bit), 1, N''WasteLicensesPermitsAndExemptions''),
+    (6, 2, CAST(1 AS bit), 1, N''SamplingAndInspectionPlan''),
+    (7, 2, CAST(1 AS bit), 1, N''OverseasReprocessingSites''),
+    (8, 2, CAST(1 AS bit), 1, N''InterimSites''),
+    (9, 1, CAST(1 AS bit), 2, N''PRNsTonnageAndAuthorityToIssuePRNs''),
+    (10, 1, CAST(1 AS bit), 2, N''BusinessPlan''),
+    (11, 1, CAST(1 AS bit), 2, N''AccreditationSamplingAndInspectionPlan''),
+    (12, 2, CAST(1 AS bit), 2, N''PERNsTonnageAndAuthorityToIssuePERNs''),
+    (13, 2, CAST(1 AS bit), 2, N''BusinessPlan''),
+    (14, 2, CAST(1 AS bit), 2, N''AccreditationSamplingAndInspectionPlan''),
+    (15, 2, CAST(1 AS bit), 2, N''OverseasReprocessingSitesAndEvidenceOfBroadlyEquivalentStandards''),
+    (16, 2, CAST(0 AS bit), 1, N''WasteCarrierBrokerDealerNumber'')');
+    IF EXISTS (SELECT * FROM [sys].[identity_columns] WHERE [name] IN (N'Id', N'ApplicationTypeId', N'IsMaterialSpecific', N'JourneyTypeId', N'Name') AND [object_id] = OBJECT_ID(N'[Lookup.Task]'))
+        SET IDENTITY_INSERT [Lookup.Task] OFF;
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250629092851_ApplicantTaskLookupTable'
+)
+BEGIN
+    CREATE INDEX [IX_Public.RegistrationTaskStatus_RegistrationMaterialId] ON [Public.RegistrationTaskStatus] ([RegistrationMaterialId]);
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250629092851_ApplicantTaskLookupTable'
+)
+BEGIN
+    ALTER TABLE [Public.RegistrationTaskStatus] ADD CONSTRAINT [FK_Public.RegistrationTaskStatus_Lookup.Task_TaskId] FOREIGN KEY ([TaskId]) REFERENCES [Lookup.Task] ([Id]);
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250629092851_ApplicantTaskLookupTable'
+)
+BEGIN
+    ALTER TABLE [Public.RegistrationTaskStatus] ADD CONSTRAINT [FK_Public.RegistrationTaskStatus_Public.RegistrationMaterial_RegistrationMaterialId] FOREIGN KEY ([RegistrationMaterialId]) REFERENCES [Public.RegistrationMaterial] ([Id]);
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250629092851_ApplicantTaskLookupTable'
+)
+BEGIN
+    INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+    VALUES (N'20250629092851_ApplicantTaskLookupTable', N'8.0.8');
+END;
+GO
+
+COMMIT;
+GO
+
+BEGIN TRANSACTION;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250629130952_RegistratinoMaterialNullableFields'
+)
+BEGIN
+    ALTER TABLE [Public.RegistrationMaterial] DROP CONSTRAINT [FK_Public.RegistrationMaterial_Lookup.MaterialPermit_PermitTypeId];
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250629130952_RegistratinoMaterialNullableFields'
+)
+BEGIN
+    DECLARE @var36 sysname;
+    SELECT @var36 = [d].[name]
+    FROM [sys].[default_constraints] [d]
+    INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+    WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Public.RegistrationMaterial]') AND [c].[name] = N'WasteManagementReprocessingCapacityTonne');
+    IF @var36 IS NOT NULL EXEC(N'ALTER TABLE [Public.RegistrationMaterial] DROP CONSTRAINT [' + @var36 + '];');
+    ALTER TABLE [Public.RegistrationMaterial] ALTER COLUMN [WasteManagementReprocessingCapacityTonne] decimal(18,2) NULL;
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250629130952_RegistratinoMaterialNullableFields'
+)
+BEGIN
+    DECLARE @var37 sysname;
+    SELECT @var37 = [d].[name]
+    FROM [sys].[default_constraints] [d]
+    INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+    WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Public.RegistrationMaterial]') AND [c].[name] = N'PermitTypeId');
+    IF @var37 IS NOT NULL EXEC(N'ALTER TABLE [Public.RegistrationMaterial] DROP CONSTRAINT [' + @var37 + '];');
+    ALTER TABLE [Public.RegistrationMaterial] ALTER COLUMN [PermitTypeId] int NULL;
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250629130952_RegistratinoMaterialNullableFields'
+)
+BEGIN
+    DECLARE @var38 sysname;
+    SELECT @var38 = [d].[name]
+    FROM [sys].[default_constraints] [d]
+    INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+    WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Public.RegistrationMaterial]') AND [c].[name] = N'PPCReprocessingCapacityTonne');
+    IF @var38 IS NOT NULL EXEC(N'ALTER TABLE [Public.RegistrationMaterial] DROP CONSTRAINT [' + @var38 + '];');
+    ALTER TABLE [Public.RegistrationMaterial] ALTER COLUMN [PPCReprocessingCapacityTonne] decimal(18,2) NULL;
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250629130952_RegistratinoMaterialNullableFields'
+)
+BEGIN
+    DECLARE @var39 sysname;
+    SELECT @var39 = [d].[name]
+    FROM [sys].[default_constraints] [d]
+    INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+    WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Public.RegistrationMaterial]') AND [c].[name] = N'MaximumReprocessingCapacityTonne');
+    IF @var39 IS NOT NULL EXEC(N'ALTER TABLE [Public.RegistrationMaterial] DROP CONSTRAINT [' + @var39 + '];');
+    ALTER TABLE [Public.RegistrationMaterial] ALTER COLUMN [MaximumReprocessingCapacityTonne] decimal(18,2) NULL;
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250629130952_RegistratinoMaterialNullableFields'
+)
+BEGIN
+    DECLARE @var40 sysname;
+    SELECT @var40 = [d].[name]
+    FROM [sys].[default_constraints] [d]
+    INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+    WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Public.RegistrationMaterial]') AND [c].[name] = N'InstallationReprocessingTonne');
+    IF @var40 IS NOT NULL EXEC(N'ALTER TABLE [Public.RegistrationMaterial] DROP CONSTRAINT [' + @var40 + '];');
+    ALTER TABLE [Public.RegistrationMaterial] ALTER COLUMN [InstallationReprocessingTonne] decimal(18,2) NULL;
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250629130952_RegistratinoMaterialNullableFields'
+)
+BEGIN
+    DECLARE @var41 sysname;
+    SELECT @var41 = [d].[name]
+    FROM [sys].[default_constraints] [d]
+    INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+    WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Public.RegistrationMaterial]') AND [c].[name] = N'EnvironmentalPermitWasteManagementTonne');
+    IF @var41 IS NOT NULL EXEC(N'ALTER TABLE [Public.RegistrationMaterial] DROP CONSTRAINT [' + @var41 + '];');
+    ALTER TABLE [Public.RegistrationMaterial] ALTER COLUMN [EnvironmentalPermitWasteManagementTonne] decimal(18,2) NULL;
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250629130952_RegistratinoMaterialNullableFields'
+)
+BEGIN
+    ALTER TABLE [Public.RegistrationMaterial] ADD CONSTRAINT [FK_Public.RegistrationMaterial_Lookup.MaterialPermit_PermitTypeId] FOREIGN KEY ([PermitTypeId]) REFERENCES [Lookup.MaterialPermit] ([Id]);
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250629130952_RegistratinoMaterialNullableFields'
+)
+BEGIN
+    INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+    VALUES (N'20250629130952_RegistratinoMaterialNullableFields', N'8.0.8');
+END;
+GO
+
+COMMIT;
+GO
+
