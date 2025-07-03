@@ -16,26 +16,29 @@ namespace EPR.PRN.Backend.Data.DataModels.Registrations
         public int Id { get; set; }
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid ExternalId { get; set; }
-        public required RegistrationMaterial RegistrationMaterial { get; set; }
+        public RegistrationMaterial RegistrationMaterial { get; set; }
         [ForeignKey("RegistrationMaterialId")]
         public int RegistrationMaterialId { get; set; }
         [MaxLength(100)]
-        public required string OrganisationName { get; set; }
+        public string OrganisationName { get; set; }
         [ForeignKey("CountryId")]
         public int CountryId { get; set; }
-        public required LookupCountry Country { get; set; }
+        public LookupCountry Country { get; set; }
         [MaxLength(100)]
-        public required string AddressLine1 { get; set; }
+        public string AddressLine1 { get; set; }
         [MaxLength(100)]
-        public required string AddressLine2 { get; set; }
+        public string AddressLine2 { get; set; }
         [MaxLength(70)]
-        public required string CityOrTown { get; set; }
+        public string CityOrTown { get; set; }
         [MaxLength(70)]
-        public required string StateProvince { get; set; }
+        public string StateProvince { get; set; }
         [MaxLength(20)]
-        public required string PostCode { get; set; }
+        public string PostCode { get; set; }
         public Guid CreatedBy { get; set; }
         public DateTime CreatedOn { get; set; }
-        public required string SiteCoordinates { get; set; }
+        public string SiteCoordinates { get; set; }
+        public List<OverseasAddressContact> OverseasAddressContacts { get; set; } = [];
+        public List<OverseasAddressWasteCode> OverseasAddressWasteCodes { get; set; } = [];
+        public List<OverseasMaterialReprocessingSite> OverseasMaterialReprocessingSites { get; set; } = [];
     }
 }

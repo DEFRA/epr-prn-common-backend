@@ -8,6 +8,7 @@ using FluentAssertions;
 using FluentAssertions.Execution;
 using Microsoft.EntityFrameworkCore;
 using System.Configuration;
+using System.Diagnostics.Metrics;
 using System.Threading.Tasks;
 
 namespace EPR.PRN.Backend.Data.UnitTests.Repositories.Regulator;
@@ -446,7 +447,7 @@ public class RegistrationMaterialRepositoryTests
             taskStatusEntry.StatusCreatedDate.Date.Should().Be(DateTime.UtcNow.Date);
         }
     }
-    
+
     [TestMethod]
     public async Task CreateRegistrationMaterialWithExemptionsAsync_ShouldCreateMaterialAndExemptions()
     {
@@ -501,7 +502,7 @@ public class RegistrationMaterialRepositoryTests
             createdMaterial.MaterialExemptionReferences!.Select(x => x.ReferenceNo).Should().Contain("EXEMPT789");
         }
     }
-    
+
     [TestMethod]
     public async Task CreateRegistrationMaterialWithExemptionsAsync_ShouldAllowEmptyExemptions()
     {
@@ -633,7 +634,7 @@ public class RegistrationMaterialRepositoryTests
         await Assert.ThrowsExceptionAsync<KeyNotFoundException>(() =>
             _repository.RegistrationMaterialsMarkAsDulyMade(materialId, 3, DateTime.UtcNow.AddDays(84), DateTime.UtcNow, Guid.NewGuid()));
     }
-  
+
     [TestMethod]
     public async Task RegistrationMaterialsMarkAsDulyMade_ShouldUpdateDeterminationDate_WhenItAlreadyExists()
     {
@@ -681,7 +682,7 @@ public class RegistrationMaterialRepositoryTests
         var id = Guid.Parse("a9421fc1-a912-42ee-85a5-3e06408759a9");
 
         // Act
-        await _repository.UpdateRegistrationOutCome(id, 2, null, null,Guid.Empty);
+        await _repository.UpdateRegistrationOutCome(id, 2, null, null, Guid.Empty);
         var updated = await _context.RegistrationMaterials.FindAsync(1);
 
         // Assert
@@ -721,7 +722,7 @@ public class RegistrationMaterialRepositoryTests
     public async Task CreateAsync_ExistingRegistrationMaterial_ShouldThrow()
     {
         // Act
-        var result = await _repository.CreateAsync(Guid.Parse("4bac12f7-f7a9-4df4-b7b5-9c4221860c4d"),"Plastic");
+        var result = await _repository.CreateAsync(Guid.Parse("4bac12f7-f7a9-4df4-b7b5-9c4221860c4d"), "Plastic");
 
         // Assert
         result.Registration.ExternalId.Should().Be("4bac12f7-f7a9-4df4-b7b5-9c4221860c4d");
@@ -740,7 +741,7 @@ public class RegistrationMaterialRepositoryTests
 
     [TestMethod]
     public async Task GetRegistrationMaterialsByRegistrationId_RegistrationIdDoesNotExists()
-    { 
+    {
         await Assert.ThrowsExceptionAsync<KeyNotFoundException>(() => _repository.GetRegistrationMaterialsByRegistrationId(Guid.NewGuid()));
     }
 
@@ -802,7 +803,7 @@ public class RegistrationMaterialRepositoryTests
     }
 
     [TestMethod]
-    [DataRow(1, "")] 
+    [DataRow(1, "")]
     [DataRow(2, "PPC-123")]
     [DataRow(3, "WML-123")]
     [DataRow(4, "IP-123")]
@@ -965,50 +966,227 @@ public class RegistrationMaterialRepositoryTests
         loaded.First().ExternalId.Should().Be(registrationMaterialExternalId2);
     }
 
-	[TestMethod]
-	public async Task UpdateIsMaterialRegisteredAsync_ShouldUpdateMaterialStatus()
-	{
-		// Arrange
-		var materialId = Guid.NewGuid();
-		var existingMaterial = new RegistrationMaterial
-		{
-			Id = 20,
-			ExternalId = materialId,
-			IsMaterialRegistered = false,
-			StatusId = (int)RegistrationMaterialStatus.Started
-		};
+    [TestMethod]
+    public async Task UpdateIsMaterialRegisteredAsync_ShouldUpdateMaterialStatus()
+    {
+        // Arrange
+        var materialId = Guid.NewGuid();
+        var existingMaterial = new RegistrationMaterial
+        {
+            Id = 20,
+            ExternalId = materialId,
+            IsMaterialRegistered = false,
+            StatusId = (int)RegistrationMaterialStatus.Started
+        };
 
-		await _context.RegistrationMaterials.AddAsync(existingMaterial);
-		await _context.SaveChangesAsync();
+        await _context.RegistrationMaterials.AddAsync(existingMaterial);
+        await _context.SaveChangesAsync();
 
-		var dto = new UpdateIsMaterialRegisteredDto
-		{
-			RegistrationMaterialId = materialId,
-			IsMaterialRegistered = true
-		};
+        var dto = new UpdateIsMaterialRegisteredDto
+        {
+            RegistrationMaterialId = materialId,
+            IsMaterialRegistered = true
+        };
 
-		// Act
-		await _repository.UpdateIsMaterialRegisteredAsync(new List<UpdateIsMaterialRegisteredDto> { dto });
+        // Act
+        await _repository.UpdateIsMaterialRegisteredAsync(new List<UpdateIsMaterialRegisteredDto> { dto });
 
-		// Assert
-		var updatedMaterial = await _context.RegistrationMaterials.SingleAsync(m => m.ExternalId == materialId);
-		updatedMaterial.IsMaterialRegistered.Should().BeTrue();
-		updatedMaterial.StatusId.Should().Be((int)RegistrationMaterialStatus.InProgress);
-	}
+        // Assert
+        var updatedMaterial = await _context.RegistrationMaterials.SingleAsync(m => m.ExternalId == materialId);
+        updatedMaterial.IsMaterialRegistered.Should().BeTrue();
+        updatedMaterial.StatusId.Should().Be((int)RegistrationMaterialStatus.InProgress);
+    }
 
-	[TestMethod]
-	public async Task UpdateIsMaterialRegisteredAsync_ShouldThrow_WhenNotFound()
-	{
-		var dto = new UpdateIsMaterialRegisteredDto
-		{
-			RegistrationMaterialId = Guid.NewGuid(),
-			IsMaterialRegistered = true
-		};
+    [TestMethod]
+    public async Task UpdateIsMaterialRegisteredAsync_ShouldThrow_WhenNotFound()
+    {
+        var dto = new UpdateIsMaterialRegisteredDto
+        {
+            RegistrationMaterialId = Guid.NewGuid(),
+            IsMaterialRegistered = true
+        };
 
-		await Assert.ThrowsExceptionAsync<KeyNotFoundException>(() => _repository.UpdateIsMaterialRegisteredAsync(new List<UpdateIsMaterialRegisteredDto> { dto }));
-	}
+        await Assert.ThrowsExceptionAsync<KeyNotFoundException>(() => _repository.UpdateIsMaterialRegisteredAsync(new List<UpdateIsMaterialRegisteredDto> { dto }));
+    }
 
-	[TestCleanup]
+    [TestMethod]
+    public async Task SaveOverseasReprocessingSites_Should_Update_Existing_And_Add_New()
+    {
+        //Arrange
+        var registrationExternalId = new Guid("6021d372-ab62-4e87-92e8-7544908453e6");
+        var registrationMaterialId = 5;
+        _context.RegistrationMaterials.Add(new RegistrationMaterial
+        {
+            Id = registrationMaterialId,
+            ExternalId = registrationExternalId,
+            RegistrationId = 1,
+            MaterialId = 1,
+            StatusId = 1,
+            IsMaterialRegistered = false
+        });
+        await _context.SaveChangesAsync();
+
+        _context.LookupCountries.Add(new LookupCountry { Id = 1, Name = "CountryA" });
+        await _context.SaveChangesAsync();
+
+        var existingExternalId = new Guid("6497f0b0-d55d-4462-a6e2-f32733bec6ea");
+
+        var userId = new Guid("ff027f06-04a1-4392-bb37-bc16cb3e7d9f");
+        var wasteCodeId = new Guid("5cf7d749-cdda-4bdd-8b6e-38e70259e560");
+
+        var existingAddress = new OverseasAddress
+        {
+            ExternalId = existingExternalId,
+            RegistrationMaterialId = registrationMaterialId,
+            AddressLine1 = "Old Line 1",
+            OrganisationName = "Old Org",
+            AddressLine2 = "Old Address Line 2",
+            CityOrTown = "Old Town",
+            StateProvince = "Old State",
+            PostCode = "12345",
+            SiteCoordinates = "51.5074, -0.1278",
+            OverseasAddressContacts = new List<OverseasAddressContact>
+            {
+                new OverseasAddressContact { CreatedBy = userId, FullName = "Old Contact", Email = "old@email.com", PhoneNumber = "111" }
+            },
+            OverseasAddressWasteCodes = new List<OverseasAddressWasteCode>
+            {
+                new OverseasAddressWasteCode { ExternalId = wasteCodeId, CodeName = "OldCode" }
+            }
+        };
+        _context.OverseasAddress.Add(existingAddress);
+        await _context.SaveChangesAsync();
+
+        var updateDto = new UpdateOverseasAddressDto
+        {
+            RegistrationMaterialId = registrationExternalId,
+            OverseasAddresses = new List<OverseasAddressDto>
+            {
+                new OverseasAddressDto
+                {
+                    ExternalId = existingExternalId,
+                    AddressLine1 = "New Line 1",
+                    OrganisationName = "New Org",
+                    OverseasAddressContacts = new List<OverseasAddressContactDto>
+                    {
+                        new OverseasAddressContactDto { CreatedBy = userId, FullName = "New Contact", Email = "new@email.com", PhoneNumber = "222" }
+                    },
+                    OverseasAddressWasteCodes = new List<OverseasAddressWasteCodeDto>
+                    {
+                        new OverseasAddressWasteCodeDto { ExternalId = wasteCodeId, CodeName = "NewCode" }
+                    },
+                    CountryName = "CountryA"
+                },
+                new OverseasAddressDto
+                {
+                    ExternalId = Guid.NewGuid(),
+                    OrganisationName = "New Org2",
+                    AddressLine1 = "New Address Line 2",
+                    OverseasAddressContacts = new List<OverseasAddressContactDto>(),
+                    OverseasAddressWasteCodes = new List<OverseasAddressWasteCodeDto>(),
+                    CountryName = "CountryA",
+                    AddressLine2 = "New Address Line 3",
+                    CityOrTown = "New Town",
+                    StateProvince = "New State",
+                    PostCode = "54321",
+                    SiteCoordinates = "52.5074, -0.1278",
+                }
+            }
+        };
+
+        // Act
+        await _repository.SaveOverseasReprocessingSites(updateDto);
+
+        // Assert
+        var allAddresses = await _context.OverseasAddress
+            .Include(a => a.OverseasAddressContacts)
+            .Include(a => a.OverseasAddressWasteCodes)
+            .ToListAsync();
+
+        // Old address updated
+        var updated = allAddresses.First(a => a.ExternalId == existingExternalId);
+        updated.AddressLine1.Should().Be("New Line 1");
+        updated.OverseasAddressContacts.Should().ContainSingle(c => c.CreatedBy == userId && c.FullName == "New Contact" && c.Email == "new@email.com");
+        updated.OverseasAddressWasteCodes.Should().ContainSingle(wc => wc.CodeName == "NewCode");
+
+        // New address added
+        allAddresses.Should().Contain(a => a.OrganisationName == "New Org" && a.AddressLine1 == "New Line 1");
+
+        // No addresses deleted incorrectly
+        allAddresses.Count.Should().Be(2);
+    }
+
+    [TestMethod]
+    public async Task SaveOverseasReprocessingSites_Should_Delete_Removed_Addresses()
+    {
+        // Arrange
+        var registrationExternalId = new Guid("6021d372-ab62-4e87-92e8-7544908453e6");
+        var registrationMaterialId = 202;
+        _context.RegistrationMaterials.Add(new RegistrationMaterial
+        {
+            Id = registrationMaterialId,
+            ExternalId = registrationExternalId,
+            RegistrationId = 1,
+            MaterialId = 1,
+            StatusId = 1,
+            IsMaterialRegistered = false
+        });
+        await _context.SaveChangesAsync();
+
+        var existingToKeep = new OverseasAddress
+        {
+            ExternalId = Guid.NewGuid(),
+            RegistrationMaterialId = registrationMaterialId,
+            AddressLine1 = "Keep This",
+            OrganisationName = "Old Org",
+            AddressLine2 = "Old Address Line 2",
+            CityOrTown = "Old Town",
+            StateProvince = "Old State",
+            PostCode = "12345",
+            SiteCoordinates = "51.5074, -0.1278",
+        };
+        var existingToDelete = new OverseasAddress
+        {
+            ExternalId = Guid.NewGuid(),
+            RegistrationMaterialId = registrationMaterialId,
+            AddressLine1 = "Delete This",
+            OrganisationName = "Old Org",
+            AddressLine2 = "Old Address Line 2",
+            CityOrTown = "Old Town",
+            StateProvince = "Old State",
+            PostCode = "12345",
+            SiteCoordinates = "51.5074, -0.1278",
+        };
+
+        _context.OverseasAddress.AddRange(existingToKeep, existingToDelete);
+        await _context.SaveChangesAsync();
+
+        var updateDto = new UpdateOverseasAddressDto
+        {
+            RegistrationMaterialId = registrationExternalId,
+            OverseasAddresses = new List<OverseasAddressDto>
+            {
+                new OverseasAddressDto
+                {
+                    ExternalId = existingToKeep.ExternalId,
+                    AddressLine1 = "Keep This Updated",
+                    OverseasAddressContacts = new List<OverseasAddressContactDto>(),
+                    OverseasAddressWasteCodes = new List<OverseasAddressWasteCodeDto>(),
+                    CountryName = ""
+                }
+            }
+        };
+
+        // Act
+        await _repository.SaveOverseasReprocessingSites(updateDto);
+
+        // Assert
+        var allAddresses = await _context.OverseasAddress.ToListAsync();
+        allAddresses.Should().ContainSingle(a => a.ExternalId == existingToKeep.ExternalId);
+        allAddresses.Should().NotContain(a => a.ExternalId == existingToDelete.ExternalId);
+    }
+
+    [TestCleanup]
     public void Cleanup()
     {
         _context.Database.EnsureDeleted();

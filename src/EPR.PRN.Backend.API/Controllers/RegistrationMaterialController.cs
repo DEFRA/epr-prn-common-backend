@@ -1,10 +1,10 @@
 ﻿using EPR.PRN.Backend.API.Commands;
 using EPR.PRN.Backend.API.Common.Constants;
 using EPR.PRN.Backend.API.Dto;
-using EPR.PRN.Backend.API.Dto.Exporter;
 using EPR.PRN.Backend.API.Dto.Regulator;
 using EPR.PRN.Backend.API.Queries;
 using EPR.PRN.Backend.API.Services.Interfaces;
+using EPR.PRN.Backend.Data.DataModels.Registrations;
 using EPR.PRN.Backend.Data.DTO;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -228,8 +228,19 @@ public class RegistrationMaterialController(
     [SwaggerResponse(StatusCodes.Status400BadRequest, "If the request is invalid or a validation error occurs.", typeof(ProblemDetails))]
     [SwaggerResponse(StatusCodes.Status500InternalServerError, "If an unexpected error occurs.", typeof(ContentResult))]
     [ExcludeFromCodeCoverage(Justification = "TODO: To be done as part of Check your answers overseas reprocessors site(s)")]
-    public async Task<IActionResult> SaveOverseasReprocessingSites([FromBody] OverseasAddressSubmissionDto OverseasAddressSubmission)
+    public async Task<IActionResult> SaveOverseasReprocessingSites([FromBody] OverseasAddressSubmissionDto overseasAddressSubmission)
     {
-        throw new NotImplementedException();
+        var command = new CreateOverseasMaterialReprocessingSiteCommand
+        {
+             UpdateOverseasAddress = new UpdateOverseasAddressDto
+             {
+                 OverseasAddresses = overseasAddressSubmission.OverseasAddresses,
+                 RegistrationMaterialId = overseasAddressSubmission.RegistrationMaterialId
+             }
+        };
+
+       await mediator.Send(command);
+
+       return NoContent();
     }
 }

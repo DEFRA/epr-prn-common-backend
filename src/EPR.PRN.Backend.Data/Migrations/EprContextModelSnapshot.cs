@@ -244,6 +244,9 @@ namespace EPR.PRN.Backend.Data.Migrations
                     b.Property<DateTime>("CalculatedOn")
                         .HasColumnType("datetime2");
 
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
                     b.Property<int>("MaterialId")
                         .HasColumnType("int");
 
@@ -252,6 +255,12 @@ namespace EPR.PRN.Backend.Data.Migrations
 
                     b.Property<Guid>("OrganisationId")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("SubmitterId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("SubmitterTypeId")
+                        .HasColumnType("int");
 
                     b.Property<int>("Tonnage")
                         .HasColumnType("int");
@@ -263,7 +272,41 @@ namespace EPR.PRN.Backend.Data.Migrations
 
                     b.HasIndex("MaterialId");
 
+                    b.HasIndex("SubmitterTypeId");
+
                     b.ToTable("ObligationCalculations", (string)null);
+                });
+
+            modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.ObligationCalculationOrganisationSubmitterType", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("TypeName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TypeName")
+                        .IsUnique();
+
+                    b.ToTable("ObligationCalculationOrganisationSubmitterType", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            TypeName = "ComplianceScheme"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            TypeName = "DirectRegistrant"
+                        });
                 });
 
             modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.PEprNpwdSync", b =>
@@ -829,6 +872,18 @@ namespace EPR.PRN.Backend.Data.Migrations
                         .HasMaxLength(12)
                         .HasColumnType("nvarchar(12)");
 
+                    b.Property<string>("BusinessCollectionsNotes")
+                        .HasColumnType("varchar(500)");
+
+                    b.Property<decimal?>("BusinessCollectionsPercentage")
+                        .HasColumnType("decimal(10,2)");
+
+                    b.Property<string>("CommunicationsNotes")
+                        .HasColumnType("varchar(500)");
+
+                    b.Property<decimal?>("CommunicationsPercentage")
+                        .HasColumnType("decimal(10,2)");
+
                     b.Property<DateTime?>("CreatedOn")
                         .HasColumnType("datetime2");
 
@@ -836,11 +891,44 @@ namespace EPR.PRN.Backend.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("InfrastructureNotes")
+                        .HasColumnType("varchar(500)");
+
+                    b.Property<decimal?>("InfrastructurePercentage")
+                        .HasColumnType("decimal(10,2)");
+
+                    b.Property<string>("NewMarketsNotes")
+                        .HasColumnType("varchar(500)");
+
+                    b.Property<decimal?>("NewMarketsPercentage")
+                        .HasColumnType("decimal(10,2)");
+
+                    b.Property<string>("NewUsersRecycledPackagingWasteNotes")
+                        .HasColumnType("varchar(500)");
+
+                    b.Property<decimal?>("NewUsersRecycledPackagingWastePercentage")
+                        .HasColumnType("decimal(10,2)");
+
+                    b.Property<string>("NotCoveredOtherCategoriesNotes")
+                        .HasColumnType("varchar(500)");
+
+                    b.Property<decimal?>("NotCoveredOtherCategoriesPercentage")
+                        .HasColumnType("decimal(10,2)");
+
                     b.Property<int>("PRNTonnage")
                         .HasColumnType("int");
 
+                    b.Property<string>("RecycledWasteNotes")
+                        .HasColumnType("varchar(500)");
+
+                    b.Property<decimal?>("RecycledWastePercentage")
+                        .HasColumnType("decimal(10,2)");
+
                     b.Property<int>("RegistrationMaterialId")
                         .HasColumnType("int");
+
+                    b.Property<decimal?>("TotalPercentage")
+                        .HasColumnType("decimal(10,2)");
 
                     b.HasKey("Id");
 
@@ -1037,9 +1125,6 @@ namespace EPR.PRN.Backend.Data.Migrations
                     b.Property<int?>("RegistrationId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("RegistrationMaterialId")
-                        .HasColumnType("int");
-
                     b.Property<int?>("TaskId")
                         .HasColumnType("int");
 
@@ -1052,8 +1137,6 @@ namespace EPR.PRN.Backend.Data.Migrations
                         .IsUnique();
 
                     b.HasIndex("RegistrationId");
-
-                    b.HasIndex("RegistrationMaterialId");
 
                     b.HasIndex("TaskId");
 
@@ -1271,163 +1354,6 @@ namespace EPR.PRN.Backend.Data.Migrations
                         });
                 });
 
-            modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.LookupApplicantRegistrationTask", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("ApplicationTypeId")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("IsMaterialSpecific")
-                        .HasColumnType("bit");
-
-                    b.Property<int>("JourneyTypeId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Lookup.Task");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            ApplicationTypeId = 1,
-                            IsMaterialSpecific = false,
-                            JourneyTypeId = 1,
-                            Name = "SiteAddressAndContactDetails"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            ApplicationTypeId = 1,
-                            IsMaterialSpecific = true,
-                            JourneyTypeId = 1,
-                            Name = "WasteLicensesPermitsAndExemptions"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            ApplicationTypeId = 1,
-                            IsMaterialSpecific = true,
-                            JourneyTypeId = 1,
-                            Name = "ReprocessingInputsAndOutputs"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            ApplicationTypeId = 1,
-                            IsMaterialSpecific = true,
-                            JourneyTypeId = 1,
-                            Name = "SamplingAndInspectionPlan"
-                        },
-                        new
-                        {
-                            Id = 5,
-                            ApplicationTypeId = 2,
-                            IsMaterialSpecific = false,
-                            JourneyTypeId = 1,
-                            Name = "WasteLicensesPermitsAndExemptions"
-                        },
-                        new
-                        {
-                            Id = 6,
-                            ApplicationTypeId = 2,
-                            IsMaterialSpecific = true,
-                            JourneyTypeId = 1,
-                            Name = "SamplingAndInspectionPlan"
-                        },
-                        new
-                        {
-                            Id = 7,
-                            ApplicationTypeId = 2,
-                            IsMaterialSpecific = true,
-                            JourneyTypeId = 1,
-                            Name = "OverseasReprocessingSites"
-                        },
-                        new
-                        {
-                            Id = 8,
-                            ApplicationTypeId = 2,
-                            IsMaterialSpecific = true,
-                            JourneyTypeId = 1,
-                            Name = "InterimSites"
-                        },
-                        new
-                        {
-                            Id = 9,
-                            ApplicationTypeId = 1,
-                            IsMaterialSpecific = true,
-                            JourneyTypeId = 2,
-                            Name = "PRNsTonnageAndAuthorityToIssuePRNs"
-                        },
-                        new
-                        {
-                            Id = 10,
-                            ApplicationTypeId = 1,
-                            IsMaterialSpecific = true,
-                            JourneyTypeId = 2,
-                            Name = "BusinessPlan"
-                        },
-                        new
-                        {
-                            Id = 11,
-                            ApplicationTypeId = 1,
-                            IsMaterialSpecific = true,
-                            JourneyTypeId = 2,
-                            Name = "AccreditationSamplingAndInspectionPlan"
-                        },
-                        new
-                        {
-                            Id = 12,
-                            ApplicationTypeId = 2,
-                            IsMaterialSpecific = true,
-                            JourneyTypeId = 2,
-                            Name = "PERNsTonnageAndAuthorityToIssuePERNs"
-                        },
-                        new
-                        {
-                            Id = 13,
-                            ApplicationTypeId = 2,
-                            IsMaterialSpecific = true,
-                            JourneyTypeId = 2,
-                            Name = "BusinessPlan"
-                        },
-                        new
-                        {
-                            Id = 14,
-                            ApplicationTypeId = 2,
-                            IsMaterialSpecific = true,
-                            JourneyTypeId = 2,
-                            Name = "AccreditationSamplingAndInspectionPlan"
-                        },
-                        new
-                        {
-                            Id = 15,
-                            ApplicationTypeId = 2,
-                            IsMaterialSpecific = true,
-                            JourneyTypeId = 2,
-                            Name = "OverseasReprocessingSitesAndEvidenceOfBroadlyEquivalentStandards"
-                        },
-                        new
-                        {
-                            Id = 16,
-                            ApplicationTypeId = 2,
-                            IsMaterialSpecific = false,
-                            JourneyTypeId = 1,
-                            Name = "WasteCarrierBrokerDealerNumber"
-                        });
-                });
-
             modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.LookupApplicationType", b =>
                 {
                     b.Property<int>("Id")
@@ -1477,7 +1403,7 @@ namespace EPR.PRN.Backend.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Lookup.Country");
+                    b.ToTable("Lookup.Country", (string)null);
 
                     b.HasData(
                         new
@@ -3254,11 +3180,6 @@ namespace EPR.PRN.Backend.Data.Migrations
                         {
                             Id = 11,
                             Name = "ReadyToSubmit"
-                        },
-                        new
-                        {
-                            Id = 12,
-                            Name = "InProgress"
                         });
                 });
 
@@ -3678,7 +3599,7 @@ namespace EPR.PRN.Backend.Data.Migrations
 
                     b.HasIndex("RegistrationMaterialId");
 
-                    b.ToTable("Public.OverseasAddress");
+                    b.ToTable("Public.OverseasAddress", (string)null);
                 });
 
             modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.OverseasAddressContact", b =>
@@ -3717,7 +3638,7 @@ namespace EPR.PRN.Backend.Data.Migrations
 
                     b.HasIndex("OverseasAddressId");
 
-                    b.ToTable("Public.OverseasAddressContact");
+                    b.ToTable("Public.OverseasAddressContact", (string)null);
                 });
 
             modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.OverseasAddressWasteCode", b =>
@@ -3744,7 +3665,7 @@ namespace EPR.PRN.Backend.Data.Migrations
 
                     b.HasIndex("OverseasAddressId");
 
-                    b.ToTable("Public.OverseasAddressWasteCode");
+                    b.ToTable("Public.OverseasAddressWasteCode", (string)null);
                 });
 
             modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.OverseasMaterialReprocessingSite", b =>
@@ -3771,7 +3692,7 @@ namespace EPR.PRN.Backend.Data.Migrations
 
                     b.HasIndex("RegistrationMaterialId");
 
-                    b.ToTable("Public.OverseasMaterialReprocessingSite");
+                    b.ToTable("Public.OverseasMaterialReprocessingSite", (string)null);
                 });
 
             modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.Registration", b =>
@@ -3909,7 +3830,7 @@ namespace EPR.PRN.Backend.Data.Migrations
                     b.Property<int?>("EnvironmentalPermitWasteManagementPeriodId")
                         .HasColumnType("int");
 
-                    b.Property<decimal?>("EnvironmentalPermitWasteManagementTonne")
+                    b.Property<decimal>("EnvironmentalPermitWasteManagementTonne")
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<Guid>("ExternalId")
@@ -3923,7 +3844,7 @@ namespace EPR.PRN.Backend.Data.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
-                    b.Property<decimal?>("InstallationReprocessingTonne")
+                    b.Property<decimal>("InstallationReprocessingTonne")
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<bool>("IsMaterialRegistered")
@@ -3932,7 +3853,7 @@ namespace EPR.PRN.Backend.Data.Migrations
                     b.Property<int>("MaterialId")
                         .HasColumnType("int");
 
-                    b.Property<decimal?>("MaximumReprocessingCapacityTonne")
+                    b.Property<decimal>("MaximumReprocessingCapacityTonne")
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<int?>("MaximumReprocessingPeriodId")
@@ -3945,10 +3866,10 @@ namespace EPR.PRN.Backend.Data.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
-                    b.Property<decimal?>("PPCReprocessingCapacityTonne")
+                    b.Property<decimal>("PPCReprocessingCapacityTonne")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<int?>("PermitTypeId")
+                    b.Property<int>("PermitTypeId")
                         .HasColumnType("int");
 
                     b.Property<string>("ReasonforNotreg")
@@ -3976,7 +3897,7 @@ namespace EPR.PRN.Backend.Data.Migrations
                     b.Property<int?>("WasteManagementPeriodId")
                         .HasColumnType("int");
 
-                    b.Property<decimal?>("WasteManagementReprocessingCapacityTonne")
+                    b.Property<decimal>("WasteManagementReprocessingCapacityTonne")
                         .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
@@ -4003,35 +3924,6 @@ namespace EPR.PRN.Backend.Data.Migrations
                     b.HasIndex("WasteManagementPeriodId");
 
                     b.ToTable("Public.RegistrationMaterial", (string)null);
-                });
-
-            modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.RegistrationMaterialContact", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<Guid>("ExternalId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("RegistrationMaterialId")
-                        .HasColumnType("int");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ExternalId")
-                        .IsUnique();
-
-                    b.HasIndex("RegistrationMaterialId")
-                        .IsUnique();
-
-                    b.ToTable("Public.RegistrationMaterialContact");
                 });
 
             modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.RegistrationReprocessingIO", b =>
@@ -4077,7 +3969,7 @@ namespace EPR.PRN.Backend.Data.Migrations
                     b.Property<decimal>("TotalOutputs")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<string>("TypeOfSuppliers")
+                    b.Property<string>("TypeOfSupplier")
                         .HasMaxLength(2000)
                         .HasColumnType("nvarchar(2000)");
 
@@ -4316,7 +4208,15 @@ namespace EPR.PRN.Backend.Data.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
+                    b.HasOne("EPR.PRN.Backend.Data.DataModels.ObligationCalculationOrganisationSubmitterType", "ObligationCalculationOrganisationSubmitterType")
+                        .WithMany()
+                        .HasForeignKey("SubmitterTypeId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
                     b.Navigation("Material");
+
+                    b.Navigation("ObligationCalculationOrganisationSubmitterType");
                 });
 
             modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.PrnMaterialMapping", b =>
@@ -4413,11 +4313,7 @@ namespace EPR.PRN.Backend.Data.Migrations
                         .WithMany("ApplicantRegistrationTasksStatus")
                         .HasForeignKey("RegistrationId");
 
-                    b.HasOne("EPR.PRN.Backend.Data.DataModels.Registrations.RegistrationMaterial", "RegistrationMaterial")
-                        .WithMany("ApplicantTaskStatuses")
-                        .HasForeignKey("RegistrationMaterialId");
-
-                    b.HasOne("EPR.PRN.Backend.Data.DataModels.Registrations.LookupApplicantRegistrationTask", "Task")
+                    b.HasOne("EPR.PRN.Backend.Data.DataModels.Registrations.LookupRegulatorTask", "Task")
                         .WithMany()
                         .HasForeignKey("TaskId");
 
@@ -4426,8 +4322,6 @@ namespace EPR.PRN.Backend.Data.Migrations
                         .HasForeignKey("TaskStatusId");
 
                     b.Navigation("Registration");
-
-                    b.Navigation("RegistrationMaterial");
 
                     b.Navigation("Task");
 
@@ -4623,7 +4517,9 @@ namespace EPR.PRN.Backend.Data.Migrations
 
                     b.HasOne("EPR.PRN.Backend.Data.DataModels.Registrations.LookupMaterialPermit", "PermitType")
                         .WithMany()
-                        .HasForeignKey("PermitTypeId");
+                        .HasForeignKey("PermitTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("EPR.PRN.Backend.Data.DataModels.Registrations.Registration", "Registration")
                         .WithMany("Materials")
@@ -4656,15 +4552,6 @@ namespace EPR.PRN.Backend.Data.Migrations
                     b.Navigation("Status");
 
                     b.Navigation("WasteManagementPeriod");
-                });
-
-            modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.RegistrationMaterialContact", b =>
-                {
-                    b.HasOne("EPR.PRN.Backend.Data.DataModels.Registrations.RegistrationMaterial", null)
-                        .WithOne("RegistrationMaterialContact")
-                        .HasForeignKey("EPR.PRN.Backend.Data.DataModels.Registrations.RegistrationMaterialContact", "RegistrationMaterialId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.RegistrationReprocessingIO", b =>
@@ -4836,8 +4723,6 @@ namespace EPR.PRN.Backend.Data.Migrations
                 {
                     b.Navigation("Accreditations");
 
-                    b.Navigation("ApplicantTaskStatuses");
-
                     b.Navigation("DeterminationDate");
 
                     b.Navigation("DulyMade");
@@ -4845,8 +4730,6 @@ namespace EPR.PRN.Backend.Data.Migrations
                     b.Navigation("FileUploads");
 
                     b.Navigation("MaterialExemptionReferences");
-
-                    b.Navigation("RegistrationMaterialContact");
 
                     b.Navigation("RegistrationReprocessingIO");
 
