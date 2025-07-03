@@ -16,9 +16,9 @@ namespace EPR.PRN.Backend.Data.DataModels.Registrations
         public int Id { get; set; }
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid ExternalId { get; set; }
-        public RegistrationMaterial RegistrationMaterial { get; set; }
-        [ForeignKey("RegistrationMaterialId")]
-        public int RegistrationMaterialId { get; set; }
+        public Registration Registration { get; set; }
+        [ForeignKey("RegistrationId")]
+        public int RegistrationId { get; set; }
         [MaxLength(100)]
         public string OrganisationName { get; set; }
         [ForeignKey("CountryId")]
@@ -27,18 +27,21 @@ namespace EPR.PRN.Backend.Data.DataModels.Registrations
         [MaxLength(100)]
         public string AddressLine1 { get; set; }
         [MaxLength(100)]
-        public string AddressLine2 { get; set; }
+        public string? AddressLine2 { get; set; }
         [MaxLength(70)]
         public string CityOrTown { get; set; }
         [MaxLength(70)]
-        public string StateProvince { get; set; }
+        public string? StateProvince { get; set; }
         [MaxLength(20)]
-        public string PostCode { get; set; }
+        public string? PostCode { get; set; }
         public Guid CreatedBy { get; set; }
+        public Guid UpdatedBy { get; set; }
         public DateTime CreatedOn { get; set; }
+        public DateTime UpdatedOn { get; set; }
         public string SiteCoordinates { get; set; }
         public List<OverseasAddressContact> OverseasAddressContacts { get; set; } = [];
         public List<OverseasAddressWasteCode> OverseasAddressWasteCodes { get; set; } = [];
         public List<OverseasMaterialReprocessingSite> OverseasMaterialReprocessingSites { get; set; } = [];
+        public List<InterimOverseasConnections> InterimOverseasConnections { get; set; } = [];
     }
 }

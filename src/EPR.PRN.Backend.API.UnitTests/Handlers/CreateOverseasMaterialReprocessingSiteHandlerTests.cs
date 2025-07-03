@@ -1,19 +1,20 @@
 ﻿using EPR.PRN.Backend.API.Commands;
 using EPR.PRN.Backend.API.Handlers.Regulator;
 using EPR.PRN.Backend.Data.DTO;
+using EPR.PRN.Backend.Data.Interfaces;
 using EPR.PRN.Backend.Data.Interfaces.Regulator;
 using Moq;
 
 [TestClass]
 public class CreateOverseasMaterialReprocessingSiteHandlerTests
 {
-    private Mock<IRegistrationMaterialRepository> _repositoryMock = null!;
+    private Mock<IMaterialRepository> _repositoryMock = null!;
     private CreateOverseasMaterialReprocessingSiteHandler _handler = null!;
 
     [TestInitialize]
     public void Setup()
     {
-        _repositoryMock = new Mock<IRegistrationMaterialRepository>();
+        _repositoryMock = new Mock<IMaterialRepository>();
         _handler = new CreateOverseasMaterialReprocessingSiteHandler(_repositoryMock.Object);
     }
 

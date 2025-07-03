@@ -385,19 +385,19 @@ public class EprContext : DbContext
             .HasIndex(e => e.ExternalId)
             .IsUnique(); // Ensures UniqueId is unique
 
-        modelBuilder.Entity<OverseasAddress>().HasOne(o => o.RegistrationMaterial)
+        modelBuilder.Entity<OverseasAddress>().HasOne(o => o.Registration)
             .WithMany(rm => rm.OverseasAddresses)
-            .HasForeignKey(o => o.RegistrationMaterialId);
+            .HasForeignKey(o => o.RegistrationId);
 
         modelBuilder.Entity<OverseasAddress>().HasMany(o => o.OverseasAddressWasteCodes)
             .WithOne(o => o.OverseasAddress)
             .HasForeignKey(o => o.OverseasAddressId)
-            .OnDelete(DeleteBehavior.Cascade); // Ensures that when OverseasAddress is deleted, its waste codes are also deleted
+            .OnDelete(DeleteBehavior.Cascade);
 
         modelBuilder.Entity<OverseasAddress>().HasMany(o => o.OverseasAddressContacts)
             .WithOne(o => o.OverseasAddress)
             .HasForeignKey(o => o.OverseasAddressId)
-            .OnDelete(DeleteBehavior.Cascade); // Ensures that when OverseasAddress is deleted, its contacts are also deleted
+            .OnDelete(DeleteBehavior.Cascade);
 
         modelBuilder.Entity<OverseasAddress>()
             .Property(e => e.CreatedOn).HasDefaultValueSql("GETUTCDATE()");
@@ -412,6 +412,30 @@ public class EprContext : DbContext
 
         modelBuilder.Entity<OverseasAddressContact>()
             .Property(e => e.CreatedOn).HasDefaultValueSql("GETUTCDATE()");
+
+        modelBuilder.Entity<InterimOverseasConnections>()
+            .HasIndex(e => e.ExternalId)
+            .IsUnique(); // Ensures UniqueId is unique
+
+        modelBuilder.Entity<OverseasMaterialReprocessingSite>()
+            .HasIndex(e => e.ExternalId)
+            .IsUnique(); // Ensures UniqueId is unique
+
+        modelBuilder.Entity<OverseasMaterialReprocessingSite>()
+            .HasMany(o => o.OverseasAddresses)
+            .WithMany(x => x.OverseasMaterialReprocessingSites);
+
+        modelBuilder.Entity<OverseasMaterialReprocessingSite>().HasMany(o => o.RegistrationMaterials)
+            .WithMany(x => x.OverseasMaterialReprocessingSites);
+
+        modelBuilder.Entity<OverseasMaterialReprocessingSite>().HasMany(o => o.OverseasAddresses)
+            .WithMany(x => x.OverseasMaterialReprocessingSites);
+
+        modelBuilder.Entity<InterimOverseasConnections>().HasOne(o => o.OverseasAddress)
+            .WithMany(rm => rm.InterimOverseasConnections)
+            .HasForeignKey(o => o.ParentOverseasAddressId)
+            .OnDelete(DeleteBehavior.Cascade);
+
 
         base.OnModelCreating(modelBuilder);
     }
@@ -466,4 +490,5 @@ public class EprContext : DbContext
     public virtual DbSet<OverseasAddressContact> OverseasAddressContact { get; set; }
     public virtual DbSet<OverseasAddressWasteCode> OverseasAddressWasteCode { get; set; }
     public virtual DbSet<OverseasMaterialReprocessingSite> OverseasMaterialReprocessingSite { get; set; }
+    public virtual DbSet<InterimOverseasConnections> InterimOverseasConnections { get; set; }
 }
