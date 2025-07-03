@@ -52,9 +52,9 @@ namespace EPR.PRN.Backend.Data.Repositories
             return registrationMaterialContact;
         }
 
-        public async Task UpdateApplicantRegistrationTaskStatusAsync(string taskName, Guid registrationMaterialId, TaskStatuses status)
+        public async Task UpdateApplicationRegistrationTaskStatusAsync(string taskName, Guid registrationMaterialId, TaskStatuses status)
         {
-            logger.LogInformation("Updating applicant status for task with TaskName {TaskName} And registrationMaterialId {registrationMaterialId} to {Status}", taskName, registrationMaterialId, status);
+            logger.LogInformation("Updating application status for task with TaskName {TaskName} And registrationMaterialId {registrationMaterialId} to {Status}", taskName, registrationMaterialId, status);
 
             var statusEntity = await context.LookupTaskStatuses.SingleAsync(lts => lts.Name == status.ToString());
 

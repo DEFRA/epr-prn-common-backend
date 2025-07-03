@@ -153,7 +153,7 @@ public class MaterialRepositoryTests
     }
 
     [TestMethod]
-    public async Task UpdateApplicantRegistrationTaskStatusAsync_ShouldAddNewStatus_WhenNotExists()
+    public async Task UpdateApplicationRegistrationTaskStatusAsync_ShouldAddNewStatus_WhenNotExists()
     {
         // Arrange
         var registrationMaterialId = Guid.NewGuid();
@@ -169,7 +169,7 @@ public class MaterialRepositoryTests
         await _context.SaveChangesAsync();
 
         // Act
-        await _materialRepositoryFull.UpdateApplicantRegistrationTaskStatusAsync("NewTask", registrationMaterialId, TaskStatuses.Completed);
+        await _materialRepositoryFull.UpdateApplicationRegistrationTaskStatusAsync("NewTask", registrationMaterialId, TaskStatuses.Completed);
 
         // Assert
         var result = await _materialRepositoryFull.GetTaskStatusAsync("NewTask", registrationMaterialId);
@@ -178,7 +178,7 @@ public class MaterialRepositoryTests
     }
 
     [TestMethod]
-    public async Task UpdateApplicantRegistrationTaskStatusAsync_ShouldUpdateExistingStatus()
+    public async Task UpdateApplicationRegistrationTaskStatusAsync_ShouldUpdateExistingStatus()
     {
         // Arrange
         var registrationMaterialId = Guid.NewGuid();
@@ -205,7 +205,7 @@ public class MaterialRepositoryTests
         await _context.SaveChangesAsync();
 
         // Act
-        await _materialRepositoryFull.UpdateApplicantRegistrationTaskStatusAsync("ExistingTask", registrationMaterialId, TaskStatuses.Completed);
+        await _materialRepositoryFull.UpdateApplicationRegistrationTaskStatusAsync("ExistingTask", registrationMaterialId, TaskStatuses.Completed);
 
         // Assert
         var result = await _materialRepositoryFull.GetTaskStatusAsync("ExistingTask", registrationMaterialId);
@@ -213,7 +213,7 @@ public class MaterialRepositoryTests
     }
 
     [TestMethod]
-    public async Task UpdateApplicantRegistrationTaskStatusAsync_ShouldThrow_WhenRegistrationNotFound()
+    public async Task UpdateApplicationRegistrationTaskStatusAsync_ShouldThrow_WhenRegistrationNotFound()
     {
         // Arrange
         var registrationId = Guid.NewGuid();
@@ -222,14 +222,14 @@ public class MaterialRepositoryTests
         await _context.SaveChangesAsync();
 
         // Act
-        Func<Task> act = async () => await _materialRepositoryFull.UpdateApplicantRegistrationTaskStatusAsync("AnyTask", registrationId, TaskStatuses.Completed);
+        Func<Task> act = async () => await _materialRepositoryFull.UpdateApplicationRegistrationTaskStatusAsync("AnyTask", registrationId, TaskStatuses.Completed);
 
         // Assert
         await act.Should().ThrowAsync<KeyNotFoundException>();
     }
 
     [TestMethod]
-    public async Task UpdateApplicantRegistrationTaskStatusAsync_ShouldThrow_WhenTaskNotFound()
+    public async Task UpdateApplicationRegistrationTaskStatusAsync_ShouldThrow_WhenTaskNotFound()
     {
         // Arrange
         var registrationMaterialId = Guid.NewGuid();
@@ -243,7 +243,7 @@ public class MaterialRepositoryTests
         await _context.SaveChangesAsync();
 
         // Act
-        Func<Task> act = async () => await _materialRepositoryFull.UpdateApplicantRegistrationTaskStatusAsync("MissingTask", registrationMaterialId, TaskStatuses.Completed);
+        Func<Task> act = async () => await _materialRepositoryFull.UpdateApplicationRegistrationTaskStatusAsync("MissingTask", registrationMaterialId, TaskStatuses.Completed);
 
         // Assert
         await act.Should().ThrowAsync<RegulatorInvalidOperationException>()

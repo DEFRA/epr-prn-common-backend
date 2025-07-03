@@ -11,15 +11,15 @@ using EPR.PRN.Backend.API.Common.Enums;
 namespace EPR.PRN.Backend.API.UnitTests.Handlers
 {
     [TestClass]
-    public class UpdateApplicantRegistrationTaskStatusHandlerTests
+    public class UpdateApplicationRegistrationTaskStatusHandlerTests
     {
         [TestMethod]
-        public async Task Handle_CallsUpdateApplicantRegistrationTaskStatusAsync()
+        public async Task Handle_CallsUpdateApplicationRegistrationTaskStatusAsync()
         {
             // Arrange
             var mockRepo = new Mock<IMaterialRepository>();
-            var handler = new UpdateApplicantRegistrationTaskStatusHandler(mockRepo.Object);
-            var command = new UpdateApplicantRegistrationTaskStatusCommand
+            var handler = new UpdateApplicationRegistrationTaskStatusHandler(mockRepo.Object);
+            var command = new UpdateApplicationRegistrationTaskStatusCommand
             {
                 TaskName = "SomeTask",
                 RegistrationId = Guid.NewGuid(),
@@ -30,7 +30,7 @@ namespace EPR.PRN.Backend.API.UnitTests.Handlers
             await handler.Handle(command, CancellationToken.None);
 
             // Assert
-            mockRepo.Verify(r => r.UpdateApplicantRegistrationTaskStatusAsync(command.TaskName, command.RegistrationId, command.Status), Times.Once);
+            mockRepo.Verify(r => r.UpdateApplicationRegistrationTaskStatusAsync(command.TaskName, command.RegistrationId, command.Status), Times.Once);
         }
     }
 }

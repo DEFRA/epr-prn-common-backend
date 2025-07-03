@@ -6,14 +6,14 @@ using FluentValidation.TestHelper;
 namespace EPR.PRN.Backend.API.UnitTests.Validators;
 
 [TestClass]
-public class UpdateApplicantRegistrationTaskStatusCommandValidatorTests
+public class UpdateApplicationRegistrationTaskStatusCommandValidatorTests
 {
-    private UpdateApplicantRegistrationTaskStatusCommandValidator _validator;
+    private UpdateApplicationRegistrationTaskStatusCommandValidator _validator;
 
     [TestInitialize]
     public void Setup()
     {
-        _validator = new UpdateApplicantRegistrationTaskStatusCommandValidator();
+        _validator = new UpdateApplicationRegistrationTaskStatusCommandValidator();
     }
 
     [TestMethod]
@@ -24,7 +24,7 @@ public class UpdateApplicantRegistrationTaskStatusCommandValidatorTests
     {
         // Arrange
         var registrationId = Guid.NewGuid();
-        var command = new UpdateApplicantRegistrationTaskStatusCommand
+        var command = new UpdateApplicationRegistrationTaskStatusCommand
         { 
             Status = validStatus, 
             RegistrationId = registrationId, 
@@ -44,7 +44,7 @@ public class UpdateApplicantRegistrationTaskStatusCommandValidatorTests
     {
         // Arrange
         var registrationId = Guid.NewGuid();
-        var command = new UpdateApplicantRegistrationTaskStatusCommand
+        var command = new UpdateApplicationRegistrationTaskStatusCommand
         { 
             Status = invalidStatus,
             RegistrationId = registrationId,
