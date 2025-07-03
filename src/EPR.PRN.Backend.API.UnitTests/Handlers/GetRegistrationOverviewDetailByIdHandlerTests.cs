@@ -1,18 +1,15 @@
 ﻿using AutoMapper;
-using EPR.PRN.Backend.API.Queries;
 using EPR.PRN.Backend.Data.DataModels.Registrations;
-using EPR.PRN.Backend.Data.Interfaces.Regulator;
 using FluentAssertions;
 using Moq;
 using EPR.PRN.Backend.API.Common.Enums;
 using EPR.PRN.Backend.API.Handlers.Regulator;
-using EPR.PRN.Backend.API.Profiles.Regulator;
 using EPR.PRN.Backend.Data.Interfaces;
 
 namespace EPR.PRN.Backend.API.UnitTests.Handlers;
 
 [TestClass]
-public class GetRegistrationOverviewDetailByIdHandlerTests
+public class GetRegistrationOverviewDetailByIdHandlerTests : HandlerTestsBase
 {
     private Mock<IRegistrationRepository> _repoMock;
     private IMapper _mapper;
@@ -22,13 +19,7 @@ public class GetRegistrationOverviewDetailByIdHandlerTests
     public void TestInitialize()
     {
         _repoMock = new Mock<IRegistrationRepository>();
-
-        var config = new MapperConfiguration(cfg =>
-        {
-            cfg.AddProfile<RegistrationMaterialProfile>(); 
-        });
-        _mapper = config.CreateMapper();
-
+        _mapper = Mapper.CreateMapper();
         _handler = new GetRegistrationOverviewDetailByIdHandler(_repoMock.Object, _mapper);
     }
 
@@ -68,12 +59,12 @@ public class GetRegistrationOverviewDetailByIdHandlerTests
             ]
         };
 
-        var requiredTasks = new List<LookupRegulatorTask>
+        var requiredTasks = new List<LookupApplicantRegistrationTask>
         {
             new() { Name = "SiteAddressAndContactDetails" }
         };
         
-        var requiredMaterialTasks = new List<LookupRegulatorTask>
+        var requiredMaterialTasks = new List<LookupApplicantRegistrationTask>
         {
             new() { Name = "BusinessAddress" }
         };
@@ -122,12 +113,12 @@ public class GetRegistrationOverviewDetailByIdHandlerTests
             ]
         };
 
-        var requiredTasks = new List<LookupRegulatorTask>
+        var requiredTasks = new List<LookupApplicantRegistrationTask>
         {
             new() { Name = "SiteAddressAndContactDetails" }
         };
 
-        var requiredMaterialTasks = new List<LookupRegulatorTask>
+        var requiredMaterialTasks = new List<LookupApplicantRegistrationTask>
         {
             new() { Name = "BusinessAddress" }
         };
@@ -165,7 +156,7 @@ public class GetRegistrationOverviewDetailByIdHandlerTests
             ApplicationTypeId = 101
         };
 
-        var requiredTasks = new List<LookupRegulatorTask>
+        var requiredTasks = new List<LookupApplicantRegistrationTask>
         {
             new() { Name = "SiteAddressAndContactDetails" }
         };

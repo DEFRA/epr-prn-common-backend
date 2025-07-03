@@ -20,7 +20,7 @@ public class RegistrationTaskOverviewProfile : Profile
         CreateMap<Registration, RegistrationTaskOverviewDto>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.ExternalId))
             .ForMember(dest => dest.Regulator, opt => opt.MapFrom(_ => "EA"))
-            .ForMember(dest => dest.Materials, opt => opt.MapFrom(src => (src.Materials ?? new List<RegistrationMaterial>()).Where(m => m.IsMaterialRegistered)))
+            .ForMember(dest => dest.Materials, opt => opt.MapFrom(src => src.Materials ?? new List<RegistrationMaterial>()))
             .ForMember(dest => dest.Tasks, opt => opt.MapFrom((src, dest, _, context) => MapTasks(src.ApplicantRegistrationTasksStatus, context)));
     }
     

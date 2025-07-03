@@ -167,6 +167,17 @@ public class GetRegistrationTaskOverviewDetailByIdHandlerTests : HandlerTestsBas
             }
         ]);
 
+        _mockRegistrationRepository.Setup(o => o.GetRequiredTasks(1, true, 1)).ReturnsAsync([
+            new()
+            {
+                Id = 2,
+                Name = "task 2",
+                ApplicationTypeId = 1,
+                IsMaterialSpecific = true,
+                JourneyTypeId = 1
+            }
+        ]);
+
         // Act
         var result = await _handler.Handle(new GetRegistrationTaskOverviewByIdQuery
         {
@@ -195,6 +206,6 @@ public class GetRegistrationTaskOverviewDetailByIdHandlerTests : HandlerTestsBas
                     Status = "NotStarted"
                 }
             ]
-        });
+        }, options => options.Excluding(o => o.Materials));
     }
 }

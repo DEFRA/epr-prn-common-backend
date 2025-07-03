@@ -15,5 +15,5 @@ public interface IRegistrationRepository
     Task UpdateSiteAddressAsync(Guid registrationId, AddressDto reprocessingSiteAddress);
     Task<IEnumerable<RegistrationOverviewDto>> GetRegistrationsOverviewForOrgIdAsync(Guid organisationId);
     Task<Registration?> GetAsync(Guid registrationId);
-    Task<List<LookupRegulatorTask>> GetRequiredTasks(int applicationTypeId, bool isMaterialSpecific, int journeyTypeId);
+    Task<List<LookupApplicantRegistrationTask>> GetRequiredTasks(int applicationTypeId, bool isMaterialSpecific, int journeyTypeId);
 }

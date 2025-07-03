@@ -2,6 +2,7 @@
 using EPR.PRN.Backend.API.Common.Enums;
 using EPR.PRN.Backend.API.Dto.Regulator;
 using EPR.PRN.Backend.API.Handlers.Regulator;
+using EPR.PRN.Backend.Data.DataModels.Registrations;
 using EPR.PRN.Backend.Data.Interfaces;
 using MediatR;
 
@@ -18,8 +19,11 @@ public class GetRegistrationTaskOverviewDetailByIdHandler(
         var registrationDto = mapper.Map<RegistrationTaskOverviewDto>(registration!);
 
         var applicationTypeId = (int)registration?.ApplicationTypeId!;
-        
-        var missingRegistrationTasks = await GetMissingTasks(applicationTypeId, false, registrationDto.Tasks);
+        var journeyTypeId = (int)JourneyType.Registration;
+        var requiredRegistrationTasks = await repo.GetRequiredTasks(applicationTypeId, false, journeyTypeId);
+        var requiredRegistrationMaterialTasks = await repo.GetRequiredTasks(applicationTypeId, true, journeyTypeId);
+
+        var missingRegistrationTasks = GetMissingTasks(requiredRegistrationTasks, registrationDto.Tasks);
         registrationDto.Tasks.AddRange(missingRegistrationTasks);
 
         if (registrationDto.Materials.Count == 0)
@@ -27,24 +31,28 @@ public class GetRegistrationTaskOverviewDetailByIdHandler(
             return registrationDto;
         }
 
-        await Parallel.ForEachAsync(registrationDto.Materials, cancellationToken, async (materialDto, _) =>
+        Parallel.ForEach(registrationDto.Materials, (materialDto, _) =>
         {
-            var missingMaterialTasks = await GetMissingTasks(registration.ApplicationTypeId, true, materialDto.Tasks);
+            var missingMaterialTasks = GetMissingTasks(requiredRegistrationMaterialTasks, materialDto.Tasks);
             materialDto.Tasks.AddRange(missingMaterialTasks);
         });
 
         return registrationDto;
     }
 
-    private async Task<IEnumerable<RegistrationTaskDto>> GetMissingTasks(int applicationTypeId, bool isMaterialSpecific, List<RegistrationTaskDto> existingTasks)
+    private IEnumerable<RegistrationTaskDto> GetMissingTasks(List<LookupApplicantRegistrationTask> requiredTasks, List<RegistrationTaskDto> existingTasks)
     {
-        var requiredTasks = await repo.GetRequiredTasks(applicationTypeId, isMaterialSpecific, 1);
+        var existingTaskNames = new HashSet<string>(existingTasks.Select(r => r.TaskName));
 
+        // Bring back all required tasks for the application and journey type that are not already in the list.
         var missingTasks = requiredTasks
-            .Where(rt => existingTasks.TrueForAll(r => r.TaskName != rt.Name))
-            .Select(t => new RegistrationTaskDto { TaskName = t.Name, Status = nameof(RegulatorTaskStatus.NotStarted)});
+            .Where(rt => !existingTaskNames.Contains(rt.Name))
+            .Select(rt => new RegistrationTaskDto
+            {
+                TaskName = rt.Name,
+                Status = nameof(RegulatorTaskStatus.NotStarted)
+            });
 
         return missingTasks;
     }
 }
-

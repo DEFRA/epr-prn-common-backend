@@ -7,8 +7,6 @@ using EPR.PRN.Backend.Data.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Immutable;
 
 namespace EPR.PRN.Backend.Data.Repositories;
 
@@ -67,8 +65,8 @@ public class RegistrationRepository(EprContext context, ILogger<RegistrationRepo
     }
 
 
-    public async Task<List<LookupRegulatorTask>> GetRequiredTasks(int applicationTypeId, bool isMaterialSpecific, int journeyTypeId) =>
-        await context.LookupTasks
+    public async Task<List<LookupApplicantRegistrationTask>> GetRequiredTasks(int applicationTypeId, bool isMaterialSpecific, int journeyTypeId) =>
+        await context.LookupApplicantRegistrationTasks
             .Where(t => t.ApplicationTypeId == applicationTypeId && t.IsMaterialSpecific == isMaterialSpecific && t.JourneyTypeId == journeyTypeId)
             .ToListAsync();
 
