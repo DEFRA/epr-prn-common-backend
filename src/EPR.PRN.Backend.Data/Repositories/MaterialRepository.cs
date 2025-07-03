@@ -1,7 +1,10 @@
 ﻿using EPR.PRN.Backend.API.Common.Enums;
 using EPR.PRN.Backend.API.Common.Exceptions;
+using Azure.Core;
+using System;
 using EPR.PRN.Backend.Data.DataModels;
 using EPR.PRN.Backend.Data.DataModels.Registrations;
+using EPR.PRN.Backend.Data.DTO;
 using EPR.PRN.Backend.Data.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -50,6 +53,43 @@ namespace EPR.PRN.Backend.Data.Repositories
             await context.SaveChangesAsync();
 
             return registrationMaterialContact;
+        }
+
+        public async Task UpsertRegistrationReprocessingDetailsAsync(Guid registrationMaterialId, RegistrationReprocessingIO registrationReprocessingIO)
+        {
+            var registrationMaterial = await context.RegistrationMaterials
+               .Include(rm => rm.RegistrationReprocessingIO)
+               .SingleOrDefaultAsync(rm => rm.ExternalId == registrationMaterialId);
+
+            if (registrationMaterial is null)
+            {
+                throw new KeyNotFoundException("Registration material not found.");
+            }
+
+            var existingRegistrationReprocessingIO = registrationMaterial.RegistrationReprocessingIO?.SingleOrDefault();
+
+            if (existingRegistrationReprocessingIO is null)
+            {
+                registrationReprocessingIO.RegistrationMaterialId = registrationMaterial.Id;
+                registrationReprocessingIO.ExternalId = Guid.NewGuid();
+                await context.RegistrationReprocessingIO.AddAsync(registrationReprocessingIO);
+            }
+            else
+            {
+                existingRegistrationReprocessingIO.TypeOfSuppliers = registrationReprocessingIO.TypeOfSuppliers;
+                existingRegistrationReprocessingIO.ReprocessingPackagingWasteLastYearFlag = registrationReprocessingIO.ReprocessingPackagingWasteLastYearFlag;
+                existingRegistrationReprocessingIO.TotalInputs = registrationReprocessingIO.TotalInputs;
+                existingRegistrationReprocessingIO.TotalOutputs = registrationReprocessingIO.TotalOutputs;
+                existingRegistrationReprocessingIO.UKPackagingWasteTonne = registrationReprocessingIO.UKPackagingWasteTonne;
+                existingRegistrationReprocessingIO.NonUKPackagingWasteTonne = registrationReprocessingIO.NonUKPackagingWasteTonne;
+                existingRegistrationReprocessingIO.NotPackingWasteTonne = registrationReprocessingIO.NotPackingWasteTonne;
+                existingRegistrationReprocessingIO.ContaminantsTonne = registrationReprocessingIO.ContaminantsTonne;
+                existingRegistrationReprocessingIO.SenttoOtherSiteTonne = registrationReprocessingIO.SenttoOtherSiteTonne;
+                existingRegistrationReprocessingIO.ProcessLossTonne = registrationReprocessingIO.ProcessLossTonne;
+                existingRegistrationReprocessingIO.PlantEquipmentUsed = registrationReprocessingIO.PlantEquipmentUsed;
+            }
+
+            await context.SaveChangesAsync();
         }
 
         public async Task UpdateApplicationRegistrationTaskStatusAsync(string taskName, Guid registrationMaterialId, TaskStatuses status)

@@ -153,6 +153,131 @@ public class MaterialRepositoryTests
     }
 
     [TestMethod]
+    public async Task UpsertRegistrationReprocessingDetails_ShouldThrow_WhenRegistrationMaterialNotFound()
+    {
+        // Arrange
+        var registrationMaterialExternalId = Guid.NewGuid();
+        var registrationReprocessingIO = new RegistrationReprocessingIO { TypeOfSuppliers = "Supplier Green", TotalInputs = 10 };
+        _mockEprContext.Setup(c => c.RegistrationMaterials)
+            .ReturnsDbSet([]);
+
+        // Act & Assert
+        await Assert.ThrowsExceptionAsync<KeyNotFoundException>(async () =>
+        {
+            await _materialRepository.UpsertRegistrationReprocessingDetailsAsync(registrationMaterialExternalId, registrationReprocessingIO);
+        });
+    }
+
+    [TestMethod]
+    public async Task UpsertRegistrationReprocessingDetails_ShouldCreateNewReprocessingIO_WhenNoneExists()
+    {
+        // Arrange
+        var registrationMaterialId = 5;
+        var registrationMaterialExternalId = Guid.NewGuid();
+
+        var registrationMaterials = new List<RegistrationMaterial>
+    {
+        new()
+        {
+            Id = registrationMaterialId,
+            ExternalId = registrationMaterialExternalId,
+            RegistrationReprocessingIO = null
+        }
+    };
+
+        var newIO = new RegistrationReprocessingIO
+        {
+            TypeOfSuppliers = "Supplier A",
+            ReprocessingPackagingWasteLastYearFlag = true,
+            TotalInputs = 10,
+            TotalOutputs = 9,
+            UKPackagingWasteTonne = 5,
+            NonUKPackagingWasteTonne = 3,
+            NotPackingWasteTonne = 0,
+            ContaminantsTonne = 1,
+            SenttoOtherSiteTonne = 0.5m,
+            ProcessLossTonne = 0.5m,
+            PlantEquipmentUsed = "Machine X"
+        };
+
+        _mockEprContext.Setup(c => c.RegistrationMaterials)
+            .ReturnsDbSet(registrationMaterials);
+        _mockEprContext.Setup(c => c.RegistrationReprocessingIO)
+            .ReturnsDbSet(new List<RegistrationReprocessingIO>());
+
+        // Act
+        await _materialRepository.UpsertRegistrationReprocessingDetailsAsync(registrationMaterialExternalId, newIO);
+
+        // Assert
+        _mockEprContext.Verify(c => c.RegistrationReprocessingIO.AddAsync(It.Is<RegistrationReprocessingIO>(
+            io => io.RegistrationMaterialId == registrationMaterialId &&
+                  io.TypeOfSuppliers == "Supplier A" &&
+                  io.ExternalId != Guid.Empty
+        ), default), Times.Once);
+
+        _mockEprContext.Verify(c => c.SaveChangesAsync(default), Times.Once);
+    }
+
+    [TestMethod]
+    public async Task UpsertRegistrationReprocessingDetails_ShouldUpdateExistingReprocessingIO_WhenExists()
+    {
+        // Arrange
+        var registrationMaterialId = 5;
+        var registrationMaterialExternalId = Guid.NewGuid();
+        var existingIO = new RegistrationReprocessingIO
+        {
+            Id = 100,
+            ExternalId = Guid.NewGuid(),
+            RegistrationMaterialId = registrationMaterialId,
+            TypeOfSuppliers = "Old Supplier",
+            TotalInputs = 1,
+            TotalOutputs = 1
+        };
+
+        var updatedIO = new RegistrationReprocessingIO
+        {
+            TypeOfSuppliers = "Updated Supplier",
+            ReprocessingPackagingWasteLastYearFlag = true,
+            TotalInputs = 20,
+            TotalOutputs = 18,
+            UKPackagingWasteTonne = 10,
+            NonUKPackagingWasteTonne = 5,
+            NotPackingWasteTonne = 2,
+            ContaminantsTonne = 1,
+            SenttoOtherSiteTonne = 0.5m,
+            ProcessLossTonne = 0.5m,
+            PlantEquipmentUsed = "Updated Machine"
+        };
+
+        var registrationMaterials = new List<RegistrationMaterial>
+    {
+        new()
+        {
+            Id = registrationMaterialId,
+            ExternalId = registrationMaterialExternalId,
+            RegistrationReprocessingIO = new List<RegistrationReprocessingIO> { existingIO }
+        }
+    };
+
+        _mockEprContext.Setup(c => c.RegistrationMaterials)
+            .ReturnsDbSet(registrationMaterials);
+
+        _mockEprContext.Setup(c => c.RegistrationReprocessingIO)
+            .ReturnsDbSet(new List<RegistrationReprocessingIO> { existingIO });
+
+        // Act
+        await _materialRepository.UpsertRegistrationReprocessingDetailsAsync(registrationMaterialExternalId, updatedIO);
+
+        // Assert
+        existingIO.TypeOfSuppliers.Should().Be("Updated Supplier");
+        existingIO.TotalInputs.Should().Be(20);
+        existingIO.TotalOutputs.Should().Be(18);
+        existingIO.PlantEquipmentUsed.Should().Be("Updated Machine");
+
+        _mockEprContext.Verify(c => c.SaveChangesAsync(default), Times.Once);
+    }    
+
+    [TestMethod]
     public async Task UpdateApplicationRegistrationTaskStatusAsync_ShouldAddNewStatus_WhenNotExists()
     {
         // Arrange

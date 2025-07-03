@@ -1,10 +1,13 @@
 ﻿using System.Net;
+using AutoMapper;
 using EPR.PRN.Backend.API.Commands;
 using EPR.PRN.Backend.API.Common.Constants;
 using EPR.PRN.Backend.API.Dto;
 using EPR.PRN.Backend.API.Dto.Regulator;
+using EPR.PRN.Backend.API.Handlers;
 using EPR.PRN.Backend.API.Queries;
 using EPR.PRN.Backend.API.Services.Interfaces;
+using EPR.PRN.Backend.Data.DataModels;
 using EPR.PRN.Backend.Data.DTO;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -20,7 +23,8 @@ namespace EPR.PRN.Backend.API.Controllers;
 public class RegistrationMaterialController(
     IMediator mediator,
     IValidationService validationService,
-    ILogger<RegistrationMaterialController> logger) : ControllerBase
+    ILogger<RegistrationMaterialController> logger,
+    IMapper mapper) : ControllerBase
 {
     [HttpGet("registrations/{registrationId:guid}/materials")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<ApplicantRegistrationMaterialDto>))]
@@ -213,5 +217,29 @@ public class RegistrationMaterialController(
         var result = await mediator.Send(command);
 
         return Ok(result);
+    }
+
+    [HttpPost("registrationMaterials/{registrationMaterialId:Guid}/registrationReprocessingDetails")]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(OkResult))]
+    [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
+    [SwaggerOperation(
+        Summary = "upserts a registration reprocessing details for a registration material",
+        Description = "attempting to upsert the registration reprocessing details for a registration material."
+    )]
+    [SwaggerResponse(StatusCodes.Status400BadRequest, "If the request is invalid or a validation error occurs.", typeof(ProblemDetails))]
+    [SwaggerResponse(StatusCodes.Status404NotFound, "If an existing registration is not found", typeof(ProblemDetails))]
+    [SwaggerResponse(StatusCodes.Status500InternalServerError, "If an unexpected error occurs.", typeof(ContentResult))]
+    public async Task<IActionResult> UpsertRegistrationReprocessingDetailsAsync([FromRoute] Guid registrationMaterialId, [FromBody] RegistrationReprocessingIORequestDto registrationReprocessingDetailsRequest)
+    {
+        logger.LogInformation(LogMessages.UpsertRegistrationReprocessingDetails, registrationMaterialId);
+
+        await validationService.ValidateAndThrowAsync(registrationReprocessingDetailsRequest);
+
+        var command = mapper.Map<RegistrationReprocessingIOCommand>(registrationReprocessingDetailsRequest);
+        command.RegistrationMaterialId = registrationMaterialId;
+        await mediator.Send(command);
+
+        return Ok();
     }
 }

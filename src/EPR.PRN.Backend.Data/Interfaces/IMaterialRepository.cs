@@ -1,6 +1,7 @@
 ﻿using EPR.PRN.Backend.API.Common.Enums;
 using EPR.PRN.Backend.Data.DataModels;
 using EPR.PRN.Backend.Data.DataModels.Registrations;
+using EPR.PRN.Backend.Data.DTO;
 
 namespace EPR.PRN.Backend.Data.Interfaces;
 
@@ -10,4 +11,6 @@ public interface IMaterialRepository
 
     Task<RegistrationMaterialContact> UpsertRegistrationMaterialContact(Guid registrationMaterialId, Guid userId);
     Task UpdateApplicationRegistrationTaskStatusAsync(string taskName, Guid registrationMaterialId, TaskStatuses status);
+
+    Task UpsertRegistrationReprocessingDetailsAsync(Guid registrationMaterialId, RegistrationReprocessingIO registrationReprocessingIO);
 }
