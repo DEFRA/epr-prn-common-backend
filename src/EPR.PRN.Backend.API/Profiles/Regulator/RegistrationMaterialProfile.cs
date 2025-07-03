@@ -7,6 +7,7 @@ using EPR.PRN.Backend.API.Dto;
 using EPR.PRN.Backend.API.Dto.Regulator;
 using EPR.PRN.Backend.API.Handlers;
 using EPR.PRN.Backend.Data.DataModels.Registrations;
+using EPR.PRN.Backend.Data.DTO;
 
 namespace EPR.PRN.Backend.API.Profiles.Regulator;
 
@@ -30,6 +31,15 @@ public class RegistrationMaterialProfile : Profile
         CreateDtoToEntityMappings();
         CreateLookupMappings();
         CreateRegistrationMaterialContactMappings();
+        CreateRegistrationReprocessingIOMappings();
+    }
+
+    private void CreateRegistrationReprocessingIOMappings()
+    {
+        CreateMap<RegistrationReprocessingIORequestDto, RegistrationReprocessingIOCommand>();
+
+        CreateMap<RegistrationReprocessingIOCommand, RegistrationReprocessingIO>()
+            .ForMember(dest => dest.RegistrationMaterialId, opt => opt.Ignore());
     }
 
     private void CreateRegistrationMaterialMappings()
