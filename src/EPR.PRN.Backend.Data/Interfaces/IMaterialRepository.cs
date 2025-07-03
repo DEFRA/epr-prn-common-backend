@@ -9,5 +9,5 @@ public interface IMaterialRepository
     Task<IEnumerable<Material>> GetAllMaterials();
 
     Task<RegistrationMaterialContact> UpsertRegistrationMaterialContact(Guid registrationMaterialId, Guid userId);
-    Task UpdateApplicantRegistrationTaskStatusAsync(string taskName, Guid registrationId, TaskStatuses status);
+    Task UpdateApplicantRegistrationTaskStatusAsync(string taskName, Guid registrationMaterialId, TaskStatuses status);
 }
