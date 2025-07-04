@@ -199,17 +199,17 @@ public class EprContext : DbContext
         .HasForeignKey(c => c.SubmitterTypeId)
         .OnDelete(DeleteBehavior.NoAction);
 
-        modelBuilder.Entity<LookupMaterial>().HasData(
-            new LookupMaterial { Id = 1, MaterialName = "Plastic", MaterialCode = "PL" },
-            new LookupMaterial { Id = 2, MaterialName = "Steel", MaterialCode = "ST" },
-            new LookupMaterial { Id = 3, MaterialName = "Aluminium", MaterialCode = "AL" },
-            new LookupMaterial { Id = 4, MaterialName = "Glass", MaterialCode = "GL" },
-            new LookupMaterial { Id = 5, MaterialName = "Paper/Board", MaterialCode = "PA" },
-            new LookupMaterial { Id = 6, MaterialName = "Wood", MaterialCode = "WO" });
+			modelBuilder.Entity<LookupMaterial>().HasData(
+                new LookupMaterial { Id = 1, MaterialName = "Plastic", MaterialCode = "PL" },
+                new LookupMaterial { Id = 2, MaterialName = "Steel", MaterialCode = "ST" },
+                new LookupMaterial { Id = 3, MaterialName = "Aluminium", MaterialCode = "AL" },
+                new LookupMaterial { Id = 4, MaterialName = "Glass", MaterialCode = "GL" },
+                new LookupMaterial { Id = 5, MaterialName = "Paper/Board", MaterialCode = "PA" },
+                new LookupMaterial { Id = 6, MaterialName = "Wood", MaterialCode = "WO" });
 
-        modelBuilder.Entity<LookupCountry>().HasData(
-            CountryConstants.Countries.Select(c => new LookupCountry { Id = c.Id, CountryCode = c.Code, Name = c.Name }).ToArray()
-        );
+            modelBuilder.Entity<LookupCountry>().HasData(
+                CountryConstants.Countries.Select(c => new LookupCountry { Id = c.Id, CountryCode = c.Code, Name = c.Name }).ToArray()
+            );
 
         modelBuilder.Entity<LookupRegistrationMaterialStatus>().HasData(
             new LookupRegistrationMaterialStatus { Id = 1, Name = "Granted" },
@@ -222,7 +222,7 @@ public class EprContext : DbContext
             new LookupRegistrationMaterialStatus { Id = 9, Name = "Suspended" },
             new LookupRegistrationMaterialStatus { Id = 10, Name = "Cancelled" },
             new LookupRegistrationMaterialStatus { Id = 11, Name = "ReadyToSubmit" },
-            new LookupRegistrationMaterialStatus { Id = 12, Name = "InProgress" });
+			new LookupRegistrationMaterialStatus { Id = 12, Name = "InProgress" });
 
         modelBuilder.Entity<LookupAccreditationStatus>().HasData(
             new LookupAccreditationStatus { Id = 1, Name = "Started" },

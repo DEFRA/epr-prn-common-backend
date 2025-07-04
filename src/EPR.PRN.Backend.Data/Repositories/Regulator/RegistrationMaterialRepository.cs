@@ -332,8 +332,6 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
 		await eprContext.SaveChangesAsync();
 	}
 
-    
-
     private IIncludableQueryable<RegistrationMaterial, LookupRegistrationMaterialStatus> GetRegistrationMaterialsWithRelatedEntities()
     {
         var registrationMaterials =

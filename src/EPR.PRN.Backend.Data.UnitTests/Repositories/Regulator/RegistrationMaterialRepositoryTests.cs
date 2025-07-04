@@ -966,52 +966,50 @@ public class RegistrationMaterialRepositoryTests
         loaded.First().ExternalId.Should().Be(registrationMaterialExternalId2);
     }
 
-    [TestMethod]
-    public async Task UpdateIsMaterialRegisteredAsync_ShouldUpdateMaterialStatus()
-    {
-        // Arrange
-        var materialId = Guid.NewGuid();
-        var existingMaterial = new RegistrationMaterial
-        {
-            Id = 20,
-            ExternalId = materialId,
-            IsMaterialRegistered = false,
-            StatusId = (int)RegistrationMaterialStatus.Started
-        };
+	[TestMethod]
+	public async Task UpdateIsMaterialRegisteredAsync_ShouldUpdateMaterialStatus()
+	{
+		// Arrange
+		var materialId = Guid.NewGuid();
+		var existingMaterial = new RegistrationMaterial
+		{
+			Id = 20,
+			ExternalId = materialId,
+			IsMaterialRegistered = false,
+			StatusId = (int)RegistrationMaterialStatus.Started
+		};
 
-        await _context.RegistrationMaterials.AddAsync(existingMaterial);
-        await _context.SaveChangesAsync();
+		await _context.RegistrationMaterials.AddAsync(existingMaterial);
+		await _context.SaveChangesAsync();
 
-        var dto = new UpdateIsMaterialRegisteredDto
-        {
-            RegistrationMaterialId = materialId,
-            IsMaterialRegistered = true
-        };
+		var dto = new UpdateIsMaterialRegisteredDto
+		{
+			RegistrationMaterialId = materialId,
+			IsMaterialRegistered = true
+		};
 
-        // Act
-        await _repository.UpdateIsMaterialRegisteredAsync(new List<UpdateIsMaterialRegisteredDto> { dto });
+		// Act
+		await _repository.UpdateIsMaterialRegisteredAsync(new List<UpdateIsMaterialRegisteredDto> { dto });
 
-        // Assert
-        var updatedMaterial = await _context.RegistrationMaterials.SingleAsync(m => m.ExternalId == materialId);
-        updatedMaterial.IsMaterialRegistered.Should().BeTrue();
-        updatedMaterial.StatusId.Should().Be((int)RegistrationMaterialStatus.InProgress);
-    }
+		// Assert
+		var updatedMaterial = await _context.RegistrationMaterials.SingleAsync(m => m.ExternalId == materialId);
+		updatedMaterial.IsMaterialRegistered.Should().BeTrue();
+		updatedMaterial.StatusId.Should().Be((int)RegistrationMaterialStatus.InProgress);
+	}
 
-    [TestMethod]
-    public async Task UpdateIsMaterialRegisteredAsync_ShouldThrow_WhenNotFound()
-    {
-        var dto = new UpdateIsMaterialRegisteredDto
-        {
-            RegistrationMaterialId = Guid.NewGuid(),
-            IsMaterialRegistered = true
-        };
+	[TestMethod]
+	public async Task UpdateIsMaterialRegisteredAsync_ShouldThrow_WhenNotFound()
+	{
+		var dto = new UpdateIsMaterialRegisteredDto
+		{
+			RegistrationMaterialId = Guid.NewGuid(),
+			IsMaterialRegistered = true
+		};
 
-        await Assert.ThrowsExceptionAsync<KeyNotFoundException>(() => _repository.UpdateIsMaterialRegisteredAsync(new List<UpdateIsMaterialRegisteredDto> { dto }));
-    }
+		await Assert.ThrowsExceptionAsync<KeyNotFoundException>(() => _repository.UpdateIsMaterialRegisteredAsync(new List<UpdateIsMaterialRegisteredDto> { dto }));
+	}
 
-    
-
-    [TestCleanup]
+	[TestCleanup]
     public void Cleanup()
     {
         _context.Database.EnsureDeleted();
