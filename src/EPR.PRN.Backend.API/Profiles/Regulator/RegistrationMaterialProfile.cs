@@ -37,6 +37,7 @@ public class RegistrationMaterialProfile : Profile
     private void CreateRegistrationReprocessingIOMappings()
     {
         CreateMap<RegistrationReprocessingIORequestDto, RegistrationReprocessingIOCommand>();
+        CreateMap<RegistrationReprocessingIORawMaterialOrProductsDto, RegistrationReprocessingIORawMaterialOrProducts>().ReverseMap();
 
         CreateMap<RegistrationReprocessingIOCommand, RegistrationReprocessingIO>()
             .ForMember(dest => dest.RegistrationMaterialId, opt => opt.Ignore());
