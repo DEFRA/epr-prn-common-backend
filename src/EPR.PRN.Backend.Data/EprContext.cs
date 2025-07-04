@@ -364,6 +364,10 @@ public class EprContext : DbContext
             .HasIndex(e => e.ExternalId)
             .IsUnique(); // Ensures UniqueId is unique
 
+        modelBuilder.Entity<RegistrationReprocessingIORawMaterialOrProducts>()
+            .HasIndex(e => e.ExternalId)
+            .IsUnique(); // Ensures UniqueId is unique
+
         modelBuilder.Entity<ApplicantRegistrationTaskStatus>()
             .HasIndex(e => e.ExternalId)
             .IsUnique(); // Ensures UniqueId is unique
@@ -462,6 +466,7 @@ public class EprContext : DbContext
     public virtual DbSet<RegistrationMaterialContact> RegistrationMaterialContacts { get; set; }
     public virtual DbSet<MaterialExemptionReference> MaterialExemptionReferences { get; set; }
     public virtual DbSet<RegistrationReprocessingIO> RegistrationReprocessingIO { get; set; }
+    public virtual DbSet<RegistrationReprocessingIORawMaterialOrProducts> RegistrationReprocessingIORawMaterialOrProducts { get; set; }
     public virtual DbSet<DeterminationDate> DeterminationDate { get; set; }
     public virtual DbSet<DulyMade> DulyMade { get; set; }
     public virtual DbSet<CarrierBrokerDealerPermits> CarrierBrokerDealerPermits { get; set; }
