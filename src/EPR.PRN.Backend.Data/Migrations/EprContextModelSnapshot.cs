@@ -3600,14 +3600,6 @@ namespace EPR.PRN.Backend.Data.Migrations
                             IsMaterialSpecific = false,
                             JourneyTypeId = 1,
                             Name = "WasteCarrierBrokerDealerNumber"
-                        },
-                        new
-                        {
-                            Id = 30,
-                            ApplicationTypeId = 2,
-                            IsMaterialSpecific = true,
-                            JourneyTypeId = 1,
-                            Name = "InterimSites"
                         });
                 });
 
