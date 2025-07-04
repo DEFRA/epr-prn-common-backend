@@ -657,7 +657,7 @@ public class MaterialRepositoryTests
         existingIO.TotalOutputs.Should().Be(18);
         existingIO.PlantEquipmentUsed.Should().Be("Updated Machine");
     }
-    }    
+        
 
     [TestMethod]
     public async Task SaveOverseasReprocessingSites_Should_Update_Existing_And_Add_New()
