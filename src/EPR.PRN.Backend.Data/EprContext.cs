@@ -283,6 +283,24 @@ public class EprContext : DbContext
             new LookupRegulatorTask { Id = 28, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 2, Name = RegulatorTaskNames.DulyMade },
             new LookupRegulatorTask { Id = 29, IsMaterialSpecific = false, ApplicationTypeId = 1, JourneyTypeId = 1, Name = RegulatorTaskNames.WasteCarrierBrokerDealerNumber });
 
+        modelBuilder.Entity<LookupApplicantRegistrationTask>().HasData(
+           new LookupApplicantRegistrationTask { Id = 1, IsMaterialSpecific = false, ApplicationTypeId = 1, JourneyTypeId = 1, Name = ApplicantRegistrationTaskNames.SiteAddressAndContactDetails },
+           new LookupApplicantRegistrationTask { Id = 2, IsMaterialSpecific = true, ApplicationTypeId = 1, JourneyTypeId = 1, Name = ApplicantRegistrationTaskNames.WasteLicensesPermitsAndExemptions },
+           new LookupApplicantRegistrationTask { Id = 3, IsMaterialSpecific = true, ApplicationTypeId = 1, JourneyTypeId = 1, Name = ApplicantRegistrationTaskNames.ReprocessingInputsAndOutputs },
+           new LookupApplicantRegistrationTask { Id = 4, IsMaterialSpecific = true, ApplicationTypeId = 1, JourneyTypeId = 1, Name = ApplicantRegistrationTaskNames.SamplingAndInspectionPlan },
+           new LookupApplicantRegistrationTask { Id = 5, IsMaterialSpecific = false, ApplicationTypeId = 2, JourneyTypeId = 1, Name = ApplicantRegistrationTaskNames.WasteLicensesPermitsAndExemptions },
+           new LookupApplicantRegistrationTask { Id = 6, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 1, Name = ApplicantRegistrationTaskNames.SamplingAndInspectionPlan },
+           new LookupApplicantRegistrationTask { Id = 7, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 1, Name = ApplicantRegistrationTaskNames.OverseasReprocessorSiteDetails },
+           new LookupApplicantRegistrationTask { Id = 8, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 1, Name = ApplicantRegistrationTaskNames.InterimSites },
+           new LookupApplicantRegistrationTask { Id = 9, IsMaterialSpecific = true, ApplicationTypeId = 1, JourneyTypeId = 2, Name = ApplicantRegistrationTaskNames.PrnsTonnageAndAuthorityToIssuePrns },
+           new LookupApplicantRegistrationTask { Id = 10, IsMaterialSpecific = true, ApplicationTypeId = 1, JourneyTypeId = 2, Name = ApplicantRegistrationTaskNames.BusinessPlan },
+           new LookupApplicantRegistrationTask { Id = 11, IsMaterialSpecific = true, ApplicationTypeId = 1, JourneyTypeId = 2, Name = ApplicantRegistrationTaskNames.AccreditationSamplingAndInspectionPlan },
+           new LookupApplicantRegistrationTask { Id = 12, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 2, Name = ApplicantRegistrationTaskNames.PERNsTonnageAndAuthorityToIssuePERNs },
+           new LookupApplicantRegistrationTask { Id = 13, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 2, Name = ApplicantRegistrationTaskNames.BusinessPlan },
+           new LookupApplicantRegistrationTask { Id = 14, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 2, Name = ApplicantRegistrationTaskNames.AccreditationSamplingAndInspectionPlan },
+           new LookupApplicantRegistrationTask { Id = 15, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 2, Name = ApplicantRegistrationTaskNames.OverseasReprocessingSitesAndBroadlyEquivalentEvidence },
+           new LookupApplicantRegistrationTask { Id = 16, IsMaterialSpecific = false, ApplicationTypeId = 2, JourneyTypeId = 1, Name = ApplicantRegistrationTaskNames.WasteCarrierBrokerDealerNumber });
+
         modelBuilder.Entity<LookupMaterialPermit>().HasData(
             new LookupMaterialPermit { Id = 1, Name = PermitTypes.WasteExemption },
             new LookupMaterialPermit { Id = 2, Name = PermitTypes.PollutionPreventionAndControlPermit },
@@ -372,9 +390,9 @@ public class EprContext : DbContext
 
     public virtual DbSet<Material> Material { get; set; }
 
-		public virtual DbSet<ObligationCalculationOrganisationSubmitterType> ObligationCalculationOrganisationSubmitterType { get; set; }
+    public virtual DbSet<ObligationCalculationOrganisationSubmitterType> ObligationCalculationOrganisationSubmitterType { get; set; }
 
-		public virtual DbSet<PEprNpwdSync> PEprNpwdSync { get; set; }
+	public virtual DbSet<PEprNpwdSync> PEprNpwdSync { get; set; }
 
     public virtual DbSet<PrnMaterialMapping> PrnMaterialMapping { get; set; }
 
@@ -391,6 +409,7 @@ public class EprContext : DbContext
     public virtual DbSet<LookupMaterial> LookupMaterials { get; set; }
     public virtual DbSet<LookupRegistrationMaterialStatus> LookupRegistrationMaterialStatuses { get; set; }
     public virtual DbSet<LookupRegulatorTask> LookupTasks { get; set; }
+    public virtual DbSet<LookupApplicantRegistrationTask> LookupApplicantRegistrationTasks { get; set; }
     public virtual DbSet<LookupTaskStatus> LookupTaskStatuses { get; set; }
     public virtual DbSet<Address> LookupAddresses { get; set; }
     public virtual DbSet<LookupPeriod> LookupPeriod { get; set; }
