@@ -215,21 +215,75 @@ public class RegistrationMaterialProfileMappingTests : MappingTestsBase<Registra
     public void RegistrationReprocessingIOCommand_To_RegistrationReprocessingIO_EnsureCorrectMapping()
     {
         // Arrange
-        var externalId = Guid.NewGuid();
         var mapper = CreateMapper();
 
         var source = new RegistrationReprocessingIOCommand
         {
-            TypeOfSuppliers = "Suppliers List"
+            TypeOfSuppliers = "Suppliers List",
+            RegistrationReprocessingIORawMaterialOrProducts = null,
         };
 
         var expected = new RegistrationReprocessingIO
         {
-            TypeOfSuppliers = "Suppliers List"
+            TypeOfSuppliers = "Suppliers List",
+            RegistrationReprocessingIORawMaterialOrProducts = new List<RegistrationReprocessingIORawMaterialOrProducts>()
         };
 
         // Act
         var result = mapper.Map<RegistrationReprocessingIO>(source);
+
+        // Assert
+        result.Should().BeEquivalentTo(expected, options =>
+            options.WithStrictOrdering()
+                   .ComparingByMembers<RegistrationReprocessingIO>()
+                   .ComparingByMembers<RegistrationReprocessingIORawMaterialOrProducts>());
+    }
+
+    [TestMethod]
+    public void RegistrationReprocessingIORawMaterialOrProducts_To_RegistrationReprocessingIORawMaterialOrProductsDto_EnsureCorrectMapping()
+    {
+        // Arrange
+        var externalId = Guid.NewGuid();
+        var mapper = CreateMapper();
+        var source = new RegistrationReprocessingIORawMaterialOrProducts
+        {
+            IsInput = false,
+            RawMaterialOrProductName = "Product Name"
+        };
+
+        var expected = new RegistrationReprocessingIORawMaterialOrProductsDto
+        {
+            IsInput = false,
+            RawMaterialOrProductName = "Product Name"
+        };
+
+        // Act
+        var result = mapper.Map<RegistrationReprocessingIORawMaterialOrProductsDto>(source);
+
+        // Assert
+        result.Should().BeEquivalentTo(expected);
+    }
+
+    [TestMethod]
+    public void RegistrationReprocessingIORawMaterialOrProductsDto_To_RegistrationReprocessingIORawMaterialOrProducts_EnsureCorrectMapping()
+    {
+        // Arrange
+        var externalId = Guid.NewGuid();
+        var mapper = CreateMapper();
+        var source = new RegistrationReprocessingIORawMaterialOrProductsDto
+        {
+            IsInput = false,
+            RawMaterialOrProductName = "Product Name"
+        };
+
+        var expected = new RegistrationReprocessingIORawMaterialOrProducts
+        {
+            IsInput = false,
+            RawMaterialOrProductName = "Product Name"
+        };
+
+        // Act
+        var result = mapper.Map<RegistrationReprocessingIORawMaterialOrProducts>(source);
 
         // Assert
         result.Should().BeEquivalentTo(expected);
