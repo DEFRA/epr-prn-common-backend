@@ -8,6 +8,7 @@ using FluentAssertions;
 using FluentAssertions.Execution;
 using Microsoft.EntityFrameworkCore;
 using System.Configuration;
+using System.Diagnostics.Metrics;
 using System.Threading.Tasks;
 
 namespace EPR.PRN.Backend.Data.UnitTests.Repositories.Regulator;
@@ -446,7 +447,7 @@ public class RegistrationMaterialRepositoryTests
             taskStatusEntry.StatusCreatedDate.Date.Should().Be(DateTime.UtcNow.Date);
         }
     }
-    
+
     [TestMethod]
     public async Task CreateRegistrationMaterialWithExemptionsAsync_ShouldCreateMaterialAndExemptions()
     {
@@ -501,7 +502,7 @@ public class RegistrationMaterialRepositoryTests
             createdMaterial.MaterialExemptionReferences!.Select(x => x.ReferenceNo).Should().Contain("EXEMPT789");
         }
     }
-    
+
     [TestMethod]
     public async Task CreateRegistrationMaterialWithExemptionsAsync_ShouldAllowEmptyExemptions()
     {
@@ -633,7 +634,7 @@ public class RegistrationMaterialRepositoryTests
         await Assert.ThrowsExceptionAsync<KeyNotFoundException>(() =>
             _repository.RegistrationMaterialsMarkAsDulyMade(materialId, 3, DateTime.UtcNow.AddDays(84), DateTime.UtcNow, Guid.NewGuid()));
     }
-  
+
     [TestMethod]
     public async Task RegistrationMaterialsMarkAsDulyMade_ShouldUpdateDeterminationDate_WhenItAlreadyExists()
     {
@@ -681,7 +682,7 @@ public class RegistrationMaterialRepositoryTests
         var id = Guid.Parse("a9421fc1-a912-42ee-85a5-3e06408759a9");
 
         // Act
-        await _repository.UpdateRegistrationOutCome(id, 2, null, null,Guid.Empty);
+        await _repository.UpdateRegistrationOutCome(id, 2, null, null, Guid.Empty);
         var updated = await _context.RegistrationMaterials.FindAsync(1);
 
         // Assert
@@ -721,7 +722,7 @@ public class RegistrationMaterialRepositoryTests
     public async Task CreateAsync_ExistingRegistrationMaterial_ShouldThrow()
     {
         // Act
-        var result = await _repository.CreateAsync(Guid.Parse("4bac12f7-f7a9-4df4-b7b5-9c4221860c4d"),"Plastic");
+        var result = await _repository.CreateAsync(Guid.Parse("4bac12f7-f7a9-4df4-b7b5-9c4221860c4d"), "Plastic");
 
         // Assert
         result.Registration.ExternalId.Should().Be("4bac12f7-f7a9-4df4-b7b5-9c4221860c4d");
@@ -740,7 +741,7 @@ public class RegistrationMaterialRepositoryTests
 
     [TestMethod]
     public async Task GetRegistrationMaterialsByRegistrationId_RegistrationIdDoesNotExists()
-    { 
+    {
         await Assert.ThrowsExceptionAsync<KeyNotFoundException>(() => _repository.GetRegistrationMaterialsByRegistrationId(Guid.NewGuid()));
     }
 
@@ -802,7 +803,7 @@ public class RegistrationMaterialRepositoryTests
     }
 
     [TestMethod]
-    [DataRow(1, "")] 
+    [DataRow(1, "")]
     [DataRow(2, "PPC-123")]
     [DataRow(3, "WML-123")]
     [DataRow(4, "IP-123")]

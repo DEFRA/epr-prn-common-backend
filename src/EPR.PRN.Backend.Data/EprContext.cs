@@ -15,13 +15,13 @@ public class EprContext : DbContext
 
     public EprContext()
     {
-       
+
     }
 
     public EprContext(DbContextOptions<EprContext> options)
         : base(options)
     {
-       
+
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -133,39 +133,39 @@ public class EprContext : DbContext
             .IsUnique();
 
             entity.HasData
-				(
-					new Material { Id = 1, MaterialCode = "PL", MaterialName = MaterialType.Plastic.ToString() },
-					new Material { Id = 2, MaterialCode = "WD", MaterialName = MaterialType.Wood.ToString() },
-					new Material { Id = 3, MaterialCode = "AL", MaterialName = MaterialType.Aluminium.ToString() },
-					new Material { Id = 4, MaterialCode = "ST", MaterialName = MaterialType.Steel.ToString() },
-					new Material { Id = 5, MaterialCode = "PC", MaterialName = MaterialType.Paper.ToString() },
-					new Material { Id = 6, MaterialCode = "GL", MaterialName = MaterialType.Glass.ToString() },
-					new Material { Id = 7, MaterialCode = "GR", MaterialName = MaterialType.GlassRemelt.ToString() },
-					new Material { Id = 8, MaterialCode = "FC", MaterialName = MaterialType.FibreComposite.ToString() }
-				);
-			});
-
-            modelBuilder.Entity<PrnMaterialMapping>()
-                .HasData
                 (
-                    new PrnMaterialMapping { Id = 1, PRNMaterialId = 1, NPWDMaterialName = PrnConstants.Materials.Plastic },
-                    new PrnMaterialMapping { Id = 2, PRNMaterialId = 2, NPWDMaterialName = PrnConstants.Materials.Wood },
-                    new PrnMaterialMapping { Id = 3, PRNMaterialId = 2, NPWDMaterialName = PrnConstants.Materials.WoodComposting },
-                    new PrnMaterialMapping { Id = 4, PRNMaterialId = 3, NPWDMaterialName = PrnConstants.Materials.Aluminium },
-                    new PrnMaterialMapping { Id = 5, PRNMaterialId = 4, NPWDMaterialName = PrnConstants.Materials.Steel },
-                    new PrnMaterialMapping { Id = 6, PRNMaterialId = 5, NPWDMaterialName = PrnConstants.Materials.PaperFiber },
-                    new PrnMaterialMapping { Id = 7, PRNMaterialId = 5, NPWDMaterialName = PrnConstants.Materials.PaperComposting },
-                    new PrnMaterialMapping { Id = 8, PRNMaterialId = 6, NPWDMaterialName = PrnConstants.Materials.GlassOther },
-                    new PrnMaterialMapping { Id = 9, PRNMaterialId = 7, NPWDMaterialName = PrnConstants.Materials.GlassMelt }
+                    new Material { Id = 1, MaterialCode = "PL", MaterialName = MaterialType.Plastic.ToString() },
+                    new Material { Id = 2, MaterialCode = "WD", MaterialName = MaterialType.Wood.ToString() },
+                    new Material { Id = 3, MaterialCode = "AL", MaterialName = MaterialType.Aluminium.ToString() },
+                    new Material { Id = 4, MaterialCode = "ST", MaterialName = MaterialType.Steel.ToString() },
+                    new Material { Id = 5, MaterialCode = "PC", MaterialName = MaterialType.Paper.ToString() },
+                    new Material { Id = 6, MaterialCode = "GL", MaterialName = MaterialType.Glass.ToString() },
+                    new Material { Id = 7, MaterialCode = "GR", MaterialName = MaterialType.GlassRemelt.ToString() },
+                    new Material { Id = 8, MaterialCode = "FC", MaterialName = MaterialType.FibreComposite.ToString() }
                 );
-
-			modelBuilder.Entity<Eprn>(entity =>
-        {
-            entity.HasMany(prn => prn.PrnStatusHistories)
-            .WithOne()
-            .HasForeignKey(s => s.PrnIdFk)
-            .OnDelete(DeleteBehavior.NoAction);
         });
+
+        modelBuilder.Entity<PrnMaterialMapping>()
+            .HasData
+            (
+                new PrnMaterialMapping { Id = 1, PRNMaterialId = 1, NPWDMaterialName = PrnConstants.Materials.Plastic },
+                new PrnMaterialMapping { Id = 2, PRNMaterialId = 2, NPWDMaterialName = PrnConstants.Materials.Wood },
+                new PrnMaterialMapping { Id = 3, PRNMaterialId = 2, NPWDMaterialName = PrnConstants.Materials.WoodComposting },
+                new PrnMaterialMapping { Id = 4, PRNMaterialId = 3, NPWDMaterialName = PrnConstants.Materials.Aluminium },
+                new PrnMaterialMapping { Id = 5, PRNMaterialId = 4, NPWDMaterialName = PrnConstants.Materials.Steel },
+                new PrnMaterialMapping { Id = 6, PRNMaterialId = 5, NPWDMaterialName = PrnConstants.Materials.PaperFiber },
+                new PrnMaterialMapping { Id = 7, PRNMaterialId = 5, NPWDMaterialName = PrnConstants.Materials.PaperComposting },
+                new PrnMaterialMapping { Id = 8, PRNMaterialId = 6, NPWDMaterialName = PrnConstants.Materials.GlassOther },
+                new PrnMaterialMapping { Id = 9, PRNMaterialId = 7, NPWDMaterialName = PrnConstants.Materials.GlassMelt }
+            );
+
+        modelBuilder.Entity<Eprn>(entity =>
+    {
+        entity.HasMany(prn => prn.PrnStatusHistories)
+        .WithOne()
+        .HasForeignKey(s => s.PrnIdFk)
+        .OnDelete(DeleteBehavior.NoAction);
+    });
 
         modelBuilder.Entity<ObligationCalculationOrganisationSubmitterType>(entity =>
         {
@@ -183,21 +183,21 @@ public class EprContext : DbContext
                 {
                     Id = 2,
                     TypeName = ObligationCalculationOrganisationSubmitterTypeName.DirectRegistrant.ToString()
-					}
+                }
             );
         });
 
-			modelBuilder.Entity<ObligationCalculation>()
-			.HasOne(c => c.Material)
-			.WithMany()
-			.HasForeignKey(c => c.MaterialId)
-			.OnDelete(DeleteBehavior.NoAction);
+        modelBuilder.Entity<ObligationCalculation>()
+        .HasOne(c => c.Material)
+        .WithMany()
+        .HasForeignKey(c => c.MaterialId)
+        .OnDelete(DeleteBehavior.NoAction);
 
-			modelBuilder.Entity<ObligationCalculation>()
-			.HasOne(c => c.ObligationCalculationOrganisationSubmitterType)
-			.WithMany()
-			.HasForeignKey(c => c.SubmitterTypeId)
-			.OnDelete(DeleteBehavior.NoAction);
+        modelBuilder.Entity<ObligationCalculation>()
+        .HasOne(c => c.ObligationCalculationOrganisationSubmitterType)
+        .WithMany()
+        .HasForeignKey(c => c.SubmitterTypeId)
+        .OnDelete(DeleteBehavior.NoAction);
 
 			modelBuilder.Entity<LookupMaterial>().HasData(
                 new LookupMaterial { Id = 1, MaterialName = "Plastic", MaterialCode = "PL" },
@@ -388,6 +388,58 @@ public class EprContext : DbContext
             .HasIndex(e => e.ExternalId)
             .IsUnique(); // Ensures UniqueId is unique
 
+        modelBuilder.Entity<OverseasAddress>().HasOne(o => o.Registration)
+            .WithMany(rm => rm.OverseasAddresses)
+            .HasForeignKey(o => o.RegistrationId);
+
+        modelBuilder.Entity<OverseasAddress>().HasMany(o => o.OverseasAddressWasteCodes)
+            .WithOne(o => o.OverseasAddress)
+            .HasForeignKey(o => o.OverseasAddressId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<OverseasAddress>().HasMany(o => o.OverseasAddressContacts)
+            .WithOne(o => o.OverseasAddress)
+            .HasForeignKey(o => o.OverseasAddressId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<OverseasAddress>()
+            .Property(e => e.CreatedOn).HasDefaultValueSql("GETUTCDATE()");
+
+        modelBuilder.Entity<OverseasAddress>()            
+             .HasIndex(e => e.ExternalId)
+             .IsUnique(); // Ensures UniqueId is unique
+
+        modelBuilder.Entity<OverseasAddressWasteCode>()            
+            .HasIndex(e => e.ExternalId)
+            .IsUnique(); // Ensures UniqueId is unique
+
+        modelBuilder.Entity<OverseasAddressContact>()
+            .Property(e => e.CreatedOn).HasDefaultValueSql("GETUTCDATE()");
+
+        modelBuilder.Entity<InterimOverseasConnections>()
+            .HasIndex(e => e.ExternalId)
+            .IsUnique(); // Ensures UniqueId is unique
+
+        modelBuilder.Entity<OverseasMaterialReprocessingSite>()
+            .HasIndex(e => e.ExternalId)
+            .IsUnique(); // Ensures UniqueId is unique
+
+        modelBuilder.Entity<OverseasMaterialReprocessingSite>()
+            .HasMany(o => o.OverseasAddresses)
+            .WithMany(x => x.OverseasMaterialReprocessingSites);
+
+        modelBuilder.Entity<OverseasMaterialReprocessingSite>().HasMany(o => o.RegistrationMaterials)
+            .WithMany(x => x.OverseasMaterialReprocessingSites);
+
+        modelBuilder.Entity<OverseasMaterialReprocessingSite>().HasMany(o => o.OverseasAddresses)
+            .WithMany(x => x.OverseasMaterialReprocessingSites);
+
+        modelBuilder.Entity<InterimOverseasConnections>().HasOne(o => o.OverseasAddress)
+            .WithMany(rm => rm.InterimOverseasConnections)
+            .HasForeignKey(o => o.ParentOverseasAddressId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+
         base.OnModelCreating(modelBuilder);
     }
 
@@ -405,7 +457,7 @@ public class EprContext : DbContext
 
     public virtual DbSet<ObligationCalculationOrganisationSubmitterType> ObligationCalculationOrganisationSubmitterType { get; set; }
 
-	public virtual DbSet<PEprNpwdSync> PEprNpwdSync { get; set; }
+    public virtual DbSet<PEprNpwdSync> PEprNpwdSync { get; set; }
 
     public virtual DbSet<PrnMaterialMapping> PrnMaterialMapping { get; set; }
 
@@ -438,5 +490,9 @@ public class EprContext : DbContext
     public virtual DbSet<AccreditationTaskStatusQueryNote> AccreditationTaskStatusQueryNote { get; set; }
     public virtual DbSet<AccreditationDeterminationDate> AccreditationDeterminationDate { get; set; }
     public virtual DbSet<LookupCountry> LookupCountries { get; set; }
-
+    public virtual DbSet<OverseasAddress> OverseasAddress { get; set; }
+    public virtual DbSet<OverseasAddressContact> OverseasAddressContact { get; set; }
+    public virtual DbSet<OverseasAddressWasteCode> OverseasAddressWasteCode { get; set; }
+    public virtual DbSet<OverseasMaterialReprocessingSite> OverseasMaterialReprocessingSite { get; set; }
+    public virtual DbSet<InterimOverseasConnections> InterimOverseasConnections { get; set; }
 }

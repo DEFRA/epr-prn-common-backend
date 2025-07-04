@@ -11,4 +11,5 @@ public interface IMaterialRepository
     Task<RegistrationMaterialContact> UpsertRegistrationMaterialContact(Guid registrationMaterialId, Guid userId);
 
     Task UpsertRegistrationReprocessingDetailsAsync(Guid registrationMaterialId, RegistrationReprocessingIO registrationReprocessingIO);
+    Task SaveOverseasReprocessingSites(UpdateOverseasAddressDto overseasAddressSubmission);
 }
