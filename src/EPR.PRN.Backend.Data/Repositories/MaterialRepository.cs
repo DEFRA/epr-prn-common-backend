@@ -55,7 +55,8 @@ namespace EPR.PRN.Backend.Data.Repositories
         public async Task UpsertRegistrationReprocessingDetailsAsync(Guid registrationMaterialId, RegistrationReprocessingIO registrationReprocessingIO)
         {
             var registrationMaterial = await context.RegistrationMaterials
-               .Include(rm => rm.RegistrationReprocessingIO)
+               .Include(rm => rm.RegistrationReprocessingIO!)
+                .ThenInclude(io => io.RegistrationReprocessingIORawMaterialOrProducts)
                .SingleOrDefaultAsync(rm => rm.ExternalId == registrationMaterialId);
 
             if (registrationMaterial is null)
@@ -69,6 +70,13 @@ namespace EPR.PRN.Backend.Data.Repositories
             {
                 registrationReprocessingIO.RegistrationMaterialId = registrationMaterial.Id;
                 registrationReprocessingIO.ExternalId = Guid.NewGuid();
+                if (registrationReprocessingIO.RegistrationReprocessingIORawMaterialOrProducts != null)
+                {
+                    foreach (var item in registrationReprocessingIO.RegistrationReprocessingIORawMaterialOrProducts)
+                    {
+                        item.ExternalId = Guid.NewGuid();
+                    }
+                }
                 await context.RegistrationReprocessingIO.AddAsync(registrationReprocessingIO);
             }
             else
@@ -84,6 +92,19 @@ namespace EPR.PRN.Backend.Data.Repositories
                 existingRegistrationReprocessingIO.SenttoOtherSiteTonne = registrationReprocessingIO.SenttoOtherSiteTonne;
                 existingRegistrationReprocessingIO.ProcessLossTonne = registrationReprocessingIO.ProcessLossTonne;
                 existingRegistrationReprocessingIO.PlantEquipmentUsed = registrationReprocessingIO.PlantEquipmentUsed;
+
+                if (registrationReprocessingIO.RegistrationReprocessingIORawMaterialOrProducts != null)
+                {
+                    context.RegistrationReprocessingIORawMaterialOrProducts
+                        .RemoveRange(existingRegistrationReprocessingIO.RegistrationReprocessingIORawMaterialOrProducts ?? new List<RegistrationReprocessingIORawMaterialOrProducts>());
+
+                    foreach (var newItem in registrationReprocessingIO.RegistrationReprocessingIORawMaterialOrProducts)
+                    {
+                        newItem.ExternalId = Guid.NewGuid();
+                        newItem.RegistrationReprocessingIOId = existingRegistrationReprocessingIO.Id;
+                        context.RegistrationReprocessingIORawMaterialOrProducts.Add(newItem);
+                    }
+                }
             }
 
             await context.SaveChangesAsync();
