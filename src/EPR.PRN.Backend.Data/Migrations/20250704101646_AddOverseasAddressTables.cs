@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace EPR.PRN.Backend.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class OverseasMaterialReprocessingSite : Migration
+    public partial class AddOverseasAddressTables : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -53,12 +53,14 @@ namespace EPR.PRN.Backend.Data.Migrations
                     OrganisationName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     CountryId = table.Column<int>(type: "int", nullable: false),
                     AddressLine1 = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    AddressLine2 = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    AddressLine2 = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     CityOrTown = table.Column<string>(type: "nvarchar(70)", maxLength: 70, nullable: false),
-                    StateProvince = table.Column<string>(type: "nvarchar(70)", maxLength: 70, nullable: false),
-                    PostCode = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
+                    StateProvince = table.Column<string>(type: "nvarchar(70)", maxLength: 70, nullable: true),
+                    PostCode = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
                     CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    UpdatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()"),
+                    UpdatedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
                     SiteCoordinates = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>

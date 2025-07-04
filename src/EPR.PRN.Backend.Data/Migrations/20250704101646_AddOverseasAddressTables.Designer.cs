@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EPR.PRN.Backend.Data.Migrations
 {
     [DbContext(typeof(EprContext))]
-    [Migration("20250703143909_OverseasMaterialReprocessingSite")]
-    partial class OverseasMaterialReprocessingSite
+    [Migration("20250704101646_AddOverseasAddressTables")]
+    partial class AddOverseasAddressTables
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -3755,7 +3755,6 @@ namespace EPR.PRN.Backend.Data.Migrations
                         .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("AddressLine2")
-                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
@@ -3785,7 +3784,6 @@ namespace EPR.PRN.Backend.Data.Migrations
                         .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("PostCode")
-                        .IsRequired()
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
@@ -3797,9 +3795,14 @@ namespace EPR.PRN.Backend.Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("StateProvince")
-                        .IsRequired()
                         .HasMaxLength(70)
                         .HasColumnType("nvarchar(70)");
+
+                    b.Property<Guid>("UpdatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("UpdatedOn")
+                        .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 

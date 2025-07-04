@@ -5,6 +5,7 @@ using EPR.PRN.Backend.Data.DataModels.Registrations;
 using EPR.PRN.Backend.Data.DTO;
 using EPR.PRN.Backend.Data.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using System.Transactions;
 
 namespace EPR.PRN.Backend.Data.Repositories
 {
@@ -91,6 +92,21 @@ namespace EPR.PRN.Backend.Data.Repositories
 
         public async Task SaveOverseasReprocessingSites(UpdateOverseasAddressDto overseasAddressSubmission)
         {
+            await using var transaction = await context.Database.BeginTransactionAsync();
+
+            try
+            {
+                await SaveOverseasSitesTransaction(overseasAddressSubmission);
+                await transaction.CommitAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("SaveOverseasReprocessingSites trandsaction failed", ex);
+            }                    
+        }
+
+        public async Task SaveOverseasSitesTransaction(UpdateOverseasAddressDto overseasAddressSubmission)
+        {
             var overseasAddressIds = overseasAddressSubmission.OverseasAddresses.Select(x => x.ExternalId).ToList();
             var registrationMaterial = await GetRegistrationMaterial(overseasAddressSubmission.RegistrationMaterialId);
             var registrationId = registrationMaterial.RegistrationId;
@@ -109,8 +125,10 @@ namespace EPR.PRN.Backend.Data.Repositories
                .ToListAsync();
 
             await CreateOverseasReprocessingSites(overseasAddressSubmission.OverseasAddresses, overseasAddressesAfterUpdate, registrationId, registrationMaterialId);
-            await context.SaveChangesAsync();
+
+            
         }
+
 
         private async Task DeleteOverseasReprocessingSites(List<Guid> overseasAddressIds, int registrationMaterialId)
         {
@@ -235,6 +253,7 @@ namespace EPR.PRN.Backend.Data.Repositories
             }).ToList();
 
             await context.OverseasAddress.AddRangeAsync(overseasAddressesToCreate);
+            await context.SaveChangesAsync();
         }
 
         private async Task<RegistrationMaterial> GetRegistrationMaterial(Guid registrationMaterialId)

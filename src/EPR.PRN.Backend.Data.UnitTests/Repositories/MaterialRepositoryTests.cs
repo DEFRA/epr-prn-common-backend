@@ -604,7 +604,7 @@ public class MaterialRepositoryTests
         };
 
         // Act
-        await _materialRepository.SaveOverseasReprocessingSites(updateDto);
+        await _materialRepository.SaveOverseasSitesTransaction(updateDto);
 
         // Assert
         var allAddresses = await _context.OverseasAddress
@@ -675,21 +675,26 @@ public class MaterialRepositoryTests
         var updateDto = new UpdateOverseasAddressDto
         {
             RegistrationMaterialId = registrationMaterialExternalId,
-            OverseasAddresses = new List<OverseasAddressDto>
-            {
+            OverseasAddresses =
+            [
                 new OverseasAddressDto
                 {
                     ExternalId = externalId,
-                    AddressLine1 = "Keep This Updated",
+                    AddressLine1 = "Keep This",
+                    OrganisationName = "Old Org",
+                    AddressLine2 = "Old Address Line 2",
+                    CityOrTown = "Old Town",
+                    StateProvince = "Old State",
+                    PostCode = "12345",
+                    SiteCoordinates = "51.5074, -0.1278",
                     OverseasAddressContacts = new List<OverseasAddressContactDto>(),
-                    OverseasAddressWasteCodes = new List<OverseasAddressWasteCodeDto>(),
-                    CountryName = ""
+                    OverseasAddressWasteCodes = new List<OverseasAddressWasteCodeDto>(),                    
                 }
-            }
+            ]
         };
 
         // Act
-        await _materialRepository.SaveOverseasReprocessingSites(updateDto);
+        await _materialRepository.SaveOverseasSitesTransaction(updateDto);
 
         // Assert
         var allAddresses = await _context.OverseasAddress.ToListAsync();
