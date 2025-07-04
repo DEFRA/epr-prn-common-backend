@@ -4,13 +4,10 @@ using EPR.PRN.Backend.Data.DataModels;
 using EPR.PRN.Backend.Data.DataModels.Registrations;
 using EPR.PRN.Backend.Data.DTO;
 using EPR.PRN.Backend.Data.Repositories;
-using EPR.PRN.Backend.Data.Repositories.Regulator;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Testing.Platform.Extensions;
 using Moq;
 using Moq.EntityFrameworkCore;
-using System.Xml.XPath;
 
 namespace EPR.PRN.Backend.Data.UnitTests.Repositories;
 
