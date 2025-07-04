@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace EPR.PRN.Backend.API.Commands;
-public class UpdateApplicantRegistrationTaskStatusCommand : IRequest
+public class UpdateApplicationRegistrationTaskStatusCommand : IRequest
 {
     public string TaskName { get; set; } = string.Empty;
 

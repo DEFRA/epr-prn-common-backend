@@ -170,22 +170,22 @@ public class RegistrationControllerTests
     }
 
     [TestMethod]
-    public async Task UpdateApplicantRegistrationTaskStatus_ValidCommand_ReturnsNoContent()
+    public async Task UpdateApplicationRegistrationTaskStatus_ValidCommand_ReturnsNoContent()
     {
         // Arrange
         var registrationId = Guid.NewGuid();
-        var command = new UpdateApplicantRegistrationTaskStatusCommand();
+        var command = new UpdateApplicationRegistrationTaskStatusCommand();
 
         _validationServiceMock
-            .Setup(v => v.ValidateAndThrowAsync(It.IsAny<UpdateApplicantRegistrationTaskStatusCommand>(), It.IsAny<CancellationToken>()))
+            .Setup(v => v.ValidateAndThrowAsync(It.IsAny<UpdateApplicationRegistrationTaskStatusCommand>(), It.IsAny<CancellationToken>()))
             .Returns(Task.CompletedTask);
 
         _mediatorMock
-            .Setup(m => m.Send(It.IsAny<UpdateApplicantRegistrationTaskStatusCommand>(), It.IsAny<CancellationToken>()))
+            .Setup(m => m.Send(It.IsAny<UpdateApplicationRegistrationTaskStatusCommand>(), It.IsAny<CancellationToken>()))
             .Returns(Task.FromResult(Unit.Value));
 
         // Act
-        var result = await _controller.UpdateApplicantRegistrationTaskStatus(registrationId, command);
+        var result = await _controller.UpdateApplicationRegistrationTaskStatus(registrationId, command);
 
         // Assert
         using (new AssertionScope())

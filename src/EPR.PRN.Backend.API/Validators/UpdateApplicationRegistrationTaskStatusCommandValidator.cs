@@ -4,9 +4,9 @@ using FluentValidation;
 
 namespace EPR.PRN.Backend.API.Validators;
 
-public class UpdateApplicantRegistrationTaskStatusCommandValidator : AbstractValidator<UpdateApplicantRegistrationTaskStatusCommand>
+public class UpdateApplicationRegistrationTaskStatusCommandValidator : AbstractValidator<UpdateApplicationRegistrationTaskStatusCommand>
 {
-    public UpdateApplicantRegistrationTaskStatusCommandValidator()
+    public UpdateApplicationRegistrationTaskStatusCommandValidator()
     {
         var allowedStatuses = new[] 
         { 
