@@ -200,13 +200,16 @@ public class EprContext : DbContext
 			.OnDelete(DeleteBehavior.NoAction);
 
 			modelBuilder.Entity<LookupMaterial>().HasData(
-            new LookupMaterial { Id = 1, MaterialName = "Plastic", MaterialCode = "PL" },
-            new LookupMaterial { Id = 2, MaterialName = "Steel", MaterialCode = "ST" },
-            new LookupMaterial { Id = 3, MaterialName = "Aluminium", MaterialCode = "AL" },
-            new LookupMaterial { Id = 4, MaterialName = "Glass", MaterialCode = "GL" },
-            new LookupMaterial { Id = 5, MaterialName = "Paper/Board", MaterialCode = "PA" },
-            new LookupMaterial { Id = 6, MaterialName = "Wood", MaterialCode = "WO" });
-        
+                new LookupMaterial { Id = 1, MaterialName = "Plastic", MaterialCode = "PL" },
+                new LookupMaterial { Id = 2, MaterialName = "Steel", MaterialCode = "ST" },
+                new LookupMaterial { Id = 3, MaterialName = "Aluminium", MaterialCode = "AL" },
+                new LookupMaterial { Id = 4, MaterialName = "Glass", MaterialCode = "GL" },
+                new LookupMaterial { Id = 5, MaterialName = "Paper/Board", MaterialCode = "PA" },
+                new LookupMaterial { Id = 6, MaterialName = "Wood", MaterialCode = "WO" });
+
+            modelBuilder.Entity<LookupCountry>().HasData(
+                CountryConstants.Countries.Select(c => new LookupCountry { Id = c.Id, CountryCode = c.Code, Name = c.Name }).ToArray()
+            );
 
         modelBuilder.Entity<LookupRegistrationMaterialStatus>().HasData(
             new LookupRegistrationMaterialStatus { Id = 1, Name = "Granted" },
@@ -218,7 +221,8 @@ public class EprContext : DbContext
             new LookupRegistrationMaterialStatus { Id = 8, Name = "Withdrawn" },
             new LookupRegistrationMaterialStatus { Id = 9, Name = "Suspended" },
             new LookupRegistrationMaterialStatus { Id = 10, Name = "Cancelled" },
-            new LookupRegistrationMaterialStatus { Id = 11, Name = "ReadyToSubmit" });
+            new LookupRegistrationMaterialStatus { Id = 11, Name = "ReadyToSubmit" },
+			new LookupRegistrationMaterialStatus { Id = 12, Name = "InProgress" });
 
         modelBuilder.Entity<LookupAccreditationStatus>().HasData(
             new LookupAccreditationStatus { Id = 1, Name = "Started" },
@@ -347,6 +351,15 @@ public class EprContext : DbContext
             .HasIndex(e => e.ExternalId)
             .IsUnique(); // Ensures UniqueId is unique
 
+        modelBuilder.Entity<RegistrationMaterial>()
+            .HasOne(r => r.RegistrationMaterialContact)
+            .WithOne()
+            .HasForeignKey<RegistrationMaterialContact>(cb => cb.RegistrationMaterialId);
+
+        modelBuilder.Entity<RegistrationMaterialContact>()
+            .HasIndex(e => e.ExternalId)
+            .IsUnique(); // Ensures UniqueId is unique
+
         modelBuilder.Entity<RegistrationReprocessingIO>()
             .HasIndex(e => e.ExternalId)
             .IsUnique(); // Ensures UniqueId is unique
@@ -394,6 +407,7 @@ public class EprContext : DbContext
 
     public virtual DbSet<Registration> Registrations { get; set; }
     public virtual DbSet<RegistrationMaterial> RegistrationMaterials { get; set; }
+    public virtual DbSet<RegistrationMaterialContact> RegistrationMaterialContacts { get; set; }
     public virtual DbSet<MaterialExemptionReference> MaterialExemptionReferences { get; set; }
     public virtual DbSet<RegistrationReprocessingIO> RegistrationReprocessingIO { get; set; }
     public virtual DbSet<DeterminationDate> DeterminationDate { get; set; }
@@ -418,5 +432,6 @@ public class EprContext : DbContext
     public virtual DbSet<RegulatorAccreditationTaskStatus> RegulatorAccreditationTaskStatus { get; set; }
     public virtual DbSet<AccreditationTaskStatusQueryNote> AccreditationTaskStatusQueryNote { get; set; }
     public virtual DbSet<AccreditationDeterminationDate> AccreditationDeterminationDate { get; set; }
+    public virtual DbSet<LookupCountry> LookupCountries { get; set; }
 
 }

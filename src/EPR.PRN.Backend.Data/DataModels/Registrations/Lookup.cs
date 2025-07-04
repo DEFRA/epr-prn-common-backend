@@ -90,3 +90,13 @@ public class LookupFileUploadType : LookupBase { }
 [Table("Lookup.FileUploadStatus")]
 [ExcludeFromCodeCoverage]
 public class LookupFileUploadStatus : LookupBase { }
+
+[Table("Lookup.Country")]
+[ExcludeFromCodeCoverage]
+public class LookupCountry : LookupBase
+{
+    [MaxLength(100)]
+    public override required string Name { get; set; }
+    [MaxLength(3)]
+    public string? CountryCode { get; set; }
+}
