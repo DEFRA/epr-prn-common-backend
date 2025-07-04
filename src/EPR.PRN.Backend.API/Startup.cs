@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.FeatureManagement;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace EPR.PRN.Backend.API
 {
@@ -52,6 +53,18 @@ namespace EPR.PRN.Backend.API
                 config.CustomSchemaIds(s => s.FullName);
                 config.DocumentFilter<FeatureEnabledDocumentFilter>();
                 config.OperationFilter<FeatureGateOperationFilter>();
+
+                // This is the key part:
+                config.TagActionsBy(api =>
+                {
+                    var tag = api.ActionDescriptor.EndpointMetadata
+                        .OfType<SwaggerOperationAttribute>()
+                        .Select(attr => attr.Tags?.FirstOrDefault())
+                        .FirstOrDefault();
+                    if (!string.IsNullOrWhiteSpace(tag))
+                        return new[] { tag };
+                    return new[] { api.ActionDescriptor.RouteValues["controller"] };
+                });
             });
             services.AddFeatureManagement();
 

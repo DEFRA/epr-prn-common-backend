@@ -1,4 +1,5 @@
 ﻿using EPR.PRN.Backend.API.Dto;
+using EPR.PRN.Backend.API.Queries;
 using EPR.PRN.Backend.API.Services;
 using EPR.PRN.Backend.Data.DataModels;
 using EPR.PRN.Backend.Data.Interfaces;
@@ -65,6 +66,55 @@ public class MaterialServiceTests
 
         // Act
         var result = await _systemUnderTest.GetAllMaterialsAsync(CancellationToken.None);
+
+        // Assert
+        result.Should().BeEquivalentTo(expectedMaterials);
+    }
+    /// <summary>
+    /// //////////
+    /// </summary>
+    /// <returns></returns>
+    [TestMethod]
+    public async Task GetMaterialsByRegistrationIdQuery_EnsureDataReturned()
+    {
+        // Arrange
+        var registrationId = Guid.NewGuid();
+
+        var materials = new List<Material>
+        {
+            new() { MaterialName = "Wood", MaterialCode = "W1" },
+            new() { MaterialName = "Plastic", MaterialCode = "P1" }
+        };
+
+        var expectedMaterials = new List<MaterialDto>
+        {
+            new() { Name = "Wood", Code = "W1" },
+            new() { Name = "Plastic", Code = "P1" }
+        };
+
+        // Expectations
+        _mockRepository.Setup(r => r.GetMaterialsByRegistrationIdQuery(registrationId)).ReturnsAsync(materials);
+
+        // Act
+        var result = await _systemUnderTest.GetMaterialsByRegistrationIdQuery(registrationId);
+
+        // Assert
+        result.Should().BeEquivalentTo(expectedMaterials);
+    }
+
+    [TestMethod]
+    public async Task GetMaterialsByRegistrationIdQuery_NoDataReturned()
+    {
+        // Arrange
+        var registrationId = Guid.NewGuid();
+
+        var expectedMaterials = Enumerable.Empty<Material>();
+
+        // Expectations
+        _mockRepository.Setup(r => r.GetMaterialsByRegistrationIdQuery(registrationId)).ReturnsAsync(new List<Material>());
+
+        // Act
+        var result = await _systemUnderTest.GetMaterialsByRegistrationIdQuery(registrationId);
 
         // Assert
         result.Should().BeEquivalentTo(expectedMaterials);
