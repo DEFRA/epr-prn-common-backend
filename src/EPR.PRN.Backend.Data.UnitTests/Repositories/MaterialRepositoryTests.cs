@@ -1,5 +1,4 @@
-﻿using System.Xml.XPath;
-using EPR.PRN.Backend.API.Common.Constants;
+﻿using EPR.PRN.Backend.API.Common.Constants;
 using EPR.PRN.Backend.API.Common.Enums;
 using EPR.PRN.Backend.Data.DataModels;
 using EPR.PRN.Backend.Data.DataModels.Registrations;
@@ -7,34 +6,37 @@ using EPR.PRN.Backend.Data.DTO;
 using EPR.PRN.Backend.Data.Repositories;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.Testing.Platform.Extensions;
 using Moq;
 using Moq.EntityFrameworkCore;
+using System.Xml.XPath;
 
 namespace EPR.PRN.Backend.Data.UnitTests.Repositories;
 
 [TestClass]
 public class MaterialRepositoryTests
 {
-	private MaterialRepository _materialRepositoryMockContext;
+    private MaterialRepository _materialRepositoryMockContext;
     private MaterialRepository _materialRepository;
-    private Mock<EprContext> _mockEprContext;
     private EprContext _context;
+    private Mock<EprContext> _mockEprContext;
     private readonly List<Material> _materials =
-		[
-			new Material { Id = 1, MaterialCode = "PL", MaterialName = MaterialType.Plastic.ToString() },
-			new Material { Id = 2, MaterialCode = "WD", MaterialName = MaterialType.Wood.ToString() },
-			new Material { Id = 3, MaterialCode = "AL", MaterialName = MaterialType.Aluminium.ToString() },
-			new Material { Id = 4, MaterialCode = "ST", MaterialName = MaterialType.Steel.ToString() },
-			new Material { Id = 5, MaterialCode = "PC", MaterialName = MaterialType.Paper.ToString() },
-			new Material { Id = 6, MaterialCode = "GL", MaterialName = MaterialType.Glass.ToString() },
-			new Material { Id = 7, MaterialCode = "GR", MaterialName = MaterialType.GlassRemelt.ToString() },
-			new Material { Id = 8, MaterialCode = "FC", MaterialName = MaterialType.FibreComposite.ToString() }
-		];
+        [
+            new Material { Id = 1, MaterialCode = "PL", MaterialName = MaterialType.Plastic.ToString() },
+            new Material { Id = 2, MaterialCode = "WD", MaterialName = MaterialType.Wood.ToString() },
+            new Material { Id = 3, MaterialCode = "AL", MaterialName = MaterialType.Aluminium.ToString() },
+            new Material { Id = 4, MaterialCode = "ST", MaterialName = MaterialType.Steel.ToString() },
+            new Material { Id = 5, MaterialCode = "PC", MaterialName = MaterialType.Paper.ToString() },
+            new Material { Id = 6, MaterialCode = "GL", MaterialName = MaterialType.Glass.ToString() },
+            new Material { Id = 7, MaterialCode = "GR", MaterialName = MaterialType.GlassRemelt.ToString() },
+            new Material { Id = 8, MaterialCode = "FC", MaterialName = MaterialType.FibreComposite.ToString() }
+        ];
 
-	[TestInitialize]
-	public void Setup()
-	{
+    [TestInitialize]
+    public void Setup()
+    {
+        
         var options = new DbContextOptionsBuilder<EprContext>()
             .UseInMemoryDatabase(databaseName: "TestDb")
             .Options;
@@ -44,10 +46,11 @@ public class MaterialRepositoryTests
         SeedDatabase();
 
         var dbContextOptions = new DbContextOptionsBuilder<EprContext>().Options;
-		_mockEprContext = new Mock<EprContext>(dbContextOptions);
-		_mockEprContext.Setup(context => context.Material).ReturnsDbSet(_materials);
-		_materialRepositoryMockContext = new MaterialRepository(_mockEprContext.Object);
-	}
+        _mockEprContext = new Mock<EprContext>(dbContextOptions);
+        _mockEprContext.Setup(context => context.Material).ReturnsDbSet(_materials);
+        _materialRepositoryMockContext = new MaterialRepository(_mockEprContext.Object);        
+       
+    }
 
     private void SeedDatabase()
     {
@@ -289,23 +292,23 @@ public class MaterialRepositoryTests
     }
 
     [TestMethod]
-	public async Task GetAllMaterials_ShouldReturnAllMaterials()
-	{
-		// Act
-		var result = await _materialRepositoryMockContext.GetAllMaterials();
+    public async Task GetAllMaterials_ShouldReturnAllMaterials()
+    {
+        // Act
+        var result = await _materialRepositoryMockContext.GetAllMaterials();
 
-		// Assert
-		result.Should().NotBeNull(); // Check that result is not null
-		result.Should().HaveCount(8); // Check that 7 materials are returned
-		result.Should().Contain(material => material.MaterialCode == "PL" && material.MaterialName == MaterialType.Plastic.ToString());
-		result.Should().Contain(material => material.MaterialCode == "WD" && material.MaterialName == MaterialType.Wood.ToString());
-		result.Should().Contain(material => material.MaterialCode == "AL" && material.MaterialName == MaterialType.Aluminium.ToString());
-		result.Should().Contain(material => material.MaterialCode == "ST" && material.MaterialName == MaterialType.Steel.ToString());
-		result.Should().Contain(material => material.MaterialCode == "PC" && material.MaterialName == MaterialType.Paper.ToString());
-		result.Should().Contain(material => material.MaterialCode == "GL" && material.MaterialName == MaterialType.Glass.ToString());
-		result.Should().Contain(material => material.MaterialCode == "GR" && material.MaterialName == MaterialType.GlassRemelt.ToString());
-		result.Should().Contain(material => material.MaterialCode == "FC" && material.MaterialName == MaterialType.FibreComposite.ToString());
-	}
+        // Assert
+        result.Should().NotBeNull(); // Check that result is not null
+        result.Should().HaveCount(8); // Check that 7 materials are returned
+        result.Should().Contain(material => material.MaterialCode == "PL" && material.MaterialName == MaterialType.Plastic.ToString());
+        result.Should().Contain(material => material.MaterialCode == "WD" && material.MaterialName == MaterialType.Wood.ToString());
+        result.Should().Contain(material => material.MaterialCode == "AL" && material.MaterialName == MaterialType.Aluminium.ToString());
+        result.Should().Contain(material => material.MaterialCode == "ST" && material.MaterialName == MaterialType.Steel.ToString());
+        result.Should().Contain(material => material.MaterialCode == "PC" && material.MaterialName == MaterialType.Paper.ToString());
+        result.Should().Contain(material => material.MaterialCode == "GL" && material.MaterialName == MaterialType.Glass.ToString());
+        result.Should().Contain(material => material.MaterialCode == "GR" && material.MaterialName == MaterialType.GlassRemelt.ToString());
+        result.Should().Contain(material => material.MaterialCode == "FC" && material.MaterialName == MaterialType.FibreComposite.ToString());
+    }
 
     [TestMethod]
     public async Task UpsertRegistrationMaterialContact_ShouldCreateNewContact_WhenNoneExists()
@@ -332,7 +335,7 @@ public class MaterialRepositoryTests
         // Assert
         result.Should().NotBeNull();
         result.RegistrationMaterialId.Should().Be(registrationMaterialId);
-        
+
         _mockEprContext.Verify(c => c.SaveChangesAsync(default), Times.Once);
     }
 
@@ -361,7 +364,7 @@ public class MaterialRepositoryTests
             .ReturnsDbSet(registrationMaterials);
 
         _mockEprContext.Setup(c => c.RegistrationMaterialContacts)
-            .ReturnsDbSet(new List<RegistrationMaterialContact> { registrationMaterialContact});
+            .ReturnsDbSet(new List<RegistrationMaterialContact> { registrationMaterialContact });
 
         // Act
         var result = await _materialRepositoryMockContext.UpsertRegistrationMaterialContact(registrationMaterialExternalId, userId);
@@ -382,7 +385,7 @@ public class MaterialRepositoryTests
         var userId = Guid.NewGuid();
         _mockEprContext.Setup(c => c.RegistrationMaterials)
             .ReturnsDbSet(new List<RegistrationMaterial>());
-        
+
         // Act & Assert
         await Assert.ThrowsExceptionAsync<KeyNotFoundException>(async () =>
         {
@@ -562,7 +565,7 @@ public class MaterialRepositoryTests
             .ReturnsDbSet(new List<RegistrationReprocessingIORawMaterialOrProducts>());
 
         // Act
-        await _materialRepository.UpsertRegistrationReprocessingDetailsAsync(registrationMaterialExternalId, newIO);
+        await _materialRepositoryMockContext.UpsertRegistrationReprocessingDetailsAsync(registrationMaterialExternalId, newIO);
 
         // Assert
         _mockEprContext.Verify(c => c.RegistrationReprocessingIO.AddAsync(
@@ -640,7 +643,7 @@ public class MaterialRepositoryTests
             .ReturnsDbSet(existingRawMaterials);
 
         // Act
-        await _materialRepository.UpsertRegistrationReprocessingDetailsAsync(registrationMaterialExternalId, updatedIO);
+        await _materialRepositoryMockContext.UpsertRegistrationReprocessingDetailsAsync(registrationMaterialExternalId, updatedIO);
 
         // Assert
         _mockEprContext.Verify(c => c.RegistrationReprocessingIORawMaterialOrProducts.RemoveRange(existingRawMaterials), Times.Once);
@@ -657,7 +660,6 @@ public class MaterialRepositoryTests
         existingIO.TotalOutputs.Should().Be(18);
         existingIO.PlantEquipmentUsed.Should().Be("Updated Machine");
     }
-        
 
     [TestMethod]
     public async Task SaveOverseasReprocessingSites_Should_Update_Existing_And_Add_New()
@@ -831,7 +833,7 @@ public class MaterialRepositoryTests
                     PostCode = "12345",
                     SiteCoordinates = "51.5074, -0.1278",
                     OverseasAddressContacts = new List<OverseasAddressContactDto>(),
-                    OverseasAddressWasteCodes = new List<OverseasAddressWasteCodeDto>(),                    
+                    OverseasAddressWasteCodes = new List<OverseasAddressWasteCodeDto>(),
                 }
             ]
         };
