@@ -238,7 +238,7 @@ namespace EPR.PRN.Backend.Data.Repositories
                 .Where(x => !overseasAddressesAfterDb.Any(y => y.ExternalId == x.ExternalId))
                 .Select(x => new OverseasAddress
                 {
-                    ExternalId = new Guid(),
+                    ExternalId = Guid.NewGuid(),
                     OrganisationName = x.OrganisationName,
                     AddressLine1 = x.AddressLine1,
                     AddressLine2 = x.AddressLine2,
@@ -261,7 +261,7 @@ namespace EPR.PRN.Backend.Data.Repositories
                 })],
                     OverseasAddressWasteCodes = [.. x.OverseasAddressWasteCodes.Select(wc => new OverseasAddressWasteCode
                 {
-                    ExternalId = new Guid(),
+                    ExternalId = Guid.NewGuid(),
                     CodeName = wc.CodeName,                    
                 })]
                 }).ToList();
@@ -274,6 +274,7 @@ namespace EPR.PRN.Backend.Data.Repositories
             }).ToList();
 
             await context.OverseasAddress.AddRangeAsync(overseasAddressesToCreate);
+            await context.OverseasMaterialReprocessingSite.AddRangeAsync(overseasMaterialReprocessingSites);
             await context.SaveChangesAsync();
         }
 
