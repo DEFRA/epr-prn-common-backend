@@ -1,4 +1,5 @@
-﻿using EPR.PRN.Backend.API.Dto.Regulator;
+﻿using EPR.PRN.Backend.API.Common.Enums;
+using EPR.PRN.Backend.API.Dto;
 using EPR.PRN.Backend.API.Handlers;
 using EPR.PRN.Backend.API.Handlers.Regulator;
 using EPR.PRN.Backend.Data.DataModels.Registrations;
@@ -9,16 +10,14 @@ using Moq;
 namespace EPR.PRN.Backend.API.UnitTests.Handlers;
 
 [TestClass]
-public class GetRegistrationTaskOverviewDetailByIdHandlerTests : HandlerTestsBase
+public class GetRegistrationTaskOverviewDetailByIdHandlerTests : HandlerTestsBase<IRegistrationRepository>
 {
-    private Mock<IRegistrationRepository> _mockRegistrationRepository;
     private GetRegistrationTaskOverviewDetailByIdHandler _handler;
 
     [TestInitialize]
     public void TestInitialize()
     {
-        _mockRegistrationRepository = new Mock<IRegistrationRepository>();
-        _handler = new GetRegistrationTaskOverviewDetailByIdHandler(_mockRegistrationRepository.Object, Mapper.CreateMapper());
+        _handler = new GetRegistrationTaskOverviewDetailByIdHandler(MockRepository.Object, Mapper.CreateMapper());
     }
 
     [TestMethod]
@@ -52,14 +51,25 @@ public class GetRegistrationTaskOverviewDetailByIdHandlerTests : HandlerTestsBas
         };
         
         // Expectations
-        _mockRegistrationRepository.Setup(o => o.GetAsync(registrationId)).ReturnsAsync(registration);
-        _mockRegistrationRepository.Setup(o => o.GetRequiredTasks(1, false, 1)).ReturnsAsync([
+        MockRepository.Setup(o => o.GetTasksForRegistrationAndMaterialsAsync(registrationId)).ReturnsAsync(registration);
+        MockRepository.Setup(o => o.GetRequiredTasks(1, false, 1)).ReturnsAsync([
             new()
             {
                 Id = 1,
                 Name = "task 1",
                 ApplicationTypeId = 1,
                 IsMaterialSpecific = false,
+                JourneyTypeId = 1
+            }
+        ]);
+
+        MockRepository.Setup(o => o.GetRequiredTasks(1, true, 1)).ReturnsAsync([
+            new()
+            {
+                Id = 2,
+                Name = "task 2",
+                ApplicationTypeId = 1,
+                IsMaterialSpecific = true,
                 JourneyTypeId = 1
             }
         ]);
@@ -71,9 +81,8 @@ public class GetRegistrationTaskOverviewDetailByIdHandlerTests : HandlerTestsBas
         }, CancellationToken.None);
 
         // Assert
-        result.Should().BeEquivalentTo(new RegistrationTaskOverviewDto
+        result.Should().BeEquivalentTo(new ApplicantRegistrationTasksOverviewDto
         {
-            Regulator = "EA",
             OrganisationId = organisationId,
             Id = registrationId,
             Materials = [],
@@ -85,11 +94,15 @@ public class GetRegistrationTaskOverviewDetailByIdHandlerTests : HandlerTestsBas
                     TaskName = "task",
                     Status = null
                 },
-
                 new()
                 {
                     TaskName = "task 1",
-                    Status = "NotStarted"
+                    Status = "CannotStartYet"
+                },
+                new()
+                {
+                    TaskName = "task 2",
+                    Status = "CannotStartYet"
                 }
             ]
         });
@@ -140,6 +153,7 @@ public class GetRegistrationTaskOverviewDetailByIdHandlerTests : HandlerTestsBas
                         {
                             Id = 1, 
                             RegistrationMaterialId = 1,
+                            TaskStatus = new LookupTaskStatus{Id = 1, Name = nameof(TaskStatuses.CannotStartYet)},
                             Task = new LookupRegulatorTask
                             {
                                 Id = 1,
@@ -155,8 +169,8 @@ public class GetRegistrationTaskOverviewDetailByIdHandlerTests : HandlerTestsBas
         };
 
         // Expectations
-        _mockRegistrationRepository.Setup(o => o.GetAsync(registrationId)).ReturnsAsync(registration);
-        _mockRegistrationRepository.Setup(o => o.GetRequiredTasks(1, false, 1)).ReturnsAsync([
+        MockRepository.Setup(o => o.GetTasksForRegistrationAndMaterialsAsync(registrationId)).ReturnsAsync(registration);
+        MockRepository.Setup(o => o.GetRequiredTasks(1, false, 1)).ReturnsAsync([
             new()
             {
                 Id = 1,
@@ -167,7 +181,7 @@ public class GetRegistrationTaskOverviewDetailByIdHandlerTests : HandlerTestsBas
             }
         ]);
 
-        _mockRegistrationRepository.Setup(o => o.GetRequiredTasks(1, true, 1)).ReturnsAsync([
+        MockRepository.Setup(o => o.GetRequiredTasks(1, true, 1)).ReturnsAsync([
             new()
             {
                 Id = 2,
@@ -185,9 +199,8 @@ public class GetRegistrationTaskOverviewDetailByIdHandlerTests : HandlerTestsBas
         }, CancellationToken.None);
 
         // Assert
-        result.Should().BeEquivalentTo(new RegistrationTaskOverviewDto
+        result.Should().BeEquivalentTo(new ApplicantRegistrationTasksOverviewDto
         {
-            Regulator = "EA",
             OrganisationId = organisationId,
             Id = registrationId,
             Materials = [],
@@ -199,11 +212,15 @@ public class GetRegistrationTaskOverviewDetailByIdHandlerTests : HandlerTestsBas
                     TaskName = "task",
                     Status = null
                 },
-
                 new()
                 {
                     TaskName = "task 1",
-                    Status = "NotStarted"
+                    Status = "CannotStartYet"
+                },
+                new()
+                {
+                    TaskName = "task 2",
+                    Status = "CannotStartYet"
                 }
             ]
         }, options => options.Excluding(o => o.Materials));

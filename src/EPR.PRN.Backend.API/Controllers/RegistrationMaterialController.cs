@@ -190,4 +190,28 @@ public class RegistrationMaterialController(
 
         return Ok();
     }
+
+    [HttpPost("registrationMaterials/{registrationMaterialId:guid}/task-status")]
+    [ProducesResponseType(StatusCodes.Status204NoContent, Type = typeof(NoContentResult))]
+    [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
+    [SwaggerOperation(
+        Summary = "update the registration material task status",
+        Description = "attempting to update the registration material task status."
+    )]
+    [SwaggerResponse(StatusCodes.Status204NoContent, $"Returns No Content", typeof(NoContentResult))]
+    [SwaggerResponse(StatusCodes.Status400BadRequest, "If the request is invalid or a validation error occurs.",
+        typeof(ProblemDetails))]
+    [SwaggerResponse(StatusCodes.Status500InternalServerError, "If an unexpected error occurs.", typeof(ContentResult))]
+    public async Task<IActionResult> UpdateRegistrationMaterialTaskStatus([FromRoute] Guid registrationMaterialId, [FromBody] UpdateRegistrationMaterialTaskStatusCommand command)
+    {
+        logger.LogInformation(LogMessages.UpdateRegistrationTaskStatus);
+        command.RegistrationMaterialId = registrationMaterialId;
+
+        await validationService.ValidateAndThrowAsync<UpdateRegistrationTaskStatusCommandBase>(command);
+
+        await mediator.Send(command);
+
+        return NoContent();
+    }
 }

@@ -1,5 +1,7 @@
 using AutoFixture;
 using EPR.PRN.Backend.API.Commands;
+using EPR.PRN.Backend.API.Common.Constants;
+using EPR.PRN.Backend.API.Common.Enums;
 using EPR.PRN.Backend.API.Controllers;
 using EPR.PRN.Backend.API.Dto.Regulator;
 using EPR.PRN.Backend.API.Handlers;
@@ -210,5 +212,50 @@ public class RegistrationMaterialControllerTests
 
         // Assert
         result.Should().BeEquivalentTo(expectedResult);
+    }
+
+    [TestMethod]
+    public async Task UpdateRegistrationMaterialTaskStatus_EnsureCorrectResult()
+    {
+        // Arrange
+        var externalId = Guid.NewGuid();
+        var expectedResult = new NoContentResult();
+
+        var command = new UpdateRegistrationMaterialTaskStatusCommand
+        {
+            RegistrationMaterialId = externalId,
+            Status = TaskStatuses.Completed,
+            TaskName = ApplicantRegistrationTaskNames.SiteAddressAndContactDetails
+        };
+
+        // Expectations
+        _mediatorMock.Setup(m => m.Send(command, It.IsAny<CancellationToken>()));
+
+        // Act
+        var result = await _controller.UpdateRegistrationMaterialTaskStatus(externalId, command);
+
+        // Assert
+        result.Should().BeEquivalentTo(expectedResult);
+    }
+
+    [TestMethod]
+    public async Task UpdateRegistrationMaterialTaskStatus_ValidationFails()
+    {
+        // Arrange
+        var externalId = Guid.NewGuid();
+
+        var command = new UpdateRegistrationMaterialTaskStatusCommand
+        {
+            RegistrationMaterialId = externalId,
+            Status = TaskStatuses.Completed,
+            TaskName = ApplicantRegistrationTaskNames.SiteAddressAndContactDetails
+        };
+
+        // Expectations
+        _validationServiceMock.Setup(o => o.ValidateAndThrowAsync<UpdateRegistrationTaskStatusCommandBase>(command, It.IsAny<CancellationToken>()))
+            .Throws(new ValidationException(It.IsAny<string>()));
+
+        // Act & Assert
+        await Assert.ThrowsExceptionAsync<ValidationException>(async () => await _controller.UpdateRegistrationMaterialTaskStatus(externalId, command));
     }
 }

@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using EPR.PRN.Backend.API.Common.Enums;
-using EPR.PRN.Backend.API.Dto.Regulator;
+using EPR.PRN.Backend.API.Dto;
 using EPR.PRN.Backend.API.Handlers.Regulator;
 using EPR.PRN.Backend.Data.DataModels.Registrations;
 using EPR.PRN.Backend.Data.Interfaces;
@@ -11,22 +11,24 @@ namespace EPR.PRN.Backend.API.Handlers;
 public class GetRegistrationTaskOverviewDetailByIdHandler(
     IRegistrationRepository repo,
     IMapper mapper
-) : IRequestHandler<GetRegistrationTaskOverviewByIdQuery, RegistrationTaskOverviewDto>
+) : IRequestHandler<GetRegistrationTaskOverviewByIdQuery, ApplicantRegistrationTasksOverviewDto>
 {
-    public async Task<RegistrationTaskOverviewDto> Handle(GetRegistrationTaskOverviewByIdQuery request, CancellationToken cancellationToken)
+    public async Task<ApplicantRegistrationTasksOverviewDto> Handle(GetRegistrationTaskOverviewByIdQuery request, CancellationToken cancellationToken)
     {
-        var registration = await repo.GetAsync(request.Id);
-        var registrationDto = mapper.Map<RegistrationTaskOverviewDto>(registration!);
+        var registration = await repo.GetTasksForRegistrationAndMaterialsAsync(request.Id);
+        var registrationDto = mapper.Map<ApplicantRegistrationTasksOverviewDto>(registration);
 
-        var applicationTypeId = (int)registration?.ApplicationTypeId!;
+        var applicationTypeId = registration.ApplicationTypeId;
         var journeyTypeId = (int)JourneyType.Registration;
         var requiredRegistrationTasks = await repo.GetRequiredTasks(applicationTypeId, false, journeyTypeId);
         var requiredRegistrationMaterialTasks = await repo.GetRequiredTasks(applicationTypeId, true, journeyTypeId);
 
         var missingRegistrationTasks = GetMissingTasks(requiredRegistrationTasks, registrationDto.Tasks);
+        var missingRegistrationMaterialTasks = GetMissingTasks(requiredRegistrationMaterialTasks, registrationDto.Tasks);
         registrationDto.Tasks.AddRange(missingRegistrationTasks);
+        registrationDto.Tasks.AddRange(missingRegistrationMaterialTasks);
 
-        if (registrationDto.Materials.Count == 0)
+        if (registrationDto.Materials.Count is 0)
         {
             return registrationDto;
         }
@@ -40,17 +42,17 @@ public class GetRegistrationTaskOverviewDetailByIdHandler(
         return registrationDto;
     }
 
-    private IEnumerable<RegistrationTaskDto> GetMissingTasks(List<LookupApplicantRegistrationTask> requiredTasks, List<RegistrationTaskDto> existingTasks)
+    private static IEnumerable<ApplicantRegistrationTaskDto> GetMissingTasks(List<LookupApplicantRegistrationTask> requiredTasks, List<ApplicantRegistrationTaskDto> existingTasks)
     {
         var existingTaskNames = new HashSet<string>(existingTasks.Select(r => r.TaskName));
 
         // Bring back all required tasks for the application and journey type that are not already in the list.
         var missingTasks = requiredTasks
             .Where(rt => !existingTaskNames.Contains(rt.Name))
-            .Select(rt => new RegistrationTaskDto
+            .Select(rt => new ApplicantRegistrationTaskDto
             {
                 TaskName = rt.Name,
-                Status = nameof(RegulatorTaskStatus.NotStarted)
+                Status = nameof(RegulatorTaskStatus.CannotStartYet)
             });
 
         return missingTasks;

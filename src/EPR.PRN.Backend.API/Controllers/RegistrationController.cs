@@ -80,7 +80,7 @@ public class RegistrationController(IMediator mediator
 
 
     [HttpGet("registrations_tasks/{registrationId:Guid}")]
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(RegistrationTaskOverviewDto))]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ApplicantRegistrationTasksOverviewDto))]
     [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     [SwaggerOperation(
@@ -186,7 +186,7 @@ public class RegistrationController(IMediator mediator
         logger.LogInformation(LogMessages.UpdateRegistrationTaskStatus);
         command.RegistrationId = registrationId;
 
-        await validationService.ValidateAndThrowAsync(command);
+        await validationService.ValidateAndThrowAsync<UpdateRegistrationTaskStatusCommandBase>(command);
 
         await mediator.Send(command);
 

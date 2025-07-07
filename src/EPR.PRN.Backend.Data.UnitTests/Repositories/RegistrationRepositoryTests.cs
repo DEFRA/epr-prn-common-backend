@@ -634,4 +634,141 @@ public class RegistrationRepositoryTests
         result.Should().ContainSingle(r => r.Material == "Paper");
     }
 
+    [TestMethod]
+    public async Task GetTasksForRegistrationAndMaterialsAsync_RegistrationWithEmptyNavigationProperties()
+    {
+        // Arrange
+        var organisationId = Guid.NewGuid();
+        var externalId = Guid.NewGuid();
+        var registrations = new List<Registration>
+        {
+            new()
+            {
+                ExternalId = externalId,
+                OrganisationId = organisationId,
+                ApplicationTypeId = 1,
+                RegistrationStatusId = 2,
+            }
+        };
+
+        await _context.Registrations.AddRangeAsync(registrations);
+        await _context.SaveChangesAsync();
+
+        // Act
+        var result = await _repository.GetTasksForRegistrationAndMaterialsAsync(externalId);
+        
+        // Assert
+        result.Should().NotBeNull();
+        result.Should().BeEquivalentTo(new Registration
+        {
+            Id = 1,
+            ExternalId = externalId,
+            OrganisationId = organisationId,
+            ApplicationTypeId = 1,
+            RegistrationStatusId = 2,
+            ApplicantRegistrationTasksStatus = Enumerable.Empty<ApplicantRegistrationTaskStatus>().ToList(),
+            Materials = Enumerable.Empty<RegistrationMaterial>().ToList()
+        });
+    }
+
+    [TestMethod]
+    public async Task GetTasksForRegistrationAndMaterialsAsync_RegistrationWithTasks()
+    {
+        // Arrange
+        var taskExternalId = Guid.NewGuid();
+        var organisationId = Guid.NewGuid();
+        var externalId = Guid.NewGuid();
+        var registrations = new List<Registration>
+        {
+            new()
+            {
+                Id = 10,
+                ExternalId = externalId,
+                OrganisationId = organisationId,
+                ApplicationTypeId = 1,
+                RegistrationStatusId = 2
+            }
+        };
+
+        var task = new LookupApplicantRegistrationTask
+        {
+            Name = "TestTask",
+            ApplicationTypeId = 1,
+            IsMaterialSpecific = false
+        };
+
+        var lookupStatus = new LookupTaskStatus
+        {
+            Id = 2,
+            Name = "Completed"
+        };
+
+        var taskStatus = new ApplicantRegistrationTaskStatus
+        {
+            Id = 11,
+            Task = task,
+            ExternalId = taskExternalId,
+            TaskStatus = lookupStatus,
+            RegistrationId = 10,
+            RegistrationMaterialId = null
+        };
+
+        var material = new RegistrationMaterial
+        {
+            Id = 20,
+            Material = new LookupMaterial
+            {
+                Id = 1,
+                MaterialName = "Plastic",
+                MaterialCode = "PLS" // Set the required MaterialCode property
+            },
+            RegistrationId = 10
+        };
+
+        var materialTask = new ApplicantRegistrationTaskStatus
+        {
+            Id = 12,
+            Task = task,
+            ExternalId = Guid.NewGuid(),
+            RegistrationMaterialId = 20,
+            TaskStatus = lookupStatus
+        };
+
+        await _context.RegistrationMaterials.AddAsync(material);
+        await _context.RegistrationTaskStatus.AddAsync(materialTask);
+        await _context.RegistrationTaskStatus.AddAsync(taskStatus);
+        await _context.LookupTaskStatuses.AddAsync(lookupStatus);
+        await _context.LookupApplicantRegistrationTasks.AddRangeAsync(task);
+        await _context.Registrations.AddRangeAsync(registrations);
+        await _context.SaveChangesAsync();
+
+        // Act
+        var result = await _repository.GetTasksForRegistrationAndMaterialsAsync(externalId);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.Should().BeEquivalentTo(new Registration
+        {
+            Id = 10,
+            ExternalId = externalId,
+            OrganisationId = organisationId,
+            ApplicationTypeId = 1,
+            RegistrationStatusId = 2,
+            ApplicantRegistrationTasksStatus =
+            [
+                new()
+                {
+                    Id = 11,
+                    Task = task,
+                    TaskId = 1,
+                    TaskStatusId = 2,
+                    RegistrationId = 10,
+                    TaskStatus = lookupStatus,
+                    ExternalId = taskExternalId,
+                    Registration = registrations[0]
+                }
+            ],
+            Materials = [material]
+        });
+    }
 }

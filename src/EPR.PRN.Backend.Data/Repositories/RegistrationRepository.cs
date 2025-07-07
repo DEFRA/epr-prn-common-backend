@@ -61,9 +61,34 @@ public class RegistrationRepository(EprContext context, ILogger<RegistrationRepo
     public async Task<Registration?> GetAsync(Guid registrationId)
     {
         var registrations = LoadRegistrationWithRelatedEntities();
-        return await registrations.SingleOrDefaultAsync(o => o.ExternalId == registrationId);
+        return await registrations
+            .SingleOrDefaultAsync(o => o.ExternalId == registrationId);
     }
 
+    public async Task<Registration> GetTasksForRegistrationAndMaterialsAsync(Guid registrationId)
+    {
+        return await context.Registrations
+            .Include(r => r.ApplicantRegistrationTasksStatus)
+            .ThenInclude(s => s.TaskStatus)
+            
+            .Include(r => r.ApplicantRegistrationTasksStatus)
+            .ThenInclude(s => s.Task)
+            
+            .Include(r => r.Materials)
+            .ThenInclude(m => m.Material)
+
+            .Include(r => r.Materials)
+            .ThenInclude(m => m.Status)
+
+            .Include(r => r.Materials)
+            .ThenInclude(m => m.ApplicantTaskStatuses)
+            .ThenInclude(o => o.Task)
+
+            .Include(r => r.Materials)
+            .ThenInclude(m => m.ApplicantTaskStatuses)
+            .ThenInclude(o => o.TaskStatus)
+            .SingleAsync(r => r.ExternalId == registrationId);
+    }
 
     public async Task<List<LookupApplicantRegistrationTask>> GetRequiredTasks(int applicationTypeId, bool isMaterialSpecific, int journeyTypeId) =>
         await context.LookupApplicantRegistrationTasks

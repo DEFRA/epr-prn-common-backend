@@ -9,18 +9,16 @@ using EPR.PRN.Backend.Data.Interfaces;
 namespace EPR.PRN.Backend.API.UnitTests.Handlers;
 
 [TestClass]
-public class GetRegistrationOverviewDetailByIdHandlerTests : HandlerTestsBase
+public class GetRegistrationOverviewDetailByIdHandlerTests : HandlerTestsBase<IRegistrationRepository>
 {
-    private Mock<IRegistrationRepository> _repoMock;
     private IMapper _mapper;
     private GetRegistrationOverviewDetailByIdHandler _handler;
 
     [TestInitialize]
     public void TestInitialize()
     {
-        _repoMock = new Mock<IRegistrationRepository>();
         _mapper = Mapper.CreateMapper();
-        _handler = new GetRegistrationOverviewDetailByIdHandler(_repoMock.Object, _mapper);
+        _handler = new GetRegistrationOverviewDetailByIdHandler(MockRepository.Object, _mapper);
     }
 
     [TestMethod]
@@ -69,9 +67,9 @@ public class GetRegistrationOverviewDetailByIdHandlerTests : HandlerTestsBase
             new() { Name = "BusinessAddress" }
         };
         
-        _repoMock.Setup(x => x.GetAsync(registrationId)).ReturnsAsync(registration);
-        _repoMock.Setup(x => x.GetRequiredTasks(101, false, 1)).ReturnsAsync(requiredTasks);
-        _repoMock.Setup(x => x.GetRequiredTasks(101, true, 1)).ReturnsAsync(requiredMaterialTasks);
+        MockRepository.Setup(x => x.GetAsync(registrationId)).ReturnsAsync(registration);
+        MockRepository.Setup(x => x.GetRequiredTasks(101, false, 1)).ReturnsAsync(requiredTasks);
+        MockRepository.Setup(x => x.GetRequiredTasks(101, true, 1)).ReturnsAsync(requiredMaterialTasks);
         
         var query = new GetRegistrationByIdQuery { Id = registrationId };
 
@@ -123,9 +121,9 @@ public class GetRegistrationOverviewDetailByIdHandlerTests : HandlerTestsBase
             new() { Name = "BusinessAddress" }
         };
 
-        _repoMock.Setup(x => x.GetAsync(registrationId)).ReturnsAsync(registration);
-        _repoMock.Setup(x => x.GetRequiredTasks(101, false, 1)).ReturnsAsync(requiredTasks);
-        _repoMock.Setup(x => x.GetRequiredTasks(101, true, 1)).ReturnsAsync(requiredMaterialTasks);
+        MockRepository.Setup(x => x.GetAsync(registrationId)).ReturnsAsync(registration);
+        MockRepository.Setup(x => x.GetRequiredTasks(101, false, 1)).ReturnsAsync(requiredTasks);
+        MockRepository.Setup(x => x.GetRequiredTasks(101, true, 1)).ReturnsAsync(requiredMaterialTasks);
 
         var query = new GetRegistrationByIdQuery { Id = registrationId };
 
@@ -170,8 +168,8 @@ public class GetRegistrationOverviewDetailByIdHandlerTests : HandlerTestsBase
             }
         };
 
-        _repoMock.Setup(x => x.GetAsync(registrationId)).ReturnsAsync(registration);
-        _repoMock.Setup(x => x.GetRequiredTasks(101, false, 1)).ReturnsAsync(requiredTasks);
+        MockRepository.Setup(x => x.GetAsync(registrationId)).ReturnsAsync(registration);
+        MockRepository.Setup(x => x.GetRequiredTasks(101, false, 1)).ReturnsAsync(requiredTasks);
         
         var query = new GetRegistrationByIdQuery { Id = registrationId };
 
