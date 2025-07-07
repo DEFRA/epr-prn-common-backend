@@ -1,6 +1,7 @@
 using AutoFixture;
 using EPR.PRN.Backend.API.Commands;
 using EPR.PRN.Backend.API.Controllers;
+using EPR.PRN.Backend.API.Dto;
 using EPR.PRN.Backend.API.Dto.Regulator;
 using EPR.PRN.Backend.API.Handlers;
 using EPR.PRN.Backend.API.Queries;
@@ -211,4 +212,23 @@ public class RegistrationMaterialControllerTests
         // Assert
         result.Should().BeEquivalentTo(expectedResult);
     }
+
+    [TestMethod]
+    public async Task GetExemptionReferences_ShouldReturnOkWithResult()
+    {
+        // Arrange
+        var expectedList = _fixture.Create<List<GetMaterialExemptionReferenceDto>>();
+
+        _mediatorMock.Setup(m => m.Send(It.IsAny<GetMaterialExemptionReferencesQuery>(), It.IsAny<CancellationToken>()))
+        .ReturnsAsync(expectedList);
+
+        // Act
+        var result = await _controller.GetExemptionReferences(Guid.NewGuid());
+
+        // Assert
+        result.Should().BeOfType<OkObjectResult>();
+        var okResult = result as OkObjectResult;
+        okResult!.Value.Should().BeEquivalentTo(expectedList);
+    }
+
 }

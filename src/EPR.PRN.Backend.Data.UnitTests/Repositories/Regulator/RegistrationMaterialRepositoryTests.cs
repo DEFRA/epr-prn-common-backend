@@ -1031,6 +1031,63 @@ public class RegistrationMaterialRepositoryTests
         await Assert.ThrowsExceptionAsync<KeyNotFoundException>(() => _repository.UpdateMaximumWeightForSiteAsync(Guid.Parse("cd9dcc80-fcf5-4f46-addd-b8a256f735a3"), 10, 1));
     }
 
+    [TestMethod]
+    public async Task GetMaterialExemptionReferences_ShouldReturnExpectedValues()
+    {
+        // Arrange
+        var id = Guid.NewGuid();
+        var registrationMaterialExternalId = Guid.NewGuid();
+        var registration = new Registration
+        {
+            Id = 11,
+            ExternalId = id
+        };
+
+        var registrationMaterial = new RegistrationMaterial
+        {
+            ExternalId = registrationMaterialExternalId,
+            Registration = registration,
+            RegistrationId = registration.Id,
+            Id = 56,
+            MaterialId = 1,
+            PermitTypeId = 1,
+            StatusId = 1,
+            InstallationPeriodId = 1,
+            PPCPeriodId = 1,
+            EnvironmentalPermitWasteManagementPeriodId = 1,
+            WasteManagementPeriodId = 1,
+            MaximumReprocessingCapacityTonne = 0,
+            MaximumReprocessingPeriodId = null,
+            MaterialExemptionReferences = new List<MaterialExemptionReference>
+            {
+                new()
+                {
+                     ReferenceNo = "REF125412",
+                     RegistrationMaterialId = 56,
+                     ExternalId = Guid.NewGuid()
+                }
+            }
+        };
+
+        await _context.Registrations.AddAsync(registration);
+        await _context.RegistrationMaterials.AddAsync(registrationMaterial);
+        await _context.SaveChangesAsync();
+
+        var expectedTestResult = registrationMaterial.MaterialExemptionReferences;
+
+        // Act
+        var result = await _repository.GetMaterialExemptionReferences(registrationMaterialExternalId);
+
+        // Assert
+        using (new AssertionScope())
+        {
+            result.Should().NotBeNull();
+            result[0].ReferenceNo.Should().Be(expectedTestResult[0].ReferenceNo);
+            result[0].RegistrationMaterialId.Should().Be(expectedTestResult[0].RegistrationMaterialId);
+            result[0].ExternalId.Should().Be(expectedTestResult[0].ExternalId);
+        }
+    }
+
     [TestCleanup]
     public void Cleanup()
     {

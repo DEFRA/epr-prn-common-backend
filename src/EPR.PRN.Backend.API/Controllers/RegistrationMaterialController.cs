@@ -80,6 +80,27 @@ public class RegistrationMaterialController(
         return Ok();
     }
 
+    
+    [HttpGet("registrationMaterials/{materialRegistrationId:guid}/exemptionReferences")]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<GetMaterialExemptionReferenceDto>))]
+    [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
+    [SwaggerOperation(
+        Summary = "gets existing exemption references associated with a material registration.",
+        Description = "attempting to get existing exemption associated with a material registration."
+    )]
+    [SwaggerResponse(StatusCodes.Status500InternalServerError, "If an unexpected error occurs.", typeof(ContentResult))]
+    public async Task<IActionResult> GetExemptionReferences([FromRoute] Guid materialRegistrationId)
+    {
+        logger.LogInformation(LogMessages.GetExemptionReferences, materialRegistrationId);
+
+        var examptionreferences = await mediator.Send(new GetMaterialExemptionReferencesQuery
+        {
+            RegistrationMateriaId = materialRegistrationId
+        });
+
+        return Ok(examptionreferences);
+    }
+
     [HttpPost("registrationMaterials/{id:Guid}/permits")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(OkResult))]
     [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]

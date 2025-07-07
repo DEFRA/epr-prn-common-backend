@@ -321,6 +321,21 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
         await eprContext.SaveChangesAsync();
     }
 
+    public async Task<IList<MaterialExemptionReference>> GetMaterialExemptionReferences(Guid registrationMaterialId)
+    {
+        var existingMaterialExemptionReference = await eprContext.MaterialExemptionReferences.AsNoTracking()
+            .Include(x => x.RegistrationMaterial)
+            .Where(o => o.RegistrationMaterial.ExternalId == registrationMaterialId)
+            .ToListAsync();
+        
+        if (existingMaterialExemptionReference == null)
+        {
+            throw new KeyNotFoundException("MaterialExemptionReferences not found.");
+        }
+
+        return existingMaterialExemptionReference;
+    }
+
     private IIncludableQueryable<RegistrationMaterial, LookupRegistrationMaterialStatus> GetRegistrationMaterialsWithRelatedEntities()
     {
         var registrationMaterials =
