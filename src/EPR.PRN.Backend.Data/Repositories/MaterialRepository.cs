@@ -5,6 +5,7 @@ using EPR.PRN.Backend.Data.DataModels.Registrations;
 using EPR.PRN.Backend.Data.DTO;
 using EPR.PRN.Backend.Data.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace EPR.PRN.Backend.Data.Repositories
 {
@@ -237,7 +238,7 @@ namespace EPR.PRN.Backend.Data.Repositories
                 .Where(x => !overseasAddressesAfterDb.Any(y => y.ExternalId == x.ExternalId))
                 .Select(x => new OverseasAddress
                 {
-                    ExternalId = x.ExternalId,
+                    ExternalId = new Guid(),
                     OrganisationName = x.OrganisationName,
                     AddressLine1 = x.AddressLine1,
                     AddressLine2 = x.AddressLine2,
@@ -260,14 +261,16 @@ namespace EPR.PRN.Backend.Data.Repositories
                 })],
                     OverseasAddressWasteCodes = [.. x.OverseasAddressWasteCodes.Select(wc => new OverseasAddressWasteCode
                 {
-                    CodeName = wc.CodeName
+                    ExternalId = new Guid(),
+                    CodeName = wc.CodeName,                    
                 })]
                 }).ToList();
 
             var overseasMaterialReprocessingSites = overseasAddressesToCreate.Select(x => new OverseasMaterialReprocessingSite
             {
                 OverseasAddressId = x.Id,
-                RegistrationMaterialId = registrationMaterialId
+                RegistrationMaterialId = registrationMaterialId,
+                ExternalId = Guid.NewGuid(),
             }).ToList();
 
             await context.OverseasAddress.AddRangeAsync(overseasAddressesToCreate);
