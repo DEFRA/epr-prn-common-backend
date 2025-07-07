@@ -1,4 +1,6 @@
-﻿using EPR.PRN.Backend.API.Common.Enums;
+﻿using System.Collections;
+using System.Linq.Expressions;
+using EPR.PRN.Backend.API.Common.Enums;
 using EPR.PRN.Backend.API.Common.Exceptions;
 using EPR.PRN.Backend.Data.DataModels.Registrations;
 using EPR.PRN.Backend.Data.DTO;
@@ -6,6 +8,7 @@ using EPR.PRN.Backend.Data.DTO.Registration;
 using EPR.PRN.Backend.Data.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
+using Microsoft.EntityFrameworkCore.Query.Internal;
 using Microsoft.Extensions.Logging;
 
 namespace EPR.PRN.Backend.Data.Repositories;
@@ -331,10 +334,10 @@ public class RegistrationRepository(EprContext context, ILogger<RegistrationRepo
             .Include(r => r.ReprocessingSiteAddress)
             .Include(r => r.LegalDocumentAddress)
              
-            .Include(r => r.ApplicantRegistrationTasksStatus)
+            .Include(r => r.ApplicantRegistrationTasksStatus)!
             .ThenInclude( t=>t.Task)
 
-            .Include(r => r.ApplicantRegistrationTasksStatus)
+            .Include(r => r.ApplicantRegistrationTasksStatus)!
             .ThenInclude(t => t.TaskStatus)
              
             .Include(r => r.Materials);
