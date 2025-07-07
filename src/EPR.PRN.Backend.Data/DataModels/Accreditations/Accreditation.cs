@@ -70,6 +70,11 @@ public class AccreditationEntity
 
     public bool BusinessPlanConfirmed { get; set; }
 
+    [MaxLength(100)]
+    public string? OverseasSiteName { get; set; }
+
+    public bool OverseasSiteCheckedForConditionFulfilment { get; set; }
+
     public Guid CreatedBy { get; set; }
     public DateTime CreatedDate { get; set; }
     public Guid UpdatedBy { get; set; }
