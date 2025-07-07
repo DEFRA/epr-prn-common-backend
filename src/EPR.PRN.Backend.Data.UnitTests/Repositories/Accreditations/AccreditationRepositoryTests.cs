@@ -1,8 +1,10 @@
-﻿using EPR.PRN.Backend.Data.DataModels.Accreditations;
+﻿using AutoMapper;
+using EPR.PRN.Backend.Data.DataModels.Accreditations;
 using EPR.PRN.Backend.Data.DataModels.Registrations;
 using EPR.PRN.Backend.Data.Repositories.Accreditations;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
+using Moq;
 
 namespace EPR.PRN.Backend.Data.UnitTests.Repositories.Accreditations;
 
@@ -11,6 +13,7 @@ public class AccreditationRepositoryTests
 {
     private EprAccreditationContext _dbContext;
     private AccreditationRepository _repository;
+    private Mock<IMapper> _mapper;
 
     [TestInitialize]
     public void Setup()
@@ -18,8 +21,9 @@ public class AccreditationRepositoryTests
         var options = new DbContextOptionsBuilder<EprAccreditationContext>()
             .UseInMemoryDatabase(databaseName: "TestDatabase" + Guid.NewGuid().ToString())
             .Options;
+        _mapper = new Mock<IMapper> ();
         _dbContext = new EprAccreditationContext(options);
-        _repository = new AccreditationRepository(_dbContext);
+        _repository = new AccreditationRepository(_dbContext, _mapper.Object);
 
         LookupMaterial material = new()
         {

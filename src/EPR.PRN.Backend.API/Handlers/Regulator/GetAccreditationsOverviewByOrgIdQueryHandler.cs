@@ -1,0 +1,18 @@
+﻿using EPR.PRN.Backend.API.Queries;
+using EPR.PRN.Backend.Data.DTO.Accreditiation;
+using EPR.PRN.Backend.Data.Interfaces.Accreditations;
+using MediatR;
+
+namespace EPR.PRN.Backend.API.Handlers.Regulator
+{
+    public class GetAccreditationsOverviewByOrgIdQueryHandler (IAccreditationRepository accreditationRepository)
+        : IRequestHandler<GetAccreditationsOverviewByOrgIdQuery, IEnumerable<AccreditationOverviewDto>>
+    {
+        private readonly IAccreditationRepository _accreditationRepository = accreditationRepository;
+
+        public async Task<IEnumerable<AccreditationOverviewDto>> Handle(GetAccreditationsOverviewByOrgIdQuery request, CancellationToken cancellationToken)
+        {
+            return await _accreditationRepository.GetAccreditationOverviewForOrgId(request.OrganisationId);
+        }
+    }
+}
