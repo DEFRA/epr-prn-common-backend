@@ -68,24 +68,24 @@ public class RegistrationRepository(EprContext context, ILogger<RegistrationRepo
     public async Task<Registration> GetTasksForRegistrationAndMaterialsAsync(Guid registrationId)
     {
         return await context.Registrations
-            .Include(r => r.ApplicantRegistrationTasksStatus)
+            .Include(r => r.ApplicantRegistrationTasksStatus)!
             .ThenInclude(s => s.TaskStatus)
             
-            .Include(r => r.ApplicantRegistrationTasksStatus)
+            .Include(r => r.ApplicantRegistrationTasksStatus)!
             .ThenInclude(s => s.Task)
             
-            .Include(r => r.Materials)
+            .Include(r => r.Materials)!
             .ThenInclude(m => m.Material)
 
-            .Include(r => r.Materials)
+            .Include(r => r.Materials)!
             .ThenInclude(m => m.Status)
 
-            .Include(r => r.Materials)
-            .ThenInclude(m => m.ApplicantTaskStatuses)
+            .Include(r => r.Materials)!
+            .ThenInclude(m => m.ApplicantTaskStatuses)!
             .ThenInclude(o => o.Task)
 
-            .Include(r => r.Materials)
-            .ThenInclude(m => m.ApplicantTaskStatuses)
+            .Include(r => r.Materials)!
+            .ThenInclude(m => m.ApplicantTaskStatuses)!
             .ThenInclude(o => o.TaskStatus)
             .SingleAsync(r => r.ExternalId == registrationId);
     }

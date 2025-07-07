@@ -27,5 +27,5 @@ public interface IRegistrationMaterialRepository : IRepositoryMarker
     Task<IEnumerable<LookupMaterialPermit>> GetMaterialPermitTypes();
     Task DeleteAsync(Guid registrationMaterialId);
 
-    Task UpdateRegistrationTaskStatusAsync(string taskName, Guid registrationId, TaskStatuses status);
+    Task UpdateRegistrationTaskStatusAsync(string taskName, Guid registrationMaterialId, TaskStatuses status);
 }
