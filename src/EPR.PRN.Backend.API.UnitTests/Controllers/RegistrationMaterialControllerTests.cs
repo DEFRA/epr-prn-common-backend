@@ -256,4 +256,36 @@ public class RegistrationMaterialControllerTests
         // Assert  
         result.Should().BeOfType<OkResult>();
     }
+
+    [TestMethod]
+    public async Task SaveOverseasReprocessingSites_ShouldReturnNoContent_WhenValid()
+    {
+        // Arrange
+        var dto = new OverseasAddressSubmissionDto
+        {
+            RegistrationMaterialId = new Guid("3041bf68-6943-4fa0-8a02-7a8c587acf1d"),
+            OverseasAddresses = new List<OverseasAddressDto>
+            {
+                new OverseasAddressDto
+                {
+                    ExternalId = Guid.NewGuid(),
+                    AddressLine1 = "Test Line"
+                }
+            }
+        };
+
+        _mediatorMock
+            .Setup(m => m.Send(It.IsAny<CreateOverseasMaterialReprocessingSiteCommand>(), It.IsAny<CancellationToken>()))
+            .Returns(Task.CompletedTask);
+
+        // Act
+        var result = await _controller.SaveOverseasReprocessingSites(dto);
+
+        // Assert
+        result.Should().BeOfType<NoContentResult>();
+        _mediatorMock.Verify(m => m.Send(It.Is<CreateOverseasMaterialReprocessingSiteCommand>(cmd =>
+            cmd.UpdateOverseasAddress.RegistrationMaterialId == dto.RegistrationMaterialId &&
+            cmd.UpdateOverseasAddress.OverseasAddresses == dto.OverseasAddresses
+        ), It.IsAny<CancellationToken>()), Times.Once);
+    }
 }
