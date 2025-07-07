@@ -169,6 +169,7 @@ public class AccreditationFileUploadServiceTests
         var dto = new AccreditationFileUploadDto
         {
             ExternalId = null,
+            SubmissionId = Guid.NewGuid(),
             FileId = Guid.NewGuid(),
             Filename = "file1.txt",
             FileUploadTypeId = fileUploadTypeId,
@@ -180,6 +181,7 @@ public class AccreditationFileUploadServiceTests
 
         _repositoryMock.Setup(r => r.Create(accreditationId, It.Is<AccreditationFileUpload>(x =>
                 x.ExternalId == Guid.Empty &&
+                x.SubmissionId == dto.SubmissionId &&
                 x.FileId == dto.FileId &&
                 x.Filename == dto.Filename &&
                 x.FileUploadTypeId == dto.FileUploadTypeId &&

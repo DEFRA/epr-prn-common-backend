@@ -4321,6 +4321,353 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250627081758_AddInProgressRegistrationMaterialStatus'
+)
+BEGIN
+    IF EXISTS (SELECT * FROM [sys].[identity_columns] WHERE [name] IN (N'Id', N'Name') AND [object_id] = OBJECT_ID(N'[Lookup.RegistrationMaterialStatus]'))
+        SET IDENTITY_INSERT [Lookup.RegistrationMaterialStatus] ON;
+    EXEC(N'INSERT INTO [Lookup.RegistrationMaterialStatus] ([Id], [Name])
+    VALUES (12, N''InProgress'')');
+    IF EXISTS (SELECT * FROM [sys].[identity_columns] WHERE [name] IN (N'Id', N'Name') AND [object_id] = OBJECT_ID(N'[Lookup.RegistrationMaterialStatus]'))
+        SET IDENTITY_INSERT [Lookup.RegistrationMaterialStatus] OFF;
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250627081758_AddInProgressRegistrationMaterialStatus'
+)
+BEGIN
+    INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+    VALUES (N'20250627081758_AddInProgressRegistrationMaterialStatus', N'8.0.8');
+END;
+GO
+
+COMMIT;
+GO
+
+BEGIN TRANSACTION;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250627113549_RenamingTypeOfSuppliers'
+)
+BEGIN
+    EXEC sp_rename N'[Public.RegistrationReprocessingIO].[TypeOfSupplier]', N'TypeOfSuppliers', N'COLUMN';
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250627113549_RenamingTypeOfSuppliers'
+)
+BEGIN
+    INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+    VALUES (N'20250627113549_RenamingTypeOfSuppliers', N'8.0.8');
+END;
+GO
+
+COMMIT;
+GO
+
+BEGIN TRANSACTION;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250627230610_Countries-Lookup'
+)
+BEGIN
+    CREATE TABLE [Lookup.Country] (
+        [Id] int NOT NULL IDENTITY,
+        [Name] nvarchar(100) NOT NULL,
+        [CountryCode] nvarchar(3) NULL,
+        CONSTRAINT [PK_Lookup.Country] PRIMARY KEY ([Id])
+    );
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250627230610_Countries-Lookup'
+)
+BEGIN
+    IF EXISTS (SELECT * FROM [sys].[identity_columns] WHERE [name] IN (N'Id', N'CountryCode', N'Name') AND [object_id] = OBJECT_ID(N'[Lookup.Country]'))
+        SET IDENTITY_INSERT [Lookup.Country] ON;
+    EXEC(N'INSERT INTO [Lookup.Country] ([Id], [CountryCode], [Name])
+    VALUES (1, N''ad'', N''Andorra''),
+    (2, N''ae'', N''United Arab Emirates''),
+    (3, N''af'', N''Afghanistan''),
+    (4, N''ag'', N''Antigua and Barbuda''),
+    (5, N''ai'', N''Anguilla''),
+    (6, N''al'', N''Albania''),
+    (7, N''am'', N''Armenia''),
+    (8, N''an'', N''Netherlands Antilles''),
+    (9, N''ao'', N''Angola''),
+    (10, N''aq'', N''Antarctica''),
+    (11, N''ar'', N''Argentina''),
+    (13, N''as'', N''American Samoa''),
+    (14, N''at'', N''Austria''),
+    (15, N''au'', N''Australia''),
+    (16, N''aw'', N''Aruba''),
+    (17, N''az'', N''Azerbaidjan''),
+    (18, N''ba'', N''Bosnia-Herzegovina''),
+    (19, N''bb'', N''Barbados''),
+    (20, N''bd'', N''Bangladesh''),
+    (21, N''be'', N''Belgium''),
+    (22, N''bf'', N''Burkina Faso''),
+    (23, N''bg'', N''Bulgaria''),
+    (24, N''bh'', N''Bahrain''),
+    (25, N''bi'', N''Burundi''),
+    (26, N''bj'', N''Benin''),
+    (27, N''bm'', N''Bermuda''),
+    (28, N''bn'', N''Brunei Darussalam''),
+    (29, N''bo'', N''Bolivia''),
+    (30, N''br'', N''Brazil''),
+    (31, N''bs'', N''Bahamas''),
+    (32, N''bt'', N''Bhutan''),
+    (33, N''bv'', N''Bouvet Island''),
+    (34, N''bw'', N''Botswana''),
+    (35, N''by'', N''Belarus''),
+    (36, N''bz'', N''Belize''),
+    (37, N''ca'', N''Canada''),
+    (38, N''cc'', N''Cocos (Keeling) Islands''),
+    (39, N''cf'', N''Central African Republic''),
+    (40, N''cg'', N''Congo''),
+    (41, N''ch'', N''Switzerland''),
+    (42, N''ci'', N''Ivory Coast (Cote D''''Ivoire)''),
+    (43, N''ck'', N''Cook Islands'');
+    INSERT INTO [Lookup.Country] ([Id], [CountryCode], [Name])
+    VALUES (44, N''cl'', N''Chile''),
+    (45, N''cm'', N''Cameroon''),
+    (46, N''cn'', N''China''),
+    (47, N''co'', N''Colombia''),
+    (48, N''com'', N''Commercial''),
+    (49, N''cr'', N''Costa Rica''),
+    (50, N''cs'', N''Former Czechoslovakia''),
+    (51, N''cu'', N''Cuba''),
+    (52, N''cv'', N''Cape Verde''),
+    (53, N''cx'', N''Christmas Island''),
+    (54, N''cy'', N''Cyprus''),
+    (55, N''cz'', N''Czech Republic''),
+    (56, N''de'', N''Germany''),
+    (57, N''dj'', N''Djibouti''),
+    (58, N''dk'', N''Denmark''),
+    (59, N''dm'', N''Dominica''),
+    (60, N''do'', N''Dominican Republic''),
+    (61, N''dz'', N''Algeria''),
+    (62, N''ec'', N''Ecuador''),
+    (64, N''ee'', N''Estonia''),
+    (65, N''eg'', N''Egypt''),
+    (66, N''eh'', N''Western Sahara''),
+    (67, N''er'', N''Eritrea''),
+    (68, N''es'', N''Spain''),
+    (69, N''et'', N''Ethiopia''),
+    (70, N''fi'', N''Finland''),
+    (71, N''fj'', N''Fiji''),
+    (72, N''fk'', N''Falkland Islands''),
+    (73, N''fm'', N''Micronesia''),
+    (74, N''fo'', N''Faroe Islands''),
+    (75, N''fr'', N''France''),
+    (76, N''fx'', N''France (European Territory)''),
+    (77, N''ga'', N''Gabon''),
+    (79, N''gd'', N''Grenada''),
+    (80, N''ge'', N''Georgia''),
+    (81, N''gf'', N''French Guyana''),
+    (82, N''gh'', N''Ghana''),
+    (83, N''gi'', N''Gibraltar''),
+    (84, N''gl'', N''Greenland''),
+    (85, N''gm'', N''Gambia''),
+    (86, N''gn'', N''Guinea''),
+    (88, N''gp'', N''Guadeloupe (French)'');
+    INSERT INTO [Lookup.Country] ([Id], [CountryCode], [Name])
+    VALUES (89, N''gq'', N''Equatorial Guinea''),
+    (90, N''gr'', N''Greece''),
+    (91, N''gs'', N''S. Georgia & S. Sandwich Isls.''),
+    (92, N''gt'', N''Guatemala''),
+    (93, N''gu'', N''Guam (USA)''),
+    (94, N''gw'', N''Guinea Bissau''),
+    (95, N''gy'', N''Guyana''),
+    (96, N''hk'', N''Hong Kong''),
+    (97, N''hm'', N''Heard and McDonald Islands''),
+    (98, N''hn'', N''Honduras''),
+    (99, N''hr'', N''Croatia''),
+    (100, N''ht'', N''Haiti''),
+    (101, N''hu'', N''Hungary''),
+    (102, N''id'', N''Indonesia''),
+    (103, N''ie'', N''Ireland''),
+    (104, N''il'', N''Israel''),
+    (105, N''in'', N''India''),
+    (106, N''int'', N''International''),
+    (107, N''io'', N''British Indian Ocean Territory''),
+    (108, N''iq'', N''Iraq''),
+    (109, N''ir'', N''Iran''),
+    (110, N''is'', N''Iceland''),
+    (111, N''it'', N''Italy''),
+    (112, N''jm'', N''Jamaica''),
+    (113, N''jo'', N''Jordan''),
+    (114, N''jp'', N''Japan''),
+    (115, N''ke'', N''Kenya''),
+    (116, N''kg'', N''Kyrgyzstan''),
+    (117, N''kh'', N''Cambodia''),
+    (118, N''ki'', N''Kiribati''),
+    (119, N''km'', N''Comoros''),
+    (120, N''kn'', N''Saint Kitts & Nevis Anguilla''),
+    (121, N''kp'', N''North Korea''),
+    (122, N''kr'', N''South Korea''),
+    (123, N''kw'', N''Kuwait''),
+    (124, N''ky'', N''Cayman Islands''),
+    (125, N''kz'', N''Kazakhstan''),
+    (126, N''la'', N''Laos''),
+    (127, N''lb'', N''Lebanon''),
+    (128, N''lc'', N''Saint Lucia''),
+    (129, N''li'', N''Liechtenstein''),
+    (130, N''lk'', N''Sri Lanka'');
+    INSERT INTO [Lookup.Country] ([Id], [CountryCode], [Name])
+    VALUES (131, N''lr'', N''Liberia''),
+    (132, N''ls'', N''Lesotho''),
+    (133, N''lt'', N''Lithuania''),
+    (134, N''lu'', N''Luxembourg''),
+    (135, N''lv'', N''Latvia''),
+    (136, N''ly'', N''Libya''),
+    (137, N''ma'', N''Morocco''),
+    (138, N''mc'', N''Monaco''),
+    (139, N''md'', N''Moldavia''),
+    (140, N''mg'', N''Madagascar''),
+    (141, N''mh'', N''Marshall Islands''),
+    (143, N''mk'', N''Macedonia''),
+    (144, N''ml'', N''Mali''),
+    (145, N''mm'', N''Myanmar''),
+    (146, N''mn'', N''Mongolia''),
+    (147, N''mo'', N''Macau''),
+    (148, N''mp'', N''Northern Mariana Islands''),
+    (149, N''mq'', N''Martinique (French)''),
+    (150, N''mr'', N''Mauritania''),
+    (151, N''ms'', N''Montserrat''),
+    (152, N''mt'', N''Malta''),
+    (153, N''mu'', N''Mauritius''),
+    (154, N''mv'', N''Maldives''),
+    (155, N''mw'', N''Malawi''),
+    (156, N''mx'', N''Mexico''),
+    (157, N''my'', N''Malaysia''),
+    (158, N''mz'', N''Mozambique''),
+    (159, N''na'', N''Namibia''),
+    (161, N''nc'', N''New Caledonia (French)''),
+    (162, N''ne'', N''Niger''),
+    (163, N''net'', N''Network''),
+    (164, N''nf'', N''Norfolk Island''),
+    (165, N''ng'', N''Nigeria''),
+    (166, N''ni'', N''Nicaragua''),
+    (167, N''nl'', N''Netherlands''),
+    (168, N''no'', N''Norway''),
+    (169, N''np'', N''Nepal''),
+    (170, N''nr'', N''Nauru''),
+    (171, N''nt'', N''Neutral Zone''),
+    (172, N''nu'', N''Niue''),
+    (173, N''nz'', N''New Zealand''),
+    (174, N''om'', N''Oman'');
+    INSERT INTO [Lookup.Country] ([Id], [CountryCode], [Name])
+    VALUES (176, N''pa'', N''Panama''),
+    (177, N''pe'', N''Peru''),
+    (178, N''pf'', N''Polynesia (French)''),
+    (179, N''pg'', N''Papua New Guinea''),
+    (180, N''ph'', N''Philippines''),
+    (181, N''pk'', N''Pakistan''),
+    (182, N''pl'', N''Poland''),
+    (183, N''pm'', N''Saint Pierre and Miquelon''),
+    (184, N''pn'', N''Pitcairn Island''),
+    (185, N''pr'', N''Puerto Rico''),
+    (186, N''pt'', N''Portugal''),
+    (187, N''pw'', N''Palau''),
+    (188, N''py'', N''Paraguay''),
+    (189, N''qa'', N''Qatar''),
+    (190, N''re'', N''Reunion (French)''),
+    (191, N''ro'', N''Romania''),
+    (192, N''ru'', N''Russian Federation''),
+    (193, N''rw'', N''Rwanda''),
+    (194, N''sa'', N''Saudi Arabia''),
+    (195, N''sb'', N''Solomon Islands''),
+    (196, N''sc'', N''Seychelles''),
+    (197, N''sd'', N''Sudan''),
+    (198, N''se'', N''Sweden''),
+    (199, N''sg'', N''Singapore''),
+    (200, N''sh'', N''Saint Helena''),
+    (201, N''si'', N''Slovenia''),
+    (202, N''sj'', N''Svalbard and Jan Mayen Islands''),
+    (203, N''sk'', N''Slovak Republic''),
+    (204, N''sl'', N''Sierra Leone''),
+    (205, N''sm'', N''San Marino''),
+    (206, N''sn'', N''Senegal''),
+    (207, N''so'', N''Somalia''),
+    (208, N''sr'', N''Suriname''),
+    (209, N''st'', N''Saint Tome (Sao Tome) and Principe''),
+    (210, N''su'', N''Former USSR''),
+    (211, N''sv'', N''El Salvador''),
+    (212, N''sy'', N''Syria''),
+    (213, N''sz'', N''Swaziland''),
+    (214, N''tc'', N''Turks and Caicos Islands''),
+    (215, N''td'', N''Chad''),
+    (216, N''tf'', N''French Southern Territories''),
+    (217, N''tg'', N''Togo'');
+    INSERT INTO [Lookup.Country] ([Id], [CountryCode], [Name])
+    VALUES (218, N''th'', N''Thailand''),
+    (219, N''tj'', N''Tadjikistan''),
+    (220, N''tk'', N''Tokelau''),
+    (221, N''tm'', N''Turkmenistan''),
+    (222, N''tn'', N''Tunisia''),
+    (223, N''to'', N''Tonga''),
+    (224, N''tp'', N''East Timor''),
+    (225, N''tr'', N''Turkey''),
+    (226, N''tt'', N''Trinidad and Tobago''),
+    (227, N''tv'', N''Tuvalu''),
+    (228, N''tw'', N''Taiwan''),
+    (229, N''tz'', N''Tanzania''),
+    (230, N''ua'', N''Ukraine''),
+    (231, N''ug'', N''Uganda''),
+    (233, N''um'', N''USA Minor Outlying Islands''),
+    (234, N''us'', N''United States''),
+    (235, N''uy'', N''Uruguay''),
+    (236, N''uz'', N''Uzbekistan''),
+    (237, N''va'', N''Vatican City State''),
+    (238, N''vc'', N''Saint Vincent & Grenadines''),
+    (239, N''ve'', N''Venezuela''),
+    (240, N''vg'', N''Virgin Islands (British)''),
+    (241, N''vi'', N''Virgin Islands (USA)''),
+    (242, N''vn'', N''Vietnam''),
+    (243, N''vu'', N''Vanuatu''),
+    (244, N''wf'', N''Wallis and Futuna Islands''),
+    (245, N''ws'', N''Samoa''),
+    (246, N''ye'', N''Yemen''),
+    (247, N''yt'', N''Mayotte''),
+    (248, N''yu'', N''Yugoslavia''),
+    (249, N''za'', N''South Africa''),
+    (250, N''zm'', N''Zambia''),
+    (251, N''zr'', N''Zaire''),
+    (252, N''zw'', N''Zimbabwe'')');
+    IF EXISTS (SELECT * FROM [sys].[identity_columns] WHERE [name] IN (N'Id', N'CountryCode', N'Name') AND [object_id] = OBJECT_ID(N'[Lookup.Country]'))
+        SET IDENTITY_INSERT [Lookup.Country] OFF;
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250627230610_Countries-Lookup'
+)
+BEGIN
+    INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+    VALUES (N'20250627230610_Countries-Lookup', N'8.0.8');
+END;
+GO
+
+COMMIT;
+GO
+
+BEGIN TRANSACTION;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
     WHERE [MigrationId] = N'20250629092851_ApplicantTaskLookupTable'
 )
 BEGIN
@@ -4540,6 +4887,108 @@ IF NOT EXISTS (
 BEGIN
     INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
     VALUES (N'20250629130952_RegistratinoMaterialNullableFields', N'8.0.8');
+END;
+GO
+
+COMMIT;
+GO
+
+BEGIN TRANSACTION;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250701083202_AddRegistrationMaterialContact'
+)
+BEGIN
+    CREATE TABLE [Public.RegistrationMaterialContact] (
+        [Id] int NOT NULL IDENTITY,
+        [ExternalId] uniqueidentifier NOT NULL,
+        [RegistrationMaterialId] int NOT NULL,
+        [UserId] uniqueidentifier NOT NULL,
+        CONSTRAINT [PK_Public.RegistrationMaterialContact] PRIMARY KEY ([Id]),
+        CONSTRAINT [FK_Public.RegistrationMaterialContact_Public.RegistrationMaterial_RegistrationMaterialId] FOREIGN KEY ([RegistrationMaterialId]) REFERENCES [Public.RegistrationMaterial] ([Id]) ON DELETE CASCADE
+    );
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250701083202_AddRegistrationMaterialContact'
+)
+BEGIN
+    CREATE UNIQUE INDEX [IX_Public.RegistrationMaterialContact_ExternalId] ON [Public.RegistrationMaterialContact] ([ExternalId]);
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250701083202_AddRegistrationMaterialContact'
+)
+BEGIN
+    CREATE UNIQUE INDEX [IX_Public.RegistrationMaterialContact_RegistrationMaterialId] ON [Public.RegistrationMaterialContact] ([RegistrationMaterialId]);
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250701083202_AddRegistrationMaterialContact'
+)
+BEGIN
+    INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+    VALUES (N'20250701083202_AddRegistrationMaterialContact', N'8.0.8');
+END;
+GO
+
+COMMIT;
+GO
+
+BEGIN TRANSACTION;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250704143807_RegistrationReprocessingIORawMaterialOrProducts'
+)
+BEGIN
+    CREATE TABLE [Public.RegistrationReprocessingIORawMaterialOrProducts] (
+        [Id] int NOT NULL IDENTITY,
+        [ExternalId] uniqueidentifier NOT NULL,
+        [RegistrationReprocessingIOId] int NOT NULL,
+        [RawMaterialOrProductName] nvarchar(max) NOT NULL,
+        [TonneValue] decimal(18,2) NOT NULL,
+        [IsInput] bit NOT NULL,
+        CONSTRAINT [PK_Public.RegistrationReprocessingIORawMaterialOrProducts] PRIMARY KEY ([Id]),
+        CONSTRAINT [FK_Public.RegistrationReprocessingIORawMaterialOrProducts_Public.RegistrationReprocessingIO_RegistrationReprocessingIOId] FOREIGN KEY ([RegistrationReprocessingIOId]) REFERENCES [Public.RegistrationReprocessingIO] ([Id]) ON DELETE CASCADE
+    );
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250704143807_RegistrationReprocessingIORawMaterialOrProducts'
+)
+BEGIN
+    CREATE UNIQUE INDEX [IX_Public.RegistrationReprocessingIORawMaterialOrProducts_ExternalId] ON [Public.RegistrationReprocessingIORawMaterialOrProducts] ([ExternalId]);
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250704143807_RegistrationReprocessingIORawMaterialOrProducts'
+)
+BEGIN
+    CREATE INDEX [IX_Public.RegistrationReprocessingIORawMaterialOrProducts_RegistrationReprocessingIOId] ON [Public.RegistrationReprocessingIORawMaterialOrProducts] ([RegistrationReprocessingIOId]);
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250704143807_RegistrationReprocessingIORawMaterialOrProducts'
+)
+BEGIN
+    INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+    VALUES (N'20250704143807_RegistrationReprocessingIORawMaterialOrProducts', N'8.0.8');
 END;
 GO
 
