@@ -146,8 +146,6 @@ namespace EPR.PRN.Backend.Data.Repositories
                .ToListAsync();
 
             await CreateOverseasReprocessingSites(overseasAddressSubmission.OverseasAddresses, overseasAddressesAfterUpdate, registrationId, registrationMaterialId);
-
-            
         }
 
 
