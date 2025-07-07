@@ -26,6 +26,20 @@ public class AccreditationService(
     {
         logger.LogInformation("{Logprefix}: AccreditationService - GetorCreateAccreditation: request for organisationId {organisationId} type of material {materialId} and applicationType {applicationTypeId}", logPrefix, organisationId, materialId, applicationTypeId);
 
+        //THIS CODE NEEDS TO BE UPDATED TO WORK WITH THE EXISTING REGISTRATION MODELS AND STRUCTURE:
+
+        // material id is actually registrationmaterial id. 
+        // we may need to search registration materials on organisation id and material id. (organisationid is in the root registration so would have to search for the orgs registrations and find if it has a reg material for the material type)
+        // if we do then we search for the accreditation assoiciated with that registration material.
+
+
+        // if no accreditation exists with the registration maaterial:
+        // 1 create a site (hard code to the details in all the figma)
+        // 2 create registration for site and orgid and application type
+        // 3 create registration material for material id linked ro reg
+        // 4 create new accreditation for registrationmaterial.
+        
+
         var entity = await repository.GetAccreditationDetails(
             organisationId,
             materialId,

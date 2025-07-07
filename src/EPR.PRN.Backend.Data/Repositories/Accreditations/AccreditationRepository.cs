@@ -39,7 +39,8 @@ public class AccreditationRepository(EprContext eprContext) : IAccreditationRepo
         accreditation.CreatedOn = currentTimestamp;
         accreditation.UpdatedOn = currentTimestamp;
         accreditation.ExternalId = Guid.NewGuid();
-
+        accreditation.CreatedBy = accreditation.ExternalId;
+        accreditation.UpdatedBy = accreditation.ExternalId;
         eprContext.Accreditations.Add(accreditation);
         await eprContext.SaveChangesAsync();
     }
