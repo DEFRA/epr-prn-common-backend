@@ -4943,3 +4943,55 @@ GO
 COMMIT;
 GO
 
+BEGIN TRANSACTION;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250704143807_RegistrationReprocessingIORawMaterialOrProducts'
+)
+BEGIN
+    CREATE TABLE [Public.RegistrationReprocessingIORawMaterialOrProducts] (
+        [Id] int NOT NULL IDENTITY,
+        [ExternalId] uniqueidentifier NOT NULL,
+        [RegistrationReprocessingIOId] int NOT NULL,
+        [RawMaterialOrProductName] nvarchar(max) NOT NULL,
+        [TonneValue] decimal(18,2) NOT NULL,
+        [IsInput] bit NOT NULL,
+        CONSTRAINT [PK_Public.RegistrationReprocessingIORawMaterialOrProducts] PRIMARY KEY ([Id]),
+        CONSTRAINT [FK_Public.RegistrationReprocessingIORawMaterialOrProducts_Public.RegistrationReprocessingIO_RegistrationReprocessingIOId] FOREIGN KEY ([RegistrationReprocessingIOId]) REFERENCES [Public.RegistrationReprocessingIO] ([Id]) ON DELETE CASCADE
+    );
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250704143807_RegistrationReprocessingIORawMaterialOrProducts'
+)
+BEGIN
+    CREATE UNIQUE INDEX [IX_Public.RegistrationReprocessingIORawMaterialOrProducts_ExternalId] ON [Public.RegistrationReprocessingIORawMaterialOrProducts] ([ExternalId]);
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250704143807_RegistrationReprocessingIORawMaterialOrProducts'
+)
+BEGIN
+    CREATE INDEX [IX_Public.RegistrationReprocessingIORawMaterialOrProducts_RegistrationReprocessingIOId] ON [Public.RegistrationReprocessingIORawMaterialOrProducts] ([RegistrationReprocessingIOId]);
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250704143807_RegistrationReprocessingIORawMaterialOrProducts'
+)
+BEGIN
+    INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+    VALUES (N'20250704143807_RegistrationReprocessingIORawMaterialOrProducts', N'8.0.8');
+END;
+GO
+
+COMMIT;
+GO
+
