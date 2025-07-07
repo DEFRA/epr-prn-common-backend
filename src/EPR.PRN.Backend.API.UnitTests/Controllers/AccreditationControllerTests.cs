@@ -1,11 +1,14 @@
 ﻿using AutoFixture;
+using Castle.Core.Logging;
 using EPR.PRN.Backend.API.Common.Enums;
 using EPR.PRN.Backend.API.Controllers;
 using EPR.PRN.Backend.API.Dto;
 using EPR.PRN.Backend.API.Dto.Accreditation;
 using EPR.PRN.Backend.API.Services.Interfaces;
 using FluentAssertions;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Moq;
 
 namespace EPR.PRN.Backend.API.UnitTests.Controllers;
@@ -15,6 +18,8 @@ public class AccreditationControllerTests
 {
     private Mock<IAccreditationService> _serviceMock;
     private Mock<IAccreditationFileUploadService> _fileUploadServiceMock;
+    private Mock<IMediator> _mediatorMock;
+    private Mock<ILogger<AccreditationController>> _loggerMock;
     private AccreditationController _controller;
     private static readonly IFixture _fixture = new Fixture();
 
@@ -23,7 +28,9 @@ public class AccreditationControllerTests
     {
         _serviceMock = new Mock<IAccreditationService>();
         _fileUploadServiceMock = new Mock<IAccreditationFileUploadService>();
-        _controller = new AccreditationController(_serviceMock.Object, _fileUploadServiceMock.Object);
+        _mediatorMock = new Mock<IMediator>();
+        _loggerMock = new Mock<ILogger<AccreditationController>>();
+        _controller = new AccreditationController(_serviceMock.Object, _fileUploadServiceMock.Object, _mediatorMock.Object, _loggerMock.Object);
     }
 
     [TestMethod]
