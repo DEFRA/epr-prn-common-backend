@@ -257,6 +257,7 @@ public class RegistrationMaterialController(
     [ExcludeFromCodeCoverage(Justification = "TODO: To be done as part of Check your answers overseas reprocessors site(s)")]
     public async Task<IActionResult> SaveOverseasReprocessingSites([FromBody] OverseasAddressSubmissionDto overseasAddressSubmission)
     {
+        logger.LogInformation(LogMessages.SaveOverseasReprocessingSites, overseasAddressSubmission.RegistrationMaterialId);
         var command = new CreateOverseasMaterialReprocessingSiteCommand
         {
             UpdateOverseasAddress = new UpdateOverseasAddressDto

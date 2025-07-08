@@ -120,13 +120,13 @@ namespace EPR.PRN.Backend.Data.Repositories
                 await SaveOverseasSitesTransaction(overseasAddressSubmission);
                 await transaction.CommitAsync();
             }
-            catch (Exception ex)
-            {
-                throw new Exception("SaveOverseasReprocessingSites trandsaction failed", ex);
+            catch (Exception)
+            {               
+                throw;
             }
         }
 
-        public async Task SaveOverseasSitesTransaction(UpdateOverseasAddressDto overseasAddressSubmission)
+        private async Task SaveOverseasSitesTransaction(UpdateOverseasAddressDto overseasAddressSubmission)
         {
             var overseasAddressIds = overseasAddressSubmission.OverseasAddresses.Select(x => x.ExternalId).ToList();
             var registrationMaterial = await GetRegistrationMaterial(overseasAddressSubmission.RegistrationMaterialId);

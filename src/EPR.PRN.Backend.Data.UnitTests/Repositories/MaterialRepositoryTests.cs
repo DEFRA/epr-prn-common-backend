@@ -21,8 +21,7 @@ public class MaterialRepositoryTests
     private MaterialRepository _materialRepositoryMockContext;
     private MaterialRepository _materialRepository;
     private EprContext _context;
-    private Mock<EprContext> _mockEprContext;
-    private static Guid _registrationId = Guid.NewGuid();
+    private Mock<EprContext> _mockEprContext;    
     private readonly List<Material> _materials =
         [
             new Material { Id = 1, MaterialCode = "PL", MaterialName = MaterialType.Plastic.ToString() },
@@ -861,6 +860,39 @@ public class MaterialRepositoryTests
         var allAddresses = await _context.OverseasAddress.ToListAsync();
         allAddresses.Should().Contain(a => a.ExternalId == existingToKeep.ExternalId);
         allAddresses.Should().NotContain(a => a.ExternalId == existingToDelete.ExternalId);
+    }
+
+    [TestMethod]
+    public async Task SaveOverseasReprocessingSites_ShouldThrow_WhenRegistrationMaterialNotFound()
+    {
+        // Arrange
+        var registrationMaterialExternalId = Guid.NewGuid();
+        var updateDto = new UpdateOverseasAddressDto
+        {
+            RegistrationMaterialId = registrationMaterialExternalId,
+            OverseasAddresses =
+           [
+               new OverseasAddressDto
+                {
+                    ExternalId = Guid.NewGuid(),
+                    AddressLine1 = "Keep This",
+                    OrganisationName = "Old Org",
+                    AddressLine2 = "Old Address Line 2",
+                    CityOrTown = "Old Town",
+                    StateProvince = "Old State",
+                    PostCode = "12345",
+                    SiteCoordinates = "51.5074, -0.1278",
+                    OverseasAddressContacts = new List<OverseasAddressContactDto>(),
+                    OverseasAddressWasteCodes = new List<OverseasAddressWasteCodeDto>(),
+                }
+           ]
+        };
+
+        // Act & Assert
+        await Assert.ThrowsExceptionAsync<KeyNotFoundException>(async () =>
+        {
+            await _materialRepository.SaveOverseasReprocessingSites(updateDto);
+        });
     }
 
     [TestCleanup]
