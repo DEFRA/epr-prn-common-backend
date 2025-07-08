@@ -6,6 +6,7 @@ using EPR.PRN.Backend.Data.DTO;
 using EPR.PRN.Backend.Data.Repositories;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Options;
 using Microsoft.Testing.Platform.Extensions;
 using Moq;
@@ -40,6 +41,7 @@ public class MaterialRepositoryTests
 
         var options = new DbContextOptionsBuilder<EprContext>()
             .UseInMemoryDatabase(databaseName: "TestDb")
+            .ConfigureWarnings(x => x.Ignore(InMemoryEventId.TransactionIgnoredWarning))
             .Options;
         _context = new EprContext(options);
         _materialRepository = new MaterialRepository(_context);
@@ -750,7 +752,7 @@ public class MaterialRepositoryTests
         };
 
         // Act
-        await _materialRepository.SaveOverseasSitesTransaction(updateDto);
+        await _materialRepository.SaveOverseasReprocessingSites(updateDto);
 
         // Assert
         var allAddresses = await _context.OverseasAddress
@@ -853,7 +855,7 @@ public class MaterialRepositoryTests
         };
 
         // Act
-        await _materialRepository.SaveOverseasSitesTransaction(updateDto);
+        await _materialRepository.SaveOverseasReprocessingSites(updateDto);
 
         // Assert
         var allAddresses = await _context.OverseasAddress.ToListAsync();
