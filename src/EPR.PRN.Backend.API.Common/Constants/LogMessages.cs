@@ -18,6 +18,7 @@ public static class LogMessages
     public const string CreateRegistrationMaterial = "Attempting to create new registration material for registration {0}";
     public const string GetAllRegistrationMaterials = "Attempting to retrieve all registration materials for registration {0}";
     public const string DeleteRegistrationMaterial = "Attempting to delete registration material with ID {0}";
+    public const string UpsertRegistrationMaterialContact = "Attempting to upsert the contact for registration material with ID {0}";
     public const string AccreditationBusinessPlan = "Attempting to get Business Plan relating to an accreditation";
 
     public const string CreateRegistration = "Attempting to create new registration";
@@ -28,6 +29,7 @@ public static class LogMessages
     public const string GetRegistrationByOrganisation = "Attempting to get registration of type {0} for organisation with ID {1}";
     public const string UpdateRegistrationSiteAddress = "Attempting to update registration site address";
     public const string UpdateRegistrationTaskStatus = "Attempting to update registration task status";
+    public const string UpdateApplicantRegistrationTaskStatus = "Attempting to update applicant registration task status";
     public const string MarkAsDulyMade = "MarkAsDulyMadeBy id :{Id}";
     public const string MarkAccreditationAsDulyMade = "MarkAccreditationAsDulyMadeBy id :{Id}";
     public const string RegistrationMaterialReference = "Attempting to get reference data registration material id :{Id}";
@@ -35,4 +37,6 @@ public static class LogMessages
     public const string GetMaterialsPermitTypes = "Attempting to get material permit types";
     public const string CreateRegistrationMaterialAndExemptionReferences = "Attempting to create new registration material and exemption references";
     public const string RegistrationsOverview = "Attempting to retrieve registrations overview for organisation id :{Id}";    
+	public const string UpdateIsMaterialRegistered = "Attempting to update the registration material IsMaterialRegistered flag.";
+    public const string UpsertRegistrationReprocessingDetails = "Attempting to upsert the registration reprocessing details for registration material with ID :{registrationMaterialId}";
 }
