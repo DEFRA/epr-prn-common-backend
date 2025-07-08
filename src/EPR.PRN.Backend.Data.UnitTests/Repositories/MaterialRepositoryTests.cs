@@ -16,11 +16,9 @@ namespace EPR.PRN.Backend.Data.UnitTests.Repositories;
 [TestClass]
 public class MaterialRepositoryTests
 {
-	private MaterialRepository _materialRepository;
-    private MaterialRepository _materialRepositoryFull;
+    private MaterialRepository _materialRepository;
     private Mock<EprContext> _mockEprContext;
-    private Mock<ILogger<MaterialRepository>> _mockLogger;
-    private EprContext _context;
+    private static Guid _registrationId = Guid.NewGuid();
     private readonly List<Material> _materials =
 		[
 			new Material { Id = 1, MaterialCode = "PL", MaterialName = MaterialType.Plastic.ToString() },
@@ -33,12 +31,21 @@ public class MaterialRepositoryTests
 			new Material { Id = 8, MaterialCode = "FC", MaterialName = MaterialType.FibreComposite.ToString() }
 		];
 
+    private readonly List<RegistrationMaterial> _registrationMaterials =
+        [
+            new RegistrationMaterial { Id = 1, RegistrationId = 1, MaterialId = 1, IsMaterialRegistered = true, Registration = new Registration() { ExternalId = _registrationId } },
+        ];
+
+    private MaterialRepository _materialRepositoryFull;
+    private Mock<ILogger<MaterialRepository>> _mockLogger;
+    private EprContext _context;
 	[TestInitialize]
 	public void Setup()
 	{
 		var dbContextOptions = new DbContextOptionsBuilder<EprContext>().Options;
 		_mockEprContext = new Mock<EprContext>(dbContextOptions);
 		_mockEprContext.Setup(context => context.Material).ReturnsDbSet(_materials);
+        _mockEprContext.Setup(context => context.RegistrationMaterials).ReturnsDbSet(_registrationMaterials);
         _mockLogger = new Mock<ILogger<MaterialRepository>>();
         _materialRepository = new MaterialRepository(_mockEprContext.Object, _mockLogger.Object);
 
@@ -50,11 +57,11 @@ public class MaterialRepositoryTests
         _materialRepositoryFull = new MaterialRepository(_context, _mockLogger.Object);
     }
 
-	[TestMethod]
-	public async Task GetAllMaterials_ShouldReturnAllMaterials()
-	{
-		// Act
-		var result = await _materialRepository.GetAllMaterials();
+    [TestMethod]
+    public async Task GetAllMaterials_ShouldReturnAllMaterials()
+    {
+        // Act
+        var result = await _materialRepository.GetAllMaterials();
 
 		// Assert
 		result.Should().NotBeNull(); // Check that result is not null
@@ -516,5 +523,18 @@ public class MaterialRepositoryTests
         // Assert
         await act.Should().ThrowAsync<RegulatorInvalidOperationException>()
             .WithMessage("No Valid Task Exists: MissingTask");
+    }
+
+    [TestMethod]
+    public async Task GetMaterialsByRegistrationId_ShouldReturnFilteredMaterials()
+    {
+        // Act
+        var result = await _materialRepository.GetMaterialsByRegistrationIdQuery(_registrationId);
+
+        // Assert
+        result.Should().NotBeNull(); // Check that result is not null
+        result.Should().HaveCount(7); // Check that 7 materials are returned
+        result.Should().NotContain(material => material.MaterialCode == "PL" && material.MaterialName == MaterialType.Plastic.ToString()); // Plastic is filtered out as registration already started
+        result.Should().Contain(material => material.MaterialCode == "FC" && material.MaterialName == MaterialType.FibreComposite.ToString());
     }
 }

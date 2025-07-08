@@ -36,4 +36,25 @@ public class MaterialService(ILogger<MaterialService> logger, IMaterialRepositor
             Code = m.MaterialCode
         }).ToList();
     }
+
+    public async Task<IList<MaterialDto>> GetMaterialsByRegistrationIdQuery(Guid registrationId)
+    {
+        var materials = await _materialRepository.GetMaterialsByRegistrationIdQuery(registrationId);
+        materials = materials.ToList();
+
+        if (!materials.Any())
+        {
+            _logger.LogInformation("Found no materials");
+
+            return Enumerable.Empty<MaterialDto>().ToList();
+        }
+
+        _logger.LogInformation("Found {Count} materials.", materials.Count());
+
+        return materials.Select(m => new MaterialDto
+        {
+            Name = m.MaterialName,
+            Code = m.MaterialCode
+        }).ToList();
+    }
 }

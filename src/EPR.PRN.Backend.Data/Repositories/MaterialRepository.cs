@@ -113,6 +113,17 @@ namespace EPR.PRN.Backend.Data.Repositories
             await context.SaveChangesAsync();
         }
 
+        public async Task<IEnumerable<Material>> GetMaterialsByRegistrationIdQuery(Guid registrationId)
+        {
+            var materialsInRegistrationMaterial = await context.RegistrationMaterials.Where(m => m.Registration.ExternalId == registrationId)
+                                                                                     .Select(m => m.MaterialId)
+                                                                                     .ToListAsync();
+
+            var materialsNotInRegistrationMaterial = await context.Material.Where(m => !materialsInRegistrationMaterial.Contains(m.Id)).ToListAsync();
+
+            return materialsNotInRegistrationMaterial;
+        }
+
         public async Task UpdateApplicationRegistrationTaskStatusAsync(string taskName, Guid registrationMaterialId, TaskStatuses status)
         {
             logger.LogInformation("Updating application status for task with TaskName {TaskName} And registrationMaterialId {registrationMaterialId} to {Status}", taskName, registrationMaterialId, status);
