@@ -288,4 +288,32 @@ public class RegistrationMaterialControllerTests
             cmd.UpdateOverseasAddress.OverseasAddresses == dto.OverseasAddresses
         ), It.IsAny<CancellationToken>()), Times.Once);
     }
+
+    [TestMethod]
+    public async Task SaveOverseasReprocessingSites_ShouldThrowNullReferenceException_WhenSubmissionIsNull()
+    {
+        // Act
+        Func<Task> act = async () => await _controller.SaveOverseasReprocessingSites(null!);
+
+        // Assert
+        await act.Should().ThrowAsync<NullReferenceException>();
+    }
+
+    [TestMethod]
+    public async Task SaveOverseasReprocessingSites_ShouldThrowException_WhenMediatorFails()
+    {
+        // Arrange
+        var dto = _fixture.Create<OverseasAddressSubmissionDto>();
+
+        _mediatorMock
+            .Setup(m => m.Send(It.IsAny<CreateOverseasMaterialReprocessingSiteCommand>(), It.IsAny<CancellationToken>()))
+            .ThrowsAsync(new InvalidOperationException("Mediator failed"));
+
+        // Act
+        Func<Task> act = async () => await _controller.SaveOverseasReprocessingSites(dto);
+
+        // Assert
+        await act.Should().ThrowAsync<InvalidOperationException>()
+            .WithMessage("Mediator failed");
+    }
 }
