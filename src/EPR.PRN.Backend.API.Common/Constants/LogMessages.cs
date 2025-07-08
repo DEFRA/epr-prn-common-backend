@@ -15,18 +15,18 @@ public static class LogMessages
     public const string UpdateRegulatorRegistrationTask = "UpdateRegulatorRegistrationTask";
     public const string UpdateRegulatorAccreditationTask = "UpdateRegulatorAccreditationTask";
     public const string AccreditationSamplingPlan = "Attempting to get file uploads relating to an accreditation";
-    public const string CreateRegistrationMaterial = "Attempting to create new registration material for registration {0}";
-    public const string GetAllRegistrationMaterials = "Attempting to retrieve all registration materials for registration {0}";
-    public const string DeleteRegistrationMaterial = "Attempting to delete registration material with ID {0}";
+    public const string CreateRegistrationMaterial = "Attempting to create new registration material for registration {RegistrationId}";
+    public const string GetAllRegistrationMaterials = "Attempting to retrieve all registration materials for registration {RegistrationId}";
+    public const string DeleteRegistrationMaterial = "Attempting to delete registration material with ID {RegistrationMaterialId}";
     public const string AccreditationBusinessPlan = "Attempting to get Business Plan relating to an accreditation";
-    public const string UpdateMaximumWeight = "Attempting to update the maximum weight the site is capable of processing for the material {0}.";
+    public const string UpdateMaximumWeight = "Attempting to update the maximum weight the site is capable of processing for the material {RegistrationMaterialId}.";
 
     public const string CreateRegistration = "Attempting to create new registration";
-    public const string UpdateRegistration = "Attempting to create new registration with ID {0}";
+    public const string UpdateRegistration = "Attempting to create new registration with ID {RegistrationId}";
     public const string UpdateRegistrationMaterial = "Attempting to update registration material with External ID {Id}";
     public const string UpdateRegistrationMaterialPermits = "Attempting to update registration material permits with External ID {Id}";
     public const string UpdateRegistrationMaterialPermitCapacity = "Attempting to update registration material permit capacity with External ID {Id}";
-    public const string GetRegistrationByOrganisation = "Attempting to get registration of type {0} for organisation with ID {1}";
+    public const string GetRegistrationByOrganisation = "Attempting to get registration of type {ApplicationTypeId} for organisation with ID {OrganisationId}";
     public const string UpdateRegistrationSiteAddress = "Attempting to update registration site address";
     public const string UpdateRegistrationTaskStatus = "Attempting to update registration task status";
     public const string MarkAsDulyMade = "MarkAsDulyMadeBy id :{Id}";
@@ -35,5 +35,6 @@ public static class LogMessages
     public const string CreateExemptionReferences = "Attempting to create exemption references";
     public const string GetMaterialsPermitTypes = "Attempting to get material permit types";
     public const string CreateRegistrationMaterialAndExemptionReferences = "Attempting to create new registration material and exemption references";
-    public const string RegistrationsOverview = "Attempting to retrieve registrations overview for organisation id :{Id}";    
+    public const string RegistrationsOverview = "Attempting to retrieve registrations overview for organisation id :{Id}";
+    public const string GetRegistrationOverviewById = "Attempting to get registration overview with registration ID {RegistrationId}";
 }

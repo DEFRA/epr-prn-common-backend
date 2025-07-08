@@ -1,14 +1,15 @@
 ﻿using EPR.PRN.Backend.API.Common.Constants;
 using EPR.PRN.Backend.API.Common.Enums;
+using EPR.PRN.Backend.API.Common.Exceptions;
 using EPR.PRN.Backend.Data.DataModels.Registrations;
 using EPR.PRN.Backend.Data.Interfaces.Regulator;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
+using Microsoft.Extensions.Logging;
 
 namespace EPR.PRN.Backend.Data.Repositories.Regulator;
 
-public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrationMaterialRepository
+public class RegistrationMaterialRepository(ILogger<RegistrationMaterialRepository> logger, EprContext eprContext) : IRegistrationMaterialRepository
 {
     public async Task<Registration> GetRegistrationById(Guid registrationId)
     {
@@ -316,9 +317,77 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
             throw new KeyNotFoundException("Registration material not found.");
         }
 
+        var existingRegistrationStatus = await eprContext.RegistrationTaskStatus.FirstOrDefaultAsync(o => o.RegistrationMaterialId == existing.Id);
+        if (existingRegistrationStatus is not null)
+        {
+            eprContext.RegistrationTaskStatus.Remove(existingRegistrationStatus);
+        }
+
         eprContext.RegistrationMaterials.Remove(existing);
 
         await eprContext.SaveChangesAsync();
+    }
+
+    public async Task UpdateRegistrationTaskStatusAsync(string taskName, Guid registrationMaterialId, TaskStatuses status)
+    {
+        logger.LogInformation("Updating status for task with TaskName {TaskName} And RegistrationMaterialId {RegistrationMaterialId} to {Status}", taskName, registrationMaterialId, status);
+
+        var registrationMaterial = await eprContext.RegistrationMaterials
+            .Include(o => o.Registration)
+            .FirstOrDefaultAsync(o => o.ExternalId == registrationMaterialId);
+
+        if (registrationMaterial is null)
+        {
+            throw new KeyNotFoundException();
+        }
+
+        var statusEntity = await eprContext.LookupTaskStatuses.SingleAsync(lts => lts.Name == status.ToString());
+
+        var taskStatus = await GetTaskStatusAsync(taskName, registrationMaterial.Id);
+        if (taskStatus is null)
+        {
+            var task = await eprContext
+                .LookupApplicantRegistrationTasks
+                .SingleOrDefaultAsync(t => t.Name == taskName && t.IsMaterialSpecific && t.ApplicationTypeId == registrationMaterial.Registration.ApplicationTypeId);
+
+            if (task is null)
+            {
+                throw new RegulatorInvalidOperationException($"No Valid Task Exists: {taskName}");
+            }
+
+            // Create a new entity if it doesn't exist
+            taskStatus = new ApplicantRegistrationTaskStatus
+            {
+                ExternalId = Guid.NewGuid(),
+                RegistrationId = null,
+                RegistrationMaterialId = registrationMaterial.Id,
+                Task = task,
+                TaskStatus = statusEntity,
+            };
+
+            await eprContext.RegistrationTaskStatus.AddAsync(taskStatus);
+        }
+        else
+        {
+            // Update the existing entity
+            taskStatus.TaskStatus = statusEntity;
+
+            eprContext.RegistrationTaskStatus.Update(taskStatus);
+        }
+        await eprContext.SaveChangesAsync();
+
+        logger.LogInformation("Successfully updated status for task with TaskName {TaskName} And RegistrationMaterialId {RegistrationMaterialId} to {Status}", taskName, registrationMaterialId, status);
+    }
+
+    public async Task<ApplicantRegistrationTaskStatus?> GetTaskStatusAsync(string taskName, int registrationMaterialId)
+    {
+        var taskStatus = await eprContext
+            .RegistrationTaskStatus
+            .Include(ts => ts.TaskStatus)
+            .Include(o => o.RegistrationMaterial)
+            .FirstOrDefaultAsync(x => x.Task.Name == taskName && x.RegistrationMaterialId == registrationMaterialId);
+
+        return taskStatus;
     }
 
     private IIncludableQueryable<RegistrationMaterial, LookupRegistrationMaterialStatus> GetRegistrationMaterialsWithRelatedEntities()

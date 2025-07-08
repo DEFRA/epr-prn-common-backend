@@ -61,8 +61,39 @@ public class RegistrationRepository(EprContext context, ILogger<RegistrationRepo
     public async Task<Registration?> GetAsync(Guid registrationId)
     {
         var registrations = LoadRegistrationWithRelatedEntities();
-        return await registrations.SingleOrDefaultAsync(o => o.ExternalId == registrationId);
+        return await registrations
+            .SingleOrDefaultAsync(o => o.ExternalId == registrationId);
     }
+
+    public async Task<Registration> GetTasksForRegistrationAndMaterialsAsync(Guid registrationId)
+    {
+        return await context.Registrations
+            .Include(r => r.ApplicantRegistrationTasksStatus)!
+            .ThenInclude(s => s.TaskStatus)
+            
+            .Include(r => r.ApplicantRegistrationTasksStatus)!
+            .ThenInclude(s => s.Task)
+            
+            .Include(r => r.Materials)!
+            .ThenInclude(m => m.Material)
+
+            .Include(r => r.Materials)!
+            .ThenInclude(m => m.Status)
+
+            .Include(r => r.Materials)!
+            .ThenInclude(m => m.ApplicantTaskStatuses)!
+            .ThenInclude(o => o.Task)
+
+            .Include(r => r.Materials)!
+            .ThenInclude(m => m.ApplicantTaskStatuses)!
+            .ThenInclude(o => o.TaskStatus)
+            .SingleAsync(r => r.ExternalId == registrationId);
+    }
+
+    public async Task<List<LookupApplicantRegistrationTask>> GetRequiredTasks(int applicationTypeId, bool isMaterialSpecific, int journeyTypeId) =>
+        await context.LookupApplicantRegistrationTasks
+            .Where(t => t.ApplicationTypeId == applicationTypeId && t.IsMaterialSpecific == isMaterialSpecific && t.JourneyTypeId == journeyTypeId)
+            .ToListAsync();
 
     public async Task<Registration?> GetByOrganisationAsync(int applicationTypeId, Guid organisationId)
     {
@@ -294,16 +325,21 @@ public class RegistrationRepository(EprContext context, ILogger<RegistrationRepo
 
     private IIncludableQueryable<Registration,List<RegistrationMaterial>?> LoadRegistrationWithRelatedEntities()
     {
-        return context.Registrations
+        var data = context.Registrations
             .AsSplitQuery()
             .Include(r => r.BusinessAddress)
             .Include(r => r.ReprocessingSiteAddress)
             .Include(r => r.LegalDocumentAddress)
+             
             .Include(r => r.ApplicantRegistrationTasksStatus)!
-                .ThenInclude(t => t.TaskStatus)
+            .ThenInclude( t=>t.Task)
+
             .Include(r => r.ApplicantRegistrationTasksStatus)!
-                .ThenInclude(t => t.Task)
+            .ThenInclude(t => t.TaskStatus)
+             
             .Include(r => r.Materials);
+
+        return data;
     }
 
     public async Task<IEnumerable<RegistrationOverviewDto>> GetRegistrationsOverviewForOrgIdAsync(Guid organisationId)
