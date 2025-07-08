@@ -161,7 +161,7 @@ namespace EPR.PRN.Backend.Data.Repositories
             var overseasAddressesToDeleteId = overseasAddresses.Where(x => x.RegistrationId == registrationId
                         && !overseasAddressIds.Contains(x.ExternalId)).Select(x => x.Id).ToList();
 
-            if (overseasAddressesToDeleteExternalId.Count() > 0)
+            if (overseasAddressesToDeleteExternalId.Count > 0)
             {
                 var overseasSitesToDelete = await context.OverseasAddress
                 .Where(x => overseasAddressesToDeleteExternalId.Contains(x.ExternalId))
