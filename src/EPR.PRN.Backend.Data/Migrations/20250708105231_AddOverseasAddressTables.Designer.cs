@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EPR.PRN.Backend.Data.Migrations
 {
     [DbContext(typeof(EprContext))]
-    [Migration("20250708093848_AddOverseasAddressTables")]
+    [Migration("20250708105231_AddOverseasAddressTables")]
     partial class AddOverseasAddressTables
     {
         /// <inheritdoc />
@@ -1302,9 +1302,6 @@ namespace EPR.PRN.Backend.Data.Migrations
                     b.Property<int>("InterimSiteId")
                         .HasColumnType("int");
 
-                    b.Property<int>("OverseasMaterialReprocessingSiteId")
-                        .HasColumnType("int");
-
                     b.Property<int>("ParentOverseasAddressId")
                         .HasColumnType("int");
 
@@ -1312,8 +1309,6 @@ namespace EPR.PRN.Backend.Data.Migrations
 
                     b.HasIndex("ExternalId")
                         .IsUnique();
-
-                    b.HasIndex("OverseasMaterialReprocessingSiteId");
 
                     b.HasIndex("ParentOverseasAddressId");
 
@@ -4695,12 +4690,6 @@ namespace EPR.PRN.Backend.Data.Migrations
 
             modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.InterimOverseasConnections", b =>
                 {
-                    b.HasOne("EPR.PRN.Backend.Data.DataModels.Registrations.OverseasMaterialReprocessingSite", "OverseasMaterialReprocessingSite")
-                        .WithMany()
-                        .HasForeignKey("OverseasMaterialReprocessingSiteId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("EPR.PRN.Backend.Data.DataModels.Registrations.OverseasAddress", "OverseasAddress")
                         .WithMany("InterimOverseasConnections")
                         .HasForeignKey("ParentOverseasAddressId")
@@ -4708,8 +4697,6 @@ namespace EPR.PRN.Backend.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("OverseasAddress");
-
-                    b.Navigation("OverseasMaterialReprocessingSite");
                 });
 
             modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.MaterialExemptionReference", b =>

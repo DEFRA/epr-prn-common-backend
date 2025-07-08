@@ -65,6 +65,27 @@ namespace EPR.PRN.Backend.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Public.InterimOverseasConnections",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ExternalId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    InterimSiteId = table.Column<int>(type: "int", nullable: false),
+                    ParentOverseasAddressId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Public.InterimOverseasConnections", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Public.InterimOverseasConnections_Public.OverseasAddress_ParentOverseasAddressId",
+                        column: x => x.ParentOverseasAddressId,
+                        principalTable: "Public.OverseasAddress",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Public.OverseasAddressContact",
                 columns: table => new
                 {
@@ -157,34 +178,6 @@ namespace EPR.PRN.Backend.Data.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            migrationBuilder.CreateTable(
-                name: "Public.InterimOverseasConnections",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ExternalId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    OverseasMaterialReprocessingSiteId = table.Column<int>(type: "int", nullable: false),
-                    InterimSiteId = table.Column<int>(type: "int", nullable: false),
-                    ParentOverseasAddressId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Public.InterimOverseasConnections", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Public.InterimOverseasConnections_Public.OverseasAddress_ParentOverseasAddressId",
-                        column: x => x.ParentOverseasAddressId,
-                        principalTable: "Public.OverseasAddress",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Public.InterimOverseasConnections_Public.OverseasMaterialReprocessingSite_OverseasMaterialReprocessingSiteId",
-                        column: x => x.OverseasMaterialReprocessingSiteId,
-                        principalTable: "Public.OverseasMaterialReprocessingSite",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
             migrationBuilder.CreateIndex(
                 name: "IX_OverseasAddressOverseasMaterialReprocessingSite_OverseasMaterialReprocessingSitesId",
                 table: "OverseasAddressOverseasMaterialReprocessingSite",
@@ -200,11 +193,6 @@ namespace EPR.PRN.Backend.Data.Migrations
                 table: "Public.InterimOverseasConnections",
                 column: "ExternalId",
                 unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Public.InterimOverseasConnections_OverseasMaterialReprocessingSiteId",
-                table: "Public.InterimOverseasConnections",
-                column: "OverseasMaterialReprocessingSiteId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Public.InterimOverseasConnections_ParentOverseasAddressId",
