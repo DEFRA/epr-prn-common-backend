@@ -7,11 +7,22 @@ using EPR.PRN.Backend.Data.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.Extensions.Logging;
+using System.Diagnostics.CodeAnalysis;
 
 namespace EPR.PRN.Backend.Data.Repositories;
 
 public class RegistrationRepository(EprContext context, ILogger<RegistrationRepository> logger) : IRegistrationRepository
 {
+    [ExcludeFromCodeCoverage]
+    public async Task<Registration?> GetRegistrationByExternalId(Guid externalId, CancellationToken cancellationToken)
+    {
+        return await context.Registrations
+             .AsNoTracking()
+             .Where(x => x.ExternalId == externalId)
+             .Include(x => x.CarrierBrokerDealerPermit)
+             .FirstOrDefaultAsync(cancellationToken);
+    }
+
     public async Task<Registration> CreateRegistrationAsync(int applicationTypeId, Guid organisationId, AddressDto reprocessingSiteAddress)
     {
         logger.LogInformation("Creating registration for ApplicationTypeId: {ApplicationTypeId} and OrganisationId: {OrganisationId}", applicationTypeId, organisationId);
