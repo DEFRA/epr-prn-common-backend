@@ -21,6 +21,7 @@ public class MaterialRepositoryTests
     private MaterialRepository _materialRepository;
     private EprContext _context;
     private Mock<EprContext> _mockEprContext;
+    private static Guid _registrationId = Guid.NewGuid();
     private readonly List<Material> _materials =
         [
             new Material { Id = 1, MaterialCode = "PL", MaterialName = MaterialType.Plastic.ToString() },
