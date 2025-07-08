@@ -149,16 +149,16 @@ namespace EPR.PRN.Backend.Data.Repositories
         }
 
 
-        private async Task DeleteOverseasReprocessingSites(List<Guid> overseasAddressIds, int registrationMaterialId)
+        private async Task DeleteOverseasReprocessingSites(List<Guid> overseasAddressIds, int registrationId)
         {
             var overseasAddresses = await context.OverseasAddress
-                .Where(x => x.RegistrationId == registrationMaterialId)
+                .Where(x => x.RegistrationId == registrationId)
                 .ToListAsync();
 
-            var overseasAddressesToDeleteExternalId = overseasAddresses.Where(x => x.RegistrationId == registrationMaterialId
+            var overseasAddressesToDeleteExternalId = overseasAddresses.Where(x => x.RegistrationId == registrationId
                         && !overseasAddressIds.Contains(x.ExternalId)).Select(x => x.ExternalId).ToList();
 
-            var overseasAddressesToDeleteId = overseasAddresses.Where(x => x.RegistrationId == registrationMaterialId
+            var overseasAddressesToDeleteId = overseasAddresses.Where(x => x.RegistrationId == registrationId
                         && !overseasAddressIds.Contains(x.ExternalId)).Select(x => x.Id).ToList();
 
             if (overseasAddressesToDeleteExternalId.Count() > 0)
@@ -168,7 +168,7 @@ namespace EPR.PRN.Backend.Data.Repositories
                 .ToListAsync();
 
                 var overseasMaterialReprocessingSitesToDelete = await context.OverseasMaterialReprocessingSite
-                    .Where(x => overseasAddressesToDeleteId.Contains(x.Id) && x.RegistrationMaterialId == registrationMaterialId)
+                    .Where(x => overseasAddressesToDeleteId.Contains(x.Id) && x.RegistrationMaterialId == registrationId)
                     .ToListAsync();
 
                 context.OverseasAddress.RemoveRange(overseasSitesToDelete);
