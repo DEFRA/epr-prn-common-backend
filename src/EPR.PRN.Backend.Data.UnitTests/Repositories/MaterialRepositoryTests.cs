@@ -813,8 +813,21 @@ public class MaterialRepositoryTests
             PostCode = "12345",
             SiteCoordinates = "51.5074, -0.1278",
         };
+        var existingToKeepDifferentRegistrationId = new OverseasAddress
+        {
+            ExternalId = externalId,
+            RegistrationId = 10,
+            AddressLine1 = "Keep This",
+            OrganisationName = "Old Org",
+            AddressLine2 = "Old Address Line 2",
+            CityOrTown = "Old Town",
+            StateProvince = "Old State",
+            PostCode = "12345",
+            SiteCoordinates = "51.5074, -0.1278",
 
-        _context.OverseasAddress.AddRange(existingToKeep, existingToDelete);
+        };
+
+        _context.OverseasAddress.AddRange(existingToKeep, existingToDelete, existingToKeepDifferentRegistrationId);
         await _context.SaveChangesAsync();
 
         var updateDto = new UpdateOverseasAddressDto
@@ -843,7 +856,7 @@ public class MaterialRepositoryTests
 
         // Assert
         var allAddresses = await _context.OverseasAddress.ToListAsync();
-        allAddresses.Should().ContainSingle(a => a.ExternalId == existingToKeep.ExternalId);
+        allAddresses.Should().Contain(a => a.ExternalId == existingToKeep.ExternalId);
         allAddresses.Should().NotContain(a => a.ExternalId == existingToDelete.ExternalId);
     }
 
