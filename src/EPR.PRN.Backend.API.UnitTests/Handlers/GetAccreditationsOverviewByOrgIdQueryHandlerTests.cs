@@ -1,5 +1,6 @@
 ﻿using EPR.PRN.Backend.API.Handlers.Regulator;
 using EPR.PRN.Backend.API.Queries;
+using EPR.PRN.Backend.API.Services.Interfaces;
 using EPR.PRN.Backend.Data.DTO.Accreditiation;
 using EPR.PRN.Backend.Data.Interfaces.Accreditations;
 using FluentAssertions;
@@ -11,13 +12,15 @@ namespace EPR.PRN.Backend.API.UnitTests.Handlers
     public class GetAccreditationsOverviewByOrgIdQueryHandlerTests
     {
         private Mock<IAccreditationRepository> _mockAccreditationRepository;
+        private Mock<IValidationService> _mockValidationService;
         private GetAccreditationsOverviewByOrgIdQueryHandler _handlerUnderTest;
 
         [TestInitialize]
         public void TestInitialize()
         {
             _mockAccreditationRepository = new Mock<IAccreditationRepository>();
-            _handlerUnderTest = new GetAccreditationsOverviewByOrgIdQueryHandler(_mockAccreditationRepository.Object);
+            _mockValidationService = new Mock<IValidationService>();
+            _handlerUnderTest = new GetAccreditationsOverviewByOrgIdQueryHandler(_mockAccreditationRepository.Object, _mockValidationService.Object);
         }
 
         [TestMethod]
@@ -46,7 +49,7 @@ namespace EPR.PRN.Backend.API.UnitTests.Handlers
                 {
                     OrganisationId = organisationId
                 }
-                };
+            };
 
             _mockAccreditationRepository.Setup(x => x.GetAccreditationOverviewForOrgId(organisationId))
                 .ReturnsAsync(expectedDto);
