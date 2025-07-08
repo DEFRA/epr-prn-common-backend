@@ -191,7 +191,7 @@ public class RegistrationControllerTests
 
         _mediatorMock
             .Setup(m => m.Send(query, It.IsAny<CancellationToken>()))
-            .ReturnsAsync((ApplicantRegistrationTasksOverviewDto?)null);
+            .ReturnsAsync(null as ApplicantRegistrationTasksOverviewDto);
 
         // Act
         var result = await _controller.GetRegistrationTaskOverviewById(registrationId);
