@@ -1,5 +1,7 @@
 ﻿using EPR.PRN.Backend.API.Commands;
 using EPR.PRN.Backend.API.Controllers;
+using EPR.PRN.Backend.API.Dto;
+using EPR.PRN.Backend.API.Handlers.Regulator;
 using EPR.PRN.Backend.API.Queries;
 using EPR.PRN.Backend.API.Services.Interfaces;
 using EPR.PRN.Backend.Data.DTO.Registration;
@@ -141,5 +143,63 @@ public class RegistrationControllerTests
         // Assert
         await act.Should().ThrowAsync<Exception>()
             .WithMessage("Unexpected error");
+    }
+
+    [TestMethod]
+    public async Task GetRegistrationTaskOverviewById_OkResult()
+    {
+        // Arrange
+        var registrationId = Guid.NewGuid();
+        var query = new GetRegistrationTaskOverviewByIdQuery { Id = registrationId };
+        var expectedResult = new ApplicantRegistrationTasksOverviewDto
+        {
+            Id = registrationId,
+            OrganisationId = Guid.Empty,
+            Tasks =
+            [
+                new()
+                {
+                    Status = "status",
+                    TaskName = "task",
+                    Id = Guid.Empty
+                }
+            ]
+        };
+        
+        _mediatorMock
+            .Setup(m => m.Send(query, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(expectedResult);
+
+        // Act
+        var result = await _controller.GetRegistrationTaskOverviewById(registrationId);
+
+        // Assert
+        using (new AssertionScope())
+        {
+            result.Should().BeOfType<OkObjectResult>();
+            var okResult = result as OkObjectResult;
+            okResult!.Value.Should().BeEquivalentTo(expectedResult);
+        }
+    }
+
+    [TestMethod]
+    public async Task GetRegistrationTaskOverviewById_NotFoundResult()
+    {
+        // Arrange
+        var registrationId = Guid.NewGuid();
+        var query = new GetRegistrationTaskOverviewByIdQuery { Id = registrationId };
+
+        _mediatorMock
+            .Setup(m => m.Send(query, It.IsAny<CancellationToken>()))
+            .ReturnsAsync((ApplicantRegistrationTasksOverviewDto?)null);
+
+        // Act
+        var result = await _controller.GetRegistrationTaskOverviewById(registrationId);
+
+        // Assert
+        using (new AssertionScope())
+        {
+            result.Should().BeOfType<NotFoundResult>();
+        }
     }
 }

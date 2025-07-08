@@ -317,6 +317,12 @@ public class RegistrationMaterialRepository(ILogger<RegistrationMaterialReposito
             throw new KeyNotFoundException("Registration material not found.");
         }
 
+        var existingRegistrationStatus = await eprContext.RegistrationTaskStatus.FirstOrDefaultAsync(o => o.RegistrationMaterialId == existing.Id);
+        if (existingRegistrationStatus is not null)
+        {
+            eprContext.RegistrationTaskStatus.Remove(existingRegistrationStatus);
+        }
+
         eprContext.RegistrationMaterials.Remove(existing);
 
         await eprContext.SaveChangesAsync();

@@ -53,32 +53,6 @@ public class RegistrationController(IMediator mediator
         return Ok(registration);
     }
 
-    [HttpGet("registrations/{registrationId:Guid}")]
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(RegistrationOverviewDto))]
-    [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
-    [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
-    [SwaggerOperation(
-        Summary = "gets an existing registration overview ID.",
-        Description = "attempting to get an existing registration overview using the registration ID."
-    )]
-    [SwaggerResponse(StatusCodes.Status400BadRequest, "If the request is invalid or a validation error occurs.", typeof(ProblemDetails))]
-    [SwaggerResponse(StatusCodes.Status500InternalServerError, "If an unexpected error occurs.", typeof(ContentResult))]
-    [ExcludeFromCodeCoverage(Justification = "TODO: To be done as part of create registration user story")]
-    public async Task<IActionResult> GetRegistrationById([FromRoute] Guid registrationId)
-    {
-        logger.LogInformation(LogMessages.GetRegistrationOverviewById, registrationId) ;
-
-        var registration = await mediator.Send(new GetRegistrationByIdQuery{Id = registrationId} );
-
-        if (registration == null)
-        {
-            return NotFound();
-        }
-
-        return Ok(registration);
-    }
-
-
     [HttpGet("registrations_tasks/{registrationId:Guid}")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ApplicantRegistrationTasksOverviewDto))]
     [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
@@ -89,7 +63,6 @@ public class RegistrationController(IMediator mediator
     )]
     [SwaggerResponse(StatusCodes.Status400BadRequest, "If the request is invalid or a validation error occurs.", typeof(ProblemDetails))]
     [SwaggerResponse(StatusCodes.Status500InternalServerError, "If an unexpected error occurs.", typeof(ContentResult))]
-    [ExcludeFromCodeCoverage(Justification = "TODO: To be done as part of create registration user story")]
     public async Task<IActionResult> GetRegistrationTaskOverviewById([FromRoute] Guid registrationId)
     {
         logger.LogInformation(LogMessages.GetRegistrationOverviewById, registrationId);

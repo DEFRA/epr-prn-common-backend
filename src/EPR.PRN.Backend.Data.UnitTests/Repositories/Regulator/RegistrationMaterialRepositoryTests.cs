@@ -908,7 +908,7 @@ public class RegistrationMaterialRepositoryTests
     }
 
     [TestMethod]
-    public async Task DeleteRegistrationMaterial_Found_ShouldDelete()
+    public async Task DeleteRegistrationMaterial_Found_WithAssociatedTask_ShouldDelete()
     {
         // Arrange
         var id = Guid.NewGuid();
@@ -918,6 +918,14 @@ public class RegistrationMaterialRepositoryTests
         {
             Id = 10,
             ExternalId = id
+        };
+
+        var task = new ApplicantRegistrationTaskStatus
+        {
+            Id = 10,
+            RegistrationMaterialId = 55,
+            TaskId = 1,
+            TaskStatusId = 1
         };
 
         var registrationMaterial = new RegistrationMaterial
@@ -954,15 +962,17 @@ public class RegistrationMaterialRepositoryTests
         await _context.Registrations.AddAsync(registration);
         await _context.RegistrationMaterials.AddAsync(registrationMaterial);
         await _context.RegistrationMaterials.AddAsync(registrationMaterial2);
+        await _context.RegistrationTaskStatus.AddAsync(task);
         await _context.SaveChangesAsync();
 
         // Act
         await _repository.DeleteAsync(registrationMaterialExternalId);
 
         // Assert
-        var loaded = _context.RegistrationMaterials.Where(o => o.RegistrationId == 10).ToList();
+        var loaded = _context.RegistrationMaterials.Include(o => o.ApplicantTaskStatuses).Where(o => o.RegistrationId == 10).ToList();
         loaded.Should().HaveCount(1);
         loaded.First().ExternalId.Should().Be(registrationMaterialExternalId2);
+        loaded.All(o => o.ApplicantTaskStatuses?.Count is 0).Should().BeTrue();
     }
 
     [TestMethod]
