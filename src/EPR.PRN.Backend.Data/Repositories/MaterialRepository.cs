@@ -187,8 +187,8 @@ namespace EPR.PRN.Backend.Data.Repositories
         {
             foreach (var overseasAddress in overseasAddresses)
             {
-                var updatedAddress = updatedAddresses.Where(x => x.ExternalId == overseasAddress.ExternalId)
-                    .FirstOrDefault()!;
+                var updatedAddress = updatedAddresses
+                    .FirstOrDefault(x => x.ExternalId == overseasAddress.ExternalId)!;
                 overseasAddress.AddressLine1 = updatedAddress.AddressLine1;
                 overseasAddress.AddressLine2 = updatedAddress.AddressLine2;
                 overseasAddress.CityOrTown = updatedAddress.CityOrTown;
