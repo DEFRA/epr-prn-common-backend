@@ -1307,9 +1307,6 @@ namespace EPR.PRN.Backend.Data.Migrations
                     b.Property<int>("InterimSiteId")
                         .HasColumnType("int");
 
-                    b.Property<int>("InterimsOverseasAddressId")
-                        .HasColumnType("int");
-
                     b.Property<int>("ParentOverseasAddressId")
                         .HasColumnType("int");
 
@@ -1318,9 +1315,7 @@ namespace EPR.PRN.Backend.Data.Migrations
                     b.HasIndex("ExternalId")
                         .IsUnique();
 
-                    b.HasIndex("InterimSiteId");
-
-                    b.HasIndex("InterimsOverseasAddressId");
+                    b.HasIndex("ParentOverseasAddressId");
 
                     b.ToTable("Public.InterimOverseasConnections");
                 });
@@ -4704,17 +4699,9 @@ namespace EPR.PRN.Backend.Data.Migrations
                 {
                     b.HasOne("EPR.PRN.Backend.Data.DataModels.Registrations.OverseasAddress", "OverseasAddress")
                         .WithMany("InterimOverseasConnections")
-                        .HasForeignKey("InterimSiteId")
+                        .HasForeignKey("ParentOverseasAddressId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.HasOne("EPR.PRN.Backend.Data.DataModels.Registrations.OverseasAddress", "InterimsOverseasAddress")
-                        .WithMany()
-                        .HasForeignKey("InterimsOverseasAddressId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("InterimsOverseasAddress");
 
                     b.Navigation("OverseasAddress");
                 });

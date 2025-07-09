@@ -44,4 +44,4 @@ namespace EPR.PRN.Backend.Data.DataModels.Registrations
         public List<OverseasMaterialReprocessingSite> OverseasMaterialReprocessingSites { get; set; } = [];
         public List<InterimOverseasConnections> InterimOverseasConnections { get; set; } = [];
     }
-}
+}   

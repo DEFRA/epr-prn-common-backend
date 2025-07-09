@@ -71,7 +71,6 @@ namespace EPR.PRN.Backend.Data.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     ExternalId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    InterimsOverseasAddressId = table.Column<int>(type: "int", nullable: false),
                     InterimSiteId = table.Column<int>(type: "int", nullable: false),
                     ParentOverseasAddressId = table.Column<int>(type: "int", nullable: false)
                 },
@@ -79,14 +78,8 @@ namespace EPR.PRN.Backend.Data.Migrations
                 {
                     table.PrimaryKey("PK_Public.InterimOverseasConnections", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Public.InterimOverseasConnections_Public.OverseasAddress_InterimSiteId",
-                        column: x => x.InterimSiteId,
-                        principalTable: "Public.OverseasAddress",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Public.InterimOverseasConnections_Public.OverseasAddress_InterimsOverseasAddressId",
-                        column: x => x.InterimsOverseasAddressId,
+                        name: "FK_Public.InterimOverseasConnections_Public.OverseasAddress_ParentOverseasAddressId",
+                        column: x => x.ParentOverseasAddressId,
                         principalTable: "Public.OverseasAddress",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -202,14 +195,9 @@ namespace EPR.PRN.Backend.Data.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Public.InterimOverseasConnections_InterimSiteId",
+                name: "IX_Public.InterimOverseasConnections_ParentOverseasAddressId",
                 table: "Public.InterimOverseasConnections",
-                column: "InterimSiteId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Public.InterimOverseasConnections_InterimsOverseasAddressId",
-                table: "Public.InterimOverseasConnections",
-                column: "InterimsOverseasAddressId");
+                column: "ParentOverseasAddressId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Public.OverseasAddress_CountryId",
