@@ -39,7 +39,7 @@ public class Registration
     public Guid UpdatedBy { get; set; }
     public DateTime? UpdatedDate { get; set; }
 
-    public CarrierBrokerDealerPermits CarrierBrokerDealerPermit { get; set; }
+    public CarrierBrokerDealerPermits? CarrierBrokerDealerPermit { get; set; }
 
     public List<RegulatorRegistrationTaskStatus>? Tasks { get; set; }
 
@@ -48,4 +48,5 @@ public class Registration
     public List<ApplicantRegistrationTaskStatus>? ApplicantRegistrationTasksStatus { get; set; }
 
     public List<RegistrationMaterial>? Materials { get; set; }
+    public List<OverseasAddress> OverseasAddresses { get; set; } = [];
 }

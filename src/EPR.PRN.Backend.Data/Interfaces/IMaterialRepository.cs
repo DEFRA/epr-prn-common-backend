@@ -15,4 +15,5 @@ public interface IMaterialRepository
     Task UpsertRegistrationReprocessingDetailsAsync(Guid registrationMaterialId, RegistrationReprocessingIO registrationReprocessingIO);
 
     Task<IEnumerable<Material>> GetMaterialsByRegistrationIdQuery(Guid registrationId);
+    Task SaveOverseasReprocessingSites(UpdateOverseasAddressDto overseasAddressSubmission);
 }
