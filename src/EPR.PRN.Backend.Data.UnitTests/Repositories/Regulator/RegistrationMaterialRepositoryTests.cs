@@ -1,13 +1,14 @@
 ﻿using EPR.PRN.Backend.API.Common.Constants;
 using EPR.PRN.Backend.API.Common.Enums;
+using EPR.PRN.Backend.API.Common.Exceptions;
 using EPR.PRN.Backend.Data.DataModels.Registrations;
+using EPR.PRN.Backend.Data.DTO;
 using EPR.PRN.Backend.Data.Interfaces.Regulator;
 using EPR.PRN.Backend.Data.Repositories.Regulator;
 using FluentAssertions;
 using FluentAssertions.Execution;
 using Microsoft.EntityFrameworkCore;
-using System.Configuration;
-using System.Threading.Tasks;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace EPR.PRN.Backend.Data.UnitTests.Repositories.Regulator;
 
@@ -25,7 +26,7 @@ public class RegistrationMaterialRepositoryTests
             .Options;
 
         _context = new EprContext(options);
-        _repository = new RegistrationMaterialRepository(_context);
+        _repository = new RegistrationMaterialRepository(new NullLogger<RegistrationMaterialRepository>(), _context);
 
         SeedDatabase();
     }
@@ -908,7 +909,7 @@ public class RegistrationMaterialRepositoryTests
     }
 
     [TestMethod]
-    public async Task DeleteRegistrationMaterial_Found_ShouldDelete()
+    public async Task DeleteRegistrationMaterial_Found_WithAssociatedTask_ShouldDelete()
     {
         // Arrange
         var id = Guid.NewGuid();
@@ -918,6 +919,14 @@ public class RegistrationMaterialRepositoryTests
         {
             Id = 10,
             ExternalId = id
+        };
+
+        var task = new ApplicantRegistrationTaskStatus
+        {
+            Id = 10,
+            RegistrationMaterialId = 55,
+            TaskId = 1,
+            TaskStatusId = 1
         };
 
         var registrationMaterial = new RegistrationMaterial
@@ -954,15 +963,17 @@ public class RegistrationMaterialRepositoryTests
         await _context.Registrations.AddAsync(registration);
         await _context.RegistrationMaterials.AddAsync(registrationMaterial);
         await _context.RegistrationMaterials.AddAsync(registrationMaterial2);
+        await _context.RegistrationTaskStatus.AddAsync(task);
         await _context.SaveChangesAsync();
 
         // Act
         await _repository.DeleteAsync(registrationMaterialExternalId);
 
         // Assert
-        var loaded = _context.RegistrationMaterials.Where(o => o.RegistrationId == 10).ToList();
+        var loaded = _context.RegistrationMaterials.Include(o => o.ApplicantTaskStatuses).Where(o => o.RegistrationId == 10).ToList();
         loaded.Should().HaveCount(1);
         loaded.First().ExternalId.Should().Be(registrationMaterialExternalId2);
+        loaded.All(o => o.ApplicantTaskStatuses?.Count is 0).Should().BeTrue();
     }
 
     [TestMethod]
@@ -1026,10 +1037,141 @@ public class RegistrationMaterialRepositoryTests
     }
 
     [TestMethod]
+    public async Task UpdateRegistrationTaskStatusAsync_ShouldAddNewStatus_WhenNotExists()
+    {
+        // Arrange
+        var task = new LookupApplicantRegistrationTask { Name = "NewTask", ApplicationTypeId = 1, JourneyTypeId = 1, IsMaterialSpecific = true };
+        var status = new LookupTaskStatus { Name = nameof(TaskStatuses.Completed) };
+
+        await _context.LookupApplicantRegistrationTasks.AddAsync(task);
+        await _context.LookupTaskStatuses.AddAsync(status);
+        await _context.SaveChangesAsync();
+
+        // Act
+        await _repository.UpdateRegistrationTaskStatusAsync("NewTask", Guid.Parse("a9421fc1-a912-42ee-85a5-3e06408759a9"), TaskStatuses.Completed);
+
+        // Assert
+        var result = await _context.RegistrationTaskStatus
+            .Include(applicantRegistrationTaskStatus => applicantRegistrationTaskStatus.TaskStatus!)
+            .SingleAsync(o => o.RegistrationMaterialId == 1);
+
+        result.Should().NotBeNull();
+        result!.TaskStatus!.Name.Should().Be(nameof(TaskStatuses.Completed));
+    }
+
+    [TestMethod]
+    public async Task UpdateRegistrationTaskStatusAsync_ShouldUpdateExistingStatus()
+    {
+        // Arrange
+        var task = new LookupApplicantRegistrationTask { Name = "ExistingTask", ApplicationTypeId = 1, IsMaterialSpecific = false };
+        var oldStatus = new LookupTaskStatus { Name = nameof(TaskStatuses.Started) };
+        var newStatus = new LookupTaskStatus { Name = nameof(TaskStatuses.Completed) };
+
+        await _context.LookupApplicantRegistrationTasks.AddAsync(task);
+        await _context.LookupTaskStatuses.AddRangeAsync(oldStatus, newStatus);
+
+        var taskStatus = new ApplicantRegistrationTaskStatus
+        {
+            RegistrationMaterialId = 1,
+            Task = task,
+            TaskStatus = oldStatus,
+        };
+
+        await _context.RegistrationTaskStatus.AddAsync(taskStatus);
+        await _context.SaveChangesAsync();
+
+        // Act
+        await _repository.UpdateRegistrationTaskStatusAsync("ExistingTask", Guid.Parse("a9421fc1-a912-42ee-85a5-3e06408759a9"), TaskStatuses.Completed);
+
+        // Assert
+        var result = await _context.RegistrationTaskStatus
+            .Include(applicantRegistrationTaskStatus => applicantRegistrationTaskStatus.TaskStatus!)
+            .SingleAsync(o => o.RegistrationMaterialId == 1);
+
+        result!.TaskStatus.Name.Should().Be(nameof(TaskStatuses.Completed));
+    }
+
+    [TestMethod]
+    public async Task UpdateRegistrationTaskStatusAsync_ShouldThrow_WhenRegistrationNotFound()
+    {
+        // Arrange
+        var registrationId = Guid.NewGuid();
+        var status = new LookupTaskStatus { Name = nameof(TaskStatuses.Completed) };
+        await _context.LookupTaskStatuses.AddAsync(status);
+        await _context.SaveChangesAsync();
+
+        // Act
+        Func<Task> act = async () => await _repository.UpdateRegistrationTaskStatusAsync("AnyTask", registrationId, TaskStatuses.Completed);
+
+        // Assert
+        await act.Should().ThrowAsync<KeyNotFoundException>();
+    }
+
+    [TestMethod]
+    public async Task UpdateRegistrationTaskStatusAsync_ShouldThrow_WhenTaskNotFound()
+    {
+        // Arrange
+        var status = new LookupTaskStatus { Name = nameof(TaskStatuses.Completed) };
+
+        await _context.LookupTaskStatuses.AddAsync(status);
+        await _context.SaveChangesAsync();
+
+        // Act
+        Func<Task> act = async () => await _repository.UpdateRegistrationTaskStatusAsync("MissingTask", Guid.Parse("a9421fc1-a912-42ee-85a5-3e06408759a9"), TaskStatuses.Completed);
+
+        // Assert
+        await act.Should().ThrowAsync<RegulatorInvalidOperationException>()
+            .WithMessage("No Valid Task Exists: MissingTask");
+    }
+
+    [TestMethod]
     public async Task UpdateMaximumWeight_RegistrationMaterialDoesNotExist_ShouldThrow()
     {
         await Assert.ThrowsExceptionAsync<KeyNotFoundException>(() => _repository.UpdateMaximumWeightForSiteAsync(Guid.Parse("cd9dcc80-fcf5-4f46-addd-b8a256f735a3"), 10, 1));
     }
+
+	[TestMethod]
+	public async Task UpdateIsMaterialRegisteredAsync_ShouldUpdateMaterialStatus()
+	{
+		// Arrange
+		var materialId = Guid.NewGuid();
+		var existingMaterial = new RegistrationMaterial
+		{
+			Id = 20,
+			ExternalId = materialId,
+			IsMaterialRegistered = false,
+			StatusId = (int)RegistrationMaterialStatus.Started
+		};
+
+		await _context.RegistrationMaterials.AddAsync(existingMaterial);
+		await _context.SaveChangesAsync();
+
+		var dto = new UpdateIsMaterialRegisteredDto
+		{
+			RegistrationMaterialId = materialId,
+			IsMaterialRegistered = true
+		};
+
+		// Act
+		await _repository.UpdateIsMaterialRegisteredAsync(new List<UpdateIsMaterialRegisteredDto> { dto });
+
+		// Assert
+		var updatedMaterial = await _context.RegistrationMaterials.SingleAsync(m => m.ExternalId == materialId);
+		updatedMaterial.IsMaterialRegistered.Should().BeTrue();
+		updatedMaterial.StatusId.Should().Be((int)RegistrationMaterialStatus.InProgress);
+	}
+
+	[TestMethod]
+	public async Task UpdateIsMaterialRegisteredAsync_ShouldThrow_WhenNotFound()
+	{
+		var dto = new UpdateIsMaterialRegisteredDto
+		{
+			RegistrationMaterialId = Guid.NewGuid(),
+			IsMaterialRegistered = true
+		};
+
+		await Assert.ThrowsExceptionAsync<KeyNotFoundException>(() => _repository.UpdateIsMaterialRegisteredAsync(new List<UpdateIsMaterialRegisteredDto> { dto }));
+	}
 
     [TestCleanup]
     public void Cleanup()

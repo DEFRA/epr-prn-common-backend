@@ -1,4 +1,5 @@
 ﻿using EPR.PRN.Backend.API.Commands.ExporterJourney;
+using EPR.PRN.Backend.API.Dto.ExporterJourney;
 using EPR.PRN.Backend.API.Handlers.ExporterJourney;
 using EPR.PRN.Backend.Data.DataModels.Registrations;
 using EPR.PRN.Backend.Data.Interfaces;
@@ -80,7 +81,6 @@ public class CreateCarrierBrokerDealerPermitsHandlerTests
             RegistrationId = registration.ExternalId,
             WasteCarrierBrokerDealerRegistration = "Test 1",
             RegisteredWasteCarrierBrokerDealerFlag = true
-
         };
 
         // Act

@@ -29,5 +29,11 @@ appsettings.Test.json
 
 **/appsettings.Development.json
 **/appsettings.development.json
+*.user
 /src/EPR.PRN.Backend.sln.DotSettings.user
-/src/EPR.PRN.Backend.sln.DotSettings.user
+**/EPR.PRN.Backend.Data.UnitTests/coveragereport
+**/EPR.PRN.Backend.Data.UnitTests/TestResults
+**/EPR.PRN.Backend.Obligation.UnitTests/coveragereport
+**/EPR.PRN.Backend.Obligation.UnitTests/TestResults
+**/EPR.PRN.Backend.API.UnitTests/coveragereport
+**/EPR.PRN.Backend.API.UnitTests/TestResults

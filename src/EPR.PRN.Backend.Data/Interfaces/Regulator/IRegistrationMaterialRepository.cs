@@ -1,9 +1,10 @@
 ﻿using EPR.PRN.Backend.API.Common.Enums;
 using EPR.PRN.Backend.Data.DataModels.Registrations;
+using EPR.PRN.Backend.Data.DTO;
 
 namespace EPR.PRN.Backend.Data.Interfaces.Regulator;
 
-public interface IRegistrationMaterialRepository
+public interface IRegistrationMaterialRepository : IRepositoryMarker
 {
     Task<Registration> GetRegistrationById(Guid registrationId);
     Task<Registration> GetRegistrationByExternalIdAndYear(Guid externalId, int? year);
@@ -26,4 +27,7 @@ public interface IRegistrationMaterialRepository
 
     Task<IEnumerable<LookupMaterialPermit>> GetMaterialPermitTypes();
     Task DeleteAsync(Guid registrationMaterialId);
+	Task UpdateIsMaterialRegisteredAsync(List<UpdateIsMaterialRegisteredDto> updateIsMaterialRegisteredDto);
+
+    Task UpdateRegistrationTaskStatusAsync(string taskName, Guid registrationMaterialId, TaskStatuses status);
 }

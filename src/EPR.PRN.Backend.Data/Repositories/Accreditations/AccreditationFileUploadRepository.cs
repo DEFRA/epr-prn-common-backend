@@ -37,6 +37,7 @@ public class AccreditationFileUploadRepository(EprAccreditationContext eprContex
         {
             ExternalId = Guid.NewGuid(),
             AccreditationId = await GetAccreditationIntegerId(accreditationId),
+            SubmissionId = fileUpload.SubmissionId,
             OverseasSiteId = fileUpload.OverseasSiteId,
             FileName = fileUpload.FileName,
             FileId = fileUpload.FileId,

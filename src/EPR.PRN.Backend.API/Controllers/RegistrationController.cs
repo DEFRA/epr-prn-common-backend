@@ -1,15 +1,16 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using System.Net;
-
-using EPR.PRN.Backend.API.Commands;
+﻿using EPR.PRN.Backend.API.Commands;
 using EPR.PRN.Backend.API.Common.Constants;
+using EPR.PRN.Backend.API.Dto;
 using EPR.PRN.Backend.API.Dto.Regulator;
+using EPR.PRN.Backend.API.Handlers.Regulator;
 using EPR.PRN.Backend.API.Queries;
 using EPR.PRN.Backend.API.Services.Interfaces;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.FeatureManagement.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
+using System.Diagnostics.CodeAnalysis;
+using System.Net;
 
 namespace EPR.PRN.Backend.API.Controllers;
 
@@ -36,7 +37,7 @@ public class RegistrationController(IMediator mediator
     [ExcludeFromCodeCoverage(Justification = "TODO: To be done as part of create registration user story")]
     public async Task<IActionResult> GetRegistrationByOrganisation([FromRoute]int applicationTypeId, [FromRoute]Guid organisationId)
     {
-        logger.LogInformation(string.Format(LogMessages.GetRegistrationByOrganisation, applicationTypeId, organisationId));
+        logger.LogInformation(LogMessages.GetRegistrationByOrganisation, applicationTypeId, organisationId);
 
         var registration = await mediator.Send(new GetRegistrationByOrganisationQuery
         {
@@ -52,6 +53,29 @@ public class RegistrationController(IMediator mediator
         return Ok(registration);
     }
 
+    [HttpGet("registrations_tasks/{registrationId:Guid}")]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ApplicantRegistrationTasksOverviewDto))]
+    [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
+    [SwaggerOperation(
+        Summary = "gets an existing registration task overview ID.",
+        Description = "attempting to get an existing registration task overview using the registration ID."
+    )]
+    [SwaggerResponse(StatusCodes.Status400BadRequest, "If the request is invalid or a validation error occurs.", typeof(ProblemDetails))]
+    [SwaggerResponse(StatusCodes.Status500InternalServerError, "If an unexpected error occurs.", typeof(ContentResult))]
+    public async Task<IActionResult> GetRegistrationTaskOverviewById([FromRoute] Guid registrationId)
+    {
+        logger.LogInformation(LogMessages.GetRegistrationOverviewById, registrationId);
+
+        var registration = await mediator.Send(new GetRegistrationTaskOverviewByIdQuery { Id = registrationId });
+
+        if (registration == null)
+        {
+            return NotFound();
+        }
+
+        return Ok(registration);
+    }
     #endregion
 
     #region Post Methods
@@ -63,7 +87,7 @@ public class RegistrationController(IMediator mediator
     [SwaggerOperation(
             Summary = "create the registration application",
             Description = "attempting to create the registration application."
-        )]
+    )]
     [SwaggerResponse(StatusCodes.Status204NoContent, $"Returns No Content", typeof(int))]
     [SwaggerResponse(StatusCodes.Status400BadRequest, "If the request is invalid or a validation error occurs.", typeof(ProblemDetails))]
     [SwaggerResponse(StatusCodes.Status500InternalServerError, "If an unexpected error occurs.", typeof(ContentResult))]
@@ -94,7 +118,7 @@ public class RegistrationController(IMediator mediator
     {
         try
         {
-            logger.LogInformation(string.Format(LogMessages.UpdateRegistration, registrationId.ToString()));
+            logger.LogInformation(LogMessages.UpdateRegistration, registrationId);
             command.RegistrationId = registrationId;
 
             await validationService.ValidateAndThrowAsync(command);
@@ -135,6 +159,29 @@ public class RegistrationController(IMediator mediator
         logger.LogInformation(LogMessages.UpdateRegistrationTaskStatus);
         command.RegistrationId = registrationId;
 
+        await validationService.ValidateAndThrowAsync<UpdateRegistrationTaskStatusCommandBase>(command);
+
+        await mediator.Send(command);
+
+        return NoContent();
+    }
+
+    [HttpPost("registrations/{registrationId:guid}/applicantTaskStatus")]
+    [ProducesResponseType(StatusCodes.Status204NoContent, Type = typeof(NoContentResult))]
+    [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
+    [SwaggerOperation(
+        Summary = "update the applicant registration task status",
+        Description = "attempting to update the applicant registration task status."
+    )]
+    [SwaggerResponse(StatusCodes.Status204NoContent, $"Returns No Content", typeof(NoContentResult))]
+    [SwaggerResponse(StatusCodes.Status400BadRequest, "If the request is invalid or a validation error occurs.", typeof(ProblemDetails))]
+    [SwaggerResponse(StatusCodes.Status500InternalServerError, "If an unexpected error occurs.", typeof(ContentResult))]
+    public async Task<IActionResult> UpdateApplicantRegistrationTaskStatus([FromRoute] Guid registrationId, [FromBody] UpdateApplicantRegistrationTaskStatusCommand command)
+    {
+        logger.LogInformation(LogMessages.UpdateApplicantRegistrationTaskStatus);
+        command.RegistrationId = registrationId;
+
         await validationService.ValidateAndThrowAsync(command);
 
         await mediator.Send(command);
@@ -167,4 +214,27 @@ public class RegistrationController(IMediator mediator
     }
 
     #endregion Post Methods
+
+    [HttpGet("registrations/{organisationId:guid}/overview")]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<RegistrationOverviewDto>))]
+    [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
+    [SwaggerOperation(
+        Summary = "return the registrations overview for a given organisation id",
+        Description = "attempting to return registrations."
+    )]
+    [SwaggerResponse(StatusCodes.Status200OK, "Returns the registrations overview for the given organisation ID", typeof(List<RegistrationOverviewDto>))]
+    [SwaggerResponse(StatusCodes.Status400BadRequest, "If the request is invalid or a validation error occurs.", typeof(ProblemDetails))]
+    [SwaggerResponse(StatusCodes.Status500InternalServerError, "If an unexpected error occurs.", typeof(ContentResult))]
+    public async Task<IActionResult> GetRegistrationsOverviewForOrgId([FromRoute] Guid organisationId)
+    {
+        logger.LogInformation(LogMessages.RegistrationsOverview, organisationId);
+        
+        var request = new GetRegistrationsOverviewByOrgIdQuery { OrganisationId = organisationId };
+        await validationService.ValidateAndThrowAsync(request);
+        
+        var result = await mediator.Send(request);
+
+        return Ok(result);
+    }
 }

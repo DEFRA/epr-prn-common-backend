@@ -7,6 +7,7 @@ using EPR.PRN.Backend.API.Dto;
 using EPR.PRN.Backend.API.Dto.Regulator;
 using EPR.PRN.Backend.API.Handlers;
 using EPR.PRN.Backend.Data.DataModels.Registrations;
+using EPR.PRN.Backend.Data.DTO;
 
 namespace EPR.PRN.Backend.API.Profiles.Regulator;
 
@@ -29,6 +30,16 @@ public class RegistrationMaterialProfile : Profile
         CreateMaterialPaymentFeeMappings();
         CreateDtoToEntityMappings();
         CreateLookupMappings();
+        CreateRegistrationMaterialContactMappings();
+        CreateRegistrationReprocessingIOMappings();
+    }
+
+    private void CreateRegistrationReprocessingIOMappings()
+    {
+        CreateMap<RegistrationReprocessingIORequestDto, RegistrationReprocessingIOCommand>();
+        CreateMap<RegistrationReprocessingIORawMaterialOrProductsDto, RegistrationReprocessingIORawMaterialOrProducts>().ReverseMap();
+        CreateMap<RegistrationReprocessingIOCommand, RegistrationReprocessingIO>()
+            .ForMember(dest => dest.RegistrationMaterialId, opt => opt.Ignore());
     }
 
     private void CreateRegistrationMaterialMappings()
@@ -95,6 +106,11 @@ public class RegistrationMaterialProfile : Profile
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.ExternalId))
             .ForMember(dest => dest.TaskName, opt => opt.MapFrom(src => src.Task.Name))
             .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.TaskStatus.Name));
+
+        CreateMap<ApplicantRegistrationTaskStatus, RegistrationTaskDto>()
+            .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.ExternalId))
+            .ForMember(dest => dest.TaskName, opt => opt.MapFrom(src => src.Task.Name))
+            .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.TaskStatus.Name));
     }
 
     private void CreateDetailsAndReprocessingMappings()
@@ -109,7 +125,7 @@ public class RegistrationMaterialProfile : Profile
 
         CreateMap<RegistrationMaterial, RegistrationMaterialReprocessingIODto>()
             .ForMember(dest => dest.MaterialName, opt => opt.MapFrom(src => src.Material.MaterialName))
-            .ForMember(dest => dest.SourcesOfPackagingWaste, opt => opt.MapFrom(src => src.RegistrationReprocessingIO!.Single().TypeOfSupplier))
+            .ForMember(dest => dest.SourcesOfPackagingWaste, opt => opt.MapFrom(src => src.RegistrationReprocessingIO!.Single().TypeOfSuppliers))
             .ForMember(dest => dest.PlantEquipmentUsed, opt => opt.MapFrom(src => src.RegistrationReprocessingIO!.Single().PlantEquipmentUsed))
             .ForMember(dest => dest.ReprocessingPackagingWasteLastYearFlag, opt => opt.MapFrom(src => src.RegistrationReprocessingIO!.Single().ReprocessingPackagingWasteLastYearFlag))
             .ForMember(dest => dest.UKPackagingWasteTonne, opt => opt.MapFrom(src => src.RegistrationReprocessingIO!.Single().UKPackagingWasteTonne))
@@ -327,6 +343,11 @@ public class RegistrationMaterialProfile : Profile
             .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Name));
     }
 
+    private void CreateRegistrationMaterialContactMappings()
+    {
+        CreateMap<RegistrationMaterialContact, RegistrationMaterialContactDto>()
+            .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.ExternalId));
+    }
 
     private List<QueryNoteDto> GetRegistrationTaskNotes(List<RegulatorRegistrationTaskStatus>? srcTasks, string taskName)
     {

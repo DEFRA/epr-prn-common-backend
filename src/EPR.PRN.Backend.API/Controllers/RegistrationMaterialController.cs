@@ -1,9 +1,14 @@
 ﻿using System.Net;
+using AutoMapper;
 using EPR.PRN.Backend.API.Commands;
 using EPR.PRN.Backend.API.Common.Constants;
+using EPR.PRN.Backend.API.Dto;
 using EPR.PRN.Backend.API.Dto.Regulator;
+using EPR.PRN.Backend.API.Handlers;
 using EPR.PRN.Backend.API.Queries;
 using EPR.PRN.Backend.API.Services.Interfaces;
+using EPR.PRN.Backend.Data.DataModels;
+using EPR.PRN.Backend.Data.DTO;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.FeatureManagement.Mvc;
@@ -18,10 +23,11 @@ namespace EPR.PRN.Backend.API.Controllers;
 public class RegistrationMaterialController(
     IMediator mediator,
     IValidationService validationService,
-    ILogger<RegistrationMaterialController> logger) : ControllerBase
+    ILogger<RegistrationMaterialController> logger,
+    IMapper mapper) : ControllerBase
 {
     [HttpGet("registrations/{registrationId:guid}/materials")]
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<RegistrationMaterialDto>))]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<ApplicantRegistrationMaterialDto>))]
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     [SwaggerOperation(
         Summary = "gets existing registration materials associated with a registration.",
@@ -169,6 +175,74 @@ public class RegistrationMaterialController(
         return Ok();
     }
 
+	[HttpPost("registrationMaterials/UpdateIsMaterialRegistered")]
+	[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(OkResult))]
+	[SwaggerResponse(StatusCodes.Status500InternalServerError, "If an unexpected error occurs.", typeof(ContentResult))]
+	[SwaggerOperation(
+	Summary = "updates an existing registration material IsMaterialRegistered flag",
+	Description = "attempting to update the registration material IsMaterialRegistered flag."
+	)]
+	public async Task<IActionResult> UpdateIsMaterialRegisteredAsync([FromBody] List<UpdateIsMaterialRegisteredDto> request)
+	{
+		logger.LogInformation(LogMessages.UpdateIsMaterialRegistered);
+
+		await mediator.Send(new UpdateIsMaterialRegisteredCommand { UpdateIsMaterialRegisteredDto = request });
+
+		return NoContent();
+	}
+
+    [HttpPost("registrationMaterials/{id:Guid}/contact")]
+    [ProducesResponseType(typeof(RegistrationMaterialContactDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
+    [SwaggerOperation(
+        Summary = "upserts an registration material contact",
+        Description = "attempting to upsert the registration material contact."
+    )]
+    [SwaggerResponse(StatusCodes.Status400BadRequest, "If the request is invalid or a validation error occurs.", typeof(ProblemDetails))]
+    [SwaggerResponse(StatusCodes.Status404NotFound, "If an existing registration is not found", typeof(ProblemDetails))]
+    [SwaggerResponse(StatusCodes.Status500InternalServerError, "If an unexpected error occurs.", typeof(ContentResult))]
+    public async Task<IActionResult> UpsertRegistrationMaterialContactAsync([FromRoute] Guid id, [FromBody] RegistrationMaterialContactDto registrationMaterialContact)
+    {
+        logger.LogInformation(LogMessages.UpsertRegistrationMaterialContact, id);
+
+        var command = new UpsertRegistrationMaterialContactCommand
+        {
+            RegistrationMaterialId = id,
+            UserId = registrationMaterialContact.UserId
+        };
+        
+        await validationService.ValidateAndThrowAsync(command);
+
+        var result = await mediator.Send(command);
+
+        return Ok(result);
+    }
+
+    [HttpPost("registrationMaterials/{registrationMaterialId:Guid}/registrationReprocessingDetails")]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(OkResult))]
+    [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
+    [SwaggerOperation(
+        Summary = "upserts a registration reprocessing details for a registration material",
+        Description = "attempting to upsert the registration reprocessing details for a registration material."
+    )]
+    [SwaggerResponse(StatusCodes.Status400BadRequest, "If the request is invalid or a validation error occurs.", typeof(ProblemDetails))]
+    [SwaggerResponse(StatusCodes.Status404NotFound, "If an existing registration is not found", typeof(ProblemDetails))]
+    [SwaggerResponse(StatusCodes.Status500InternalServerError, "If an unexpected error occurs.", typeof(ContentResult))]
+    public async Task<IActionResult> UpsertRegistrationReprocessingDetailsAsync([FromRoute] Guid registrationMaterialId, [FromBody] RegistrationReprocessingIORequestDto registrationReprocessingDetailsRequest)
+    {
+        logger.LogInformation(LogMessages.UpsertRegistrationReprocessingDetails, registrationMaterialId);
+
+        await validationService.ValidateAndThrowAsync(registrationReprocessingDetailsRequest);
+
+        var command = mapper.Map<RegistrationReprocessingIOCommand>(registrationReprocessingDetailsRequest);
+        command.RegistrationMaterialId = registrationMaterialId;
+        await mediator.Send(command);
+
+        return Ok();
+    }
+
     [HttpPut("registrationMaterials/{registrationMaterialId:guid}/max-weight")]
     [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(OkResult))]
     [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
@@ -189,4 +263,28 @@ public class RegistrationMaterialController(
 
         return Ok();
     }
+
+    [HttpPost("registrationMaterials/{registrationMaterialId:guid}/task-status")]
+    [ProducesResponseType(StatusCodes.Status204NoContent, Type = typeof(NoContentResult))]
+    [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
+    [SwaggerOperation(
+        Summary = "update the registration material task status",
+        Description = "attempting to update the registration material task status."
+    )]
+    [SwaggerResponse(StatusCodes.Status204NoContent, $"Returns No Content", typeof(NoContentResult))]
+    [SwaggerResponse(StatusCodes.Status400BadRequest, "If the request is invalid or a validation error occurs.",
+        typeof(ProblemDetails))]
+    [SwaggerResponse(StatusCodes.Status500InternalServerError, "If an unexpected error occurs.", typeof(ContentResult))]
+    public async Task<IActionResult> UpdateRegistrationMaterialTaskStatus([FromRoute] Guid registrationMaterialId, [FromBody] UpdateRegistrationMaterialTaskStatusCommand command)
+    {
+        logger.LogInformation(LogMessages.UpdateRegistrationTaskStatus);
+        command.RegistrationMaterialId = registrationMaterialId;
+
+        await validationService.ValidateAndThrowAsync<UpdateRegistrationTaskStatusCommandBase>(command);
+
+        await mediator.Send(command);
+
+        return NoContent();
+    }    
 }

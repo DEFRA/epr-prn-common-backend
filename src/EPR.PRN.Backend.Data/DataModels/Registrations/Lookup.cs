@@ -38,6 +38,17 @@ public class LookupRegulatorTask : LookupBase
     public int JourneyTypeId { get; set; }
 }
 
+[Table("Lookup.Task")]
+[ExcludeFromCodeCoverage]
+public class LookupApplicantRegistrationTask : LookupBase
+{
+    public bool IsMaterialSpecific { get; set; }
+
+    public int ApplicationTypeId { get; set; }
+
+    public int JourneyTypeId { get; set; }
+}
+
 [Table("Lookup.TaskStatus")]
 [ExcludeFromCodeCoverage]
 public class LookupTaskStatus : LookupBase {
@@ -79,3 +90,13 @@ public class LookupFileUploadType : LookupBase { }
 [Table("Lookup.FileUploadStatus")]
 [ExcludeFromCodeCoverage]
 public class LookupFileUploadStatus : LookupBase { }
+
+[Table("Lookup.Country")]
+[ExcludeFromCodeCoverage]
+public class LookupCountry : LookupBase
+{
+    [MaxLength(100)]
+    public override required string Name { get; set; }
+    [MaxLength(3)]
+    public string? CountryCode { get; set; }
+}
