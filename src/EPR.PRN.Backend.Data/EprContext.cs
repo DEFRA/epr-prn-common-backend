@@ -46,25 +46,29 @@ public class EprContext : DbContext
         modelBuilder.Entity<PrnStatus>()
             .HasData(DataModels.PrnStatus.Data);
 
-        modelBuilder.Entity<Registration>()
-            .HasOne(r => r.CarrierBrokerDealerPermit)
-            .WithOne()
-            .HasForeignKey<CarrierBrokerDealerPermits>(cb => cb.RegistrationId);
+            modelBuilder.Entity<Registration>()
+                .HasOne(r => r.CarrierBrokerDealerPermit)
+                .WithOne(c => c.Registration)
+                .HasForeignKey<CarrierBrokerDealerPermits>(cb => cb.RegistrationId);
 
         modelBuilder.Entity<CarrierBrokerDealerPermits>()
             .HasIndex(e => e.ExternalId)
             .IsUnique(); // Ensures UniqueId is unique
 
-        modelBuilder.Entity<RecyclingTarget>()
-            .HasData
-            (
-                // Paper
-                new() { Id = 1, MaterialNameRT = MaterialType.Paper.ToString(), Target = 0.75, Year = 2025 },
-                new() { Id = 2, MaterialNameRT = MaterialType.Paper.ToString(), Target = 0.77, Year = 2026 },
-                new() { Id = 3, MaterialNameRT = MaterialType.Paper.ToString(), Target = 0.79, Year = 2027 },
-                new() { Id = 4, MaterialNameRT = MaterialType.Paper.ToString(), Target = 0.81, Year = 2028 },
-                new() { Id = 5, MaterialNameRT = MaterialType.Paper.ToString(), Target = 0.83, Year = 2029 },
-                new() { Id = 6, MaterialNameRT = MaterialType.Paper.ToString(), Target = 0.85, Year = 2030 },
+            modelBuilder.Entity<CarrierBrokerDealerPermits>()
+                .Property(e => e.ExternalId)
+                .HasDefaultValueSql("NEWID()");
+
+            modelBuilder.Entity<RecyclingTarget>()
+                .HasData
+                (
+                    // Paper
+                    new() { Id = 1, MaterialNameRT = MaterialType.Paper.ToString(), Target = 0.75, Year = 2025 },
+                    new() { Id = 2, MaterialNameRT = MaterialType.Paper.ToString(), Target = 0.77, Year = 2026 },
+                    new() { Id = 3, MaterialNameRT = MaterialType.Paper.ToString(), Target = 0.79, Year = 2027 },
+                    new() { Id = 4, MaterialNameRT = MaterialType.Paper.ToString(), Target = 0.81, Year = 2028 },
+                    new() { Id = 5, MaterialNameRT = MaterialType.Paper.ToString(), Target = 0.83, Year = 2029 },
+                    new() { Id = 6, MaterialNameRT = MaterialType.Paper.ToString(), Target = 0.85, Year = 2030 },
 
                 // Glass
                 new() { Id = 7, MaterialNameRT = MaterialType.Glass.ToString(), Target = 0.74, Year = 2025 },

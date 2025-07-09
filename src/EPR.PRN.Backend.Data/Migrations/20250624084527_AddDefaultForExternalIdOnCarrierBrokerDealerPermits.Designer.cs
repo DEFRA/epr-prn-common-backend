@@ -4,6 +4,7 @@ using EPR.PRN.Backend.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EPR.PRN.Backend.Data.Migrations
 {
     [DbContext(typeof(EprContext))]
-    partial class EprContextModelSnapshot : ModelSnapshot
+    [Migration("20250624084527_AddDefaultForExternalIdOnCarrierBrokerDealerPermits")]
+    partial class AddDefaultForExternalIdOnCarrierBrokerDealerPermits
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -154,7 +157,7 @@ namespace EPR.PRN.Backend.Data.Migrations
                     b.HasIndex("PrnNumber")
                         .IsUnique();
 
-                    b.ToTable("Prn", (string)null);
+                    b.ToTable("Prn");
                 });
 
             modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Material", b =>
@@ -180,7 +183,7 @@ namespace EPR.PRN.Backend.Data.Migrations
                     b.HasIndex("MaterialCode")
                         .IsUnique();
 
-                    b.ToTable("Material", (string)null);
+                    b.ToTable("Material");
 
                     b.HasData(
                         new
@@ -274,7 +277,7 @@ namespace EPR.PRN.Backend.Data.Migrations
 
                     b.HasIndex("SubmitterTypeId");
 
-                    b.ToTable("ObligationCalculations", (string)null);
+                    b.ToTable("ObligationCalculations");
                 });
 
             modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.ObligationCalculationOrganisationSubmitterType", b =>
@@ -294,7 +297,7 @@ namespace EPR.PRN.Backend.Data.Migrations
                     b.HasIndex("TypeName")
                         .IsUnique();
 
-                    b.ToTable("ObligationCalculationOrganisationSubmitterType", (string)null);
+                    b.ToTable("ObligationCalculationOrganisationSubmitterType");
 
                     b.HasData(
                         new
@@ -328,7 +331,7 @@ namespace EPR.PRN.Backend.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("PEprNpwdSync", (string)null);
+                    b.ToTable("PEprNpwdSync");
                 });
 
             modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.PrnMaterialMapping", b =>
@@ -351,7 +354,7 @@ namespace EPR.PRN.Backend.Data.Migrations
 
                     b.HasIndex("PRNMaterialId");
 
-                    b.ToTable("PrnMaterialMapping", (string)null);
+                    b.ToTable("PrnMaterialMapping");
 
                     b.HasData(
                         new
@@ -429,7 +432,7 @@ namespace EPR.PRN.Backend.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("PrnStatus", (string)null);
+                    b.ToTable("PrnStatus");
 
                     b.HasData(
                         new
@@ -489,7 +492,7 @@ namespace EPR.PRN.Backend.Data.Migrations
 
                     b.HasIndex("PrnIdFk");
 
-                    b.ToTable("PrnStatusHistory", (string)null);
+                    b.ToTable("PrnStatusHistory");
                 });
 
             modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.RecyclingTarget", b =>
@@ -512,7 +515,7 @@ namespace EPR.PRN.Backend.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("RecyclingTargets", (string)null);
+                    b.ToTable("RecyclingTargets");
 
                     b.HasData(
                         new
@@ -872,18 +875,6 @@ namespace EPR.PRN.Backend.Data.Migrations
                         .HasMaxLength(12)
                         .HasColumnType("nvarchar(12)");
 
-                    b.Property<string>("BusinessCollectionsNotes")
-                        .HasColumnType("varchar(500)");
-
-                    b.Property<decimal?>("BusinessCollectionsPercentage")
-                        .HasColumnType("decimal(10,2)");
-
-                    b.Property<string>("CommunicationsNotes")
-                        .HasColumnType("varchar(500)");
-
-                    b.Property<decimal?>("CommunicationsPercentage")
-                        .HasColumnType("decimal(10,2)");
-
                     b.Property<DateTime?>("CreatedOn")
                         .HasColumnType("datetime2");
 
@@ -891,44 +882,11 @@ namespace EPR.PRN.Backend.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("InfrastructureNotes")
-                        .HasColumnType("varchar(500)");
-
-                    b.Property<decimal?>("InfrastructurePercentage")
-                        .HasColumnType("decimal(10,2)");
-
-                    b.Property<string>("NewMarketsNotes")
-                        .HasColumnType("varchar(500)");
-
-                    b.Property<decimal?>("NewMarketsPercentage")
-                        .HasColumnType("decimal(10,2)");
-
-                    b.Property<string>("NewUsersRecycledPackagingWasteNotes")
-                        .HasColumnType("varchar(500)");
-
-                    b.Property<decimal?>("NewUsersRecycledPackagingWastePercentage")
-                        .HasColumnType("decimal(10,2)");
-
-                    b.Property<string>("NotCoveredOtherCategoriesNotes")
-                        .HasColumnType("varchar(500)");
-
-                    b.Property<decimal?>("NotCoveredOtherCategoriesPercentage")
-                        .HasColumnType("decimal(10,2)");
-
                     b.Property<int>("PRNTonnage")
                         .HasColumnType("int");
 
-                    b.Property<string>("RecycledWasteNotes")
-                        .HasColumnType("varchar(500)");
-
-                    b.Property<decimal?>("RecycledWastePercentage")
-                        .HasColumnType("decimal(10,2)");
-
                     b.Property<int>("RegistrationMaterialId")
                         .HasColumnType("int");
-
-                    b.Property<decimal?>("TotalPercentage")
-                        .HasColumnType("decimal(10,2)");
 
                     b.HasKey("Id");
 
@@ -939,7 +897,7 @@ namespace EPR.PRN.Backend.Data.Migrations
 
                     b.HasIndex("RegistrationMaterialId");
 
-                    b.ToTable("Public.Accreditation", (string)null);
+                    b.ToTable("Public.Accreditation");
                 });
 
             modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.AccreditationDeterminationDate", b =>
@@ -966,7 +924,7 @@ namespace EPR.PRN.Backend.Data.Migrations
                     b.HasIndex("ExternalId")
                         .IsUnique();
 
-                    b.ToTable("Public.AccreditationDeterminationDate", (string)null);
+                    b.ToTable("Public.AccreditationDeterminationDate");
                 });
 
             modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.AccreditationDulyMade", b =>
@@ -994,7 +952,7 @@ namespace EPR.PRN.Backend.Data.Migrations
                     b.HasIndex("ExternalId")
                         .IsUnique();
 
-                    b.ToTable("Public.AccreditationDulyMade", (string)null);
+                    b.ToTable("Public.AccreditationDulyMade");
                 });
 
             modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.AccreditationFileUpload", b =>
@@ -1041,7 +999,7 @@ namespace EPR.PRN.Backend.Data.Migrations
 
                     b.HasIndex("FileUploadTypeId");
 
-                    b.ToTable("public.AccreditationFileUpload", (string)null);
+                    b.ToTable("public.AccreditationFileUpload");
                 });
 
             modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.AccreditationTaskStatusQueryNote", b =>
@@ -1064,7 +1022,7 @@ namespace EPR.PRN.Backend.Data.Migrations
 
                     b.HasIndex("RegulatorAccreditationTaskStatusId");
 
-                    b.ToTable("Public.AccreditationTaskStatusQueryNote", (string)null);
+                    b.ToTable("Public.AccreditationTaskStatusQueryNote");
                 });
 
             modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.Address", b =>
@@ -1107,7 +1065,7 @@ namespace EPR.PRN.Backend.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Public.Address", (string)null);
+                    b.ToTable("Public.Address");
                 });
 
             modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.ApplicantRegistrationTaskStatus", b =>
@@ -1125,9 +1083,6 @@ namespace EPR.PRN.Backend.Data.Migrations
                     b.Property<int?>("RegistrationId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("RegistrationMaterialId")
-                        .HasColumnType("int");
-
                     b.Property<int?>("TaskId")
                         .HasColumnType("int");
 
@@ -1141,13 +1096,11 @@ namespace EPR.PRN.Backend.Data.Migrations
 
                     b.HasIndex("RegistrationId");
 
-                    b.HasIndex("RegistrationMaterialId");
-
                     b.HasIndex("TaskId");
 
                     b.HasIndex("TaskStatusId");
 
-                    b.ToTable("Public.RegistrationTaskStatus", (string)null);
+                    b.ToTable("Public.RegistrationTaskStatus");
                 });
 
             modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.ApplicationTaskStatusQueryNote", b =>
@@ -1170,7 +1123,7 @@ namespace EPR.PRN.Backend.Data.Migrations
 
                     b.HasIndex("RegulatorApplicationTaskStatusId");
 
-                    b.ToTable("Public.ApplicationTaskStatusQueryNote", (string)null);
+                    b.ToTable("Public.ApplicationTaskStatusQueryNote");
                 });
 
             modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.CarrierBrokerDealerPermits", b =>
@@ -1228,7 +1181,7 @@ namespace EPR.PRN.Backend.Data.Migrations
                     b.HasIndex("RegistrationId")
                         .IsUnique();
 
-                    b.ToTable("Public.CarrierBrokerDealerPermits", (string)null);
+                    b.ToTable("Public.CarrierBrokerDealerPermits");
                 });
 
             modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.DeterminationDate", b =>
@@ -1245,10 +1198,6 @@ namespace EPR.PRN.Backend.Data.Migrations
                     b.Property<Guid>("ExternalId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<bool>("IsOverdue")
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("bit");
-
                     b.Property<int>("RegistrationMaterialId")
                         .HasColumnType("int");
 
@@ -1260,7 +1209,7 @@ namespace EPR.PRN.Backend.Data.Migrations
                     b.HasIndex("RegistrationMaterialId")
                         .IsUnique();
 
-                    b.ToTable("Public.DeterminationDate", (string)null);
+                    b.ToTable("Public.DeterminationDate");
                 });
 
             modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.DulyMade", b =>
@@ -1289,7 +1238,7 @@ namespace EPR.PRN.Backend.Data.Migrations
                     b.HasIndex("RegistrationMaterialId")
                         .IsUnique();
 
-                    b.ToTable("Public.DulyMade", (string)null);
+                    b.ToTable("Public.DulyMade");
                 });
 
             modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.LookupAccreditationStatus", b =>
@@ -1307,7 +1256,7 @@ namespace EPR.PRN.Backend.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Lookup.AccreditationStatus", (string)null);
+                    b.ToTable("Lookup.AccreditationStatus");
 
                     b.HasData(
                         new
@@ -1367,163 +1316,6 @@ namespace EPR.PRN.Backend.Data.Migrations
                         });
                 });
 
-            modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.LookupApplicantRegistrationTask", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("ApplicationTypeId")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("IsMaterialSpecific")
-                        .HasColumnType("bit");
-
-                    b.Property<int>("JourneyTypeId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Lookup.Task", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            ApplicationTypeId = 1,
-                            IsMaterialSpecific = false,
-                            JourneyTypeId = 1,
-                            Name = "SiteAddressAndContactDetails"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            ApplicationTypeId = 1,
-                            IsMaterialSpecific = true,
-                            JourneyTypeId = 1,
-                            Name = "WasteLicensesPermitsAndExemptions"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            ApplicationTypeId = 1,
-                            IsMaterialSpecific = true,
-                            JourneyTypeId = 1,
-                            Name = "ReprocessingInputsAndOutputs"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            ApplicationTypeId = 1,
-                            IsMaterialSpecific = true,
-                            JourneyTypeId = 1,
-                            Name = "SamplingAndInspectionPlan"
-                        },
-                        new
-                        {
-                            Id = 5,
-                            ApplicationTypeId = 2,
-                            IsMaterialSpecific = false,
-                            JourneyTypeId = 1,
-                            Name = "WasteLicensesPermitsAndExemptions"
-                        },
-                        new
-                        {
-                            Id = 6,
-                            ApplicationTypeId = 2,
-                            IsMaterialSpecific = true,
-                            JourneyTypeId = 1,
-                            Name = "SamplingAndInspectionPlan"
-                        },
-                        new
-                        {
-                            Id = 7,
-                            ApplicationTypeId = 2,
-                            IsMaterialSpecific = true,
-                            JourneyTypeId = 1,
-                            Name = "OverseasReprocessingSites"
-                        },
-                        new
-                        {
-                            Id = 8,
-                            ApplicationTypeId = 2,
-                            IsMaterialSpecific = true,
-                            JourneyTypeId = 1,
-                            Name = "InterimSites"
-                        },
-                        new
-                        {
-                            Id = 9,
-                            ApplicationTypeId = 1,
-                            IsMaterialSpecific = true,
-                            JourneyTypeId = 2,
-                            Name = "PRNsTonnageAndAuthorityToIssuePRNs"
-                        },
-                        new
-                        {
-                            Id = 10,
-                            ApplicationTypeId = 1,
-                            IsMaterialSpecific = true,
-                            JourneyTypeId = 2,
-                            Name = "BusinessPlan"
-                        },
-                        new
-                        {
-                            Id = 11,
-                            ApplicationTypeId = 1,
-                            IsMaterialSpecific = true,
-                            JourneyTypeId = 2,
-                            Name = "AccreditationSamplingAndInspectionPlan"
-                        },
-                        new
-                        {
-                            Id = 12,
-                            ApplicationTypeId = 2,
-                            IsMaterialSpecific = true,
-                            JourneyTypeId = 2,
-                            Name = "PERNsTonnageAndAuthorityToIssuePERNs"
-                        },
-                        new
-                        {
-                            Id = 13,
-                            ApplicationTypeId = 2,
-                            IsMaterialSpecific = true,
-                            JourneyTypeId = 2,
-                            Name = "BusinessPlan"
-                        },
-                        new
-                        {
-                            Id = 14,
-                            ApplicationTypeId = 2,
-                            IsMaterialSpecific = true,
-                            JourneyTypeId = 2,
-                            Name = "AccreditationSamplingAndInspectionPlan"
-                        },
-                        new
-                        {
-                            Id = 15,
-                            ApplicationTypeId = 2,
-                            IsMaterialSpecific = true,
-                            JourneyTypeId = 2,
-                            Name = "OverseasReprocessingSitesAndEvidenceOfBroadlyEquivalentStandards"
-                        },
-                        new
-                        {
-                            Id = 16,
-                            ApplicationTypeId = 2,
-                            IsMaterialSpecific = false,
-                            JourneyTypeId = 1,
-                            Name = "WasteCarrierBrokerDealerNumber"
-                        });
-                });
-
             modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.LookupApplicationType", b =>
                 {
                     b.Property<int>("Id")
@@ -1539,7 +1331,7 @@ namespace EPR.PRN.Backend.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Lookup.ApplicationType", (string)null);
+                    b.ToTable("Lookup.ApplicationType");
 
                     b.HasData(
                         new
@@ -1551,1494 +1343,6 @@ namespace EPR.PRN.Backend.Data.Migrations
                         {
                             Id = 2,
                             Name = "Exporter"
-                        });
-                });
-
-            modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.LookupCountry", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("CountryCode")
-                        .HasMaxLength(3)
-                        .HasColumnType("nvarchar(3)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Lookup.Country");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            CountryCode = "ad",
-                            Name = "Andorra"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            CountryCode = "ae",
-                            Name = "United Arab Emirates"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            CountryCode = "af",
-                            Name = "Afghanistan"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            CountryCode = "ag",
-                            Name = "Antigua and Barbuda"
-                        },
-                        new
-                        {
-                            Id = 5,
-                            CountryCode = "ai",
-                            Name = "Anguilla"
-                        },
-                        new
-                        {
-                            Id = 6,
-                            CountryCode = "al",
-                            Name = "Albania"
-                        },
-                        new
-                        {
-                            Id = 7,
-                            CountryCode = "am",
-                            Name = "Armenia"
-                        },
-                        new
-                        {
-                            Id = 8,
-                            CountryCode = "an",
-                            Name = "Netherlands Antilles"
-                        },
-                        new
-                        {
-                            Id = 9,
-                            CountryCode = "ao",
-                            Name = "Angola"
-                        },
-                        new
-                        {
-                            Id = 10,
-                            CountryCode = "aq",
-                            Name = "Antarctica"
-                        },
-                        new
-                        {
-                            Id = 11,
-                            CountryCode = "ar",
-                            Name = "Argentina"
-                        },
-                        new
-                        {
-                            Id = 13,
-                            CountryCode = "as",
-                            Name = "American Samoa"
-                        },
-                        new
-                        {
-                            Id = 14,
-                            CountryCode = "at",
-                            Name = "Austria"
-                        },
-                        new
-                        {
-                            Id = 15,
-                            CountryCode = "au",
-                            Name = "Australia"
-                        },
-                        new
-                        {
-                            Id = 16,
-                            CountryCode = "aw",
-                            Name = "Aruba"
-                        },
-                        new
-                        {
-                            Id = 17,
-                            CountryCode = "az",
-                            Name = "Azerbaidjan"
-                        },
-                        new
-                        {
-                            Id = 18,
-                            CountryCode = "ba",
-                            Name = "Bosnia-Herzegovina"
-                        },
-                        new
-                        {
-                            Id = 19,
-                            CountryCode = "bb",
-                            Name = "Barbados"
-                        },
-                        new
-                        {
-                            Id = 20,
-                            CountryCode = "bd",
-                            Name = "Bangladesh"
-                        },
-                        new
-                        {
-                            Id = 21,
-                            CountryCode = "be",
-                            Name = "Belgium"
-                        },
-                        new
-                        {
-                            Id = 22,
-                            CountryCode = "bf",
-                            Name = "Burkina Faso"
-                        },
-                        new
-                        {
-                            Id = 23,
-                            CountryCode = "bg",
-                            Name = "Bulgaria"
-                        },
-                        new
-                        {
-                            Id = 24,
-                            CountryCode = "bh",
-                            Name = "Bahrain"
-                        },
-                        new
-                        {
-                            Id = 25,
-                            CountryCode = "bi",
-                            Name = "Burundi"
-                        },
-                        new
-                        {
-                            Id = 26,
-                            CountryCode = "bj",
-                            Name = "Benin"
-                        },
-                        new
-                        {
-                            Id = 27,
-                            CountryCode = "bm",
-                            Name = "Bermuda"
-                        },
-                        new
-                        {
-                            Id = 28,
-                            CountryCode = "bn",
-                            Name = "Brunei Darussalam"
-                        },
-                        new
-                        {
-                            Id = 29,
-                            CountryCode = "bo",
-                            Name = "Bolivia"
-                        },
-                        new
-                        {
-                            Id = 30,
-                            CountryCode = "br",
-                            Name = "Brazil"
-                        },
-                        new
-                        {
-                            Id = 31,
-                            CountryCode = "bs",
-                            Name = "Bahamas"
-                        },
-                        new
-                        {
-                            Id = 32,
-                            CountryCode = "bt",
-                            Name = "Bhutan"
-                        },
-                        new
-                        {
-                            Id = 33,
-                            CountryCode = "bv",
-                            Name = "Bouvet Island"
-                        },
-                        new
-                        {
-                            Id = 34,
-                            CountryCode = "bw",
-                            Name = "Botswana"
-                        },
-                        new
-                        {
-                            Id = 35,
-                            CountryCode = "by",
-                            Name = "Belarus"
-                        },
-                        new
-                        {
-                            Id = 36,
-                            CountryCode = "bz",
-                            Name = "Belize"
-                        },
-                        new
-                        {
-                            Id = 37,
-                            CountryCode = "ca",
-                            Name = "Canada"
-                        },
-                        new
-                        {
-                            Id = 38,
-                            CountryCode = "cc",
-                            Name = "Cocos (Keeling) Islands"
-                        },
-                        new
-                        {
-                            Id = 39,
-                            CountryCode = "cf",
-                            Name = "Central African Republic"
-                        },
-                        new
-                        {
-                            Id = 40,
-                            CountryCode = "cg",
-                            Name = "Congo"
-                        },
-                        new
-                        {
-                            Id = 41,
-                            CountryCode = "ch",
-                            Name = "Switzerland"
-                        },
-                        new
-                        {
-                            Id = 42,
-                            CountryCode = "ci",
-                            Name = "Ivory Coast (Cote D'Ivoire)"
-                        },
-                        new
-                        {
-                            Id = 43,
-                            CountryCode = "ck",
-                            Name = "Cook Islands"
-                        },
-                        new
-                        {
-                            Id = 44,
-                            CountryCode = "cl",
-                            Name = "Chile"
-                        },
-                        new
-                        {
-                            Id = 45,
-                            CountryCode = "cm",
-                            Name = "Cameroon"
-                        },
-                        new
-                        {
-                            Id = 46,
-                            CountryCode = "cn",
-                            Name = "China"
-                        },
-                        new
-                        {
-                            Id = 47,
-                            CountryCode = "co",
-                            Name = "Colombia"
-                        },
-                        new
-                        {
-                            Id = 48,
-                            CountryCode = "com",
-                            Name = "Commercial"
-                        },
-                        new
-                        {
-                            Id = 49,
-                            CountryCode = "cr",
-                            Name = "Costa Rica"
-                        },
-                        new
-                        {
-                            Id = 50,
-                            CountryCode = "cs",
-                            Name = "Former Czechoslovakia"
-                        },
-                        new
-                        {
-                            Id = 51,
-                            CountryCode = "cu",
-                            Name = "Cuba"
-                        },
-                        new
-                        {
-                            Id = 52,
-                            CountryCode = "cv",
-                            Name = "Cape Verde"
-                        },
-                        new
-                        {
-                            Id = 53,
-                            CountryCode = "cx",
-                            Name = "Christmas Island"
-                        },
-                        new
-                        {
-                            Id = 54,
-                            CountryCode = "cy",
-                            Name = "Cyprus"
-                        },
-                        new
-                        {
-                            Id = 55,
-                            CountryCode = "cz",
-                            Name = "Czech Republic"
-                        },
-                        new
-                        {
-                            Id = 56,
-                            CountryCode = "de",
-                            Name = "Germany"
-                        },
-                        new
-                        {
-                            Id = 57,
-                            CountryCode = "dj",
-                            Name = "Djibouti"
-                        },
-                        new
-                        {
-                            Id = 58,
-                            CountryCode = "dk",
-                            Name = "Denmark"
-                        },
-                        new
-                        {
-                            Id = 59,
-                            CountryCode = "dm",
-                            Name = "Dominica"
-                        },
-                        new
-                        {
-                            Id = 60,
-                            CountryCode = "do",
-                            Name = "Dominican Republic"
-                        },
-                        new
-                        {
-                            Id = 61,
-                            CountryCode = "dz",
-                            Name = "Algeria"
-                        },
-                        new
-                        {
-                            Id = 62,
-                            CountryCode = "ec",
-                            Name = "Ecuador"
-                        },
-                        new
-                        {
-                            Id = 64,
-                            CountryCode = "ee",
-                            Name = "Estonia"
-                        },
-                        new
-                        {
-                            Id = 65,
-                            CountryCode = "eg",
-                            Name = "Egypt"
-                        },
-                        new
-                        {
-                            Id = 66,
-                            CountryCode = "eh",
-                            Name = "Western Sahara"
-                        },
-                        new
-                        {
-                            Id = 67,
-                            CountryCode = "er",
-                            Name = "Eritrea"
-                        },
-                        new
-                        {
-                            Id = 68,
-                            CountryCode = "es",
-                            Name = "Spain"
-                        },
-                        new
-                        {
-                            Id = 69,
-                            CountryCode = "et",
-                            Name = "Ethiopia"
-                        },
-                        new
-                        {
-                            Id = 70,
-                            CountryCode = "fi",
-                            Name = "Finland"
-                        },
-                        new
-                        {
-                            Id = 71,
-                            CountryCode = "fj",
-                            Name = "Fiji"
-                        },
-                        new
-                        {
-                            Id = 72,
-                            CountryCode = "fk",
-                            Name = "Falkland Islands"
-                        },
-                        new
-                        {
-                            Id = 73,
-                            CountryCode = "fm",
-                            Name = "Micronesia"
-                        },
-                        new
-                        {
-                            Id = 74,
-                            CountryCode = "fo",
-                            Name = "Faroe Islands"
-                        },
-                        new
-                        {
-                            Id = 75,
-                            CountryCode = "fr",
-                            Name = "France"
-                        },
-                        new
-                        {
-                            Id = 76,
-                            CountryCode = "fx",
-                            Name = "France (European Territory)"
-                        },
-                        new
-                        {
-                            Id = 77,
-                            CountryCode = "ga",
-                            Name = "Gabon"
-                        },
-                        new
-                        {
-                            Id = 79,
-                            CountryCode = "gd",
-                            Name = "Grenada"
-                        },
-                        new
-                        {
-                            Id = 80,
-                            CountryCode = "ge",
-                            Name = "Georgia"
-                        },
-                        new
-                        {
-                            Id = 81,
-                            CountryCode = "gf",
-                            Name = "French Guyana"
-                        },
-                        new
-                        {
-                            Id = 82,
-                            CountryCode = "gh",
-                            Name = "Ghana"
-                        },
-                        new
-                        {
-                            Id = 83,
-                            CountryCode = "gi",
-                            Name = "Gibraltar"
-                        },
-                        new
-                        {
-                            Id = 84,
-                            CountryCode = "gl",
-                            Name = "Greenland"
-                        },
-                        new
-                        {
-                            Id = 85,
-                            CountryCode = "gm",
-                            Name = "Gambia"
-                        },
-                        new
-                        {
-                            Id = 86,
-                            CountryCode = "gn",
-                            Name = "Guinea"
-                        },
-                        new
-                        {
-                            Id = 88,
-                            CountryCode = "gp",
-                            Name = "Guadeloupe (French)"
-                        },
-                        new
-                        {
-                            Id = 89,
-                            CountryCode = "gq",
-                            Name = "Equatorial Guinea"
-                        },
-                        new
-                        {
-                            Id = 90,
-                            CountryCode = "gr",
-                            Name = "Greece"
-                        },
-                        new
-                        {
-                            Id = 91,
-                            CountryCode = "gs",
-                            Name = "S. Georgia & S. Sandwich Isls."
-                        },
-                        new
-                        {
-                            Id = 92,
-                            CountryCode = "gt",
-                            Name = "Guatemala"
-                        },
-                        new
-                        {
-                            Id = 93,
-                            CountryCode = "gu",
-                            Name = "Guam (USA)"
-                        },
-                        new
-                        {
-                            Id = 94,
-                            CountryCode = "gw",
-                            Name = "Guinea Bissau"
-                        },
-                        new
-                        {
-                            Id = 95,
-                            CountryCode = "gy",
-                            Name = "Guyana"
-                        },
-                        new
-                        {
-                            Id = 96,
-                            CountryCode = "hk",
-                            Name = "Hong Kong"
-                        },
-                        new
-                        {
-                            Id = 97,
-                            CountryCode = "hm",
-                            Name = "Heard and McDonald Islands"
-                        },
-                        new
-                        {
-                            Id = 98,
-                            CountryCode = "hn",
-                            Name = "Honduras"
-                        },
-                        new
-                        {
-                            Id = 99,
-                            CountryCode = "hr",
-                            Name = "Croatia"
-                        },
-                        new
-                        {
-                            Id = 100,
-                            CountryCode = "ht",
-                            Name = "Haiti"
-                        },
-                        new
-                        {
-                            Id = 101,
-                            CountryCode = "hu",
-                            Name = "Hungary"
-                        },
-                        new
-                        {
-                            Id = 102,
-                            CountryCode = "id",
-                            Name = "Indonesia"
-                        },
-                        new
-                        {
-                            Id = 103,
-                            CountryCode = "ie",
-                            Name = "Ireland"
-                        },
-                        new
-                        {
-                            Id = 104,
-                            CountryCode = "il",
-                            Name = "Israel"
-                        },
-                        new
-                        {
-                            Id = 105,
-                            CountryCode = "in",
-                            Name = "India"
-                        },
-                        new
-                        {
-                            Id = 106,
-                            CountryCode = "int",
-                            Name = "International"
-                        },
-                        new
-                        {
-                            Id = 107,
-                            CountryCode = "io",
-                            Name = "British Indian Ocean Territory"
-                        },
-                        new
-                        {
-                            Id = 108,
-                            CountryCode = "iq",
-                            Name = "Iraq"
-                        },
-                        new
-                        {
-                            Id = 109,
-                            CountryCode = "ir",
-                            Name = "Iran"
-                        },
-                        new
-                        {
-                            Id = 110,
-                            CountryCode = "is",
-                            Name = "Iceland"
-                        },
-                        new
-                        {
-                            Id = 111,
-                            CountryCode = "it",
-                            Name = "Italy"
-                        },
-                        new
-                        {
-                            Id = 112,
-                            CountryCode = "jm",
-                            Name = "Jamaica"
-                        },
-                        new
-                        {
-                            Id = 113,
-                            CountryCode = "jo",
-                            Name = "Jordan"
-                        },
-                        new
-                        {
-                            Id = 114,
-                            CountryCode = "jp",
-                            Name = "Japan"
-                        },
-                        new
-                        {
-                            Id = 115,
-                            CountryCode = "ke",
-                            Name = "Kenya"
-                        },
-                        new
-                        {
-                            Id = 116,
-                            CountryCode = "kg",
-                            Name = "Kyrgyzstan"
-                        },
-                        new
-                        {
-                            Id = 117,
-                            CountryCode = "kh",
-                            Name = "Cambodia"
-                        },
-                        new
-                        {
-                            Id = 118,
-                            CountryCode = "ki",
-                            Name = "Kiribati"
-                        },
-                        new
-                        {
-                            Id = 119,
-                            CountryCode = "km",
-                            Name = "Comoros"
-                        },
-                        new
-                        {
-                            Id = 120,
-                            CountryCode = "kn",
-                            Name = "Saint Kitts & Nevis Anguilla"
-                        },
-                        new
-                        {
-                            Id = 121,
-                            CountryCode = "kp",
-                            Name = "North Korea"
-                        },
-                        new
-                        {
-                            Id = 122,
-                            CountryCode = "kr",
-                            Name = "South Korea"
-                        },
-                        new
-                        {
-                            Id = 123,
-                            CountryCode = "kw",
-                            Name = "Kuwait"
-                        },
-                        new
-                        {
-                            Id = 124,
-                            CountryCode = "ky",
-                            Name = "Cayman Islands"
-                        },
-                        new
-                        {
-                            Id = 125,
-                            CountryCode = "kz",
-                            Name = "Kazakhstan"
-                        },
-                        new
-                        {
-                            Id = 126,
-                            CountryCode = "la",
-                            Name = "Laos"
-                        },
-                        new
-                        {
-                            Id = 127,
-                            CountryCode = "lb",
-                            Name = "Lebanon"
-                        },
-                        new
-                        {
-                            Id = 128,
-                            CountryCode = "lc",
-                            Name = "Saint Lucia"
-                        },
-                        new
-                        {
-                            Id = 129,
-                            CountryCode = "li",
-                            Name = "Liechtenstein"
-                        },
-                        new
-                        {
-                            Id = 130,
-                            CountryCode = "lk",
-                            Name = "Sri Lanka"
-                        },
-                        new
-                        {
-                            Id = 131,
-                            CountryCode = "lr",
-                            Name = "Liberia"
-                        },
-                        new
-                        {
-                            Id = 132,
-                            CountryCode = "ls",
-                            Name = "Lesotho"
-                        },
-                        new
-                        {
-                            Id = 133,
-                            CountryCode = "lt",
-                            Name = "Lithuania"
-                        },
-                        new
-                        {
-                            Id = 134,
-                            CountryCode = "lu",
-                            Name = "Luxembourg"
-                        },
-                        new
-                        {
-                            Id = 135,
-                            CountryCode = "lv",
-                            Name = "Latvia"
-                        },
-                        new
-                        {
-                            Id = 136,
-                            CountryCode = "ly",
-                            Name = "Libya"
-                        },
-                        new
-                        {
-                            Id = 137,
-                            CountryCode = "ma",
-                            Name = "Morocco"
-                        },
-                        new
-                        {
-                            Id = 138,
-                            CountryCode = "mc",
-                            Name = "Monaco"
-                        },
-                        new
-                        {
-                            Id = 139,
-                            CountryCode = "md",
-                            Name = "Moldavia"
-                        },
-                        new
-                        {
-                            Id = 140,
-                            CountryCode = "mg",
-                            Name = "Madagascar"
-                        },
-                        new
-                        {
-                            Id = 141,
-                            CountryCode = "mh",
-                            Name = "Marshall Islands"
-                        },
-                        new
-                        {
-                            Id = 143,
-                            CountryCode = "mk",
-                            Name = "Macedonia"
-                        },
-                        new
-                        {
-                            Id = 144,
-                            CountryCode = "ml",
-                            Name = "Mali"
-                        },
-                        new
-                        {
-                            Id = 145,
-                            CountryCode = "mm",
-                            Name = "Myanmar"
-                        },
-                        new
-                        {
-                            Id = 146,
-                            CountryCode = "mn",
-                            Name = "Mongolia"
-                        },
-                        new
-                        {
-                            Id = 147,
-                            CountryCode = "mo",
-                            Name = "Macau"
-                        },
-                        new
-                        {
-                            Id = 148,
-                            CountryCode = "mp",
-                            Name = "Northern Mariana Islands"
-                        },
-                        new
-                        {
-                            Id = 149,
-                            CountryCode = "mq",
-                            Name = "Martinique (French)"
-                        },
-                        new
-                        {
-                            Id = 150,
-                            CountryCode = "mr",
-                            Name = "Mauritania"
-                        },
-                        new
-                        {
-                            Id = 151,
-                            CountryCode = "ms",
-                            Name = "Montserrat"
-                        },
-                        new
-                        {
-                            Id = 152,
-                            CountryCode = "mt",
-                            Name = "Malta"
-                        },
-                        new
-                        {
-                            Id = 153,
-                            CountryCode = "mu",
-                            Name = "Mauritius"
-                        },
-                        new
-                        {
-                            Id = 154,
-                            CountryCode = "mv",
-                            Name = "Maldives"
-                        },
-                        new
-                        {
-                            Id = 155,
-                            CountryCode = "mw",
-                            Name = "Malawi"
-                        },
-                        new
-                        {
-                            Id = 156,
-                            CountryCode = "mx",
-                            Name = "Mexico"
-                        },
-                        new
-                        {
-                            Id = 157,
-                            CountryCode = "my",
-                            Name = "Malaysia"
-                        },
-                        new
-                        {
-                            Id = 158,
-                            CountryCode = "mz",
-                            Name = "Mozambique"
-                        },
-                        new
-                        {
-                            Id = 159,
-                            CountryCode = "na",
-                            Name = "Namibia"
-                        },
-                        new
-                        {
-                            Id = 161,
-                            CountryCode = "nc",
-                            Name = "New Caledonia (French)"
-                        },
-                        new
-                        {
-                            Id = 162,
-                            CountryCode = "ne",
-                            Name = "Niger"
-                        },
-                        new
-                        {
-                            Id = 163,
-                            CountryCode = "net",
-                            Name = "Network"
-                        },
-                        new
-                        {
-                            Id = 164,
-                            CountryCode = "nf",
-                            Name = "Norfolk Island"
-                        },
-                        new
-                        {
-                            Id = 165,
-                            CountryCode = "ng",
-                            Name = "Nigeria"
-                        },
-                        new
-                        {
-                            Id = 166,
-                            CountryCode = "ni",
-                            Name = "Nicaragua"
-                        },
-                        new
-                        {
-                            Id = 167,
-                            CountryCode = "nl",
-                            Name = "Netherlands"
-                        },
-                        new
-                        {
-                            Id = 168,
-                            CountryCode = "no",
-                            Name = "Norway"
-                        },
-                        new
-                        {
-                            Id = 169,
-                            CountryCode = "np",
-                            Name = "Nepal"
-                        },
-                        new
-                        {
-                            Id = 170,
-                            CountryCode = "nr",
-                            Name = "Nauru"
-                        },
-                        new
-                        {
-                            Id = 171,
-                            CountryCode = "nt",
-                            Name = "Neutral Zone"
-                        },
-                        new
-                        {
-                            Id = 172,
-                            CountryCode = "nu",
-                            Name = "Niue"
-                        },
-                        new
-                        {
-                            Id = 173,
-                            CountryCode = "nz",
-                            Name = "New Zealand"
-                        },
-                        new
-                        {
-                            Id = 174,
-                            CountryCode = "om",
-                            Name = "Oman"
-                        },
-                        new
-                        {
-                            Id = 176,
-                            CountryCode = "pa",
-                            Name = "Panama"
-                        },
-                        new
-                        {
-                            Id = 177,
-                            CountryCode = "pe",
-                            Name = "Peru"
-                        },
-                        new
-                        {
-                            Id = 178,
-                            CountryCode = "pf",
-                            Name = "Polynesia (French)"
-                        },
-                        new
-                        {
-                            Id = 179,
-                            CountryCode = "pg",
-                            Name = "Papua New Guinea"
-                        },
-                        new
-                        {
-                            Id = 180,
-                            CountryCode = "ph",
-                            Name = "Philippines"
-                        },
-                        new
-                        {
-                            Id = 181,
-                            CountryCode = "pk",
-                            Name = "Pakistan"
-                        },
-                        new
-                        {
-                            Id = 182,
-                            CountryCode = "pl",
-                            Name = "Poland"
-                        },
-                        new
-                        {
-                            Id = 183,
-                            CountryCode = "pm",
-                            Name = "Saint Pierre and Miquelon"
-                        },
-                        new
-                        {
-                            Id = 184,
-                            CountryCode = "pn",
-                            Name = "Pitcairn Island"
-                        },
-                        new
-                        {
-                            Id = 185,
-                            CountryCode = "pr",
-                            Name = "Puerto Rico"
-                        },
-                        new
-                        {
-                            Id = 186,
-                            CountryCode = "pt",
-                            Name = "Portugal"
-                        },
-                        new
-                        {
-                            Id = 187,
-                            CountryCode = "pw",
-                            Name = "Palau"
-                        },
-                        new
-                        {
-                            Id = 188,
-                            CountryCode = "py",
-                            Name = "Paraguay"
-                        },
-                        new
-                        {
-                            Id = 189,
-                            CountryCode = "qa",
-                            Name = "Qatar"
-                        },
-                        new
-                        {
-                            Id = 190,
-                            CountryCode = "re",
-                            Name = "Reunion (French)"
-                        },
-                        new
-                        {
-                            Id = 191,
-                            CountryCode = "ro",
-                            Name = "Romania"
-                        },
-                        new
-                        {
-                            Id = 192,
-                            CountryCode = "ru",
-                            Name = "Russian Federation"
-                        },
-                        new
-                        {
-                            Id = 193,
-                            CountryCode = "rw",
-                            Name = "Rwanda"
-                        },
-                        new
-                        {
-                            Id = 194,
-                            CountryCode = "sa",
-                            Name = "Saudi Arabia"
-                        },
-                        new
-                        {
-                            Id = 195,
-                            CountryCode = "sb",
-                            Name = "Solomon Islands"
-                        },
-                        new
-                        {
-                            Id = 196,
-                            CountryCode = "sc",
-                            Name = "Seychelles"
-                        },
-                        new
-                        {
-                            Id = 197,
-                            CountryCode = "sd",
-                            Name = "Sudan"
-                        },
-                        new
-                        {
-                            Id = 198,
-                            CountryCode = "se",
-                            Name = "Sweden"
-                        },
-                        new
-                        {
-                            Id = 199,
-                            CountryCode = "sg",
-                            Name = "Singapore"
-                        },
-                        new
-                        {
-                            Id = 200,
-                            CountryCode = "sh",
-                            Name = "Saint Helena"
-                        },
-                        new
-                        {
-                            Id = 201,
-                            CountryCode = "si",
-                            Name = "Slovenia"
-                        },
-                        new
-                        {
-                            Id = 202,
-                            CountryCode = "sj",
-                            Name = "Svalbard and Jan Mayen Islands"
-                        },
-                        new
-                        {
-                            Id = 203,
-                            CountryCode = "sk",
-                            Name = "Slovak Republic"
-                        },
-                        new
-                        {
-                            Id = 204,
-                            CountryCode = "sl",
-                            Name = "Sierra Leone"
-                        },
-                        new
-                        {
-                            Id = 205,
-                            CountryCode = "sm",
-                            Name = "San Marino"
-                        },
-                        new
-                        {
-                            Id = 206,
-                            CountryCode = "sn",
-                            Name = "Senegal"
-                        },
-                        new
-                        {
-                            Id = 207,
-                            CountryCode = "so",
-                            Name = "Somalia"
-                        },
-                        new
-                        {
-                            Id = 208,
-                            CountryCode = "sr",
-                            Name = "Suriname"
-                        },
-                        new
-                        {
-                            Id = 209,
-                            CountryCode = "st",
-                            Name = "Saint Tome (Sao Tome) and Principe"
-                        },
-                        new
-                        {
-                            Id = 210,
-                            CountryCode = "su",
-                            Name = "Former USSR"
-                        },
-                        new
-                        {
-                            Id = 211,
-                            CountryCode = "sv",
-                            Name = "El Salvador"
-                        },
-                        new
-                        {
-                            Id = 212,
-                            CountryCode = "sy",
-                            Name = "Syria"
-                        },
-                        new
-                        {
-                            Id = 213,
-                            CountryCode = "sz",
-                            Name = "Swaziland"
-                        },
-                        new
-                        {
-                            Id = 214,
-                            CountryCode = "tc",
-                            Name = "Turks and Caicos Islands"
-                        },
-                        new
-                        {
-                            Id = 215,
-                            CountryCode = "td",
-                            Name = "Chad"
-                        },
-                        new
-                        {
-                            Id = 216,
-                            CountryCode = "tf",
-                            Name = "French Southern Territories"
-                        },
-                        new
-                        {
-                            Id = 217,
-                            CountryCode = "tg",
-                            Name = "Togo"
-                        },
-                        new
-                        {
-                            Id = 218,
-                            CountryCode = "th",
-                            Name = "Thailand"
-                        },
-                        new
-                        {
-                            Id = 219,
-                            CountryCode = "tj",
-                            Name = "Tadjikistan"
-                        },
-                        new
-                        {
-                            Id = 220,
-                            CountryCode = "tk",
-                            Name = "Tokelau"
-                        },
-                        new
-                        {
-                            Id = 221,
-                            CountryCode = "tm",
-                            Name = "Turkmenistan"
-                        },
-                        new
-                        {
-                            Id = 222,
-                            CountryCode = "tn",
-                            Name = "Tunisia"
-                        },
-                        new
-                        {
-                            Id = 223,
-                            CountryCode = "to",
-                            Name = "Tonga"
-                        },
-                        new
-                        {
-                            Id = 224,
-                            CountryCode = "tp",
-                            Name = "East Timor"
-                        },
-                        new
-                        {
-                            Id = 225,
-                            CountryCode = "tr",
-                            Name = "Turkey"
-                        },
-                        new
-                        {
-                            Id = 226,
-                            CountryCode = "tt",
-                            Name = "Trinidad and Tobago"
-                        },
-                        new
-                        {
-                            Id = 227,
-                            CountryCode = "tv",
-                            Name = "Tuvalu"
-                        },
-                        new
-                        {
-                            Id = 228,
-                            CountryCode = "tw",
-                            Name = "Taiwan"
-                        },
-                        new
-                        {
-                            Id = 229,
-                            CountryCode = "tz",
-                            Name = "Tanzania"
-                        },
-                        new
-                        {
-                            Id = 230,
-                            CountryCode = "ua",
-                            Name = "Ukraine"
-                        },
-                        new
-                        {
-                            Id = 231,
-                            CountryCode = "ug",
-                            Name = "Uganda"
-                        },
-                        new
-                        {
-                            Id = 233,
-                            CountryCode = "um",
-                            Name = "USA Minor Outlying Islands"
-                        },
-                        new
-                        {
-                            Id = 234,
-                            CountryCode = "us",
-                            Name = "United States"
-                        },
-                        new
-                        {
-                            Id = 235,
-                            CountryCode = "uy",
-                            Name = "Uruguay"
-                        },
-                        new
-                        {
-                            Id = 236,
-                            CountryCode = "uz",
-                            Name = "Uzbekistan"
-                        },
-                        new
-                        {
-                            Id = 237,
-                            CountryCode = "va",
-                            Name = "Vatican City State"
-                        },
-                        new
-                        {
-                            Id = 238,
-                            CountryCode = "vc",
-                            Name = "Saint Vincent & Grenadines"
-                        },
-                        new
-                        {
-                            Id = 239,
-                            CountryCode = "ve",
-                            Name = "Venezuela"
-                        },
-                        new
-                        {
-                            Id = 240,
-                            CountryCode = "vg",
-                            Name = "Virgin Islands (British)"
-                        },
-                        new
-                        {
-                            Id = 241,
-                            CountryCode = "vi",
-                            Name = "Virgin Islands (USA)"
-                        },
-                        new
-                        {
-                            Id = 242,
-                            CountryCode = "vn",
-                            Name = "Vietnam"
-                        },
-                        new
-                        {
-                            Id = 243,
-                            CountryCode = "vu",
-                            Name = "Vanuatu"
-                        },
-                        new
-                        {
-                            Id = 244,
-                            CountryCode = "wf",
-                            Name = "Wallis and Futuna Islands"
-                        },
-                        new
-                        {
-                            Id = 245,
-                            CountryCode = "ws",
-                            Name = "Samoa"
-                        },
-                        new
-                        {
-                            Id = 246,
-                            CountryCode = "ye",
-                            Name = "Yemen"
-                        },
-                        new
-                        {
-                            Id = 247,
-                            CountryCode = "yt",
-                            Name = "Mayotte"
-                        },
-                        new
-                        {
-                            Id = 248,
-                            CountryCode = "yu",
-                            Name = "Yugoslavia"
-                        },
-                        new
-                        {
-                            Id = 249,
-                            CountryCode = "za",
-                            Name = "South Africa"
-                        },
-                        new
-                        {
-                            Id = 250,
-                            CountryCode = "zm",
-                            Name = "Zambia"
-                        },
-                        new
-                        {
-                            Id = 251,
-                            CountryCode = "zr",
-                            Name = "Zaire"
-                        },
-                        new
-                        {
-                            Id = 252,
-                            CountryCode = "zw",
-                            Name = "Zimbabwe"
                         });
                 });
 
@@ -3057,7 +1361,7 @@ namespace EPR.PRN.Backend.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Lookup.FileUploadStatus", (string)null);
+                    b.ToTable("Lookup.FileUploadStatus");
 
                     b.HasData(
                         new
@@ -3102,7 +1406,7 @@ namespace EPR.PRN.Backend.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Lookup.FileUploadType", (string)null);
+                    b.ToTable("Lookup.FileUploadType");
 
                     b.HasData(
                         new
@@ -3127,7 +1431,7 @@ namespace EPR.PRN.Backend.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Lookup.JourneyType", (string)null);
+                    b.ToTable("Lookup.JourneyType");
 
                     b.HasData(
                         new
@@ -3162,7 +1466,7 @@ namespace EPR.PRN.Backend.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Lookup.Material", (string)null);
+                    b.ToTable("Lookup.Material");
 
                     b.HasData(
                         new
@@ -3218,7 +1522,7 @@ namespace EPR.PRN.Backend.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Lookup.MaterialPermit", (string)null);
+                    b.ToTable("Lookup.MaterialPermit");
 
                     b.HasData(
                         new
@@ -3263,7 +1567,7 @@ namespace EPR.PRN.Backend.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Lookup.Period", (string)null);
+                    b.ToTable("Lookup.Period");
 
                     b.HasData(
                         new
@@ -3298,7 +1602,7 @@ namespace EPR.PRN.Backend.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Lookup.RegistrationMaterialStatus", (string)null);
+                    b.ToTable("Lookup.RegistrationMaterialStatus");
 
                     b.HasData(
                         new
@@ -3350,11 +1654,6 @@ namespace EPR.PRN.Backend.Data.Migrations
                         {
                             Id = 11,
                             Name = "ReadyToSubmit"
-                        },
-                        new
-                        {
-                            Id = 12,
-                            Name = "InProgress"
                         });
                 });
 
@@ -3382,7 +1681,7 @@ namespace EPR.PRN.Backend.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Lookup.RegulatorTask", (string)null);
+                    b.ToTable("Lookup.RegulatorTask");
 
                     b.HasData(
                         new
@@ -3595,14 +1894,6 @@ namespace EPR.PRN.Backend.Data.Migrations
                         },
                         new
                         {
-                            Id = 28,
-                            ApplicationTypeId = 2,
-                            IsMaterialSpecific = true,
-                            JourneyTypeId = 2,
-                            Name = "DulyMade"
-                        },
-                        new
-                        {
                             Id = 29,
                             ApplicationTypeId = 1,
                             IsMaterialSpecific = false,
@@ -3626,7 +1917,7 @@ namespace EPR.PRN.Backend.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Lookup.TaskStatus", (string)null);
+                    b.ToTable("Lookup.TaskStatus");
 
                     b.HasData(
                         new
@@ -3683,7 +1974,7 @@ namespace EPR.PRN.Backend.Data.Migrations
 
                     b.HasIndex("RegistrationMaterialId");
 
-                    b.ToTable("Public.MaterialExemptionReference", (string)null);
+                    b.ToTable("Public.MaterialExemptionReference");
                 });
 
             modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.Note", b =>
@@ -3707,7 +1998,7 @@ namespace EPR.PRN.Backend.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Public.Note", (string)null);
+                    b.ToTable("Public.Note");
                 });
 
             modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.Registration", b =>
@@ -3766,7 +2057,7 @@ namespace EPR.PRN.Backend.Data.Migrations
 
                     b.HasIndex("ReprocessingSiteAddressId");
 
-                    b.ToTable("Public.Registration", (string)null);
+                    b.ToTable("Public.Registration");
                 });
 
             modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.RegistrationFileUpload", b =>
@@ -3817,7 +2108,7 @@ namespace EPR.PRN.Backend.Data.Migrations
 
                     b.HasIndex("RegistrationMaterialId");
 
-                    b.ToTable("public.FileUpload", (string)null);
+                    b.ToTable("public.FileUpload");
                 });
 
             modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.RegistrationMaterial", b =>
@@ -3845,7 +2136,7 @@ namespace EPR.PRN.Backend.Data.Migrations
                     b.Property<int?>("EnvironmentalPermitWasteManagementPeriodId")
                         .HasColumnType("int");
 
-                    b.Property<decimal?>("EnvironmentalPermitWasteManagementTonne")
+                    b.Property<decimal>("EnvironmentalPermitWasteManagementTonne")
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<Guid>("ExternalId")
@@ -3859,7 +2150,7 @@ namespace EPR.PRN.Backend.Data.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
-                    b.Property<decimal?>("InstallationReprocessingTonne")
+                    b.Property<decimal>("InstallationReprocessingTonne")
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<bool>("IsMaterialRegistered")
@@ -3868,7 +2159,7 @@ namespace EPR.PRN.Backend.Data.Migrations
                     b.Property<int>("MaterialId")
                         .HasColumnType("int");
 
-                    b.Property<decimal?>("MaximumReprocessingCapacityTonne")
+                    b.Property<decimal>("MaximumReprocessingCapacityTonne")
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<int?>("MaximumReprocessingPeriodId")
@@ -3881,10 +2172,10 @@ namespace EPR.PRN.Backend.Data.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
-                    b.Property<decimal?>("PPCReprocessingCapacityTonne")
+                    b.Property<decimal>("PPCReprocessingCapacityTonne")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<int?>("PermitTypeId")
+                    b.Property<int>("PermitTypeId")
                         .HasColumnType("int");
 
                     b.Property<string>("ReasonforNotreg")
@@ -3912,7 +2203,7 @@ namespace EPR.PRN.Backend.Data.Migrations
                     b.Property<int?>("WasteManagementPeriodId")
                         .HasColumnType("int");
 
-                    b.Property<decimal?>("WasteManagementReprocessingCapacityTonne")
+                    b.Property<decimal>("WasteManagementReprocessingCapacityTonne")
                         .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
@@ -3938,36 +2229,7 @@ namespace EPR.PRN.Backend.Data.Migrations
 
                     b.HasIndex("WasteManagementPeriodId");
 
-                    b.ToTable("Public.RegistrationMaterial", (string)null);
-                });
-
-            modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.RegistrationMaterialContact", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<Guid>("ExternalId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("RegistrationMaterialId")
-                        .HasColumnType("int");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ExternalId")
-                        .IsUnique();
-
-                    b.HasIndex("RegistrationMaterialId")
-                        .IsUnique();
-
-                    b.ToTable("Public.RegistrationMaterialContact");
+                    b.ToTable("Public.RegistrationMaterial");
                 });
 
             modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.RegistrationReprocessingIO", b =>
@@ -4013,7 +2275,7 @@ namespace EPR.PRN.Backend.Data.Migrations
                     b.Property<decimal>("TotalOutputs")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<string>("TypeOfSuppliers")
+                    b.Property<string>("TypeOfSupplier")
                         .HasMaxLength(2000)
                         .HasColumnType("nvarchar(2000)");
 
@@ -4027,42 +2289,7 @@ namespace EPR.PRN.Backend.Data.Migrations
 
                     b.HasIndex("RegistrationMaterialId");
 
-                    b.ToTable("Public.RegistrationReprocessingIO", (string)null);
-                });
-
-            modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.RegistrationReprocessingIORawMaterialOrProducts", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<Guid>("ExternalId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<bool>("IsInput")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("RawMaterialOrProductName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("RegistrationReprocessingIOId")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("TonneValue")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ExternalId")
-                        .IsUnique();
-
-                    b.HasIndex("RegistrationReprocessingIOId");
-
-                    b.ToTable("Public.RegistrationReprocessingIORawMaterialOrProducts");
+                    b.ToTable("Public.RegistrationReprocessingIO");
                 });
 
             modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.RegistrationTaskStatusQueryNote", b =>
@@ -4085,7 +2312,7 @@ namespace EPR.PRN.Backend.Data.Migrations
 
                     b.HasIndex("RegulatorRegistrationTaskStatusId");
 
-                    b.ToTable("Public.RegistrationTaskStatusQueryNote", (string)null);
+                    b.ToTable("Public.RegistrationTaskStatusQueryNote");
                 });
 
             modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.RegulatorAccreditationRegistrationTaskStatus", b =>
@@ -4135,7 +2362,7 @@ namespace EPR.PRN.Backend.Data.Migrations
 
                     b.HasIndex("TaskStatusId");
 
-                    b.ToTable("Public.RegulatorAccreditationRegistrationTaskStatus", (string)null);
+                    b.ToTable("Public.RegulatorAccreditationRegistrationTaskStatus");
                 });
 
             modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.RegulatorAccreditationTaskStatus", b =>
@@ -4182,7 +2409,7 @@ namespace EPR.PRN.Backend.Data.Migrations
 
                     b.HasIndex("TaskStatusId");
 
-                    b.ToTable("Public.RegulatorAccreditationTaskStatus", (string)null);
+                    b.ToTable("Public.RegulatorAccreditationTaskStatus");
                 });
 
             modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.RegulatorApplicationTaskStatus", b =>
@@ -4229,7 +2456,7 @@ namespace EPR.PRN.Backend.Data.Migrations
 
                     b.HasIndex("TaskStatusId");
 
-                    b.ToTable("Public.RegulatorApplicationTaskStatus", (string)null);
+                    b.ToTable("Public.RegulatorApplicationTaskStatus");
                 });
 
             modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.RegulatorRegistrationTaskStatus", b =>
@@ -4276,7 +2503,7 @@ namespace EPR.PRN.Backend.Data.Migrations
 
                     b.HasIndex("TaskStatusId");
 
-                    b.ToTable("Public.RegulatorRegistrationTaskStatus", (string)null);
+                    b.ToTable("Public.RegulatorRegistrationTaskStatus");
                 });
 
             modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.ObligationCalculation", b =>
@@ -4392,11 +2619,7 @@ namespace EPR.PRN.Backend.Data.Migrations
                         .WithMany("ApplicantRegistrationTasksStatus")
                         .HasForeignKey("RegistrationId");
 
-                    b.HasOne("EPR.PRN.Backend.Data.DataModels.Registrations.RegistrationMaterial", "RegistrationMaterial")
-                        .WithMany("ApplicantTaskStatuses")
-                        .HasForeignKey("RegistrationMaterialId");
-
-                    b.HasOne("EPR.PRN.Backend.Data.DataModels.Registrations.LookupApplicantRegistrationTask", "Task")
+                    b.HasOne("EPR.PRN.Backend.Data.DataModels.Registrations.LookupRegulatorTask", "Task")
                         .WithMany()
                         .HasForeignKey("TaskId");
 
@@ -4405,8 +2628,6 @@ namespace EPR.PRN.Backend.Data.Migrations
                         .HasForeignKey("TaskStatusId");
 
                     b.Navigation("Registration");
-
-                    b.Navigation("RegistrationMaterial");
 
                     b.Navigation("Task");
 
@@ -4544,7 +2765,9 @@ namespace EPR.PRN.Backend.Data.Migrations
 
                     b.HasOne("EPR.PRN.Backend.Data.DataModels.Registrations.LookupMaterialPermit", "PermitType")
                         .WithMany()
-                        .HasForeignKey("PermitTypeId");
+                        .HasForeignKey("PermitTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("EPR.PRN.Backend.Data.DataModels.Registrations.Registration", "Registration")
                         .WithMany("Materials")
@@ -4579,15 +2802,6 @@ namespace EPR.PRN.Backend.Data.Migrations
                     b.Navigation("WasteManagementPeriod");
                 });
 
-            modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.RegistrationMaterialContact", b =>
-                {
-                    b.HasOne("EPR.PRN.Backend.Data.DataModels.Registrations.RegistrationMaterial", null)
-                        .WithOne("RegistrationMaterialContact")
-                        .HasForeignKey("EPR.PRN.Backend.Data.DataModels.Registrations.RegistrationMaterialContact", "RegistrationMaterialId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.RegistrationReprocessingIO", b =>
                 {
                     b.HasOne("EPR.PRN.Backend.Data.DataModels.Registrations.RegistrationMaterial", "RegistrationMaterial")
@@ -4597,15 +2811,6 @@ namespace EPR.PRN.Backend.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("RegistrationMaterial");
-                });
-
-            modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.RegistrationReprocessingIORawMaterialOrProducts", b =>
-                {
-                    b.HasOne("EPR.PRN.Backend.Data.DataModels.Registrations.RegistrationReprocessingIO", null)
-                        .WithMany("RegistrationReprocessingIORawMaterialOrProducts")
-                        .HasForeignKey("RegistrationReprocessingIOId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.RegistrationTaskStatusQueryNote", b =>
@@ -4766,8 +2971,6 @@ namespace EPR.PRN.Backend.Data.Migrations
                 {
                     b.Navigation("Accreditations");
 
-                    b.Navigation("ApplicantTaskStatuses");
-
                     b.Navigation("DeterminationDate");
 
                     b.Navigation("DulyMade");
@@ -4776,16 +2979,9 @@ namespace EPR.PRN.Backend.Data.Migrations
 
                     b.Navigation("MaterialExemptionReferences");
 
-                    b.Navigation("RegistrationMaterialContact");
-
                     b.Navigation("RegistrationReprocessingIO");
 
                     b.Navigation("Tasks");
-                });
-
-            modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.RegistrationReprocessingIO", b =>
-                {
-                    b.Navigation("RegistrationReprocessingIORawMaterialOrProducts");
                 });
 
             modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.RegulatorApplicationTaskStatus", b =>
