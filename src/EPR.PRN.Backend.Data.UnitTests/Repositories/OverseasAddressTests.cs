@@ -19,22 +19,9 @@ namespace EPR.PRN.Backend.Data.UnitTests.Repositories;
 [TestClass]
 public class OverseasAddressTests
 {
-    private MaterialRepository _materialRepositoryMockContext;
     private MaterialRepository _materialRepository;
     private EprContext _context;
     private Mock<ILogger<MaterialRepository>> _mockLogger;
-    private Mock<EprContext> _mockEprContext;
-    private readonly List<Material> _materials =
-        [
-            new Material { Id = 1, MaterialCode = "PL", MaterialName = MaterialType.Plastic.ToString() },
-            new Material { Id = 2, MaterialCode = "WD", MaterialName = MaterialType.Wood.ToString() },
-            new Material { Id = 3, MaterialCode = "AL", MaterialName = MaterialType.Aluminium.ToString() },
-            new Material { Id = 4, MaterialCode = "ST", MaterialName = MaterialType.Steel.ToString() },
-            new Material { Id = 5, MaterialCode = "PC", MaterialName = MaterialType.Paper.ToString() },
-            new Material { Id = 6, MaterialCode = "GL", MaterialName = MaterialType.Glass.ToString() },
-            new Material { Id = 7, MaterialCode = "GR", MaterialName = MaterialType.GlassRemelt.ToString() },
-            new Material { Id = 8, MaterialCode = "FC", MaterialName = MaterialType.FibreComposite.ToString() }
-        ];
 
     [TestInitialize]
     public void Setup()
@@ -43,7 +30,7 @@ public class OverseasAddressTests
             .UseInMemoryDatabase(databaseName: "TestDb")
             .ConfigureWarnings(x => x.Ignore(InMemoryEventId.TransactionIgnoredWarning))
             .Options;
-        _context = new EprContext(options);        
+        _context = new EprContext(options);
         _mockLogger = new Mock<ILogger<MaterialRepository>>();
         _materialRepository = new MaterialRepository(_context, _mockLogger.Object);
 
@@ -316,7 +303,7 @@ public class OverseasAddressTests
             RegistrationId = registrationId,
             MaterialId = 1,
             StatusId = 1,
-            IsMaterialRegistered = false,           
+            IsMaterialRegistered = false,
         });
         await _context.SaveChangesAsync();
 
@@ -376,8 +363,19 @@ public class OverseasAddressTests
                     ExternalId = Guid.NewGuid(),
                     OrganisationName = "New Org2",
                     AddressLine1 = "New Address Line 2",
-                    OverseasAddressContacts = new List<OverseasAddressContactDto>(),
-                    OverseasAddressWasteCodes = new List<OverseasAddressWasteCodeDto>(),
+                    OverseasAddressContacts = new List<OverseasAddressContactDto>()
+                    {
+                        new() { CreatedBy = userId,
+                            FullName = "New Contact2",
+                            Email = "test",
+                            PhoneNumber = "04343"
+                        }
+                        },
+
+                    OverseasAddressWasteCodes = new List<OverseasAddressWasteCodeDto>()
+                    {
+                        new() { ExternalId = Guid.NewGuid(), CodeName = "NewCode2" }
+                    },
                     CountryName = "CountryA",
                     AddressLine2 = "New Address Line 3",
                     CityOrTown = "New Town",
@@ -396,7 +394,7 @@ public class OverseasAddressTests
             .Include(a => a.OverseasAddressContacts)
             .Include(a => a.OverseasAddressWasteCodes)
             .ToListAsync();
-        var allTasks = await _context.RegistrationTaskStatus            
+        var allTasks = await _context.RegistrationTaskStatus
             .ToListAsync();
         // Old address updated
         var updated = allAddresses.First(a => a.ExternalId == existingExternalId);
@@ -411,7 +409,7 @@ public class OverseasAddressTests
         allAddresses.Count.Should().Be(2);
 
         // Check completed task is created
-        allTasks.Count.Should().Be(1);        
+        allTasks.Count.Should().Be(1);
         allTasks.FirstOrDefault()!.RegistrationMaterialId.Should().Be(registrationMaterialId);
         allTasks.FirstOrDefault()!.TaskStatus.Name.Should().Be(TaskStatuses.Completed.ToString());
         allTasks.FirstOrDefault()!.Task.Name.Should().Be(ApplicantRegistrationTaskNames.OverseasReprocessorSiteDetails);

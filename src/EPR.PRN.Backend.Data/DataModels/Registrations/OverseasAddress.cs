@@ -16,14 +16,14 @@ namespace EPR.PRN.Backend.Data.DataModels.Registrations
         public int Id { get; set; }
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid ExternalId { get; set; }
-        public Registration Registration { get; set; }
+        public Registration? Registration { get; set; }
         [ForeignKey("RegistrationId")]
         public int RegistrationId { get; set; }
         [MaxLength(100)]
         public string OrganisationName { get; set; }
         [ForeignKey("CountryId")]
         public int CountryId { get; set; }
-        public LookupCountry Country { get; set; }
+        public LookupCountry? Country { get; set; }
         [MaxLength(100)]
         public string AddressLine1 { get; set; }
         [MaxLength(100)]
