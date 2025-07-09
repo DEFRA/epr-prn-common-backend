@@ -1,10 +1,12 @@
 ﻿using System.Xml.XPath;
 using EPR.PRN.Backend.API.Common.Enums;
+using EPR.PRN.Backend.API.Common.Exceptions;
 using EPR.PRN.Backend.Data.DataModels;
 using EPR.PRN.Backend.Data.DataModels.Registrations;
 using EPR.PRN.Backend.Data.Repositories;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Microsoft.Testing.Platform.Extensions;
 using Moq;
 using Moq.EntityFrameworkCore;
@@ -18,30 +20,41 @@ public class MaterialRepositoryTests
     private Mock<EprContext> _mockEprContext;
     private static Guid _registrationId = Guid.NewGuid();
     private readonly List<Material> _materials =
-        [
-            new Material { Id = 1, MaterialCode = "PL", MaterialName = MaterialType.Plastic.ToString() },
-            new Material { Id = 2, MaterialCode = "WD", MaterialName = MaterialType.Wood.ToString() },
-            new Material { Id = 3, MaterialCode = "AL", MaterialName = MaterialType.Aluminium.ToString() },
-            new Material { Id = 4, MaterialCode = "ST", MaterialName = MaterialType.Steel.ToString() },
-            new Material { Id = 5, MaterialCode = "PC", MaterialName = MaterialType.Paper.ToString() },
-            new Material { Id = 6, MaterialCode = "GL", MaterialName = MaterialType.Glass.ToString() },
-            new Material { Id = 7, MaterialCode = "GR", MaterialName = MaterialType.GlassRemelt.ToString() },
-            new Material { Id = 8, MaterialCode = "FC", MaterialName = MaterialType.FibreComposite.ToString() }
-        ];
+		[
+			new Material { Id = 1, MaterialCode = "PL", MaterialName = MaterialType.Plastic.ToString() },
+			new Material { Id = 2, MaterialCode = "WD", MaterialName = MaterialType.Wood.ToString() },
+			new Material { Id = 3, MaterialCode = "AL", MaterialName = MaterialType.Aluminium.ToString() },
+			new Material { Id = 4, MaterialCode = "ST", MaterialName = MaterialType.Steel.ToString() },
+			new Material { Id = 5, MaterialCode = "PC", MaterialName = MaterialType.Paper.ToString() },
+			new Material { Id = 6, MaterialCode = "GL", MaterialName = MaterialType.Glass.ToString() },
+			new Material { Id = 7, MaterialCode = "GR", MaterialName = MaterialType.GlassRemelt.ToString() },
+			new Material { Id = 8, MaterialCode = "FC", MaterialName = MaterialType.FibreComposite.ToString() }
+		];
 
     private readonly List<RegistrationMaterial> _registrationMaterials =
         [
             new RegistrationMaterial { Id = 1, RegistrationId = 1, MaterialId = 1, IsMaterialRegistered = true, Registration = new Registration() { ExternalId = _registrationId } },
         ];
 
-    [TestInitialize]
-    public void Setup()
-    {
-        var dbContextOptions = new DbContextOptionsBuilder<EprContext>().Options;
-        _mockEprContext = new Mock<EprContext>(dbContextOptions);
-        _mockEprContext.Setup(context => context.Material).ReturnsDbSet(_materials);
+    private MaterialRepository _materialRepositoryFull;
+    private Mock<ILogger<MaterialRepository>> _mockLogger;
+    private EprContext _context;
+	[TestInitialize]
+	public void Setup()
+	{
+		var dbContextOptions = new DbContextOptionsBuilder<EprContext>().Options;
+		_mockEprContext = new Mock<EprContext>(dbContextOptions);
+		_mockEprContext.Setup(context => context.Material).ReturnsDbSet(_materials);
         _mockEprContext.Setup(context => context.RegistrationMaterials).ReturnsDbSet(_registrationMaterials);
-        _materialRepository = new MaterialRepository(_mockEprContext.Object);
+        _mockLogger = new Mock<ILogger<MaterialRepository>>();
+        _materialRepository = new MaterialRepository(_mockEprContext.Object, _mockLogger.Object);
+
+        var options = new DbContextOptionsBuilder<EprContext>()
+            .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
+            .Options;
+
+        _context = new EprContext(options);
+        _materialRepositoryFull = new MaterialRepository(_context, _mockLogger.Object);
     }
 
     [TestMethod]
@@ -412,6 +425,104 @@ public class MaterialRepositoryTests
         existingIO.TotalInputs.Should().Be(20);
         existingIO.TotalOutputs.Should().Be(18);
         existingIO.PlantEquipmentUsed.Should().Be("Updated Machine");
+    }
+
+    [TestMethod]
+    public async Task UpdateApplicationRegistrationTaskStatusAsync_ShouldAddNewStatus_WhenNotExists()
+    {
+        // Arrange
+        var registrationMaterialId = Guid.NewGuid();
+        var registrationMaterial = new RegistrationMaterial { Id = 1, ExternalId = registrationMaterialId, RegistrationId = 1 };
+        var registration = new Registration { Id = 1, ApplicationTypeId = 1, ExternalId = Guid.NewGuid() };
+        var task = new LookupApplicantRegistrationTask { Name = "NewTask", ApplicationTypeId = 1, IsMaterialSpecific = true };
+        var status = new LookupTaskStatus { Name = nameof(TaskStatuses.Completed) };
+
+        await _context.Registrations.AddAsync(registration);
+        await _context.RegistrationMaterials.AddAsync(registrationMaterial);
+        await _context.LookupApplicantRegistrationTasks.AddAsync(task);
+        await _context.LookupTaskStatuses.AddAsync(status);
+        await _context.SaveChangesAsync();
+
+        // Act
+        await _materialRepositoryFull.UpdateApplicationRegistrationTaskStatusAsync("NewTask", registrationMaterialId, TaskStatuses.Completed);
+
+        // Assert
+        var result = await _materialRepositoryFull.GetTaskStatusAsync("NewTask", registrationMaterialId);
+        result.Should().NotBeNull();
+        result!.TaskStatus.Name.Should().Be(TaskStatuses.Completed.ToString());
+    }
+
+    [TestMethod]
+    public async Task UpdateApplicationRegistrationTaskStatusAsync_ShouldUpdateExistingStatus()
+    {
+        // Arrange
+        var registrationMaterialId = Guid.NewGuid();
+        var registrationMaterial = new RegistrationMaterial { Id = 1, ExternalId = registrationMaterialId, RegistrationId = 1 };
+        var registration = new Registration { Id = 1, ApplicationTypeId = 1, ExternalId = Guid.NewGuid() };
+        var task = new LookupApplicantRegistrationTask { Name = "ExistingTask", ApplicationTypeId = 1, IsMaterialSpecific = false };
+        var oldStatus = new LookupTaskStatus { Name = TaskStatuses.Started.ToString() };
+        var newStatus = new LookupTaskStatus { Name = TaskStatuses.Completed.ToString() };
+
+        await _context.Registrations.AddAsync(registration);
+        await _context.RegistrationMaterials.AddAsync(registrationMaterial);
+        await _context.LookupApplicantRegistrationTasks.AddAsync(task);
+        await _context.LookupTaskStatuses.AddRangeAsync(oldStatus, newStatus);
+
+        var taskStatus = new ApplicantRegistrationTaskStatus
+        {
+            RegistrationId = 2,
+            Task = task,
+            TaskStatus = oldStatus,
+            RegistrationMaterialId = registrationMaterial.Id,
+        };
+
+        await _context.RegistrationTaskStatus.AddAsync(taskStatus);
+        await _context.SaveChangesAsync();
+
+        // Act
+        await _materialRepositoryFull.UpdateApplicationRegistrationTaskStatusAsync("ExistingTask", registrationMaterialId, TaskStatuses.Completed);
+
+        // Assert
+        var result = await _materialRepositoryFull.GetTaskStatusAsync("ExistingTask", registrationMaterialId);
+        result!.TaskStatus.Name.Should().Be(TaskStatuses.Completed.ToString());
+    }
+
+    [TestMethod]
+    public async Task UpdateApplicationRegistrationTaskStatusAsync_ShouldThrow_WhenRegistrationNotFound()
+    {
+        // Arrange
+        var registrationId = Guid.NewGuid();
+        var status = new LookupTaskStatus { Name = TaskStatuses.Completed.ToString() };
+        await _context.LookupTaskStatuses.AddAsync(status);
+        await _context.SaveChangesAsync();
+
+        // Act
+        Func<Task> act = async () => await _materialRepositoryFull.UpdateApplicationRegistrationTaskStatusAsync("AnyTask", registrationId, TaskStatuses.Completed);
+
+        // Assert
+        await act.Should().ThrowAsync<KeyNotFoundException>();
+    }
+
+    [TestMethod]
+    public async Task UpdateApplicationRegistrationTaskStatusAsync_ShouldThrow_WhenTaskNotFound()
+    {
+        // Arrange
+        var registrationMaterialId = Guid.NewGuid();
+        var registrationMaterial = new RegistrationMaterial { Id = 1, ExternalId = registrationMaterialId, RegistrationId = 1 };
+        var registration = new Registration { Id = 1, ApplicationTypeId = 1, ExternalId = Guid.NewGuid() };
+        var status = new LookupTaskStatus { Name = TaskStatuses.Completed.ToString() };
+
+        await _context.Registrations.AddAsync(registration);
+        await _context.RegistrationMaterials.AddAsync(registrationMaterial);
+        await _context.LookupTaskStatuses.AddAsync(status);
+        await _context.SaveChangesAsync();
+
+        // Act
+        Func<Task> act = async () => await _materialRepositoryFull.UpdateApplicationRegistrationTaskStatusAsync("MissingTask", registrationMaterialId, TaskStatuses.Completed);
+
+        // Assert
+        await act.Should().ThrowAsync<RegulatorInvalidOperationException>()
+            .WithMessage("No Valid Task Exists: MissingTask");
     }
 
     [TestMethod]
