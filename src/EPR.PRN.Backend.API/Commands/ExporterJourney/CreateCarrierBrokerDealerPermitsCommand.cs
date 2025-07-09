@@ -12,4 +12,6 @@ public class CreateCarrierBrokerDealerPermitsCommand : IRequest<bool>
     public Guid RegistrationId { get; set; }
 
 	public required string WasteCarrierBrokerDealerRegistration { get; set; }
+
+    public bool RegisteredWasteCarrierBrokerDealerFlag { get; set; }
 }

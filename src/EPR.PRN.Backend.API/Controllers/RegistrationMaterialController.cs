@@ -286,5 +286,5 @@ public class RegistrationMaterialController(
         await mediator.Send(command);
 
         return NoContent();
-    }
+    }    
 }

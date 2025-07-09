@@ -79,7 +79,8 @@ public class CreateCarrierBrokerDealerPermitsHandlerTests
         {
             UserId = Guid.NewGuid(),
             RegistrationId = registration.ExternalId,
-			WasteCarrierBrokerDealerRegistration = "Test 1"
+            WasteCarrierBrokerDealerRegistration = "Test 1",
+            RegisteredWasteCarrierBrokerDealerFlag = true
         };
 
         // Act
@@ -90,5 +91,6 @@ public class CreateCarrierBrokerDealerPermitsHandlerTests
         createdCarrierBrokerDealerPermit.Should().NotBeNull();
         createdCarrierBrokerDealerPermit.WasteCarrierBrokerDealerRegistration.Should().Be("Test 1");
         createdCarrierBrokerDealerPermit.CreatedBy.Should().Be(command.UserId);
+        createdCarrierBrokerDealerPermit.RegisteredWasteCarrierBrokerDealerFlag.Should().BeTrue();
     }
 }

@@ -1,4 +1,5 @@
-﻿using EPR.PRN.Backend.API.Dto.ExporterJourney;
+﻿using System.Diagnostics.CodeAnalysis;
+using EPR.PRN.Backend.API.Dto.ExporterJourney;
 using MediatR;
 using System.Diagnostics.CodeAnalysis;
 

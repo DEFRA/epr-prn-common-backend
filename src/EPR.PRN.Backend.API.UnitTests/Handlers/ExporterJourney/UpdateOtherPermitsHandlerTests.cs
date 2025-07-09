@@ -108,6 +108,7 @@ public class UpdateCarrierBrokerDealerPermitsHandlerTests
                 WasteLicenseOrPermitNumber = "test 1",
                 PpcNumber = "test 2",
                 WasteExemptionReference = new List<string> { "test 3", "test 4" },
+                RegisteredWasteCarrierBrokerDealerFlag = false
             }
         };
 
@@ -121,5 +122,6 @@ public class UpdateCarrierBrokerDealerPermitsHandlerTests
         updatedCarrierBrokerDealerPermit.InstallationPermitOrPPCNumber.Should().Be(command.Dto.PpcNumber);
         updatedCarrierBrokerDealerPermit.WasteExemptionReference.Should().Be("test 3,test 4");
         updatedCarrierBrokerDealerPermit.UpdatedBy.Should().Be(command.UserId);
+        updatedCarrierBrokerDealerPermit.RegisteredWasteCarrierBrokerDealerFlag.Should().Be(command.Dto.RegisteredWasteCarrierBrokerDealerFlag);
     }
 }

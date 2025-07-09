@@ -1,4 +1,5 @@
-﻿using EPR.PRN.Backend.API.Common.Enums;
+﻿using System.Diagnostics.CodeAnalysis;
+using EPR.PRN.Backend.API.Common.Enums;
 using EPR.PRN.Backend.API.Common.Exceptions;
 using EPR.PRN.Backend.Data.DataModels.Registrations;
 using EPR.PRN.Backend.Data.DTO;

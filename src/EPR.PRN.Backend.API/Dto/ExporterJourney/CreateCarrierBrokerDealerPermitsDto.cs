@@ -6,4 +6,6 @@ namespace EPR.PRN.Backend.API.Dto.ExporterJourney;
 public class CreateCarrierBrokerDealerPermitsDto
 {
 	public required string WasteCarrierBrokerDealerRegistration { get; set; }
+
+    public bool RegisteredWasteCarrierBrokerDealerFlag { get; set; } = false;
 }
