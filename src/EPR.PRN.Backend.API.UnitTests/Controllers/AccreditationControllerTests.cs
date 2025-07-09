@@ -1,11 +1,12 @@
 ﻿using AutoFixture;
-using Castle.Core.Logging;
 using EPR.PRN.Backend.API.Common.Enums;
 using EPR.PRN.Backend.API.Controllers;
-using EPR.PRN.Backend.API.Dto;
 using EPR.PRN.Backend.API.Dto.Accreditation;
+using EPR.PRN.Backend.API.Queries;
 using EPR.PRN.Backend.API.Services.Interfaces;
+using EPR.PRN.Backend.Data.DTO.Accreditiation;
 using FluentAssertions;
+using FluentAssertions.Execution;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -289,5 +290,67 @@ public class AccreditationControllerTests
         result.Should().BeOfType<OkResult>();
 
         _fileUploadServiceMock.VerifyAll();
+    }
+
+    [TestMethod]
+    public async Task GetAccreditationsOverviewForOrgId_ValidInputReturnsOkResult()
+    {
+        // Arrange
+        var organisationId = Guid.NewGuid();
+        var query = new GetAccreditationsOverviewByOrgIdQuery { OrganisationId = organisationId };
+        var expectedResult = new List<AccreditationOverviewDto>
+        {
+            new AccreditationOverviewDto
+            {
+                OrganisationId = organisationId
+            },
+            new AccreditationOverviewDto
+            {
+                OrganisationId = organisationId,
+            }
+        };
+
+        _mediatorMock.Setup(m => m.Send(It.IsAny<GetAccreditationsOverviewByOrgIdQuery>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(expectedResult);
+
+        // Act
+        var result = await _controller.GetAccreditationsOverviewForOrgId(organisationId);
+
+        // Assert
+        using (new AssertionScope())
+        {
+            result.Should().BeOfType<OkObjectResult>();
+            var okResult = result as OkObjectResult;
+            okResult!.Value.Should().BeEquivalentTo(expectedResult);
+        }
+    }
+
+    [TestMethod]
+    public async Task GetAccreditationsOverviewForOrgId_InvalidInputThrows()
+    {
+        // Arrange
+        var organisationId = Guid.NewGuid();
+        var query = new GetAccreditationsOverviewByOrgIdQuery();
+        var expectedResult = new List<AccreditationOverviewDto>
+        {
+            new AccreditationOverviewDto
+            {
+                OrganisationId = organisationId
+            },
+            new AccreditationOverviewDto
+            {
+                OrganisationId = organisationId,
+            }
+        };
+
+        _mediatorMock.Setup(m => m.Send(It.IsAny<GetAccreditationsOverviewByOrgIdQuery>(), It.IsAny<CancellationToken>()))
+            .ThrowsAsync(new FluentValidation.ValidationException("Invalid organisation ID"));
+
+        // Act
+        Func<Task> act = async () => await _controller.GetAccreditationsOverviewForOrgId(organisationId);
+
+        // Assert
+        await act.Should().ThrowAsync<FluentValidation.ValidationException>()
+            .WithMessage("Invalid organisation ID");
     }
 }
