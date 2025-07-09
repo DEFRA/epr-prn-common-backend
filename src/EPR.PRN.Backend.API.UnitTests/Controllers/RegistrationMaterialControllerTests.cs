@@ -269,7 +269,13 @@ public class RegistrationMaterialControllerTests
                 new OverseasAddressDto
                 {
                     ExternalId = Guid.NewGuid(),
-                    AddressLine1 = "Test Line"
+                    AddressLine1 = "Test Line",
+                    SiteCoordinates = "51.5074, -0.1278",
+                    OrganisationName = "Test Organisation",
+                    CityOrTown = "London",
+                    CountryName = "United Kingdom",
+                    CreatedBy = Guid.NewGuid(),
+                    
                 }
             }
         };

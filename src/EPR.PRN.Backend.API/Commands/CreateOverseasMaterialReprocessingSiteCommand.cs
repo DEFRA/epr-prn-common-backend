@@ -5,6 +5,6 @@ namespace EPR.PRN.Backend.API.Commands
 {
     public class CreateOverseasMaterialReprocessingSiteCommand : IRequest
     {
-        public UpdateOverseasAddressDto UpdateOverseasAddress { get; set; }
+        public UpdateOverseasAddressDto? UpdateOverseasAddress { get; set; }
     }
 }

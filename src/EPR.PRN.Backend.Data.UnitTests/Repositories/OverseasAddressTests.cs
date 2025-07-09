@@ -348,6 +348,9 @@ public class OverseasAddressTests
                     ExternalId = existingExternalId,
                     AddressLine1 = "New Line 1",
                     OrganisationName = "New Org",
+                    CityOrTown = "New Town",
+                    SiteCoordinates = "51.5074, -0.1278",
+
                     OverseasAddressContacts = new List<OverseasAddressContactDto>
                     {
                         new OverseasAddressContactDto { CreatedBy = userId, FullName = "New Contact", Email = "new@email.com", PhoneNumber = "222" }
@@ -490,6 +493,7 @@ public class OverseasAddressTests
                     StateProvince = "Old State",
                     PostCode = "12345",
                     SiteCoordinates = "51.5074, -0.1278",
+                    CountryName = "CountryA",
                     OverseasAddressContacts = new List<OverseasAddressContactDto>(),
                     OverseasAddressWasteCodes = new List<OverseasAddressWasteCodeDto>(),
                 }
@@ -525,6 +529,7 @@ public class OverseasAddressTests
                     StateProvince = "Old State",
                     PostCode = "12345",
                     SiteCoordinates = "51.5074, -0.1278",
+                    CountryName = "CountryA",
                     OverseasAddressContacts = new List<OverseasAddressContactDto>(),
                     OverseasAddressWasteCodes = new List<OverseasAddressWasteCodeDto>(),
                 }

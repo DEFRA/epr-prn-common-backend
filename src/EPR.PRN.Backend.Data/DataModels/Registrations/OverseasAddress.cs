@@ -20,16 +20,16 @@ namespace EPR.PRN.Backend.Data.DataModels.Registrations
         [ForeignKey("RegistrationId")]
         public int RegistrationId { get; set; }
         [MaxLength(100)]
-        public string OrganisationName { get; set; }
+        public required string OrganisationName { get; set; }
         [ForeignKey("CountryId")]
         public int CountryId { get; set; }
         public LookupCountry? Country { get; set; }
         [MaxLength(100)]
-        public string AddressLine1 { get; set; }
+        public required string AddressLine1 { get; set; }
         [MaxLength(100)]
         public string? AddressLine2 { get; set; }
         [MaxLength(70)]
-        public string CityOrTown { get; set; }
+        public required string CityOrTown { get; set; }
         [MaxLength(70)]
         public string? StateProvince { get; set; }
         [MaxLength(20)]
@@ -38,7 +38,7 @@ namespace EPR.PRN.Backend.Data.DataModels.Registrations
         public Guid UpdatedBy { get; set; }
         public DateTime CreatedOn { get; set; }
         public DateTime UpdatedOn { get; set; }
-        public string SiteCoordinates { get; set; }
+        public string? SiteCoordinates { get; set; }
         public List<OverseasAddressContact> OverseasAddressContacts { get; set; } = [];
         public List<OverseasAddressWasteCode> OverseasAddressWasteCodes { get; set; } = [];
         public List<OverseasMaterialReprocessingSite> OverseasMaterialReprocessingSites { get; set; } = [];
