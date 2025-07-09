@@ -35,11 +35,12 @@ public class AccreditationRepository(EprContext eprContext) : IAccreditationRepo
 
     public async Task Create(Accreditation accreditation)
     {
+   
         var currentTimestamp = DateTime.UtcNow;
         accreditation.CreatedOn = currentTimestamp;
         accreditation.UpdatedOn = currentTimestamp;
         accreditation.ExternalId = Guid.NewGuid();
-        accreditation.CreatedBy = accreditation.ExternalId;
+        accreditation.CreatedBy =  accreditation.ExternalId; // These need to be replaced with the correct ids that must be passed through the apis from the front end.
         accreditation.UpdatedBy = accreditation.ExternalId;
         eprContext.Accreditations.Add(accreditation);
         await eprContext.SaveChangesAsync();
