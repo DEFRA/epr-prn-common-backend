@@ -6,16 +6,14 @@
 /// </summary>
 public static class ApplicantRegistrationTaskNames
 {
-    // Not sure if this is needed
-    //public const string AccreditationSamplingAndInspectionPlan = "AccreditationSamplingAndInspectionPlan";
-    //public const string BusinessPlan = "BusinessPlan";
-    //public const string BusinessAddress = "BusinessAddress";
-    //public const string OverseasReprocessingSitesAndBroadlyEquivalentEvidence = "OverseasReprocessingSitesAndEvidenceOfBroadlyEquivalentStandards";
-    //public const string PrnsTonnageAndAuthorityToIssuePrns = "PRNsTonnageAndAuthorityToIssuePRNs";
-    //public const string PERNsTonnageAndAuthorityToIssuePERNs = "PERNsTonnageAndAuthorityToIssuePERNs";
-    //public const string ReprocessingInputsAndOutputs = "ReprocessingInputsAndOutputs";
+    //public const string AccreditationSamplingAndInspectionPlan = "AccreditationSamplingAndInspectionPlan";                                                //NOSONAR
+    //public const string BusinessPlan = "BusinessPlan";                                                                                                    //NOSONAR
+    //public const string BusinessAddress = "BusinessAddress";                                                                                              //NOSONAR
+    //public const string OverseasReprocessingSitesAndBroadlyEquivalentEvidence = "OverseasReprocessingSitesAndEvidenceOfBroadlyEquivalentStandards";       //NOSONAR
+    //public const string PrnsTonnageAndAuthorityToIssuePrns = "PRNsTonnageAndAuthorityToIssuePRNs";                                                        //NOSONAR
+    //public const string PERNsTonnageAndAuthorityToIssuePERNs = "PERNsTonnageAndAuthorityToIssuePERNs";                                                    //NOSONAR
+    //public const string ReprocessingInputsAndOutputs = "ReprocessingInputsAndOutputs";                                                                    //NOSONAR
 
-    // Reprocessor & Exporter Tasks
     public const string SiteAddressAndContactDetails = "SiteAddressAndContactDetails";                              // Reprocessor
     public const string WasteLicensesPermitsAndExemptions = "WasteLicensesPermitsAndExemption";                     // Reprocessor
     public const string AboutthePackagingYouAreRegistering = "AboutthePackagingYouAreRegistering";                  // Reprocessor

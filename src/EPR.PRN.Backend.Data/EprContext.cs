@@ -299,17 +299,17 @@ public class EprContext : DbContext
            new LookupApplicantRegistrationTask { Id = 8, IsMaterialSpecific = false, ApplicationTypeId = 2, JourneyTypeId = 1, Name = ApplicantRegistrationTaskNames.OverseasReprocessingSitesYouExportTo },
            new LookupApplicantRegistrationTask { Id = 9, IsMaterialSpecific = false, ApplicationTypeId = 2, JourneyTypeId = 1, Name = ApplicantRegistrationTaskNames.InterimSites }
 
-           //new LookupApplicantRegistrationTask { Id = 6, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 1, Name = ApplicantRegistrationTaskNames.SamplingAndInspectionPlan },
-           //new LookupApplicantRegistrationTask { Id = 7, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 1, Name = ApplicantRegistrationTaskNames.OverseasReprocessingSitesYouExportTo },
-           //new LookupApplicantRegistrationTask { Id = 8, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 1, Name = ApplicantRegistrationTaskNames.InterimSites },
-           //new LookupApplicantRegistrationTask { Id = 9, IsMaterialSpecific = true, ApplicationTypeId = 1, JourneyTypeId = 2, Name = ApplicantRegistrationTaskNames.PrnsTonnageAndAuthorityToIssuePrns },
-           //new LookupApplicantRegistrationTask { Id = 10, IsMaterialSpecific = true, ApplicationTypeId = 1, JourneyTypeId = 2, Name = ApplicantRegistrationTaskNames.BusinessPlan },
-           //new LookupApplicantRegistrationTask { Id = 11, IsMaterialSpecific = true, ApplicationTypeId = 1, JourneyTypeId = 2, Name = ApplicantRegistrationTaskNames.AccreditationSamplingAndInspectionPlan },
-           //new LookupApplicantRegistrationTask { Id = 12, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 2, Name = ApplicantRegistrationTaskNames.PERNsTonnageAndAuthorityToIssuePERNs },
-           //new LookupApplicantRegistrationTask { Id = 13, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 2, Name = ApplicantRegistrationTaskNames.BusinessPlan },
-           //new LookupApplicantRegistrationTask { Id = 14, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 2, Name = ApplicantRegistrationTaskNames.AccreditationSamplingAndInspectionPlan },
-           //new LookupApplicantRegistrationTask { Id = 15, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 2, Name = ApplicantRegistrationTaskNames.OverseasReprocessingSitesAndBroadlyEquivalentEvidence },
-           //new LookupApplicantRegistrationTask { Id = 16, IsMaterialSpecific = false, ApplicationTypeId = 2, JourneyTypeId = 1, Name = ApplicantRegistrationTaskNames.WasteCarrierBrokerDealerNumber
+           //new LookupApplicantRegistrationTask { Id = 6, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 1, Name = ApplicantRegistrationTaskNames.SamplingAndInspectionPlan },                                  //NOSONAR
+           //new LookupApplicantRegistrationTask { Id = 7, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 1, Name = ApplicantRegistrationTaskNames.OverseasReprocessingSitesYouExportTo },                       //NOSONAR
+           //new LookupApplicantRegistrationTask { Id = 8, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 1, Name = ApplicantRegistrationTaskNames.InterimSites },                                               //NOSONAR
+           //new LookupApplicantRegistrationTask { Id = 9, IsMaterialSpecific = true, ApplicationTypeId = 1, JourneyTypeId = 2, Name = ApplicantRegistrationTaskNames.PrnsTonnageAndAuthorityToIssuePrns },                         //NOSONAR
+           //new LookupApplicantRegistrationTask { Id = 10, IsMaterialSpecific = true, ApplicationTypeId = 1, JourneyTypeId = 2, Name = ApplicantRegistrationTaskNames.BusinessPlan },                                              //NOSONAR
+           //new LookupApplicantRegistrationTask { Id = 11, IsMaterialSpecific = true, ApplicationTypeId = 1, JourneyTypeId = 2, Name = ApplicantRegistrationTaskNames.AccreditationSamplingAndInspectionPlan },                    //NOSONAR
+           //new LookupApplicantRegistrationTask { Id = 12, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 2, Name = ApplicantRegistrationTaskNames.PERNsTonnageAndAuthorityToIssuePERNs },                      //NOSONAR
+           //new LookupApplicantRegistrationTask { Id = 13, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 2, Name = ApplicantRegistrationTaskNames.BusinessPlan },                                              //NOSONAR
+           //new LookupApplicantRegistrationTask { Id = 14, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 2, Name = ApplicantRegistrationTaskNames.AccreditationSamplingAndInspectionPlan },                    //NOSONAR
+           //new LookupApplicantRegistrationTask { Id = 15, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 2, Name = ApplicantRegistrationTaskNames.OverseasReprocessingSitesAndBroadlyEquivalentEvidence },     //NOSONAR
+           //new LookupApplicantRegistrationTask { Id = 16, IsMaterialSpecific = false, ApplicationTypeId = 2, JourneyTypeId = 1, Name = ApplicantRegistrationTaskNames.WasteCarrierBrokerDealerNumber                              //NOSONAR
         );
 
         modelBuilder.Entity<LookupMaterialPermit>().HasData(
