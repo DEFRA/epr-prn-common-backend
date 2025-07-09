@@ -326,14 +326,8 @@ public class OverseasAddressTests
             StateProvince = "Old State",
             PostCode = "12345",
             SiteCoordinates = "51.5074, -0.1278",
-            OverseasAddressContacts = new List<OverseasAddressContact>
-            {
-                new OverseasAddressContact { CreatedBy = userId, FullName = "Old Contact", Email = "old@email.com", PhoneNumber = "111" }
-            },
-            OverseasAddressWasteCodes = new List<OverseasAddressWasteCode>
-            {
-                new OverseasAddressWasteCode { ExternalId = wasteCodeId, CodeName = "OldCode" }
-            }
+            OverseasAddressContacts = new List<OverseasAddressContact>(),
+            OverseasAddressWasteCodes = new List<OverseasAddressWasteCode>(),   
         };
         _context.OverseasAddress.Add(existingAddress);
         await _context.SaveChangesAsync();
