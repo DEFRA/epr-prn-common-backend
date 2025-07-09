@@ -6,17 +6,26 @@
 /// </summary>
 public static class ApplicantRegistrationTaskNames
 {
-    public const string AccreditationSamplingAndInspectionPlan = "AccreditationSamplingAndInspectionPlan";
-    public const string BusinessPlan = "BusinessPlan";
-    public const string BusinessAddress = "BusinessAddress";
-    public const string OverseasReprocessingSitesAndBroadlyEquivalentEvidence = "OverseasReprocessingSitesAndEvidenceOfBroadlyEquivalentStandards";
-    public const string PrnsTonnageAndAuthorityToIssuePrns = "PRNsTonnageAndAuthorityToIssuePRNs";
-    public const string PERNsTonnageAndAuthorityToIssuePERNs = "PERNsTonnageAndAuthorityToIssuePERNs";
-    public const string ReprocessingInputsAndOutputs = "ReprocessingInputsAndOutputs";
-    public const string SamplingAndInspectionPlan = "SamplingAndInspectionPlan";
-    public const string SiteAddressAndContactDetails = "SiteAddressAndContactDetails";
-    public const string WasteLicensesPermitsAndExemptions = "WasteLicensesPermitsAndExemptions";
-    public const string WasteCarrierBrokerDealerNumber = "WasteCarrierBrokerDealerNumber";
-    public const string OverseasReprocessorSiteDetails = "OverseasReprocessingSites";
-    public const string InterimSites = "InterimSites";
+    // Not sure if this is needed
+    //public const string AccreditationSamplingAndInspectionPlan = "AccreditationSamplingAndInspectionPlan";
+    //public const string BusinessPlan = "BusinessPlan";
+    //public const string BusinessAddress = "BusinessAddress";
+    //public const string OverseasReprocessingSitesAndBroadlyEquivalentEvidence = "OverseasReprocessingSitesAndEvidenceOfBroadlyEquivalentStandards";
+    //public const string PrnsTonnageAndAuthorityToIssuePrns = "PRNsTonnageAndAuthorityToIssuePRNs";
+    //public const string PERNsTonnageAndAuthorityToIssuePERNs = "PERNsTonnageAndAuthorityToIssuePERNs";
+    //public const string ReprocessingInputsAndOutputs = "ReprocessingInputsAndOutputs";
+
+    // Reprocessor & Exporter Tasks
+    public const string SiteAddressAndContactDetails = "SiteAddressAndContactDetails";                              // Reprocessor
+    public const string WasteLicensesPermitsAndExemptions = "WasteLicensesPermitsAndExemption";                     // Reprocessor
+    public const string AboutthePackagingYouAreRegistering = "AboutthePackagingYouAreRegistering";                  // Reprocessor
+    public const string SamplingAndInspectionPlan = "SamplingAndInspectionPlan";                                    // Reprocessor & Exporter
+
+    public const string AddressForServiceofNotices = "AddressForServiceofNotices";                                  // Exporter
+    public const string CarrierBrokerDealerNumberAndOtherPermits = "CarrierBrokerDealerNumberAndOtherPermits";      // Exporter
+    public const string AboutThePackagingWasteYouExport = "AboutThePackagingWasteYouExport";                        // Exporter
+    public const string OverseasReprocessingSitesYouExportTo = "OverseasReprocessingSitesYouExportTo";              // Exporter
+    public const string InterimSites = "InterimSites";                                                              // Exporter
+
+
 }

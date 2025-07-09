@@ -1,6 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
 using AutoMapper;
 using EPR.PRN.Backend.API.Commands;
+using EPR.PRN.Backend.API.Common.Constants;
 using EPR.PRN.Backend.API.Common.Enums;
 using EPR.PRN.Backend.API.Dto;
 using EPR.PRN.Backend.Data.Interfaces;
@@ -16,8 +17,17 @@ public class CreateRegistrationHandler(IRegistrationRepository repository, IMapp
     {
         var registration = await repository.CreateRegistrationAsync(command.ApplicationTypeId, command.OrganisationId, command.ReprocessingSiteAddress);
 
-        await repository.UpdateRegistrationTaskStatusAsync(nameof(RegistrationTaskType.SiteAddressAndContactDetails),
-            registration.ExternalId, TaskStatuses.Started);
+        var taskTypeNameMap = new Dictionary<int, string>
+        {
+            { 1, ApplicantRegistrationTaskNames.SiteAddressAndContactDetails },
+            { 2, ApplicantRegistrationTaskNames.AddressForServiceofNotices }
+        };
+
+        var taskType = taskTypeNameMap.TryGetValue(command.ApplicationTypeId, out var name)
+            ? name
+            : throw new InvalidOperationException($"Unknown ApplicationTypeId: {command.ApplicationTypeId}");
+
+        await repository.UpdateRegistrationTaskStatusAsync(taskType, registration.ExternalId, TaskStatuses.Started);
 
         return mapper.Map<CreateRegistrationDto>(registration);
     }
