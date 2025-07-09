@@ -146,6 +146,58 @@ public class RegistrationControllerTests
     }
 
     [TestMethod]
+    public async Task UpdateRegistrationTaskStatus_ValidCommand_ReturnsNoContent()
+    {
+        // Arrange
+        var registrationId = Guid.NewGuid();
+        var command = new UpdateRegistrationTaskStatusCommand();
+
+        _validationServiceMock
+            .Setup(v => v.ValidateAndThrowAsync(It.IsAny<UpdateRegistrationTaskStatusCommand>(), It.IsAny<CancellationToken>()))
+            .Returns(Task.CompletedTask);
+
+        _mediatorMock
+            .Setup(m => m.Send(It.IsAny<UpdateRegistrationTaskStatusCommand>(), It.IsAny<CancellationToken>()))
+            .Returns(Task.FromResult(Unit.Value));
+
+        // Act
+        var result = await _controller.UpdateRegistrationTaskStatus(registrationId, command);
+
+        // Assert
+        using (new AssertionScope())
+        {
+            result.Should().BeOfType<NoContentResult>();
+            command.RegistrationId.Should().Be(registrationId);
+        }
+    }
+
+    [TestMethod]
+    public async Task UpdateApplicantRegistrationTaskStatus_ValidCommand_ReturnsNoContent()
+    {
+        // Arrange
+        var registrationId = Guid.NewGuid();
+        var command = new UpdateApplicantRegistrationTaskStatusCommand();
+
+        _validationServiceMock
+            .Setup(v => v.ValidateAndThrowAsync(It.IsAny<UpdateApplicantRegistrationTaskStatusCommand>(), It.IsAny<CancellationToken>()))
+            .Returns(Task.CompletedTask);
+
+        _mediatorMock
+            .Setup(m => m.Send(It.IsAny<UpdateApplicantRegistrationTaskStatusCommand>(), It.IsAny<CancellationToken>()))
+            .Returns(Task.FromResult(Unit.Value));
+
+        // Act
+        var result = await _controller.UpdateApplicantRegistrationTaskStatus(registrationId, command);
+
+        // Assert
+        using (new AssertionScope())
+        {
+            result.Should().BeOfType<NoContentResult>();
+            command.RegistrationId.Should().Be(registrationId);
+        }
+    }
+
+    [TestMethod]
     public async Task GetRegistrationTaskOverviewById_OkResult()
     {
         // Arrange

@@ -45,25 +45,29 @@ public class EprContext : DbContext
         modelBuilder.Entity<PrnStatus>()
             .HasData(DataModels.PrnStatus.Data);
 
-        modelBuilder.Entity<Registration>()
-            .HasOne(r => r.CarrierBrokerDealerPermit)
-            .WithOne()
-            .HasForeignKey<CarrierBrokerDealerPermits>(cb => cb.RegistrationId);
+            modelBuilder.Entity<Registration>()
+                .HasOne(r => r.CarrierBrokerDealerPermit)
+                .WithOne(c => c.Registration)
+                .HasForeignKey<CarrierBrokerDealerPermits>(cb => cb.RegistrationId);
 
         modelBuilder.Entity<CarrierBrokerDealerPermits>()
             .HasIndex(e => e.ExternalId)
             .IsUnique(); // Ensures UniqueId is unique
 
-        modelBuilder.Entity<RecyclingTarget>()
-            .HasData
-            (
-                // Paper
-                new() { Id = 1, MaterialNameRT = MaterialType.Paper.ToString(), Target = 0.75, Year = 2025 },
-                new() { Id = 2, MaterialNameRT = MaterialType.Paper.ToString(), Target = 0.77, Year = 2026 },
-                new() { Id = 3, MaterialNameRT = MaterialType.Paper.ToString(), Target = 0.79, Year = 2027 },
-                new() { Id = 4, MaterialNameRT = MaterialType.Paper.ToString(), Target = 0.81, Year = 2028 },
-                new() { Id = 5, MaterialNameRT = MaterialType.Paper.ToString(), Target = 0.83, Year = 2029 },
-                new() { Id = 6, MaterialNameRT = MaterialType.Paper.ToString(), Target = 0.85, Year = 2030 },
+            modelBuilder.Entity<CarrierBrokerDealerPermits>()
+                .Property(e => e.ExternalId)
+                .HasDefaultValueSql("NEWID()");
+
+            modelBuilder.Entity<RecyclingTarget>()
+                .HasData
+                (
+                    // Paper
+                    new() { Id = 1, MaterialNameRT = MaterialType.Paper.ToString(), Target = 0.75, Year = 2025 },
+                    new() { Id = 2, MaterialNameRT = MaterialType.Paper.ToString(), Target = 0.77, Year = 2026 },
+                    new() { Id = 3, MaterialNameRT = MaterialType.Paper.ToString(), Target = 0.79, Year = 2027 },
+                    new() { Id = 4, MaterialNameRT = MaterialType.Paper.ToString(), Target = 0.81, Year = 2028 },
+                    new() { Id = 5, MaterialNameRT = MaterialType.Paper.ToString(), Target = 0.83, Year = 2029 },
+                    new() { Id = 6, MaterialNameRT = MaterialType.Paper.ToString(), Target = 0.85, Year = 2030 },
 
                 // Glass
                 new() { Id = 7, MaterialNameRT = MaterialType.Glass.ToString(), Target = 0.74, Year = 2025 },
@@ -200,13 +204,16 @@ public class EprContext : DbContext
 			.OnDelete(DeleteBehavior.NoAction);
 
 			modelBuilder.Entity<LookupMaterial>().HasData(
-            new LookupMaterial { Id = 1, MaterialName = "Plastic", MaterialCode = "PL" },
-            new LookupMaterial { Id = 2, MaterialName = "Steel", MaterialCode = "ST" },
-            new LookupMaterial { Id = 3, MaterialName = "Aluminium", MaterialCode = "AL" },
-            new LookupMaterial { Id = 4, MaterialName = "Glass", MaterialCode = "GL" },
-            new LookupMaterial { Id = 5, MaterialName = "Paper/Board", MaterialCode = "PA" },
-            new LookupMaterial { Id = 6, MaterialName = "Wood", MaterialCode = "WO" });
-        
+                new LookupMaterial { Id = 1, MaterialName = "Plastic", MaterialCode = "PL" },
+                new LookupMaterial { Id = 2, MaterialName = "Steel", MaterialCode = "ST" },
+                new LookupMaterial { Id = 3, MaterialName = "Aluminium", MaterialCode = "AL" },
+                new LookupMaterial { Id = 4, MaterialName = "Glass", MaterialCode = "GL" },
+                new LookupMaterial { Id = 5, MaterialName = "Paper/Board", MaterialCode = "PA" },
+                new LookupMaterial { Id = 6, MaterialName = "Wood", MaterialCode = "WO" });
+
+            modelBuilder.Entity<LookupCountry>().HasData(
+                CountryConstants.Countries.Select(c => new LookupCountry { Id = c.Id, CountryCode = c.Code, Name = c.Name }).ToArray()
+            );
 
         modelBuilder.Entity<LookupRegistrationMaterialStatus>().HasData(
             new LookupRegistrationMaterialStatus { Id = 1, Name = "Granted" },
@@ -218,7 +225,8 @@ public class EprContext : DbContext
             new LookupRegistrationMaterialStatus { Id = 8, Name = "Withdrawn" },
             new LookupRegistrationMaterialStatus { Id = 9, Name = "Suspended" },
             new LookupRegistrationMaterialStatus { Id = 10, Name = "Cancelled" },
-            new LookupRegistrationMaterialStatus { Id = 11, Name = "ReadyToSubmit" });
+            new LookupRegistrationMaterialStatus { Id = 11, Name = "ReadyToSubmit" },
+			new LookupRegistrationMaterialStatus { Id = 12, Name = "InProgress" });
 
         modelBuilder.Entity<LookupAccreditationStatus>().HasData(
             new LookupAccreditationStatus { Id = 1, Name = "Started" },
@@ -347,7 +355,20 @@ public class EprContext : DbContext
             .HasIndex(e => e.ExternalId)
             .IsUnique(); // Ensures UniqueId is unique
 
+        modelBuilder.Entity<RegistrationMaterial>()
+            .HasOne(r => r.RegistrationMaterialContact)
+            .WithOne()
+            .HasForeignKey<RegistrationMaterialContact>(cb => cb.RegistrationMaterialId);
+
+        modelBuilder.Entity<RegistrationMaterialContact>()
+            .HasIndex(e => e.ExternalId)
+            .IsUnique(); // Ensures UniqueId is unique
+
         modelBuilder.Entity<RegistrationReprocessingIO>()
+            .HasIndex(e => e.ExternalId)
+            .IsUnique(); // Ensures UniqueId is unique
+
+        modelBuilder.Entity<RegistrationReprocessingIORawMaterialOrProducts>()
             .HasIndex(e => e.ExternalId)
             .IsUnique(); // Ensures UniqueId is unique
 
@@ -394,8 +415,10 @@ public class EprContext : DbContext
 
     public virtual DbSet<Registration> Registrations { get; set; }
     public virtual DbSet<RegistrationMaterial> RegistrationMaterials { get; set; }
+    public virtual DbSet<RegistrationMaterialContact> RegistrationMaterialContacts { get; set; }
     public virtual DbSet<MaterialExemptionReference> MaterialExemptionReferences { get; set; }
     public virtual DbSet<RegistrationReprocessingIO> RegistrationReprocessingIO { get; set; }
+    public virtual DbSet<RegistrationReprocessingIORawMaterialOrProducts> RegistrationReprocessingIORawMaterialOrProducts { get; set; }
     public virtual DbSet<DeterminationDate> DeterminationDate { get; set; }
     public virtual DbSet<DulyMade> DulyMade { get; set; }
     public virtual DbSet<CarrierBrokerDealerPermits> CarrierBrokerDealerPermits { get; set; }
@@ -418,5 +441,6 @@ public class EprContext : DbContext
     public virtual DbSet<RegulatorAccreditationTaskStatus> RegulatorAccreditationTaskStatus { get; set; }
     public virtual DbSet<AccreditationTaskStatusQueryNote> AccreditationTaskStatusQueryNote { get; set; }
     public virtual DbSet<AccreditationDeterminationDate> AccreditationDeterminationDate { get; set; }
+    public virtual DbSet<LookupCountry> LookupCountries { get; set; }
 
 }
