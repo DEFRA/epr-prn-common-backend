@@ -3,6 +3,5 @@
     public class OverseasAddressSubmissionDto
     {
         public List<Data.DTO.OverseasAddressDto> OverseasAddresses { get; set; } = [];
-        public Guid RegistrationMaterialId { get; set; }
     }
 }

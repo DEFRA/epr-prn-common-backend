@@ -261,9 +261,9 @@ public class RegistrationMaterialControllerTests
     public async Task SaveOverseasReprocessingSites_ShouldReturnNoContent_WhenValid()
     {
         // Arrange
+        var registrationMaterialId = new Guid("3041bf68-6943-4fa0-8a02-7a8c587acf1d");
         var dto = new OverseasAddressSubmissionDto
-        {
-            RegistrationMaterialId = new Guid("3041bf68-6943-4fa0-8a02-7a8c587acf1d"),
+        {            
             OverseasAddresses = new List<OverseasAddressDto>
             {
                 new OverseasAddressDto
@@ -279,12 +279,12 @@ public class RegistrationMaterialControllerTests
             .Returns(Task.CompletedTask);
 
         // Act
-        var result = await _controller.SaveOverseasReprocessingSites(dto);
+        var result = await _controller.SaveOverseasReprocessingSites(registrationMaterialId, dto);
 
         // Assert
         result.Should().BeOfType<NoContentResult>();
         _mediatorMock.Verify(m => m.Send(It.Is<CreateOverseasMaterialReprocessingSiteCommand>(cmd =>
-            cmd.UpdateOverseasAddress.RegistrationMaterialId == dto.RegistrationMaterialId &&
+            cmd.UpdateOverseasAddress.RegistrationMaterialId == registrationMaterialId &&
             cmd.UpdateOverseasAddress.OverseasAddresses == dto.OverseasAddresses
         ), It.IsAny<CancellationToken>()), Times.Once);
     }
@@ -293,7 +293,7 @@ public class RegistrationMaterialControllerTests
     public async Task SaveOverseasReprocessingSites_ShouldThrowNullReferenceException_WhenSubmissionIsNull()
     {
         // Act
-        Func<Task> act = async () => await _controller.SaveOverseasReprocessingSites(null!);
+        Func<Task> act = async () => await _controller.SaveOverseasReprocessingSites(Guid.Empty ,null!);
 
         // Assert
         await act.Should().ThrowAsync<NullReferenceException>();
@@ -310,7 +310,7 @@ public class RegistrationMaterialControllerTests
             .ThrowsAsync(new InvalidOperationException("Mediator failed"));
 
         // Act
-        Func<Task> act = async () => await _controller.SaveOverseasReprocessingSites(dto);
+        Func<Task> act = async () => await _controller.SaveOverseasReprocessingSites(Guid.NewGuid() ,dto);
 
         // Assert
         await act.Should().ThrowAsync<InvalidOperationException>()
