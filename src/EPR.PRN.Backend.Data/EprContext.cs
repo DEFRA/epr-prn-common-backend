@@ -440,7 +440,12 @@ public class EprContext : DbContext
 
         modelBuilder.Entity<InterimOverseasConnections>().HasOne(o => o.OverseasAddress)
             .WithMany(rm => rm.InterimOverseasConnections)
-            .HasForeignKey(o => o.ParentOverseasAddressId)
+            .HasForeignKey(o => o.ParentOverseasAddressId)            
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<InterimOverseasConnections>().HasOne(o => o.OverseasAddress)
+            .WithMany(rm => rm.InterimOverseasConnections)
+            .HasForeignKey(o => o.InterimSiteId)
             .OnDelete(DeleteBehavior.Cascade);
 
         base.OnModelCreating(modelBuilder);
