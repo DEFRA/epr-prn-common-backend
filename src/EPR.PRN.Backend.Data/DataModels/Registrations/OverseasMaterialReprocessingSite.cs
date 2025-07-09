@@ -16,9 +16,9 @@ namespace EPR.PRN.Backend.Data.DataModels.Registrations
         public Guid ExternalId { get; set; }
         [ForeignKey("OverseasAddressId")]
         public int OverseasAddressId { get; set; }
-        public OverseasAddress OverseasAddress { get; set; }
+        public OverseasAddress? OverseasAddress { get; set; }
         [ForeignKey("RegistrationMaterialId")]
         public int RegistrationMaterialId { get; set; }
-        public RegistrationMaterial RegistrationMaterial { get; set; }
+        public RegistrationMaterial? RegistrationMaterial { get; set; }
     }
 }
