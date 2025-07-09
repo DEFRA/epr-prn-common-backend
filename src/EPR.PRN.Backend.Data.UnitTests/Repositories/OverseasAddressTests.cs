@@ -326,8 +326,14 @@ public class OverseasAddressTests
             StateProvince = "Old State",
             PostCode = "12345",
             SiteCoordinates = "51.5074, -0.1278",
-            OverseasAddressContacts = new List<OverseasAddressContact>(),
-            OverseasAddressWasteCodes = new List<OverseasAddressWasteCode>(),   
+            OverseasAddressContacts = new List<OverseasAddressContact>()
+            {
+                new() { CreatedBy = userId, FullName = "Old Contact", Email = "testemail", PhoneNumber = "09032" }
+            },
+            OverseasAddressWasteCodes = new List<OverseasAddressWasteCode>()
+            {
+                new OverseasAddressWasteCode() { ExternalId = wasteCodeId, CodeName = "OldCode"}
+            },   
         };
         _context.OverseasAddress.Add(existingAddress);
         await _context.SaveChangesAsync();
@@ -347,11 +353,13 @@ public class OverseasAddressTests
 
                     OverseasAddressContacts = new List<OverseasAddressContactDto>
                     {
-                        new OverseasAddressContactDto { CreatedBy = userId, FullName = "New Contact", Email = "new@email.com", PhoneNumber = "222" }
+                        new OverseasAddressContactDto { CreatedBy = userId, FullName = "New Contact", Email = "new@email.com", PhoneNumber = "222" },
+                        new OverseasAddressContactDto { CreatedBy = Guid.NewGuid(), FullName = "New Contact4", Email = "new23@email.com", PhoneNumber = "122" }
                     },
                     OverseasAddressWasteCodes = new List<OverseasAddressWasteCodeDto>
                     {
-                        new OverseasAddressWasteCodeDto { ExternalId = wasteCodeId, CodeName = "NewCode" }
+                        new OverseasAddressWasteCodeDto { ExternalId = wasteCodeId, CodeName = "NewCode" },
+                        new OverseasAddressWasteCodeDto { ExternalId = Guid.NewGuid(), CodeName = "NewCode222" }
                     },
                     CountryName = "CountryA"
                 },
@@ -366,12 +374,18 @@ public class OverseasAddressTests
                             FullName = "New Contact2",
                             Email = "test",
                             PhoneNumber = "04343"
-                        }
                         },
+                        new() { CreatedBy = userId,
+                            FullName = "New Contact3",
+                            Email = "test2",
+                            PhoneNumber = "04342"
+                        }
+                    },
 
                     OverseasAddressWasteCodes = new List<OverseasAddressWasteCodeDto>()
                     {
-                        new() { ExternalId = Guid.NewGuid(), CodeName = "NewCode2" }
+                        new() { ExternalId = wasteCodeId, CodeName = "NewCode2" },
+                        new() { ExternalId = Guid.NewGuid(), CodeName = "NewCode3" }
                     },
                     CountryName = "CountryA",
                     AddressLine2 = "New Address Line 3",

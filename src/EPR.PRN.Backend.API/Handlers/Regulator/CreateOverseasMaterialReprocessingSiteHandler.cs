@@ -9,7 +9,7 @@ namespace EPR.PRN.Backend.API.Handlers.Regulator
     {
         public async Task Handle(CreateOverseasMaterialReprocessingSiteCommand command, CancellationToken cancellationToken)
         {
-            await repository.SaveOverseasReprocessingSites(command.UpdateOverseasAddress);
+            await repository.SaveOverseasReprocessingSites(command.UpdateOverseasAddress!);
         }
     }
 }
