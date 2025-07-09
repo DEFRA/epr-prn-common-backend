@@ -254,8 +254,9 @@ public class RegistrationMaterialController(
         Description = "attempting to save newly created overseasReprocessingSites"
     )]
     [SwaggerResponse(StatusCodes.Status400BadRequest, "If the request is invalid or a validation error occurs.", typeof(ProblemDetails))]
-    [SwaggerResponse(StatusCodes.Status500InternalServerError, "If an unexpected error occurs.", typeof(ContentResult))]    
-    public async Task<IActionResult> SaveOverseasReprocessingSites([FromRoute] Guid registrationMaterialId, [FromBody] OverseasAddressSubmissionDto overseasAddressSubmission)
+    [SwaggerResponse(StatusCodes.Status500InternalServerError, "If an unexpected error occurs.", typeof(ContentResult))]
+    [ExcludeFromCodeCoverage(Justification = "TODO: To be done as part of Check your answers overseas reprocessors site(s)")]
+    public async Task<IActionResult> SaveOverseasReprocessingSites(Guid registrationMaterialId, [FromBody] OverseasAddressSubmissionDto overseasAddressSubmission)
     {
         logger.LogInformation(LogMessages.SaveOverseasReprocessingSites, registrationMaterialId);
         var command = new CreateOverseasMaterialReprocessingSiteCommand

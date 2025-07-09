@@ -5105,3 +5105,242 @@ GO
 COMMIT;
 GO
 
+BEGIN TRANSACTION;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250709105152_AddOverseasTables'
+)
+BEGIN
+    CREATE TABLE [Public.OverseasAddress] (
+        [Id] int NOT NULL IDENTITY,
+        [ExternalId] uniqueidentifier NOT NULL,
+        [RegistrationId] int NOT NULL,
+        [OrganisationName] nvarchar(100) NOT NULL,
+        [CountryId] int NOT NULL,
+        [AddressLine1] nvarchar(100) NOT NULL,
+        [AddressLine2] nvarchar(100) NULL,
+        [CityOrTown] nvarchar(70) NOT NULL,
+        [StateProvince] nvarchar(70) NULL,
+        [PostCode] nvarchar(20) NULL,
+        [CreatedBy] uniqueidentifier NOT NULL,
+        [UpdatedBy] uniqueidentifier NOT NULL,
+        [CreatedOn] datetime2 NOT NULL DEFAULT (GETUTCDATE()),
+        [UpdatedOn] datetime2 NOT NULL,
+        [SiteCoordinates] nvarchar(max) NOT NULL,
+        CONSTRAINT [PK_Public.OverseasAddress] PRIMARY KEY ([Id]),
+        CONSTRAINT [FK_Public.OverseasAddress_Lookup.Country_CountryId] FOREIGN KEY ([CountryId]) REFERENCES [Lookup.Country] ([Id]) ON DELETE CASCADE,
+        CONSTRAINT [FK_Public.OverseasAddress_Public.Registration_RegistrationId] FOREIGN KEY ([RegistrationId]) REFERENCES [Public.Registration] ([Id]) ON DELETE CASCADE
+    );
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250709105152_AddOverseasTables'
+)
+BEGIN
+    CREATE TABLE [Public.OverseasMaterialReprocessingSite] (
+        [Id] int NOT NULL IDENTITY,
+        [ExternalId] uniqueidentifier NOT NULL,
+        [OverseasAddressId] int NOT NULL,
+        [RegistrationMaterialId] int NOT NULL,
+        CONSTRAINT [PK_Public.OverseasMaterialReprocessingSite] PRIMARY KEY ([Id])
+    );
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250709105152_AddOverseasTables'
+)
+BEGIN
+    CREATE TABLE [Public.InterimOverseasConnections] (
+        [Id] int NOT NULL IDENTITY,
+        [ExternalId] uniqueidentifier NOT NULL,
+        [InterimSiteId] int NOT NULL,
+        [ParentOverseasAddressId] int NOT NULL,
+        CONSTRAINT [PK_Public.InterimOverseasConnections] PRIMARY KEY ([Id]),
+        CONSTRAINT [FK_Public.InterimOverseasConnections_Public.OverseasAddress_ParentOverseasAddressId] FOREIGN KEY ([ParentOverseasAddressId]) REFERENCES [Public.OverseasAddress] ([Id]) ON DELETE CASCADE
+    );
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250709105152_AddOverseasTables'
+)
+BEGIN
+    CREATE TABLE [Public.OverseasAddressContact] (
+        [Id] int NOT NULL IDENTITY,
+        [OverseasAddressId] int NOT NULL,
+        [FullName] nvarchar(100) NOT NULL,
+        [Email] nvarchar(100) NOT NULL,
+        [PhoneNumber] nvarchar(25) NOT NULL,
+        [CreatedOn] datetime2 NOT NULL DEFAULT (GETUTCDATE()),
+        [CreatedBy] uniqueidentifier NOT NULL,
+        CONSTRAINT [PK_Public.OverseasAddressContact] PRIMARY KEY ([Id]),
+        CONSTRAINT [FK_Public.OverseasAddressContact_Public.OverseasAddress_OverseasAddressId] FOREIGN KEY ([OverseasAddressId]) REFERENCES [Public.OverseasAddress] ([Id]) ON DELETE CASCADE
+    );
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250709105152_AddOverseasTables'
+)
+BEGIN
+    CREATE TABLE [Public.OverseasAddressWasteCode] (
+        [Id] int NOT NULL IDENTITY,
+        [ExternalId] uniqueidentifier NOT NULL,
+        [OverseasAddressId] int NOT NULL,
+        [CodeName] nvarchar(10) NOT NULL,
+        CONSTRAINT [PK_Public.OverseasAddressWasteCode] PRIMARY KEY ([Id]),
+        CONSTRAINT [FK_Public.OverseasAddressWasteCode_Public.OverseasAddress_OverseasAddressId] FOREIGN KEY ([OverseasAddressId]) REFERENCES [Public.OverseasAddress] ([Id]) ON DELETE CASCADE
+    );
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250709105152_AddOverseasTables'
+)
+BEGIN
+    CREATE TABLE [OverseasAddressOverseasMaterialReprocessingSite] (
+        [OverseasAddressesId] int NOT NULL,
+        [OverseasMaterialReprocessingSitesId] int NOT NULL,
+        CONSTRAINT [PK_OverseasAddressOverseasMaterialReprocessingSite] PRIMARY KEY ([OverseasAddressesId], [OverseasMaterialReprocessingSitesId]),
+        CONSTRAINT [FK_OverseasAddressOverseasMaterialReprocessingSite_Public.OverseasAddress_OverseasAddressesId] FOREIGN KEY ([OverseasAddressesId]) REFERENCES [Public.OverseasAddress] ([Id]) ON DELETE CASCADE,
+        CONSTRAINT [FK_OverseasAddressOverseasMaterialReprocessingSite_Public.OverseasMaterialReprocessingSite_OverseasMaterialReprocessingSitesId] FOREIGN KEY ([OverseasMaterialReprocessingSitesId]) REFERENCES [Public.OverseasMaterialReprocessingSite] ([Id]) ON DELETE CASCADE
+    );
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250709105152_AddOverseasTables'
+)
+BEGIN
+    CREATE TABLE [OverseasMaterialReprocessingSiteRegistrationMaterial] (
+        [OverseasMaterialReprocessingSitesId] int NOT NULL,
+        [RegistrationMaterialsId] int NOT NULL,
+        CONSTRAINT [PK_OverseasMaterialReprocessingSiteRegistrationMaterial] PRIMARY KEY ([OverseasMaterialReprocessingSitesId], [RegistrationMaterialsId]),
+        CONSTRAINT [FK_OverseasMaterialReprocessingSiteRegistrationMaterial_Public.OverseasMaterialReprocessingSite_OverseasMaterialReprocessingSit~] FOREIGN KEY ([OverseasMaterialReprocessingSitesId]) REFERENCES [Public.OverseasMaterialReprocessingSite] ([Id]) ON DELETE CASCADE,
+        CONSTRAINT [FK_OverseasMaterialReprocessingSiteRegistrationMaterial_Public.RegistrationMaterial_RegistrationMaterialsId] FOREIGN KEY ([RegistrationMaterialsId]) REFERENCES [Public.RegistrationMaterial] ([Id]) ON DELETE CASCADE
+    );
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250709105152_AddOverseasTables'
+)
+BEGIN
+    CREATE INDEX [IX_OverseasAddressOverseasMaterialReprocessingSite_OverseasMaterialReprocessingSitesId] ON [OverseasAddressOverseasMaterialReprocessingSite] ([OverseasMaterialReprocessingSitesId]);
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250709105152_AddOverseasTables'
+)
+BEGIN
+    CREATE INDEX [IX_OverseasMaterialReprocessingSiteRegistrationMaterial_RegistrationMaterialsId] ON [OverseasMaterialReprocessingSiteRegistrationMaterial] ([RegistrationMaterialsId]);
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250709105152_AddOverseasTables'
+)
+BEGIN
+    CREATE UNIQUE INDEX [IX_Public.InterimOverseasConnections_ExternalId] ON [Public.InterimOverseasConnections] ([ExternalId]);
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250709105152_AddOverseasTables'
+)
+BEGIN
+    CREATE INDEX [IX_Public.InterimOverseasConnections_ParentOverseasAddressId] ON [Public.InterimOverseasConnections] ([ParentOverseasAddressId]);
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250709105152_AddOverseasTables'
+)
+BEGIN
+    CREATE INDEX [IX_Public.OverseasAddress_CountryId] ON [Public.OverseasAddress] ([CountryId]);
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250709105152_AddOverseasTables'
+)
+BEGIN
+    CREATE UNIQUE INDEX [IX_Public.OverseasAddress_ExternalId] ON [Public.OverseasAddress] ([ExternalId]);
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250709105152_AddOverseasTables'
+)
+BEGIN
+    CREATE INDEX [IX_Public.OverseasAddress_RegistrationId] ON [Public.OverseasAddress] ([RegistrationId]);
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250709105152_AddOverseasTables'
+)
+BEGIN
+    CREATE INDEX [IX_Public.OverseasAddressContact_OverseasAddressId] ON [Public.OverseasAddressContact] ([OverseasAddressId]);
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250709105152_AddOverseasTables'
+)
+BEGIN
+    CREATE UNIQUE INDEX [IX_Public.OverseasAddressWasteCode_ExternalId] ON [Public.OverseasAddressWasteCode] ([ExternalId]);
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250709105152_AddOverseasTables'
+)
+BEGIN
+    CREATE INDEX [IX_Public.OverseasAddressWasteCode_OverseasAddressId] ON [Public.OverseasAddressWasteCode] ([OverseasAddressId]);
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250709105152_AddOverseasTables'
+)
+BEGIN
+    CREATE UNIQUE INDEX [IX_Public.OverseasMaterialReprocessingSite_ExternalId] ON [Public.OverseasMaterialReprocessingSite] ([ExternalId]);
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250709105152_AddOverseasTables'
+)
+BEGIN
+    INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+    VALUES (N'20250709105152_AddOverseasTables', N'8.0.8');
+END;
+GO
+
+COMMIT;
+GO
+
