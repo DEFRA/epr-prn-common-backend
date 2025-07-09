@@ -50,21 +50,6 @@ namespace EPR.PRN.Backend.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Public.OverseasMaterialReprocessingSite",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ExternalId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    OverseasAddressId = table.Column<int>(type: "int", nullable: false),
-                    RegistrationMaterialId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Public.OverseasMaterialReprocessingSite", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Public.InterimOverseasConnections",
                 columns: table => new
                 {
@@ -131,62 +116,30 @@ namespace EPR.PRN.Backend.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "OverseasAddressOverseasMaterialReprocessingSite",
+                name: "Public.OverseasMaterialReprocessingSite",
                 columns: table => new
                 {
-                    OverseasAddressesId = table.Column<int>(type: "int", nullable: false),
-                    OverseasMaterialReprocessingSitesId = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ExternalId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    OverseasAddressId = table.Column<int>(type: "int", nullable: false),
+                    RegistrationMaterialId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_OverseasAddressOverseasMaterialReprocessingSite", x => new { x.OverseasAddressesId, x.OverseasMaterialReprocessingSitesId });
+                    table.PrimaryKey("PK_Public.OverseasMaterialReprocessingSite", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_OverseasAddressOverseasMaterialReprocessingSite_Public.OverseasAddress_OverseasAddressesId",
-                        column: x => x.OverseasAddressesId,
+                        name: "FK_Public.OverseasMaterialReprocessingSite_Public.OverseasAddress_OverseasAddressId",
+                        column: x => x.OverseasAddressId,
                         principalTable: "Public.OverseasAddress",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_OverseasAddressOverseasMaterialReprocessingSite_Public.OverseasMaterialReprocessingSite_OverseasMaterialReprocessingSitesId",
-                        column: x => x.OverseasMaterialReprocessingSitesId,
-                        principalTable: "Public.OverseasMaterialReprocessingSite",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "OverseasMaterialReprocessingSiteRegistrationMaterial",
-                columns: table => new
-                {
-                    OverseasMaterialReprocessingSitesId = table.Column<int>(type: "int", nullable: false),
-                    RegistrationMaterialsId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_OverseasMaterialReprocessingSiteRegistrationMaterial", x => new { x.OverseasMaterialReprocessingSitesId, x.RegistrationMaterialsId });
-                    table.ForeignKey(
-                        name: "FK_OverseasMaterialReprocessingSiteRegistrationMaterial_Public.OverseasMaterialReprocessingSite_OverseasMaterialReprocessingSit~",
-                        column: x => x.OverseasMaterialReprocessingSitesId,
-                        principalTable: "Public.OverseasMaterialReprocessingSite",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_OverseasMaterialReprocessingSiteRegistrationMaterial_Public.RegistrationMaterial_RegistrationMaterialsId",
-                        column: x => x.RegistrationMaterialsId,
+                        name: "FK_Public.OverseasMaterialReprocessingSite_Public.RegistrationMaterial_RegistrationMaterialId",
+                        column: x => x.RegistrationMaterialId,
                         principalTable: "Public.RegistrationMaterial",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_OverseasAddressOverseasMaterialReprocessingSite_OverseasMaterialReprocessingSitesId",
-                table: "OverseasAddressOverseasMaterialReprocessingSite",
-                column: "OverseasMaterialReprocessingSitesId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_OverseasMaterialReprocessingSiteRegistrationMaterial_RegistrationMaterialsId",
-                table: "OverseasMaterialReprocessingSiteRegistrationMaterial",
-                column: "RegistrationMaterialsId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Public.InterimOverseasConnections_ExternalId",
@@ -236,17 +189,21 @@ namespace EPR.PRN.Backend.Data.Migrations
                 table: "Public.OverseasMaterialReprocessingSite",
                 column: "ExternalId",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Public.OverseasMaterialReprocessingSite_OverseasAddressId",
+                table: "Public.OverseasMaterialReprocessingSite",
+                column: "OverseasAddressId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Public.OverseasMaterialReprocessingSite_RegistrationMaterialId",
+                table: "Public.OverseasMaterialReprocessingSite",
+                column: "RegistrationMaterialId");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable(
-                name: "OverseasAddressOverseasMaterialReprocessingSite");
-
-            migrationBuilder.DropTable(
-                name: "OverseasMaterialReprocessingSiteRegistrationMaterial");
-
             migrationBuilder.DropTable(
                 name: "Public.InterimOverseasConnections");
 

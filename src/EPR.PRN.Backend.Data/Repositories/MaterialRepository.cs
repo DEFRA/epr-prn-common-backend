@@ -259,28 +259,27 @@ namespace EPR.PRN.Backend.Data.Repositories
                         .Select(c => c.Id)
                         .FirstOrDefault(),
                     OverseasAddressContacts = [.. x.OverseasAddressContacts.Select(c => new OverseasAddressContact
-                {
-                    FullName = c.FullName,
-                    Email = c.Email,
-                    PhoneNumber = c.PhoneNumber,
-                    CreatedBy = c.CreatedBy
-                })],
+              {
+                  FullName = c.FullName,
+                  Email = c.Email,
+                  PhoneNumber = c.PhoneNumber,
+                  CreatedBy = c.CreatedBy
+              })],
                     OverseasAddressWasteCodes = [.. x.OverseasAddressWasteCodes.Select(wc => new OverseasAddressWasteCode
-                {
-                    ExternalId = Guid.NewGuid(),
-                    CodeName = wc.CodeName,                    
-                })]
+              {
+                  ExternalId = Guid.NewGuid(),
+                  CodeName = wc.CodeName,
+              })],
+                    OverseasMaterialReprocessingSites = [
+                        new OverseasMaterialReprocessingSite
+                  {
+                      RegistrationMaterialId = registrationMaterialId,
+                      ExternalId = Guid.NewGuid(),
+                  }
+                    ]
                 }).ToList();
 
-            var overseasMaterialReprocessingSites = overseasAddressesToCreate.Select(x => new OverseasMaterialReprocessingSite
-            {
-                OverseasAddressId = x.Id,
-                RegistrationMaterialId = registrationMaterialId,
-                ExternalId = Guid.NewGuid(),
-            }).ToList();
-
             await context.OverseasAddress.AddRangeAsync(overseasAddressesToCreate);
-            await context.OverseasMaterialReprocessingSite.AddRangeAsync(overseasMaterialReprocessingSites);
             await context.SaveChangesAsync();
         }
 

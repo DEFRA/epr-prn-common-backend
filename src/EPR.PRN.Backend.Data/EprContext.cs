@@ -429,14 +429,14 @@ public class EprContext : DbContext
             .IsUnique(); // Ensures UniqueId is unique
 
         modelBuilder.Entity<OverseasMaterialReprocessingSite>()
-            .HasMany(o => o.OverseasAddresses)
-            .WithMany(x => x.OverseasMaterialReprocessingSites);
+            .HasOne(o => o.RegistrationMaterial)
+            .WithMany(x => x.OverseasMaterialReprocessingSites)
+            .OnDelete(DeleteBehavior.NoAction);
 
-        modelBuilder.Entity<OverseasMaterialReprocessingSite>().HasMany(o => o.RegistrationMaterials)
-            .WithMany(x => x.OverseasMaterialReprocessingSites);
-
-        modelBuilder.Entity<OverseasMaterialReprocessingSite>().HasMany(o => o.OverseasAddresses)
-            .WithMany(x => x.OverseasMaterialReprocessingSites);
+        modelBuilder.Entity<OverseasMaterialReprocessingSite>()
+            .HasOne(o => o.OverseasAddress)
+            .WithMany(x => x.OverseasMaterialReprocessingSites)
+            .OnDelete(DeleteBehavior.Cascade);
 
         modelBuilder.Entity<InterimOverseasConnections>().HasOne(o => o.OverseasAddress)
             .WithMany(x => x.InterimOverseasConnections)

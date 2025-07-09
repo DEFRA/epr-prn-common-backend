@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EPR.PRN.Backend.Data.Migrations
 {
     [DbContext(typeof(EprContext))]
-    [Migration("20250709105152_AddOverseasTables")]
+    [Migration("20250709141930_AddOverseasTables")]
     partial class AddOverseasTables
     {
         /// <inheritdoc />
@@ -3910,6 +3910,10 @@ namespace EPR.PRN.Backend.Data.Migrations
                     b.HasIndex("ExternalId")
                         .IsUnique();
 
+                    b.HasIndex("OverseasAddressId");
+
+                    b.HasIndex("RegistrationMaterialId");
+
                     b.ToTable("Public.OverseasMaterialReprocessingSite");
                 });
 
@@ -4482,36 +4486,6 @@ namespace EPR.PRN.Backend.Data.Migrations
                     b.ToTable("Public.RegulatorRegistrationTaskStatus");
                 });
 
-            modelBuilder.Entity("OverseasAddressOverseasMaterialReprocessingSite", b =>
-                {
-                    b.Property<int>("OverseasAddressesId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("OverseasMaterialReprocessingSitesId")
-                        .HasColumnType("int");
-
-                    b.HasKey("OverseasAddressesId", "OverseasMaterialReprocessingSitesId");
-
-                    b.HasIndex("OverseasMaterialReprocessingSitesId");
-
-                    b.ToTable("OverseasAddressOverseasMaterialReprocessingSite");
-                });
-
-            modelBuilder.Entity("OverseasMaterialReprocessingSiteRegistrationMaterial", b =>
-                {
-                    b.Property<int>("OverseasMaterialReprocessingSitesId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("RegistrationMaterialsId")
-                        .HasColumnType("int");
-
-                    b.HasKey("OverseasMaterialReprocessingSitesId", "RegistrationMaterialsId");
-
-                    b.HasIndex("RegistrationMaterialsId");
-
-                    b.ToTable("OverseasMaterialReprocessingSiteRegistrationMaterial");
-                });
-
             modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.ObligationCalculation", b =>
                 {
                     b.HasOne("EPR.PRN.Backend.Data.DataModels.Material", "Material")
@@ -4759,6 +4733,25 @@ namespace EPR.PRN.Backend.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("OverseasAddress");
+                });
+
+            modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.OverseasMaterialReprocessingSite", b =>
+                {
+                    b.HasOne("EPR.PRN.Backend.Data.DataModels.Registrations.OverseasAddress", "OverseasAddress")
+                        .WithMany("OverseasMaterialReprocessingSites")
+                        .HasForeignKey("OverseasAddressId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("EPR.PRN.Backend.Data.DataModels.Registrations.RegistrationMaterial", "RegistrationMaterial")
+                        .WithMany("OverseasMaterialReprocessingSites")
+                        .HasForeignKey("RegistrationMaterialId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("OverseasAddress");
+
+                    b.Navigation("RegistrationMaterial");
                 });
 
             modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.Registration", b =>
@@ -5014,36 +5007,6 @@ namespace EPR.PRN.Backend.Data.Migrations
                     b.Navigation("TaskStatus");
                 });
 
-            modelBuilder.Entity("OverseasAddressOverseasMaterialReprocessingSite", b =>
-                {
-                    b.HasOne("EPR.PRN.Backend.Data.DataModels.Registrations.OverseasAddress", null)
-                        .WithMany()
-                        .HasForeignKey("OverseasAddressesId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("EPR.PRN.Backend.Data.DataModels.Registrations.OverseasMaterialReprocessingSite", null)
-                        .WithMany()
-                        .HasForeignKey("OverseasMaterialReprocessingSitesId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("OverseasMaterialReprocessingSiteRegistrationMaterial", b =>
-                {
-                    b.HasOne("EPR.PRN.Backend.Data.DataModels.Registrations.OverseasMaterialReprocessingSite", null)
-                        .WithMany()
-                        .HasForeignKey("OverseasMaterialReprocessingSitesId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("EPR.PRN.Backend.Data.DataModels.Registrations.RegistrationMaterial", null)
-                        .WithMany()
-                        .HasForeignKey("RegistrationMaterialsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Eprn", b =>
                 {
                     b.Navigation("PrnStatusHistories");
@@ -5070,6 +5033,8 @@ namespace EPR.PRN.Backend.Data.Migrations
                     b.Navigation("OverseasAddressContacts");
 
                     b.Navigation("OverseasAddressWasteCodes");
+
+                    b.Navigation("OverseasMaterialReprocessingSites");
                 });
 
             modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.Registration", b =>
@@ -5101,6 +5066,8 @@ namespace EPR.PRN.Backend.Data.Migrations
                     b.Navigation("FileUploads");
 
                     b.Navigation("MaterialExemptionReferences");
+
+                    b.Navigation("OverseasMaterialReprocessingSites");
 
                     b.Navigation("RegistrationMaterialContact");
 
