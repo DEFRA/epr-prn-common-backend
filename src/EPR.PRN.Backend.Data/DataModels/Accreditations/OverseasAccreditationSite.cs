@@ -10,6 +10,8 @@ public class OverseasAccreditationSite
 
     public int OverseasAddressId { get; set; }
 
+    public required string OrganisationName { get; set; }
+
     public int MeetConditionsOfExportId { get; set; }
 
     public int StartDay { get; set; }
