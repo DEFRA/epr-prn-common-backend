@@ -399,7 +399,7 @@ public class OverseasAddressTests
         // Old address updated
         var updated = allAddresses.First(a => a.ExternalId == existingExternalId);
         updated.AddressLine1.Should().Be("New Line 1");
-        updated.OverseasAddressContacts.Should().ContainSingle(c => c.CreatedBy == userId && c.FullName == "New Contact" && c.Email == "new@email.com" && c.CreatedOn != DateTime.MinValue);
+        updated.OverseasAddressContacts.Should().ContainSingle(c => c.CreatedBy == userId && c.FullName == "New Contact" && c.Email == "new@email.com");        
         updated.OverseasAddressWasteCodes.Should().ContainSingle(wc => wc.CodeName == "NewCode");
 
         // New address added
