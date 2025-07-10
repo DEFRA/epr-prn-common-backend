@@ -438,10 +438,17 @@ public class EprContext : DbContext
             .WithMany(x => x.OverseasMaterialReprocessingSites)
             .OnDelete(DeleteBehavior.Cascade);
 
-        modelBuilder.Entity<InterimOverseasConnections>().HasOne(o => o.OverseasAddress)
-            .WithMany(x => x.InterimOverseasConnections)
-            .HasForeignKey(o => o.ParentOverseasAddressId)            
-            .OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<InterimOverseasConnections>()
+            .HasOne(ic => ic.ParentOverseasAddress)
+            .WithMany(oa => oa.ChildInterimConnections)
+            .HasForeignKey(ic => ic.ParentOverseasAddressId)
+            .OnDelete(DeleteBehavior.Cascade); 
+
+        modelBuilder.Entity<InterimOverseasConnections>()
+            .HasOne(ic => ic.OverseasAddress)
+            .WithMany(oa => oa.InterimConnections)
+            .HasForeignKey(ic => ic.InterimSiteId)
+            .OnDelete(DeleteBehavior.Restrict);
 
         base.OnModelCreating(modelBuilder);
     }

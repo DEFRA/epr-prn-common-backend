@@ -332,6 +332,24 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
 		await eprContext.SaveChangesAsync();
 	}
 
+    public async Task<IEnumerable<RegistrationMaterial>> GetOverseasMaterialReprocessingSites(Guid registrationMaterialId)
+    {
+        var result = await eprContext.RegistrationMaterials
+            .Where(rm => rm.ExternalId == registrationMaterialId)
+            .Include(rm => rm.OverseasMaterialReprocessingSites)
+            .ThenInclude(s => s.OverseasAddress)
+            .ThenInclude(oa => oa.OverseasAddressContacts)
+            .Include(rm => rm.OverseasMaterialReprocessingSites)
+            .ThenInclude(s => s.OverseasAddress)
+            .ThenInclude(oa => oa.ChildInterimConnections)
+            .ThenInclude(child_oa => child_oa.OverseasAddress)
+            .ThenInclude(child_oa => child_oa.OverseasAddressContacts)
+            .AsSplitQuery()
+            .ToListAsync();
+        return result;
+    }
+
+
     private IIncludableQueryable<RegistrationMaterial, LookupRegistrationMaterialStatus> GetRegistrationMaterialsWithRelatedEntities()
     {
         var registrationMaterials =
