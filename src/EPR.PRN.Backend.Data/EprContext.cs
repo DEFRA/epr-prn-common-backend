@@ -2,7 +2,7 @@
 using EPR.PRN.Backend.API.Common.Constants;
 using EPR.PRN.Backend.API.Common.Enums;
 using EPR.PRN.Backend.Data.DataModels;
-
+using EPR.PRN.Backend.Data.DataModels.Accreditations;
 using EPR.PRN.Backend.Data.DataModels.Registrations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -292,6 +292,13 @@ public class EprContext : DbContext
             new LookupRegulatorTask { Id = 28, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 2, Name = RegulatorTaskNames.DulyMade },
             new LookupRegulatorTask { Id = 29, IsMaterialSpecific = false, ApplicationTypeId = 1, JourneyTypeId = 1, Name = RegulatorTaskNames.WasteCarrierBrokerDealerNumber });
 
+        //modelBuilder.Entity<LookupTaskName>().HasData(
+        //    new LookupTaskName { Id = 1, Name = "PRNs tonnage and authority to issue PRNs" },
+        //    new LookupTaskName { Id = 2, Name = "Business Plan" },
+        //    new LookupTaskName { Id = 3, Name = "Accreditation sampling and inspection plan" },
+        //    new LookupTaskName { Id = 4, Name = "Overseas reprocessing sites and broadly equivalent evidence" }
+        //    );
+
         modelBuilder.Entity<LookupApplicantRegistrationTask>().HasData(
            new LookupApplicantRegistrationTask { Id = 1, IsMaterialSpecific = false, ApplicationTypeId = 1, JourneyTypeId = 1, Name = ApplicantRegistrationTaskNames.SiteAddressAndContactDetails },
            new LookupApplicantRegistrationTask { Id = 2, IsMaterialSpecific = true, ApplicationTypeId = 1, JourneyTypeId = 1, Name = ApplicantRegistrationTaskNames.WasteLicensesPermitsAndExemptions },
@@ -323,7 +330,8 @@ public class EprContext : DbContext
            new LookupPeriod { Id = 3, Name = "Per Week" });
 
         modelBuilder.Entity<LookupFileUploadType>().HasData(
-            new LookupFileUploadType { Id = 1, Name = "SamplingAndInspectionPlan" });
+            new LookupFileUploadType { Id = 1, Name = "SamplingAndInspectionPlan" },
+            new LookupFileUploadType { Id = 2, Name = "OverseasSiteEvidence" });
 
         modelBuilder.Entity<LookupFileUploadStatus>().HasData(
             new LookupFileUploadStatus { Id = 1, Name = "Virus check failed" },
@@ -404,6 +412,10 @@ public class EprContext : DbContext
             .HasIndex(e => e.ExternalId)
             .IsUnique(); // Ensures UniqueId is unique
 
+        modelBuilder.Entity<AccreditationTaskStatus>()
+            .HasIndex(e => e.ExternalId)
+            .IsUnique(); // Ensures UniqueId is unique
+
         modelBuilder.Entity<RegulatorApplicationTaskStatus>()
             .HasIndex(e => e.ExternalId)
             .IsUnique(); // Ensures UniqueId is unique
@@ -447,9 +459,16 @@ public class EprContext : DbContext
     public virtual DbSet<RegulatorApplicationTaskStatus> RegulatorApplicationTaskStatus { get; set; }
     public virtual DbSet<RegulatorRegistrationTaskStatus> RegulatorRegistrationTaskStatus { get; set; }
     public virtual DbSet<ApplicantRegistrationTaskStatus> RegistrationTaskStatus { get; set; }
+
+    public virtual DbSet<AccreditationTaskStatus> AccreditationTaskStatus { get; set; }
+
     public virtual DbSet<LookupMaterial> LookupMaterials { get; set; }
     public virtual DbSet<LookupRegistrationMaterialStatus> LookupRegistrationMaterialStatuses { get; set; }
     public virtual DbSet<LookupRegulatorTask> LookupTasks { get; set; }
+
+    public virtual DbSet<LookupJourneyType> LookupJourneyTypes { get; set; }
+    //public virtual DbSet<LookupTaskName> LookupTaskNames { get; set; }
+
     public virtual DbSet<LookupApplicantRegistrationTask> LookupApplicantRegistrationTasks { get; set; }
     public virtual DbSet<LookupTaskStatus> LookupTaskStatuses { get; set; }
     public virtual DbSet<Address> LookupAddresses { get; set; }
@@ -469,6 +488,6 @@ public class EprContext : DbContext
     public virtual DbSet<DataModels.Registrations.AccreditationFileUpload> AccreditationFileUploads { get; set; }
 
 
-
+   // public virtual DbSet<DataModels.Accreditations.AccreditationFileUpload> AccreditationFileUploads { get; set; }
 
 }

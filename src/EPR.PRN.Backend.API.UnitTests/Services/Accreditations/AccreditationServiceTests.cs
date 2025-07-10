@@ -9,6 +9,8 @@ using Moq;
 using AutoMapper;
 using EPR.PRN.Backend.API.Profiles;
 using EPR.PRN.Backend.Data.DataModels.Registrations;
+using EPR.PRN.Backend.Data.Interfaces;
+using EPR.PRN.Backend.Data.Interfaces.Regulator;
 
 namespace EPR.PRN.Backend.API.UnitTests.Services.Accreditations;
 
@@ -16,6 +18,8 @@ namespace EPR.PRN.Backend.API.UnitTests.Services.Accreditations;
 public class AccreditationServiceTests
 {
     private Mock<IAccreditationRepository> _repositoryMock;
+    private Mock<IRegistrationRepository> _registrationRepository;
+    private Mock<IRegistrationMaterialRepository> _registrationMaterialRepositoryMock;
     private Mock<ILogger<AccreditationService>> _loggerMock;
     private Mock<IConfiguration> _configurationMock;
     private AccreditationService _service;
@@ -24,6 +28,8 @@ public class AccreditationServiceTests
     public void Setup()
     {
         _repositoryMock = new Mock<IAccreditationRepository>();
+        _registrationRepository = new Mock<IRegistrationRepository>();
+        _registrationMaterialRepositoryMock = new Mock<IRegistrationMaterialRepository>();
         _loggerMock = new Mock<ILogger<AccreditationService>>();
         _configurationMock = new Mock<IConfiguration>();
         _configurationMock.Setup(c => c["LogPrefix"]).Returns("[EPR.PRN.Backend]");
@@ -36,6 +42,8 @@ public class AccreditationServiceTests
 
         _service = new AccreditationService(
             _repositoryMock.Object,
+            _registrationRepository.Object,
+            _registrationMaterialRepositoryMock.Object,
             mapper,
             _loggerMock.Object,
             _configurationMock.Object

@@ -20,6 +20,7 @@ using EPR.PRN.Backend.Obligation.Services;
 using EPR.PRN.Backend.Obligation.Strategies;
 using FluentValidation;
 using System.Diagnostics.CodeAnalysis;
+using EPR.PRN.Backend.Data.Interfaces.Accreditation;
 
 namespace EPR.PRN.Backend.API.Helpers
 {
@@ -41,8 +42,8 @@ namespace EPR.PRN.Backend.API.Helpers
                 .AddScoped<IMaterialCalculationStrategy, GeneralCalculationStrategy>()
                 .AddScoped<IMaterialCalculationService, MaterialCalculationService>()
                 .AddScoped<IMaterialRepository, MaterialRepository>()
-				.AddScoped<IObligationCalculationOrganisationSubmitterTypeRepository, ObligationCalculationOrganisationSubmitterTypeRepository>()
-				.AddScoped<IPrnRepository, PrnRepository>()
+                .AddScoped<IObligationCalculationOrganisationSubmitterTypeRepository, ObligationCalculationOrganisationSubmitterTypeRepository>()
+                .AddScoped<IPrnRepository, PrnRepository>()
                 .AddScoped<IValidator<SavePrnDetailsRequest>, SavePrnDetailsRequestValidator>()
                 .AddScoped<IValidator<UpdateRegistrationCommand>, UpdateRegistrationCommandValidator>()
                 .AddScoped<IValidator<UpdateRegulatorRegistrationTaskCommand>, UpdateRegulatorRegistrationTaskCommandValidator>()
@@ -53,6 +54,7 @@ namespace EPR.PRN.Backend.API.Helpers
                 .AddScoped<IRegistrationMaterialRepository, RegistrationMaterialRepository>()
                 .AddScoped<IRegulatorAccreditationRepository, RegulatorAccreditationRepository>()
                 .AddScoped<IRegulatorAccreditationTaskStatusRepository, RegulatorAccreditationTaskStatusRepository>()
+
                 .AddScoped<IDateTimeProvider, DateTimeProvider>()
                 .AddScoped<IAccreditationService, AccreditationService>()
                 .AddScoped<IAccreditationPrnIssueAuthService, AccreditationPrnIssueAuthService>()
@@ -63,7 +65,8 @@ namespace EPR.PRN.Backend.API.Helpers
                 .AddScoped<IRegistrationRepository, RegistrationRepository>()
                 .AddScoped<ILookupCountryRepository, CountryRepository>()
                 .AddScoped<ICarrierBrokerDealerPermitRepository, CarrierBrokerDealerPermitRepository>()
-                .AddScoped<IDateTimeProvider, DateTimeProvider>();
+                .AddScoped<IDateTimeProvider, DateTimeProvider>()
+                .AddScoped<IAccreditationTaskStatusRepository, AccreditationTaskStatusRepository>();
 
             return services;
         }

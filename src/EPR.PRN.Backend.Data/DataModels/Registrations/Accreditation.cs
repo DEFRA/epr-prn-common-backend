@@ -33,7 +33,7 @@ public class Accreditation
     public string? DecFullName { get; set; }
 
     [MaxLength(50)]
-    public string? JobTitle { get; set; }
+    public string? DecJobTitle { get; set; }
 
     public Guid CreatedBy { get; set; }
 
@@ -85,6 +85,8 @@ public class Accreditation
     public int AccreditationYear { get; set; }
    
     public List<RegulatorAccreditationTaskStatus>? Tasks { get; set; }
+
+    public List<AccreditationTaskStatus>? AccreditationTasksStatus { get; set; }
 
     public List<AccreditationDeterminationDate> AccreditationDulyMade { get; set; }        
    

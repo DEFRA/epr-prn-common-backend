@@ -19,8 +19,8 @@ public class AccreditationFileUpload
     [MaxLength(50)]
     public string UploadedBy { get; set; }
 
-    public int FileUploadTypeId { get; set; }
-    public int FileUploadStatusId { get; set; }
+    public int? FileUploadTypeId { get; set; }
+    public int? FileUploadStatusId { get; set; }
 
     public AccreditationEntity Accreditation { get; set; }
     public FileUploadType FileUploadType { get; set; }

@@ -55,7 +55,7 @@ public class AccreditationRepository(EprContext eprContext) : IAccreditationRepo
         existingAccreditation.ApplicationTypeId = accreditation.ApplicationTypeId;
         existingAccreditation.AccreditationStatusId = accreditation.AccreditationStatusId;
         existingAccreditation.DecFullName = accreditation.DecFullName;
-        existingAccreditation.JobTitle = accreditation.JobTitle;
+        existingAccreditation.DecJobTitle = accreditation.DecJobTitle;
         existingAccreditation.ApplicationReferenceNumber = accreditation.ApplicationReferenceNumber;
         existingAccreditation.AccreditationYear = accreditation.AccreditationYear;
         existingAccreditation.PRNTonnage = accreditation.PRNTonnage;

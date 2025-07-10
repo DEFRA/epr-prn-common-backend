@@ -100,3 +100,13 @@ public class LookupCountry : LookupBase
     [MaxLength(3)]
     public string? CountryCode { get; set; }
 }
+
+//[Table("Lookup.TaskName")] // should this be accrediation task name?
+//[ExcludeFromCodeCoverage]
+//public class LookupTaskName : LookupBase
+//{
+//    [MaxLength(100)]
+//    public override required string Name { get; set; }
+//    [MaxLength(20)]  // should this be an int?
+//    public string? Journey { get; set; }
+//}

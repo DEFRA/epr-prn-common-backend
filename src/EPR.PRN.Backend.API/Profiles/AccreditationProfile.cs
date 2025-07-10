@@ -18,40 +18,49 @@ public class AccreditationProfile : Profile
         CreateMap<Data.DataModels.Accreditations.AccreditationPrnIssueAuth, AccreditationPrnIssueAuthDto>();
         CreateMap<AccreditationPrnIssueAuthRequestDto, Data.DataModels.Accreditations.AccreditationPrnIssueAuth>();
 
-
+        //--------------------------------------------------------------------------------------------------
 
 
         CreateMap<Accreditation, AccreditationDto>()
-          .ForMember(dest => dest.MaterialName, opt => opt.MapFrom(src => src.RegistrationMaterial.Material.MaterialName))
 
 
-    // Example: Map nested MaterialName
-    .ForMember(dest => dest.MaterialName, opt => opt.MapFrom(src => src.RegistrationMaterial.Material.MaterialName))
-    // Example: Map AccreditationStatusName from nested AccreditationStatus.Name
-    .ForMember(dest => dest.AccreditationStatusId, opt => opt.MapFrom(src => src.AccreditationStatus.Id))
-    // Example: Map ApplicationTypeName from nested ApplicationType.Name
-    .ForMember(dest => dest.ApplicationTypeId, opt => opt.MapFrom(src => src.ApplicationType.Id))
-    // Example: Map RegistrationMaterialId if property names differ
-    .ForMember(dest => dest.RegistrationMaterialId, opt => opt.MapFrom(src => src.RegistrationMaterialId))
-    // Example: Map CreatedDate if property names differ
-    //  .ForMember(dest => dest.CreatedDate, opt => opt.MapFrom(src => src.CreatedOn))
-    // Add more custom mappings as needed for other non-identical but related members
-    .ForMember(des => des.AccreferenceNumber, opt => opt.MapFrom(src => src.ApplicationReferenceNumber))
-    ;
 
+            // Example: Map nested MaterialName
+            .ForMember(dest => dest.MaterialName, opt => opt.MapFrom(src => src.RegistrationMaterial.Material.MaterialName))
+            // Example: Map AccreditationStatusName from nested AccreditationStatus.Name
+            .ForMember(dest => dest.AccreditationStatusId, opt => opt.MapFrom(src => src.AccreditationStatus.Id))
+            // Example: Map ApplicationTypeName from nested ApplicationType.Name
+            .ForMember(dest => dest.ApplicationTypeId, opt => opt.MapFrom(src => src.ApplicationType.Id))
+            // Example: Map RegistrationMaterialId if property names differ
+            .ForMember(dest => dest.RegistrationMaterialId, opt => opt.MapFrom(src => src.RegistrationMaterialId))
+            // Example: Map CreatedDate if property names differ
+            //  .ForMember(dest => dest.CreatedDate, opt => opt.MapFrom(src => src.CreatedOn))
+            // Add more custom mappings as needed for other non-identical but related members
+            .ForMember(des => des.AccreferenceNumber, opt => opt.MapFrom(src => src.ApplicationReferenceNumber))
+
+        // percentages
+            .ForMember(des => des.NewMarketsPercentage, opt => opt.MapFrom(src => src.NewMarketsPercentage))
+            .ForMember(des => des.BusinessCollectionsPercentage, opt => opt.MapFrom(src => src.BusinessCollectionsPercentage))
+            .ForMember(des => des.InfrastructurePercentage, opt => opt.MapFrom(src => src.InfrastructurePercentage))
+            .ForMember(des => des.CommunicationsPercentage, opt => opt.MapFrom(src => src.CommunicationsPercentage))
+            .ForMember(des => des.NewUsesPercentage, opt => opt.MapFrom(src => src.NewUsersRecycledPackagingWastePercentage))
+            .ForMember(des => des.OtherPercentage, opt => opt.MapFrom(src => src.NotCoveredOtherCategoriesPercentage))
+            ;
         CreateMap<AccreditationRequestDto, Accreditation>()
-    // Example: Map ApplicationTypeId if property names differ
-    .ForMember(dest => dest.ApplicationTypeId, opt => opt.MapFrom(src => src.ApplicationTypeId))
-    // Example: Map AccreditationStatusId if property names differ
-    .ForMember(dest => dest.AccreditationStatusId, opt => opt.MapFrom(src => src.AccreditationStatusId))
-    // Example: Map RegistrationMaterialId if property names differ
-    .ForMember(dest => dest.RegistrationMaterialId, opt => opt.MapFrom(src => src.RegistrationMaterialId))
-    // Example: Map ApplicationReferenceNumber if property names differ
-    .ForMember(dest => dest.ApplicationReferenceNumber, opt => opt.MapFrom(src => src.AccreferenceNumber))
-    // Example: Map CreatedOn if property names differ
-    //.ForMember(dest => dest.CreatedOn, opt => opt.MapFrom(src => src.CreatedDate))
-    // Add more custom mappings as needed for other non-identical but related members
-    ;
+            // Example: Map ApplicationTypeId if property names differ
+            .ForMember(dest => dest.ApplicationTypeId, opt => opt.MapFrom(src => src.ApplicationTypeId))
+            // Example: Map AccreditationStatusId if property names differ
+            .ForMember(dest => dest.AccreditationStatusId, opt => opt.MapFrom(src => src.AccreditationStatusId))
+            // Example: Map RegistrationMaterialId if property names differ
+            .ForMember(dest => dest.RegistrationMaterialId, opt => opt.MapFrom(src => src.RegistrationMaterialId))
+            // Example: Map ApplicationReferenceNumber if property names differ
+            .ForMember(dest => dest.ApplicationReferenceNumber, opt => opt.MapFrom(src => src.AccreferenceNumber))
+            // Example: Map CreatedOn if property names differ
+            //.ForMember(dest => dest.CreatedOn, opt => opt.MapFrom(src => src.CreatedDate))
+            // Add more custom mappings as needed for other non-identical but related members
+
+            // percentages
+            ;
 
 
         CreateMap<Data.DataModels.Registrations.AccreditationPrnIssueAuth, AccreditationPrnIssueAuthDto>();
