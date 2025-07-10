@@ -272,4 +272,24 @@ public class RegistrationMaterialController(
 
         return NoContent();
     }
+
+    [HttpGet("registrationMaterials/{registrationMaterialId:guid}/overseasMaterialReprocessingSites")]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<OverseasMaterialReprocessingSiteDto>))]
+    [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
+    [SwaggerOperation(
+        Summary = "gets overseas reprocessing sites including corresponding interim sites associated with a registrationMaterial.",
+        Description = "attempting to get overseas reprocessing sites including corresponding interim sites associated with a registrationMaterial."
+    )]
+    [SwaggerResponse(StatusCodes.Status500InternalServerError, "If an unexpected error occurs.", typeof(ContentResult))]
+    public async Task<IActionResult> GetOverseasMaterialReprocessingSites([FromRoute] Guid registrationMaterialId)
+    {
+        logger.LogInformation(LogMessages.GetOverseasMaterialReprocessingSites, registrationMaterialId);
+
+        var registrationMaterials = await mediator.Send(new GetOverseasMaterialReprocessingSitesQuery()
+        {
+            RegistrationMaterialId = registrationMaterialId
+        });
+
+        return Ok(registrationMaterials);
+    }
 }

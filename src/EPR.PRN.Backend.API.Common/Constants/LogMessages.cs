@@ -21,6 +21,7 @@ public static class LogMessages
     public const string UpsertRegistrationMaterialContact = "Attempting to upsert the contact for registration material with ID {0}";
     public const string AccreditationBusinessPlan = "Attempting to get Business Plan relating to an accreditation";
     public const string SaveOverseasReprocessingSites = "Attempting to save overseas reprocessing sites with ID :{registrationMaterialId}";
+    public const string GetOverseasMaterialReprocessingSites = "Attempting to retrieve overseas reprocessing sites including corresponding interim sites for registrationMaterial {RegistrationMaterialId}";
 
     public const string CreateRegistration = "Attempting to create new registration";
     public const string UpdateRegistration = "Attempting to create new registration with ID {0}";

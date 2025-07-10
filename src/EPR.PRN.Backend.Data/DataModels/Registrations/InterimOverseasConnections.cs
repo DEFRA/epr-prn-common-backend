@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace EPR.PRN.Backend.Data.DataModels.Registrations
 {
@@ -17,9 +12,13 @@ namespace EPR.PRN.Backend.Data.DataModels.Registrations
         public int Id { get; set; }
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid ExternalId { get; set; }
+
         public int InterimSiteId { get; set; }
-        public OverseasAddress? OverseasAddress { get; set; }
-        [ForeignKey("OverseasAddress")]
+        [ForeignKey(nameof(InterimSiteId))]
+        public OverseasAddress OverseasAddress { get; set; }
+
         public int ParentOverseasAddressId { get; set; }
+        [ForeignKey(nameof(ParentOverseasAddressId))]
+        public OverseasAddress ParentOverseasAddress { get; set; }
     }
 }

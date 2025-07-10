@@ -44,6 +44,12 @@ namespace EPR.PRN.Backend.Data.DataModels.Registrations
         public List<OverseasAddressContact> OverseasAddressContacts { get; set; } = [];
         public List<OverseasAddressWasteCode> OverseasAddressWasteCodes { get; set; } = [];
         public List<OverseasMaterialReprocessingSite> OverseasMaterialReprocessingSites { get; set; } = [];
-        public List<InterimOverseasConnections> InterimOverseasConnections { get; set; } = [];
+
+        [InverseProperty(nameof(InterimOverseasConnections.ParentOverseasAddress))]
+        public List<InterimOverseasConnections> ChildInterimConnections { get; set; } = [];
+
+        
+        [InverseProperty(nameof(InterimOverseasConnections.OverseasAddress))]
+        public List<InterimOverseasConnections> InterimConnections { get; set; } = [];
     }
 }   

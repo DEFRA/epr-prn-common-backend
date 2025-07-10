@@ -322,4 +322,61 @@ public class RegistrationMaterialControllerTests
         await act.Should().ThrowAsync<InvalidOperationException>()
             .WithMessage("Mediator failed");
     }
+
+    [TestMethod]
+    public async Task GetOverseasMaterialReprocessingSites_ShouldReturnOkWithResult()
+    {
+        // Arrange
+        var registrationMaterialId = Guid.NewGuid();
+        var expectedList = _fixture.Create<List<OverseasMaterialReprocessingSiteDto>>();
+
+            _mediatorMock
+            .Setup(m => m.Send(It.IsAny<GetOverseasMaterialReprocessingSitesQuery>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(expectedList);
+
+        // Act
+        var result = await _controller.GetOverseasMaterialReprocessingSites(registrationMaterialId);
+
+        // Assert
+        result.Should().BeOfType<OkObjectResult>();
+        var okResult = result as OkObjectResult;
+        okResult!.Value.Should().BeEquivalentTo(expectedList);
+    }
+
+    [TestMethod]
+    public async Task GetOverseasMaterialReprocessingSites_ShouldReturnOkWithEmptyList_WhenNoSitesFound()
+    {
+        // Arrange
+        var registrationMaterialId = Guid.NewGuid();
+        var expectedList = new List<OverseasMaterialReprocessingSiteDto>();
+
+        _mediatorMock
+            .Setup(m => m.Send(It.IsAny<GetOverseasMaterialReprocessingSitesQuery>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(expectedList);
+
+        // Act
+        var result = await _controller.GetOverseasMaterialReprocessingSites(registrationMaterialId);
+
+        // Assert
+        result.Should().BeOfType<OkObjectResult>();
+        var okResult = result as OkObjectResult;
+        okResult!.Value.Should().BeEquivalentTo(expectedList);
+    }
+
+    [TestMethod]
+    public async Task GetOverseasMaterialReprocessingSites_ShouldReturnInternalServerError_WhenMediatorThrows()
+    {
+        // Arrange
+        var registrationMaterialId = Guid.NewGuid();
+
+        _mediatorMock
+            .Setup(m => m.Send(It.IsAny<GetOverseasMaterialReprocessingSitesQuery>(), It.IsAny<CancellationToken>()))
+            .ThrowsAsync(new Exception("Unexpected error"));
+
+        // Act
+        Func<Task> act = async () => await _controller.GetOverseasMaterialReprocessingSites(registrationMaterialId);
+
+        // Assert
+        await act.Should().ThrowAsync<Exception>().WithMessage("Unexpected error");
+    }
 }
