@@ -1,5 +1,8 @@
-﻿namespace EPR.PRN.Backend.Data.DTO.Accreditiation
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace EPR.PRN.Backend.Data.DTO.Accreditiation
 {
+    [ExcludeFromCodeCoverage]
     public class RegistrationMaterialDto
     {
         public int Id { get; set; }
