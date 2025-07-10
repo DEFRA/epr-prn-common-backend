@@ -37,6 +37,6 @@ namespace EPR.PRN.Backend.Data.DTO.Accreditiation
 
         public ApplicationTypeDto? ApplicationType { get; set; }
         public AccreditationStatusDto? AccreditationStatus { get; set; }
-        public RegistrationMaterialDto RegistrationMaterial { get; set; }
+        public RegistrationMaterialDto? RegistrationMaterial { get; set; }
     }
 }
