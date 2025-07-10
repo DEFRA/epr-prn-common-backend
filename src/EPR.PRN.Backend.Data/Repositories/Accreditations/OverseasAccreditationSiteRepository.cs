@@ -16,11 +16,14 @@ public class OverseasAccreditationSiteRepository(EprAccreditationContext eprCont
 
     public async Task PostByAccreditationId(Guid accreditationId, OverseasAccreditationSite overseasAccreditationSite)
     {
-        int accreditationIdInt = await eprContext.Accreditations.Where(x => x.ExternalId == accreditationId).Select(x => x.Id).SingleAsync();
+        int accreditationIdInt = 0;
 
-            overseasAccreditationSite.ExternalId = accreditationId;
-            overseasAccreditationSite.AccreditationId = accreditationIdInt; 
-            eprContext.OverseasAccreditationSites.Add(overseasAccreditationSite);
+        if (eprContext.Accreditations.Any())
+            accreditationIdInt = await eprContext.Accreditations.Where(x => x.ExternalId == accreditationId).Select(x => x.Id).SingleAsync();
+
+        overseasAccreditationSite.ExternalId = accreditationId;
+        overseasAccreditationSite.AccreditationId = accreditationIdInt; 
+        eprContext.OverseasAccreditationSites.Add(overseasAccreditationSite);
 
         await eprContext.SaveChangesAsync();
     }
