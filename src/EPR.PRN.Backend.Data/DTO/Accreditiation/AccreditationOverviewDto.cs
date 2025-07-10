@@ -1,6 +1,9 @@
 ﻿
+using System.Diagnostics.CodeAnalysis;
+
 namespace EPR.PRN.Backend.Data.DTO.Accreditiation
 {
+    [ExcludeFromCodeCoverage]
     public class AccreditationOverviewDto
     {
         public int Id { get; set; }
