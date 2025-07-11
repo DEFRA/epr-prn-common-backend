@@ -16,5 +16,8 @@ public class AccreditationProfile : Profile
 
         CreateMap<AccreditationPrnIssueAuth, AccreditationPrnIssueAuthDto>();
         CreateMap<AccreditationPrnIssueAuthRequestDto, AccreditationPrnIssueAuth>();
+
+        CreateMap<OverseasAccreditationSite, OverseasAccreditationSiteDto>();
+        CreateMap<OverseasAccreditationSiteDto, OverseasAccreditationSite>();
     }
 }
