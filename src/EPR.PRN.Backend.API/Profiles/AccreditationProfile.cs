@@ -19,7 +19,7 @@ public class AccreditationProfile : Profile
         CreateMap<AccreditationPrnIssueAuth, AccreditationPrnIssueAuthDto>();
         CreateMap<AccreditationPrnIssueAuthRequestDto, AccreditationPrnIssueAuth>();
 
-        CreateMap<Accreditation, AccreditationOverviewDto>();
+        CreateMap<AccreditationEntity, AccreditationOverviewDto>();
         CreateMap<ApplicationType, ApplicationTypeDto>();
         CreateMap<AccreditationStatus, AccreditationStatusDto>();
         CreateMap<RegistrationMaterial, RegistrationMaterialDto>();
