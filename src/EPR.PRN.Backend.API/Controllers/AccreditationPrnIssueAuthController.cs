@@ -29,7 +29,7 @@ public class AccreditationPrnIssueAuthController(IAccreditationPrnIssueAuthServi
     }
 
     [HttpPost("{accreditationId}")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> Post([FromRoute]Guid accreditationId, [FromBody]List<AccreditationPrnIssueAuthRequestDto> request)
     {
         await accreditationPrnIssueAuthService.ReplaceAllByAccreditationId(accreditationId, request);

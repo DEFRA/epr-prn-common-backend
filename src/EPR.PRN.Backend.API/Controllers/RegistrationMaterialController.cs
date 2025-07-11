@@ -69,7 +69,7 @@ public class RegistrationMaterialController(
     }
 
     [HttpPost("registrationMaterials/{Id:guid}/createExemptionReferences")]
-    [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(CreatedResult))]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     [SwaggerOperation(
@@ -88,7 +88,7 @@ public class RegistrationMaterialController(
     }
 
     [HttpPost("registrationMaterials/{id:Guid}/permits")]
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(OkResult))]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     [SwaggerOperation(
@@ -114,7 +114,7 @@ public class RegistrationMaterialController(
     }
 
     [HttpPost("registrationMaterials/{id:Guid}/permitCapacity")]
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(OkResult))]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     [SwaggerOperation(
@@ -178,7 +178,7 @@ public class RegistrationMaterialController(
     }
 
 	[HttpPost("registrationMaterials/UpdateIsMaterialRegistered")]
-	[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(OkResult))]
+	[ProducesResponseType(StatusCodes.Status204NoContent)]
 	[SwaggerResponse(StatusCodes.Status500InternalServerError, "If an unexpected error occurs.", typeof(ContentResult))]
 	[SwaggerOperation(
 	Summary = "updates an existing registration material IsMaterialRegistered flag",
