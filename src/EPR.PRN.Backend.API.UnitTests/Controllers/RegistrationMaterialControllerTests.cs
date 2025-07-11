@@ -281,4 +281,28 @@ public class RegistrationMaterialControllerTests
         // Assert
         result.Should().BeEquivalentTo(expectedResult);
     }
+
+    [TestMethod]
+    public async Task GetAllRegistrationMaterials_ReturnOkObjectResult()
+    {
+        // Arrange
+        var externalId = Guid.NewGuid();
+        var expectedResult = new OkObjectResult(new List<ApplicantRegistrationMaterialDto>());
+        
+        var query = new GetAllRegistrationMaterialsQuery
+        {
+            RegistrationId = externalId,
+        };
+
+        // Expectations
+        _mediatorMock
+            .Setup(m => m.Send(query, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new List<ApplicantRegistrationMaterialDto>());
+
+        // Act
+        var result = await _controller.GetAllRegistrationMaterials(externalId);
+
+        // Assert
+        result.Should().BeEquivalentTo(expectedResult);
+    }
 }

@@ -86,7 +86,6 @@ public class RegistrationMaterialController(
     }
 
     [HttpPost("registrationMaterials/{id:Guid}/permits")]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     [SwaggerOperation(
@@ -112,7 +111,6 @@ public class RegistrationMaterialController(
     }
 
     [HttpPost("registrationMaterials/{id:Guid}/permitCapacity")]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     [SwaggerOperation(
