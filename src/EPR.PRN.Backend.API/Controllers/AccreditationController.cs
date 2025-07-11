@@ -25,7 +25,7 @@ public class AccreditationController(
     ILogger<AccreditationController> logger) : ControllerBase
 {
     [HttpGet("{organisationId}/{materialId}/{applicationTypeId}")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(Guid), StatusCodes.Status200OK)]
     public async Task<IActionResult> Get(
         [FromRoute] Guid organisationId,
         [FromRoute] int materialId,
@@ -55,7 +55,7 @@ public class AccreditationController(
     }
 
     [HttpPost]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(AccreditationDto), StatusCodes.Status200OK)]
     public async Task<IActionResult> Post([FromBody]AccreditationRequestDto request)
     {
         Guid externalId;
@@ -96,6 +96,7 @@ public class AccreditationController(
 
     [HttpGet("{accreditationId}/Files/{fileUploadTypeId}/{fileUploadStatusId?}")]
     [ProducesResponseType(typeof(List<AccreditationFileUploadDto>), 200)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetFileUploads(
         [FromRoute] Guid accreditationId,
         [FromRoute] int fileUploadTypeId,

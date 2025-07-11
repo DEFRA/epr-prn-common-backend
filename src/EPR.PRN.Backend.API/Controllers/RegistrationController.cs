@@ -27,6 +27,7 @@ public class RegistrationController(IMediator mediator
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(RegistrationDto))]
     [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     [SwaggerOperation(
         Summary = "gets an existing registration by the organisation ID.",
         Description = "attempting to get an existing registration using the organisation ID."
