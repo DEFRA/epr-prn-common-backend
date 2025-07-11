@@ -72,7 +72,7 @@ public class AccreditationController(
     public async Task<IActionResult> ClearDownDatabase()
     {
         // Temporary: Aid to QA whilst Accreditation uses in-memory database.
-        await accreditationService.ClearDownDatabase();
+        //await accreditationService.ClearDownDatabase();
 
         return Ok();
     }

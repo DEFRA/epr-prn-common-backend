@@ -86,7 +86,7 @@ public class AccreditationRepository(EprContext eprContext) : IAccreditationRepo
     public async Task ClearDownDatabase()
     {
         // Temporary: Aid to QA whilst Accreditation uses in-memory database.
-        await eprContext.Database.EnsureDeletedAsync();
-        await eprContext.Database.EnsureCreatedAsync();
+        //await eprContext.Database.EnsureDeletedAsync();
+        //await eprContext.Database.EnsureCreatedAsync();
     }
 }

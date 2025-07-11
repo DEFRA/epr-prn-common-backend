@@ -43,8 +43,13 @@ public class AccreditationProfile : Profile
             .ForMember(des => des.BusinessCollectionsPercentage, opt => opt.MapFrom(src => src.BusinessCollectionsPercentage))
             .ForMember(des => des.InfrastructurePercentage, opt => opt.MapFrom(src => src.InfrastructurePercentage))
             .ForMember(des => des.CommunicationsPercentage, opt => opt.MapFrom(src => src.CommunicationsPercentage))
-            .ForMember(des => des.NewUsesPercentage, opt => opt.MapFrom(src => src.NewUsersRecycledPackagingWastePercentage))
+            //.ForMember(des => des.NewUsesPercentage, opt => opt.MapFrom(src => src.NewUsersRecycledPackagingWastePercentage))
             .ForMember(des => des.OtherPercentage, opt => opt.MapFrom(src => src.NotCoveredOtherCategoriesPercentage))
+
+            .ForMember(des => des.PackagingWastePercentage, opt => opt.MapFrom(src => src.NewUsersRecycledPackagingWastePercentage))
+
+            .ForMember(des => des.NewUsesNotes, opt => opt.MapFrom(src => src.NewUsersRecycledPackagingWasteNotes))
+            .ForMember(des => des.OtherNotes, opt => opt.MapFrom(src => src.NotCoveredOtherCategoriesNotes))
             ;
         CreateMap<AccreditationRequestDto, Accreditation>()
             // Example: Map ApplicationTypeId if property names differ
@@ -60,6 +65,19 @@ public class AccreditationProfile : Profile
             // Add more custom mappings as needed for other non-identical but related members
 
             // percentages
+
+            .ForMember(des => des.NewMarketsPercentage, opt => opt.MapFrom(src => src.NewMarketsPercentage))
+            .ForMember(des => des.BusinessCollectionsPercentage, opt => opt.MapFrom(src => src.BusinessCollectionsPercentage))
+            .ForMember(des => des.InfrastructurePercentage, opt => opt.MapFrom(src => src.InfrastructurePercentage))
+            .ForMember(des => des.CommunicationsPercentage, opt => opt.MapFrom(src => src.CommunicationsPercentage))
+            //.ForMember(des => des.NewUsersRecycledPackagingWastePercentage, opt => opt.MapFrom(src => src.NewUsesPercentage))
+            .ForMember(des => des.NotCoveredOtherCategoriesPercentage, opt => opt.MapFrom(src => src.OtherPercentage))
+
+            .ForMember(des => des.NewUsersRecycledPackagingWastePercentage, opt => opt.MapFrom(src => src.PackagingWastePercentage))
+
+
+            .ForMember(des => des.NewUsersRecycledPackagingWasteNotes, opt => opt.MapFrom(src => src.NewUsesNotes))
+            .ForMember(des => des.NotCoveredOtherCategoriesNotes, opt => opt.MapFrom(src => src.OtherNotes))
             ;
 
 
