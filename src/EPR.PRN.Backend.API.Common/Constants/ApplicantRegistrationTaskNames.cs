@@ -19,4 +19,12 @@ public static class ApplicantRegistrationTaskNames
     public const string WasteCarrierBrokerDealerNumber = "WasteCarrierBrokerDealerNumber";
     public const string OverseasReprocessorSiteDetails = "OverseasReprocessingSites";
     public const string InterimSites = "InterimSites";
+
+    // Exporter
+    public const string ExporterSamplingAndInspectionPlan = "SamplingAndInspectionPlan";                                    
+    public const string ExporterAddressForServiceofNotices = "AddressForServiceofNotices";                                  
+    public const string ExporterCarrierBrokerDealerNumberAndOtherPermits = "CarrierBrokerDealerNumberAndOtherPermits";      
+    public const string ExporterAboutThePackagingWasteYouExport = "AboutThePackagingWasteYouExport";                        
+    public const string ExporterOverseasReprocessingSitesYouExportTo = "OverseasReprocessingSitesYouExportTo";              
+    public const string ExporterInterimSites = "InterimSites";                                                              
 }

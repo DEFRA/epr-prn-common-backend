@@ -292,20 +292,25 @@ public class EprContext : DbContext
            new LookupApplicantRegistrationTask { Id = 2, IsMaterialSpecific = true, ApplicationTypeId = 1, JourneyTypeId = 1, Name = ApplicantRegistrationTaskNames.WasteLicensesPermitsAndExemptions },
            new LookupApplicantRegistrationTask { Id = 3, IsMaterialSpecific = true, ApplicationTypeId = 1, JourneyTypeId = 1, Name = ApplicantRegistrationTaskNames.ReprocessingInputsAndOutputs },
            new LookupApplicantRegistrationTask { Id = 4, IsMaterialSpecific = true, ApplicationTypeId = 1, JourneyTypeId = 1, Name = ApplicantRegistrationTaskNames.SamplingAndInspectionPlan },
-           new LookupApplicantRegistrationTask { Id = 5, IsMaterialSpecific = false, ApplicationTypeId = 2, JourneyTypeId = 1, Name = ApplicantRegistrationTaskNames.WasteLicensesPermitsAndExemptions },
-           new LookupApplicantRegistrationTask { Id = 6, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 1, Name = ApplicantRegistrationTaskNames.SamplingAndInspectionPlan },
-           new LookupApplicantRegistrationTask { Id = 7, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 1, Name = ApplicantRegistrationTaskNames.OverseasReprocessorSiteDetails },
-           new LookupApplicantRegistrationTask { Id = 8, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 1, Name = ApplicantRegistrationTaskNames.InterimSites },
            new LookupApplicantRegistrationTask { Id = 9, IsMaterialSpecific = true, ApplicationTypeId = 1, JourneyTypeId = 2, Name = ApplicantRegistrationTaskNames.PrnsTonnageAndAuthorityToIssuePrns },
            new LookupApplicantRegistrationTask { Id = 10, IsMaterialSpecific = true, ApplicationTypeId = 1, JourneyTypeId = 2, Name = ApplicantRegistrationTaskNames.BusinessPlan },
            new LookupApplicantRegistrationTask { Id = 11, IsMaterialSpecific = true, ApplicationTypeId = 1, JourneyTypeId = 2, Name = ApplicantRegistrationTaskNames.AccreditationSamplingAndInspectionPlan },
+
+           new LookupApplicantRegistrationTask { Id = 5, IsMaterialSpecific = false, ApplicationTypeId = 2, JourneyTypeId = 1, Name = ApplicantRegistrationTaskNames.WasteLicensesPermitsAndExemptions },
            new LookupApplicantRegistrationTask { Id = 12, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 2, Name = ApplicantRegistrationTaskNames.PERNsTonnageAndAuthorityToIssuePERNs },
            new LookupApplicantRegistrationTask { Id = 13, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 2, Name = ApplicantRegistrationTaskNames.BusinessPlan },
            new LookupApplicantRegistrationTask { Id = 14, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 2, Name = ApplicantRegistrationTaskNames.AccreditationSamplingAndInspectionPlan },
            new LookupApplicantRegistrationTask { Id = 15, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 2, Name = ApplicantRegistrationTaskNames.OverseasReprocessingSitesAndBroadlyEquivalentEvidence },
-           new LookupApplicantRegistrationTask { Id = 16, IsMaterialSpecific = false, ApplicationTypeId = 2, JourneyTypeId = 1, Name = ApplicantRegistrationTaskNames.WasteCarrierBrokerDealerNumber });
+        
+           new LookupApplicantRegistrationTask { Id = 17, IsMaterialSpecific = false, ApplicationTypeId = 2, JourneyTypeId = 1, Name = ApplicantRegistrationTaskNames.ExporterAddressForServiceofNotices },
+           new LookupApplicantRegistrationTask { Id = 6, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 1, Name = ApplicantRegistrationTaskNames.ExporterSamplingAndInspectionPlan },
+           new LookupApplicantRegistrationTask { Id = 16, IsMaterialSpecific = false, ApplicationTypeId = 2, JourneyTypeId = 1, Name = ApplicantRegistrationTaskNames.ExporterCarrierBrokerDealerNumberAndOtherPermits },
+           new LookupApplicantRegistrationTask { Id = 18, IsMaterialSpecific = false, ApplicationTypeId = 2, JourneyTypeId = 1, Name = ApplicantRegistrationTaskNames.ExporterAboutThePackagingWasteYouExport },
+           new LookupApplicantRegistrationTask { Id = 7, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 1, Name = ApplicantRegistrationTaskNames.ExporterOverseasReprocessingSitesYouExportTo },
+           new LookupApplicantRegistrationTask { Id = 8, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 1, Name = ApplicantRegistrationTaskNames.ExporterInterimSites });
 
-        modelBuilder.Entity<LookupMaterialPermit>().HasData(
+
+    modelBuilder.Entity<LookupMaterialPermit>().HasData(
             new LookupMaterialPermit { Id = 1, Name = PermitTypes.WasteExemption },
             new LookupMaterialPermit { Id = 2, Name = PermitTypes.PollutionPreventionAndControlPermit },
             new LookupMaterialPermit { Id = 3, Name = PermitTypes.WasteManagementLicence },
