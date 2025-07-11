@@ -79,6 +79,11 @@ public record ApplicantRegistrationMaterialDto
     public decimal MaximumReprocessingCapacityTonne { get; set; }
 
     /// <summary>
+    /// The ID of the period that this max weight is applicable within.
+    /// </summary>
+    public decimal MaximumReprocessingPeriodId { get; set; }
+
+    /// <summary>
     /// The identifying number for the associated PPC permit, only applicable if permit type is PPC.
     /// </summary>
     public string? PPCPermitNumber { get; set; }

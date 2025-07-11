@@ -81,6 +81,7 @@ public class GetAllRegistrationMaterialsQueryHandlerTests
                 InstallationPeriodId = 1,
                 WasteManagementPeriodId = 1,
                 EnvironmentalPeriodId = 1,
+                MaximumReprocessingPeriodId = 1
             }
         };
 
@@ -133,7 +134,8 @@ public class GetAllRegistrationMaterialsQueryHandlerTests
                         PPCPeriodId = 1,
                         InstallationPeriodId = 1,
                         WasteManagementPeriodId = 1,
-                        EnvironmentalPermitWasteManagementPeriodId = 1
+                        EnvironmentalPermitWasteManagementPeriodId = 1,
+                        MaximumReprocessingPeriodId = 1
                     }
                 });
 

@@ -5,7 +5,7 @@ using MediatR;
 namespace EPR.PRN.Backend.API.Queries;
 
 [ExcludeFromCodeCoverage]
-public class GetAllRegistrationMaterialsQuery : IRequest<IList<ApplicantRegistrationMaterialDto>>
+public record GetAllRegistrationMaterialsQuery : IRequest<IList<ApplicantRegistrationMaterialDto>>
 {
     public required Guid RegistrationId { get; set; }
 }

@@ -7,8 +7,6 @@ using EPR.PRN.Backend.Data.Repositories.Regulator;
 using FluentAssertions;
 using FluentAssertions.Execution;
 using Microsoft.EntityFrameworkCore;
-using System.Configuration;
-using System.Threading.Tasks;
 
 namespace EPR.PRN.Backend.Data.UnitTests.Repositories.Regulator;
 
@@ -787,7 +785,8 @@ public class RegistrationMaterialRepositoryTests
             InstallationPeriodId = 1,
             PPCPeriodId = 1,
             EnvironmentalPermitWasteManagementPeriodId = 1,
-            WasteManagementPeriodId = 1
+            WasteManagementPeriodId = 1,
+            MaximumReprocessingPeriodId = 1
         };
 
         await _context.Registrations.AddAsync(registration);
@@ -802,7 +801,52 @@ public class RegistrationMaterialRepositoryTests
     }
 
     [TestMethod]
-    [DataRow(1, "")] 
+    public async Task UpdateRegistrationMaterialPermits_WasteExemptions_ShouldUpdate_WhenExists()
+    {
+        // Arrange
+        var registrationMaterialId = Guid.Parse("a9421fc1-a912-42ee-85a5-3e06408759a9");
+        var exemptions = new List<MaterialExemptionReference>
+        {
+            new()
+            {
+                ReferenceNo = "1234",
+                RegistrationMaterialId = 1
+            },
+            new()
+            {
+                ReferenceNo = "5678",
+                RegistrationMaterialId = 1
+            }
+        };
+
+        var expected = new List<MaterialExemptionReference>();
+        expected.AddRange(exemptions);
+        expected.Add(new MaterialExemptionReference
+        {
+            Id = 1,
+            ReferenceNo = "EXEMPT123",
+            RegistrationMaterialId = 1
+        });
+
+        _context.MaterialExemptionReferences.AddRange(exemptions);
+        await _context.SaveChangesAsync();
+
+        // Act
+        await _repository.UpdateRegistrationMaterialPermits(registrationMaterialId, (int)MaterialPermitType.WasteExemption, null);
+        var registrationMaterial = await _context.RegistrationMaterials.FirstOrDefaultAsync(x => x.ExternalId == registrationMaterialId);
+
+        // Assert
+        registrationMaterial.PermitTypeId.Should().Be((int)MaterialPermitType.WasteExemption);
+        registrationMaterial.EnvironmentalPermitWasteManagementNumber.Should().BeNull();
+        registrationMaterial.WasteManagementLicenceNumber.Should().BeNull();
+        registrationMaterial.InstallationPermitNumber.Should().BeNull();
+        registrationMaterial.PPCPermitNumber.Should().BeNull();
+
+        var loaded = _context.MaterialExemptionReferences.Where(o => o.RegistrationMaterialId == 1).ToList();
+        loaded.Should().BeEquivalentTo(expected, o => o.Excluding(x => x.RegistrationMaterial));
+    }
+
+    [TestMethod]
     [DataRow(2, "PPC-123")]
     [DataRow(3, "WML-123")]
     [DataRow(4, "IP-123")]
@@ -811,6 +855,22 @@ public class RegistrationMaterialRepositoryTests
     {
         // Arrange
         var registrationMaterialId = Guid.Parse("a9421fc1-a912-42ee-85a5-3e06408759a9");
+        var exemptions = new List<MaterialExemptionReference>
+        {
+            new()
+            {
+                ReferenceNo = "1234",
+                RegistrationMaterialId = 1
+            },
+            new()
+            {
+                ReferenceNo = "5678",
+                RegistrationMaterialId = 1
+            }
+        };
+
+        _context.MaterialExemptionReferences.AddRange(exemptions);
+        await _context.SaveChangesAsync();
 
         // Act
         await _repository.UpdateRegistrationMaterialPermits(registrationMaterialId, permitTypeId, permitNumber);
@@ -823,17 +883,32 @@ public class RegistrationMaterialRepositoryTests
         {
             case MaterialPermitType.PollutionPreventionAndControlPermit:
                 registrationMaterial.PPCPermitNumber.Should().Be(permitNumber);
+                registrationMaterial.WasteManagementLicenceNumber.Should().BeNull();
+                registrationMaterial.InstallationPermitNumber.Should().BeNull();
+                registrationMaterial.EnvironmentalPermitWasteManagementNumber.Should().BeNull();
                 break;
             case MaterialPermitType.WasteManagementLicence:
                 registrationMaterial.WasteManagementLicenceNumber.Should().Be(permitNumber);
+                registrationMaterial.PPCPermitNumber.Should().BeNull();
+                registrationMaterial.InstallationPermitNumber.Should().BeNull();
+                registrationMaterial.EnvironmentalPermitWasteManagementNumber.Should().BeNull();
                 break;
             case MaterialPermitType.InstallationPermit:
                 registrationMaterial.InstallationPermitNumber.Should().Be(permitNumber);
+                registrationMaterial.WasteManagementLicenceNumber.Should().BeNull();
+                registrationMaterial.PPCPermitNumber.Should().BeNull();
+                registrationMaterial.EnvironmentalPermitWasteManagementNumber.Should().BeNull();
                 break;
             case MaterialPermitType.EnvironmentalPermitOrWasteManagementLicence:
                 registrationMaterial.EnvironmentalPermitWasteManagementNumber.Should().Be(permitNumber);
+                registrationMaterial.WasteManagementLicenceNumber.Should().BeNull();
+                registrationMaterial.InstallationPermitNumber.Should().BeNull();
+                registrationMaterial.PPCPermitNumber.Should().BeNull();
                 break;
         }
+
+        var loaded = _context.MaterialExemptionReferences.Where(o => o.RegistrationMaterialId == 1).ToList();
+        loaded.Should().BeEmpty();
     }
 
     [DataTestMethod]
@@ -857,18 +932,42 @@ public class RegistrationMaterialRepositoryTests
             case MaterialPermitType.PollutionPreventionAndControlPermit:
                 registrationMaterial.PPCReprocessingCapacityTonne.Should().Be(capacityInTonnesAsDecimal);
                 registrationMaterial.PPCPeriodId.Should().Be(periodId);
+                registrationMaterial.WasteManagementReprocessingCapacityTonne.Should().BeNull();
+                registrationMaterial.WasteManagementPeriodId.Should().BeNull();
+                registrationMaterial.InstallationReprocessingTonne.Should().BeNull();
+                registrationMaterial.InstallationPeriodId.Should().BeNull();
+                registrationMaterial.EnvironmentalPermitWasteManagementTonne.Should().BeNull();
+                registrationMaterial.EnvironmentalPermitWasteManagementPeriodId.Should().BeNull();
                 break;
             case MaterialPermitType.WasteManagementLicence:
                 registrationMaterial.WasteManagementReprocessingCapacityTonne.Should().Be(capacityInTonnesAsDecimal);
                 registrationMaterial.WasteManagementPeriodId.Should().Be(periodId);
+                registrationMaterial.PPCReprocessingCapacityTonne.Should().BeNull();
+                registrationMaterial.PPCPeriodId.Should().BeNull();
+                registrationMaterial.InstallationReprocessingTonne.Should().BeNull();
+                registrationMaterial.InstallationPeriodId.Should().BeNull();
+                registrationMaterial.EnvironmentalPermitWasteManagementTonne.Should().BeNull();
+                registrationMaterial.EnvironmentalPermitWasteManagementPeriodId.Should().BeNull();
                 break;
             case MaterialPermitType.InstallationPermit:
                 registrationMaterial.InstallationReprocessingTonne.Should().Be(capacityInTonnesAsDecimal);
                 registrationMaterial.InstallationPeriodId.Should().Be(periodId);
+                registrationMaterial.WasteManagementReprocessingCapacityTonne.Should().BeNull();
+                registrationMaterial.WasteManagementPeriodId.Should().BeNull();
+                registrationMaterial.PPCReprocessingCapacityTonne.Should().BeNull();
+                registrationMaterial.PPCPeriodId.Should().BeNull();
+                registrationMaterial.EnvironmentalPermitWasteManagementTonne.Should().BeNull();
+                registrationMaterial.EnvironmentalPermitWasteManagementPeriodId.Should().BeNull();
                 break;
             case MaterialPermitType.EnvironmentalPermitOrWasteManagementLicence:
                 registrationMaterial.EnvironmentalPermitWasteManagementTonne.Should().Be(capacityInTonnesAsDecimal);
                 registrationMaterial.EnvironmentalPermitWasteManagementPeriodId.Should().Be(periodId);
+                registrationMaterial.WasteManagementReprocessingCapacityTonne.Should().BeNull();
+                registrationMaterial.WasteManagementPeriodId.Should().BeNull();
+                registrationMaterial.InstallationReprocessingTonne.Should().BeNull();
+                registrationMaterial.InstallationPeriodId.Should().BeNull();
+                registrationMaterial.PPCReprocessingCapacityTonne.Should().BeNull();
+                registrationMaterial.PPCPeriodId.Should().BeNull();
                 break;
         }
     }
@@ -1008,7 +1107,73 @@ public class RegistrationMaterialRepositoryTests
 		await Assert.ThrowsExceptionAsync<KeyNotFoundException>(() => _repository.UpdateIsMaterialRegisteredAsync(new List<UpdateIsMaterialRegisteredDto> { dto }));
 	}
 
-	[TestCleanup]
+    [TestMethod]
+    public async Task UpdateMaximumWeight_RegistrationMaterialExists_ShouldUpdate()
+    {
+        // Arrange
+        var id = Guid.NewGuid();
+        var registrationMaterialExternalId = Guid.NewGuid();
+        var registrationMaterialExternalId2 = Guid.NewGuid();
+        var registration = new Registration
+        {
+            Id = 10,
+            ExternalId = id
+        };
+
+        var registrationMaterial = new RegistrationMaterial
+        {
+            ExternalId = registrationMaterialExternalId,
+            Registration = registration,
+            RegistrationId = registration.Id,
+            Id = 55,
+            MaterialId = 1,
+            PermitTypeId = 1,
+            StatusId = 1,
+            InstallationPeriodId = 1,
+            PPCPeriodId = 1,
+            EnvironmentalPermitWasteManagementPeriodId = 1,
+            WasteManagementPeriodId = 1,
+            MaximumReprocessingCapacityTonne = 0,
+            MaximumReprocessingPeriodId = null
+        };
+
+        // Negative data.
+        var registrationMaterial2 = new RegistrationMaterial
+        {
+            ExternalId = registrationMaterialExternalId2,
+            Registration = registration,
+            RegistrationId = registration.Id,
+            Id = 65,
+            MaterialId = 1,
+            PermitTypeId = 1,
+            StatusId = 1,
+            InstallationPeriodId = 1,
+            PPCPeriodId = 1,
+            EnvironmentalPermitWasteManagementPeriodId = 1,
+            WasteManagementPeriodId = 1
+        };
+
+        await _context.Registrations.AddAsync(registration);
+        await _context.RegistrationMaterials.AddAsync(registrationMaterial);
+        await _context.RegistrationMaterials.AddAsync(registrationMaterial2);
+        await _context.SaveChangesAsync();
+
+        // Act
+        await _repository.UpdateMaximumWeightForSiteAsync(registrationMaterialExternalId, 10, 1);
+
+        // Assert
+        var loaded = _context.RegistrationMaterials.First(o => o.ExternalId == registrationMaterialExternalId);
+        loaded.MaximumReprocessingCapacityTonne.Should().Be(10);
+        loaded.MaximumReprocessingPeriodId.Should().Be(1);
+    }
+
+    [TestMethod]
+    public async Task UpdateMaximumWeight_RegistrationMaterialDoesNotExist_ShouldThrow()
+    {
+        await Assert.ThrowsExceptionAsync<KeyNotFoundException>(() => _repository.UpdateMaximumWeightForSiteAsync(Guid.Parse("cd9dcc80-fcf5-4f46-addd-b8a256f735a3"), 10, 1));
+    }
+
+    [TestCleanup]
     public void Cleanup()
     {
         _context.Database.EnsureDeleted();
