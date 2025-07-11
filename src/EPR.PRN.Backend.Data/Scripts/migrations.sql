@@ -5105,3 +5105,173 @@ GO
 COMMIT;
 GO
 
+BEGIN TRANSACTION;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250709160407_Update_Registration_Task_Names'
+)
+BEGIN
+    EXEC(N'DELETE FROM [Lookup.Task]
+    WHERE [Id] = 10;
+    SELECT @@ROWCOUNT');
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250709160407_Update_Registration_Task_Names'
+)
+BEGIN
+    EXEC(N'DELETE FROM [Lookup.Task]
+    WHERE [Id] = 11;
+    SELECT @@ROWCOUNT');
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250709160407_Update_Registration_Task_Names'
+)
+BEGIN
+    EXEC(N'DELETE FROM [Lookup.Task]
+    WHERE [Id] = 12;
+    SELECT @@ROWCOUNT');
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250709160407_Update_Registration_Task_Names'
+)
+BEGIN
+    EXEC(N'DELETE FROM [Lookup.Task]
+    WHERE [Id] = 13;
+    SELECT @@ROWCOUNT');
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250709160407_Update_Registration_Task_Names'
+)
+BEGIN
+    EXEC(N'DELETE FROM [Lookup.Task]
+    WHERE [Id] = 14;
+    SELECT @@ROWCOUNT');
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250709160407_Update_Registration_Task_Names'
+)
+BEGIN
+    EXEC(N'DELETE FROM [Lookup.Task]
+    WHERE [Id] = 15;
+    SELECT @@ROWCOUNT');
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250709160407_Update_Registration_Task_Names'
+)
+BEGIN
+    EXEC(N'DELETE FROM [Lookup.Task]
+    WHERE [Id] = 16;
+    SELECT @@ROWCOUNT');
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250709160407_Update_Registration_Task_Names'
+)
+BEGIN
+    EXEC(N'UPDATE [Lookup.Task] SET [Name] = N''WasteLicensesPermitsAndExemption''
+    WHERE [Id] = 2;
+    SELECT @@ROWCOUNT');
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250709160407_Update_Registration_Task_Names'
+)
+BEGIN
+    EXEC(N'UPDATE [Lookup.Task] SET [Name] = N''AboutthePackagingYouAreRegistering''
+    WHERE [Id] = 3;
+    SELECT @@ROWCOUNT');
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250709160407_Update_Registration_Task_Names'
+)
+BEGIN
+    EXEC(N'UPDATE [Lookup.Task] SET [Name] = N''AddressForServiceofNotices''
+    WHERE [Id] = 5;
+    SELECT @@ROWCOUNT');
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250709160407_Update_Registration_Task_Names'
+)
+BEGIN
+    EXEC(N'UPDATE [Lookup.Task] SET [IsMaterialSpecific] = CAST(0 AS bit), [Name] = N''CarrierBrokerDealerNumberAndOtherPermits''
+    WHERE [Id] = 6;
+    SELECT @@ROWCOUNT');
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250709160407_Update_Registration_Task_Names'
+)
+BEGIN
+    EXEC(N'UPDATE [Lookup.Task] SET [IsMaterialSpecific] = CAST(0 AS bit), [Name] = N''AboutThePackagingWasteYouExport''
+    WHERE [Id] = 7;
+    SELECT @@ROWCOUNT');
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250709160407_Update_Registration_Task_Names'
+)
+BEGIN
+    EXEC(N'UPDATE [Lookup.Task] SET [IsMaterialSpecific] = CAST(0 AS bit), [Name] = N''OverseasReprocessingSitesYouExportTo''
+    WHERE [Id] = 8;
+    SELECT @@ROWCOUNT');
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250709160407_Update_Registration_Task_Names'
+)
+BEGIN
+    EXEC(N'UPDATE [Lookup.Task] SET [ApplicationTypeId] = 2, [IsMaterialSpecific] = CAST(0 AS bit), [JourneyTypeId] = 1, [Name] = N''InterimSites''
+    WHERE [Id] = 9;
+    SELECT @@ROWCOUNT');
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250709160407_Update_Registration_Task_Names'
+)
+BEGIN
+    INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+    VALUES (N'20250709160407_Update_Registration_Task_Names', N'8.0.8');
+END;
+GO
+
+COMMIT;
+GO
+
