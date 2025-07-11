@@ -5105,3 +5105,56 @@ GO
 COMMIT;
 GO
 
+BEGIN TRANSACTION;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250711135040_Update_Registration_Task_Names'
+)
+BEGIN
+    EXEC(N'UPDATE [Lookup.Task] SET [Name] = N''OverseasReprocessingSitesYouExportTo''
+    WHERE [Id] = 7;
+    SELECT @@ROWCOUNT');
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250711135040_Update_Registration_Task_Names'
+)
+BEGIN
+    EXEC(N'UPDATE [Lookup.Task] SET [Name] = N''CarrierBrokerDealerNumberAndOtherPermits''
+    WHERE [Id] = 16;
+    SELECT @@ROWCOUNT');
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250711135040_Update_Registration_Task_Names'
+)
+BEGIN
+    IF EXISTS (SELECT * FROM [sys].[identity_columns] WHERE [name] IN (N'Id', N'ApplicationTypeId', N'IsMaterialSpecific', N'JourneyTypeId', N'Name') AND [object_id] = OBJECT_ID(N'[Lookup.Task]'))
+        SET IDENTITY_INSERT [Lookup.Task] ON;
+    EXEC(N'INSERT INTO [Lookup.Task] ([Id], [ApplicationTypeId], [IsMaterialSpecific], [JourneyTypeId], [Name])
+    VALUES (17, 2, CAST(0 AS bit), 1, N''AddressForServiceofNotices''),
+    (18, 2, CAST(0 AS bit), 1, N''AboutThePackagingWasteYouExport'')');
+    IF EXISTS (SELECT * FROM [sys].[identity_columns] WHERE [name] IN (N'Id', N'ApplicationTypeId', N'IsMaterialSpecific', N'JourneyTypeId', N'Name') AND [object_id] = OBJECT_ID(N'[Lookup.Task]'))
+        SET IDENTITY_INSERT [Lookup.Task] OFF;
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250711135040_Update_Registration_Task_Names'
+)
+BEGIN
+    INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+    VALUES (N'20250711135040_Update_Registration_Task_Names', N'8.0.8');
+END;
+GO
+
+COMMIT;
+GO
+
