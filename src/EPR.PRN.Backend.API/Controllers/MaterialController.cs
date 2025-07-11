@@ -19,6 +19,7 @@ public class MaterialController(
     [HttpGet("materials")]
     [ProducesResponseType(typeof(IList<MaterialDto>), 200)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [SwaggerOperation(
         Summary = "Get all materials",
         Description = "Retrieves a list of all materials that can be applied for during the reprocessor/exporter journey."
