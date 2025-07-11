@@ -422,6 +422,7 @@ public class RegistrationRepository(EprContext context, ILogger<RegistrationRepo
                 MaterialId = m?.Material?.Id ?? 0,
                 Material = m?.Material?.MaterialName ?? string.Empty,
                 MaterialCode = m?.Material?.MaterialCode ?? string.Empty,
+                IsMaterialRegistered = m?.IsMaterialRegistered,
                 ApplicationTypeId = r.ApplicationTypeId,
                 RegistrationStatus = r.RegistrationStatusId,
                 AccreditationStatus = m?.Accreditations?.FirstOrDefault()?.AccreditationStatus?.Id ?? 0,
