@@ -15,7 +15,9 @@ namespace EPR.PRN.Backend.Data.DTO.Registration
 
         public string? Material { get; set; }
         
-         public string? MaterialCode { get; set; }       
+         public string? MaterialCode { get; set; }
+
+        public bool? IsMaterialRegistered { get; set; }
 
         public int ApplicationTypeId { get; set; }
 
