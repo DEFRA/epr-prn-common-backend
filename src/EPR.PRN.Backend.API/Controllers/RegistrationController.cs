@@ -144,20 +144,20 @@ public class RegistrationController(IMediator mediator
         return NoContent();
     }
 
-    [HttpPost("registrations/{registrationId:guid}/applicantTaskStatus")]
+    [HttpPost("registrations/{registrationId:guid}/applicationTaskStatus")]
     [ProducesResponseType(StatusCodes.Status204NoContent, Type = typeof(NoContentResult))]
     [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     [SwaggerOperation(
-        Summary = "update the applicant registration task status",
-        Description = "attempting to update the applicant registration task status."
+        Summary = "update the application registration task status",
+        Description = "attempting to update the application registration task status."
     )]
     [SwaggerResponse(StatusCodes.Status204NoContent, $"Returns No Content", typeof(NoContentResult))]
     [SwaggerResponse(StatusCodes.Status400BadRequest, "If the request is invalid or a validation error occurs.", typeof(ProblemDetails))]
     [SwaggerResponse(StatusCodes.Status500InternalServerError, "If an unexpected error occurs.", typeof(ContentResult))]
-    public async Task<IActionResult> UpdateApplicantRegistrationTaskStatus([FromRoute] Guid registrationId, [FromBody] UpdateApplicantRegistrationTaskStatusCommand command)
+    public async Task<IActionResult> UpdateApplicationRegistrationTaskStatus([FromRoute] Guid registrationId, [FromBody] UpdateApplicationRegistrationTaskStatusCommand command)
     {
-        logger.LogInformation(LogMessages.UpdateApplicantRegistrationTaskStatus);
+        logger.LogInformation(LogMessages.UpdateApplicationRegistrationTaskStatus);
         command.RegistrationId = registrationId;
 
         await validationService.ValidateAndThrowAsync(command);
