@@ -357,4 +357,80 @@ public class RegistrationRepository(EprContext context, ILogger<RegistrationRepo
 
         return result;
     }
+
+    public async Task<Address?> GetLegalDocumentAddress(Guid registrationId)
+    {
+        var registration = await context.Registrations.FirstOrDefaultAsync(x => x.ExternalId == registrationId);
+
+        if (registration is null)
+        {
+            throw new KeyNotFoundException("Registration not found.");
+        }
+
+        Address? existingAddress = null;
+        if (registration.LegalDocumentAddressId.HasValue)
+        {
+            existingAddress = await context.LookupAddresses.FindAsync(registration.LegalDocumentAddressId.Value);
+        }
+
+        return existingAddress;
+    }
+
+    public async Task UpsertLegalDocumentAddress(Guid registrationId, AddressDto legalSiteAddress)
+    {
+        var registration = await context.Registrations.FirstOrDefaultAsync(x => x.ExternalId == registrationId);
+
+        if (registration is null)
+        {
+            throw new KeyNotFoundException("Registration not found.");
+        }
+
+        Address? existingAddress = null;
+        if (registration.LegalDocumentAddressId.HasValue)
+        {
+            existingAddress = await context.LookupAddresses.FindAsync(registration.LegalDocumentAddressId.Value);
+        }
+
+        bool needsNewAddress = false;
+
+        if (existingAddress == null)
+        {
+            needsNewAddress = true;
+        }
+        else
+        {
+            // Compare all relevant fields
+            if (!string.Equals(existingAddress.AddressLine1, legalSiteAddress.AddressLine1, StringComparison.Ordinal) ||
+                !string.Equals(existingAddress.AddressLine2, legalSiteAddress.AddressLine2, StringComparison.Ordinal) ||
+                !string.Equals(existingAddress.TownCity, legalSiteAddress.TownCity, StringComparison.Ordinal) ||
+                !string.Equals(existingAddress.County, legalSiteAddress.County, StringComparison.Ordinal) ||
+                !string.Equals(existingAddress.PostCode, legalSiteAddress.PostCode, StringComparison.Ordinal) ||
+                existingAddress.NationId != legalSiteAddress.NationId ||
+                !string.Equals(existingAddress.GridReference, legalSiteAddress.GridReference, StringComparison.Ordinal))
+            {
+                needsNewAddress = true;
+            }
+        }
+
+        if (needsNewAddress)
+        {
+            var newAddress = new Address
+            {
+                AddressLine1 = legalSiteAddress.AddressLine1,
+                AddressLine2 = legalSiteAddress.AddressLine2,
+                TownCity = legalSiteAddress.TownCity,
+                County = legalSiteAddress.County,
+                PostCode = legalSiteAddress.PostCode,
+                NationId = legalSiteAddress.NationId,
+                GridReference = legalSiteAddress.GridReference
+            };
+
+            await context.LookupAddresses.AddAsync(newAddress);
+            await context.SaveChangesAsync();
+
+            registration.LegalDocumentAddressId = newAddress.Id;
+        }
+
+        await context.SaveChangesAsync();
+    }
 }
