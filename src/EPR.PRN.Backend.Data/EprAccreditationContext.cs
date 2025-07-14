@@ -80,7 +80,7 @@ public class EprAccreditationContext : DbContext
             new DataModels.Accreditations.ApplicationType { Id = 1, Name = "SamplingAndInspectionPlan" },
             new DataModels.Accreditations.ApplicationType { Id = 2, Name = "OverseasSiteEvidence" });
 
-        4modelBuilder.Entity<FileUploadStatus>().HasData(
+        modelBuilder.Entity<FileUploadStatus>().HasData(
             new DataModels.Accreditations.ApplicationType { Id = 1, Name = "Upload complete" },
             new DataModels.Accreditations.ApplicationType { Id = 2, Name = "Upload failed" },
             new DataModels.Accreditations.ApplicationType { Id = 3, Name = "File deleted" });
