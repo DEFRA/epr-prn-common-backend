@@ -102,6 +102,27 @@ public class LookupCountry : LookupBase
     public string? CountryCode { get; set; }
 }
 
+[Table("Lookup.MeetConditionsOfExport")]
+[ExcludeFromCodeCoverage]
+public class LookupMeetConditionsOfExport : LookupBase
+{
+    [MaxLength(50)]
+    public override required string Name { get; set; }
+    //[MaxLength(200)]
+    //public string? ConditionFulfilment { get; set; } // this is not in the adr
+}
+
+
+[Table("Lookup.SiteCheckStatus")]
+[ExcludeFromCodeCoverage]
+public class LookupSiteCheckStatus : LookupBase
+{
+    [MaxLength(10)]
+    public override required string Name { get; set; }
+
+    //[MaxLength(100)]
+    //public string? Status { get; set; } // does not match the adr
+}
 //[Table("Lookup.TaskName")] // should this be accrediation task name?
 //[ExcludeFromCodeCoverage]
 //public class LookupTaskName : LookupBase

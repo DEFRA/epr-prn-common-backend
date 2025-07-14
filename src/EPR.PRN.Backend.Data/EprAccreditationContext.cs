@@ -111,7 +111,7 @@ public class EprAccreditationContext : DbContext
 
     public virtual DbSet<AccreditationEntity> Accreditations { get; set; }
     public virtual DbSet<DataModels.Accreditations.AccreditationPrnIssueAuth> AccreditationPrnIssueAuths { get; set; }
-    public virtual DbSet<OverseasAccreditationSite> OverseasAccreditationSites { get; set; }
+    public virtual DbSet<DataModels.Accreditations.OverseasAccreditationSite> OverseasAccreditationSites { get; set; }
 
     public virtual DbSet<DataModels.Accreditations.AccreditationFileUpload> AccreditationFileUploads { get; set; }
 }

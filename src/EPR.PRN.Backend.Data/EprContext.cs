@@ -355,6 +355,26 @@ public class EprContext : DbContext
             //    .WithOne()
             //    .HasForeignKey(x => x.AccreditationId);
 
+            //e.HasMany(x => x.FileUploads)
+            //    .WithOne()
+            //    .HasForeignKey(x => x.AccreditationId);
+
+            e.HasIndex(e => e.ExternalId)
+            .IsUnique(); // Ensures UniqueId is unique
+        });
+
+        modelBuilder.Entity<LookupMeetConditionsOfExport>().HasData(
+            new LookupMeetConditionsOfExport { Id = 1, Name = "Yes (Don't Upload)" }, //"Yes, they fulfil all the conditions. I do not want to upload evidence of broadly equivalent standards" },
+            new LookupMeetConditionsOfExport { Id = 2, Name = "Yes (upload)" }, //"Yes, they fulfil all the conditions. I also want to upload evidence of broadly equivalent standards" },
+            new LookupMeetConditionsOfExport { Id = 3, Name = "No" }); // "No, they do not fulfil all the conditions" });
+
+        modelBuilder.Entity<LookupSiteCheckStatus>().HasData(
+            new LookupSiteCheckStatus { Id = 1, Name = "NotStarted" },
+            new LookupSiteCheckStatus { Id = 2, Name = "InProgress" },
+            new LookupSiteCheckStatus { Id = 3, Name = "Completed" });
+
+        modelBuilder.Entity<DataModels.Registrations.OverseasAccreditationSite>(e =>
+        {
             e.HasIndex(e => e.ExternalId)
             .IsUnique(); // Ensures UniqueId is unique
         });
@@ -540,8 +560,9 @@ public class EprContext : DbContext
 
     public virtual DbSet<DataModels.Registrations.AccreditationPrnIssueAuth> AccreditationPrnIssueAuths { get; set; }
     public virtual DbSet<DataModels.Registrations.AccreditationFileUpload> AccreditationFileUploads { get; set; }
+    public virtual DbSet<DataModels.Registrations.OverseasAccreditationSite> OverseasAccreditationSites { get; set; }
 
 
-   // public virtual DbSet<DataModels.Accreditations.AccreditationFileUpload> AccreditationFileUploads { get; set; }
+    // public virtual DbSet<DataModels.Accreditations.AccreditationFileUpload> AccreditationFileUploads { get; set; }
 
 }
