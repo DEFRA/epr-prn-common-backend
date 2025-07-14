@@ -3,9 +3,9 @@ using MediatR;
 
 namespace EPR.PRN.Backend.API.Commands;
 
-public class UpdateMaterialNotRegisteringReasonCommand : IRequest
+public class UpdateMaterialNotReprocessingReasonCommand : IRequest
 {
     public Guid RegistrationMaterialId { get; set; }
 
-    public string MaterialNotRegisteringReason { get; set; } = string.Empty;
+    public string MaterialNotReprocessingReason { get; set; } = string.Empty;
 }

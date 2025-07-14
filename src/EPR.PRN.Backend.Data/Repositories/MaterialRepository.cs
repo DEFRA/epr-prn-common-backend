@@ -358,7 +358,7 @@ namespace EPR.PRN.Backend.Data.Repositories
             return taskStatus;
         }
 
-        public async Task UpdateMaterialNotRegisteringReason(Guid registrationMaterialId, string materialNotRegisteringReason)
+        public async Task UpdateMaterialNotReprocessingReason(Guid registrationMaterialId, string materialNotReprocessingReason)
         {
             var registrationMaterial = await context.RegistrationMaterials
               .SingleOrDefaultAsync(rm => rm.ExternalId == registrationMaterialId);
@@ -368,7 +368,7 @@ namespace EPR.PRN.Backend.Data.Repositories
                 throw new KeyNotFoundException("Registration material not found.");
             }
 
-            registrationMaterial.ReasonforNotreg = materialNotRegisteringReason;
+            registrationMaterial.ReasonforNotreg = materialNotReprocessingReason;
 
             await context.SaveChangesAsync();
         }
