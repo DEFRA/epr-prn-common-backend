@@ -15,10 +15,10 @@ public static class LogMessages
     public const string UpdateRegulatorRegistrationTask = "UpdateRegulatorRegistrationTask";
     public const string UpdateRegulatorAccreditationTask = "UpdateRegulatorAccreditationTask";
     public const string AccreditationSamplingPlan = "Attempting to get file uploads relating to an accreditation";
-    public const string CreateRegistrationMaterial = "Attempting to create new registration material for registration {0}";
-    public const string GetAllRegistrationMaterials = "Attempting to retrieve all registration materials for registration {0}";
-    public const string DeleteRegistrationMaterial = "Attempting to delete registration material with ID {0}";
-    public const string UpsertRegistrationMaterialContact = "Attempting to upsert the contact for registration material with ID {0}";
+    public const string CreateRegistrationMaterial = "Attempting to create new registration material for registration {RegistrationId}";
+    public const string GetAllRegistrationMaterials = "Attempting to retrieve all registration materials for registration {RegistrationId}";
+    public const string DeleteRegistrationMaterial = "Attempting to delete registration material with ID {RegistrationMaterialId}";
+    public const string UpsertRegistrationMaterialContact = "Attempting to upsert the contact for registration material with ID {Id}";
     public const string AccreditationBusinessPlan = "Attempting to get Business Plan relating to an accreditation";
     public const string SaveOverseasReprocessingSites = "Attempting to save overseas reprocessing sites with ID :{registrationMaterialId}";
     public const string UpdateMaximumWeight = "Attempting to update the maximum weight the site is capable of processing for the material {RegistrationMaterialId}.";
