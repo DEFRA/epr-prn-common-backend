@@ -83,6 +83,8 @@ public class AccreditationEntity
 
     public RegistrationMaterial? RegistrationMaterial { get; set; }
 
+    public List<OverseasAccreditationSite>? OverseasAccreditationSites { get; set; }
+
     public List<AccreditationPrnIssueAuth>? AccreditationPrnIssueAuths { get; set; }
 
     public List<AccreditationFileUpload>? FileUploads { get; set; }

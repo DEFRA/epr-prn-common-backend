@@ -47,6 +47,10 @@ public class EprAccreditationContext : DbContext
             e.HasMany(x => x.FileUploads)
                 .WithOne()
                 .HasForeignKey(x => x.AccreditationId);
+
+            e.HasMany(x => x.OverseasAccreditationSites)
+                .WithOne()
+                .HasForeignKey(x => x.AccreditationId);
         });
 
         modelBuilder.Entity<DataModels.Accreditations.AccreditationPrnIssueAuth>(e =>
@@ -81,6 +85,16 @@ public class EprAccreditationContext : DbContext
             new DataModels.Accreditations.ApplicationType { Id = 2, Name = "Upload failed" },
             new DataModels.Accreditations.ApplicationType { Id = 3, Name = "File deleted" });
 
+        modelBuilder.Entity<SiteCheckStatus>().HasData(
+            new SiteCheckStatus { Id = 1, Status = "Not Started" },
+            new SiteCheckStatus { Id = 2, Status = "In Progress" },
+            new SiteCheckStatus { Id = 3, Status = "Completed" });
+
+        modelBuilder.Entity<MeetConditionsOfExport>().HasData(
+            new MeetConditionsOfExport { Id = 1, ConditionFulfilment = "Yes, they fulfil all the conditions. I do not want to upload evidence of broadly equivalent standards" },
+            new MeetConditionsOfExport { Id = 2, ConditionFulfilment = "Yes, they fulfil all the conditions. I also want to upload evidence of broadly equivalent standards" },
+            new MeetConditionsOfExport { Id = 3, ConditionFulfilment = "No, they do not fulfil all the conditions" });
+
         // TEMP:
         modelBuilder.Entity<LookupMaterial>().HasData(
             new LookupMaterial { Id = 1, MaterialName = "Plastic", MaterialCode = "PL" },
@@ -94,8 +108,10 @@ public class EprAccreditationContext : DbContext
 
     public virtual DbSet<DataModels.Accreditations.ApplicationType> ApplicationTypes { get; set; }
     public virtual DbSet<AccreditationStatus> AccreditationStatuses { get; set; }
+
     public virtual DbSet<AccreditationEntity> Accreditations { get; set; }
     public virtual DbSet<DataModels.Accreditations.AccreditationPrnIssueAuth> AccreditationPrnIssueAuths { get; set; }
+    public virtual DbSet<OverseasAccreditationSite> OverseasAccreditationSites { get; set; }
+
     public virtual DbSet<DataModels.Accreditations.AccreditationFileUpload> AccreditationFileUploads { get; set; }
 }
-

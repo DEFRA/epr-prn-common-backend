@@ -35,6 +35,7 @@ public class PrnController(IPrnService prnService,
 
     [HttpGet("{prnId}")]
     [ProducesResponseType(typeof(PrnDto), 200)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetPrn([FromHeader(Name = "X-EPR-ORGANISATION")] Guid orgId, [FromRoute] Guid prnId)
     {
         logger.LogInformation("{Logprefix}: PrnController - GetPrn: Api Route api/v1/prn/{PrnId}", logPrefix, prnId);
@@ -86,6 +87,8 @@ public class PrnController(IPrnService prnService,
 
     [HttpGet("ModifiedPrnsbyDate")]
     [ProducesResponseType(typeof(List<PrnUpdateStatus>), 200)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetModifiedPrnsbyDate([FromQuery] ModifiedPrnsbyDateRequest request)
     {
         if (!ModelState.IsValid)
@@ -102,6 +105,8 @@ public class PrnController(IPrnService prnService,
 
     [HttpGet("syncstatuses")]
     [ProducesResponseType(typeof(List<PrnStatusSync>), 200)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetSyncStatuses([FromQuery] ModifiedPrnsbyDateRequest request)
     {
         if (!ModelState.IsValid)
@@ -145,6 +150,10 @@ public class PrnController(IPrnService prnService,
     }
 
     [HttpPost("status")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> UpdatePrnStatus([FromHeader(Name = "X-EPR-ORGANISATION")] Guid orgId, [FromHeader(Name = "X-EPR-USER")] Guid userId, [FromBody] List<PrnUpdateStatusDto> prnUpdates)
     {
         logger.LogInformation("{Logprefix}: PrnController - UpdatePrnStatus: Api Route api/v1/prn/status", logPrefix);
@@ -254,6 +263,9 @@ public class PrnController(IPrnService prnService,
     }
 
     [HttpPost("updatesyncstatus")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> PeprToNpwdSyncedPrns([FromBody] List<InsertSyncedPrn> syncedPrns)
     {
         try

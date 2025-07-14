@@ -85,6 +85,9 @@ public class AccreditationProfile : Profile
 
         CreateMap<Data.DataModels.Registrations.AccreditationPrnIssueAuth, AccreditationPrnIssueAuthDto>();
         CreateMap<AccreditationPrnIssueAuthRequestDto, Data.DataModels.Registrations.AccreditationPrnIssueAuth>();
+
+        CreateMap<OverseasAccreditationSite, OverseasAccreditationSiteDto>();
+        CreateMap<OverseasAccreditationSiteDto, OverseasAccreditationSite>();
     }
 }
 /*
