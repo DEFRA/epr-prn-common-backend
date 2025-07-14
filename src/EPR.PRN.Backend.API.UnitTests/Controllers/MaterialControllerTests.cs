@@ -81,24 +81,20 @@ public class MaterialControllerTests
     }
 
     [TestMethod]
-    public async Task GetMaterials_ThrowsError__WhenInvalidRegistrationIdIsPassed()
+    public void ThrowInvalidRegistrationId_ReturnsBadRequest_WhenCalledWithInvalidGuid()
     {
         // Arrange
-        var materials = new List<MaterialDto>
-        {
-            new() { Code = "1", Name = "Wood" },
-            new() { Code = "2", Name = "Plastic" }
-        };
-
-        _mediatorMock
-            .Setup(m => m.Send(It.IsAny<GetMaterialsByRegistrationIdQuery>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(materials);
+        var fakeGuid = Guid.NewGuid();
 
         // Act
-        Func<Task> act = async () => await _controller.GetAllMaterials(new Guid("invalid-guid"));
+        var result = _controller.ThrowInvalidRegistrationId(_loggerMock.Object, fakeGuid);
 
         // Assert
-        await act.Should().ThrowAsync<Exception>();
+        result.Should().BeOfType<BadRequestObjectResult>();
+        result.As<BadRequestObjectResult>().Value.Should().BeEquivalentTo(new
+        {
+            Message = $"Invalid Guid format for registrationId : {fakeGuid}"
+        });
     }
 
     [TestMethod]

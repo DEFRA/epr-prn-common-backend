@@ -309,6 +309,72 @@ public class RegistrationMaterialControllerTests
     }
 
     [TestMethod]
+    public async Task SaveOverseasReprocessingSites_ShouldReturnNoContent_WhenValid()
+    {
+        // Arrange
+        var registrationMaterialId = new Guid("3041bf68-6943-4fa0-8a02-7a8c587acf1d");
+        var dto = new OverseasAddressSubmissionDto
+        {            
+            OverseasAddresses = new List<OverseasAddressDto>
+            {
+                new OverseasAddressDto
+                {
+                    ExternalId = Guid.NewGuid(),
+                    AddressLine1 = "Test Line",
+                    SiteCoordinates = "51.5074, -0.1278",
+                    OrganisationName = "Test Organisation",
+                    CityOrTown = "London",
+                    CountryName = "United Kingdom",
+                    CreatedBy = Guid.NewGuid(),
+                    
+                }
+            }
+        };
+
+        _mediatorMock
+            .Setup(m => m.Send(It.IsAny<CreateOverseasMaterialReprocessingSiteCommand>(), It.IsAny<CancellationToken>()))
+            .Returns(Task.CompletedTask);
+
+        // Act
+        var result = await _controller.SaveOverseasReprocessingSites(registrationMaterialId, dto);
+
+        // Assert
+        result.Should().BeOfType<NoContentResult>();
+        _mediatorMock.Verify(m => m.Send(It.Is<CreateOverseasMaterialReprocessingSiteCommand>(cmd =>
+            cmd.UpdateOverseasAddress.RegistrationMaterialId == registrationMaterialId &&
+            cmd.UpdateOverseasAddress.OverseasAddresses == dto.OverseasAddresses
+        ), It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [TestMethod]
+    public async Task SaveOverseasReprocessingSites_ShouldThrowNullReferenceException_WhenSubmissionIsNull()
+    {
+        // Act
+        Func<Task> act = async () => await _controller.SaveOverseasReprocessingSites(Guid.Empty ,null!);
+
+        // Assert
+        await act.Should().ThrowAsync<NullReferenceException>();
+    }
+
+    [TestMethod]
+    public async Task SaveOverseasReprocessingSites_ShouldThrowException_WhenMediatorFails()
+    {
+        // Arrange
+        var dto = _fixture.Create<OverseasAddressSubmissionDto>();
+
+        _mediatorMock
+            .Setup(m => m.Send(It.IsAny<CreateOverseasMaterialReprocessingSiteCommand>(), It.IsAny<CancellationToken>()))
+            .ThrowsAsync(new InvalidOperationException("Mediator failed"));
+
+        // Act
+        Func<Task> act = async () => await _controller.SaveOverseasReprocessingSites(Guid.NewGuid() ,dto);
+
+        // Assert
+        await act.Should().ThrowAsync<InvalidOperationException>()
+            .WithMessage("Mediator failed");
+    }
+
+    [TestMethod]
     public async Task UpdateRegistrationMaterialTaskStatus_ValidationFails()
     {
         // Arrange

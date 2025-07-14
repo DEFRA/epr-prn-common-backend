@@ -124,4 +124,46 @@ public class UpdateCarrierBrokerDealerPermitsHandlerTests
         updatedCarrierBrokerDealerPermit.UpdatedBy.Should().Be(command.UserId);
         updatedCarrierBrokerDealerPermit.RegisteredWasteCarrierBrokerDealerFlag.Should().Be(command.Dto.RegisteredWasteCarrierBrokerDealerFlag);
     }
+
+    [TestMethod]
+    public async Task Handle_ShouldOnlySetWasteCarrierBrokerDealerRegistration_WhenItIsProvided()
+    {
+        // Arrange
+        var registrationId = Guid.NewGuid();
+        var userId = Guid.NewGuid();
+        var existingPermit = new CarrierBrokerDealerPermits();
+
+        CarrierBrokerDealerPermits updated = null;
+
+        _carrierBrokerDealerPermitRepositoryMock
+            .Setup(x => x.GetByRegistrationId(registrationId, CancellationToken.None))
+            .ReturnsAsync(existingPermit);
+
+        _carrierBrokerDealerPermitRepositoryMock
+            .Setup(x => x.Update(It.IsAny<CarrierBrokerDealerPermits>(), CancellationToken.None))
+            .Callback<CarrierBrokerDealerPermits, CancellationToken>((permit, _) => updated = permit);
+
+        var command = new UpdateCarrierBrokerDealerPermitsCommand
+        {
+            RegistrationId = registrationId,
+            UserId = userId,
+            Dto = new UpdateCarrierBrokerDealerPermitsDto
+            {
+                WasteCarrierBrokerDealerRegistration = "REG-ABC-123"
+                // All other fields intentionally left null
+            }
+        };
+
+        // Act
+        await _handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        updated.Should().NotBeNull();
+        updated.WasteCarrierBrokerDealerRegistration.Should().Be("REG-ABC-123");
+        updated.WasteManagementEnvironmentPermitNumber.Should().BeNull();
+        updated.InstallationPermitOrPPCNumber.Should().BeNull();
+        updated.WasteExemptionReference.Should().BeNull();
+        updated.UpdatedBy.Should().Be(userId);
+    }
+
 }
