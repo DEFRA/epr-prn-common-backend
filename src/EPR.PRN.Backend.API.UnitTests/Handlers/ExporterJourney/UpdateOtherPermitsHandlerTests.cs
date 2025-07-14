@@ -162,7 +162,7 @@ public class UpdateCarrierBrokerDealerPermitsHandlerTests
         updated.WasteCarrierBrokerDealerRegistration.Should().Be("REG-ABC-123");
         updated.WasteManagementEnvironmentPermitNumber.Should().BeNull();
         updated.InstallationPermitOrPPCNumber.Should().BeNull();
-        updated.WasteExemptionReference.Should().BeNull();
+        updated.WasteExemptionReference.Should().BeEmpty();
         updated.UpdatedBy.Should().Be(userId);
     }
 

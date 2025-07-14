@@ -16,7 +16,6 @@ public interface IRegistrationRepository : IRepositoryMarker
     Task UpdateRegistrationTaskStatusAsync(string taskName, Guid registrationId, TaskStatuses status);
     Task UpdateSiteAddressAsync(Guid registrationId, AddressDto reprocessingSiteAddress);
     Task<IEnumerable<RegistrationOverviewDto>> GetRegistrationsOverviewForOrgIdAsync(Guid organisationId);
-    Task UpdateApplicantRegistrationTaskStatusAsync(string taskName, Guid registrationId, TaskStatuses status);
     Task<Registration?> GetAsync(Guid registrationId);
     Task<List<LookupApplicantRegistrationTask>> GetRequiredTasks(int applicationTypeId, bool isMaterialSpecific, int journeyTypeId);
     Task<Registration> GetTasksForRegistrationAndMaterialsAsync(Guid registrationId);
