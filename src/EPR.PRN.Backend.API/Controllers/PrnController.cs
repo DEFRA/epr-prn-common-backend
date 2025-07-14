@@ -31,8 +31,6 @@ public class PrnController(IPrnService prnService,
     private readonly PrnObligationCalculationConfig _config = config.Value;
     private readonly string? logPrefix = string.IsNullOrEmpty(configuration["LogPrefix"]) ? "[EPR.PRN.Backend]" : configuration["LogPrefix"];
 
-    #region Get methods
-
     [HttpGet("{prnId}")]
     [ProducesResponseType(typeof(PrnDto), 200)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -118,9 +116,6 @@ public class PrnController(IPrnService prnService,
             : Ok(statusList);
     }
 
-    #endregion Get Methods
-
-    #region Post Methods
 
     [HttpGet("obligationcalculation/{year}")]
     [ProducesResponseType(typeof(List<ObligationData>), 200)]
@@ -285,6 +280,4 @@ public class PrnController(IPrnService prnService,
             return Problem("Internal Server Error", null, (int)HttpStatusCode.InternalServerError);
         }
     }
-
-    #endregion Post Methods
 }
