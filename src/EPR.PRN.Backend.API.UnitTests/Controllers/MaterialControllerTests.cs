@@ -4,6 +4,7 @@ using EPR.PRN.Backend.API.Queries;
 using FluentAssertions;
 using FluentAssertions.Execution;
 using MediatR;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -50,5 +51,70 @@ public class MaterialControllerTests
             result.Should().BeOfType<OkObjectResult>();
             result.As<OkObjectResult>().Value.Should().BeEquivalentTo(materials);
         }
+    }
+
+    [TestMethod]
+    public async Task GetMaterials_FilteredBy_RegistrationId_EnsureDataReturnedCorrectly()
+    {
+        // Arrange
+        var materials = new List<MaterialDto>
+        {
+            new() { Code = "1", Name = "Wood" },
+            new() { Code = "2", Name = "Plastic" }
+        };
+
+        Guid registrationId = Guid.NewGuid();
+
+        _mediatorMock
+            .Setup(m => m.Send(It.IsAny<GetMaterialsByRegistrationIdQuery>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(materials);
+
+        // Act
+        var result = await _controller.GetAllMaterials(registrationId);
+
+        // Assert
+        using (new AssertionScope())
+        {
+            result.Should().BeOfType<OkObjectResult>();
+            result.As<OkObjectResult>().Value.Should().BeEquivalentTo(materials);
+        }
+    }
+
+    [TestMethod]
+    public void ThrowInvalidRegistrationId_ReturnsBadRequest_WhenCalledWithInvalidGuid()
+    {
+        // Arrange
+        var fakeGuid = Guid.NewGuid();
+
+        // Act
+        var result = _controller.ThrowInvalidRegistrationId(_loggerMock.Object, fakeGuid);
+
+        // Assert
+        result.Should().BeOfType<BadRequestObjectResult>();
+        result.As<BadRequestObjectResult>().Value.Should().BeEquivalentTo(new
+        {
+            Message = $"Invalid Guid format for registrationId : {fakeGuid}"
+        });
+    }
+
+    [TestMethod]
+    public void ThrowInvalidRegistrationId_ThrowsError__WhenNullRegistrationIdIsPassed()
+    {
+        // Arrange
+        var materials = new List<MaterialDto>
+        {
+            new() { Code = "1", Name = "Wood" },
+            new() { Code = "2", Name = "Plastic" }
+        };
+
+        _mediatorMock
+            .Setup(m => m.Send(It.IsAny<GetMaterialsByRegistrationIdQuery>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(materials);
+
+        // Act
+        var result = _controller.ThrowInvalidRegistrationId(_loggerMock.Object, null);
+
+        // Assert
+        result.Should().BeOfType<BadRequestObjectResult>();
     }
 }

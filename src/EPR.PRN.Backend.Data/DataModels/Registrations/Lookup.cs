@@ -52,6 +52,7 @@ public class LookupApplicantRegistrationTask : LookupBase
 [Table("Lookup.TaskStatus")]
 [ExcludeFromCodeCoverage]
 public class LookupTaskStatus : LookupBase {
+    public static int Completed { get; set; }
     [MaxLength(100)]
     public override required string Name { get; set; }
 }

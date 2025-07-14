@@ -7,11 +7,22 @@ using EPR.PRN.Backend.Data.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.Extensions.Logging;
+using System.Diagnostics.CodeAnalysis;
 
 namespace EPR.PRN.Backend.Data.Repositories;
 
 public class RegistrationRepository(EprContext context, ILogger<RegistrationRepository> logger) : IRegistrationRepository
 {
+    [ExcludeFromCodeCoverage]
+    public async Task<Registration?> GetRegistrationByExternalId(Guid externalId, CancellationToken cancellationToken)
+    {
+        return await context.Registrations
+             .AsNoTracking()
+             .Where(x => x.ExternalId == externalId)
+             .Include(x => x.CarrierBrokerDealerPermit)
+             .FirstOrDefaultAsync(cancellationToken);
+    }
+
     public async Task<Registration> CreateRegistrationAsync(int applicationTypeId, Guid organisationId, AddressDto reprocessingSiteAddress)
     {
         logger.LogInformation("Creating registration for ApplicationTypeId: {ApplicationTypeId} and OrganisationId: {OrganisationId}", applicationTypeId, organisationId);
@@ -257,55 +268,6 @@ public class RegistrationRepository(EprContext context, ILogger<RegistrationRepo
 
         logger.LogInformation("Successfully updated status for task with TaskName {TaskName} And RegistrationId {RegistrationId} to {Status}", taskName, registrationId, status);
     }
-
-    public async Task UpdateApplicantRegistrationTaskStatusAsync(string taskName, Guid registrationId, TaskStatuses status)
-    {
-        logger.LogInformation("Updating applicant status for task with TaskName {TaskName} And RegistrationId {RegistrationId} to {Status}", taskName, registrationId, status);
-
-        var statusEntity = await context.LookupTaskStatuses.SingleAsync(lts => lts.Name == status.ToString());
-
-        var taskStatus = await GetTaskStatusAsync(taskName, registrationId);
-        if (taskStatus is null)
-        {
-            var registration = await context.Registrations.FirstOrDefaultAsync(o => o.ExternalId == registrationId);
-            if (registration is null)
-            {
-                throw new KeyNotFoundException();
-            }
-
-            var task = await context
-                .LookupApplicantRegistrationTasks
-                .SingleOrDefaultAsync(t => t.Name == taskName && t.IsMaterialSpecific && t.ApplicationTypeId == registration.ApplicationTypeId);
-
-            if (task is null)
-            {
-                throw new RegulatorInvalidOperationException($"No Valid Task Exists: {taskName}");
-            }
-
-            // Create a new entity if it doesn't exist
-            taskStatus = new ApplicantRegistrationTaskStatus
-            {
-                ExternalId = Guid.NewGuid(),
-                RegistrationId = registration.Id,
-                Task = task,
-                TaskStatus = statusEntity,
-            };
-
-            await context.RegistrationTaskStatus.AddAsync(taskStatus);
-        }
-        else
-        {
-            // Update the existing entity
-            taskStatus.TaskStatus = statusEntity;
-
-            context.RegistrationTaskStatus.Update(taskStatus);
-        }
-
-        await context.SaveChangesAsync();
-
-        logger.LogInformation("Successfully updated status for task with TaskName {TaskName} And RegistrationId {RegistrationId} to {Status}", taskName, registrationId, status);
-    }
-
 
     public async Task UpdateSiteAddressAsync(Guid registrationId, AddressDto reprocessingSiteAddress)
     {

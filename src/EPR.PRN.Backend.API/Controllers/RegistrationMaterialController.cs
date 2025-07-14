@@ -1,5 +1,4 @@
-﻿using System.Net;
-using AutoMapper;
+﻿using AutoMapper;
 using EPR.PRN.Backend.API.Commands;
 using EPR.PRN.Backend.API.Common.Constants;
 using EPR.PRN.Backend.API.Dto;
@@ -8,11 +7,14 @@ using EPR.PRN.Backend.API.Handlers;
 using EPR.PRN.Backend.API.Queries;
 using EPR.PRN.Backend.API.Services.Interfaces;
 using EPR.PRN.Backend.Data.DataModels;
+using EPR.PRN.Backend.Data.DataModels.Registrations;
 using EPR.PRN.Backend.Data.DTO;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.FeatureManagement.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
+using System.Diagnostics.CodeAnalysis;
+using System.Net;
 
 namespace EPR.PRN.Backend.API.Controllers;
 
@@ -67,7 +69,7 @@ public class RegistrationMaterialController(
     }
 
     [HttpPost("registrationMaterials/{Id:guid}/createExemptionReferences")]
-    [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(CreatedResult))]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     [SwaggerOperation(
@@ -86,7 +88,7 @@ public class RegistrationMaterialController(
     }
 
     [HttpPost("registrationMaterials/{id:Guid}/permits")]
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(OkResult))]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     [SwaggerOperation(
@@ -112,7 +114,7 @@ public class RegistrationMaterialController(
     }
 
     [HttpPost("registrationMaterials/{id:Guid}/permitCapacity")]
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(OkResult))]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     [SwaggerOperation(
@@ -176,7 +178,7 @@ public class RegistrationMaterialController(
     }
 
 	[HttpPost("registrationMaterials/UpdateIsMaterialRegistered")]
-	[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(OkResult))]
+	[ProducesResponseType(StatusCodes.Status204NoContent)]
 	[SwaggerResponse(StatusCodes.Status500InternalServerError, "If an unexpected error occurs.", typeof(ContentResult))]
 	[SwaggerOperation(
 	Summary = "updates an existing registration material IsMaterialRegistered flag",
@@ -241,5 +243,33 @@ public class RegistrationMaterialController(
         await mediator.Send(command);
 
         return Ok();
+    }
+
+    [HttpPost("registrationMaterials/{registrationMaterialId:guid}/overseasReprocessingSites")]
+    [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(OverseasAddressSubmissionDto))]
+    [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
+    [SwaggerOperation(
+        Summary = "Submit and save created overseasReprocessingSites",
+        Description = "attempting to save newly created overseasReprocessingSites"
+    )]
+    [SwaggerResponse(StatusCodes.Status400BadRequest, "If the request is invalid or a validation error occurs.", typeof(ProblemDetails))]
+    [SwaggerResponse(StatusCodes.Status500InternalServerError, "If an unexpected error occurs.", typeof(ContentResult))]
+    [ExcludeFromCodeCoverage(Justification = "TODO: To be done as part of Check your answers overseas reprocessors site(s)")]
+    public async Task<IActionResult> SaveOverseasReprocessingSites(Guid registrationMaterialId, [FromBody] OverseasAddressSubmissionDto overseasAddressSubmission)
+    {
+        logger.LogInformation(LogMessages.SaveOverseasReprocessingSites, registrationMaterialId);
+        var command = new CreateOverseasMaterialReprocessingSiteCommand
+        {
+            UpdateOverseasAddress = new UpdateOverseasAddressDto
+            {
+                OverseasAddresses = overseasAddressSubmission.OverseasAddresses,
+                RegistrationMaterialId = registrationMaterialId
+            }
+        };
+
+        await mediator.Send(command);
+
+        return NoContent();
     }
 }
