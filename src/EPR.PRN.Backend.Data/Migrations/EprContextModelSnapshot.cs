@@ -1315,8 +1315,6 @@ namespace EPR.PRN.Backend.Data.Migrations
                     b.HasIndex("ExternalId")
                         .IsUnique();
 
-                    b.HasIndex("InterimSiteId");
-
                     b.HasIndex("ParentOverseasAddressId");
 
                     b.ToTable("Public.InterimOverseasConnections");
@@ -3790,6 +3788,7 @@ namespace EPR.PRN.Backend.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("SiteCoordinates")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("StateProvince")
@@ -4673,20 +4672,12 @@ namespace EPR.PRN.Backend.Data.Migrations
             modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.InterimOverseasConnections", b =>
                 {
                     b.HasOne("EPR.PRN.Backend.Data.DataModels.Registrations.OverseasAddress", "OverseasAddress")
-                        .WithMany("InterimConnections")
-                        .HasForeignKey("InterimSiteId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("EPR.PRN.Backend.Data.DataModels.Registrations.OverseasAddress", "ParentOverseasAddress")
-                        .WithMany("ChildInterimConnections")
+                        .WithMany("InterimOverseasConnections")
                         .HasForeignKey("ParentOverseasAddressId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("OverseasAddress");
-
-                    b.Navigation("ParentOverseasAddress");
                 });
 
             modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.MaterialExemptionReference", b =>
@@ -4696,6 +4687,66 @@ namespace EPR.PRN.Backend.Data.Migrations
                         .HasForeignKey("RegistrationMaterialId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("RegistrationMaterial");
+                });
+
+            modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.OverseasAddress", b =>
+                {
+                    b.HasOne("EPR.PRN.Backend.Data.DataModels.Registrations.LookupCountry", "Country")
+                        .WithMany()
+                        .HasForeignKey("CountryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("EPR.PRN.Backend.Data.DataModels.Registrations.Registration", "Registration")
+                        .WithMany("OverseasAddresses")
+                        .HasForeignKey("RegistrationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Country");
+
+                    b.Navigation("Registration");
+                });
+
+            modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.OverseasAddressContact", b =>
+                {
+                    b.HasOne("EPR.PRN.Backend.Data.DataModels.Registrations.OverseasAddress", "OverseasAddress")
+                        .WithMany("OverseasAddressContacts")
+                        .HasForeignKey("OverseasAddressId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("OverseasAddress");
+                });
+
+            modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.OverseasAddressWasteCode", b =>
+                {
+                    b.HasOne("EPR.PRN.Backend.Data.DataModels.Registrations.OverseasAddress", "OverseasAddress")
+                        .WithMany("OverseasAddressWasteCodes")
+                        .HasForeignKey("OverseasAddressId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("OverseasAddress");
+                });
+
+            modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.OverseasMaterialReprocessingSite", b =>
+                {
+                    b.HasOne("EPR.PRN.Backend.Data.DataModels.Registrations.OverseasAddress", "OverseasAddress")
+                        .WithMany("OverseasMaterialReprocessingSites")
+                        .HasForeignKey("OverseasAddressId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("EPR.PRN.Backend.Data.DataModels.Registrations.RegistrationMaterial", "RegistrationMaterial")
+                        .WithMany("OverseasMaterialReprocessingSites")
+                        .HasForeignKey("RegistrationMaterialId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("OverseasAddress");
 
                     b.Navigation("RegistrationMaterial");
                 });
@@ -5034,9 +5085,7 @@ namespace EPR.PRN.Backend.Data.Migrations
 
             modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.OverseasAddress", b =>
                 {
-                    b.Navigation("ChildInterimConnections");
-
-                    b.Navigation("InterimConnections");
+                    b.Navigation("InterimOverseasConnections");
 
                     b.Navigation("OverseasAddressContacts");
 
