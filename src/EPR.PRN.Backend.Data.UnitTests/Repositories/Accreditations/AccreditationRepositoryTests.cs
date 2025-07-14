@@ -28,11 +28,32 @@ public class AccreditationRepositoryTests
             MaterialCode = "code"
         };
 
+        Registration registration = new()
+        {
+            Id = 1,
+            ExternalId = new Guid("11111111-1111-1111-1111-111111111111"),
+            OrganisationId = Guid.NewGuid(),
+            ApplicationTypeId = 1,
+            CreatedBy = Guid.NewGuid(),
+            CreatedDate = DateTime.UtcNow,
+            UpdatedBy = Guid.NewGuid(),
+            UpdatedDate = DateTime.UtcNow
+        };
+
         RegistrationMaterial registrationMaterial = new()
         {
             MaterialId = 1,
-            Material = material
+            Material = material,
+            Registration = registration
         };
+
+        LookupAccreditationStatus accreditationStatus = new()
+        {
+            Id = 1,
+            Name = "Active"
+      
+        };
+
 
         _dbContext.Accreditations.AddRange(
             new List<Accreditation>
@@ -45,7 +66,7 @@ public class AccreditationRepositoryTests
            
                     //ApplicationType = new(),
                     AccreditationStatusId = 1,
-                    //AccreditationStatus = new(),
+                    AccreditationStatus = accreditationStatus,
                     RegistrationMaterialId = 1,
                     RegistrationMaterial = registrationMaterial,
                     ApplicationReferenceNumber = "APP-123456",
@@ -58,7 +79,7 @@ public class AccreditationRepositoryTests
                     //ApplicationTypeId = 1,
                     //ApplicationType = new(),
                     AccreditationStatusId = 1,
-                    //AccreditationStatus = new(),
+                    AccreditationStatus = accreditationStatus,
                     RegistrationMaterialId = 1,
                     RegistrationMaterial = registrationMaterial,
                     ApplicationReferenceNumber = "APP-123456",
