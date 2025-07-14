@@ -40,4 +40,5 @@ public static class LogMessages
     public const string RegistrationsOverview = "Attempting to retrieve registrations overview for organisation id :{Id}";    
 	public const string UpdateIsMaterialRegistered = "Attempting to update the registration material IsMaterialRegistered flag.";
     public const string UpsertRegistrationReprocessingDetails = "Attempting to upsert the registration reprocessing details for registration material with ID :{registrationMaterialId}";
+    public const string UpdateMaterialNotRegistrationReason = "Attempting to update the reason for not registering registration material with ID {RegistrationMaterialId}";
 }

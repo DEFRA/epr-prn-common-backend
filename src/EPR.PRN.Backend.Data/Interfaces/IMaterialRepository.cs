@@ -16,4 +16,5 @@ public interface IMaterialRepository
 
     Task<IEnumerable<Material>> GetMaterialsByRegistrationIdQuery(Guid registrationId);
     Task SaveOverseasReprocessingSites(UpdateOverseasAddressDto overseasAddressSubmission);
+    Task UpdateMaterialNotRegisteringReason(Guid registrationMaterialId, string materialNotRegisteringReason);
 }
