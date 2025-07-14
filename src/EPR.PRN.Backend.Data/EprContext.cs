@@ -343,9 +343,9 @@ public class EprContext : DbContext
 
         modelBuilder.Entity<Accreditation>(e =>
         {
-            e.HasOne(x => x.ApplicationType)
-                .WithMany()
-                .HasForeignKey(x => x.ApplicationTypeId);
+            //e.HasOne(x => x.ApplicationType)
+            //    .WithMany()
+            //    .HasForeignKey(x => x.ApplicationTypeId);
 
             e.HasOne(x => x.AccreditationStatus)
                 .WithMany()

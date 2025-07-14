@@ -15,11 +15,11 @@ public class Accreditation
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public Guid ExternalId { get; set; }
 
-    [ForeignKey("ApplicationType")]
-    public int? ApplicationTypeId { get; set; }
-    public LookupApplicationType? ApplicationType { get; set; }
+    //[ForeignKey("ApplicationType")]
+    //public int? ApplicationTypeId { get; set; }
+    //public LookupApplicationType? ApplicationType { get; set; }
 
-    public Guid OrganisationId { get; set; }
+    //public Guid OrganisationId { get; set; }
 
     [ForeignKey("AccreditationStatus")]
     public int AccreditationStatusId { get; set; }
@@ -93,5 +93,7 @@ public class Accreditation
     public List<AccreditationFileUpload>? FileUploads { get; set; }
 
     public List<AccreditationPrnIssueAuth>? AccreditationPrnIssueAuths { get; set; }
+
+    public List<OverseasAccreditationSite>? OverseasAccreditationSites { get; set; }
 
 }

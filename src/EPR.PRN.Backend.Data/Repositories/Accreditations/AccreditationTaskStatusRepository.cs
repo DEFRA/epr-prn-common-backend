@@ -58,7 +58,7 @@ namespace EPR.PRN.Backend.Data.Repositories.Accreditations
                     throw new InvalidOperationException("Journey type 'Accreditation' not found.");
                 var task = _context.LookupApplicantRegistrationTasks.SingleOrDefault(t => t.Name == taskName
                                                                                         && t.JourneyTypeId == journeyTypeId
-                                                                                        && t.ApplicationTypeId == accreditation.ApplicationTypeId
+                                                                                        && t.ApplicationTypeId == accreditation.RegistrationMaterial.Registration.ApplicationTypeId
                                                                                         && t.IsMaterialSpecific == true);
 
                 if (task == null)

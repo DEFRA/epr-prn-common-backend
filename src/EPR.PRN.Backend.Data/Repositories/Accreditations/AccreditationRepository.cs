@@ -12,11 +12,12 @@ public class AccreditationRepository(EprContext eprContext) : IAccreditationRepo
     {
         return await eprContext.Accreditations
             .AsNoTracking()
-            .Include(x => x.ApplicationType)
+            //.Include(x => x.ApplicationType)  // will this be needed in the other layers? should it be added to the registration entity?
             .Include(x => x.AccreditationStatus)
             
             .Include(x => x.RegistrationMaterial)
                 .ThenInclude(x => x.Registration)
+                
             .Include(x => x.RegistrationMaterial)
                 .ThenInclude(x => x.Material)
 
@@ -39,13 +40,13 @@ public class AccreditationRepository(EprContext eprContext) : IAccreditationRepo
             .SingleOrDefaultAsync();
 
         // use this if the organisation and application type ids are kept in accreditation table in the ADR
-        return await eprContext.Accreditations
-            .AsNoTracking()
-            .Where(x =>
-                x.OrganisationId == organisationId &&
-                x.RegistrationMaterialId == materialId &&
-                x.ApplicationTypeId == applicationTypeId)            
-            .SingleOrDefaultAsync();
+        //return await eprContext.Accreditations
+        //    .AsNoTracking()
+        //    .Where(x =>
+        //        x.OrganisationId == organisationId &&
+        //        x.RegistrationMaterialId == materialId &&
+        //        x.ApplicationTypeId == applicationTypeId)            
+        //    .SingleOrDefaultAsync();
     }
 
     public async Task Create(Accreditation accreditation)

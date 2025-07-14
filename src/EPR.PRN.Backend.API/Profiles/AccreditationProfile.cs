@@ -30,7 +30,7 @@ public class AccreditationProfile : Profile
             // Example: Map AccreditationStatusName from nested AccreditationStatus.Name
             .ForMember(dest => dest.AccreditationStatusId, opt => opt.MapFrom(src => src.AccreditationStatusId))
             // Example: Map ApplicationTypeName from nested ApplicationType.Name
-            .ForMember(dest => dest.ApplicationTypeId, opt => opt.MapFrom(src => src.ApplicationTypeId))
+            .ForMember(dest => dest.ApplicationTypeId, opt => opt.MapFrom(src => src.RegistrationMaterial.Registration.ApplicationTypeId))
             // Example: Map RegistrationMaterialId if property names differ
             .ForMember(dest => dest.RegistrationMaterialId, opt => opt.MapFrom(src => src.RegistrationMaterialId))
             // Example: Map CreatedDate if property names differ
@@ -55,7 +55,7 @@ public class AccreditationProfile : Profile
             ;
         CreateMap<AccreditationRequestDto, Accreditation>()
             // Example: Map ApplicationTypeId if property names differ
-            .ForMember(dest => dest.ApplicationTypeId, opt => opt.MapFrom(src => src.ApplicationTypeId))
+           // .ForMember(dest => dest.RegistrationMaterial.Registration.ApplicationTypeId, opt => opt.MapFrom(src => src.ApplicationTypeId))
             // Example: Map AccreditationStatusId if property names differ
             .ForMember(dest => dest.AccreditationStatusId, opt => opt.MapFrom(src => src.AccreditationStatusId))
             // Example: Map RegistrationMaterialId if property names differ

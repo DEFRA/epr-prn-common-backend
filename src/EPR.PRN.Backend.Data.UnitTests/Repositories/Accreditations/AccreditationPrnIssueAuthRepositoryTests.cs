@@ -39,7 +39,7 @@ public class AccreditationPrnIssueAuthRepositoryTests
     {
         // Arrange
         var accreditationId = Guid.NewGuid();
-        var accreditation = new Accreditation { Id = 1, ExternalId = accreditationId, OrganisationId = Guid.NewGuid(), ApplicationReferenceNumber = string.Empty };
+        var accreditation = new Accreditation { Id = 1, ExternalId = accreditationId,  ApplicationReferenceNumber = string.Empty };
         var auth = new AccreditationPrnIssueAuth
         {
             ExternalId = Guid.NewGuid(),
@@ -79,7 +79,7 @@ public class AccreditationPrnIssueAuthRepositoryTests
     {
         // Arrange
         var accreditationId = Guid.NewGuid();
-        var accreditation = new Accreditation { Id = 2, ExternalId = accreditationId, OrganisationId = Guid.NewGuid(), ApplicationReferenceNumber = string.Empty };
+        var accreditation = new Accreditation { Id = 2, ExternalId = accreditationId, ApplicationReferenceNumber = string.Empty };
         var oldAuth = new AccreditationPrnIssueAuth
         {
             ExternalId = Guid.NewGuid(),

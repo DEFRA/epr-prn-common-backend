@@ -42,7 +42,7 @@ public class AccreditationRepositoryTests
                     Id = 1,
                     ExternalId = new Guid("11111111-1111-1111-1111-111111111111"), 
                     AccreditationYear = 2026,
-                    ApplicationTypeId = 1,
+           
                     //ApplicationType = new(),
                     AccreditationStatusId = 1,
                     //AccreditationStatus = new(),

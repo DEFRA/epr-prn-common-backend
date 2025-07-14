@@ -146,9 +146,9 @@ public class AccreditationService(
 
         var entity = new Accreditation
         {
-            OrganisationId = organisationId,
+            //OrganisationId = organisationId,
             RegistrationMaterialId = material.Id,
-            ApplicationTypeId = applicationTypeId,
+            //ApplicationTypeId = applicationTypeId,
             AccreditationStatusId = 1,
             AccreditationYear = 2026,
             ApplicationReferenceNumber = string.Empty
