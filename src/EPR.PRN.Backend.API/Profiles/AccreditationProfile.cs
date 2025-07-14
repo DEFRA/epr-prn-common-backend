@@ -23,5 +23,8 @@ public class AccreditationProfile : Profile
         CreateMap<ApplicationType, ApplicationTypeDto>();
         CreateMap<AccreditationStatus, AccreditationStatusDto>();
         CreateMap<RegistrationMaterial, RegistrationMaterialDto>();
+
+        CreateMap<OverseasAccreditationSite, OverseasAccreditationSiteDto>();
+        CreateMap<OverseasAccreditationSiteDto, OverseasAccreditationSite>();
     }
 }
