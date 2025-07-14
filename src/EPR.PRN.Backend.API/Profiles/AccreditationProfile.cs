@@ -28,17 +28,19 @@ public class AccreditationProfile : Profile
             // Example: Map nested MaterialName
             .ForMember(dest => dest.MaterialName, opt => opt.MapFrom(src => src.RegistrationMaterial.Material.MaterialName))
             // Example: Map AccreditationStatusName from nested AccreditationStatus.Name
-            .ForMember(dest => dest.AccreditationStatusId, opt => opt.MapFrom(src => src.AccreditationStatus.Id))
+            .ForMember(dest => dest.AccreditationStatusId, opt => opt.MapFrom(src => src.AccreditationStatusId))
             // Example: Map ApplicationTypeName from nested ApplicationType.Name
-            .ForMember(dest => dest.ApplicationTypeId, opt => opt.MapFrom(src => src.ApplicationType.Id))
+            .ForMember(dest => dest.ApplicationTypeId, opt => opt.MapFrom(src => src.ApplicationTypeId))
             // Example: Map RegistrationMaterialId if property names differ
             .ForMember(dest => dest.RegistrationMaterialId, opt => opt.MapFrom(src => src.RegistrationMaterialId))
             // Example: Map CreatedDate if property names differ
             //  .ForMember(dest => dest.CreatedDate, opt => opt.MapFrom(src => src.CreatedOn))
             // Add more custom mappings as needed for other non-identical but related members
             .ForMember(des => des.AccreferenceNumber, opt => opt.MapFrom(src => src.ApplicationReferenceNumber))
+            
+            .ForMember(des => des.AccreditationYear, opt => opt.MapFrom(src => src.AccreditationYear))
 
-        // percentages
+            // percentages
             .ForMember(des => des.NewMarketsPercentage, opt => opt.MapFrom(src => src.NewMarketsPercentage))
             .ForMember(des => des.BusinessCollectionsPercentage, opt => opt.MapFrom(src => src.BusinessCollectionsPercentage))
             .ForMember(des => des.InfrastructurePercentage, opt => opt.MapFrom(src => src.InfrastructurePercentage))
@@ -63,7 +65,7 @@ public class AccreditationProfile : Profile
             // Example: Map CreatedOn if property names differ
             //.ForMember(dest => dest.CreatedOn, opt => opt.MapFrom(src => src.CreatedDate))
             // Add more custom mappings as needed for other non-identical but related members
-
+            .ForMember(dest => dest.AccreditationYear, opt => opt.MapFrom(src => src.AccreditationYear))
             // percentages
 
             .ForMember(des => des.NewMarketsPercentage, opt => opt.MapFrom(src => src.NewMarketsPercentage))

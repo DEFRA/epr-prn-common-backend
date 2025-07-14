@@ -16,7 +16,7 @@ public class Accreditation
     public Guid ExternalId { get; set; }
 
     [ForeignKey("ApplicationType")]
-    public int ApplicationTypeId { get; set; }
+    public int? ApplicationTypeId { get; set; }
     public LookupApplicationType? ApplicationType { get; set; }
 
     public Guid OrganisationId { get; set; }

@@ -14,8 +14,12 @@ public class AccreditationRepository(EprContext eprContext) : IAccreditationRepo
             .AsNoTracking()
             .Include(x => x.ApplicationType)
             .Include(x => x.AccreditationStatus)
+            
+            .Include(x => x.RegistrationMaterial)
+                .ThenInclude(x => x.Registration)
             .Include(x => x.RegistrationMaterial)
                 .ThenInclude(x => x.Material)
+
             .SingleOrDefaultAsync(x => x.ExternalId.Equals(accreditationId));
     }
 
@@ -24,6 +28,17 @@ public class AccreditationRepository(EprContext eprContext) : IAccreditationRepo
         int materialId,
         int applicationTypeId)
     {
+        return await eprContext.Accreditations
+            .Include(x => x.RegistrationMaterial)
+                .ThenInclude(x => x.Registration)
+            .AsNoTracking()
+            .Where(x =>
+                x.RegistrationMaterial.Registration.OrganisationId == organisationId &&
+                x.RegistrationMaterialId == materialId &&
+                x.RegistrationMaterial.Registration.ApplicationTypeId == applicationTypeId)
+            .SingleOrDefaultAsync();
+
+        // use this if the organisation and application type ids are kept in accreditation table in the ADR
         return await eprContext.Accreditations
             .AsNoTracking()
             .Where(x =>
@@ -50,9 +65,19 @@ public class AccreditationRepository(EprContext eprContext) : IAccreditationRepo
     {
         var existingAccreditation = await eprContext.Accreditations.SingleAsync(x => x.ExternalId.Equals(accreditation.ExternalId));
 
-        existingAccreditation.OrganisationId = accreditation.OrganisationId;
+        /*
+         * There should not be a secenario where the applcation type or organisation id is changed in eiter accreditation or organisation?
+         * 
+         */
+        //existingAccreditation = await eprContext.Accreditations
+        //    .Include(x => x.RegistrationMaterial)
+        //        .ThenInclude(x => x.Registration)
+        //    .SingleAsync(x => x.ExternalId.Equals(accreditation.ExternalId));
+
+        //existingAccreditation.OrganisationId = accreditation.OrganisationId;
         existingAccreditation.RegistrationMaterialId = accreditation.RegistrationMaterialId;
-        existingAccreditation.ApplicationTypeId = accreditation.ApplicationTypeId;
+        //existingAccreditation.ApplicationTypeId = accreditation.ApplicationTypeId;
+        //existingAccreditation.RegistrationMaterial.Registration.ApplicationTypeId = accreditation.ApplicationTypeId.GetValueOrDefault();
         existingAccreditation.AccreditationStatusId = accreditation.AccreditationStatusId;
         existingAccreditation.DecFullName = accreditation.DecFullName;
         existingAccreditation.DecJobTitle = accreditation.DecJobTitle;

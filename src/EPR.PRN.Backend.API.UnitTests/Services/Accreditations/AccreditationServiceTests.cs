@@ -60,9 +60,30 @@ public class AccreditationServiceTests
         var accreditationStatusId = 1;
         Accreditation accreditation = null!;
 
+
+
         _repositoryMock
             .Setup(r => r.GetAccreditationDetails(organisationId,materialId,applicationTypeId))
             .ReturnsAsync(accreditation);
+        // Mock _registrationRepository and _registrationMaterialRepositoryMock to return a material and registration
+        Guid regMaterialId = Guid.NewGuid();
+        Guid registrationId = Guid.NewGuid();
+
+        _registrationRepository.Setup(Setup => Setup.GetRegistrationByExternalId(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new Registration
+            {
+                Id = 1,
+                ExternalId = registrationId,
+                OrganisationId = organisationId,
+
+            });
+
+        _registrationMaterialRepositoryMock
+            .Setup(r => r.GetRegistrationMaterialById(regMaterialId))
+            .ReturnsAsync(new RegistrationMaterial { Id = materialId, RegistrationId = 1});
+        
+
+
 
         // Act
         await _service.GetOrCreateAccreditation(
@@ -124,19 +145,22 @@ public class AccreditationServiceTests
         var id = Guid.NewGuid();
         var entity = new Accreditation
         {
+            Id = 1,
             ExternalId = id,
             OrganisationId = Guid.NewGuid(),
             RegistrationMaterialId = 1,
             ApplicationTypeId = 2,
             AccreditationStatusId = 3,
             ApplicationReferenceNumber = "APP-123456",
+            AccreditationYear = 2026,
+            PRNTonnage = 1000,
         };
         var dto = new AccreditationDto
         {
             ExternalId = id,
             OrganisationId = entity.OrganisationId,
             RegistrationMaterialId = entity.RegistrationMaterialId,
-            ApplicationTypeId = entity.ApplicationTypeId,
+            ApplicationTypeId = entity.ApplicationTypeId.GetValueOrDefault(),
             AccreditationStatusId = entity.AccreditationStatusId
         };
 
@@ -144,12 +168,24 @@ public class AccreditationServiceTests
 
         // Act
         var result = await _service.GetAccreditationById(id);
+  
 
         // Assert
         result.Should().NotBeNull();
         result.ExternalId.Should().Be(id);
         _repositoryMock.Verify(r => r.GetById(id), Times.Once);
-        result.Should().BeEquivalentTo(dto);
+        //result.Should().BeEquivalentTo(dto);
+        // check entity fields against dto fields
+        result.AccreferenceNumber.Should().Be(entity.ApplicationReferenceNumber);
+        result.AccreditationYear.Should().Be(entity.AccreditationYear);
+        result.PrnTonnage.Should().Be(entity.PRNTonnage);
+        result.OrganisationId.Should().Be(entity.OrganisationId);
+        result.RegistrationMaterialId.Should().Be(entity.RegistrationMaterialId);
+        result.ApplicationTypeId.Should().Be(entity.ApplicationTypeId);
+        result.AccreditationStatusId.Should().Be(entity.AccreditationStatusId);
+   
+
+
     }
 
     [TestMethod]
