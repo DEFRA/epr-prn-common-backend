@@ -134,4 +134,16 @@ public class AccreditationRepositoryTests
         updatedAccreditation.ExternalId.Should().Be(accreditationId);
         updatedAccreditation.AccreditationYear.Should().Be(2027);
     }
+
+    [TestMethod]
+    public async Task GetAccreditationDetails_NoRecords_ReturnsNull()
+    {
+        // Arrange
+        
+        // Act
+        var result = await _repository.GetAccreditationDetails(new Guid(), It.IsAny<int>(), It.IsAny<int>());
+
+        // Assert
+        result.Should().BeNull();
+    }
 }
