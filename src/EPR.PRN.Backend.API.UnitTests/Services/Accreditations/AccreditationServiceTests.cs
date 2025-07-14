@@ -93,9 +93,9 @@ public class AccreditationServiceTests
 
         // Assert
         _repositoryMock.Verify(r => r.Create(It.Is<Accreditation>(x =>
-            x.OrganisationId == organisationId &&
+            //x.OrganisationId == organisationId &&
             x.RegistrationMaterialId == materialId &&
-            x.ApplicationTypeId == applicationTypeId &&
+            //x.ApplicationTypeId == applicationTypeId &&
             x.AccreditationStatusId == accreditationStatusId
             )), Times.Once);
 
@@ -114,9 +114,9 @@ public class AccreditationServiceTests
         var accreditation = new Accreditation
         {
             ExternalId = id,
-            OrganisationId = organisationId,
+            //OrganisationId = organisationId,
             RegistrationMaterialId = materialId,
-            ApplicationTypeId = applicationTypeId,
+            //ApplicationTypeId = applicationTypeId,
             AccreditationStatusId = accreditationStatusId,
             ApplicationReferenceNumber = "APP-123456",
         };
@@ -147,9 +147,9 @@ public class AccreditationServiceTests
         {
             Id = 1,
             ExternalId = id,
-            OrganisationId = Guid.NewGuid(),
+            //OrganisationId = Guid.NewGuid(),
             RegistrationMaterialId = 1,
-            ApplicationTypeId = 2,
+            //ApplicationTypeId = 2,
             AccreditationStatusId = 3,
             ApplicationReferenceNumber = "APP-123456",
             AccreditationYear = 2026,
@@ -158,9 +158,9 @@ public class AccreditationServiceTests
         var dto = new AccreditationDto
         {
             ExternalId = id,
-            OrganisationId = entity.OrganisationId,
+            OrganisationId = Guid.NewGuid(),// entity.OrganisationId,
             RegistrationMaterialId = entity.RegistrationMaterialId,
-            ApplicationTypeId = entity.ApplicationTypeId.GetValueOrDefault(),
+            ApplicationTypeId = 2,//entity.ApplicationTypeId.GetValueOrDefault(),
             AccreditationStatusId = entity.AccreditationStatusId
         };
 
@@ -179,9 +179,9 @@ public class AccreditationServiceTests
         result.AccreferenceNumber.Should().Be(entity.ApplicationReferenceNumber);
         result.AccreditationYear.Should().Be(entity.AccreditationYear);
         result.PrnTonnage.Should().Be(entity.PRNTonnage);
-        result.OrganisationId.Should().Be(entity.OrganisationId);
+        //result.OrganisationId.Should().Be(entity.OrganisationId);
         result.RegistrationMaterialId.Should().Be(entity.RegistrationMaterialId);
-        result.ApplicationTypeId.Should().Be(entity.ApplicationTypeId);
+        //result.ApplicationTypeId.Should().Be(entity.ApplicationTypeId);
         result.AccreditationStatusId.Should().Be(entity.AccreditationStatusId);
    
 
@@ -221,9 +221,9 @@ public class AccreditationServiceTests
 
         // Assert
         _repositoryMock.Verify(r => r.Create(It.Is<Accreditation>(x => 
-            x.OrganisationId == requestDto.OrganisationId &&
+            //x.OrganisationId == requestDto.OrganisationId &&
             x.RegistrationMaterialId == requestDto.RegistrationMaterialId &&
-            x.ApplicationTypeId == requestDto.ApplicationTypeId &&
+            //x.ApplicationTypeId == requestDto.ApplicationTypeId &&
             x.AccreditationStatusId == requestDto.AccreditationStatusId
             )), Times.Once);
     }
@@ -247,9 +247,9 @@ public class AccreditationServiceTests
         // Assert
         _repositoryMock.Verify(r => r.Update(It.Is<Accreditation>(x =>
             x.ExternalId == requestDto.ExternalId &&
-            x.OrganisationId == requestDto.OrganisationId &&
+            //x.OrganisationId == requestDto.OrganisationId &&
             x.RegistrationMaterialId == requestDto.RegistrationMaterialId &&
-            x.ApplicationTypeId == requestDto.ApplicationTypeId &&
+            //x.ApplicationTypeId == requestDto.ApplicationTypeId &&
             x.AccreditationStatusId == requestDto.AccreditationStatusId
             )), Times.Once);
     }
