@@ -6,7 +6,7 @@ using EPR.PRN.Backend.Data.Interfaces.Regulator;
 using MediatR;
 
 namespace EPR.PRN.Backend.API.Handlers;
-    
+
 /// <summary>
 /// Handler for the <see cref="GetAllRegistrationMaterialsQuery"/>.
 /// </summary>
@@ -16,12 +16,36 @@ public class GetOverseasMaterialReprocessingSitesHandler(
     IMapper mapper
 ) : IRequestHandler<GetOverseasMaterialReprocessingSitesQuery, IList<OverseasMaterialReprocessingSiteDto>>
 {
-    /// <inheritdoc />>.
     public async Task<IList<OverseasMaterialReprocessingSiteDto>> Handle(GetOverseasMaterialReprocessingSitesQuery request, CancellationToken cancellationToken)
     {
-        var overseasMaterialReprocessingSites = await registrationMaterialService.GetOverseasMaterialReprocessingSites(request.RegistrationMaterialId);
+        var sites = await registrationMaterialService.GetOverseasMaterialReprocessingSites(request.RegistrationMaterialId);
 
-        //todo create map profile for overseasMaterialReprocessingSites to OverseasMaterialReprocessingSiteDto and return the mapped list.
-        return mapper.Map<IList<OverseasMaterialReprocessingSiteDto>>(overseasMaterialReprocessingSites);
+        var parentSites = sites
+            .Where(site => site.OverseasAddress?.IsInterimSite != true)
+            .ToList();
+
+        var result = mapper.Map<IList<OverseasMaterialReprocessingSiteDto>>(parentSites);
+
+        foreach (var dto in result)
+        {
+            var parent = parentSites
+                .FirstOrDefault(x => x.OverseasAddress?.ExternalId == dto.OverseasAddressId);
+
+            if (parent?.OverseasAddress?.ChildInterimConnections == null)
+                continue;
+
+            foreach (var conn in parent.OverseasAddress.ChildInterimConnections)
+            {
+                var interimAddress = conn.OverseasAddress;
+
+                if (interimAddress != null && interimAddress.IsInterimSite == true)
+                {
+                    var childDto = mapper.Map<InterimSiteAddressDto>(interimAddress);
+                    dto.InterimSiteAddresses?.Add(childDto);
+                }
+            }
+        }
+
+        return result;
     }
 }

@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EPR.PRN.Backend.Data.Migrations
 {
     [DbContext(typeof(EprContext))]
-    [Migration("20250710164043_InterimOverseasConnectionsRelationship")]
-    partial class InterimOverseasConnectionsRelationship
+    [Migration("20250714163811_InterimOverSeasConnectionRelationships")]
+    partial class InterimOverSeasConnectionRelationships
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

@@ -5,7 +5,7 @@
 namespace EPR.PRN.Backend.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class InterimOverseasConnectionsRelationship : Migration
+    public partial class InterimOverSeasConnectionRelationships : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

@@ -26,5 +26,5 @@ public interface IRegistrationMaterialRepository
     Task<IEnumerable<LookupMaterialPermit>> GetMaterialPermitTypes();
     Task DeleteAsync(Guid registrationMaterialId);
 	Task UpdateIsMaterialRegisteredAsync(List<UpdateIsMaterialRegisteredDto> updateIsMaterialRegisteredDto);
-    Task<IEnumerable<RegistrationMaterial>> GetOverseasMaterialReprocessingSites(Guid registrationMaterialId);
+    Task<IList<OverseasMaterialReprocessingSite>> GetOverseasMaterialReprocessingSites(Guid registrationMaterialId);
 }

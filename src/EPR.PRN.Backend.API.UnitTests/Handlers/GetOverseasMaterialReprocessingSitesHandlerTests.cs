@@ -1,5 +1,4 @@
 using AutoMapper;
-using EPR.PRN.Backend.API.Dto;
 using EPR.PRN.Backend.API.Handlers;
 using EPR.PRN.Backend.API.Queries;
 using EPR.PRN.Backend.Data.DataModels.Registrations;
@@ -7,7 +6,6 @@ using EPR.PRN.Backend.Data.DTO;
 using EPR.PRN.Backend.Data.Interfaces.Regulator;
 using FluentAssertions;
 using Moq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace EPR.PRN.Backend.API.UnitTests.Handlers;
 
@@ -33,73 +31,185 @@ public class GetOverseasMaterialReprocessingSitesHandlerTests
     }
 
     [TestMethod]
-    public async Task Handle_ShouldReturnMappedDto_WhenSitesExist()
+    public async Task Handle_ShouldFilterParentSitesAndMapCorrectly()
     {
         // Arrange
-        var siteId = 123;
-        var overseasSites = new List<RegistrationMaterial>
+        var parentExternalId = Guid.NewGuid();
+        var interimExternalId = Guid.NewGuid();
+
+        var interimAddress = new OverseasAddress
         {
-            new RegistrationMaterial
-            {
-                OverseasMaterialReprocessingSites = new List<OverseasMaterialReprocessingSite>
-                {
-                    new OverseasMaterialReprocessingSite
-                    {
-                        Id = siteId
-                    }
-                }
-            }
+            ExternalId = interimExternalId,
+            IsInterimSite = true,
+            OrganisationName = "BB Ltd",
+            AddressLine1 = "Addresss line 1",
+            CityOrTown = "testcity"
         };
 
-        var expectedDtos = new List<OverseasMaterialReprocessingSiteDto>
+        var childConnection = new InterimOverseasConnections
         {
-            new OverseasMaterialReprocessingSiteDto
+            OverseasAddress = interimAddress
+        };
+
+        var parentAddress = new OverseasAddress
+        {
+            ExternalId = parentExternalId,
+            IsInterimSite = false,
+            ChildInterimConnections = new List<InterimOverseasConnections>
             {
-                OverseasAddress = new OverseasAddressBaseDto
+                childConnection
+            },
+            OrganisationName = "BB Ltd",
+            AddressLine1 = "Addresss line 1",
+            CityOrTown = "testcity"
+        };
+
+        var reprocessingSites = new List<OverseasMaterialReprocessingSite>
+        {
+            new OverseasMaterialReprocessingSite
+            {
+                OverseasAddress = parentAddress
+            },
+            new OverseasMaterialReprocessingSite
+            {
+                OverseasAddress = new OverseasAddress
                 {
+                    IsInterimSite = true,
+                    OrganisationName = "Interim Site",
                     AddressLine1 = "Address line 1",
-                    AddressLine2 = "Address line 2",
-                    CityorTown = "lisbon",
-                    Country = "portugal",
-                    OrganisationName = "bb ltd",
-                    PostCode = "123-456-789",
-                    StateProvince = "samplestate"
+                    CityOrTown = "Interim City"
                 }
             }
         };
 
-        _mockRepository.Setup(r => r.GetOverseasMaterialReprocessingSites(_registrationMaterialId))
-            .ReturnsAsync(overseasSites);
+        var parentDto = new OverseasMaterialReprocessingSiteDto
+        {
+            OverseasAddressId = parentExternalId,
+            InterimSiteAddresses = new List<InterimSiteAddressDto>(),
+            OverseasAddress = new OverseasAddressDto
+            {
+                OrganisationName = "test",
+                AddressLine1 = "test",
+                CityOrTown = "test",
+                CountryName = "TEST"
+            }
+        };
 
-        _mockMapper.Setup(m => m.Map<IList<OverseasMaterialReprocessingSiteDto>>(It.IsAny<object>()))
-            .Returns(expectedDtos);
+        var interimDto = new InterimSiteAddressDto
+        {
+            AddressLine1 = "Address line 1",
+            AddressLine2 = "Address line 2",
+            CityOrTown = "TestCity",
+            CountryName = "TestCountry",
+            OrganisationName = "BB Ltd",
+            PostCode = "9999999",
+            StateProvince = "teststate"
+        };
+
+        _mockRepository
+            .Setup(x => x.GetOverseasMaterialReprocessingSites(_registrationMaterialId))
+            .ReturnsAsync(reprocessingSites);
+
+        _mockMapper
+            .Setup(x => x.Map<IList<OverseasMaterialReprocessingSiteDto>>(It.IsAny<List<OverseasMaterialReprocessingSite>>()))
+            .Returns(new List<OverseasMaterialReprocessingSiteDto> { parentDto });
+
+        _mockMapper
+            .Setup(x => x.Map<InterimSiteAddressDto>(interimAddress))
+            .Returns(interimDto);
 
         // Act
-        var result = await _handler.Handle(_query, default);
+        var result = await _handler.Handle(_query, CancellationToken.None);
 
         // Assert
-        result.Should().BeEquivalentTo(expectedDtos);
-        _mockRepository.Verify(r => r.GetOverseasMaterialReprocessingSites(_registrationMaterialId), Times.Once);
-        _mockMapper.Verify(m => m.Map<IList<OverseasMaterialReprocessingSiteDto>>(overseasSites), Times.Once);
+        result.Should().HaveCount(1);
+        result.First().InterimSiteAddresses.Should().ContainSingle()
+            .Which.Should().Be(interimDto);
     }
 
     [TestMethod]
-    public async Task Handle_ShouldReturnEmptyList_WhenNoSitesExist()
+    public async Task Handle_ShouldReturnEmptyList_WhenNoParentSitesExist()
     {
         // Arrange
-        var overseasSites = new List<RegistrationMaterial>();
-        var expectedDtos = new List<OverseasMaterialReprocessingSiteDto>();
+        var sites = new List<OverseasMaterialReprocessingSite>
+        {
+            new OverseasMaterialReprocessingSite
+            {
+                OverseasAddress = new OverseasAddress
+                {
+                    IsInterimSite = true,
+                    OrganisationName = "Interim org",
+                    AddressLine1 = "Address line 1",
+                    CityOrTown = "testinterimcity"
+                }
+            }
+        };
 
-        _mockRepository.Setup(r => r.GetOverseasMaterialReprocessingSites(_registrationMaterialId))
-            .ReturnsAsync(overseasSites);
+        _mockRepository
+            .Setup(x => x.GetOverseasMaterialReprocessingSites(_registrationMaterialId))
+            .ReturnsAsync(sites);
 
-        _mockMapper.Setup(m => m.Map<IList<OverseasMaterialReprocessingSiteDto>>(overseasSites))
-            .Returns(expectedDtos);
+        _mockMapper
+            .Setup(x => x.Map<IList<OverseasMaterialReprocessingSiteDto>>(It.IsAny<List<OverseasMaterialReprocessingSite>>()))
+            .Returns(new List<OverseasMaterialReprocessingSiteDto>());
 
         // Act
-        var result = await _handler.Handle(_query, default);
+        var result = await _handler.Handle(_query, CancellationToken.None);
 
         // Assert
         result.Should().BeEmpty();
+    }
+
+    [TestMethod]
+    public async Task Handle_ShouldHandleEmptyChildInterimConnections()
+    {
+        // Arrange
+        var parentExternalId = Guid.NewGuid();
+
+        var parentAddress = new OverseasAddress
+        {
+            ExternalId = parentExternalId,
+            IsInterimSite = false,
+            ChildInterimConnections = new List<InterimOverseasConnections>(),
+            OrganisationName = "Test Org",
+            AddressLine1 = "Address line 1",
+            CityOrTown = "TestCity"
+        };
+
+        var reprocessingSites = new List<OverseasMaterialReprocessingSite>
+        {
+            new OverseasMaterialReprocessingSite
+            {
+                OverseasAddress = parentAddress
+            }
+        };
+
+        var parentDto = new OverseasMaterialReprocessingSiteDto
+        {
+            OverseasAddressId = parentExternalId,
+            InterimSiteAddresses = new List<InterimSiteAddressDto>(),
+            OverseasAddress = new OverseasAddressDto
+            {
+                OrganisationName = "Test Org",
+                AddressLine1 = "Address line 1",
+                CityOrTown = "Test City",
+                CountryName = "TestCountry"
+            }
+        };
+
+        _mockRepository
+            .Setup(x => x.GetOverseasMaterialReprocessingSites(_registrationMaterialId))
+            .ReturnsAsync(reprocessingSites);
+
+        _mockMapper
+            .Setup(x => x.Map<IList<OverseasMaterialReprocessingSiteDto>>(It.IsAny<List<OverseasMaterialReprocessingSite>>()))
+            .Returns(new List<OverseasMaterialReprocessingSiteDto> { parentDto });
+
+        // Act
+        var result = await _handler.Handle(_query, CancellationToken.None);
+
+        // Assert
+        result.Should().HaveCount(1);
+        result.First().InterimSiteAddresses.Should().BeEmpty();
     }
 }

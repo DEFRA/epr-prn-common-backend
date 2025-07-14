@@ -32,6 +32,7 @@ public class RegistrationMaterialProfile : Profile
         CreateLookupMappings();
         CreateRegistrationMaterialContactMappings();
         CreateRegistrationReprocessingIOMappings();
+        CreateOverseasReprocessingMappings();
     }
 
     private void CreateRegistrationReprocessingIOMappings()
@@ -499,4 +500,53 @@ public class RegistrationMaterialProfile : Profile
                 reprocessingSiteAddress.County,
                 reprocessingSiteAddress.PostCode
             }.Where(addressPart => !string.IsNullOrEmpty(addressPart)));
+
+
+    private void CreateOverseasReprocessingMappings()
+    {
+        CreateMap<OverseasMaterialReprocessingSite, OverseasMaterialReprocessingSiteDto>()
+            .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.ExternalId))
+            .ForMember(dest => dest.OverseasAddressId, opt => opt.MapFrom(src => src.OverseasAddress!.ExternalId))
+            .ForMember(dest => dest.OverseasAddress, opt => opt.MapFrom(src => src.OverseasAddress))
+            .ForMember(dest => dest.InterimSiteAddresses, opt => opt.Ignore()); // Populate manually in handler
+
+        CreateMap<OverseasAddress, OverseasAddressDto>()
+            .ForMember(dest => dest.ExternalId, opt => opt.MapFrom(src => src.ExternalId))
+            .ForMember(dest => dest.OrganisationName, opt => opt.MapFrom(src => src.OrganisationName))
+            .ForMember(dest => dest.AddressLine1, opt => opt.MapFrom(src => src.AddressLine1))
+            .ForMember(dest => dest.AddressLine2, opt => opt.MapFrom(src => src.AddressLine2))
+            .ForMember(dest => dest.CityOrTown, opt => opt.MapFrom(src => src.CityOrTown))
+            .ForMember(dest => dest.StateProvince, opt => opt.MapFrom(src => src.StateProvince))
+            .ForMember(dest => dest.PostCode, opt => opt.MapFrom(src => src.PostCode))
+            .ForMember(dest => dest.CreatedBy, opt => opt.MapFrom(src => src.CreatedBy))
+            .ForMember(dest => dest.UpdatedBy, opt => opt.MapFrom(src => src.UpdatedBy))
+            .ForMember(dest => dest.SiteCoordinates, opt => opt.MapFrom(src => src.SiteCoordinates))
+            .ForMember(dest => dest.CountryName, opt => opt.MapFrom(src => src.Country!.Name))
+            .ForMember(dest => dest.OverseasAddressContacts, opt => opt.MapFrom(src => src.OverseasAddressContacts))
+            .ForMember(dest => dest.OverseasAddressWasteCodes, opt => opt.MapFrom(src => src.OverseasAddressWasteCodes));
+
+        CreateMap<OverseasAddressContact, OverseasAddressContactDto>()
+            .ForMember(dest => dest.FullName, opt => opt.MapFrom(src => src.FullName))
+            .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email))
+            .ForMember(dest => dest.PhoneNumber, opt => opt.MapFrom(src => src.PhoneNumber))
+            .ForMember(dest => dest.CreatedBy, opt => opt.MapFrom(src => src.CreatedBy));
+
+        CreateMap<OverseasAddressWasteCode, OverseasAddressWasteCodeDto>()
+            .ForMember(dest => dest.ExternalId, opt => opt.MapFrom(src => src.ExternalId))
+            .ForMember(dest => dest.CodeName, opt => opt.MapFrom(src => src.CodeName));
+
+        CreateMap<OverseasAddress, InterimSiteAddressDto>()
+            .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.ExternalId))
+            .ForMember(dest => dest.OrganisationName, opt => opt.MapFrom(src => src.OrganisationName))
+            .ForMember(dest => dest.AddressLine1, opt => opt.MapFrom(src => src.AddressLine1))
+            .ForMember(dest => dest.AddressLine2, opt => opt.MapFrom(src => src.AddressLine2 ?? string.Empty))
+            .ForMember(dest => dest.CityOrTown, opt => opt.MapFrom(src => src.CityOrTown))
+            .ForMember(dest => dest.CountryName, opt => opt.MapFrom(src => src.Country!.Name))
+            .ForMember(dest => dest.PostCode, opt => opt.MapFrom(src => src.PostCode ?? string.Empty))
+            .ForMember(dest => dest.StateProvince, opt => opt.MapFrom(src => src.StateProvince ?? string.Empty))
+            .ForMember(dest => dest.InterimAddressContact, opt => opt.MapFrom(src => src.OverseasAddressContacts));
+    }
+
+
+
 }

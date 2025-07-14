@@ -41,6 +41,7 @@ namespace EPR.PRN.Backend.Data.DataModels.Registrations
         public DateTime CreatedOn { get; set; }
         public DateTime UpdatedOn { get; set; }
         public string? SiteCoordinates { get; set; }
+        public bool? IsInterimSite { get; set; }
         public List<OverseasAddressContact> OverseasAddressContacts { get; set; } = [];
         public List<OverseasAddressWasteCode> OverseasAddressWasteCodes { get; set; } = [];
         public List<OverseasMaterialReprocessingSite> OverseasMaterialReprocessingSites { get; set; } = [];
@@ -48,8 +49,7 @@ namespace EPR.PRN.Backend.Data.DataModels.Registrations
         [InverseProperty(nameof(InterimOverseasConnections.ParentOverseasAddress))]
         public List<InterimOverseasConnections> ChildInterimConnections { get; set; } = [];
 
-        
         [InverseProperty(nameof(InterimOverseasConnections.OverseasAddress))]
         public List<InterimOverseasConnections> InterimConnections { get; set; } = [];
     }
-}   
+}

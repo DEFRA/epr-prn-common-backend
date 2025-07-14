@@ -332,22 +332,30 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
 		await eprContext.SaveChangesAsync();
 	}
 
-    public async Task<IEnumerable<RegistrationMaterial>> GetOverseasMaterialReprocessingSites(Guid registrationMaterialId)
+    public async Task<IList<OverseasMaterialReprocessingSite>> GetOverseasMaterialReprocessingSites(Guid registrationMaterialId)
     {
-        var result = await eprContext.RegistrationMaterials
-            .Where(rm => rm.ExternalId == registrationMaterialId)
-            .Include(rm => rm.OverseasMaterialReprocessingSites)
-            .ThenInclude(s => s.OverseasAddress)
+        var result = await eprContext.OverseasMaterialReprocessingSite
+            .Where(s => s.RegistrationMaterial!.ExternalId == registrationMaterialId)
+            .Include(s => s.OverseasAddress)
             .ThenInclude(oa => oa.OverseasAddressContacts)
-            .Include(rm => rm.OverseasMaterialReprocessingSites)
-            .ThenInclude(s => s.OverseasAddress)
+            .Include(s => s.OverseasAddress)
+            .ThenInclude(oa => oa.Country)
+            .Include(s => s.OverseasAddress)
+            .ThenInclude(oa => oa.OverseasAddressWasteCodes)
+            .Include(s => s.OverseasAddress)
             .ThenInclude(oa => oa.ChildInterimConnections)
             .ThenInclude(child_oa => child_oa.OverseasAddress)
             .ThenInclude(child_oa => child_oa.OverseasAddressContacts)
+            .Include(s => s.OverseasAddress)
+            .ThenInclude(oa => oa.ChildInterimConnections)
+            .ThenInclude(child_oa => child_oa.OverseasAddress)
+            .ThenInclude(child_oa => child_oa.Country)
             .AsSplitQuery()
             .ToListAsync();
+
         return result;
     }
+
 
 
     private IIncludableQueryable<RegistrationMaterial, LookupRegistrationMaterialStatus> GetRegistrationMaterialsWithRelatedEntities()
