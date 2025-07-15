@@ -10,10 +10,7 @@ using MediatR;
 namespace EPR.PRN.Backend.API.Handlers.Accreditation
 {
     public class UpdateAccreditationTaskHandler(IAccreditationTaskStatusRepository repository)
-    : 
-        //UpdateRegulatorTaskHandlerBase,
-
-        IRequestHandler<UpdateAccreditationTaskCommand>
+    : IRequestHandler<UpdateAccreditationTaskCommand>
     {
         public async Task Handle(UpdateAccreditationTaskCommand command, CancellationToken cancellationToken)
         {

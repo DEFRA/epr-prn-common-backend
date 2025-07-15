@@ -17,5 +17,5 @@ public interface IAccreditationRepository
 
     Task Update(DataModels.Registrations.Accreditation accreditation);
 
-    Task ClearDownDatabase();
+
 }

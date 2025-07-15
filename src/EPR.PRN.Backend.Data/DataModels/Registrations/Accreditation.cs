@@ -15,12 +15,6 @@ public class Accreditation
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public Guid ExternalId { get; set; }
 
-    //[ForeignKey("ApplicationType")]
-    //public int? ApplicationTypeId { get; set; }
-    //public LookupApplicationType? ApplicationType { get; set; }
-
-    //public Guid OrganisationId { get; set; }
-
     [ForeignKey("AccreditationStatus")]
     public int AccreditationStatusId { get; set; }
     public LookupAccreditationStatus AccreditationStatus { get; set; }

@@ -66,17 +66,6 @@ public class AccreditationController(
         return Ok(accreditation);
     }
 
-    [HttpPost("clear-down-database")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ExcludeFromCodeCoverage]
-    public async Task<IActionResult> ClearDownDatabase()
-    {
-        // Temporary: Aid to QA whilst Accreditation uses in-memory database.
-        //await accreditationService.ClearDownDatabase();
-
-        return Ok();
-    }
-
     [HttpGet("Files/{externalId}")]
     [ProducesResponseType(typeof(AccreditationFileUploadDto), 200)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]

@@ -292,13 +292,6 @@ public class EprContext : DbContext
             new LookupRegulatorTask { Id = 28, IsMaterialSpecific = true, ApplicationTypeId = 2, JourneyTypeId = 2, Name = RegulatorTaskNames.DulyMade },
             new LookupRegulatorTask { Id = 29, IsMaterialSpecific = false, ApplicationTypeId = 1, JourneyTypeId = 1, Name = RegulatorTaskNames.WasteCarrierBrokerDealerNumber });
 
-        //modelBuilder.Entity<LookupTaskName>().HasData(
-        //    new LookupTaskName { Id = 1, Name = "PRNs tonnage and authority to issue PRNs" },
-        //    new LookupTaskName { Id = 2, Name = "Business Plan" },
-        //    new LookupTaskName { Id = 3, Name = "Accreditation sampling and inspection plan" },
-        //    new LookupTaskName { Id = 4, Name = "Overseas reprocessing sites and broadly equivalent evidence" }
-        //    );
-
         modelBuilder.Entity<LookupApplicantRegistrationTask>().HasData(
            new LookupApplicantRegistrationTask { Id = 1, IsMaterialSpecific = false, ApplicationTypeId = 1, JourneyTypeId = 1, Name = ApplicantRegistrationTaskNames.SiteAddressAndContactDetails },
            new LookupApplicantRegistrationTask { Id = 2, IsMaterialSpecific = true, ApplicationTypeId = 1, JourneyTypeId = 1, Name = ApplicantRegistrationTaskNames.WasteLicensesPermitsAndExemptions },
@@ -343,21 +336,9 @@ public class EprContext : DbContext
 
         modelBuilder.Entity<Accreditation>(e =>
         {
-            //e.HasOne(x => x.ApplicationType)
-            //    .WithMany()
-            //    .HasForeignKey(x => x.ApplicationTypeId);
-
             e.HasOne(x => x.AccreditationStatus)
                 .WithMany()
                 .HasForeignKey(x => x.AccreditationStatusId);
-
-            //e.HasMany(x => x.AccreditationPrnIssueAuths)
-            //    .WithOne()
-            //    .HasForeignKey(x => x.AccreditationId);
-
-            //e.HasMany(x => x.FileUploads)
-            //    .WithOne()
-            //    .HasForeignKey(x => x.AccreditationId);
 
             e.HasIndex(e => e.ExternalId)
             .IsUnique(); // Ensures UniqueId is unique
@@ -540,10 +521,7 @@ public class EprContext : DbContext
     public virtual DbSet<LookupMaterial> LookupMaterials { get; set; }
     public virtual DbSet<LookupRegistrationMaterialStatus> LookupRegistrationMaterialStatuses { get; set; }
     public virtual DbSet<LookupRegulatorTask> LookupTasks { get; set; }
-
-    public virtual DbSet<LookupJourneyType> LookupJourneyTypes { get; set; }
-    //public virtual DbSet<LookupTaskName> LookupTaskNames { get; set; }
-
+    public virtual DbSet<LookupJourneyType> LookupJourneyTypes { get; set; } 
     public virtual DbSet<LookupApplicantRegistrationTask> LookupApplicantRegistrationTasks { get; set; }
     public virtual DbSet<LookupTaskStatus> LookupTaskStatuses { get; set; }
     public virtual DbSet<Address> LookupAddresses { get; set; }
@@ -567,8 +545,5 @@ public class EprContext : DbContext
     public virtual DbSet<DataModels.Registrations.AccreditationPrnIssueAuth> AccreditationPrnIssueAuths { get; set; }
     public virtual DbSet<DataModels.Registrations.AccreditationFileUpload> AccreditationFileUploads { get; set; }
     public virtual DbSet<DataModels.Registrations.OverseasAccreditationSite> OverseasAccreditationSites { get; set; }
-
-
-    // public virtual DbSet<DataModels.Accreditations.AccreditationFileUpload> AccreditationFileUploads { get; set; }
 
 }

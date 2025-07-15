@@ -11,16 +11,12 @@ public class AccreditationRepository(EprContext eprContext) : IAccreditationRepo
     public async Task<Accreditation?> GetById(Guid accreditationId)
     {
         return await eprContext.Accreditations
-            .AsNoTracking()
-            //.Include(x => x.ApplicationType)  // will this be needed in the other layers? should it be added to the registration entity?
-            .Include(x => x.AccreditationStatus)
-            
+            .AsNoTracking()            
+            .Include(x => x.AccreditationStatus)           
             .Include(x => x.RegistrationMaterial)
-                .ThenInclude(x => x.Registration)
-                
+                .ThenInclude(x => x.Registration)                
             .Include(x => x.RegistrationMaterial)
                 .ThenInclude(x => x.Material)
-
             .SingleOrDefaultAsync(x => x.ExternalId.Equals(accreditationId));
     }
 
@@ -38,15 +34,6 @@ public class AccreditationRepository(EprContext eprContext) : IAccreditationRepo
                 x.RegistrationMaterialId == materialId &&
                 x.RegistrationMaterial.Registration.ApplicationTypeId == applicationTypeId)
             .SingleOrDefaultAsync();
-
-        // use this if the organisation and application type ids are kept in accreditation table in the ADR
-        //return await eprContext.Accreditations
-        //    .AsNoTracking()
-        //    .Where(x =>
-        //        x.OrganisationId == organisationId &&
-        //        x.RegistrationMaterialId == materialId &&
-        //        x.ApplicationTypeId == applicationTypeId)            
-        //    .SingleOrDefaultAsync();
     }
 
     public async Task Create(Accreditation accreditation)
@@ -70,22 +57,14 @@ public class AccreditationRepository(EprContext eprContext) : IAccreditationRepo
          * There should not be a secenario where the applcation type or organisation id is changed in eiter accreditation or organisation?
          * 
          */
-        //existingAccreditation = await eprContext.Accreditations
-        //    .Include(x => x.RegistrationMaterial)
-        //        .ThenInclude(x => x.Registration)
-        //    .SingleAsync(x => x.ExternalId.Equals(accreditation.ExternalId));
 
-        //existingAccreditation.OrganisationId = accreditation.OrganisationId;
         existingAccreditation.RegistrationMaterialId = accreditation.RegistrationMaterialId;
-        //existingAccreditation.ApplicationTypeId = accreditation.ApplicationTypeId;
-        //existingAccreditation.RegistrationMaterial.Registration.ApplicationTypeId = accreditation.ApplicationTypeId.GetValueOrDefault();
         existingAccreditation.AccreditationStatusId = accreditation.AccreditationStatusId;
         existingAccreditation.DecFullName = accreditation.DecFullName;
         existingAccreditation.DecJobTitle = accreditation.DecJobTitle;
         existingAccreditation.ApplicationReferenceNumber = accreditation.ApplicationReferenceNumber;
         existingAccreditation.AccreditationYear = accreditation.AccreditationYear;
         existingAccreditation.PRNTonnage = accreditation.PRNTonnage;
-        //existingAccreditation.PrnTonnageAndAuthoritiesConfirmed = accreditation.PrnTonnageAndAuthoritiesConfirmed;
         existingAccreditation.InfrastructurePercentage = accreditation.InfrastructurePercentage;
         existingAccreditation.RecycledWastePercentage = accreditation.RecycledWastePercentage;
         existingAccreditation.BusinessCollectionsPercentage = accreditation.BusinessCollectionsPercentage;
@@ -100,19 +79,10 @@ public class AccreditationRepository(EprContext eprContext) : IAccreditationRepo
         existingAccreditation.NewMarketsNotes = accreditation.NewMarketsNotes;
         existingAccreditation.CommunicationsNotes = accreditation.CommunicationsNotes;
         existingAccreditation.NotCoveredOtherCategoriesNotes = accreditation.NotCoveredOtherCategoriesNotes;
-        //existingAccreditation.BusinessPlanConfirmed = accreditation.BusinessPlanConfirmed;
         existingAccreditation.UpdatedBy = accreditation.UpdatedBy;
         existingAccreditation.UpdatedOn = DateTime.UtcNow;
 
         eprContext.Entry(existingAccreditation).State = EntityState.Modified;
         await eprContext.SaveChangesAsync();
-    }
-
-    [ExcludeFromCodeCoverage]
-    public async Task ClearDownDatabase()
-    {
-        // Temporary: Aid to QA whilst Accreditation uses in-memory database.
-        //await eprContext.Database.EnsureDeletedAsync();
-        //await eprContext.Database.EnsureCreatedAsync();
     }
 }
