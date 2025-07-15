@@ -57,6 +57,21 @@ namespace EPR.PRN.Backend.Data.Repositories
             return registrationMaterialContact;
         }
 
+        public async Task UpdateMaterialNotReprocessingReason(Guid registrationMaterialId, string materialNotReprocessingReason)
+        {
+            var registrationMaterial = await context.RegistrationMaterials
+              .SingleOrDefaultAsync(rm => rm.ExternalId == registrationMaterialId);
+
+            if (registrationMaterial is null)
+            {
+                throw new KeyNotFoundException("Registration material not found.");
+            }
+
+            registrationMaterial.ReasonforNotreg = materialNotReprocessingReason;
+
+            await context.SaveChangesAsync();
+        }
+
         public async Task UpsertRegistrationReprocessingDetailsAsync(Guid registrationMaterialId, RegistrationReprocessingIO registrationReprocessingIO)
         {
             var registrationMaterial = await context.RegistrationMaterials

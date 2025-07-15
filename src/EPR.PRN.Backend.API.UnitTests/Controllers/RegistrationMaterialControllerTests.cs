@@ -14,6 +14,7 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace EPR.PRN.Backend.API.UnitTests.Controllers;
 
@@ -317,6 +318,55 @@ public class RegistrationMaterialControllerTests
 
         // Act
         Func<Task> act = async () => await _controller.SaveOverseasReprocessingSites(Guid.NewGuid() ,dto);
+
+        // Assert
+        await act.Should().ThrowAsync<InvalidOperationException>()
+            .WithMessage("Mediator failed");
+    }
+
+    [TestMethod]
+    public async Task UpdateMaterialNotReprocessingReasonAsync_EnsureCorrectResult()
+    {
+        // Arrange
+        var registrationMaterialId = Guid.NewGuid();
+        var reason = "Material is contaminated";
+
+        var expectedCommand = new UpdateMaterialNotReprocessingReasonCommand
+        {
+            RegistrationMaterialId = registrationMaterialId,
+            MaterialNotReprocessingReason = reason
+        };
+
+        var command = _fixture.Build<UpdateMaterialNotReprocessingReasonCommand>()
+                              .Without(c => c.RegistrationMaterialId)
+                              .Create();
+
+        _validationServiceMock.Setup(v => v.ValidateAsync(command, default))
+           .ReturnsAsync(new FluentValidation.Results.ValidationResult());
+
+        _mediatorMock
+            .Setup(m => m.Send(It.Is<UpdateMaterialNotReprocessingReasonCommand>(cmd =>
+                cmd.RegistrationMaterialId == registrationMaterialId &&
+                cmd.MaterialNotReprocessingReason == reason), It.IsAny<CancellationToken>()))
+            .Returns(Task.CompletedTask);
+
+        // Act
+        var result = await _controller.UpdateMaterialNotReprocessingReasonAsync(registrationMaterialId, reason);
+
+        // Assert
+        result.Should().BeOfType<OkResult>();
+    }
+
+    [TestMethod]
+    public async Task UpdateMaterialNotReprocessingReasonAsync_ShouldThrowException_WhenMediatorFails()
+    {
+        // Arrange
+        _mediatorMock
+            .Setup(m => m.Send(It.IsAny<UpdateMaterialNotReprocessingReasonCommand>(), It.IsAny<CancellationToken>()))
+            .ThrowsAsync(new InvalidOperationException("Mediator failed"));
+
+        // Act
+        Func<Task> act = async () => await _controller.UpdateMaterialNotReprocessingReasonAsync(Guid.NewGuid(), "reason");
 
         // Assert
         await act.Should().ThrowAsync<InvalidOperationException>()
