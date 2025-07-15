@@ -44,14 +44,18 @@ public class AccreditationProfile : Profile
             .ForMember(des => des.NewMarketsPercentage, opt => opt.MapFrom(src => src.NewMarketsPercentage))
             .ForMember(des => des.BusinessCollectionsPercentage, opt => opt.MapFrom(src => src.BusinessCollectionsPercentage))
             .ForMember(des => des.InfrastructurePercentage, opt => opt.MapFrom(src => src.InfrastructurePercentage))
-            .ForMember(des => des.CommunicationsPercentage, opt => opt.MapFrom(src => src.CommunicationsPercentage))
-            //.ForMember(des => des.NewUsesPercentage, opt => opt.MapFrom(src => src.NewUsersRecycledPackagingWastePercentage))
+            .ForMember(des => des.CommunicationsPercentage, opt => opt.MapFrom(src => src.CommunicationsPercentage))            
             .ForMember(des => des.OtherPercentage, opt => opt.MapFrom(src => src.NotCoveredOtherCategoriesPercentage))
-
+            .ForMember(des => des.NewUsesPercentage, opt => opt.MapFrom(src => src.NewUsersRecycledPackagingWastePercentage))
             .ForMember(des => des.PackagingWastePercentage, opt => opt.MapFrom(src => src.NewUsersRecycledPackagingWastePercentage))
 
-            .ForMember(des => des.NewUsesNotes, opt => opt.MapFrom(src => src.NewUsersRecycledPackagingWasteNotes))
+            .ForMember(des => des.NewMarketsNotes, opt => opt.MapFrom(src => src.NewMarketsNotes))
+            .ForMember(des => des.BusinessCollectionsNotes, opt => opt.MapFrom(src => src.BusinessCollectionsNotes))
+            .ForMember(des => des.InfrastructureNotes, opt => opt.MapFrom(src => src.InfrastructureNotes))
+            .ForMember(des => des.CommunicationsNotes, opt => opt.MapFrom(src => src.CommunicationsNotes))
             .ForMember(des => des.OtherNotes, opt => opt.MapFrom(src => src.NotCoveredOtherCategoriesNotes))
+            .ForMember(des => des.NewUsesNotes, opt => opt.MapFrom(src => src.NewUsersRecycledPackagingWasteNotes))
+            .ForMember(des => des.PackagingWasteNotes, opt => opt.MapFrom(src => src.NewUsersRecycledPackagingWasteNotes))
             ;
         CreateMap<AccreditationRequestDto, Accreditation>()
             // Example: Map ApplicationTypeId if property names differ
@@ -73,34 +77,27 @@ public class AccreditationProfile : Profile
             .ForMember(des => des.InfrastructurePercentage, opt => opt.MapFrom(src => src.InfrastructurePercentage))
             .ForMember(des => des.CommunicationsPercentage, opt => opt.MapFrom(src => src.CommunicationsPercentage))
             //.ForMember(des => des.NewUsersRecycledPackagingWastePercentage, opt => opt.MapFrom(src => src.NewUsesPercentage))
-            .ForMember(des => des.NotCoveredOtherCategoriesPercentage, opt => opt.MapFrom(src => src.OtherPercentage))
+            .ForMember(des => des.NotCoveredOtherCategoriesPercentage, opt => opt.MapFrom(src => src.OtherPercentage))            
+            .ForMember(des => des.NewUsersRecycledPackagingWastePercentage, opt => opt.MapFrom(src => src.NewUsesPercentage))
 
-            .ForMember(des => des.NewUsersRecycledPackagingWastePercentage, opt => opt.MapFrom(src => src.PackagingWastePercentage))
 
-
-            .ForMember(des => des.NewUsersRecycledPackagingWasteNotes, opt => opt.MapFrom(src => src.NewUsesNotes))
+            .ForMember(des => des.NewMarketsNotes, opt => opt.MapFrom(src => src.NewMarketsNotes))
+            .ForMember(des => des.BusinessCollectionsNotes, opt => opt.MapFrom(src => src.BusinessCollectionsNotes))
+            .ForMember(des => des.InfrastructureNotes, opt => opt.MapFrom(src => src.InfrastructureNotes))
+            .ForMember(des => des.CommunicationsNotes, opt => opt.MapFrom(src => src.CommunicationsNotes))
+            
             .ForMember(des => des.NotCoveredOtherCategoriesNotes, opt => opt.MapFrom(src => src.OtherNotes))
+            .ForMember(des => des.NewUsersRecycledPackagingWasteNotes, opt => opt.MapFrom(src => src.NewUsesNotes))
             ;
 
 
         CreateMap<Data.DataModels.Registrations.AccreditationPrnIssueAuth, AccreditationPrnIssueAuthDto>();
         CreateMap<AccreditationPrnIssueAuthRequestDto, Data.DataModels.Registrations.AccreditationPrnIssueAuth>();
 
-        CreateMap<Data.DataModels.Accreditations.OverseasAccreditationSite, OverseasAccreditationSiteDto>();
+        CreateMap<Data.DataModels.Accreditations.OverseasAccreditationSite, OverseasAccreditationSiteDto>();            
         CreateMap<OverseasAccreditationSiteDto, Data.DataModels.Accreditations.OverseasAccreditationSite>();
 
         CreateMap<Data.DataModels.Registrations.OverseasAccreditationSite, OverseasAccreditationSiteDto>();
         CreateMap<OverseasAccreditationSiteDto, Data.DataModels.Registrations.OverseasAccreditationSite>();
     }
 }
-/*
- * 
- * Invalid column name 'ApplicationTypeId'.
-Invalid column name 'CreatedBy'.
-Invalid column name 'DecFullName'.
-Invalid column name 'JobTitle'.
-Invalid column name 'OrganisationId'.
-Invalid column name 'UpdatedBy'.
-Invalid column name 'UpdatedOn'.
- * 
- */

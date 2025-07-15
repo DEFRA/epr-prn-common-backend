@@ -16,8 +16,9 @@ public class OverseasAccreditationSite
     public int AccreditationId { get; set; }
     public Accreditation? Accreditation { get; set; }
 
-    [ForeignKey("OverseasAddressId")]
+
     public int OverseasAddressId { get; set; }
+    public OverseasAddress? overseasAddress { get; set; }
 
     public required string OrganisationName { get; set; }
     [ForeignKey("MeetConditionsOfExportId")]

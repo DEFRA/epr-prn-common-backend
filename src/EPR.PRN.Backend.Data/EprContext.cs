@@ -363,6 +363,12 @@ public class EprContext : DbContext
             .IsUnique(); // Ensures UniqueId is unique
         });
 
+        modelBuilder.Entity<DataModels.Registrations.OverseasAccreditationSite>()
+            .HasOne(o => o.overseasAddress)
+            .WithMany()
+            .HasForeignKey(o => o.OverseasAddressId)
+            .OnDelete(DeleteBehavior.NoAction);
+
         modelBuilder.Entity<LookupMeetConditionsOfExport>().HasData(
             new LookupMeetConditionsOfExport { Id = 1, Name = "Yes (Don't Upload)" }, //"Yes, they fulfil all the conditions. I do not want to upload evidence of broadly equivalent standards" },
             new LookupMeetConditionsOfExport { Id = 2, Name = "Yes (upload)" }, //"Yes, they fulfil all the conditions. I also want to upload evidence of broadly equivalent standards" },

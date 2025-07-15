@@ -43,9 +43,9 @@ public class Accreditation
     public DateTime UpdatedOn { get; set; }
 
     [MaxLength(12)]
-    public required string ApplicationReferenceNumber { get; set; }
+    public string? ApplicationReferenceNumber { get; set; }
 
-    public int PRNTonnage { get; set; }
+    public int? PRNTonnage { get; set; }
 
     [Column(TypeName = "decimal(10,2)")]
     public decimal? InfrastructurePercentage { get; set; }
@@ -82,7 +82,7 @@ public class Accreditation
     [Column(TypeName = "varchar(500)")]
     public string? NotCoveredOtherCategoriesNotes { get; set; }
 
-    public int AccreditationYear { get; set; }
+    public int? AccreditationYear { get; set; }
    
     public List<RegulatorAccreditationTaskStatus>? Tasks { get; set; }
 
