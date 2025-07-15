@@ -218,4 +218,53 @@ public class GetOverseasMaterialReprocessingSitesHandlerTests
         result.Should().HaveCount(1);
         result.First().InterimSiteAddresses.Should().BeEmpty();
     }
+
+    [TestMethod]
+    public async Task Handle_ShouldSkip_WhenParentIsNull()
+    {
+        // Arrange
+        var unmatchedDtoId = Guid.NewGuid();
+
+        var dtoWithNoMatchingParent = new OverseasMaterialReprocessingSiteDto
+        {
+            OverseasAddressId = unmatchedDtoId,
+            InterimSiteAddresses = new List<InterimSiteAddressDto>(),
+            OverseasAddress = new OverseasAddressDto
+            {
+                OrganisationName = "test org",
+                AddressLine1 = "Address line 1",
+                CityOrTown = "testcity",
+                CountryName = "testcountry"
+            }
+        };
+
+        var existingParent = new OverseasMaterialReprocessingSite
+        {
+            OverseasAddress = new OverseasAddress
+            {
+                ExternalId = Guid.NewGuid(), // does not match dtoWithNoMatchingParent.OverseasAddressId
+                IsInterimSite = false,
+                ChildInterimConnections = new List<InterimOverseasConnections>(),
+                OrganisationName = "test org",
+                AddressLine1 = "address line 1",
+                CityOrTown = "test city"
+            }
+        };
+
+        _mockRepository
+            .Setup(x => x.GetOverseasMaterialReprocessingSites(_registrationMaterialId))
+            .ReturnsAsync(new List<OverseasMaterialReprocessingSite> { existingParent });
+
+        _mockMapper
+            .Setup(x => x.Map<IList<OverseasMaterialReprocessingSiteDto>>(It.IsAny<List<OverseasMaterialReprocessingSite>>()))
+            .Returns(new List<OverseasMaterialReprocessingSiteDto> { dtoWithNoMatchingParent });
+
+        // Act
+        var result = await _handler.Handle(_query, CancellationToken.None);
+
+        // Assert
+        result.Should().HaveCount(1);
+        result.First().InterimSiteAddresses.Should().BeEmpty();
+    }
+
 }
