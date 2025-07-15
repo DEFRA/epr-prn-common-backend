@@ -6,18 +6,16 @@ using MediatR;
 
 namespace EPR.PRN.Backend.API.Handlers.Regulator
 {
-    public class GetAccreditationsOverviewByOrgIdQueryHandler (
+    public class GetAccreditationsOverviewByOrgIdQueryHandler(
         IAccreditationRepository accreditationRepository,
         IValidationService validationService
         )
         : IRequestHandler<GetAccreditationsOverviewByOrgIdQuery, IEnumerable<AccreditationOverviewDto>>
     {
-        private readonly IAccreditationRepository _accreditationRepository = accreditationRepository;
-
         public async Task<IEnumerable<AccreditationOverviewDto>> Handle(GetAccreditationsOverviewByOrgIdQuery request, CancellationToken cancellationToken)
         {
-            await validationService.ValidateAndThrowAsync(request);
-            return await _accreditationRepository.GetAccreditationOverviewForOrgId(request.OrganisationId);
+            await validationService.ValidateAndThrowAsync(request, cancellationToken);
+            return await accreditationRepository.GetAccreditationOverviewForOrgId(request.OrganisationId);
         }
     }
 }
