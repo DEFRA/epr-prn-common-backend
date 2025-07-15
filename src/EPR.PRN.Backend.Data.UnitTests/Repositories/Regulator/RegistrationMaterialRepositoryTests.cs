@@ -1008,7 +1008,129 @@ public class RegistrationMaterialRepositoryTests
 		await Assert.ThrowsExceptionAsync<KeyNotFoundException>(() => _repository.UpdateIsMaterialRegisteredAsync(new List<UpdateIsMaterialRegisteredDto> { dto }));
 	}
 
-	[TestCleanup]
+    [TestMethod]
+    public async Task GetOverseasMaterialReprocessingSites_ShouldReturnSitesWithRelatedEntities()
+    {
+        // Arrange
+        var registrationMaterialId = Guid.NewGuid();
+        var overseasAddressId = 100;
+        var overseasAddress = new OverseasAddress
+        {
+            ExternalId = Guid.NewGuid(),
+            OverseasAddressContacts = new List<OverseasAddressContact>
+            {
+                new OverseasAddressContact
+                {
+                    OverseasAddressId = overseasAddressId,
+                    FullName = "bb",
+                    Email = "bb@gmail.com",
+                    PhoneNumber = "457739423100"
+                }
+            },
+            Country = new LookupCountry
+            {
+                Name = "GB"
+            },
+            OverseasAddressWasteCodes = new List<OverseasAddressWasteCode>
+            {
+                new OverseasAddressWasteCode
+                {
+                    OverseasAddressId = overseasAddressId,
+                    CodeName = "oecdcode"
+                }
+            },
+            ChildInterimConnections = new List<InterimOverseasConnections>
+            {
+                new InterimOverseasConnections
+                {
+                    OverseasAddress = new OverseasAddress
+                    {
+                        OverseasAddressContacts = new List<OverseasAddressContact>
+                        {
+                            new OverseasAddressContact
+                            {
+                                OverseasAddressId = overseasAddressId,
+                                FullName = "bb",
+                                Email = "bb@gmail.com",
+                                PhoneNumber = "447739423900"
+                            }
+                        },
+                        Country = new LookupCountry
+                        {
+                            Name = "GB"
+                        },
+
+                        OrganisationName = "testorg",
+                        AddressLine1 = "Addressline1",
+                        CityOrTown = "testcity"
+                    },
+                    ParentOverseasAddress = new OverseasAddress
+                    {
+                        OrganisationName = "test org",
+                        AddressLine1 = "address line 1",
+                        CityOrTown = "testcity"
+                    }
+                }
+            },
+            OrganisationName = "Test Org",
+            AddressLine1 = "Address line 1",
+            CityOrTown = "TestCity"
+        };
+
+        var registrationMaterial = new RegistrationMaterial
+        {
+            ExternalId = registrationMaterialId
+        };
+
+        var overseasSite = new OverseasMaterialReprocessingSite
+        {
+            ExternalId = Guid.NewGuid(),
+            OverseasAddressId = overseasAddressId,
+            OverseasAddress = overseasAddress,
+            RegistrationMaterialId = 999,
+            RegistrationMaterial = registrationMaterial
+        };
+
+        _context.OverseasAddress.Add(overseasAddress);
+        _context.RegistrationMaterials.Add(registrationMaterial);
+        _context.OverseasMaterialReprocessingSite.Add(overseasSite);
+        await _context.SaveChangesAsync();
+
+        // Act
+        var result = await _repository.GetOverseasMaterialReprocessingSites(registrationMaterialId);
+
+        // Assert
+        using (new FluentAssertions.Execution.AssertionScope())
+        {
+            result.Should().NotBeNull();
+            result.Should().HaveCount(1);
+            var site = result.First();
+            site.OverseasAddress.Should().NotBeNull();
+            site.OverseasAddress.OverseasAddressContacts.Should().NotBeEmpty();
+            site.OverseasAddress.Country.Should().NotBeNull();
+            site.OverseasAddress.OverseasAddressWasteCodes.Should().NotBeEmpty();
+            site.OverseasAddress.ChildInterimConnections.Should().NotBeEmpty();
+            site.OverseasAddress.ChildInterimConnections.First().OverseasAddress.Country.Should().NotBeNull();
+            site.OverseasAddress.ChildInterimConnections.First().OverseasAddress.OverseasAddressContacts.Should().NotBeEmpty();
+        }
+    }
+
+    [TestMethod]
+    public async Task GetOverseasMaterialReprocessingSites_ShouldReturnEmptyList_WhenNoSitesExist()
+    {
+        // Arrange
+        var registrationMaterialId = Guid.NewGuid();
+
+        // Act
+        var result = await _repository.GetOverseasMaterialReprocessingSites(registrationMaterialId);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.Should().BeEmpty();
+    }
+
+
+    [TestCleanup]
     public void Cleanup()
     {
         _context.Database.EnsureDeleted();

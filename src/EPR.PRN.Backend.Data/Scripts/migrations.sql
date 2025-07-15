@@ -5316,3 +5316,77 @@ GO
 COMMIT;
 GO
 
+BEGIN TRANSACTION;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250714163811_InterimOverSeasConnectionRelationships'
+)
+BEGIN
+    DECLARE @var46 sysname;
+    SELECT @var46 = [d].[name]
+    FROM [sys].[default_constraints] [d]
+    INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+    WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Public.OverseasAddress]') AND [c].[name] = N'SiteCoordinates');
+    IF @var46 IS NOT NULL EXEC(N'ALTER TABLE [Public.OverseasAddress] DROP CONSTRAINT [' + @var46 + '];');
+    ALTER TABLE [Public.OverseasAddress] ALTER COLUMN [SiteCoordinates] nvarchar(max) NULL;
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250714163811_InterimOverSeasConnectionRelationships'
+)
+BEGIN
+    CREATE INDEX [IX_Public.InterimOverseasConnections_InterimSiteId] ON [Public.InterimOverseasConnections] ([InterimSiteId]);
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250714163811_InterimOverSeasConnectionRelationships'
+)
+BEGIN
+    ALTER TABLE [Public.InterimOverseasConnections] ADD CONSTRAINT [FK_Public.InterimOverseasConnections_Public.OverseasAddress_InterimSiteId] FOREIGN KEY ([InterimSiteId]) REFERENCES [Public.OverseasAddress] ([Id]) ON DELETE NO ACTION;
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250714163811_InterimOverSeasConnectionRelationships'
+)
+BEGIN
+    INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+    VALUES (N'20250714163811_InterimOverSeasConnectionRelationships', N'8.0.8');
+END;
+GO
+
+COMMIT;
+GO
+
+BEGIN TRANSACTION;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250714164749_IsInterimSiteFlag'
+)
+BEGIN
+    ALTER TABLE [Public.OverseasAddress] ADD [IsInterimSite] bit NULL;
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250714164749_IsInterimSiteFlag'
+)
+BEGIN
+    INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+    VALUES (N'20250714164749_IsInterimSiteFlag', N'8.0.8');
+END;
+GO
+
+COMMIT;
+GO
+

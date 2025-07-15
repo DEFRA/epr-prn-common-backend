@@ -372,4 +372,43 @@ public class RegistrationMaterialControllerTests
         await act.Should().ThrowAsync<InvalidOperationException>()
             .WithMessage("Mediator failed");
     }
+
+    [TestMethod]
+    public async Task GetOverseasMaterialReprocessingSites_ShouldReturnOkWithExpectedData()
+    {
+        // Arrange
+        var registrationMaterialId = Guid.NewGuid();
+        var expectedSites = _fixture.Create<List<OverseasMaterialReprocessingSiteDto>>();
+
+        _mediatorMock
+            .Setup(m => m.Send(
+                It.Is<GetOverseasMaterialReprocessingSitesQuery>(q =>
+                    q.RegistrationMaterialId == registrationMaterialId),
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(expectedSites);
+
+        // Act
+        var result = await _controller.GetOverseasMaterialReprocessingSites(registrationMaterialId);
+
+        // Assert
+        result.Should().BeOfType<OkObjectResult>();
+        var okResult = result as OkObjectResult;
+        okResult!.Value.Should().BeEquivalentTo(expectedSites);
+
+        _mediatorMock.Verify(m => m.Send(
+                It.Is<GetOverseasMaterialReprocessingSitesQuery>(q =>
+                    q.RegistrationMaterialId == registrationMaterialId),
+                It.IsAny<CancellationToken>()),
+            Times.Once);
+
+        _loggerMock.Verify(
+            x => x.Log(
+                LogLevel.Information,
+                It.IsAny<EventId>(),
+                It.Is<It.IsAnyType>((v, t) => true),
+                It.IsAny<Exception>(),
+                It.IsAny<Func<It.IsAnyType, Exception, string>>()),
+            Times.Once);
+    }
+
 }
