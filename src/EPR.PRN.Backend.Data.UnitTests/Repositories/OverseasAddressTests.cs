@@ -354,7 +354,6 @@ public class OverseasAddressTests
                     OverseasAddressContacts = new List<OverseasAddressContactDto>
                     {
                         new OverseasAddressContactDto { CreatedBy = userId, FullName = "New Contact", Email = "new@email.com", PhoneNumber = "222" },
-                        new OverseasAddressContactDto { CreatedBy = Guid.NewGuid(), FullName = "New Contact4", Email = "new23@email.com", PhoneNumber = "122" }
                     },
                     OverseasAddressWasteCodes = new List<OverseasAddressWasteCodeDto>
                     {
@@ -370,11 +369,7 @@ public class OverseasAddressTests
                     AddressLine1 = "New Address Line 2",
                     OverseasAddressContacts = new List<OverseasAddressContactDto>()
                     {
-                        new() { CreatedBy = userId,
-                            FullName = "New Contact2",
-                            Email = "test",
-                            PhoneNumber = "04343"
-                        },
+
                         new() { CreatedBy = userId,
                             FullName = "New Contact3",
                             Email = "test2",

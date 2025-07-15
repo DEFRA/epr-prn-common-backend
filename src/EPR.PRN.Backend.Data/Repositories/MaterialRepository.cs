@@ -216,7 +216,7 @@ namespace EPR.PRN.Backend.Data.Repositories
 
                 foreach (var contact in updatedAddress.OverseasAddressContacts)
                 {
-                    var existingContact = overseasAddress.OverseasAddressContacts.FirstOrDefault(c => c.CreatedBy == contact.CreatedBy);
+                    var existingContact = overseasAddress.OverseasAddressContacts.SingleOrDefault();
                     if (existingContact != null)
                     {
                         existingContact.FullName = contact.FullName;
