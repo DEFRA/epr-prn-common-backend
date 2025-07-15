@@ -272,4 +272,31 @@ public class RegistrationMaterialController(
 
         return NoContent();
     }
+
+    [HttpPost("registrationMaterials/{registrationMaterialId:Guid}/materialNotReprocessingReason")]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(OkResult))]
+    [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
+    [SwaggerOperation(
+      Summary = "Update the reason for not reprocessing a registration material",
+      Description = "attempting to update the reason for not reprocessing a registration material."
+   )]
+    [SwaggerResponse(StatusCodes.Status400BadRequest, "If the request is invalid or a validation error occurs.", typeof(ProblemDetails))]
+    [SwaggerResponse(StatusCodes.Status404NotFound, "If an existing registration material is not found", typeof(ProblemDetails))]
+    [SwaggerResponse(StatusCodes.Status500InternalServerError, "If an unexpected error occurs.", typeof(ContentResult))]
+    public async Task<IActionResult> UpdateMaterialNotReprocessingReasonAsync([FromRoute] Guid registrationMaterialId, [FromBody] string materialNotReprocessingReason)
+    {
+        logger.LogInformation(LogMessages.UpdateMaterialNotReprocessingReason, registrationMaterialId);
+
+        var command = new UpdateMaterialNotReprocessingReasonCommand
+        {
+            RegistrationMaterialId = registrationMaterialId,
+            MaterialNotReprocessingReason = materialNotReprocessingReason
+        };
+
+        await validationService.ValidateAndThrowAsync(command);
+        await mediator.Send(command);
+
+        return Ok();
+    }
 }
