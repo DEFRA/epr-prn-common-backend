@@ -1,5 +1,9 @@
-﻿namespace EPR.PRN.Backend.Data.DTO;
+﻿using System.Diagnostics.CodeAnalysis;
+namespace EPR.PRN.Backend.Data.DTO;
 
+namespace EPR.PRN.Backend.Data.DTO
+{
+    [ExcludeFromCodeCoverage]
     public class OverseasAddressWasteCodeDto
 {
     public Guid ExternalId { get; set; }
