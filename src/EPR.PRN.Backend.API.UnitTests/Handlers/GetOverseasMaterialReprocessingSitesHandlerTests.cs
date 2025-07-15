@@ -267,4 +267,55 @@ public class GetOverseasMaterialReprocessingSitesHandlerTests
         result.First().InterimSiteAddresses.Should().BeEmpty();
     }
 
+    [TestMethod]
+    public async Task Handle_ShouldSkip_WhenNoMatchingParentFound()
+    {
+        // Arrange
+        var unmatchedDtoId = Guid.NewGuid();
+
+        var parentAddress = new OverseasAddress
+        {
+            ExternalId = Guid.NewGuid(), // intentionally different
+            IsInterimSite = false,
+            ChildInterimConnections = new List<InterimOverseasConnections>(),
+            OrganisationName = "test org",
+            AddressLine1 = "address line 1",
+            CityOrTown = "test city"
+        };
+
+        var reprocessingSites = new List<OverseasMaterialReprocessingSite>
+        {
+            new OverseasMaterialReprocessingSite { OverseasAddress = parentAddress }
+        };
+
+        var parentDto = new OverseasMaterialReprocessingSiteDto
+        {
+            OverseasAddressId = unmatchedDtoId,
+            InterimSiteAddresses = new List<InterimSiteAddressDto>(),
+            OverseasAddress = new OverseasAddressDto
+            {
+                OrganisationName = "test org",
+                AddressLine1 = "address line 1",
+                CityOrTown = "test city",
+                CountryName = "test country"
+            }
+        };
+
+        _mockRepository
+            .Setup(x => x.GetOverseasMaterialReprocessingSites(_registrationMaterialId))
+            .ReturnsAsync(reprocessingSites);
+
+        _mockMapper
+            .Setup(x => x.Map<IList<OverseasMaterialReprocessingSiteDto>>(It.IsAny<List<OverseasMaterialReprocessingSite>>()))
+            .Returns(new List<OverseasMaterialReprocessingSiteDto> { parentDto });
+
+        // Act
+        var result = await _handler.Handle(_query, CancellationToken.None);
+
+        // Assert
+        result.Should().HaveCount(1);
+        result.First().InterimSiteAddresses.Should().BeEmpty(); // skipped
+    }
+
+
 }
