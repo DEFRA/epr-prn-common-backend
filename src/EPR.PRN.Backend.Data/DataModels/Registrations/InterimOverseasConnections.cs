@@ -20,10 +20,10 @@ namespace EPR.PRN.Backend.Data.DataModels.Registrations
 
         public int InterimSiteId { get; set; }
         [ForeignKey(nameof(InterimSiteId))]
-        public OverseasAddress OverseasAddress { get; set; }
+        public required OverseasAddress OverseasAddress { get; set; }
 
         public int ParentOverseasAddressId { get; set; }
         [ForeignKey(nameof(ParentOverseasAddressId))]
-        public OverseasAddress ParentOverseasAddress { get; set; }
+        public required OverseasAddress ParentOverseasAddress { get; set; }
     }
 }

@@ -1063,6 +1063,12 @@ public class RegistrationMaterialRepositoryTests
                         OrganisationName = "testorg",
                         AddressLine1 = "Addressline1",
                         CityOrTown = "testcity"
+                    },
+                    ParentOverseasAddress = new OverseasAddress
+                    {
+                        OrganisationName = "test org",
+                        AddressLine1 = "address line 1",
+                        CityOrTown = "testcity"
                     }
                 }
             },

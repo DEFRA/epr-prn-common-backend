@@ -11,7 +11,7 @@ public class OverseasAddressDto
     public string? PostCode { get; set; }
     public Guid CreatedBy { get; set; }
     public Guid UpdatedBy { get; set; }
-    public string SiteCoordinates { get; set; }
+    public string? SiteCoordinates { get; set; }
     public required string CountryName { get; set; }
     public List<OverseasAddressContactDto> OverseasAddressContacts { get; set; } = [];
     public List<OverseasAddressWasteCodeDto> OverseasAddressWasteCodes { get; set; } = [];

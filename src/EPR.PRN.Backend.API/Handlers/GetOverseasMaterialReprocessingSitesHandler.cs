@@ -29,7 +29,7 @@ public class GetOverseasMaterialReprocessingSitesHandler(
         foreach (var dto in result)
         {
             var parent = parentSites
-                .FirstOrDefault(x => x.OverseasAddress?.ExternalId == dto.OverseasAddressId);
+                .Find(x => x.OverseasAddress?.ExternalId == dto.OverseasAddressId);
 
             if (parent?.OverseasAddress?.ChildInterimConnections == null)
                 continue;

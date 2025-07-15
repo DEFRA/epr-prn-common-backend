@@ -48,7 +48,13 @@ public class GetOverseasMaterialReprocessingSitesHandlerTests
 
         var childConnection = new InterimOverseasConnections
         {
-            OverseasAddress = interimAddress
+            OverseasAddress = interimAddress,
+            ParentOverseasAddress = new OverseasAddress
+            {
+                OrganisationName = "test org",
+                AddressLine1 = "address line 1",
+                CityOrTown = "testcity"
+            }
         };
 
         var parentAddress = new OverseasAddress

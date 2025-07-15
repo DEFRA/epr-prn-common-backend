@@ -159,7 +159,7 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
     public async Task CreateExemptionReferencesAsync(Guid registrationMaterialId, List<MaterialExemptionReference> exemptionReferences)
     {
         var material = await eprContext.RegistrationMaterials.FirstOrDefaultAsync(rm => rm.ExternalId == registrationMaterialId);
-        
+
         if (material is null) throw new KeyNotFoundException("Material not found.");
 
         foreach (var exemptionReference in exemptionReferences)
@@ -309,45 +309,45 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
         eprContext.RegistrationMaterials.Remove(existing);
 
         await eprContext.SaveChangesAsync();
-	}
+    }
 
-	public async Task UpdateIsMaterialRegisteredAsync(List<UpdateIsMaterialRegisteredDto> updateIsMaterialRegisteredDto)
-	{
+    public async Task UpdateIsMaterialRegisteredAsync(List<UpdateIsMaterialRegisteredDto> updateIsMaterialRegisteredDto)
+    {
         foreach (var registrationMaterial in updateIsMaterialRegisteredDto)
         {
-			var existing =
-			await eprContext.RegistrationMaterials.SingleOrDefaultAsync(o => o.ExternalId == registrationMaterial.RegistrationMaterialId);
+            var existing =
+            await eprContext.RegistrationMaterials.SingleOrDefaultAsync(o => o.ExternalId == registrationMaterial.RegistrationMaterialId);
 
-			if (existing is null)
-			{
-				throw new KeyNotFoundException("Registration material not found.");
-			}
+            if (existing is null)
+            {
+                throw new KeyNotFoundException("Registration material not found.");
+            }
 
             existing.IsMaterialRegistered = registrationMaterial.IsMaterialRegistered!.Value;
             existing.StatusId = (int)RegistrationMaterialStatus.InProgress;
 
-			eprContext.RegistrationMaterials.Update(existing);
-		}
+            eprContext.RegistrationMaterials.Update(existing);
+        }
 
-		await eprContext.SaveChangesAsync();
-	}
+        await eprContext.SaveChangesAsync();
+    }
 
     public async Task<IList<OverseasMaterialReprocessingSite>> GetOverseasMaterialReprocessingSites(Guid registrationMaterialId)
     {
         var result = await eprContext.OverseasMaterialReprocessingSite
-            .Where(s => s.RegistrationMaterial!.ExternalId == registrationMaterialId)
+            .Where(s => s.RegistrationMaterial != null && s.RegistrationMaterial!.ExternalId == registrationMaterialId)
             .Include(s => s.OverseasAddress)
-            .ThenInclude(oa => oa.OverseasAddressContacts)
+            .ThenInclude(oa => oa!.OverseasAddressContacts)
             .Include(s => s.OverseasAddress)
-            .ThenInclude(oa => oa.Country)
+            .ThenInclude(oa => oa!.Country)
             .Include(s => s.OverseasAddress)
-            .ThenInclude(oa => oa.OverseasAddressWasteCodes)
+            .ThenInclude(oa => oa!.OverseasAddressWasteCodes)
             .Include(s => s.OverseasAddress)
-            .ThenInclude(oa => oa.ChildInterimConnections)
+            .ThenInclude(oa => oa!.ChildInterimConnections)
             .ThenInclude(child_oa => child_oa.OverseasAddress)
             .ThenInclude(child_oa => child_oa.OverseasAddressContacts)
             .Include(s => s.OverseasAddress)
-            .ThenInclude(oa => oa.ChildInterimConnections)
+            .ThenInclude(oa => oa!.ChildInterimConnections)
             .ThenInclude(child_oa => child_oa.OverseasAddress)
             .ThenInclude(child_oa => child_oa.Country)
             .AsSplitQuery()
