@@ -6,6 +6,6 @@ namespace EPR.PRN.Backend.API.Dto.Accreditation
     [ExcludeFromCodeCoverage]
     public class AccreditationDto : AccreditationDtoBase
     {
-        public string MaterialName { get; set; }
+        public string? MaterialName { get; set; }
     }
 }
