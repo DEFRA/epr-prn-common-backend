@@ -1,8 +1,5 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿namespace EPR.PRN.Backend.Data.DTO;
 
-namespace EPR.PRN.Backend.Data.DTO;
-
-[ExcludeFromCodeCoverage]
 public class OverseasMaterialReprocessingSiteDto
 {
     public Guid Id { get; init; }
