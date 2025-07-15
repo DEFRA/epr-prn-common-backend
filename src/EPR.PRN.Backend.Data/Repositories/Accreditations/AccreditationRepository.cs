@@ -92,9 +92,14 @@ public class AccreditationRepository(EprAccreditationContext eprContext, IMapper
 
     public async Task<IEnumerable<AccreditationOverviewDto>> GetAccreditationOverviewForOrgId(Guid organisationId)
     {
-        return await eprContext.Accreditations
+        var data= await eprContext.Accreditations
+            .Include(x => x.ApplicationType)
+            .Include(x => x.RegistrationMaterial)
+            .Include(x => x.AccreditationStatus)
             .Where(a => a.OrganisationId == organisationId)
-            .ProjectTo<AccreditationOverviewDto>(mapper.ConfigurationProvider)
+            
             .ToListAsync();
+
+        return mapper.Map<List<AccreditationOverviewDto>>(data);
     }
 }

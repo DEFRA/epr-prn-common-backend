@@ -44,12 +44,13 @@ public class AccreditationRepositoryTests
                 new AccreditationEntity
                 {
                     Id = 1,
-                    ExternalId = new Guid("11111111-1111-1111-1111-111111111111"), 
+                    ExternalId = new Guid("11111111-1111-1111-1111-111111111111"),
+                    OrganisationId = new Guid("11111111-1111-1111-1111-111111111111"), 
                     AccreditationYear = 2026,
                     ApplicationTypeId = 1,
                     ApplicationType = new(),
                     AccreditationStatusId = 1,
-                    AccreditationStatus = new(),
+                    AccreditationStatus = new (),
                     RegistrationMaterialId = 1,
                     RegistrationMaterial = registrationMaterial
                 },
@@ -57,6 +58,7 @@ public class AccreditationRepositoryTests
                 {
                     Id = 2,
                     ExternalId = new Guid("22222222-2222-2222-2222-222222222222"),
+                    OrganisationId = new Guid("22222222-2222-2222-2222-222222222222"),
                     AccreditationYear = 2026,
                     ApplicationTypeId = 1,
                     ApplicationType = new(),
@@ -142,6 +144,50 @@ public class AccreditationRepositoryTests
         
         // Act
         var result = await _repository.GetAccreditationDetails(new Guid(), It.IsAny<int>(), It.IsAny<int>());
+
+        // Assert
+        result.Should().BeNull();
+    }
+
+    [TestMethod]
+    public async Task GetAccreditationOverviewForOrgId_NoRecordsFound_ReturnsEmptyList()
+    {
+        // Arrange
+        var organisationId = Guid.NewGuid();
+        var orgId = Guid.NewGuid();
+        var accreditations = new List<AccreditationEntity>
+        {
+            new AccreditationEntity
+            {
+                ExternalId = Guid.NewGuid(),
+                OrganisationId = organisationId,
+                ApplicationTypeId = 1
+            },
+            new AccreditationEntity
+            {
+                ExternalId = Guid.NewGuid(),
+                OrganisationId = organisationId,
+                ApplicationTypeId = 2
+            },
+            new AccreditationEntity
+            {
+                ExternalId = Guid.NewGuid(),
+                OrganisationId = organisationId,
+                ApplicationTypeId = 3
+            },
+            new AccreditationEntity
+            {
+                ExternalId = Guid.NewGuid(),
+                OrganisationId = organisationId,
+                ApplicationTypeId = 4
+            }
+        };
+
+        await _dbContext.AddRangeAsync(accreditations);
+        await _dbContext.SaveChangesAsync();
+
+        // Act
+        var result = await _repository.GetAccreditationOverviewForOrgId(orgId);
 
         // Assert
         result.Should().BeNull();

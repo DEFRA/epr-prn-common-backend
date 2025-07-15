@@ -19,7 +19,11 @@ public class AccreditationProfile : Profile
         CreateMap<AccreditationPrnIssueAuth, AccreditationPrnIssueAuthDto>();
         CreateMap<AccreditationPrnIssueAuthRequestDto, AccreditationPrnIssueAuth>();
 
-        CreateMap<AccreditationEntity, AccreditationOverviewDto>();
+        CreateMap<AccreditationEntity, AccreditationOverviewDto>()
+            .ForMember(dest => dest.ApplicationType, opts => opts.MapFrom(src => src.ApplicationType == null ? null : src.ApplicationType))
+            .ForMember(dest => dest.AccreditationStatus, opts => opts.MapFrom(src => src.AccreditationStatus == null ? null : src.AccreditationStatus))
+            .ForMember(dest => dest.RegistrationMaterial, opts => opts.MapFrom(src => src.RegistrationMaterial == null ? null : src.RegistrationMaterial));
+
         CreateMap<ApplicationType, ApplicationTypeDto>();
         CreateMap<AccreditationStatus, AccreditationStatusDto>();
         CreateMap<RegistrationMaterial, RegistrationMaterialDto>();
