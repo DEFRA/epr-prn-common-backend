@@ -2,6 +2,7 @@
 using EPR.PRN.Backend.API.Common.Enums;
 using EPR.PRN.Backend.API.Common.Exceptions;
 using EPR.PRN.Backend.API.Handlers.Regulator;
+using EPR.PRN.Backend.API.Helpers;
 using EPR.PRN.Backend.API.Repositories;
 using EPR.PRN.Backend.Data.DataModels.Registrations;
 using EPR.PRN.Backend.Data.Interfaces.Accreditation;
@@ -18,7 +19,12 @@ namespace EPR.PRN.Backend.API.Handlers.Accreditation
 
             var taskStatus = await repository.GetTaskStatusAsync(command.TaskName, command.AccreditationId);
 
-            ValidateAndThrowIfInvalidStatus(command.Status, taskStatus);
+            if (taskStatus == null)
+            {
+                throw new NotFoundException($"Task with name {command.TaskName} and accreditation ID {command.AccreditationId} not found.");
+            }
+
+            ValidateAndThrowIfInvalidStatus(command.Status, taskStatus!);
 
             await repository.UpdateStatusAsync(command.TaskName, command.AccreditationId, command.Status);
         }
