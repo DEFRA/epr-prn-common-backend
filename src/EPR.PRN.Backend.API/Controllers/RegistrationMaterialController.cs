@@ -88,7 +88,6 @@ public class RegistrationMaterialController(
     }
 
     [HttpPost("registrationMaterials/{id:Guid}/permits")]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     [SwaggerOperation(
@@ -114,7 +113,6 @@ public class RegistrationMaterialController(
     }
 
     [HttpPost("registrationMaterials/{id:Guid}/permitCapacity")]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     [SwaggerOperation(
@@ -271,6 +269,27 @@ public class RegistrationMaterialController(
         await mediator.Send(command);
 
         return NoContent();
+    }
+
+    [HttpPut("registrationMaterials/{registrationMaterialId:guid}/max-weight")]
+    [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(OkResult))]
+    [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
+    [SwaggerOperation(
+        Summary = "update the maximum weight the site is capable of processing for the material",
+        Description = "attempting to update the maximum weight the site is capable of processing for the material."
+    )]
+    [SwaggerResponse(StatusCodes.Status200OK)]
+    [SwaggerResponse(StatusCodes.Status400BadRequest, "If the request is invalid or a validation error occurs.", typeof(ProblemDetails))]
+    [SwaggerResponse(StatusCodes.Status500InternalServerError, "If an unexpected error occurs.", typeof(ContentResult))]
+    public async Task<IActionResult> UpdateMaximumWeight([FromRoute] Guid registrationMaterialId, [FromBody] UpdateMaximumWeightCommand command)
+    {
+        logger.LogInformation(LogMessages.UpdateMaximumWeight, command.RegistrationMaterialId);
+        command.RegistrationMaterialId = registrationMaterialId;
+
+        await mediator.Send(command);
+
+        return Ok();
     }
 
     [HttpPost("registrationMaterials/{registrationMaterialId:Guid}/materialNotReprocessingReason")]
