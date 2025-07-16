@@ -1,5 +1,8 @@
-﻿namespace EPR.PRN.Backend.Data.Dto
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace EPR.PRN.Backend.Data.Dto
 {
+    [ExcludeFromCodeCoverage]
     public class EprnTonnageResultsDto
     {
         public Guid OrganisationId { get; set; }
