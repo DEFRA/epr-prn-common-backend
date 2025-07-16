@@ -1,6 +1,6 @@
 ﻿using AutoFixture;
 using EPR.PRN.Backend.API.Common.Enums;
-using EPR.PRN.Backend.API.Controllers;
+using EPR.PRN.Backend.API.Controllers.Accreditation;
 using EPR.PRN.Backend.API.Dto;
 using EPR.PRN.Backend.API.Dto.Accreditation;
 using EPR.PRN.Backend.API.Services.Interfaces;

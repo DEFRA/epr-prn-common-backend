@@ -345,7 +345,7 @@ public class EprContext : DbContext
         });
 
         modelBuilder.Entity<DataModels.Registrations.OverseasAccreditationSite>()
-            .HasOne(o => o.overseasAddress)
+            .HasOne(o => o.OverseasAddress)
             .WithMany()
             .HasForeignKey(o => o.OverseasAddressId)
             .OnDelete(DeleteBehavior.NoAction);
