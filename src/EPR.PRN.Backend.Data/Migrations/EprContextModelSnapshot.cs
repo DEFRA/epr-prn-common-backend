@@ -3780,6 +3780,9 @@ namespace EPR.PRN.Backend.Data.Migrations
                     b.Property<bool?>("IsInterimSite")
                         .HasColumnType("bit");
 
+                    b.Property<Guid?>("OrganisationId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("OrganisationName")
                         .IsRequired()
                         .HasMaxLength(100)

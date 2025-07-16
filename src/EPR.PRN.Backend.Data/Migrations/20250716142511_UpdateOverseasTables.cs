@@ -50,6 +50,12 @@ namespace EPR.PRN.Backend.Data.Migrations
                 oldType: "nvarchar(max)",
                 oldNullable: true);
 
+            migrationBuilder.AddColumn<Guid>(
+                name: "OrganisationId",
+                table: "Public.OverseasAddress",
+                type: "uniqueidentifier",
+                nullable: true);
+
             migrationBuilder.AddPrimaryKey(
                 name: "PK_Public.OverseasAddressWasteCodes",
                 table: "Public.OverseasAddressWasteCodes",
@@ -88,6 +94,10 @@ namespace EPR.PRN.Backend.Data.Migrations
             migrationBuilder.DropColumn(
                 name: "ExternalId",
                 table: "Public.OverseasAddressContact");
+
+            migrationBuilder.DropColumn(
+                name: "OrganisationId",
+                table: "Public.OverseasAddress");
 
             migrationBuilder.RenameTable(
                 name: "Public.OverseasAddressWasteCodes",

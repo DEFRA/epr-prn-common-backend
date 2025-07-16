@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EPR.PRN.Backend.Data.Migrations
 {
     [DbContext(typeof(EprContext))]
-    [Migration("20250716111447_UpdateOverseasTables")]
+    [Migration("20250716142511_UpdateOverseasTables")]
     partial class UpdateOverseasTables
     {
         /// <inheritdoc />
@@ -3782,6 +3782,9 @@ namespace EPR.PRN.Backend.Data.Migrations
 
                     b.Property<bool?>("IsInterimSite")
                         .HasColumnType("bit");
+
+                    b.Property<Guid?>("OrganisationId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("OrganisationName")
                         .IsRequired()
