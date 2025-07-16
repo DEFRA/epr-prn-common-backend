@@ -56,26 +56,13 @@ namespace EPR.PRN.Backend.Data.Repositories.Accreditations
                 var journeyTypeId = _context.LookupJourneyTypes.SingleOrDefault(jt => jt.Name == "Accreditation")?.Id;
                 if (journeyTypeId == null)
                     throw new InvalidOperationException("Journey type 'Accreditation' not found.");
-                var task = _context.LookupApplicantRegistrationTasks.SingleOrDefault(t => t.Name == taskName
+                var task = await _context.LookupApplicantRegistrationTasks.SingleOrDefaultAsync(t => t.Name == taskName
                                                                                         && t.JourneyTypeId == journeyTypeId
-                                                                                        && t.ApplicationTypeId == accreditation.RegistrationMaterial.Registration.ApplicationTypeId
+                                                                                        && t.ApplicationTypeId == registration!.ApplicationTypeId
                                                                                         && t.IsMaterialSpecific == true);
 
                 if (task == null)
                     throw new InvalidOperationException($"No Valid Task Exists: {taskName}");
-
-                //// Create a new entity if it doesn't exist
-                //taskStatus = new RegulatorAccreditationTaskStatus
-                //{
-                //    AccreditationId = accreditation.Id,
-                //    ExternalId = Guid.NewGuid(),
-                //    Task = task,
-                //    TaskStatus = statusEntity,
-                //    StatusCreatedBy = user,
-                //    StatusCreatedDate = DateTime.UtcNow,
-                //    StatusUpdatedBy = user,
-                //    StatusUpdatedDate = DateTime.UtcNow,
-                //};
 
                 taskStatus = new AccreditationTaskStatus
                 {
@@ -83,41 +70,16 @@ namespace EPR.PRN.Backend.Data.Repositories.Accreditations
                     ExternalId = Guid.NewGuid(),
                     Task = task,
                     TaskStatus = statusEntity
-
-                    //TaskStatus = statusEntity,
-                    //StatusCreatedBy = user,
-                    //StatusCreatedDate = DateTime.UtcNow,
-                    //StatusUpdatedBy = user,
-                    //StatusUpdatedDate = DateTime.UtcNow,
                 };
 
                 await _context.AccreditationTaskStatus.AddAsync(taskStatus);
 
 
-                //if (comments != null && status == RegulatorTaskStatus.Queried)
-                //{
-                //    var queryNote = new Note
-                //    {
-                //        Notes = comments,
-                //        CreatedBy = user,
-                //        CreatedDate = DateTime.UtcNow
-                //    };
-                //    await _context.QueryNote.AddAsync(queryNote);
-                //    var accreditationTaskStatusQueryNotes = new AccreditationTaskStatusQueryNote
-                //    {
-                //        Note = queryNote,
-                //        RegulatorAccreditationTaskStatus = taskStatus
-                //    };
-                //    await _context.AccreditationTaskStatusQueryNote.AddAsync(accreditationTaskStatusQueryNotes);
-                //}
             }
             else
             {
                 // Update the existing entity
                 taskStatus.TaskStatus = statusEntity;
-                //taskStatus.StatusUpdatedBy = user;
-                //taskStatus.StatusUpdatedDate = DateTime.UtcNow;
-
                 _context.AccreditationTaskStatus.Update(taskStatus);
             }
 
