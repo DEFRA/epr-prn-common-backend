@@ -69,7 +69,7 @@ public class AccreditationFileUploadService(
             ExternalId = entity.ExternalId,
             SubmissionId = entity.SubmissionId,
             OverseasSiteId = entity.OverseasSiteId,
-            Filename = entity.Filename,
+            Filename = entity.Filename!,
             FileId = entity.FileId,
             UploadedOn = entity.DateUploaded ?? DateTime.MinValue, // this should not be null.
             UploadedBy = entity.UpdatedBy,

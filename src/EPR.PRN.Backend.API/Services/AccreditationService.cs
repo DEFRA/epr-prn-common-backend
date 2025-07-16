@@ -5,6 +5,7 @@ using AutoMapper;
 using EPR.PRN.Backend.API.Common.Enums;
 using EPR.PRN.Backend.API.Common.Helpers;
 using EPR.PRN.Backend.API.Dto.Accreditation;
+using EPR.PRN.Backend.API.Helpers;
 using EPR.PRN.Backend.API.Services.Interfaces;
 using EPR.PRN.Backend.Data.DataModels.Accreditations;
 using EPR.PRN.Backend.Data.DataModels.Registrations;
@@ -51,7 +52,7 @@ public class AccreditationService(
         if (registration == null)
         {
             logger.LogError("{Logprefix}: AccreditationService - GetOrCreateAccreditation: Failed to create registration for organisation {OrganisationId} with application type {ApplicationTypeId}", logPrefix, organisationId, applicationTypeId);
-            throw new Exception("Failed to create registration");
+            throw new NotFoundException("Failed to create registration");
         }
 
         var materialName = materialId switch
