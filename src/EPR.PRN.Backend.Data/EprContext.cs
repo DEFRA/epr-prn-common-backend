@@ -355,6 +355,10 @@ public class EprContext : DbContext
             .HasIndex(e => e.ExternalId)
             .IsUnique(); // Ensures UniqueId is unique
 
+        modelBuilder.Entity<OverseasAddressContact>()
+            .HasIndex(e => e.ExternalId)
+            .IsUnique(); // Ensures UniqueId is unique
+
         modelBuilder.Entity<RegistrationMaterial>()
             .HasOne(r => r.RegistrationMaterialContact)
             .WithOne()

@@ -40,6 +40,7 @@ namespace EPR.PRN.Backend.Data.DataModels.Registrations
         public Guid UpdatedBy { get; set; }
         public DateTime CreatedOn { get; set; }
         public DateTime UpdatedOn { get; set; }
+        [MaxLength(100)]
         public string? SiteCoordinates { get; set; }
         public bool? IsInterimSite { get; set; }
         public List<OverseasAddressContact> OverseasAddressContacts { get; set; } = [];
