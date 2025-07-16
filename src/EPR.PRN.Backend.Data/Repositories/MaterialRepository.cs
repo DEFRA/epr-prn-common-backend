@@ -458,7 +458,7 @@ namespace EPR.PRN.Backend.Data.Repositories
                 foreach (var dto in incomingInterimAddresses)
                 {
                     var entity = await UpsertSingleInterimSite(dto, registrationId, registrationMaterialId, requestDto.UserId!.Value, existingInterimSites);
-                    await CreateInterimConnection(dto, entity.ExternalId, requestDto.UserId.Value);
+                    await CreateInterimConnection(dto, entity.ExternalId);
                 }
 
                 await UpdateApplicationRegistrationTaskStatusAsync(ApplicantRegistrationTaskNames.InterimSites, registrationMaterial.ExternalId, TaskStatuses.Completed);
@@ -581,7 +581,7 @@ namespace EPR.PRN.Backend.Data.Repositories
             return entity;
         }
 
-        private async Task CreateInterimConnection(InterimSiteAddressDto dto, Guid interimExternalId, Guid userId)
+        private async Task CreateInterimConnection(InterimSiteAddressDto dto, Guid interimExternalId)
         {
             if (!dto.ParentExternalId.HasValue) return;
 
