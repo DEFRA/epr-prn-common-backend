@@ -1106,4 +1106,10 @@ public class RegistrationMaterialRepositoryTests
 
 		await Assert.ThrowsExceptionAsync<KeyNotFoundException>(() => _repository.UpdateIsMaterialRegisteredAsync(new List<UpdateIsMaterialRegisteredDto> { dto }));
 	}
+
+    [TestCleanup]
+    public void Cleanup()
+    {
+        _context.Database.EnsureDeleted();
+    }
 }

@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging;
 namespace EPR.PRN.Backend.Data.UnitTests.Repositories;
 
 [TestClass]
-public class MaterialRepositorySaveInterimSitesTests
+public class InterimSitesRepositoryTests
 {
     private EprContext _context;
     private MaterialRepository _repository;
@@ -336,4 +336,101 @@ public class MaterialRepositorySaveInterimSitesTests
 
         await act.Should().NotThrowAsync();
     }
+
+    [TestMethod]
+    public async Task GetOverseasMaterialReprocessingSites_ShouldReturnSitesWithRelatedEntities()
+    {
+        // Arrange
+        var regMaterialExternalId = Guid.NewGuid();
+
+        var registration = new Registration
+        {
+            Id = 10,
+            ExternalId = Guid.NewGuid()
+        };
+
+        var registrationMaterial = new RegistrationMaterial
+        {
+            Id = 10,
+            ExternalId = regMaterialExternalId,
+            Registration = registration,
+            RegistrationId = registration.Id
+        };
+
+        var childInterim = new OverseasAddress
+        {
+            OrganisationName = "Child Org",
+            AddressLine1 = "Child Address",
+            CityOrTown = "Child City",
+            Country = new LookupCountry { Name = "TestCountry" },
+            OverseasAddressContacts = new List<OverseasAddressContact>
+        {
+            new() { FullName = "Child Contact", Email = "child@test.com", PhoneNumber = "11111" }
+        }
+        };
+
+        var parentAddress = new OverseasAddress
+        {
+            Id = 20,
+            OrganisationName = "Parent Org",
+            AddressLine1 = "Parent Address",
+            CityOrTown = "Parent City",
+            Country = new LookupCountry { Name = "TestCountry" },
+            OverseasAddressContacts = new List<OverseasAddressContact>
+        {
+            new() { FullName = "Parent Contact", Email = "parent@test.com", PhoneNumber = "22222" }
+        },
+            OverseasAddressWasteCodes = new List<OverseasAddressWasteCode>
+        {
+            new() { CodeName = "OEC123" }
+        },
+            ChildInterimConnections = new List<InterimOverseasConnections>
+        {
+            new() { OverseasAddress = childInterim }
+        }
+        };
+
+        var site = new OverseasMaterialReprocessingSite
+        {
+            OverseasAddress = parentAddress,
+            OverseasAddressId = parentAddress.Id,
+            RegistrationMaterial = registrationMaterial,
+            RegistrationMaterialId = registrationMaterial.Id
+        };
+
+        _context.Registrations.Add(registration);
+        _context.RegistrationMaterials.Add(registrationMaterial);
+        _context.OverseasAddress.AddRange(parentAddress, childInterim);
+        _context.OverseasMaterialReprocessingSite.Add(site);
+        _context.SaveChanges();
+
+        // Act
+        var result = await _repository.GetOverseasMaterialReprocessingSites(regMaterialExternalId);
+
+        // Assert
+        result.Should().HaveCount(1);
+        var fetchedSite = result.First();
+        fetchedSite.OverseasAddress.Should().NotBeNull();
+        fetchedSite.OverseasAddress.Country.Should().NotBeNull();
+        fetchedSite.OverseasAddress.OverseasAddressWasteCodes.Should().NotBeEmpty();
+        fetchedSite.OverseasAddress.OverseasAddressContacts.Should().NotBeEmpty();
+        fetchedSite.OverseasAddress.ChildInterimConnections.Should().NotBeEmpty();
+        fetchedSite.OverseasAddress.ChildInterimConnections.First().OverseasAddress.Should().NotBeNull();
+        fetchedSite.OverseasAddress.ChildInterimConnections.First().OverseasAddress.OverseasAddressContacts.Should().NotBeEmpty();
+    }
+
+    [TestMethod]
+    public async Task GetOverseasMaterialReprocessingSites_ShouldReturnEmptyList_WhenNoSitesExist()
+    {
+        // Arrange
+        var nonExistentId = Guid.NewGuid();
+
+        // Act
+        var result = await _repository.GetOverseasMaterialReprocessingSites(nonExistentId);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.Should().BeEmpty();
+    }
+
 }
