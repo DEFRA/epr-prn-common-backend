@@ -22,8 +22,6 @@ public class AccreditationProfile : Profile
         CreateMap<AccreditationEntity, AccreditationOverviewDto>()
             .ForMember(dest => dest.RegistrationMaterial, opts => opts.MapFrom(src => src.RegistrationMaterial == null ? null : src.RegistrationMaterial));
 
-        CreateMap<ApplicationType, ApplicationTypeDto>();
-        CreateMap<AccreditationStatus, AccreditationStatusDto>();
         CreateMap<RegistrationMaterial, RegistrationMaterialDto>();
 
         CreateMap<OverseasAccreditationSite, OverseasAccreditationSiteDto>();
