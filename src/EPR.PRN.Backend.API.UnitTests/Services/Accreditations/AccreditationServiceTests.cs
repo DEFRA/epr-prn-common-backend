@@ -1,7 +1,6 @@
 ﻿using EPR.PRN.Backend.API.Dto.Accreditation;
 using EPR.PRN.Backend.API.Services;
 using EPR.PRN.Backend.Data.DataModels.Accreditations;
-using EPR.PRN.Backend.Data.Interfaces.Accreditations;
 using FluentAssertions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -12,6 +11,7 @@ using EPR.PRN.Backend.Data.DataModels.Registrations;
 using EPR.PRN.Backend.Data.Interfaces;
 using EPR.PRN.Backend.Data.Interfaces.Regulator;
 using EPR.PRN.Backend.Data.DTO;
+using EPR.PRN.Backend.Data.Interfaces.Accreditation;
 
 namespace EPR.PRN.Backend.API.UnitTests.Services.Accreditations;
 

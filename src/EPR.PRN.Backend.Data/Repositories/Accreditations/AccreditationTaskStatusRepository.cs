@@ -30,7 +30,7 @@ namespace EPR.PRN.Backend.Data.Repositories.Accreditations
             return await GetTaskStatus(taskName, accreditationId);
         }
 
-        public async Task UpdateStatusAsync(string taskName, Guid accreditationId, TaskStatuses status) //, string? comments)
+        public async Task UpdateStatusAsync(string taskName, Guid accreditationId, TaskStatuses status) 
         {
             _logger.LogInformation("Updating status for task with TaskName {TaskName} And AccreditationId {AccreditationId} to {Status}", taskName, accreditationId, status);
 

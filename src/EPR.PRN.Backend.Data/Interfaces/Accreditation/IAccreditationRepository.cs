@@ -1,8 +1,4 @@
-﻿using EPR.PRN.Backend.Data.DataModels.Accreditations;
-using EPR.PRN.Backend.Data.DataModels.Registrations;
-using EPR.PRN.Backend.Data.DataModels.Registrations;   
-
-namespace EPR.PRN.Backend.Data.Interfaces.Accreditations;
+﻿namespace EPR.PRN.Backend.Data.Interfaces.Accreditation;
 
 public interface IAccreditationRepository
 {    

@@ -11,7 +11,7 @@ using EPR.PRN.Backend.Data.DataModels.Accreditations;
 using EPR.PRN.Backend.Data.DataModels.Registrations;
 using EPR.PRN.Backend.Data.DTO;
 using EPR.PRN.Backend.Data.Interfaces;
-using EPR.PRN.Backend.Data.Interfaces.Accreditations;
+using EPR.PRN.Backend.Data.Interfaces.Accreditation;
 using EPR.PRN.Backend.Data.Interfaces.Regulator;
 using EPR.PRN.Backend.Data.Repositories.Regulator;
 using Microsoft.Extensions.Logging;

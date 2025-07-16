@@ -1,6 +1,6 @@
 ﻿using EPR.PRN.Backend.Data.DataModels.Registrations;
 
-namespace EPR.PRN.Backend.Data.Interfaces.Accreditations;
+namespace EPR.PRN.Backend.Data.Interfaces.Accreditation;
 
 public interface IAccreditationPrnIssueAuthRepository
 {

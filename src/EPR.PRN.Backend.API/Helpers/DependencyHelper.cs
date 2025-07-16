@@ -7,7 +7,6 @@ using EPR.PRN.Backend.API.Services.Interfaces;
 using EPR.PRN.Backend.API.Validators;
 using EPR.PRN.Backend.API.Validators.Regulator;
 using EPR.PRN.Backend.Data.Interfaces;
-using EPR.PRN.Backend.Data.Interfaces.Accreditations;
 using EPR.PRN.Backend.Data.Interfaces.Regulator;
 using EPR.PRN.Backend.Data.Repositories;
 using EPR.PRN.Backend.Data.Repositories.ExporterJourney;

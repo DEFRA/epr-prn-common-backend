@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using EPR.PRN.Backend.Data.DataModels.Accreditations;
 using EPR.PRN.Backend.Data.DataModels.Registrations;
-using EPR.PRN.Backend.Data.Interfaces.Accreditations;
+using EPR.PRN.Backend.Data.Interfaces.Accreditation;
 using Microsoft.EntityFrameworkCore;
 
 namespace EPR.PRN.Backend.Data.Repositories.Accreditations;
