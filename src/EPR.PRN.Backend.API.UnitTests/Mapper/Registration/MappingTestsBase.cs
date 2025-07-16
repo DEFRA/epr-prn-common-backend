@@ -1,13 +1,17 @@
 ﻿using AutoMapper;
+using EPR.PRN.Backend.API.Profiles.Regulator;
 
 namespace EPR.PRN.Backend.API.UnitTests.Mapper.Registration;
 
-public class MappingTestsBase<T> where T : Profile, new()
+public interface IMappingTestBase
 {
-    // Base class for mapping tests, can contain common setup or utilities for tests
-    protected IMapper CreateMapper()
+    IMapper CreateMapper()
     {
-        var config = new MapperConfiguration(cfg => cfg.AddProfile<T>());
+        var config = new MapperConfiguration(cfg =>
+        {
+            cfg.AddMaps(typeof(RegistrationMaterialProfile).Assembly);
+        });
+
         return config.CreateMapper();
     }
 }

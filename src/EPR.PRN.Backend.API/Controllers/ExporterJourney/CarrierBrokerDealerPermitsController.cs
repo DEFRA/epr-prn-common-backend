@@ -60,7 +60,8 @@ public class CarrierBrokerDealerPermitsController(IMediator mediator,
             {
                 UserId = userId,
                 RegistrationId = registrationId, 
-                WasteCarrierBrokerDealerRegistration = dto.WasteCarrierBrokerDealerRegistration
+                WasteCarrierBrokerDealerRegistration = dto.WasteCarrierBrokerDealerRegistration,
+                RegisteredWasteCarrierBrokerDealerFlag = dto.RegisteredWasteCarrierBrokerDealerFlag
             });
 
             return created ? CreatedAtAction(nameof(GetCarrierBrokerDealerPermits), new { registrationId }, null) : Ok();

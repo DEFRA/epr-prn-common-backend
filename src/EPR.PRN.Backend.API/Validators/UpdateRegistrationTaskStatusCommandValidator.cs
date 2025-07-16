@@ -4,13 +4,15 @@ using FluentValidation;
 
 namespace EPR.PRN.Backend.API.Validators;
 
-public class UpdateRegistrationTaskStatusCommandValidator : AbstractValidator<UpdateRegistrationTaskStatusCommand>
+public class UpdateRegistrationTaskStatusCommandValidator : AbstractValidator<UpdateRegistrationTaskStatusCommandBase>
 {
     public UpdateRegistrationTaskStatusCommandValidator()
     {
-        var allowedStatuses = new[] 
-        { 
-            TaskStatuses.Started, 
+        var allowedStatuses = new[]
+        {
+            TaskStatuses.NotStarted,
+            TaskStatuses.Started,
+            TaskStatuses.CannotStartYet,
             TaskStatuses.Queried, 
             TaskStatuses.Completed 
         };

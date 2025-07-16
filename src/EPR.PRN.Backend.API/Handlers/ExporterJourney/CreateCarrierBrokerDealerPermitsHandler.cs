@@ -24,6 +24,7 @@ public class CreateCarrierBrokerDealerPermitsHandler(
         {
             RegistrationId = registration.Id, 
             WasteCarrierBrokerDealerRegistration = request.WasteCarrierBrokerDealerRegistration,
+            RegisteredWasteCarrierBrokerDealerFlag = request.RegisteredWasteCarrierBrokerDealerFlag,
             CreatedBy = request.UserId,
             CreatedDate = DateTime.UtcNow
         };
