@@ -156,6 +156,8 @@ namespace EPR.PRN.Backend.Data.Repositories
 
             var overseasAddressesAfterDelete = await context.OverseasAddress
                 .Where(x => x.RegistrationId == registrationId)
+                .Include(x => x.OverseasAddressContacts)
+                .Include(x => x.OverseasAddressWasteCodes)
                 .ToListAsync();
 
             await UpdateOverseasReprocessingSites(overseasAddressesAfterDelete, overseasAddressSubmission.OverseasAddresses);
@@ -214,43 +216,67 @@ namespace EPR.PRN.Backend.Data.Repositories
                 overseasAddress.UpdatedBy = updatedAddress.UpdatedBy;
                 overseasAddress.UpdatedOn = DateTime.UtcNow;
 
-                foreach (var contact in updatedAddress.OverseasAddressContacts)
+                UpsertOverseasAddressContact(overseasAddress, updatedAddress.OverseasAddressContacts.FirstOrDefault()!);
+                UpsertOverseasAddressWasteCodes(overseasAddress, updatedAddress.OverseasAddressWasteCodes);
+            }
+            await context.SaveChangesAsync();
+        }
+
+        private void UpsertOverseasAddressContact(OverseasAddress overseasAddress, OverseasAddressContactDto contactDto)
+        {
+            if (contactDto == null)
+            {
+                overseasAddress.OverseasAddressContacts.Clear();
+                return;
+            }
+
+            var existingContact = overseasAddress.OverseasAddressContacts.SingleOrDefault();
+
+            if (existingContact != null)
+            {
+                existingContact.FullName = contactDto.FullName;
+                existingContact.Email = contactDto.Email;
+                existingContact.PhoneNumber = contactDto.PhoneNumber;
+            }
+            else
+            {
+                overseasAddress.OverseasAddressContacts.Add(new OverseasAddressContact
                 {
-                    var existingContact = overseasAddress.OverseasAddressContacts.FirstOrDefault(c => c.CreatedBy == contact.CreatedBy);
-                    if (existingContact != null)
+                    FullName = contactDto.FullName,
+                    Email = contactDto.Email,
+                    PhoneNumber = contactDto.PhoneNumber,
+                    CreatedBy = contactDto.CreatedBy
+                });
+            }
+        }
+
+        private void UpsertOverseasAddressWasteCodes(OverseasAddress overseasAddress, List<OverseasAddressWasteCodeDto> updatedWasteCodes)
+        {
+            var deletedWastCodes = overseasAddress.OverseasAddressWasteCodes
+                .Where(wc => !updatedWasteCodes.Any(uwc => uwc.ExternalId == wc.ExternalId))
+                .ToList();
+
+            overseasAddress.OverseasAddressWasteCodes.RemoveAll(wc => deletedWastCodes.Contains(wc));
+
+            foreach (var wasteCode in updatedWasteCodes)
+            {
+                if (wasteCode.ExternalId == Guid.Empty)
+                {
+                    overseasAddress.OverseasAddressWasteCodes.Add(new OverseasAddressWasteCode
                     {
-                        existingContact.FullName = contact.FullName;
-                        existingContact.Email = contact.Email;
-                        existingContact.PhoneNumber = contact.PhoneNumber;
-                    }
-                    else
-                    {
-                        overseasAddress.OverseasAddressContacts.Add(new OverseasAddressContact
-                        {
-                            FullName = contact.FullName,
-                            Email = contact.Email,
-                            PhoneNumber = contact.PhoneNumber,
-                            CreatedBy = contact.CreatedBy
-                        });
-                    }
+                        ExternalId = Guid.NewGuid(),
+                        CodeName = wasteCode.CodeName,
+                    });
                 }
-                foreach (var wasteCode in updatedAddress.OverseasAddressWasteCodes)
+                else
                 {
                     var existingWasteCode = overseasAddress.OverseasAddressWasteCodes.FirstOrDefault(wc => wc.ExternalId == wasteCode.ExternalId);
                     if (existingWasteCode != null)
                     {
                         existingWasteCode.CodeName = wasteCode.CodeName;
                     }
-                    else
-                    {
-                        overseasAddress.OverseasAddressWasteCodes.Add(new OverseasAddressWasteCode
-                        {
-                            CodeName = wasteCode.CodeName,
-                        });
-                    }
                 }
             }
-            await context.SaveChangesAsync();
         }
 
         private async Task CreateOverseasReprocessingSites(List<OverseasAddressDto> overseasAddresses, List<OverseasAddress> overseasAddressesAfterDb, int registrationId, int registrationMaterialId)
