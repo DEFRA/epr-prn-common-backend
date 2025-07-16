@@ -408,5 +408,207 @@ namespace EPR.PRN.Backend.Data.Repositories
 
             return registrationMaterial;
         }
+
+        public async Task<IList<OverseasMaterialReprocessingSite>> GetOverseasMaterialReprocessingSites(Guid registrationMaterialId)
+        {
+            var result = await context.OverseasMaterialReprocessingSite
+                .Where(s => s.RegistrationMaterial != null && s.RegistrationMaterial!.ExternalId == registrationMaterialId)
+                .Include(s => s.OverseasAddress)
+                .ThenInclude(oa => oa!.OverseasAddressContacts)
+                .Include(s => s.OverseasAddress)
+                .ThenInclude(oa => oa!.Country)
+                .Include(s => s.OverseasAddress)
+                .ThenInclude(oa => oa!.OverseasAddressWasteCodes)
+                .Include(s => s.OverseasAddress)
+                .ThenInclude(oa => oa!.ChildInterimConnections)
+                .ThenInclude(child_oa => child_oa.OverseasAddress)
+                .ThenInclude(child_oa => child_oa.OverseasAddressContacts)
+                .Include(s => s.OverseasAddress)
+                .ThenInclude(oa => oa!.ChildInterimConnections)
+                .ThenInclude(child_oa => child_oa.OverseasAddress)
+                .ThenInclude(child_oa => child_oa.Country)
+                .AsSplitQuery()
+                .ToListAsync();
+
+            return result;
+        }
+
+        public async Task SaveInterimSitesAsync(SaveInterimSitesRequestDto requestDto)
+        {
+            await using var transaction = await context.Database.BeginTransactionAsync();
+            try
+            {
+                var registrationMaterial = await context.RegistrationMaterials
+                    .Include(rm => rm.Registration)
+                    .FirstOrDefaultAsync(rm => rm.ExternalId == requestDto.RegistrationMaterialId)
+                    ?? throw new KeyNotFoundException("RegistrationMaterial not found");
+
+                var registrationMaterialId = registrationMaterial.Id;
+                var registrationId = registrationMaterial.Registration.Id;
+
+                var existingInterimSites = await GetExistingInterimSites(registrationId);
+
+                var incomingInterimAddresses = requestDto.OverseasMaterialReprocessingSites
+                    .Where(x => x.InterimSiteAddresses != null)
+                    .SelectMany(x => x.InterimSiteAddresses!)
+                    .ToList();
+
+                await DeleteObsoleteInterimSites(existingInterimSites, incomingInterimAddresses, registrationMaterialId);
+
+                foreach (var dto in incomingInterimAddresses)
+                {
+                    var entity = await UpsertSingleInterimSite(dto, registrationId, registrationMaterialId, requestDto.UserId!.Value, existingInterimSites);
+                    await CreateInterimConnection(dto, entity.ExternalId, requestDto.UserId.Value);
+                }
+
+                await UpdateApplicationRegistrationTaskStatusAsync(ApplicantRegistrationTaskNames.InterimSites, registrationMaterial.ExternalId, TaskStatuses.Completed);
+                await context.SaveChangesAsync();
+                await transaction.CommitAsync();
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Error while saving interim sites for RegistrationMaterialId: {RegistrationMaterialId}", requestDto.RegistrationMaterialId);
+                await transaction.RollbackAsync();
+                throw;
+            }
+        }
+
+        private async Task<List<OverseasAddress>> GetExistingInterimSites(int registrationId)
+        {
+            return await context.OverseasAddress
+                .Where(oa => oa.IsInterimSite == true && oa.RegistrationId == registrationId)
+                .Include(oa => oa.OverseasAddressContacts)
+                .Include(oa => oa.InterimConnections)
+                .ToListAsync();
+        }
+
+        private async Task DeleteObsoleteInterimSites(List<OverseasAddress> existingSites, List<InterimSiteAddressDto> incomingDtos, int registrationMaterialId)
+        {
+            var incomingExternalIds = incomingDtos
+                .Where(x => x.ExternalId != Guid.Empty)
+                .Select(x => x.ExternalId)
+                .ToHashSet();
+
+            var toDelete = existingSites
+                .Where(x => !incomingExternalIds.Contains(x.ExternalId))
+                .ToList();
+
+            if (toDelete.Count == 0) return;
+
+            var deleteSiteIds = toDelete.Select(x => x.Id).ToList();
+
+            var toDeleteConnections = await context.InterimOverseasConnections
+                .Where(c => deleteSiteIds.Contains(c.InterimSiteId))
+                .ToListAsync();
+
+            var toDeleteMaterialSites = await context.OverseasMaterialReprocessingSite
+                .Where(r => deleteSiteIds.Contains(r.OverseasAddressId) && r.RegistrationMaterialId == registrationMaterialId)
+                .ToListAsync();
+
+            context.InterimOverseasConnections.RemoveRange(toDeleteConnections);
+            context.OverseasMaterialReprocessingSite.RemoveRange(toDeleteMaterialSites);
+            context.OverseasAddress.RemoveRange(toDelete);
+        }
+
+        private async Task<OverseasAddress> UpsertSingleInterimSite(InterimSiteAddressDto dto, int registrationId, int registrationMaterialId, Guid userId, List<OverseasAddress> existingInterimSites)
+        {
+            var isNew = dto.ExternalId == Guid.Empty;
+            var externalId = isNew ? Guid.NewGuid() : dto.ExternalId;
+
+            var countryId = await context.LookupCountries
+                .Where(c => c.Name == dto.CountryName)
+                .Select(c => c.Id)
+                .FirstOrDefaultAsync();
+
+            OverseasAddress entity;
+
+            if (isNew)
+            {
+                entity = new OverseasAddress
+                {
+                    ExternalId = externalId,
+                    OrganisationName = dto.OrganisationName,
+                    AddressLine1 = dto.AddressLine1,
+                    AddressLine2 = dto.AddressLine2,
+                    CityOrTown = dto.CityOrTown,
+                    StateProvince = dto.StateProvince,
+                    PostCode = dto.PostCode,
+                    CountryId = countryId,
+                    RegistrationId = registrationId,
+                    IsInterimSite = true,
+                    CreatedBy = userId,
+                    CreatedOn = DateTime.UtcNow,
+                    OverseasAddressContacts = dto.InterimAddressContact.Select(c => new OverseasAddressContact
+                    {
+                        FullName = c.FullName,
+                        Email = c.Email,
+                        PhoneNumber = c.PhoneNumber,
+                        CreatedBy = userId
+                    }).ToList(),
+                    OverseasMaterialReprocessingSites = new List<OverseasMaterialReprocessingSite>
+            {
+                new() { RegistrationMaterialId = registrationMaterialId, ExternalId = Guid.NewGuid() }
+            }
+                };
+
+                await context.OverseasAddress.AddAsync(entity);
+                await context.SaveChangesAsync();
+            }
+            else
+            {
+                entity = existingInterimSites.First(x => x.ExternalId == externalId);
+
+                entity.OrganisationName = dto.OrganisationName;
+                entity.AddressLine1 = dto.AddressLine1;
+                entity.AddressLine2 = dto.AddressLine2;
+                entity.CityOrTown = dto.CityOrTown;
+                entity.StateProvince = dto.StateProvince;
+                entity.PostCode = dto.PostCode;
+                entity.CountryId = countryId;
+                entity.UpdatedBy = userId;
+                entity.UpdatedOn = DateTime.UtcNow;
+
+                context.OverseasAddressContact.RemoveRange(entity.OverseasAddressContacts);
+                entity.OverseasAddressContacts = dto.InterimAddressContact.Select(c => new OverseasAddressContact
+                {
+                    FullName = c.FullName,
+                    Email = c.Email,
+                    PhoneNumber = c.PhoneNumber,
+                    CreatedBy = userId
+                }).ToList();
+            }
+
+            return entity;
+        }
+
+        private async Task CreateInterimConnection(InterimSiteAddressDto dto, Guid interimExternalId, Guid userId)
+        {
+            if (!dto.ParentExternalId.HasValue) return;
+
+            var parentEntityId = await context.OverseasAddress
+                .Where(p => p.ExternalId == dto.ParentExternalId && p.IsInterimSite != true)
+                .Select(p => p.Id)
+                .FirstOrDefaultAsync();
+
+            var interimEntityId = await context.OverseasAddress
+                .Where(i => i.ExternalId == interimExternalId && i.IsInterimSite == true)
+                .Select(i => i.Id)
+                .FirstOrDefaultAsync();
+
+            if (parentEntityId == 0 || interimEntityId == 0) return;
+
+            var exists = await context.InterimOverseasConnections
+                .AnyAsync(c => c.InterimSiteId == interimEntityId && c.ParentOverseasAddressId == parentEntityId);
+
+            if (!exists)
+            {
+                await context.InterimOverseasConnections.AddAsync(new InterimOverseasConnections
+                {
+                    ExternalId = Guid.NewGuid(),
+                    InterimSiteId = interimEntityId,
+                    ParentOverseasAddressId = parentEntityId
+                });
+            }
+        }
     }
 }
