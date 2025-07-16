@@ -4,6 +4,7 @@ using EPR.PRN.Backend.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EPR.PRN.Backend.Data.Migrations
 {
     [DbContext(typeof(EprContext))]
-    partial class EprContextModelSnapshot : ModelSnapshot
+    [Migration("20250709141930_AddOverseasTables")]
+    partial class AddOverseasTables
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1456,6 +1459,38 @@ namespace EPR.PRN.Backend.Data.Migrations
                         },
                         new
                         {
+                            Id = 5,
+                            ApplicationTypeId = 2,
+                            IsMaterialSpecific = false,
+                            JourneyTypeId = 1,
+                            Name = "WasteLicensesPermitsAndExemptions"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            ApplicationTypeId = 2,
+                            IsMaterialSpecific = true,
+                            JourneyTypeId = 1,
+                            Name = "SamplingAndInspectionPlan"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            ApplicationTypeId = 2,
+                            IsMaterialSpecific = true,
+                            JourneyTypeId = 1,
+                            Name = "OverseasReprocessingSites"
+                        },
+                        new
+                        {
+                            Id = 8,
+                            ApplicationTypeId = 2,
+                            IsMaterialSpecific = true,
+                            JourneyTypeId = 1,
+                            Name = "InterimSites"
+                        },
+                        new
+                        {
                             Id = 9,
                             ApplicationTypeId = 1,
                             IsMaterialSpecific = true,
@@ -1477,14 +1512,6 @@ namespace EPR.PRN.Backend.Data.Migrations
                             IsMaterialSpecific = true,
                             JourneyTypeId = 2,
                             Name = "AccreditationSamplingAndInspectionPlan"
-                        },
-                        new
-                        {
-                            Id = 5,
-                            ApplicationTypeId = 2,
-                            IsMaterialSpecific = false,
-                            JourneyTypeId = 1,
-                            Name = "WasteLicensesPermitsAndExemptions"
                         },
                         new
                         {
@@ -1520,51 +1547,11 @@ namespace EPR.PRN.Backend.Data.Migrations
                         },
                         new
                         {
-                            Id = 17,
-                            ApplicationTypeId = 2,
-                            IsMaterialSpecific = false,
-                            JourneyTypeId = 1,
-                            Name = "AddressForServiceofNotices"
-                        },
-                        new
-                        {
-                            Id = 6,
-                            ApplicationTypeId = 2,
-                            IsMaterialSpecific = true,
-                            JourneyTypeId = 1,
-                            Name = "SamplingAndInspectionPlan"
-                        },
-                        new
-                        {
                             Id = 16,
                             ApplicationTypeId = 2,
                             IsMaterialSpecific = false,
                             JourneyTypeId = 1,
-                            Name = "CarrierBrokerDealerNumberAndOtherPermits"
-                        },
-                        new
-                        {
-                            Id = 18,
-                            ApplicationTypeId = 2,
-                            IsMaterialSpecific = false,
-                            JourneyTypeId = 1,
-                            Name = "AboutThePackagingWasteYouExport"
-                        },
-                        new
-                        {
-                            Id = 7,
-                            ApplicationTypeId = 2,
-                            IsMaterialSpecific = true,
-                            JourneyTypeId = 1,
-                            Name = "OverseasReprocessingSitesYouExportTo"
-                        },
-                        new
-                        {
-                            Id = 8,
-                            ApplicationTypeId = 2,
-                            IsMaterialSpecific = true,
-                            JourneyTypeId = 1,
-                            Name = "InterimSites"
+                            Name = "WasteCarrierBrokerDealerNumber"
                         });
                 });
 
