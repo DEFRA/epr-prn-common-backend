@@ -97,7 +97,8 @@ public class GetOverseasMaterialReprocessingSitesHandlerTests
                 OrganisationName = "test",
                 AddressLine1 = "test",
                 CityOrTown = "test",
-                CountryName = "TEST"
+                CountryName = "TEST",
+                SiteCoordinates = "121"
             }
         };
 
@@ -199,7 +200,8 @@ public class GetOverseasMaterialReprocessingSitesHandlerTests
                 OrganisationName = "Test Org",
                 AddressLine1 = "Address line 1",
                 CityOrTown = "Test City",
-                CountryName = "TestCountry"
+                CountryName = "TestCountry",
+                SiteCoordinates = "121"
             }
         };
 
@@ -234,7 +236,8 @@ public class GetOverseasMaterialReprocessingSitesHandlerTests
                 OrganisationName = "test org",
                 AddressLine1 = "Address line 1",
                 CityOrTown = "testcity",
-                CountryName = "testcountry"
+                CountryName = "testcountry",
+                SiteCoordinates = "121"
             }
         };
 
@@ -297,7 +300,8 @@ public class GetOverseasMaterialReprocessingSitesHandlerTests
                 OrganisationName = "test org",
                 AddressLine1 = "address line 1",
                 CityOrTown = "test city",
-                CountryName = "test country"
+                CountryName = "test country",
+                SiteCoordinates = "121"
             }
         };
 

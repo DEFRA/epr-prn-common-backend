@@ -72,6 +72,7 @@ public class AccreditationEntity
 
     public Guid CreatedBy { get; set; }
     public DateTime CreatedDate { get; set; }
+
     public Guid UpdatedBy { get; set; }
     public DateTime UpdatedDate { get; set; }
 
@@ -80,6 +81,8 @@ public class AccreditationEntity
     public AccreditationStatus? AccreditationStatus { get; set; }
 
     public RegistrationMaterial? RegistrationMaterial { get; set; }
+
+    public List<OverseasAccreditationSite>? OverseasAccreditationSites { get; set; }
 
     public List<AccreditationPrnIssueAuth>? AccreditationPrnIssueAuths { get; set; }
 
