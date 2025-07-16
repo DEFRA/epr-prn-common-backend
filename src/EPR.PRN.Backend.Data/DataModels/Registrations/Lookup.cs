@@ -108,8 +108,6 @@ public class LookupMeetConditionsOfExport : LookupBase
 {
     [MaxLength(50)]
     public override required string Name { get; set; }
-    //[MaxLength(200)]
-    //public string? ConditionFulfilment { get; set; } // this is not in the adr
 }
 
 
@@ -119,16 +117,4 @@ public class LookupSiteCheckStatus : LookupBase
 {
     [MaxLength(10)]
     public override required string Name { get; set; }
-
-    //[MaxLength(100)]
-    //public string? Status { get; set; } // does not match the adr
 }
-//[Table("Lookup.TaskName")] // should this be accrediation task name?
-//[ExcludeFromCodeCoverage]
-//public class LookupTaskName : LookupBase
-//{
-//    [MaxLength(100)]
-//    public override required string Name { get; set; }
-//    [MaxLength(20)]  // should this be an int?
-//    public string? Journey { get; set; }
-//}

@@ -283,7 +283,7 @@ namespace EPR.PRN.Backend.Data.UnitTests.Repositories.Accreditations
                     It.IsAny<EventId>(),
                     It.Is<It.IsAnyType>((v, _) => v.ToString()!.Contains("Updating status for task")),
                     It.IsAny<Exception>(),
-                    (Func<It.IsAnyType, Exception?, string>)It.IsAny<object>()),
+                    (Func<It.IsAnyType, Exception, string>)It.IsAny<object>()),
                 Times.AtLeastOnce);
         }
     }

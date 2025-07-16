@@ -22,7 +22,7 @@ namespace EPR.PRN.Backend.Data.DataModels.Accreditations
         [ForeignKey("Task")]
         public int TaskId { get; set; }
 
-        public Accreditation Accreditation { get; set; }
+        public required Accreditation Accreditation { get; set; }
         [ForeignKey("Accreditation")]
         public int AccreditationId { get; set; }
     }
