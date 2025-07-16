@@ -9,6 +9,7 @@ using MediatR;
 
 namespace EPR.PRN.Backend.API.Handlers.Accreditation
 {
+    
     public class UpdateAccreditationTaskHandler(IAccreditationTaskStatusRepository repository)
     : IRequestHandler<UpdateAccreditationTaskCommand>
     {
@@ -19,41 +20,42 @@ namespace EPR.PRN.Backend.API.Handlers.Accreditation
 
             ValidateAndThrowIfInvalidStatus(command.Status, taskStatus);
 
-            await repository.UpdateStatusAsync(command.TaskName, command.AccreditationId, command.Status);//, Guid.NewGuid());
+            await repository.UpdateStatusAsync(command.TaskName, command.AccreditationId, command.Status);
         }
 
         protected static void ValidateAndThrowIfInvalidStatus(TaskStatuses commandStatus, TaskStatusBase task)
         {
-            //if (task != null)
-            //{
-            //    if (commandStatus == RegulatorTaskStatus.Completed)
-            //    {
+            // This logic will need to be updated to match the logic for accreditation tasks. It is currently the same as the regulator accreditation logic.
+            if (task != null)
+            {
+                if (commandStatus == TaskStatuses.Completed)
+                {
 
-            //        if (task.TaskStatus.Name == RegulatorTaskStatus.Completed.ToString())
-            //        {
-            //            throw new RegulatorInvalidOperationException($"Cannot set task status to {RegulatorTaskStatus.Completed} as it is already {RegulatorTaskStatus.Completed}");
-            //        }
-            //    }
-            //    else if (commandStatus == RegulatorTaskStatus.Queried)
-            //    {
-            //        if (task.TaskStatus.Name == RegulatorTaskStatus.Queried.ToString())
-            //        {
-            //            throw new RegulatorInvalidOperationException($"Cannot set task status to {RegulatorTaskStatus.Queried} as it is already {RegulatorTaskStatus.Queried}");
-            //        }
-            //        else if (task.TaskStatus.Name == RegulatorTaskStatus.Completed.ToString())
-            //        {
-            //            throw new RegulatorInvalidOperationException($"Cannot set task status to {RegulatorTaskStatus.Queried} as it is {RegulatorTaskStatus.Completed}");
-            //        }
-            //        else
-            //        {
-            //            throw new RegulatorInvalidOperationException($"Cannot set task status to {RegulatorTaskStatus.Queried} as it is {task.TaskStatus.Name}");
-            //        }
-            //    }
-            //    else
-            //    {
-            //        throw new RegulatorInvalidOperationException($"Invalid status type: {commandStatus}");
-            //    }
-            //}
+                    if (task.TaskStatus.Name == TaskStatuses.Completed.ToString())
+                    {
+                        throw new InvalidOperationException($"Cannot set task status to {TaskStatuses.Completed} as it is already {TaskStatuses.Completed}");
+                    }
+                }
+                else if (commandStatus == TaskStatuses.Queried)
+                {
+                    if (task.TaskStatus.Name == TaskStatuses.Queried.ToString())
+                    {
+                        throw new InvalidOperationException($"Cannot set task status to {TaskStatuses.Queried} as it is already {TaskStatuses.Queried}");
+                    }
+                    else if (task.TaskStatus.Name == RegulatorTaskStatus.Completed.ToString())
+                    {
+                        throw new InvalidOperationException($"Cannot set task status to {TaskStatuses.Queried} as it is {TaskStatuses.Completed}");
+                    }
+                    else
+                    {
+                        throw new InvalidOperationException($"Cannot set task status to {TaskStatuses.Queried} as it is {task.TaskStatus.Name}");
+                    }
+                }
+                else
+                {
+                    throw new InvalidOperationException($"Invalid status type: {commandStatus}");
+                }
+            }
         }
     }
     
