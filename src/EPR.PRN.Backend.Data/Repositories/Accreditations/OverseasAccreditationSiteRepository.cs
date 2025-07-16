@@ -1,10 +1,10 @@
-﻿using EPR.PRN.Backend.Data.DataModels.Accreditations;
+﻿using EPR.PRN.Backend.Data.DataModels.Registrations;
 using EPR.PRN.Backend.Data.Interfaces.Accreditations;
 using Microsoft.EntityFrameworkCore;
 
 namespace EPR.PRN.Backend.Data.Repositories.Accreditations;
 
-public class OverseasAccreditationSiteRepository(EprAccreditationContext eprContext) : IOverseasAccreditationSiteRepository
+public class OverseasAccreditationSiteRepository(EprContext eprContext) : IOverseasAccreditationSiteRepository
 {
     public async Task<List<OverseasAccreditationSite>?> GetAllByAccreditationId(Guid accreditationId)
     {

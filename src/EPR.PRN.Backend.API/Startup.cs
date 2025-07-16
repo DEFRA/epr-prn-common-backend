@@ -72,12 +72,12 @@ namespace EPR.PRN.Backend.API
                 options.UseSqlServer(_config.GetConnectionString("EprConnectionString"))
             );
 
-            if (_config.GetValue<bool>($"FeatureManagement:{FeatureFlags.EnableAccreditation}"))
-            {
-                services.AddDbContext<EprAccreditationContext>(options =>
-                    options.UseInMemoryDatabase("EprAccreditationDatabase")
-                );
-            }
+            //if (_config.GetValue<bool>($"FeatureManagement:{FeatureFlags.EnableAccreditation}"))
+            //{
+            //    services.AddDbContext<EprAccreditationContext>(options =>
+            //        options.UseInMemoryDatabase("EprAccreditationDatabase")
+            //    );
+            //}
 
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
@@ -100,11 +100,11 @@ namespace EPR.PRN.Backend.API
                     app.UseMiddleware<ExceptionHandlingMiddleware>();
                 }
 
-                if (featureManager.IsEnabledAsync(FeatureFlags.EnableAccreditation).Result)
-                {
-                    var accreditationContext = scope.ServiceProvider.GetRequiredService<EprAccreditationContext>();
-                    accreditationContext.Database.EnsureCreated();
-                }
+                //if (featureManager.IsEnabledAsync(FeatureFlags.EnableAccreditation).Result)
+                //{
+                //    var accreditationContext = scope.ServiceProvider.GetRequiredService<EprAccreditationContext>();
+                //    accreditationContext.Database.EnsureCreated();
+                //}
             }
             if (env.IsDevelopment())
             {
