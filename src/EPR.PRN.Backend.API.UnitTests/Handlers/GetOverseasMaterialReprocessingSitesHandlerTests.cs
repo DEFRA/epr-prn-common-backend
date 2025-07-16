@@ -3,7 +3,7 @@ using EPR.PRN.Backend.API.Handlers;
 using EPR.PRN.Backend.API.Queries;
 using EPR.PRN.Backend.Data.DataModels.Registrations;
 using EPR.PRN.Backend.Data.DTO;
-using EPR.PRN.Backend.Data.Interfaces.Regulator;
+using EPR.PRN.Backend.Data.Interfaces;
 using FluentAssertions;
 using Moq;
 
@@ -12,7 +12,7 @@ namespace EPR.PRN.Backend.API.UnitTests.Handlers;
 [TestClass]
 public class GetOverseasMaterialReprocessingSitesHandlerTests
 {
-    private Mock<IRegistrationMaterialRepository> _mockRepository;
+    private Mock<IMaterialRepository> _mockRepository;
     private Mock<IMapper> _mockMapper;
     private GetOverseasMaterialReprocessingSitesHandler _handler;
     private GetOverseasMaterialReprocessingSitesQuery _query;
@@ -21,7 +21,7 @@ public class GetOverseasMaterialReprocessingSitesHandlerTests
     [TestInitialize]
     public void TestInitialize()
     {
-        _mockRepository = new Mock<IRegistrationMaterialRepository>();
+        _mockRepository = new Mock<IMaterialRepository>();
         _mockMapper = new Mock<IMapper>();
         _handler = new GetOverseasMaterialReprocessingSitesHandler(_mockRepository.Object, _mockMapper.Object);
         _query = new GetOverseasMaterialReprocessingSitesQuery

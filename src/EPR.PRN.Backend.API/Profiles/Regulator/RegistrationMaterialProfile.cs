@@ -536,7 +536,7 @@ public class RegistrationMaterialProfile : Profile
             .ForMember(dest => dest.CodeName, opt => opt.MapFrom(src => src.CodeName));
 
         CreateMap<OverseasAddress, InterimSiteAddressDto>()
-            .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.ExternalId))
+            .ForMember(dest => dest.ExternalId, opt => opt.MapFrom(src => src.ExternalId))
             .ForMember(dest => dest.OrganisationName, opt => opt.MapFrom(src => src.OrganisationName))
             .ForMember(dest => dest.AddressLine1, opt => opt.MapFrom(src => src.AddressLine1))
             .ForMember(dest => dest.AddressLine2, opt => opt.MapFrom(src => src.AddressLine2 ?? string.Empty))
@@ -546,7 +546,4 @@ public class RegistrationMaterialProfile : Profile
             .ForMember(dest => dest.StateProvince, opt => opt.MapFrom(src => src.StateProvince ?? string.Empty))
             .ForMember(dest => dest.InterimAddressContact, opt => opt.MapFrom(src => src.OverseasAddressContacts));
     }
-
-
-
 }

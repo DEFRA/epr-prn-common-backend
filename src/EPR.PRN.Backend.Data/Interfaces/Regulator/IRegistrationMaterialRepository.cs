@@ -17,7 +17,6 @@ public interface IRegistrationMaterialRepository
     Task RegistrationMaterialsMarkAsDulyMade(Guid registrationMaterialId, int statusId, DateTime DeterminationDate,
             DateTime DulyMadeDate,Guid DulyMadeBy);
     Task<RegistrationMaterial> CreateAsync(Guid registrationId, string material);
-
     Task CreateExemptionReferencesAsync(Guid registrationMaterialId, List<MaterialExemptionReference> exemptionReferences);
     Task<IList<RegistrationMaterial>> GetRegistrationMaterialsByRegistrationId(Guid requestRegistrationId);
     Task UpdateRegistrationMaterialPermits(Guid registrationMaterialId, int permitTypeId, string? permitNumber);
@@ -28,5 +27,4 @@ public interface IRegistrationMaterialRepository
     Task<IEnumerable<LookupMaterialPermit>> GetMaterialPermitTypes();
     Task DeleteAsync(Guid registrationMaterialId);
 	Task UpdateIsMaterialRegisteredAsync(List<UpdateIsMaterialRegisteredDto> updateIsMaterialRegisteredDto);
-    Task<IList<OverseasMaterialReprocessingSite>> GetOverseasMaterialReprocessingSites(Guid registrationMaterialId);
 }

@@ -15,6 +15,7 @@ using Microsoft.FeatureManagement.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 using System.Diagnostics.CodeAnalysis;
 using System.Net;
+using EPR.PRN.Backend.API.Services;
 
 namespace EPR.PRN.Backend.API.Controllers;
 
@@ -338,4 +339,28 @@ public class RegistrationMaterialController(
 
         return Ok(registrationMaterials);
     }
+
+    [HttpPost("registrationMaterials/{registrationMaterialId:guid}/saveInterimSites")]
+    [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(SaveInterimSitesRequestDto))]
+    [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
+    [SwaggerOperation(
+        Summary = "Save (delete and upsert) interim sites",
+        Description = "attempting to save (delete and upsert) interim sites"
+    )]
+    [SwaggerResponse(StatusCodes.Status400BadRequest, "If the request is invalid or a validation error occurs.", typeof(ProblemDetails))]
+    [SwaggerResponse(StatusCodes.Status500InternalServerError, "If an unexpected error occurs.", typeof(ContentResult))]
+    public async Task<IActionResult> SaveInterimSites(Guid registrationMaterialId, [FromBody] SaveInterimSitesRequestDto saveInterimSitesRequestDto)
+    {
+        logger.LogInformation(LogMessages.SaveInterimSites, registrationMaterialId);
+        var command = new UpsertInterimSiteCommand()
+        {
+            InterimSitesRequestDto = saveInterimSitesRequestDto
+        };
+
+        await mediator.Send(command);
+
+        return NoContent();
+    }
+
 }

@@ -23,6 +23,7 @@ public static class LogMessages
     public const string SaveOverseasReprocessingSites = "Attempting to save overseas reprocessing sites with ID :{registrationMaterialId}";
     public const string UpdateMaximumWeight = "Attempting to update the maximum weight the site is capable of processing for the material {RegistrationMaterialId}.";
     public const string GetOverseasMaterialReprocessingSites = "Attempting to retrieve overseas reprocessing sites including corresponding interim sites for registrationMaterial {RegistrationMaterialId}";
+    public const string SaveInterimSites = "Attempting to save interim sites for :{registrationMaterialId}";
 
     public const string CreateRegistration = "Attempting to create new registration";
     public const string UpdateRegistration = "Attempting to create new registration with ID {0}";

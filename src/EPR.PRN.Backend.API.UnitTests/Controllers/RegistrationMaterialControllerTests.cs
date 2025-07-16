@@ -460,4 +460,41 @@ public class RegistrationMaterialControllerTests
             Times.Once);
     }
 
+    [TestMethod]
+    public async Task SaveInterimSites_ShouldSendCommandAndReturnNoContent()
+    {
+        // Arrange
+        var registrationMaterialId = Guid.NewGuid();
+        var dto = new SaveInterimSitesRequestDto
+        {
+            RegistrationMaterialId = registrationMaterialId,
+            UserId = Guid.NewGuid(),
+            OverseasMaterialReprocessingSites = new List<OverseasMaterialReprocessingSiteDto>()
+        };
+
+        // Mock mediator to accept UpsertInterimSiteCommand and return successfully
+        _mediatorMock
+            .Setup(m => m.Send(It.Is<UpsertInterimSiteCommand>(cmd =>
+            cmd.InterimSitesRequestDto == dto), It.IsAny<CancellationToken>()))
+            .Returns(Task.FromResult(Unit.Value));
+        
+        // Act
+        var result = await _controller.SaveInterimSites(registrationMaterialId, dto);
+
+        // Assert
+        result.Should().BeOfType<NoContentResult>();
+        _mediatorMock.Verify(m => m.Send(It.Is<UpsertInterimSiteCommand>(cmd =>
+            cmd.InterimSitesRequestDto == dto), It.IsAny<CancellationToken>()), Times.Once);
+
+        _loggerMock.Verify(
+            x => x.Log(
+                LogLevel.Information,
+                It.IsAny<EventId>(),
+                It.Is<It.IsAnyType>((v, t) => true),
+                It.IsAny<Exception>(),
+                It.IsAny<Func<It.IsAnyType, Exception, string>>()),
+            Times.Once);
+    }
+
+
 }
