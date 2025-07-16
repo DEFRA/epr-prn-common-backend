@@ -156,6 +156,8 @@ namespace EPR.PRN.Backend.Data.Repositories
 
             var overseasAddressesAfterDelete = await context.OverseasAddress
                 .Where(x => x.RegistrationId == registrationId)
+                .Include(x => x.OverseasAddressContacts)
+                .Include(x => x.OverseasAddressWasteCodes)
                 .ToListAsync();
 
             await UpdateOverseasReprocessingSites(overseasAddressesAfterDelete, overseasAddressSubmission.OverseasAddresses);
@@ -234,19 +236,30 @@ namespace EPR.PRN.Backend.Data.Repositories
                         });
                     }
                 }
+
+                var deletedWastCodes = overseasAddress.OverseasAddressWasteCodes
+                    .Where(wc => !updatedAddress.OverseasAddressWasteCodes.Any(uwc => uwc.ExternalId == wc.ExternalId))
+                    .ToList();
+
+                overseasAddress.OverseasAddressWasteCodes.RemoveAll(wc => deletedWastCodes.Contains(wc));
+
                 foreach (var wasteCode in updatedAddress.OverseasAddressWasteCodes)
                 {
-                    var existingWasteCode = overseasAddress.OverseasAddressWasteCodes.FirstOrDefault(wc => wc.ExternalId == wasteCode.ExternalId);
-                    if (existingWasteCode != null)
-                    {
-                        existingWasteCode.CodeName = wasteCode.CodeName;
-                    }
-                    else
+                    if (wasteCode.ExternalId == Guid.Empty)
                     {
                         overseasAddress.OverseasAddressWasteCodes.Add(new OverseasAddressWasteCode
                         {
+                            ExternalId = Guid.NewGuid(),
                             CodeName = wasteCode.CodeName,
                         });
+                    }
+                    else
+                    {
+                        var existingWasteCode = overseasAddress.OverseasAddressWasteCodes.FirstOrDefault(wc => wc.ExternalId == wasteCode.ExternalId);
+                        if (existingWasteCode != null)
+                        {
+                            existingWasteCode.CodeName = wasteCode.CodeName;
+                        }
                     }
                 }
             }
