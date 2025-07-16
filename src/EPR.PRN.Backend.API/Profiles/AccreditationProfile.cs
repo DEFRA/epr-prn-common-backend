@@ -11,12 +11,10 @@ public class AccreditationProfile : Profile
 {
     public AccreditationProfile()
     {
-        CreateMap<AccreditationEntity, AccreditationDto>()
-            .ForMember(dest => dest.MaterialName, opt => opt.MapFrom(src => src.RegistrationMaterial.Material.MaterialName));
-        CreateMap<AccreditationRequestDto, AccreditationEntity>();
 
-        CreateMap<Data.DataModels.Accreditations.AccreditationPrnIssueAuth, AccreditationPrnIssueAuthDto>();
-        CreateMap<AccreditationPrnIssueAuthRequestDto, Data.DataModels.Accreditations.AccreditationPrnIssueAuth>();
+
+        CreateMap<AccreditationPrnIssueAuth, AccreditationPrnIssueAuthDto>();
+        CreateMap<AccreditationPrnIssueAuthRequestDto, AccreditationPrnIssueAuth>();
 
         CreateMap<Accreditation, AccreditationDto>()
 
@@ -71,9 +69,6 @@ public class AccreditationProfile : Profile
 
         CreateMap<Data.DataModels.Registrations.AccreditationPrnIssueAuth, AccreditationPrnIssueAuthDto>();
         CreateMap<AccreditationPrnIssueAuthRequestDto, Data.DataModels.Registrations.AccreditationPrnIssueAuth>();
-
-        CreateMap<Data.DataModels.Accreditations.OverseasAccreditationSite, OverseasAccreditationSiteDto>();            
-        CreateMap<OverseasAccreditationSiteDto, Data.DataModels.Accreditations.OverseasAccreditationSite>();
 
         CreateMap<Data.DataModels.Registrations.OverseasAccreditationSite, OverseasAccreditationSiteDto>();
         CreateMap<OverseasAccreditationSiteDto, Data.DataModels.Registrations.OverseasAccreditationSite>();
