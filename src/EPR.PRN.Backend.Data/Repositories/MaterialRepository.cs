@@ -224,7 +224,14 @@ namespace EPR.PRN.Backend.Data.Repositories
 
         private void UpsertOverseasAddressContact(OverseasAddress overseasAddress, OverseasAddressContactDto contactDto)
         {
+            if (contactDto == null)
+            {
+                overseasAddress.OverseasAddressContacts.Clear();
+                return;
+            }
+
             var existingContact = overseasAddress.OverseasAddressContacts.SingleOrDefault();
+
             if (existingContact != null)
             {
                 existingContact.FullName = contactDto.FullName;
