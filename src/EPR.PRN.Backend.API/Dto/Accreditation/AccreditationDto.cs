@@ -1,5 +1,4 @@
-﻿using EPR.PRN.Backend.Data.DTO.Accreditiation;
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics.CodeAnalysis;
 
 namespace EPR.PRN.Backend.API.Dto.Accreditation
 {
