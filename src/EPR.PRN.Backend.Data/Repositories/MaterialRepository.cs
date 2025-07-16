@@ -242,6 +242,7 @@ namespace EPR.PRN.Backend.Data.Repositories
             {
                 overseasAddress.OverseasAddressContacts.Add(new OverseasAddressContact
                 {
+                    ExternalId = Guid.NewGuid(),
                     FullName = contactDto.FullName,
                     Email = contactDto.Email,
                     PhoneNumber = contactDto.PhoneNumber,
