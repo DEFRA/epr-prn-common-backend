@@ -1,11 +1,14 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using EPR.PRN.Backend.Data.DataModels.Accreditations;
+using EPR.PRN.Backend.Data.DTO.Accreditiation;
 using EPR.PRN.Backend.Data.Interfaces.Accreditations;
 using Microsoft.EntityFrameworkCore;
 
 namespace EPR.PRN.Backend.Data.Repositories.Accreditations;
 
-public class AccreditationRepository(EprAccreditationContext eprContext) : IAccreditationRepository
+public class AccreditationRepository(EprAccreditationContext eprContext, IMapper mapper) : IAccreditationRepository
 {
     public async Task<AccreditationEntity?> GetById(Guid accreditationId)
     {
@@ -28,7 +31,7 @@ public class AccreditationRepository(EprAccreditationContext eprContext) : IAccr
             .Where(x =>
                 x.OrganisationId == organisationId &&
                 x.RegistrationMaterialId == materialId &&
-                x.ApplicationTypeId == applicationTypeId)            
+                x.ApplicationTypeId == applicationTypeId)
             .SingleOrDefaultAsync();
     }
 
@@ -85,5 +88,18 @@ public class AccreditationRepository(EprAccreditationContext eprContext) : IAccr
         // Temporary: Aid to QA whilst Accreditation uses in-memory database.
         await eprContext.Database.EnsureDeletedAsync();
         await eprContext.Database.EnsureCreatedAsync();
+    }
+
+    public async Task<IEnumerable<AccreditationOverviewDto>> GetAccreditationOverviewForOrgId(Guid organisationId)
+    {
+        var data= await eprContext.Accreditations
+            .Include(x => x.ApplicationType)
+            .Include(x => x.RegistrationMaterial)
+            .Include(x => x.AccreditationStatus)
+            .Where(a => a.OrganisationId == organisationId)
+            
+            .ToListAsync();
+
+        return mapper.Map<List<AccreditationOverviewDto>>(data);
     }
 }
