@@ -24,7 +24,7 @@ namespace EPR.PRN.Backend.API.UnitTests.Controllers
         private Mock<IMediator> _mockMediator;
         private Mock<ILogger<AccreditationTaskStatusController>> _mockLogger;
         private Mock<IValidator<UpdateAccreditationTaskCommand>> _validatorMock;
-        private static readonly IFixture _fixture = new Fixture();
+        private static readonly AutoFixture.Fixture _fixture = new Fixture();
 
         [TestInitialize]
         public void TestInitialize()
