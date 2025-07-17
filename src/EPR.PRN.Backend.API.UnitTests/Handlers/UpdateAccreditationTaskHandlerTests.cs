@@ -7,6 +7,8 @@ using EPR.PRN.Backend.API.Commands;
 using EPR.PRN.Backend.API.Common.Enums;
 using EPR.PRN.Backend.API.Handlers;
 using EPR.PRN.Backend.API.Handlers.Accreditation;
+using EPR.PRN.Backend.API.Helpers;
+using EPR.PRN.Backend.Data.DataModels.Accreditations;
 using EPR.PRN.Backend.Data.DataModels.Registrations;
 using EPR.PRN.Backend.Data.Interfaces;
 using EPR.PRN.Backend.Data.Interfaces.Accreditation;
@@ -84,5 +86,32 @@ namespace EPR.PRN.Backend.API.UnitTests.Handlers
             await act.Should().ThrowAsync<InvalidOperationException>().WithMessage($"Cannot set task status to {TaskStatuses.Completed} as it is already {TaskStatuses.Completed}");
         }
 
+
+        [TestMethod]
+        public async Task Handle_ThrowsInvalidOperationException_WhenTaskStatusIsNull()
+        {
+            AccreditationTaskStatus? nullStatus = null;
+            // Arrange
+            var mockRepo = new Mock<IAccreditationTaskStatusRepository>();
+
+            mockRepo.Setup(r => r.GetTaskStatusAsync(It.IsAny<string>(), It.IsAny<Guid>()))
+          .ReturnsAsync(nullStatus);
+            mockRepo.Setup(r => r.UpdateStatusAsync(It.IsAny<string>(), It.IsAny<Guid>(), It.IsAny<TaskStatuses>()))
+                .ThrowsAsync(new InvalidOperationException("Test exception"));
+
+            var handler = new UpdateAccreditationTaskHandler(mockRepo.Object);
+            var command = new UpdateAccreditationTaskCommand
+            {
+                TaskName = "AnyTask",
+                AccreditationId = Guid.NewGuid(),
+                Status = TaskStatuses.Completed
+            };
+
+            // Act
+            Func<Task> act = async () => await handler.Handle(command, CancellationToken.None);
+
+            // Assert
+            await act.Should().ThrowAsync<NotFoundException>().WithMessage($"Task with name {command.TaskName} and accreditation ID {command.AccreditationId} not found.");
+        }
     }
 }
