@@ -3,9 +3,6 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace EPR.PRN.Backend.Data.DataModels.Registrations
 {
@@ -40,8 +37,10 @@ namespace EPR.PRN.Backend.Data.DataModels.Registrations
         public Guid UpdatedBy { get; set; }
         public DateTime CreatedOn { get; set; }
         public DateTime UpdatedOn { get; set; }
+        [MaxLength(100)]
         public string? SiteCoordinates { get; set; }
         public bool? IsInterimSite { get; set; }
+        public Guid? OrganisationId { get; set; }
         public List<OverseasAddressContact> OverseasAddressContacts { get; set; } = [];
         public List<OverseasAddressWasteCode> OverseasAddressWasteCodes { get; set; } = [];
         public List<OverseasMaterialReprocessingSite> OverseasMaterialReprocessingSites { get; set; } = [];
