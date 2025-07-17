@@ -19,14 +19,17 @@ namespace EPR.PRN.Backend.API.UnitTests.Handlers
     public class UpdateAccreditationTaskHandlerTests
     {
         [TestMethod]
-        public async Task Handle_CallsUpdateAccreditationTaskAsync()
+        [DataRow("InProgress","Completed")]
+        [DataRow("NotStarted","InProgress")]
+        [DataRow("InProgress", "Queried")]
+        public Task Handle_CallsUpdateAccreditationTaskAsync(string status, string statusReturned)
         {
             // Arrange
             var mockRepo = new Mock<IAccreditationTaskStatusRepository>();
             mockRepo.Setup(r => r.GetTaskStatusAsync(It.IsAny<string>(), It.IsAny<Guid>()))
                 .ReturnsAsync(new Data.DataModels.Accreditations.AccreditationTaskStatus
                 {
-                    TaskStatus = new LookupTaskStatus { Name = "InProgress" },
+                    TaskStatus = new LookupTaskStatus { Name = statusReturned },
 
                     Accreditation = new()
 
@@ -36,7 +39,7 @@ namespace EPR.PRN.Backend.API.UnitTests.Handlers
             var handler = new UpdateAccreditationTaskHandler(mockRepo.Object);
             var command = new UpdateAccreditationTaskCommand
             {
-                TaskName = "Completed",
+                TaskName = statusReturned,
                 AccreditationId = Guid.NewGuid(),
                 Status = TaskStatuses.Completed
             };
@@ -45,7 +48,41 @@ namespace EPR.PRN.Backend.API.UnitTests.Handlers
             var task = handler.Handle(command, CancellationToken.None);
 
             // Assert
-            task.IsCompleted.Should().BeTrue();          
+            task.IsCompleted.Should().BeTrue();         
+            return Task.CompletedTask;
         }
+
+        [TestMethod]
+        public async Task Handle_ThrowsInvalidOperationException_WhenRepositoryThrows()
+        {
+            // Arrange
+            var mockRepo = new Mock<IAccreditationTaskStatusRepository>();
+
+            mockRepo.Setup(r => r.GetTaskStatusAsync(It.IsAny<string>(), It.IsAny<Guid>()))
+          .ReturnsAsync(new Data.DataModels.Accreditations.AccreditationTaskStatus
+          {
+              TaskStatus = new LookupTaskStatus { Name = "Completed" },
+
+              Accreditation = new()
+
+          });
+            mockRepo.Setup(r => r.UpdateStatusAsync(It.IsAny<string>(), It.IsAny<Guid>(), It.IsAny<TaskStatuses>()))
+                .ThrowsAsync(new InvalidOperationException("Test exception"));
+
+            var handler = new UpdateAccreditationTaskHandler(mockRepo.Object);
+            var command = new UpdateAccreditationTaskCommand
+            {
+                TaskName = "AnyTask",
+                AccreditationId = Guid.NewGuid(),
+                Status = TaskStatuses.Completed
+            };
+
+            // Act
+            Func<Task> act = async () => await handler.Handle(command, CancellationToken.None);
+
+            // Assert
+            await act.Should().ThrowAsync<InvalidOperationException>().WithMessage($"Cannot set task status to {TaskStatuses.Completed} as it is already {TaskStatuses.Completed}");
+        }
+
     }
 }
