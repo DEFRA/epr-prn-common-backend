@@ -52,12 +52,16 @@ public class AccreditationServiceTests
     }
 
     [TestMethod]
-    public async Task GetOrCreateAccreditation_Should_Create_WhenAccreditation_NotExists()
+    [DataRow(1,1)]
+    [DataRow(1,2)]
+    [DataRow(1,3)]
+    [DataRow(2, 4)]
+    [DataRow(2, 5)]
+    [DataRow(2, 6)]
+    public async Task GetOrCreateAccreditation_Should_Create_WhenAccreditation_NotExists(int applicationTypeId, int materialId)
     {
         // Arrange
         var organisationId = Guid.NewGuid();
-        var materialId = 2;
-        var applicationTypeId = 1;
         var accreditationStatusId = 1;
         Accreditation accreditation = null!;
 
@@ -107,6 +111,37 @@ public class AccreditationServiceTests
             x.AccreditationStatusId == accreditationStatusId
             )), Times.Once);
 
+    }
+
+
+    [TestMethod]
+    public async Task GetOrCreateAccreditation_Should_Throw_WhenRegistrationNotFound()
+    {
+        // Arrange
+        var organisationId = Guid.NewGuid();
+        var materialId = 2;
+        var applicationTypeId = 1;
+
+        _repositoryMock
+            .Setup(r => r.GetAccreditationDetails(organisationId, materialId, applicationTypeId))
+            .ReturnsAsync((Accreditation)null);
+
+        // Simulate registration not found
+        _registrationRepository
+            .Setup(r => r.GetRegistrationByExternalId(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync((Registration)null);
+
+        _registrationRepository
+            .Setup(r => r.CreateRegistrationAsync(It.IsAny<int>(), It.IsAny<Guid>(), It.IsAny<AddressDto>()))
+            .ReturnsAsync((Registration)null);
+
+        // Act & Assert
+        Func<Task> act = async () => await _service.GetOrCreateAccreditation(
+            organisationId,
+            materialId,
+            applicationTypeId);
+
+        await act.Should().ThrowAsync<Exception>(); // Replace Exception with your specific type if needed
     }
 
     //[TestMethod]
