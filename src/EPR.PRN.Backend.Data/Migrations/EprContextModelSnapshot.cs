@@ -3844,7 +3844,8 @@ namespace EPR.PRN.Backend.Data.Migrations
 
                     b.Property<Guid>("ExternalId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWID()");
 
                     b.Property<string>("FullName")
                         .IsRequired()
