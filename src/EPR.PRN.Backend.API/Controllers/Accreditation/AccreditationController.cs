@@ -1,12 +1,18 @@
 ﻿namespace EPR.PRN.Backend.API.Controllers.Accreditation;
 
-using System.Diagnostics.CodeAnalysis;
 using EPR.PRN.Backend.API.Common.Constants;
 using EPR.PRN.Backend.API.Common.Enums;
 using EPR.PRN.Backend.API.Dto.Accreditation;
+using EPR.PRN.Backend.API.Queries;
 using EPR.PRN.Backend.API.Services.Interfaces;
+using EPR.PRN.Backend.Data.DTO.Accreditiation;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Microsoft.FeatureManagement.Mvc;
+using Swashbuckle.AspNetCore.Annotations;
+using System.Diagnostics.CodeAnalysis;
+using System.Net;
 
 [ApiController]
 [ApiVersion("1.0")]
@@ -14,7 +20,9 @@ using Microsoft.FeatureManagement.Mvc;
 [FeatureGate(FeatureFlags.EnableAccreditation)]
 public class AccreditationController(
     IAccreditationService accreditationService,
-    IAccreditationFileUploadService accreditationFileUploadService) : ControllerBase
+    IAccreditationFileUploadService accreditationFileUploadService,
+    IMediator mediator,
+    ILogger<AccreditationController> logger) : ControllerBase
 {
     [HttpGet("{organisationId}/{materialId}/{applicationTypeId}")]
     [ProducesResponseType(typeof(Guid), StatusCodes.Status200OK)]
@@ -121,5 +129,27 @@ public class AccreditationController(
         await accreditationFileUploadService.DeleteFileUpload(accreditationId, fileId);
 
         return Ok();
+    }
+
+    [HttpGet("accreditations/{organisationId:guid}/overview")]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<AccreditationOverviewDto>))]
+    [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
+    [SwaggerOperation(
+    Summary = "return the accreditations overview for a given organisation id",
+    Description = "attempting to return accreditations."
+)]
+    [SwaggerResponse(StatusCodes.Status200OK, "Returns the accreditations overview for the given organisation ID", typeof(List<AccreditationOverviewDto>))]
+    [SwaggerResponse(StatusCodes.Status400BadRequest, "If the request is invalid or a validation error occurs.", typeof(ProblemDetails))]
+    [SwaggerResponse(StatusCodes.Status500InternalServerError, "If an unexpected error occurs.", typeof(ContentResult))]
+    public async Task<IActionResult> GetAccreditationsOverviewForOrgId([FromRoute] Guid organisationId)
+    {
+        logger.LogInformation(LogMessages.AccreditationsOverview, [organisationId]);
+
+        var request = new GetAccreditationsOverviewByOrgIdQuery { OrganisationId = organisationId };
+
+        var result = await mediator.Send(request);
+
+        return Ok(result);
     }
 }

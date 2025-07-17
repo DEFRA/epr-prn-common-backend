@@ -1,4 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using EPR.PRN.Backend.Data.DataModels.Accreditations;
 using EPR.PRN.Backend.Data.DataModels.Registrations;
 using EPR.PRN.Backend.Data.Interfaces.Accreditation;
@@ -6,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace EPR.PRN.Backend.Data.Repositories.Accreditations;
 
-public class AccreditationRepository(EprContext eprContext) : IAccreditationRepository
+public class AccreditationRepository(EprContext eprContext, IMapper mapper) : IAccreditationRepository
 {
     public async Task<Accreditation?> GetById(Guid accreditationId)
     {
@@ -84,5 +86,20 @@ public class AccreditationRepository(EprContext eprContext) : IAccreditationRepo
 
         eprContext.Entry(existingAccreditation).State = EntityState.Modified;
         await eprContext.SaveChangesAsync();
+    }
+
+
+
+    public async Task<IEnumerable<AccreditationOverviewDto>> GetAccreditationOverviewForOrgId(Guid organisationId)
+    {
+        var data= await eprContext.Accreditations
+            .Include(x => x.ApplicationType)
+            .Include(x => x.RegistrationMaterial)
+            .Include(x => x.AccreditationStatus)
+            .Where(a => a.OrganisationId == organisationId)
+            
+            .ToListAsync();
+
+        return mapper.Map<List<AccreditationOverviewDto>>(data);
     }
 }

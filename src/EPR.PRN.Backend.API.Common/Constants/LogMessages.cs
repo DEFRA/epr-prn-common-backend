@@ -43,4 +43,5 @@ public static class LogMessages
     public const string UpsertRegistrationReprocessingDetails = "Attempting to upsert the registration reprocessing details for registration material with ID :{registrationMaterialId}";
 
     public const string UpdateAccreditationTask = "UpdateAccreditationTask";
+    public const string AccreditationsOverview = "Recieved request for Accreditations overview";
 }
