@@ -5395,7 +5395,7 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250716142511_UpdateOverseasTables'
+    WHERE [MigrationId] = N'20250717100928_UpdateOverseasTables'
 )
 BEGIN
     ALTER TABLE [Public.OverseasAddressWasteCode] DROP CONSTRAINT [FK_Public.OverseasAddressWasteCode_Public.OverseasAddress_OverseasAddressId];
@@ -5404,7 +5404,7 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250716142511_UpdateOverseasTables'
+    WHERE [MigrationId] = N'20250717100928_UpdateOverseasTables'
 )
 BEGIN
     ALTER TABLE [Public.OverseasAddressWasteCode] DROP CONSTRAINT [PK_Public.OverseasAddressWasteCode];
@@ -5413,7 +5413,7 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250716142511_UpdateOverseasTables'
+    WHERE [MigrationId] = N'20250717100928_UpdateOverseasTables'
 )
 BEGIN
     EXEC sp_rename N'[Public.OverseasAddressWasteCode]', N'Public.OverseasAddressWasteCodes';
@@ -5422,7 +5422,7 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250716142511_UpdateOverseasTables'
+    WHERE [MigrationId] = N'20250717100928_UpdateOverseasTables'
 )
 BEGIN
     EXEC sp_rename N'[Public.OverseasAddressWasteCodes].[IX_Public.OverseasAddressWasteCode_OverseasAddressId]', N'IX_Public.OverseasAddressWasteCodes_OverseasAddressId', N'INDEX';
@@ -5431,7 +5431,7 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250716142511_UpdateOverseasTables'
+    WHERE [MigrationId] = N'20250717100928_UpdateOverseasTables'
 )
 BEGIN
     EXEC sp_rename N'[Public.OverseasAddressWasteCodes].[IX_Public.OverseasAddressWasteCode_ExternalId]', N'IX_Public.OverseasAddressWasteCodes_ExternalId', N'INDEX';
@@ -5440,16 +5440,16 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250716142511_UpdateOverseasTables'
+    WHERE [MigrationId] = N'20250717100928_UpdateOverseasTables'
 )
 BEGIN
-    ALTER TABLE [Public.OverseasAddressContact] ADD [ExternalId] uniqueidentifier NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000';
+    ALTER TABLE [Public.OverseasAddressContact] ADD [ExternalId] uniqueidentifier NOT NULL DEFAULT (NEWID());
 END;
 GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250716142511_UpdateOverseasTables'
+    WHERE [MigrationId] = N'20250717100928_UpdateOverseasTables'
 )
 BEGIN
     DECLARE @var47 sysname;
@@ -5464,7 +5464,7 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250716142511_UpdateOverseasTables'
+    WHERE [MigrationId] = N'20250717100928_UpdateOverseasTables'
 )
 BEGIN
     ALTER TABLE [Public.OverseasAddress] ADD [OrganisationId] uniqueidentifier NULL;
@@ -5473,7 +5473,7 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250716142511_UpdateOverseasTables'
+    WHERE [MigrationId] = N'20250717100928_UpdateOverseasTables'
 )
 BEGIN
     ALTER TABLE [Public.OverseasAddressWasteCodes] ADD CONSTRAINT [PK_Public.OverseasAddressWasteCodes] PRIMARY KEY ([Id]);
@@ -5482,7 +5482,7 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250716142511_UpdateOverseasTables'
+    WHERE [MigrationId] = N'20250717100928_UpdateOverseasTables'
 )
 BEGIN
     CREATE UNIQUE INDEX [IX_Public.OverseasAddressContact_ExternalId] ON [Public.OverseasAddressContact] ([ExternalId]);
@@ -5491,7 +5491,7 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250716142511_UpdateOverseasTables'
+    WHERE [MigrationId] = N'20250717100928_UpdateOverseasTables'
 )
 BEGIN
     ALTER TABLE [Public.OverseasAddressWasteCodes] ADD CONSTRAINT [FK_Public.OverseasAddressWasteCodes_Public.OverseasAddress_OverseasAddressId] FOREIGN KEY ([OverseasAddressId]) REFERENCES [Public.OverseasAddress] ([Id]) ON DELETE CASCADE;
@@ -5500,11 +5500,11 @@ GO
 
 IF NOT EXISTS (
     SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20250716142511_UpdateOverseasTables'
+    WHERE [MigrationId] = N'20250717100928_UpdateOverseasTables'
 )
 BEGIN
     INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
-    VALUES (N'20250716142511_UpdateOverseasTables', N'8.0.8');
+    VALUES (N'20250717100928_UpdateOverseasTables', N'8.0.8');
 END;
 GO
 
