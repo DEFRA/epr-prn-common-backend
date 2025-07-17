@@ -424,6 +424,9 @@ public class EprContext : DbContext
         modelBuilder.Entity<OverseasAddressContact>()
             .Property(e => e.CreatedOn).HasDefaultValueSql("GETUTCDATE()");
 
+        modelBuilder.Entity<OverseasAddressContact>()
+            .Property(e => e.ExternalId).HasDefaultValueSql("NEWID()");
+
         modelBuilder.Entity<InterimOverseasConnections>()
             .HasIndex(e => e.ExternalId)
             .IsUnique(); // Ensures UniqueId is unique
