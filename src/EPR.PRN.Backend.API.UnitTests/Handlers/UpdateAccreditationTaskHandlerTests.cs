@@ -24,6 +24,7 @@ namespace EPR.PRN.Backend.API.UnitTests.Handlers
         [DataRow("InProgress","Completed")]
         [DataRow("NotStarted","InProgress")]
         [DataRow("InProgress", "Queried")]
+        [DataRow("Queried", "Completed")]
         public Task Handle_CallsUpdateAccreditationTaskAsync(string status, string statusReturned)
         {
             // Arrange
@@ -90,12 +91,12 @@ namespace EPR.PRN.Backend.API.UnitTests.Handlers
         [TestMethod]
         public async Task Handle_ThrowsInvalidOperationException_WhenTaskStatusIsNull()
         {
-            AccreditationTaskStatus? nullStatus = null;
+    
             // Arrange
             var mockRepo = new Mock<IAccreditationTaskStatusRepository>();
 
             mockRepo.Setup(r => r.GetTaskStatusAsync(It.IsAny<string>(), It.IsAny<Guid>()))
-          .ReturnsAsync(nullStatus);
+          .ReturnsAsync((AccreditationTaskStatus)null);
             mockRepo.Setup(r => r.UpdateStatusAsync(It.IsAny<string>(), It.IsAny<Guid>(), It.IsAny<TaskStatuses>()))
                 .ThrowsAsync(new InvalidOperationException("Test exception"));
 
