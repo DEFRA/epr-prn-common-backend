@@ -3,6 +3,7 @@ using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using EPR.PRN.Backend.Data.DataModels.Accreditations;
 using EPR.PRN.Backend.Data.DataModels.Registrations;
+using EPR.PRN.Backend.Data.DTO.Accreditiation;
 using EPR.PRN.Backend.Data.Interfaces.Accreditation;
 using Microsoft.EntityFrameworkCore;
 
@@ -93,10 +94,13 @@ public class AccreditationRepository(EprContext eprContext, IMapper mapper) : IA
     public async Task<IEnumerable<AccreditationOverviewDto>> GetAccreditationOverviewForOrgId(Guid organisationId)
     {
         var data= await eprContext.Accreditations
-            .Include(x => x.ApplicationType)
+             .Include(x => x.RegistrationMaterial)
+                .ThenInclude(x => x.Registration)
+      
+              // do we need application type? its not 
             .Include(x => x.RegistrationMaterial)
             .Include(x => x.AccreditationStatus)
-            .Where(a => a.OrganisationId == organisationId)
+            .Where(a => a.RegistrationMaterial.Registration.OrganisationId == organisationId)
             
             .ToListAsync();
 

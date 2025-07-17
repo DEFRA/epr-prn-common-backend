@@ -66,12 +66,12 @@ public class AccreditationRepositoryTests
                 {
                     Id = 1,
                     ExternalId = new Guid("11111111-1111-1111-1111-111111111111"),
-                    OrganisationId = new Guid("11111111-1111-1111-1111-111111111111"), 
+                    
                     AccreditationYear = 2026,
            
                     //ApplicationType = new(),
                     AccreditationStatusId = 1,
-                    AccreditationStatus = new(),
+                
                     AccreditationStatus = accreditationStatus,
                     RegistrationMaterial = registrationMaterial,
                     ApplicationReferenceNumber = "APP-123456",
@@ -80,7 +80,7 @@ public class AccreditationRepositoryTests
                 {
                     Id = 2,
                     ExternalId = new Guid("22222222-2222-2222-2222-222222222222"),
-                    OrganisationId = new Guid("22222222-2222-2222-2222-222222222222"),
+              
                     AccreditationYear = 2026,
                     //ApplicationTypeId = 1,
                     //ApplicationType = new(),
@@ -178,31 +178,27 @@ public class AccreditationRepositoryTests
         // Arrange
         var organisationId = Guid.NewGuid();
         var orgId = Guid.NewGuid();
-        var accreditations = new List<AccreditationEntity>
+        var accreditations = new List<Accreditation>
         {
-            new AccreditationEntity
+            new Accreditation
             {
                 ExternalId = Guid.NewGuid(),
-                OrganisationId = organisationId,
-                ApplicationTypeId = 1
+             
             },
-            new AccreditationEntity
+            new Accreditation
             {
                 ExternalId = Guid.NewGuid(),
-                OrganisationId = organisationId,
-                ApplicationTypeId = 2
+                
             },
-            new AccreditationEntity
+            new Accreditation
             {
                 ExternalId = Guid.NewGuid(),
-                OrganisationId = organisationId,
-                ApplicationTypeId = 3
+       
             },
-            new AccreditationEntity
+            new Accreditation
             {
                 ExternalId = Guid.NewGuid(),
-                OrganisationId = organisationId,
-                ApplicationTypeId = 4
+        
             }
         };
 

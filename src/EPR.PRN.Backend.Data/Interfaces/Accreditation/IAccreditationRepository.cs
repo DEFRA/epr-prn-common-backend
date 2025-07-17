@@ -1,4 +1,6 @@
-﻿namespace EPR.PRN.Backend.Data.Interfaces.Accreditation;
+﻿using EPR.PRN.Backend.Data.DTO.Accreditiation;
+
+namespace EPR.PRN.Backend.Data.Interfaces.Accreditation;
 
 public interface IAccreditationRepository
 {    
@@ -13,5 +15,5 @@ public interface IAccreditationRepository
 
     Task Update(DataModels.Registrations.Accreditation accreditation);
 
-
+    Task<IEnumerable<AccreditationOverviewDto>> GetAccreditationOverviewForOrgId(Guid organisationId);
 }

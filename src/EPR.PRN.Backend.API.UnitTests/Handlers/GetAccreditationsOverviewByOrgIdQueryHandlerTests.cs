@@ -2,7 +2,7 @@
 using EPR.PRN.Backend.API.Queries;
 using EPR.PRN.Backend.API.Services.Interfaces;
 using EPR.PRN.Backend.Data.DTO.Accreditiation;
-using EPR.PRN.Backend.Data.Interfaces.Accreditations;
+using EPR.PRN.Backend.Data.Interfaces.Accreditation;
 using FluentAssertions;
 using Moq;
 
