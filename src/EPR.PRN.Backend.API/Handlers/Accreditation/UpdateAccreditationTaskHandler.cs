@@ -50,11 +50,11 @@ namespace EPR.PRN.Backend.API.Handlers.Accreditation
                     }
                     else if (task.TaskStatus.Name == RegulatorTaskStatus.Completed.ToString())
                     {
-                        throw new InvalidOperationException($"Cannot set task status to {TaskStatuses.Queried} as it is {TaskStatuses.Completed}");
+                        throw new InvalidOperationException($"Cannot set task status to {TaskStatuses.Queried} as it is already {TaskStatuses.Completed}");
                     }
                     else
                     {
-                        throw new InvalidOperationException($"Cannot set task status to {TaskStatuses.Queried} as it is {task.TaskStatus.Name}");
+                        throw new InvalidOperationException($"Cannot set task status to {TaskStatuses.Queried} as it is already {task.TaskStatus.Name}");
                     }
                 }
                 else

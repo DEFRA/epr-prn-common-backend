@@ -25,6 +25,8 @@ namespace EPR.PRN.Backend.API.UnitTests.Handlers
         [DataRow("NotStarted","InProgress")]
         [DataRow("InProgress", "Queried")]
         [DataRow("Queried", "Completed")]
+        [DataRow("Queried", "Queried")]
+        [DataRow("Completed", "Queried")]
         public Task Handle_CallsUpdateAccreditationTaskAsync(string status, string statusReturned)
         {
             // Arrange
@@ -56,7 +58,11 @@ namespace EPR.PRN.Backend.API.UnitTests.Handlers
         }
 
         [TestMethod]
-        public async Task Handle_ThrowsInvalidOperationException_WhenRepositoryThrows()
+        [DataRow(TaskStatuses.Completed, "Completed")]
+        [DataRow(TaskStatuses.Queried, "Queried")]
+        [DataRow(TaskStatuses.Queried, "Completed")]
+
+        public async Task Handle_ThrowsInvalidOperationException_WhenRepositoryThrows(TaskStatuses commnandStatus, string taskStatus)
         {
             // Arrange
             var mockRepo = new Mock<IAccreditationTaskStatusRepository>();
@@ -64,7 +70,7 @@ namespace EPR.PRN.Backend.API.UnitTests.Handlers
             mockRepo.Setup(r => r.GetTaskStatusAsync(It.IsAny<string>(), It.IsAny<Guid>()))
           .ReturnsAsync(new Data.DataModels.Accreditations.AccreditationTaskStatus
           {
-              TaskStatus = new LookupTaskStatus { Name = "Completed" },
+              TaskStatus = new LookupTaskStatus { Name = taskStatus },
 
               Accreditation = new()
 
@@ -77,14 +83,14 @@ namespace EPR.PRN.Backend.API.UnitTests.Handlers
             {
                 TaskName = "AnyTask",
                 AccreditationId = Guid.NewGuid(),
-                Status = TaskStatuses.Completed
+                Status = commnandStatus// TaskStatuses.Completed
             };
 
             // Act
             Func<Task> act = async () => await handler.Handle(command, CancellationToken.None);
 
             // Assert
-            await act.Should().ThrowAsync<InvalidOperationException>().WithMessage($"Cannot set task status to {TaskStatuses.Completed} as it is already {TaskStatuses.Completed}");
+            await act.Should().ThrowAsync<InvalidOperationException>().WithMessage($"Cannot set task status to {commnandStatus} as it is already {taskStatus}");
         }
 
 
