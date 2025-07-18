@@ -331,7 +331,7 @@ public class RegistrationRepository(EprContext context, ILogger<RegistrationRepo
             r => (r.Materials ?? []).DefaultIfEmpty(),
             (r, m) => new RegistrationOverviewDto
             {
-                RegistrationId = r.ExternalId,
+                Id = r.ExternalId,
                 RegistrationMaterialId = m?.Id ?? 0,
                 MaterialId = m?.Material?.Id ?? 0,
                 Material = m?.Material?.MaterialName ?? string.Empty,
