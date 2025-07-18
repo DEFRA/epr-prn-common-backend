@@ -6,13 +6,15 @@ using EPR.PRN.Backend.Data.DataModels.Registrations;
 using EPR.PRN.Backend.Data.DTO.Accreditiation;
 using EPR.PRN.Backend.Data.Interfaces.Accreditation;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace EPR.PRN.Backend.Data.Repositories.Accreditations;
 
-public class AccreditationRepository(EprContext eprContext, IMapper mapper) : IAccreditationRepository
+public class AccreditationRepository(EprContext eprContext, IMapper mapper, ILogger<AccreditationRepository> logger) : IAccreditationRepository
 {
     public async Task<Accreditation?> GetById(Guid accreditationId)
     {
+        logger.LogInformation("Retrieving accreditation details for ExternalId: {AccreditationId}.", accreditationId);
         return await eprContext.Accreditations
             .AsNoTracking()            
             .Include(x => x.AccreditationStatus)           
@@ -21,6 +23,8 @@ public class AccreditationRepository(EprContext eprContext, IMapper mapper) : IA
             .Include(x => x.RegistrationMaterial)
                 .ThenInclude(x => x.Material)
             .SingleOrDefaultAsync(x => x.ExternalId.Equals(accreditationId));
+        logger.LogInformation("Retrieved accreditation details for ExternalId: {AccreditationId} with Id {Id}.", accreditationId, accreditation?.Id);
+        return accreditation;
     }
 
     public async Task<Accreditation?> GetAccreditationDetails(
@@ -28,6 +32,7 @@ public class AccreditationRepository(EprContext eprContext, IMapper mapper) : IA
         int materialId,
         int applicationTypeId)
     {
+        logger.LogInformation("Retrieving accreditation details for OrganisationId: {OrganisationId}, MaterialId: {MaterialId}, ApplicationTypeId: {ApplicationTypeId}.", organisationId, materialId, applicationTypeId);
         return await eprContext.Accreditations
             .Include(x => x.RegistrationMaterial)
                 .ThenInclude(x => x.Registration)
@@ -37,6 +42,8 @@ public class AccreditationRepository(EprContext eprContext, IMapper mapper) : IA
                 x.RegistrationMaterialId == materialId &&
                 x.RegistrationMaterial.Registration.ApplicationTypeId == applicationTypeId)
             .SingleOrDefaultAsync();
+        logger.LogInformation("Retrieved accreditation details for OrganisationId: {OrganisationId}, MaterialId: {MaterialId}, ApplicationTypeId: {ApplicationTypeId} with Id {Id}.", organisationId, materialId, applicationTypeId, accreditation?.Id);
+        return accreditation;
     }
 
     public async Task Create(Accreditation accreditation)
@@ -50,10 +57,12 @@ public class AccreditationRepository(EprContext eprContext, IMapper mapper) : IA
         accreditation.UpdatedBy = accreditation.ExternalId;
         eprContext.Accreditations.Add(accreditation);
         await eprContext.SaveChangesAsync();
+        logger.LogInformation("Created new accreditation with ExternalId: {ExternalId} and Id: {Id}", accreditation.ExternalId, accreditation.Id);
     }
 
     public async Task Update(Accreditation accreditation)
     {
+        logger.LogInformation("Updating accreditation with ExternalId: {ExternalId} and Id {Id}.", accreditation.ExternalId, accreditation.Id);
         var existingAccreditation = await eprContext.Accreditations.SingleAsync(x => x.ExternalId.Equals(accreditation.ExternalId));
 
         /*
@@ -87,6 +96,7 @@ public class AccreditationRepository(EprContext eprContext, IMapper mapper) : IA
 
         eprContext.Entry(existingAccreditation).State = EntityState.Modified;
         await eprContext.SaveChangesAsync();
+        logger.LogInformation("Updated accreditation with ExternalId: {ExternalId} and Id {Id}.", accreditation.ExternalId, accreditation.Id);  
     }
 
 

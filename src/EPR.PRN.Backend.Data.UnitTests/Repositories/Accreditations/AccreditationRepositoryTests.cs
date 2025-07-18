@@ -4,6 +4,7 @@ using EPR.PRN.Backend.Data.DataModels.Registrations;
 using EPR.PRN.Backend.Data.Repositories.Accreditations;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Moq;
 
 namespace EPR.PRN.Backend.Data.UnitTests.Repositories.Accreditations;
@@ -14,6 +15,7 @@ public class AccreditationRepositoryTests
     private EprContext _dbContext;
     private AccreditationRepository _repository;
     private Mock<IMapper> _mapper;
+    private Mock<ILogger<AccreditationRepository>> _mockLogger;
 
     [TestInitialize]
     public void Setup()
@@ -23,7 +25,8 @@ public class AccreditationRepositoryTests
             .Options;
         _mapper = new Mock<IMapper> ();
         _dbContext = new EprContext(options);
-        _repository = new AccreditationRepository(_dbContext, _mapper.Object);
+        _mockLogger = new Mock<ILogger<AccreditationRepository>>();
+        _repository = new AccreditationRepository(_dbContext, _mapper.Object, _mockLogger.Object);
 
         LookupMaterial material = new()
         {

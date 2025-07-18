@@ -31,7 +31,7 @@ public class GetRegistrationsOverviewByOrgIdHandlerTests
         {
             new()
             {
-                RegistrationId = Guid.NewGuid(),
+                Id = Guid.NewGuid(),
                 RegistrationMaterialId = 1,
                 MaterialId = 1,
                 Material = "Plastic",
