@@ -15,7 +15,7 @@ public class AccreditationRepository(EprContext eprContext, IMapper mapper, ILog
     public async Task<Accreditation?> GetById(Guid accreditationId)
     {
         logger.LogInformation("Retrieving accreditation details for ExternalId: {AccreditationId}.", accreditationId);
-        return await eprContext.Accreditations
+        var accreditation =  await eprContext.Accreditations
             .AsNoTracking()            
             .Include(x => x.AccreditationStatus)           
             .Include(x => x.RegistrationMaterial)
@@ -33,7 +33,7 @@ public class AccreditationRepository(EprContext eprContext, IMapper mapper, ILog
         int applicationTypeId)
     {
         logger.LogInformation("Retrieving accreditation details for OrganisationId: {OrganisationId}, MaterialId: {MaterialId}, ApplicationTypeId: {ApplicationTypeId}.", organisationId, materialId, applicationTypeId);
-        return await eprContext.Accreditations
+        var accreditation =  await eprContext.Accreditations
             .Include(x => x.RegistrationMaterial)
                 .ThenInclude(x => x.Registration)
             .AsNoTracking()
