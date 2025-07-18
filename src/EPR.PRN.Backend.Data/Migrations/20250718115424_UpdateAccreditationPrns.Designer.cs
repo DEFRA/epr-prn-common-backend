@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EPR.PRN.Backend.Data.Migrations
 {
     [DbContext(typeof(EprContext))]
-    [Migration("20250718111617_UpdateAccreditationPrns")]
+    [Migration("20250718115424_UpdateAccreditationPrns")]
     partial class UpdateAccreditationPrns
     {
         /// <inheritdoc />
@@ -922,7 +922,9 @@ namespace EPR.PRN.Backend.Data.Migrations
                         .HasColumnType("decimal(10,2)");
 
                     b.Property<Guid>("CreatedBy")
-                        .HasColumnType("uniqueidentifier");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("00000000-0000-0000-0000-000000000000");
 
                     b.Property<DateTime?>("CreatedOn")
                         .HasColumnType("datetime2");
@@ -979,7 +981,9 @@ namespace EPR.PRN.Backend.Data.Migrations
                         .HasColumnType("decimal(10,2)");
 
                     b.Property<Guid>("UpdatedBy")
-                        .HasColumnType("uniqueidentifier");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("00000000-0000-0000-0000-000000000000");
 
                     b.Property<DateTime>("UpdatedOn")
                         .HasColumnType("datetime2");
@@ -1086,7 +1090,9 @@ namespace EPR.PRN.Backend.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<Guid>("SubmissionId")
-                        .HasColumnType("uniqueidentifier");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("00000000-0000-0000-0000-000000000000");
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()

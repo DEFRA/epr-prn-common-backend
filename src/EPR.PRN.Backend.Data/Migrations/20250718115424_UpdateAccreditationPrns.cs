@@ -32,7 +32,7 @@ namespace EPR.PRN.Backend.Data.Migrations
                 table: "public.AccreditationFileUpload",
                 type: "uniqueidentifier",
                 nullable: false,
-                defaultValue: new Guid("00000000-0000-0000-0000-000000000000"));
+                defaultValueSql: "00000000-0000-0000-0000-000000000000");
 
             migrationBuilder.AlterColumn<int>(
                 name: "PRNTonnage",
@@ -65,7 +65,7 @@ namespace EPR.PRN.Backend.Data.Migrations
                 table: "Public.Accreditation",
                 type: "uniqueidentifier",
                 nullable: false,
-                defaultValue: new Guid("00000000-0000-0000-0000-000000000000"));
+                defaultValueSql: "00000000-0000-0000-0000-000000000000");
 
             migrationBuilder.AddColumn<string>(
                 name: "DecFullName",
@@ -86,7 +86,7 @@ namespace EPR.PRN.Backend.Data.Migrations
                 table: "Public.Accreditation",
                 type: "uniqueidentifier",
                 nullable: false,
-                defaultValue: new Guid("00000000-0000-0000-0000-000000000000"));
+                defaultValueSql: "00000000-0000-0000-0000-000000000000");
 
             migrationBuilder.AddColumn<DateTime>(
                 name: "UpdatedOn",
