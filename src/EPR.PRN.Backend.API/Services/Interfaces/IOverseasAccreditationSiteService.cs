@@ -1,5 +1,5 @@
 ﻿using EPR.PRN.Backend.API.Dto.Accreditation;
-using EPR.PRN.Backend.Data.DataModels.Accreditations;
+using EPR.PRN.Backend.Data.DataModels.Registrations;
 
 namespace EPR.PRN.Backend.API.Services.Interfaces;
 

@@ -3,8 +3,8 @@
 using EPR.PRN.Backend.API.Common.Helpers;
 using EPR.PRN.Backend.API.Dto.Accreditation;
 using EPR.PRN.Backend.API.Services.Interfaces;
-using EPR.PRN.Backend.Data.DataModels.Accreditations;
-using EPR.PRN.Backend.Data.Interfaces.Accreditations;
+using EPR.PRN.Backend.Data.DataModels.Registrations;
+using EPR.PRN.Backend.Data.Interfaces.Accreditation;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
@@ -62,17 +62,19 @@ public class AccreditationFileUploadService(
 
     private AccreditationFileUploadDto MapEntityToDto(AccreditationFileUpload entity)
     {
+
+        // all thie nullable types need to be fixed accross all teams for this model.
         return new AccreditationFileUploadDto
         {
             ExternalId = entity.ExternalId,
             SubmissionId = entity.SubmissionId,
             OverseasSiteId = entity.OverseasSiteId,
-            Filename = entity.FileName,
+            Filename = entity.Filename!,
             FileId = entity.FileId,
-            UploadedOn = entity.UploadedOn,
-            UploadedBy = entity.UploadedBy,
-            FileUploadTypeId = entity.FileUploadTypeId,
-            FileUploadStatusId = entity.FileUploadStatusId
+            UploadedOn = entity.DateUploaded ?? DateTime.MinValue, // this should not be null.
+            UploadedBy = entity.UpdatedBy,
+            FileUploadTypeId = entity.FileUploadTypeId.GetValueOrDefault(),
+            FileUploadStatusId = entity.FileUploadStatusId.GetValueOrDefault()
         };
     }
 
@@ -83,10 +85,10 @@ public class AccreditationFileUploadService(
             ExternalId = dto.ExternalId.HasValue ? dto.ExternalId.Value : Guid.Empty,
             SubmissionId = dto.SubmissionId,
             OverseasSiteId = dto.OverseasSiteId,
-            FileName = dto.Filename,
-            FileId = dto.FileId,
-            UploadedOn = dto.UploadedOn,
-            UploadedBy = dto.UploadedBy,
+            Filename = dto.Filename,
+            FileId = dto.FileId.GetValueOrDefault(),
+            DateUploaded = dto.UploadedOn,
+            UpdatedBy = dto.UploadedBy,
             FileUploadTypeId = dto.FileUploadTypeId,
             FileUploadStatusId = dto.FileUploadStatusId
         };

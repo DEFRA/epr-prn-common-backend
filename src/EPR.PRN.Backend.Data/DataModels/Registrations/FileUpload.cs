@@ -42,4 +42,8 @@ public class AccreditationFileUpload : FileUpload
     [ForeignKey("Accreditation")]
     public int? AccreditationId { get; set; }
     public Accreditation? Accreditation { get; set; }
+
+    public int? OverseasSiteId { get; set; }
+
+    public Guid SubmissionId { get; set; }
 }

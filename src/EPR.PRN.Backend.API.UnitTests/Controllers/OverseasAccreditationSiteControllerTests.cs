@@ -1,9 +1,9 @@
-using EPR.PRN.Backend.API.Controllers;
 using EPR.PRN.Backend.API.Dto.Accreditation;
 using EPR.PRN.Backend.API.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using FluentAssertions;
 using Moq;
+using EPR.PRN.Backend.API.Controllers.Accreditation;
 
 namespace EPR.PRN.Backend.API.UnitTests.Controllers;
 

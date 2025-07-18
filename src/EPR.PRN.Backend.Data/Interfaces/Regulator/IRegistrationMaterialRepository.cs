@@ -12,7 +12,7 @@ public interface IRegistrationMaterialRepository
     Task<List<LookupRegulatorTask>> GetRequiredTasks(int applicationTypeId, bool isMaterialSpecific, int journeyTypeId);
 
     Task<RegistrationMaterial> GetRegistrationMaterialById(Guid registrationMaterialId);
-    Task<Accreditation> GetAccreditation_FileUploadById(Guid accreditationId);
+    Task<DataModels.Registrations.Accreditation> GetAccreditation_FileUploadById(Guid accreditationId);
     Task UpdateRegistrationOutCome(Guid registrationMaterialId, int statusId, string? comment, string? registrationReferenceNumber , Guid User);
     Task RegistrationMaterialsMarkAsDulyMade(Guid registrationMaterialId, int statusId, DateTime DeterminationDate,
             DateTime DulyMadeDate,Guid DulyMadeBy);

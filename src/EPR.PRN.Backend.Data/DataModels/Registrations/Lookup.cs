@@ -101,3 +101,20 @@ public class LookupCountry : LookupBase
     [MaxLength(3)]
     public string? CountryCode { get; set; }
 }
+
+[Table("Lookup.MeetConditionsOfExport")]
+[ExcludeFromCodeCoverage]
+public class LookupMeetConditionsOfExport : LookupBase
+{
+    [MaxLength(50)]
+    public override required string Name { get; set; }
+}
+
+
+[Table("Lookup.SiteCheckStatus")]
+[ExcludeFromCodeCoverage]
+public class LookupSiteCheckStatus : LookupBase
+{
+    [MaxLength(10)]
+    public override required string Name { get; set; }
+}

@@ -1,4 +1,4 @@
-﻿namespace EPR.PRN.Backend.API.Controllers;
+﻿namespace EPR.PRN.Backend.API.Controllers.Accreditation;
 
 using System.Net;
 using EPR.PRN.Backend.API.Common.Constants;
