@@ -1,8 +1,11 @@
 ﻿using EPR.PRN.Backend.API.Common.Enums;
 using EPR.PRN.Backend.Data.DataModels.Accreditations;
+using EPR.PRN.Backend.Data.Repositories;
 using EPR.PRN.Backend.Data.Repositories.Accreditations;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using Moq;
 
 namespace EPR.PRN.Backend.Data.UnitTests.Repositories.Accreditations;
 
@@ -12,6 +15,7 @@ public class AccreditationFileUploadRepositoryTests
     private DbContextOptions<EprAccreditationContext> _dbContextOptions;
     private EprAccreditationContext _dbContext;
     private AccreditationFileUploadRepository _repository;
+    private Mock<ILogger<AccreditationFileUploadRepository>> _mockLogger;
 
     private readonly Guid _accreditationId = Guid.NewGuid();
 
@@ -22,7 +26,8 @@ public class AccreditationFileUploadRepositoryTests
             .UseInMemoryDatabase(databaseName: "TestDatabase" + Guid.NewGuid().ToString())
             .Options;
         _dbContext = new EprAccreditationContext(options);
-        _repository = new AccreditationFileUploadRepository(_dbContext);
+        _mockLogger = new Mock<ILogger<AccreditationFileUploadRepository>>();
+        _repository = new AccreditationFileUploadRepository(_dbContext, _mockLogger.Object);
 
         
         var accreditation = new AccreditationEntity { Id = 1, ExternalId = _accreditationId };

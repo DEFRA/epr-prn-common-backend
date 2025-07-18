@@ -2,10 +2,11 @@
 using EPR.PRN.Backend.Data.DataModels.Accreditations;
 using EPR.PRN.Backend.Data.Interfaces.Accreditations;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace EPR.PRN.Backend.Data.Repositories.Accreditations;
 
-public class AccreditationFileUploadRepository(EprAccreditationContext eprContext) : IAccreditationFileUploadRepository
+public class AccreditationFileUploadRepository(EprAccreditationContext eprContext, ILogger<AccreditationFileUploadRepository> logger) : IAccreditationFileUploadRepository
 {
     public async Task<AccreditationFileUpload> GetByExternalId(Guid accreditationFileUploadId)
     {
@@ -91,6 +92,7 @@ public class AccreditationFileUploadRepository(EprAccreditationContext eprContex
 
     private async Task<int> GetAccreditationIntegerId(Guid accreditationId)
     {
+        logger.LogInformation("Retrieving accreditation ID for external ID: {AccreditationId}.", accreditationId);
         var accreditationIdInt = await eprContext.Accreditations.Where(x => x.ExternalId == accreditationId).Select(x => x.Id).SingleOrDefaultAsync();
 
         if (accreditationIdInt == 0)
