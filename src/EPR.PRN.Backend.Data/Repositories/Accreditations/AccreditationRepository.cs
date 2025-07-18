@@ -5,20 +5,24 @@ using EPR.PRN.Backend.Data.DataModels.Accreditations;
 using EPR.PRN.Backend.Data.DTO.Accreditiation;
 using EPR.PRN.Backend.Data.Interfaces.Accreditations;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace EPR.PRN.Backend.Data.Repositories.Accreditations;
 
-public class AccreditationRepository(EprAccreditationContext eprContext, IMapper mapper) : IAccreditationRepository
+public class AccreditationRepository(EprAccreditationContext eprContext, IMapper mapper, ILogger<AccreditationRepository> logger) : IAccreditationRepository
 {
     public async Task<AccreditationEntity?> GetById(Guid accreditationId)
     {
-        return await eprContext.Accreditations
+        logger.LogInformation("Retrieving accreditation details for ExternalId: {AccreditationId}.", accreditationId);
+        var accreditation =  await eprContext.Accreditations
             .AsNoTracking()
             .Include(x => x.ApplicationType)
             .Include(x => x.AccreditationStatus)
             .Include(x => x.RegistrationMaterial)
                 .ThenInclude(x => x.Material)
             .SingleOrDefaultAsync(x => x.ExternalId.Equals(accreditationId));
+        logger.LogInformation("Retrieved accreditation details for ExternalId: {AccreditationId} with Id {Id}.", accreditationId, accreditation?.Id);
+        return accreditation;
     }
 
     public async Task<AccreditationEntity?> GetAccreditationDetails(
@@ -26,13 +30,16 @@ public class AccreditationRepository(EprAccreditationContext eprContext, IMapper
         int materialId,
         int applicationTypeId)
     {
-        return await eprContext.Accreditations
+        logger.LogInformation("Retrieving accreditation details for OrganisationId: {OrganisationId}, MaterialId: {MaterialId}, ApplicationTypeId: {ApplicationTypeId}.", organisationId, materialId, applicationTypeId);
+        var accreditation =  await eprContext.Accreditations
             .AsNoTracking()
             .Where(x =>
                 x.OrganisationId == organisationId &&
                 x.RegistrationMaterialId == materialId &&
                 x.ApplicationTypeId == applicationTypeId)
             .SingleOrDefaultAsync();
+        logger.LogInformation("Retrieved accreditation details for OrganisationId: {OrganisationId}, MaterialId: {MaterialId}, ApplicationTypeId: {ApplicationTypeId} with Id {Id}.", organisationId, materialId, applicationTypeId, accreditation?.Id);
+        return accreditation;
     }
 
     public async Task Create(AccreditationEntity accreditation)
@@ -44,10 +51,12 @@ public class AccreditationRepository(EprAccreditationContext eprContext, IMapper
 
         eprContext.Accreditations.Add(accreditation);
         await eprContext.SaveChangesAsync();
+        logger.LogInformation("Created new accreditation with ExternalId: {ExternalId} and Id: {Id}", accreditation.ExternalId, accreditation.Id);
     }
 
     public async Task Update(AccreditationEntity accreditation)
     {
+        logger.LogInformation("Updating accreditation with ExternalId: {ExternalId} and Id {Id}.", accreditation.ExternalId, accreditation.Id);
         var existingAccreditation = await eprContext.Accreditations.SingleAsync(x => x.ExternalId.Equals(accreditation.ExternalId));
 
         existingAccreditation.OrganisationId = accreditation.OrganisationId;
@@ -80,12 +89,14 @@ public class AccreditationRepository(EprAccreditationContext eprContext, IMapper
 
         eprContext.Entry(existingAccreditation).State = EntityState.Modified;
         await eprContext.SaveChangesAsync();
+        logger.LogInformation("Updated accreditation with ExternalId: {ExternalId} and Id {Id}.", accreditation.ExternalId, accreditation.Id);  
     }
 
     [ExcludeFromCodeCoverage]
     public async Task ClearDownDatabase()
     {
         // Temporary: Aid to QA whilst Accreditation uses in-memory database.
+        logger.LogInformation("Clearing down EPR Accreditation database for testing purposes.");
         await eprContext.Database.EnsureDeletedAsync();
         await eprContext.Database.EnsureCreatedAsync();
     }
