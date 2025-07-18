@@ -95,13 +95,9 @@ public class AccreditationRepository(EprContext eprContext, IMapper mapper) : IA
     {
         var data= await eprContext.Accreditations
              .Include(x => x.RegistrationMaterial)
-                .ThenInclude(x => x.Registration)
-      
-              // do we need application type? its not 
+                .ThenInclude(x => x.Registration)           
             .Include(x => x.RegistrationMaterial)
-            .Include(x => x.AccreditationStatus)
-            .Where(a => a.RegistrationMaterial.Registration.OrganisationId == organisationId)
-            
+            .Where(a => a.RegistrationMaterial.Registration.OrganisationId == organisationId)            
             .ToListAsync();
 
         return mapper.Map<List<AccreditationOverviewDto>>(data);
