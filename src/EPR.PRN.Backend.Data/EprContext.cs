@@ -342,6 +342,8 @@ public class EprContext : DbContext
 
             e.HasIndex(e => e.ExternalId)
             .IsUnique(); // Ensures UniqueId is unique
+
+            e.Property(e => e.UpdatedBy).HasDefaultValueSql(Guid.Empty.ToString());
         });
 
         modelBuilder.Entity<DataModels.Registrations.OverseasAccreditationSite>()
