@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace EPR.PRN.Backend.Data.DataModels.Registrations
 {
     [ExcludeFromCodeCoverage]
-    [Table("Public.OverseasAddressWasteCode")]
+    [Table("Public.OverseasAddressWasteCodes")]
     public class OverseasAddressWasteCode
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]

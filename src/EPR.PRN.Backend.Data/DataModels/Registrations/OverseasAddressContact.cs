@@ -19,6 +19,8 @@ namespace EPR.PRN.Backend.Data.DataModels.Registrations
         public OverseasAddress? OverseasAddress { get; set; }
         [ForeignKey("OverseasAddressId")]
         public int OverseasAddressId { get; set; }
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public Guid ExternalId { get; set; }
         [MaxLength(100)]
         public required string FullName { get; set; }
         [MaxLength(100)]

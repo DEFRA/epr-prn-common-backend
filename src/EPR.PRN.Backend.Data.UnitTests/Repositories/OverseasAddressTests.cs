@@ -333,7 +333,7 @@ public class OverseasAddressTests
             OverseasAddressWasteCodes = new List<OverseasAddressWasteCode>()
             {
                 new OverseasAddressWasteCode() { ExternalId = wasteCodeId, CodeName = "OldCode"}
-            },   
+            },
         };
         _context.OverseasAddress.Add(existingAddress);
         await _context.SaveChangesAsync();
@@ -354,7 +354,6 @@ public class OverseasAddressTests
                     OverseasAddressContacts = new List<OverseasAddressContactDto>
                     {
                         new OverseasAddressContactDto { CreatedBy = userId, FullName = "New Contact", Email = "new@email.com", PhoneNumber = "222" },
-                        new OverseasAddressContactDto { CreatedBy = Guid.NewGuid(), FullName = "New Contact4", Email = "new23@email.com", PhoneNumber = "122" }
                     },
                     OverseasAddressWasteCodes = new List<OverseasAddressWasteCodeDto>
                     {
@@ -370,11 +369,7 @@ public class OverseasAddressTests
                     AddressLine1 = "New Address Line 2",
                     OverseasAddressContacts = new List<OverseasAddressContactDto>()
                     {
-                        new() { CreatedBy = userId,
-                            FullName = "New Contact2",
-                            Email = "test",
-                            PhoneNumber = "04343"
-                        },
+
                         new() { CreatedBy = userId,
                             FullName = "New Contact3",
                             Email = "test2",
@@ -410,7 +405,7 @@ public class OverseasAddressTests
         // Old address updated
         var updated = allAddresses.First(a => a.ExternalId == existingExternalId);
         updated.AddressLine1.Should().Be("New Line 1");
-        updated.OverseasAddressContacts.Should().ContainSingle(c => c.CreatedBy == userId && c.FullName == "New Contact" && c.Email == "new@email.com");        
+        updated.OverseasAddressContacts.Should().ContainSingle(c => c.CreatedBy == userId && c.FullName == "New Contact" && c.Email == "new@email.com");
         updated.OverseasAddressWasteCodes.Should().ContainSingle(wc => wc.CodeName == "NewCode");
 
         // New address added
@@ -515,6 +510,112 @@ public class OverseasAddressTests
         var allAddresses = await _context.OverseasAddress.ToListAsync();
         allAddresses.Should().Contain(a => a.ExternalId == existingToKeep.ExternalId);
         allAddresses.Should().NotContain(a => a.ExternalId == existingToDelete.ExternalId);
+    }
+
+    [TestMethod]
+    public async Task SaveOverseasReprocessingSites_Should_Create_New_Contact()
+    {
+        // Arrange
+        var externalId = new Guid("6021d372-ab62-4e87-92e8-7544908453e6");
+        var registrationMaterialId = 202;
+        var registrationMaterialExternalId = new Guid("f32b8fd6-9c20-461b-9788-003e82490d8f");
+        var registrationId = 1;
+        _context.RegistrationMaterials.Add(new RegistrationMaterial
+        {
+            Id = registrationMaterialId,
+            ExternalId = registrationMaterialExternalId,
+            RegistrationId = registrationId,
+            MaterialId = 1,
+            StatusId = 1,
+            IsMaterialRegistered = false
+        });
+        await _context.SaveChangesAsync();
+
+        var existingToKeep = new OverseasAddress
+        {
+            ExternalId = externalId,
+            RegistrationId = registrationId,
+            AddressLine1 = "Keep This",
+            OrganisationName = "Old Org",
+            AddressLine2 = "Old Address Line 2",
+            CityOrTown = "Old Town",
+            StateProvince = "Old State",
+            PostCode = "12345",
+            SiteCoordinates = "51.5074, -0.1278",
+        };
+        var existingToDelete = new OverseasAddress
+        {
+            ExternalId = Guid.NewGuid(),
+            RegistrationId = registrationId,
+            AddressLine1 = "Delete This",
+            OrganisationName = "Old Org",
+            AddressLine2 = "Old Address Line 2",
+            CityOrTown = "Old Town",
+            StateProvince = "Old State",
+            PostCode = "12345",
+            SiteCoordinates = "51.5074, -0.1278",
+        };
+        var existingToKeepDifferentRegistrationId = new OverseasAddress
+        {
+            ExternalId = externalId,
+            RegistrationId = 10,
+            AddressLine1 = "Keep This",
+            OrganisationName = "Old Org",
+            AddressLine2 = "Old Address Line 2",
+            CityOrTown = "Old Town",
+            StateProvince = "Old State",
+            PostCode = "12345",
+            SiteCoordinates = "51.5074, -0.1278",
+
+        };
+
+        _context.OverseasAddress.AddRange(existingToKeep, existingToDelete, existingToKeepDifferentRegistrationId);
+        await _context.SaveChangesAsync();
+
+        var updateDto = new UpdateOverseasAddressDto
+        {
+            RegistrationMaterialId = registrationMaterialExternalId,
+            OverseasAddresses =
+            [
+                new OverseasAddressDto
+                {
+                    ExternalId = externalId,
+                    AddressLine1 = "Keep This",
+                    OrganisationName = "Old Org",
+                    AddressLine2 = "Old Address Line 2",
+                    CityOrTown = "Old Town",
+                    StateProvince = "Old State",
+                    PostCode = "12345",
+                    SiteCoordinates = "51.5074, -0.1278",
+                    CountryName = "CountryA",
+                    OverseasAddressContacts = new List<OverseasAddressContactDto>()
+                    {
+                        new OverseasAddressContactDto
+                        {
+                            CreatedBy = Guid.NewGuid(),
+                            FullName = "Test Name",
+                            Email = "testemail",
+                            PhoneNumber = "09032"
+                        }
+                    },
+                    OverseasAddressWasteCodes = new List<OverseasAddressWasteCodeDto>(){
+                        new OverseasAddressWasteCodeDto { ExternalId = Guid.Empty, CodeName = "NewCode" }
+                    },
+                }
+            ]
+        };
+
+        // Act
+        await _materialRepository.SaveOverseasReprocessingSites(updateDto);
+
+        // Assert
+        var allAddresses = await _context.OverseasAddress.ToListAsync();
+        allAddresses.Should().Contain(a => a.ExternalId == existingToKeep.ExternalId);
+        allAddresses.Should().NotContain(a => a.ExternalId == existingToDelete.ExternalId);
+        var allContacts = await _context.OverseasAddressContact.ToListAsync();
+        allContacts.Should().ContainSingle(a => a.FullName == "Test Name");
+        var allWasteCodes = await _context.OverseasAddressWasteCode.ToListAsync();
+        allWasteCodes.Should().ContainSingle(a => a.CodeName == "NewCode");
     }
 
     [TestMethod]
