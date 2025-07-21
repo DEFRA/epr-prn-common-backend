@@ -921,7 +921,7 @@ namespace EPR.PRN.Backend.Data.Migrations
                     b.Property<Guid>("CreatedBy")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier")
-                        .HasDefaultValueSql("00000000-0000-0000-0000-000000000000");
+                        .HasDefaultValueSql("'00000000-0000-0000-0000-000000000000'");
 
                     b.Property<DateTime?>("CreatedOn")
                         .HasColumnType("datetime2");
@@ -980,7 +980,7 @@ namespace EPR.PRN.Backend.Data.Migrations
                     b.Property<Guid>("UpdatedBy")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier")
-                        .HasDefaultValueSql("00000000-0000-0000-0000-000000000000");
+                        .HasDefaultValueSql("'00000000-0000-0000-0000-000000000000'");
 
                     b.Property<DateTime>("UpdatedOn")
                         .HasColumnType("datetime2");
@@ -1089,7 +1089,7 @@ namespace EPR.PRN.Backend.Data.Migrations
                     b.Property<Guid>("SubmissionId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier")
-                        .HasDefaultValueSql("00000000-0000-0000-0000-000000000000");
+                        .HasDefaultValueSql("'00000000-0000-0000-0000-000000000000'");
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()

@@ -334,7 +334,7 @@ public class EprContext : DbContext
             new LookupFileUploadStatus { Id = 5, Name = "File deleted(Soft delete of record in database – will physically remove from blob storage)" });
 
         modelBuilder.Entity<AccreditationFileUpload>().
-            Property(e => e.SubmissionId).HasDefaultValueSql(Guid.Empty.ToString());    
+            Property(e => e.SubmissionId).HasDefaultValueSql("'"+Guid.Empty.ToString()+"'");    
 
         modelBuilder.Entity<Accreditation>(e =>
         {
@@ -344,8 +344,8 @@ public class EprContext : DbContext
 
             e.HasIndex(e => e.ExternalId)
             .IsUnique(); // Ensures UniqueId is unique
-            e.Property(e => e.CreatedBy).HasDefaultValueSql(Guid.Empty.ToString());
-            e.Property(e => e.UpdatedBy).HasDefaultValueSql(Guid.Empty.ToString());
+            e.Property(e => e.CreatedBy).HasDefaultValueSql("'" + Guid.Empty.ToString() + "'");
+            e.Property(e => e.UpdatedBy).HasDefaultValueSql("'" + Guid.Empty.ToString() + "'");
         });
 
         modelBuilder.Entity<DataModels.Registrations.OverseasAccreditationSite>()
