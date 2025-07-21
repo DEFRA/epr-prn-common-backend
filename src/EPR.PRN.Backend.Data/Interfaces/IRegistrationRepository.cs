@@ -14,5 +14,7 @@ public interface IRegistrationRepository
     Task UpdateAsync(Guid registrationId, AddressDto businessAddress, AddressDto reprocessingSiteAddress, AddressDto legalDocumentsAddress);
     Task UpdateRegistrationTaskStatusAsync(string taskName, Guid registrationId, TaskStatuses status);
     Task UpdateSiteAddressAsync(Guid registrationId, AddressDto reprocessingSiteAddress);
+    Task UpsertLegalDocumentAddress(Guid registrationId, AddressDto legalSiteAddress);
+    Task<Address?> GetLegalDocumentAddress(Guid registrationId);
     Task<IEnumerable<RegistrationOverviewDto>> GetRegistrationsOverviewForOrgIdAsync(Guid organisationId);
 }
