@@ -5683,3 +5683,34 @@ GO
 COMMIT;
 GO
 
+BEGIN TRANSACTION;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250721155337_UpdateAccreditationRefLength'
+)
+BEGIN
+    DECLARE @var50 sysname;
+    SELECT @var50 = [d].[name]
+    FROM [sys].[default_constraints] [d]
+    INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+    WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Public.Accreditation]') AND [c].[name] = N'ApplicationReferenceNumber');
+    IF @var50 IS NOT NULL EXEC(N'ALTER TABLE [Public.Accreditation] DROP CONSTRAINT [' + @var50 + '];');
+    ALTER TABLE [Public.Accreditation] ALTER COLUMN [ApplicationReferenceNumber] nvarchar(18) NULL;
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250721155337_UpdateAccreditationRefLength'
+)
+BEGIN
+    INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+    VALUES (N'20250721155337_UpdateAccreditationRefLength', N'8.0.8');
+END;
+GO
+
+COMMIT;
+GO
+

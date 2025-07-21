@@ -36,7 +36,7 @@ public class Accreditation
     public Guid UpdatedBy { get; set; }
     public DateTime UpdatedOn { get; set; }
 
-    [MaxLength(12)]
+    [MaxLength(18)]
     public string? ApplicationReferenceNumber { get; set; }
 
     public int? PRNTonnage { get; set; }
