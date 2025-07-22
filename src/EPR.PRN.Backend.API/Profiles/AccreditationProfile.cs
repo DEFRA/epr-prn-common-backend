@@ -34,7 +34,7 @@ public class AccreditationProfile : Profile
             .ForMember(des => des.CommunicationsPercentage, opt => opt.MapFrom(src => src.CommunicationsPercentage))            
             .ForMember(des => des.OtherPercentage, opt => opt.MapFrom(src => src.NotCoveredOtherCategoriesPercentage))
             .ForMember(des => des.NewUsesPercentage, opt => opt.MapFrom(src => src.NewUsersRecycledPackagingWastePercentage))
-            .ForMember(des => des.PackagingWastePercentage, opt => opt.MapFrom(src => src.NewUsersRecycledPackagingWastePercentage))
+            .ForMember(des => des.PackagingWastePercentage, opt => opt.MapFrom(src => src.RecycledWastePercentage))
 
             .ForMember(des => des.NewMarketsNotes, opt => opt.MapFrom(src => src.NewMarketsNotes))
             .ForMember(des => des.BusinessCollectionsNotes, opt => opt.MapFrom(src => src.BusinessCollectionsNotes))
@@ -42,7 +42,7 @@ public class AccreditationProfile : Profile
             .ForMember(des => des.CommunicationsNotes, opt => opt.MapFrom(src => src.CommunicationsNotes))
             .ForMember(des => des.OtherNotes, opt => opt.MapFrom(src => src.NotCoveredOtherCategoriesNotes))
             .ForMember(des => des.NewUsesNotes, opt => opt.MapFrom(src => src.NewUsersRecycledPackagingWasteNotes))
-            .ForMember(des => des.PackagingWasteNotes, opt => opt.MapFrom(src => src.NewUsersRecycledPackagingWasteNotes))
+            .ForMember(des => des.PackagingWasteNotes, opt => opt.MapFrom(src => src.RecycledWasteNotes))
             ;
         CreateMap<AccreditationRequestDto, Accreditation>()
             .ForMember(dest => dest.AccreditationStatusId, opt => opt.MapFrom(src => src.AccreditationStatusId))
@@ -56,6 +56,8 @@ public class AccreditationProfile : Profile
             .ForMember(des => des.CommunicationsPercentage, opt => opt.MapFrom(src => src.CommunicationsPercentage))
             .ForMember(des => des.NotCoveredOtherCategoriesPercentage, opt => opt.MapFrom(src => src.OtherPercentage))
             .ForMember(des => des.NewUsersRecycledPackagingWastePercentage, opt => opt.MapFrom(src => src.NewUsesPercentage))
+            .ForMember(des => des.RecycledWastePercentage, opt => opt.MapFrom(src => src.PackagingWastePercentage))
+
 
 
             .ForMember(des => des.NewMarketsNotes, opt => opt.MapFrom(src => src.NewMarketsNotes))
@@ -63,9 +65,9 @@ public class AccreditationProfile : Profile
             .ForMember(des => des.InfrastructureNotes, opt => opt.MapFrom(src => src.InfrastructureNotes))
             .ForMember(des => des.CommunicationsNotes, opt => opt.MapFrom(src => src.CommunicationsNotes))
             .ForMember(des => des.NotCoveredOtherCategoriesNotes, opt => opt.MapFrom(src => src.OtherNotes))
-            .ForMember(des => des.NewUsersRecycledPackagingWasteNotes, opt => opt.MapFrom(src => src.NewUsesNotes));
-            
-
+            .ForMember(des => des.NewUsersRecycledPackagingWasteNotes, opt => opt.MapFrom(src => src.NewUsesNotes))
+            .ForMember(des => des.RecycledWasteNotes, opt => opt.MapFrom(src => src.PackagingWasteNotes))
+            ;
 
         CreateMap<Data.DataModels.Registrations.AccreditationPrnIssueAuth, AccreditationPrnIssueAuthDto>();
         CreateMap<AccreditationPrnIssueAuthRequestDto, Data.DataModels.Registrations.AccreditationPrnIssueAuth>();
