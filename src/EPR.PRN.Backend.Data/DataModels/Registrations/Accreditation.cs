@@ -15,37 +15,52 @@ public class Accreditation
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public Guid ExternalId { get; set; }
 
-    [ForeignKey("RegistrationMaterial")]
-    public int RegistrationMaterialId { get; set; }
-    public RegistrationMaterial RegistrationMaterial { get; set; }
-    public int AccreditationYear { get; set; }
-    [MaxLength(12)]
-    public required string ApplicationReferenceNumber { get; set; }
-    public List<RegulatorAccreditationTaskStatus>? Tasks { get; set; }
-
     [ForeignKey("AccreditationStatus")]
     public int AccreditationStatusId { get; set; }
     public LookupAccreditationStatus AccreditationStatus { get; set; }
-    public List<AccreditationDeterminationDate> AccreditationDulyMade { get; set; }
+
+    [ForeignKey("RegistrationMaterial")]
+    public int RegistrationMaterialId { get; set; }
+    public RegistrationMaterial RegistrationMaterial { get; set; }
+
+    [MaxLength(50)]
+    public string? DecFullName { get; set; }
+
+    [MaxLength(50)]
+    public string? DecJobTitle { get; set; }
+
+    public Guid CreatedBy { get; set; }
+
     public DateTime? CreatedOn { get; set; }
-    public int PRNTonnage { get; set; }
+
+    public Guid UpdatedBy { get; set; }
+    public DateTime UpdatedOn { get; set; }
+
+    [MaxLength(18)]
+    public string? ApplicationReferenceNumber { get; set; }
+
+    public int? PRNTonnage { get; set; }
 
     [Column(TypeName = "decimal(10,2)")]
     public decimal? InfrastructurePercentage { get; set; }
+
     [Column(TypeName = "decimal(10,2)")]
     public decimal? BusinessCollectionsPercentage { get; set; }
+
     [Column(TypeName = "decimal(10,2)")]
     public decimal? RecycledWastePercentage { get; set; }
     [Column(TypeName = "decimal(10,2)")]
     public decimal? NewMarketsPercentage { get; set; }
     [Column(TypeName = "decimal(10,2)")]
     public decimal? CommunicationsPercentage { get; set; }
+
     [Column(TypeName = "decimal(10,2)")]
     public decimal? NewUsersRecycledPackagingWastePercentage { get; set; }
     [Column(TypeName = "decimal(10,2)")]
     public decimal? NotCoveredOtherCategoriesPercentage { get; set; }
     [Column(TypeName = "decimal(10,2)")]
     public decimal? TotalPercentage { get; set; }
+
     [Column(TypeName = "varchar(500)")]
     public string? InfrastructureNotes { get; set; }
     [Column(TypeName = "varchar(500)")]
@@ -60,5 +75,19 @@ public class Accreditation
     public string? NewUsersRecycledPackagingWasteNotes { get; set; }
     [Column(TypeName = "varchar(500)")]
     public string? NotCoveredOtherCategoriesNotes { get; set; }
+
+    public int? AccreditationYear { get; set; }
+   
+    public List<RegulatorAccreditationTaskStatus>? Tasks { get; set; }
+
+    public List<AccreditationTaskStatus>? AccreditationTasksStatus { get; set; }
+
+    public List<AccreditationDeterminationDate> AccreditationDulyMade { get; set; }        
+   
     public List<AccreditationFileUpload>? FileUploads { get; set; }
+
+    public List<AccreditationPrnIssueAuth>? AccreditationPrnIssueAuths { get; set; }
+
+    public List<OverseasAccreditationSite>? OverseasAccreditationSites { get; set; }
+
 }

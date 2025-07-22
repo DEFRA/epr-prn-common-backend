@@ -12,7 +12,7 @@ namespace EPR.PRN.Backend.Data.UnitTests.Repositories.Accreditations;
 [TestClass]
 public class AccreditationRepositoryTests
 {
-    private EprAccreditationContext _dbContext;
+    private EprContext _dbContext;
     private AccreditationRepository _repository;
     private Mock<IMapper> _mapper;
     private Mock<ILogger<AccreditationRepository>> _mockLogger;
@@ -20,11 +20,11 @@ public class AccreditationRepositoryTests
     [TestInitialize]
     public void Setup()
     {
-        var options = new DbContextOptionsBuilder<EprAccreditationContext>()
+        var options = new DbContextOptionsBuilder<EprContext>()
             .UseInMemoryDatabase(databaseName: "TestDatabase" + Guid.NewGuid().ToString())
             .Options;
         _mapper = new Mock<IMapper> ();
-        _dbContext = new EprAccreditationContext(options);
+        _dbContext = new EprContext(options);
         _mockLogger = new Mock<ILogger<AccreditationRepository>>();
         _repository = new AccreditationRepository(_dbContext, _mapper.Object, _mockLogger.Object);
 
@@ -35,40 +35,63 @@ public class AccreditationRepositoryTests
             MaterialCode = "code"
         };
 
+        Registration registration = new()
+        {
+            Id = 1,
+            ExternalId = new Guid("11111111-1111-1111-1111-111111111111"),
+            OrganisationId = Guid.NewGuid(),
+            ApplicationTypeId = 1,
+            CreatedBy = Guid.NewGuid(),
+            CreatedDate = DateTime.UtcNow,
+            UpdatedBy = Guid.NewGuid(),
+            UpdatedDate = DateTime.UtcNow
+        };
+
         RegistrationMaterial registrationMaterial = new()
         {
             MaterialId = 1,
-            Material = material
+            Material = material,
+            Registration = registration
         };
 
+        LookupAccreditationStatus accreditationStatus = new()
+        {
+            Id = 1,
+            Name = "Active"
+      
+        };
+
+
         _dbContext.Accreditations.AddRange(
-            new List<AccreditationEntity>
+            new List<Accreditation>
             {
-                new AccreditationEntity
+                new Accreditation
                 {
                     Id = 1,
                     ExternalId = new Guid("11111111-1111-1111-1111-111111111111"),
-                    OrganisationId = new Guid("11111111-1111-1111-1111-111111111111"), 
+                    
                     AccreditationYear = 2026,
-                    ApplicationTypeId = 1,
-                    ApplicationType = new(),
+           
+                    //ApplicationType = new(),
                     AccreditationStatusId = 1,
-                    AccreditationStatus = new (),
-                    RegistrationMaterialId = 1,
-                    RegistrationMaterial = registrationMaterial
+                
+                    AccreditationStatus = accreditationStatus,
+                    RegistrationMaterial = registrationMaterial,
+                    ApplicationReferenceNumber = "APP-123456",
                 },
-                new AccreditationEntity
+                new Accreditation
                 {
                     Id = 2,
                     ExternalId = new Guid("22222222-2222-2222-2222-222222222222"),
-                    OrganisationId = new Guid("22222222-2222-2222-2222-222222222222"),
+              
                     AccreditationYear = 2026,
-                    ApplicationTypeId = 1,
-                    ApplicationType = new(),
+                    //ApplicationTypeId = 1,
+                    //ApplicationType = new(),
                     AccreditationStatusId = 1,
-                    AccreditationStatus = new(),
+                    AccreditationStatus = accreditationStatus,
                     RegistrationMaterialId = 1,
-                    RegistrationMaterial = registrationMaterial
+                    RegistrationMaterial = registrationMaterial,
+                    ApplicationReferenceNumber = "APP-123456",
                 }
             });
         _dbContext.SaveChangesAsync();
@@ -110,7 +133,7 @@ public class AccreditationRepositoryTests
     public async Task Create_ShouldAddNewEntity()
     {
         // Arrange
-        var accreditation = new AccreditationEntity { AccreditationYear = 2026 };
+        var accreditation = new Accreditation { AccreditationYear = 2026, ApplicationReferenceNumber = "APP-123456", };
 
         // Act
         await _repository.Create(accreditation);
@@ -128,7 +151,7 @@ public class AccreditationRepositoryTests
     {
         // Arrange
         var accreditationId = new Guid("11111111-1111-1111-1111-111111111111");
-        var accreditation = new AccreditationEntity { Id = 1, ExternalId = accreditationId, AccreditationYear = 2027 };
+        var accreditation = new Accreditation { Id = 1, ExternalId = accreditationId, AccreditationYear = 2027, ApplicationReferenceNumber = "APP-123456", };
 
         // Act
         await _repository.Update(accreditation);
@@ -158,31 +181,27 @@ public class AccreditationRepositoryTests
         // Arrange
         var organisationId = Guid.NewGuid();
         var orgId = Guid.NewGuid();
-        var accreditations = new List<AccreditationEntity>
+        var accreditations = new List<Accreditation>
         {
-            new AccreditationEntity
+            new Accreditation
             {
                 ExternalId = Guid.NewGuid(),
-                OrganisationId = organisationId,
-                ApplicationTypeId = 1
+             
             },
-            new AccreditationEntity
+            new Accreditation
             {
                 ExternalId = Guid.NewGuid(),
-                OrganisationId = organisationId,
-                ApplicationTypeId = 2
+                
             },
-            new AccreditationEntity
+            new Accreditation
             {
                 ExternalId = Guid.NewGuid(),
-                OrganisationId = organisationId,
-                ApplicationTypeId = 3
+       
             },
-            new AccreditationEntity
+            new Accreditation
             {
                 ExternalId = Guid.NewGuid(),
-                OrganisationId = organisationId,
-                ApplicationTypeId = 4
+        
             }
         };
 
