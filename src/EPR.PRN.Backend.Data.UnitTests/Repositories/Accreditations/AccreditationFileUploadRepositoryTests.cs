@@ -11,7 +11,6 @@ namespace EPR.PRN.Backend.Data.UnitTests.Repositories.Accreditations;
 [TestClass]
 public class AccreditationFileUploadRepositoryTests
 {
-    private DbContextOptions<EprContext> _dbContextOptions;
     private EprContext _dbContext;
     private AccreditationFileUploadRepository _repository;
     private Mock<ILogger<AccreditationFileUploadRepository>> _mockLogger;
