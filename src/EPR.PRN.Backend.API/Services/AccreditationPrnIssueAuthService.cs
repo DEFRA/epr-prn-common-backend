@@ -6,8 +6,8 @@ using AutoMapper;
 using EPR.PRN.Backend.API.Common.Helpers;
 using EPR.PRN.Backend.API.Dto.Accreditation;
 using EPR.PRN.Backend.API.Services.Interfaces;
-using EPR.PRN.Backend.Data.DataModels.Accreditations;
-using EPR.PRN.Backend.Data.Interfaces.Accreditations;
+using EPR.PRN.Backend.Data.DataModels.Registrations;
+using EPR.PRN.Backend.Data.Interfaces.Accreditation;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 

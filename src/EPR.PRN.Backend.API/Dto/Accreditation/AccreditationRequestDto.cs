@@ -10,6 +10,7 @@ namespace EPR.PRN.Backend.API.Dto.Accreditation
         public int RegistrationMaterialId { get; set; }
         public int ApplicationTypeId { get; set; }
         public int AccreditationStatusId { get; set; }
+
         public string? DecFullName { get; set; }
         public string? DecJobTitle { get; set; }
         public string? AccreferenceNumber { get; set; }

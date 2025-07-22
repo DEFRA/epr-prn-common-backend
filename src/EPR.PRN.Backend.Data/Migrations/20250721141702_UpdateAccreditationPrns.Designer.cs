@@ -4,6 +4,7 @@ using EPR.PRN.Backend.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EPR.PRN.Backend.Data.Migrations
 {
     [DbContext(typeof(EprContext))]
-    partial class EprContextModelSnapshot : ModelSnapshot
+    [Migration("20250721141702_UpdateAccreditationPrns")]
+    partial class UpdateAccreditationPrns
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -903,8 +906,8 @@ namespace EPR.PRN.Backend.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("ApplicationReferenceNumber")
-                        .HasMaxLength(18)
-                        .HasColumnType("nvarchar(18)");
+                        .HasMaxLength(12)
+                        .HasColumnType("nvarchar(12)");
 
                     b.Property<string>("BusinessCollectionsNotes")
                         .HasColumnType("varchar(500)");
@@ -1404,8 +1407,6 @@ namespace EPR.PRN.Backend.Data.Migrations
 
                     b.HasIndex("ExternalId")
                         .IsUnique();
-
-                    b.HasIndex("InterimSiteId");
 
                     b.HasIndex("ParentOverseasAddressId");
 
@@ -4010,12 +4011,6 @@ namespace EPR.PRN.Backend.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<bool?>("IsInterimSite")
-                        .HasColumnType("bit");
-
-                    b.Property<Guid?>("OrganisationId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<string>("OrganisationName")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -4029,8 +4024,7 @@ namespace EPR.PRN.Backend.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("SiteCoordinates")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("StateProvince")
                         .HasMaxLength(70)
@@ -4075,11 +4069,6 @@ namespace EPR.PRN.Backend.Data.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<Guid>("ExternalId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier")
-                        .HasDefaultValueSql("NEWID()");
-
                     b.Property<string>("FullName")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -4094,9 +4083,6 @@ namespace EPR.PRN.Backend.Data.Migrations
                         .HasColumnType("nvarchar(25)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ExternalId")
-                        .IsUnique();
 
                     b.HasIndex("OverseasAddressId");
 
@@ -4130,7 +4116,7 @@ namespace EPR.PRN.Backend.Data.Migrations
 
                     b.HasIndex("OverseasAddressId");
 
-                    b.ToTable("Public.OverseasAddressWasteCodes");
+                    b.ToTable("Public.OverseasAddressWasteCode");
                 });
 
             modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.OverseasMaterialReprocessingSite", b =>
@@ -4959,20 +4945,12 @@ namespace EPR.PRN.Backend.Data.Migrations
             modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.InterimOverseasConnections", b =>
                 {
                     b.HasOne("EPR.PRN.Backend.Data.DataModels.Registrations.OverseasAddress", "OverseasAddress")
-                        .WithMany("InterimConnections")
-                        .HasForeignKey("InterimSiteId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("EPR.PRN.Backend.Data.DataModels.Registrations.OverseasAddress", "ParentOverseasAddress")
-                        .WithMany("ChildInterimConnections")
+                        .WithMany("InterimOverseasConnections")
                         .HasForeignKey("ParentOverseasAddressId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("OverseasAddress");
-
-                    b.Navigation("ParentOverseasAddress");
                 });
 
             modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.MaterialExemptionReference", b =>
@@ -5361,9 +5339,7 @@ namespace EPR.PRN.Backend.Data.Migrations
 
             modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.OverseasAddress", b =>
                 {
-                    b.Navigation("ChildInterimConnections");
-
-                    b.Navigation("InterimConnections");
+                    b.Navigation("InterimOverseasConnections");
 
                     b.Navigation("OverseasAddressContacts");
 

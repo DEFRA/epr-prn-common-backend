@@ -2,6 +2,7 @@
 using EPR.PRN.Backend.API.Common.Constants;
 using EPR.PRN.Backend.API.Common.Enums;
 using EPR.PRN.Backend.Data.DataModels;
+using EPR.PRN.Backend.Data.DataModels.Accreditations;
 using EPR.PRN.Backend.Data.DataModels.Registrations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -228,6 +229,7 @@ public class EprContext : DbContext
             new LookupRegistrationMaterialStatus { Id = 11, Name = "ReadyToSubmit" },
 			new LookupRegistrationMaterialStatus { Id = 12, Name = "InProgress" });
 
+
         modelBuilder.Entity<LookupAccreditationStatus>().HasData(
             new LookupAccreditationStatus { Id = 1, Name = "Started" },
             new LookupAccreditationStatus { Id = 2, Name = "Submitted" },
@@ -239,7 +241,9 @@ public class EprContext : DbContext
             new LookupAccreditationStatus { Id = 8, Name = "Withdrawn" },
             new LookupAccreditationStatus { Id = 9, Name = "Suspended" },
             new LookupAccreditationStatus { Id = 10, Name = "Cancelled" },
-            new LookupAccreditationStatus { Id = 11, Name = "ReadyToSubmit" });
+            new LookupAccreditationStatus { Id = 11, Name = "ReadyToSubmit" 
+            });
+
 
         modelBuilder.Entity<LookupTaskStatus>().HasData(
             new LookupTaskStatus { Id = 1, Name = "NotStarted" },
@@ -251,6 +255,7 @@ public class EprContext : DbContext
         modelBuilder.Entity<LookupApplicationType>().HasData(
             new LookupApplicationType { Id = 1, Name = "Reprocessor" },
             new LookupApplicationType { Id = 2, Name = "Exporter" });
+
 
         modelBuilder.Entity<LookupJourneyType>().HasData(
             new LookupJourneyType { Id = 1, Name = "Registration" },
@@ -318,7 +323,8 @@ public class EprContext : DbContext
            new LookupPeriod { Id = 3, Name = "Per Week" });
 
         modelBuilder.Entity<LookupFileUploadType>().HasData(
-            new LookupFileUploadType { Id = 1, Name = "SamplingAndInspectionPlan" });
+            new LookupFileUploadType { Id = 1, Name = "SamplingAndInspectionPlan" },
+            new LookupFileUploadType { Id = 2, Name = "OverseasSiteEvidence" });
 
         modelBuilder.Entity<LookupFileUploadStatus>().HasData(
             new LookupFileUploadStatus { Id = 1, Name = "Virus check failed" },
@@ -327,9 +333,42 @@ public class EprContext : DbContext
             new LookupFileUploadStatus { Id = 4, Name = "Upload failed" },
             new LookupFileUploadStatus { Id = 5, Name = "File deleted(Soft delete of record in database – will physically remove from blob storage)" });
 
-        modelBuilder.Entity<Accreditation>()
-            .HasIndex(e => e.ExternalId)
+        modelBuilder.Entity<AccreditationFileUpload>().
+            Property(e => e.SubmissionId).HasDefaultValueSql("'"+Guid.Empty.ToString()+"'");    
+
+        modelBuilder.Entity<Accreditation>(e =>
+        {
+            e.HasOne(x => x.AccreditationStatus)
+                .WithMany()
+                .HasForeignKey(x => x.AccreditationStatusId);
+
+            e.HasIndex(e => e.ExternalId)
             .IsUnique(); // Ensures UniqueId is unique
+            e.Property(e => e.CreatedBy).HasDefaultValueSql("'" + Guid.Empty.ToString() + "'");
+            e.Property(e => e.UpdatedBy).HasDefaultValueSql("'" + Guid.Empty.ToString() + "'");
+        });
+
+        modelBuilder.Entity<DataModels.Registrations.OverseasAccreditationSite>()
+            .HasOne(o => o.OverseasAddress)
+            .WithMany()
+            .HasForeignKey(o => o.OverseasAddressId)
+            .OnDelete(DeleteBehavior.NoAction);
+
+        modelBuilder.Entity<LookupMeetConditionsOfExport>().HasData(
+            new LookupMeetConditionsOfExport { Id = 1, Name = "Yes (Don't Upload)" }, 
+            new LookupMeetConditionsOfExport { Id = 2, Name = "Yes (upload)" },
+            new LookupMeetConditionsOfExport { Id = 3, Name = "No" }); 
+
+        modelBuilder.Entity<LookupSiteCheckStatus>().HasData(
+            new LookupSiteCheckStatus { Id = 1, Name = "NotStarted" },
+            new LookupSiteCheckStatus { Id = 2, Name = "InProgress" },
+            new LookupSiteCheckStatus { Id = 3, Name = "Completed" });
+
+        modelBuilder.Entity<DataModels.Registrations.OverseasAccreditationSite>(e =>
+        {
+            e.HasIndex(e => e.ExternalId)
+            .IsUnique(); // Ensures UniqueId is unique
+        });
 
         modelBuilder.Entity<AccreditationDeterminationDate>()
             .HasIndex(e => e.ExternalId)
@@ -385,6 +424,10 @@ public class EprContext : DbContext
             .IsUnique(); // Ensures UniqueId is unique
 
         modelBuilder.Entity<RegulatorAccreditationTaskStatus>()
+            .HasIndex(e => e.ExternalId)
+            .IsUnique(); // Ensures UniqueId is unique
+
+        modelBuilder.Entity<AccreditationTaskStatus>()
             .HasIndex(e => e.ExternalId)
             .IsUnique(); // Ensures UniqueId is unique
 
@@ -490,9 +533,13 @@ public class EprContext : DbContext
     public virtual DbSet<RegulatorApplicationTaskStatus> RegulatorApplicationTaskStatus { get; set; }
     public virtual DbSet<RegulatorRegistrationTaskStatus> RegulatorRegistrationTaskStatus { get; set; }
     public virtual DbSet<ApplicantRegistrationTaskStatus> RegistrationTaskStatus { get; set; }
+
+    public virtual DbSet<AccreditationTaskStatus> AccreditationTaskStatus { get; set; }
+
     public virtual DbSet<LookupMaterial> LookupMaterials { get; set; }
     public virtual DbSet<LookupRegistrationMaterialStatus> LookupRegistrationMaterialStatuses { get; set; }
     public virtual DbSet<LookupRegulatorTask> LookupTasks { get; set; }
+    public virtual DbSet<LookupJourneyType> LookupJourneyTypes { get; set; } 
     public virtual DbSet<LookupApplicantRegistrationTask> LookupApplicantRegistrationTasks { get; set; }
     public virtual DbSet<LookupTaskStatus> LookupTaskStatuses { get; set; }
     public virtual DbSet<Address> LookupAddresses { get; set; }
@@ -512,5 +559,9 @@ public class EprContext : DbContext
     public virtual DbSet<OverseasAddressWasteCode> OverseasAddressWasteCode { get; set; }
     public virtual DbSet<OverseasMaterialReprocessingSite> OverseasMaterialReprocessingSite { get; set; }
     public virtual DbSet<InterimOverseasConnections> InterimOverseasConnections { get; set; }
+
+    public virtual DbSet<DataModels.Registrations.AccreditationPrnIssueAuth> AccreditationPrnIssueAuths { get; set; }
+    public virtual DbSet<DataModels.Registrations.AccreditationFileUpload> AccreditationFileUploads { get; set; }
+    public virtual DbSet<DataModels.Registrations.OverseasAccreditationSite> OverseasAccreditationSites { get; set; }
 
 }

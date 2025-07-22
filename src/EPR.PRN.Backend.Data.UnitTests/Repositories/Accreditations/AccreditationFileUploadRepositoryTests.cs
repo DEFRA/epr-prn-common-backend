@@ -1,6 +1,5 @@
 ﻿using EPR.PRN.Backend.API.Common.Enums;
-using EPR.PRN.Backend.Data.DataModels.Accreditations;
-using EPR.PRN.Backend.Data.Repositories;
+using EPR.PRN.Backend.Data.DataModels.Registrations;
 using EPR.PRN.Backend.Data.Repositories.Accreditations;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
@@ -12,8 +11,7 @@ namespace EPR.PRN.Backend.Data.UnitTests.Repositories.Accreditations;
 [TestClass]
 public class AccreditationFileUploadRepositoryTests
 {
-    private DbContextOptions<EprAccreditationContext> _dbContextOptions;
-    private EprAccreditationContext _dbContext;
+    private EprContext _dbContext;
     private AccreditationFileUploadRepository _repository;
     private Mock<ILogger<AccreditationFileUploadRepository>> _mockLogger;
 
@@ -22,15 +20,15 @@ public class AccreditationFileUploadRepositoryTests
     [TestInitialize]
     public void Setup()
     {
-        var options = new DbContextOptionsBuilder<EprAccreditationContext>()
+        var options = new DbContextOptionsBuilder<EprContext>()
             .UseInMemoryDatabase(databaseName: "TestDatabase" + Guid.NewGuid().ToString())
             .Options;
-        _dbContext = new EprAccreditationContext(options);
+        _dbContext = new EprContext(options);
         _mockLogger = new Mock<ILogger<AccreditationFileUploadRepository>>();
         _repository = new AccreditationFileUploadRepository(_dbContext, _mockLogger.Object);
 
         
-        var accreditation = new AccreditationEntity { Id = 1, ExternalId = _accreditationId };
+        var accreditation = new Accreditation { Id = 1, ExternalId = _accreditationId, ApplicationReferenceNumber =  string.Empty };
         _dbContext.Accreditations.Add(accreditation);
 
         var fileUploads = new List<AccreditationFileUpload>
@@ -41,8 +39,8 @@ public class AccreditationFileUploadRepositoryTests
                 AccreditationId = 1,
                 FileUploadTypeId = (int)AccreditationFileUploadType.SamplingAndInspectionPlan,
                 FileUploadStatusId = (int)AccreditationFileUploadStatus.UploadComplete,
-                FileName = "complete.txt",
-                UploadedBy = "A N Other",
+                Filename = "complete.txt",
+                UpdatedBy = "A N Other",
             },
             new AccreditationFileUpload
             {
@@ -50,8 +48,8 @@ public class AccreditationFileUploadRepositoryTests
                 AccreditationId = 1,
                 FileUploadTypeId = (int)AccreditationFileUploadType.SamplingAndInspectionPlan,
                 FileUploadStatusId = (int)AccreditationFileUploadStatus.UploadFailed,
-                FileName = "failed.txt",
-                UploadedBy = "A N Other",
+                Filename = "failed.txt",
+                UpdatedBy = "A N Other",
             },
             new AccreditationFileUpload
             {
@@ -59,8 +57,8 @@ public class AccreditationFileUploadRepositoryTests
                 AccreditationId = 1,
                 FileUploadTypeId = (int)AccreditationFileUploadType.SamplingAndInspectionPlan,
                 FileUploadStatusId = (int)AccreditationFileUploadStatus.FileDeleted,
-                FileName = "deleted.txt",
-                UploadedBy = "A N Other",
+                Filename = "deleted.txt",
+                UpdatedBy = "A N Other",
             },
             new AccreditationFileUpload
             {
@@ -68,8 +66,8 @@ public class AccreditationFileUploadRepositoryTests
                 AccreditationId = 1,
                 FileUploadTypeId = (int)AccreditationFileUploadType.OverseasSiteEvidence,
                 FileUploadStatusId = (int)AccreditationFileUploadStatus.UploadComplete,
-                FileName = "overseas.txt",
-                UploadedBy = "A N Other",
+                Filename = "overseas.txt",
+                UpdatedBy = "A N Other",
             },
             new AccreditationFileUpload
             {
@@ -77,8 +75,8 @@ public class AccreditationFileUploadRepositoryTests
                 AccreditationId = 2,
                 FileUploadTypeId = (int)AccreditationFileUploadType.SamplingAndInspectionPlan,
                 FileUploadStatusId = (int)AccreditationFileUploadStatus.UploadComplete,
-                FileName = "file for acc 2.txt",
-                UploadedBy = "A N Other",
+                Filename = "file for acc 2.txt",
+                UpdatedBy = "A N Other",
             },
         };
 
@@ -108,7 +106,7 @@ public class AccreditationFileUploadRepositoryTests
         // Assert
         result.Should().NotBeNull();
         result.ExternalId.Should().Be(fileUploadId);
-        result.FileName.Should().Be(entityToReturn.FileName);
+        result.Filename.Should().Be(entityToReturn.Filename);
     }
 
     [TestMethod]
@@ -137,7 +135,7 @@ public class AccreditationFileUploadRepositoryTests
         // Assert
         result.Should().NotBeNull();
         result.Count.Should().Be(1);
-        result[0].FileName.Should().Be("complete.txt");
+        result[0].Filename.Should().Be("complete.txt");
     }
 
     [TestMethod]
@@ -152,7 +150,7 @@ public class AccreditationFileUploadRepositoryTests
         // Assert
         result.Should().NotBeNull();
         result.Count.Should().Be(1);
-        result[0].FileName.Should().Be("failed.txt");
+        result[0].Filename.Should().Be("failed.txt");
     }
 
     [TestMethod]
@@ -167,7 +165,7 @@ public class AccreditationFileUploadRepositoryTests
         // Assert
         result.Should().NotBeNull();
         result.Count.Should().Be(1);
-        result[0].FileName.Should().Be("deleted.txt");
+        result[0].Filename.Should().Be("deleted.txt");
     }
 
     [TestMethod]
@@ -182,7 +180,7 @@ public class AccreditationFileUploadRepositoryTests
         // Assert
         result.Should().NotBeNull();
         result.Count.Should().Be(1);
-        result[0].FileName.Should().Be("overseas.txt");
+        result[0].Filename.Should().Be("overseas.txt");
     }
 
     [TestMethod]
@@ -209,8 +207,8 @@ public class AccreditationFileUploadRepositoryTests
             AccreditationId = 1,
             FileUploadTypeId = (int)AccreditationFileUploadType.SamplingAndInspectionPlan,
             FileUploadStatusId = (int)AccreditationFileUploadStatus.UploadComplete,
-            FileName = "new file.txt",
-            UploadedBy = "A N Other",
+            Filename = "new file.txt",
+            UpdatedBy = "A N Other",
         };
 
         // Act
@@ -221,7 +219,7 @@ public class AccreditationFileUploadRepositoryTests
         _dbContext.AccreditationFileUploads.Count().Should().Be(6);
         var entityInContext = _dbContext.AccreditationFileUploads.Last();
         entityInContext.ExternalId.Should().NotBeEmpty();
-        entityInContext.FileName.Should().Be(newEntity.FileName);
+        entityInContext.Filename.Should().Be(newEntity.Filename);
     }
 
     [TestMethod]
@@ -230,7 +228,7 @@ public class AccreditationFileUploadRepositoryTests
         // Arrange
         
         // Act
-        Func<Task> act = async () => await _repository.Create(Guid.NewGuid(), new AccreditationFileUpload { FileName = string.Empty });
+        Func<Task> act = async () => await _repository.Create(Guid.NewGuid(), new AccreditationFileUpload { Filename = string.Empty, UpdatedBy = string.Empty });
 
         // Assert
         await act.Should().ThrowAsync<KeyNotFoundException>()
@@ -253,9 +251,9 @@ public class AccreditationFileUploadRepositoryTests
             FileUploadTypeId = (int)AccreditationFileUploadType.OverseasSiteEvidence,
             FileUploadStatusId = (int)AccreditationFileUploadStatus.FileDeleted,
             FileId = Guid.NewGuid(),
-            FileName = "updated name.txt",
-            UploadedBy = "A Different Person",
-            UploadedOn = DateTime.UtcNow,
+            Filename = "updated name.txt",
+            UpdatedBy = "A Different Person",
+            DateUploaded = DateTime.UtcNow,
             OverseasSiteId = 200
         };
 
@@ -270,9 +268,9 @@ public class AccreditationFileUploadRepositoryTests
         entityInContext.FileUploadTypeId.Should().Be(updatedEntity.FileUploadTypeId);
         entityInContext.FileUploadStatusId.Should().Be(updatedEntity.FileUploadStatusId);
         entityInContext.FileId.Should().Be(updatedEntity.FileId);
-        entityInContext.FileName.Should().Be(updatedEntity.FileName);
-        entityInContext.UploadedBy.Should().Be(updatedEntity.UploadedBy);
-        entityInContext.UploadedOn.Should().Be(updatedEntity.UploadedOn);
+        entityInContext.Filename.Should().Be(updatedEntity.Filename);
+        entityInContext.UpdatedBy.Should().Be(updatedEntity.UpdatedBy);
+        entityInContext.DateUploaded.Should().Be(updatedEntity.DateUploaded);
         entityInContext.OverseasSiteId.Should().Be(updatedEntity.OverseasSiteId);
     }
 
@@ -282,7 +280,7 @@ public class AccreditationFileUploadRepositoryTests
         // Arrange
         
         // Act
-        Func<Task> act = async () => await _repository.Update(_accreditationId, new AccreditationFileUpload { FileName = string.Empty, ExternalId = Guid.NewGuid() });
+        Func<Task> act = async () => await _repository.Update(_accreditationId, new AccreditationFileUpload { Filename = string.Empty, ExternalId = Guid.NewGuid(), UpdatedBy = string.Empty });
 
         // Assert
         await act.Should().ThrowAsync<KeyNotFoundException>()

@@ -4,7 +4,7 @@ using EPR.PRN.Backend.API.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.FeatureManagement.Mvc;
 
-namespace EPR.PRN.Backend.API.Controllers;
+namespace EPR.PRN.Backend.API.Controllers.Accreditation;
 
 [ApiController]
 [ApiVersion("1.0")]
