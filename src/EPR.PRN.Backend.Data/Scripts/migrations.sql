@@ -5714,3 +5714,198 @@ GO
 COMMIT;
 GO
 
+BEGIN TRANSACTION;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250714163811_InterimOverSeasConnectionRelationships'
+)
+BEGIN
+    DECLARE @var46 sysname;
+    SELECT @var46 = [d].[name]
+    FROM [sys].[default_constraints] [d]
+    INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+    WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Public.OverseasAddress]') AND [c].[name] = N'SiteCoordinates');
+    IF @var46 IS NOT NULL EXEC(N'ALTER TABLE [Public.OverseasAddress] DROP CONSTRAINT [' + @var46 + '];');
+    ALTER TABLE [Public.OverseasAddress] ALTER COLUMN [SiteCoordinates] nvarchar(max) NULL;
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250714163811_InterimOverSeasConnectionRelationships'
+)
+BEGIN
+    CREATE INDEX [IX_Public.InterimOverseasConnections_InterimSiteId] ON [Public.InterimOverseasConnections] ([InterimSiteId]);
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250714163811_InterimOverSeasConnectionRelationships'
+)
+BEGIN
+    ALTER TABLE [Public.InterimOverseasConnections] ADD CONSTRAINT [FK_Public.InterimOverseasConnections_Public.OverseasAddress_InterimSiteId] FOREIGN KEY ([InterimSiteId]) REFERENCES [Public.OverseasAddress] ([Id]) ON DELETE NO ACTION;
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250714163811_InterimOverSeasConnectionRelationships'
+)
+BEGIN
+    INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+    VALUES (N'20250714163811_InterimOverSeasConnectionRelationships', N'8.0.8');
+END;
+GO
+
+COMMIT;
+GO
+
+BEGIN TRANSACTION;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250714164749_IsInterimSiteFlag'
+)
+BEGIN
+    ALTER TABLE [Public.OverseasAddress] ADD [IsInterimSite] bit NULL;
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250714164749_IsInterimSiteFlag'
+)
+BEGIN
+    INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+    VALUES (N'20250714164749_IsInterimSiteFlag', N'8.0.8');
+END;
+GO
+
+COMMIT;
+GO
+
+BEGIN TRANSACTION;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250717100928_UpdateOverseasTables'
+)
+BEGIN
+    ALTER TABLE [Public.OverseasAddressWasteCode] DROP CONSTRAINT [FK_Public.OverseasAddressWasteCode_Public.OverseasAddress_OverseasAddressId];
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250717100928_UpdateOverseasTables'
+)
+BEGIN
+    ALTER TABLE [Public.OverseasAddressWasteCode] DROP CONSTRAINT [PK_Public.OverseasAddressWasteCode];
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250717100928_UpdateOverseasTables'
+)
+BEGIN
+    EXEC sp_rename N'[Public.OverseasAddressWasteCode]', N'Public.OverseasAddressWasteCodes';
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250717100928_UpdateOverseasTables'
+)
+BEGIN
+    EXEC sp_rename N'[Public.OverseasAddressWasteCodes].[IX_Public.OverseasAddressWasteCode_OverseasAddressId]', N'IX_Public.OverseasAddressWasteCodes_OverseasAddressId', N'INDEX';
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250717100928_UpdateOverseasTables'
+)
+BEGIN
+    EXEC sp_rename N'[Public.OverseasAddressWasteCodes].[IX_Public.OverseasAddressWasteCode_ExternalId]', N'IX_Public.OverseasAddressWasteCodes_ExternalId', N'INDEX';
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250717100928_UpdateOverseasTables'
+)
+BEGIN
+    ALTER TABLE [Public.OverseasAddressContact] ADD [ExternalId] uniqueidentifier NOT NULL DEFAULT (NEWID());
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250717100928_UpdateOverseasTables'
+)
+BEGIN
+    DECLARE @var47 sysname;
+    SELECT @var47 = [d].[name]
+    FROM [sys].[default_constraints] [d]
+    INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+    WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Public.OverseasAddress]') AND [c].[name] = N'SiteCoordinates');
+    IF @var47 IS NOT NULL EXEC(N'ALTER TABLE [Public.OverseasAddress] DROP CONSTRAINT [' + @var47 + '];');
+    ALTER TABLE [Public.OverseasAddress] ALTER COLUMN [SiteCoordinates] nvarchar(100) NULL;
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250717100928_UpdateOverseasTables'
+)
+BEGIN
+    ALTER TABLE [Public.OverseasAddress] ADD [OrganisationId] uniqueidentifier NULL;
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250717100928_UpdateOverseasTables'
+)
+BEGIN
+    ALTER TABLE [Public.OverseasAddressWasteCodes] ADD CONSTRAINT [PK_Public.OverseasAddressWasteCodes] PRIMARY KEY ([Id]);
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250717100928_UpdateOverseasTables'
+)
+BEGIN
+    CREATE UNIQUE INDEX [IX_Public.OverseasAddressContact_ExternalId] ON [Public.OverseasAddressContact] ([ExternalId]);
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250717100928_UpdateOverseasTables'
+)
+BEGIN
+    ALTER TABLE [Public.OverseasAddressWasteCodes] ADD CONSTRAINT [FK_Public.OverseasAddressWasteCodes_Public.OverseasAddress_OverseasAddressId] FOREIGN KEY ([OverseasAddressId]) REFERENCES [Public.OverseasAddress] ([Id]) ON DELETE CASCADE;
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250717100928_UpdateOverseasTables'
+)
+BEGIN
+    INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+    VALUES (N'20250717100928_UpdateOverseasTables', N'8.0.8');
+END;
+GO
+
+COMMIT;
+GO
+

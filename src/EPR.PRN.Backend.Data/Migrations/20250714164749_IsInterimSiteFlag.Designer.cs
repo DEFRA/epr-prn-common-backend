@@ -4,6 +4,7 @@ using EPR.PRN.Backend.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EPR.PRN.Backend.Data.Migrations
 {
     [DbContext(typeof(EprContext))]
-    partial class EprContextModelSnapshot : ModelSnapshot
+    [Migration("20250714164749_IsInterimSiteFlag")]
+    partial class IsInterimSiteFlag
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,41 +24,6 @@ namespace EPR.PRN.Backend.Data.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
-
-            modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Accreditations.AccreditationTaskStatus", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("AccreditationId")
-                        .HasColumnType("int");
-
-                    b.Property<Guid>("ExternalId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("TaskId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("TaskStatusId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AccreditationId");
-
-                    b.HasIndex("ExternalId")
-                        .IsUnique();
-
-                    b.HasIndex("TaskId");
-
-                    b.HasIndex("TaskStatusId");
-
-                    b.ToTable("Public.AccreditationTaskStatus");
-                });
 
             modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Eprn", b =>
                 {
@@ -899,12 +867,13 @@ namespace EPR.PRN.Backend.Data.Migrations
                     b.Property<int>("AccreditationStatusId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("AccreditationYear")
+                    b.Property<int>("AccreditationYear")
                         .HasColumnType("int");
 
                     b.Property<string>("ApplicationReferenceNumber")
-                        .HasMaxLength(18)
-                        .HasColumnType("nvarchar(18)");
+                        .IsRequired()
+                        .HasMaxLength(12)
+                        .HasColumnType("nvarchar(12)");
 
                     b.Property<string>("BusinessCollectionsNotes")
                         .HasColumnType("varchar(500)");
@@ -918,21 +887,8 @@ namespace EPR.PRN.Backend.Data.Migrations
                     b.Property<decimal?>("CommunicationsPercentage")
                         .HasColumnType("decimal(10,2)");
 
-                    b.Property<Guid>("CreatedBy")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier")
-                        .HasDefaultValueSql("'00000000-0000-0000-0000-000000000000'");
-
                     b.Property<DateTime?>("CreatedOn")
                         .HasColumnType("datetime2");
-
-                    b.Property<string>("DecFullName")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<string>("DecJobTitle")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
 
                     b.Property<Guid>("ExternalId")
                         .ValueGeneratedOnAdd()
@@ -962,7 +918,7 @@ namespace EPR.PRN.Backend.Data.Migrations
                     b.Property<decimal?>("NotCoveredOtherCategoriesPercentage")
                         .HasColumnType("decimal(10,2)");
 
-                    b.Property<int?>("PRNTonnage")
+                    b.Property<int>("PRNTonnage")
                         .HasColumnType("int");
 
                     b.Property<string>("RecycledWasteNotes")
@@ -976,14 +932,6 @@ namespace EPR.PRN.Backend.Data.Migrations
 
                     b.Property<decimal?>("TotalPercentage")
                         .HasColumnType("decimal(10,2)");
-
-                    b.Property<Guid>("UpdatedBy")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier")
-                        .HasDefaultValueSql("'00000000-0000-0000-0000-000000000000'");
-
-                    b.Property<DateTime>("UpdatedOn")
-                        .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
@@ -1083,14 +1031,6 @@ namespace EPR.PRN.Backend.Data.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<int?>("OverseasSiteId")
-                        .HasColumnType("int");
-
-                    b.Property<Guid>("SubmissionId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier")
-                        .HasDefaultValueSql("'00000000-0000-0000-0000-000000000000'");
-
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -1105,33 +1045,6 @@ namespace EPR.PRN.Backend.Data.Migrations
                     b.HasIndex("FileUploadTypeId");
 
                     b.ToTable("public.AccreditationFileUpload");
-                });
-
-            modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.AccreditationPrnIssueAuth", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<Guid>("AccreditationExternalId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("AccreditationId")
-                        .HasColumnType("int");
-
-                    b.Property<Guid>("ExternalId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("PersonExternalId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AccreditationId");
-
-                    b.ToTable("Public.AccreditationPrnIssueAuth");
                 });
 
             modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.AccreditationTaskStatusQueryNote", b =>
@@ -3229,11 +3142,6 @@ namespace EPR.PRN.Backend.Data.Migrations
                         {
                             Id = 1,
                             Name = "SamplingAndInspectionPlan"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Name = "OverseasSiteEvidence"
                         });
                 });
 
@@ -3370,41 +3278,6 @@ namespace EPR.PRN.Backend.Data.Migrations
                         {
                             Id = 5,
                             Name = "Environmental permit or waste management licence"
-                        });
-                });
-
-            modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.LookupMeetConditionsOfExport", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Lookup.MeetConditionsOfExport");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Name = "Yes (Don't Upload)"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Name = "Yes (upload)"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Name = "No"
                         });
                 });
 
@@ -3771,41 +3644,6 @@ namespace EPR.PRN.Backend.Data.Migrations
                         });
                 });
 
-            modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.LookupSiteCheckStatus", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Lookup.SiteCheckStatus");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Name = "NotStarted"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Name = "InProgress"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Name = "Completed"
-                        });
-                });
-
             modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.LookupTaskStatus", b =>
                 {
                     b.Property<int>("Id")
@@ -3905,74 +3743,6 @@ namespace EPR.PRN.Backend.Data.Migrations
                     b.ToTable("Public.Note");
                 });
 
-            modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.OverseasAccreditationSite", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("AccreditationId")
-                        .HasColumnType("int");
-
-                    b.Property<Guid>("CreatedBy")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreatedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("ExpiryDay")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ExpiryMonth")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ExpiryYear")
-                        .HasColumnType("int");
-
-                    b.Property<Guid>("ExternalId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("MeetConditionsOfExportId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("OrganisationName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("OverseasAddressId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("SiteCheckStatusId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("StartDay")
-                        .HasColumnType("int");
-
-                    b.Property<int>("StartMonth")
-                        .HasColumnType("int");
-
-                    b.Property<int>("StartYear")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AccreditationId");
-
-                    b.HasIndex("ExternalId")
-                        .IsUnique();
-
-                    b.HasIndex("MeetConditionsOfExportId");
-
-                    b.HasIndex("OverseasAddressId");
-
-                    b.HasIndex("SiteCheckStatusId");
-
-                    b.ToTable("Public.OverseasAccreditationSite");
-                });
-
             modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.OverseasAddress", b =>
                 {
                     b.Property<int>("Id")
@@ -4013,9 +3783,6 @@ namespace EPR.PRN.Backend.Data.Migrations
                     b.Property<bool?>("IsInterimSite")
                         .HasColumnType("bit");
 
-                    b.Property<Guid?>("OrganisationId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<string>("OrganisationName")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -4029,8 +3796,7 @@ namespace EPR.PRN.Backend.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("SiteCoordinates")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("StateProvince")
                         .HasMaxLength(70)
@@ -4075,11 +3841,6 @@ namespace EPR.PRN.Backend.Data.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<Guid>("ExternalId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier")
-                        .HasDefaultValueSql("NEWID()");
-
                     b.Property<string>("FullName")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -4094,9 +3855,6 @@ namespace EPR.PRN.Backend.Data.Migrations
                         .HasColumnType("nvarchar(25)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ExternalId")
-                        .IsUnique();
 
                     b.HasIndex("OverseasAddressId");
 
@@ -4130,7 +3888,7 @@ namespace EPR.PRN.Backend.Data.Migrations
 
                     b.HasIndex("OverseasAddressId");
 
-                    b.ToTable("Public.OverseasAddressWasteCodes");
+                    b.ToTable("Public.OverseasAddressWasteCode");
                 });
 
             modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.OverseasMaterialReprocessingSite", b =>
@@ -4732,33 +4490,6 @@ namespace EPR.PRN.Backend.Data.Migrations
                     b.ToTable("Public.RegulatorRegistrationTaskStatus");
                 });
 
-            modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Accreditations.AccreditationTaskStatus", b =>
-                {
-                    b.HasOne("EPR.PRN.Backend.Data.DataModels.Registrations.Accreditation", "Accreditation")
-                        .WithMany("AccreditationTasksStatus")
-                        .HasForeignKey("AccreditationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("EPR.PRN.Backend.Data.DataModels.Registrations.LookupApplicantRegistrationTask", "Task")
-                        .WithMany()
-                        .HasForeignKey("TaskId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("EPR.PRN.Backend.Data.DataModels.Registrations.LookupTaskStatus", "TaskStatus")
-                        .WithMany()
-                        .HasForeignKey("TaskStatusId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Accreditation");
-
-                    b.Navigation("Task");
-
-                    b.Navigation("TaskStatus");
-                });
-
             modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.ObligationCalculation", b =>
                 {
                     b.HasOne("EPR.PRN.Backend.Data.DataModels.Material", "Material")
@@ -4845,17 +4576,6 @@ namespace EPR.PRN.Backend.Data.Migrations
                     b.Navigation("FileUploadStatus");
 
                     b.Navigation("FileUploadType");
-                });
-
-            modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.AccreditationPrnIssueAuth", b =>
-                {
-                    b.HasOne("EPR.PRN.Backend.Data.DataModels.Registrations.Accreditation", "Accreditation")
-                        .WithMany("AccreditationPrnIssueAuths")
-                        .HasForeignKey("AccreditationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Accreditation");
                 });
 
             modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.AccreditationTaskStatusQueryNote", b =>
@@ -4984,41 +4704,6 @@ namespace EPR.PRN.Backend.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("RegistrationMaterial");
-                });
-
-            modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.OverseasAccreditationSite", b =>
-                {
-                    b.HasOne("EPR.PRN.Backend.Data.DataModels.Registrations.Accreditation", "Accreditation")
-                        .WithMany("OverseasAccreditationSites")
-                        .HasForeignKey("AccreditationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("EPR.PRN.Backend.Data.DataModels.Registrations.LookupMeetConditionsOfExport", "MeetConditionsOfExport")
-                        .WithMany()
-                        .HasForeignKey("MeetConditionsOfExportId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("EPR.PRN.Backend.Data.DataModels.Registrations.OverseasAddress", "OverseasAddress")
-                        .WithMany()
-                        .HasForeignKey("OverseasAddressId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("EPR.PRN.Backend.Data.DataModels.Registrations.LookupSiteCheckStatus", "SiteCheckStatus")
-                        .WithMany()
-                        .HasForeignKey("SiteCheckStatusId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Accreditation");
-
-                    b.Navigation("MeetConditionsOfExport");
-
-                    b.Navigation("OverseasAddress");
-
-                    b.Navigation("SiteCheckStatus");
                 });
 
             modelBuilder.Entity("EPR.PRN.Backend.Data.DataModels.Registrations.OverseasAddress", b =>
@@ -5348,13 +5033,7 @@ namespace EPR.PRN.Backend.Data.Migrations
                 {
                     b.Navigation("AccreditationDulyMade");
 
-                    b.Navigation("AccreditationPrnIssueAuths");
-
-                    b.Navigation("AccreditationTasksStatus");
-
                     b.Navigation("FileUploads");
-
-                    b.Navigation("OverseasAccreditationSites");
 
                     b.Navigation("Tasks");
                 });
