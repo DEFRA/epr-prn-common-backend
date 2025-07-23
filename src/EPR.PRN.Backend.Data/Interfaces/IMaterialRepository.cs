@@ -16,4 +16,7 @@ public interface IMaterialRepository
 
     Task<IEnumerable<Material>> GetMaterialsByRegistrationIdQuery(Guid registrationId);
     Task SaveOverseasReprocessingSites(UpdateOverseasAddressDto overseasAddressSubmission);
+    Task UpdateMaterialNotReprocessingReason(Guid registrationMaterialId, string materialNotReprocessingReason);
+    Task<IList<OverseasMaterialReprocessingSite>> GetOverseasMaterialReprocessingSites(Guid registrationMaterialId);
+    Task SaveInterimSitesAsync(SaveInterimSitesRequestDto requestDto);
 }

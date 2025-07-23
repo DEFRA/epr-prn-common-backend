@@ -394,6 +394,10 @@ public class EprContext : DbContext
             .HasIndex(e => e.ExternalId)
             .IsUnique(); // Ensures UniqueId is unique
 
+        modelBuilder.Entity<OverseasAddressContact>()
+            .HasIndex(e => e.ExternalId)
+            .IsUnique(); // Ensures UniqueId is unique
+
         modelBuilder.Entity<RegistrationMaterial>()
             .HasOne(r => r.RegistrationMaterialContact)
             .WithOne()
@@ -463,6 +467,9 @@ public class EprContext : DbContext
         modelBuilder.Entity<OverseasAddressContact>()
             .Property(e => e.CreatedOn).HasDefaultValueSql("GETUTCDATE()");
 
+        modelBuilder.Entity<OverseasAddressContact>()
+            .Property(e => e.ExternalId).HasDefaultValueSql("NEWID()");
+
         modelBuilder.Entity<InterimOverseasConnections>()
             .HasIndex(e => e.ExternalId)
             .IsUnique(); // Ensures UniqueId is unique
@@ -481,10 +488,17 @@ public class EprContext : DbContext
             .WithMany(x => x.OverseasMaterialReprocessingSites)
             .OnDelete(DeleteBehavior.Cascade);
 
-        modelBuilder.Entity<InterimOverseasConnections>().HasOne(o => o.OverseasAddress)
-            .WithMany(x => x.InterimOverseasConnections)
-            .HasForeignKey(o => o.ParentOverseasAddressId)            
+        modelBuilder.Entity<InterimOverseasConnections>()
+            .HasOne(ic => ic.ParentOverseasAddress)
+            .WithMany(oa => oa.ChildInterimConnections)
+            .HasForeignKey(ic => ic.ParentOverseasAddressId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<InterimOverseasConnections>()
+            .HasOne(ic => ic.OverseasAddress)
+            .WithMany(oa => oa.InterimConnections)
+            .HasForeignKey(ic => ic.InterimSiteId)
+            .OnDelete(DeleteBehavior.Restrict);
 
         base.OnModelCreating(modelBuilder);
     }
