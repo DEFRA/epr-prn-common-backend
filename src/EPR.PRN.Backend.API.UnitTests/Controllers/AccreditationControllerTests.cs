@@ -299,17 +299,8 @@ public class AccreditationControllerTests
         // Arrange
         var organisationId = Guid.NewGuid();
         var query = new GetAccreditationsOverviewByOrgIdQuery { OrganisationId = organisationId };
-        var expectedResult = new List<AccreditationOverviewDto>
-        {
-            new AccreditationOverviewDto
-            {
-                OrganisationId = organisationId
-            },
-            new AccreditationOverviewDto
-            {
-                OrganisationId = organisationId,
-            }
-        };
+        var expectedResult = _fixture.Build<AccreditationOverviewDto>()
+            .CreateMany(3);
 
         _mediatorMock.Setup(m => m.Send(It.IsAny<GetAccreditationsOverviewByOrgIdQuery>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(expectedResult);
@@ -332,17 +323,7 @@ public class AccreditationControllerTests
         // Arrange
         var organisationId = Guid.NewGuid();
         var query = new GetAccreditationsOverviewByOrgIdQuery();
-        var expectedResult = new List<AccreditationOverviewDto>
-        {
-            new AccreditationOverviewDto
-            {
-                OrganisationId = organisationId
-            },
-            new AccreditationOverviewDto
-            {
-                OrganisationId = organisationId,
-            }
-        };
+        var expectedResult = _fixture.CreateMany<AccreditationOverviewDto>(3);
 
         _mediatorMock.Setup(m => m.Send(It.IsAny<GetAccreditationsOverviewByOrgIdQuery>(), It.IsAny<CancellationToken>()))
             .ThrowsAsync(new FluentValidation.ValidationException("Invalid organisation ID"));

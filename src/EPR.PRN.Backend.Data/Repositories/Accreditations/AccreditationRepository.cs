@@ -106,7 +106,6 @@ public class AccreditationRepository(EprContext eprContext, IMapper mapper, ILog
         var data= await eprContext.Accreditations
              .Include(x => x.RegistrationMaterial)
                 .ThenInclude(x => x.Registration)           
-            .Include(x => x.RegistrationMaterial)
             .Where(a => a.RegistrationMaterial.Registration.OrganisationId == organisationId)            
             .ToListAsync();
 
