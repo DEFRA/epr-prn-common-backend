@@ -1,4 +1,5 @@
-﻿using EPR.PRN.Backend.API.Handlers.Regulator;
+﻿using AutoFixture;
+using EPR.PRN.Backend.API.Handlers.Regulator;
 using EPR.PRN.Backend.API.Queries;
 using EPR.PRN.Backend.API.Services.Interfaces;
 using EPR.PRN.Backend.Data.DTO.Accreditiation;
@@ -14,10 +15,12 @@ namespace EPR.PRN.Backend.API.UnitTests.Handlers
         private Mock<IAccreditationRepository> _mockAccreditationRepository;
         private Mock<IValidationService> _mockValidationService;
         private GetAccreditationsOverviewByOrgIdQueryHandler _handlerUnderTest;
+        private IFixture _fixture;
 
         [TestInitialize]
         public void TestInitialize()
         {
+            _fixture = new Fixture();
             _mockAccreditationRepository = new Mock<IAccreditationRepository>();
             _mockValidationService = new Mock<IValidationService>();
             _handlerUnderTest = new GetAccreditationsOverviewByOrgIdQueryHandler(_mockAccreditationRepository.Object, _mockValidationService.Object);
@@ -31,25 +34,8 @@ namespace EPR.PRN.Backend.API.UnitTests.Handlers
             var externalId = Guid.NewGuid();
             var query = new GetAccreditationsOverviewByOrgIdQuery { OrganisationId = organisationId };
 
-            var expectedDto = new List<AccreditationOverviewDto>
-            {
-                new AccreditationOverviewDto
-                {
-                    OrganisationId = organisationId
-                },
-                new AccreditationOverviewDto
-                {
-                    OrganisationId = organisationId
-                },
-                new AccreditationOverviewDto
-                {
-                    OrganisationId = organisationId
-                },
-                new AccreditationOverviewDto
-                {
-                    OrganisationId = organisationId
-                }
-            };
+            var expectedDto  = _fixture.CreateMany<AccreditationOverviewDto>(3);
+
 
             _mockAccreditationRepository.Setup(x => x.GetAccreditationOverviewForOrgId(organisationId))
                 .ReturnsAsync(expectedDto);

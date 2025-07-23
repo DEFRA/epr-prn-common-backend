@@ -3,6 +3,7 @@ using AutoMapper;
 using EPR.PRN.Backend.API.Dto.Accreditation;
 using EPR.PRN.Backend.Data.DataModels.Accreditations;
 using EPR.PRN.Backend.Data.DataModels.Registrations;
+using EPR.PRN.Backend.Data.DTO.Accreditiation;
 
 namespace EPR.PRN.Backend.API.Profiles;
 
@@ -16,11 +17,7 @@ public class AccreditationProfile : Profile
         CreateMap<AccreditationPrnIssueAuth, AccreditationPrnIssueAuthDto>();
         CreateMap<AccreditationPrnIssueAuthRequestDto, AccreditationPrnIssueAuth>();
 
-        CreateMap<Accreditation, AccreditationDto>()
-
-
-
-            
+        CreateMap<Accreditation, AccreditationDto>()       
             .ForMember(dest => dest.MaterialName, opt => opt.MapFrom(src => src.RegistrationMaterial.Material.MaterialName))            
             .ForMember(dest => dest.AccreditationStatusId, opt => opt.MapFrom(src => src.AccreditationStatusId))            
             .ForMember(dest => dest.ApplicationTypeId, opt => opt.MapFrom(src => src.RegistrationMaterial.Registration.ApplicationTypeId))            
@@ -69,10 +66,13 @@ public class AccreditationProfile : Profile
             .ForMember(des => des.RecycledWasteNotes, opt => opt.MapFrom(src => src.PackagingWasteNotes))
             ;
 
-        CreateMap<Data.DataModels.Registrations.AccreditationPrnIssueAuth, AccreditationPrnIssueAuthDto>();
-        CreateMap<AccreditationPrnIssueAuthRequestDto, Data.DataModels.Registrations.AccreditationPrnIssueAuth>();
+        CreateMap<AccreditationPrnIssueAuth, AccreditationPrnIssueAuthDto>();
+        CreateMap<AccreditationPrnIssueAuthRequestDto, AccreditationPrnIssueAuth>();
 
-        CreateMap<Data.DataModels.Registrations.OverseasAccreditationSite, OverseasAccreditationSiteDto>();
-        CreateMap<OverseasAccreditationSiteDto, Data.DataModels.Registrations.OverseasAccreditationSite>();
+        CreateMap<OverseasAccreditationSite, OverseasAccreditationSiteDto>();
+        CreateMap<OverseasAccreditationSiteDto, OverseasAccreditationSite>();
+
+        CreateMap<Accreditation, AccreditationOverviewDto>();
+        CreateMap<RegistrationMaterial, RegistrationMaterialDto>();
     }
 }
