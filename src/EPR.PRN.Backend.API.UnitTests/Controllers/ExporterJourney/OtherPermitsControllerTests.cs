@@ -80,7 +80,7 @@ public class OtherPermitsControllerTests
             .ReturnsAsync(true);
 
         // Act
-        var dto = new CreateCarrierBrokerDealerPermitsDto() { WasteCarrierBrokerDealerRegistration = "test 1" };
+        var dto = new CreateCarrierBrokerDealerPermitsDto() { WasteCarrierBrokerDealerRegistration = "test 1", RegisteredWasteCarrierBrokerDealerFlag = true };
         var result = await _controller.CreateCarrierBrokerDealerPermits(Guid.Empty, Guid.Empty, dto);
 
         // Assert
