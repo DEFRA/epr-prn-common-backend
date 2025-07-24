@@ -504,7 +504,7 @@ public class RegistrationRepositoryTests
         result.Should().NotBeNull();
         result.Should().HaveCount(1);
         var overview = result.First();
-        overview.RegistrationId.Should().Be(registration.ExternalId);
+        overview.Id.Should().Be(registration.ExternalId);
         overview.Material.Should().Be("Plastic");
         overview.ReprocessingSiteAddress.Should().NotBeNull();
         overview.ReprocessingSiteAddress!.AddressLine1.Should().Be("123 Test St");
@@ -532,7 +532,7 @@ public class RegistrationRepositoryTests
         result.Should().NotBeNull();
         result.Should().HaveCount(1);
         var overview = result.First();
-        overview.RegistrationId.Should().Be(registration.ExternalId);
+        overview.Id.Should().Be(registration.ExternalId);
         overview.Material.Should().Be(string.Empty);
     }
 
@@ -570,7 +570,7 @@ public class RegistrationRepositoryTests
         result.Should().NotBeNull();
         result.Should().HaveCount(1);
         var overview = result.First();
-        overview.RegistrationId.Should().Be(registration.ExternalId);
+        overview.Id.Should().Be(registration.ExternalId);
         overview.Material.Should().Be("Glass");
         overview.ReprocessingSiteAddress.Should().BeNull();
     }

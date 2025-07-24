@@ -16,6 +16,7 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace EPR.PRN.Backend.API.UnitTests.Controllers;
 
@@ -418,4 +419,129 @@ public class RegistrationMaterialControllerTests
         // Act & Assert
         await Assert.ThrowsExceptionAsync<ValidationException>(async () => await _controller.UpdateRegistrationMaterialTaskStatus(externalId, command));
     }
+
+    [TestMethod]
+    public async Task UpdateMaterialNotReprocessingReasonAsync_EnsureCorrectResult()
+    {
+        // Arrange
+        var registrationMaterialId = Guid.NewGuid();
+        var reason = "Material is contaminated";
+
+        var expectedCommand = new UpdateMaterialNotReprocessingReasonCommand
+        {
+            RegistrationMaterialId = registrationMaterialId,
+            MaterialNotReprocessingReason = reason
+        };
+
+        var command = _fixture.Build<UpdateMaterialNotReprocessingReasonCommand>()
+                              .Without(c => c.RegistrationMaterialId)
+                              .Create();
+
+        _validationServiceMock.Setup(v => v.ValidateAsync(command, default))
+           .ReturnsAsync(new FluentValidation.Results.ValidationResult());
+
+        _mediatorMock
+            .Setup(m => m.Send(It.Is<UpdateMaterialNotReprocessingReasonCommand>(cmd =>
+                cmd.RegistrationMaterialId == registrationMaterialId &&
+                cmd.MaterialNotReprocessingReason == reason), It.IsAny<CancellationToken>()))
+            .Returns(Task.CompletedTask);
+
+        // Act
+        var result = await _controller.UpdateMaterialNotReprocessingReasonAsync(registrationMaterialId, reason);
+
+        // Assert
+        result.Should().BeOfType<OkResult>();
+    }
+
+    [TestMethod]
+    public async Task UpdateMaterialNotReprocessingReasonAsync_ShouldThrowException_WhenMediatorFails()
+    {
+        // Arrange
+        _mediatorMock
+            .Setup(m => m.Send(It.IsAny<UpdateMaterialNotReprocessingReasonCommand>(), It.IsAny<CancellationToken>()))
+            .ThrowsAsync(new InvalidOperationException("Mediator failed"));
+
+        // Act
+        Func<Task> act = async () => await _controller.UpdateMaterialNotReprocessingReasonAsync(Guid.NewGuid(), "reason");
+
+        // Assert
+        await act.Should().ThrowAsync<InvalidOperationException>()
+            .WithMessage("Mediator failed");
+    }
+
+    [TestMethod]
+    public async Task GetOverseasMaterialReprocessingSites_ShouldReturnOkWithExpectedData()
+    {
+        // Arrange
+        var registrationMaterialId = Guid.NewGuid();
+        var expectedSites = _fixture.Create<List<OverseasMaterialReprocessingSiteDto>>();
+
+        _mediatorMock
+            .Setup(m => m.Send(
+                It.Is<GetOverseasMaterialReprocessingSitesQuery>(q =>
+                    q.RegistrationMaterialId == registrationMaterialId),
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(expectedSites);
+
+        // Act
+        var result = await _controller.GetOverseasMaterialReprocessingSites(registrationMaterialId);
+
+        // Assert
+        result.Should().BeOfType<OkObjectResult>();
+        var okResult = result as OkObjectResult;
+        okResult!.Value.Should().BeEquivalentTo(expectedSites);
+
+        _mediatorMock.Verify(m => m.Send(
+                It.Is<GetOverseasMaterialReprocessingSitesQuery>(q =>
+                    q.RegistrationMaterialId == registrationMaterialId),
+                It.IsAny<CancellationToken>()),
+            Times.Once);
+
+        _loggerMock.Verify(
+            x => x.Log(
+                LogLevel.Information,
+                It.IsAny<EventId>(),
+                It.Is<It.IsAnyType>((v, t) => true),
+                It.IsAny<Exception>(),
+                It.IsAny<Func<It.IsAnyType, Exception, string>>()),
+            Times.Once);
+    }
+
+    [TestMethod]
+    public async Task SaveInterimSites_ShouldSendCommandAndReturnNoContent()
+    {
+        // Arrange
+        var registrationMaterialId = Guid.NewGuid();
+        var dto = new SaveInterimSitesRequestDto
+        {
+            RegistrationMaterialId = registrationMaterialId,
+            UserId = Guid.NewGuid(),
+            OverseasMaterialReprocessingSites = new List<OverseasMaterialReprocessingSiteDto>()
+        };
+
+        // Mock mediator to accept UpsertInterimSiteCommand and return successfully
+        _mediatorMock
+            .Setup(m => m.Send(It.Is<UpsertInterimSiteCommand>(cmd =>
+            cmd.InterimSitesRequestDto == dto), It.IsAny<CancellationToken>()))
+            .Returns(Task.FromResult(Unit.Value));
+        
+        // Act
+        var result = await _controller.SaveInterimSites(registrationMaterialId, dto);
+
+        // Assert
+        result.Should().BeOfType<NoContentResult>();
+        _mediatorMock.Verify(m => m.Send(It.Is<UpsertInterimSiteCommand>(cmd =>
+            cmd.InterimSitesRequestDto == dto), It.IsAny<CancellationToken>()), Times.Once);
+
+        _loggerMock.Verify(
+            x => x.Log(
+                LogLevel.Information,
+                It.IsAny<EventId>(),
+                It.Is<It.IsAnyType>((v, t) => true),
+                It.IsAny<Exception>(),
+                It.IsAny<Func<It.IsAnyType, Exception, string>>()),
+            Times.Once);
+    }
+
+
 }

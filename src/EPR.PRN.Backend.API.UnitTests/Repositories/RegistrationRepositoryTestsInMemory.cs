@@ -107,7 +107,7 @@ public class RegistrationRepositoryTestsInMemory
         result.Should().NotBeNull();
         result.Should().HaveCount(1);
         var overview = result.First();
-        overview.RegistrationId.Should().Be(registration.ExternalId);
+        overview.Id.Should().Be(registration.ExternalId);
         overview.Material.Should().Be("Plastic");
         overview.AccreditationStatus.Should().Be(accreditationStatus.Id);
         overview.AccreditationYear.Should().Be(2023);
@@ -222,14 +222,14 @@ public class RegistrationRepositoryTestsInMemory
         result.Should().NotBeNull();
         result.Should().HaveCount(2);
         var firstOverview = result.First();
-        firstOverview.RegistrationId.Should().Be(registrations[0].ExternalId);
+        firstOverview.Id.Should().Be(registrations[0].ExternalId);
         firstOverview.Material.Should().Be("Plastic");
         firstOverview.AccreditationStatus.Should().Be(accreditationStatus1.Id);
         firstOverview.AccreditationYear.Should().Be(2023);
         firstOverview.ReprocessingSiteAddress.Should().NotBeNull();
         firstOverview.ReprocessingSiteAddress!.AddressLine1.Should().Be("123 Test St");
         var secondOverview = result.Last();
-        secondOverview.RegistrationId.Should().Be(registrations[1].ExternalId);
+        secondOverview.Id.Should().Be(registrations[1].ExternalId);
         secondOverview.Material.Should().Be("Plastic");
         secondOverview.AccreditationStatus.Should().Be(accreditationStatus2.Id);
         secondOverview.AccreditationYear.Should().Be(2024);
@@ -289,12 +289,12 @@ public class RegistrationRepositoryTestsInMemory
         result.Should().NotBeNull();
         result.Should().HaveCount(2);
         var firstOverview = result.First();
-        firstOverview.RegistrationId.Should().Be(registrationWithNullMaterials.ExternalId);
+        firstOverview.Id.Should().Be(registrationWithNullMaterials.ExternalId);
         firstOverview.Material.Should().Be(string.Empty); // Material should be empty for null Materials
         firstOverview.ReprocessingSiteAddress.Should().NotBeNull();
         firstOverview.ReprocessingSiteAddress!.AddressLine1.Should().Be("123 Test St");
         var secondOverview = result.Last();
-        secondOverview.RegistrationId.Should().Be(registrationWithEmptyMaterials.ExternalId);
+        secondOverview.Id.Should().Be(registrationWithEmptyMaterials.ExternalId);
         secondOverview.Material.Should().Be(string.Empty); // Material should be empty for empty Materials
         secondOverview.ReprocessingSiteAddress.Should().NotBeNull();
         secondOverview.ReprocessingSiteAddress!.AddressLine1.Should().Be("456 Another St");

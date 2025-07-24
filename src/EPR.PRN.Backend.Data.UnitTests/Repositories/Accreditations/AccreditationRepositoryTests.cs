@@ -1,25 +1,32 @@
-﻿using EPR.PRN.Backend.Data.DataModels.Accreditations;
+﻿using AutoMapper;
+using EPR.PRN.Backend.Data.DataModels.Accreditations;
 using EPR.PRN.Backend.Data.DataModels.Registrations;
 using EPR.PRN.Backend.Data.Repositories.Accreditations;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using Moq;
 
 namespace EPR.PRN.Backend.Data.UnitTests.Repositories.Accreditations;
 
 [TestClass]
 public class AccreditationRepositoryTests
 {
-    private EprAccreditationContext _dbContext;
+    private EprContext _dbContext;
     private AccreditationRepository _repository;
+    private Mock<IMapper> _mapper;
+    private Mock<ILogger<AccreditationRepository>> _mockLogger;
 
     [TestInitialize]
     public void Setup()
     {
-        var options = new DbContextOptionsBuilder<EprAccreditationContext>()
+        var options = new DbContextOptionsBuilder<EprContext>()
             .UseInMemoryDatabase(databaseName: "TestDatabase" + Guid.NewGuid().ToString())
             .Options;
-        _dbContext = new EprAccreditationContext(options);
-        _repository = new AccreditationRepository(_dbContext);
+        _mapper = new Mock<IMapper> ();
+        _dbContext = new EprContext(options);
+        _mockLogger = new Mock<ILogger<AccreditationRepository>>();
+        _repository = new AccreditationRepository(_dbContext, _mapper.Object, _mockLogger.Object);
 
         LookupMaterial material = new()
         {
@@ -28,38 +35,63 @@ public class AccreditationRepositoryTests
             MaterialCode = "code"
         };
 
+        Registration registration = new()
+        {
+            Id = 1,
+            ExternalId = new Guid("11111111-1111-1111-1111-111111111111"),
+            OrganisationId = Guid.NewGuid(),
+            ApplicationTypeId = 1,
+            CreatedBy = Guid.NewGuid(),
+            CreatedDate = DateTime.UtcNow,
+            UpdatedBy = Guid.NewGuid(),
+            UpdatedDate = DateTime.UtcNow
+        };
+
         RegistrationMaterial registrationMaterial = new()
         {
             MaterialId = 1,
-            Material = material
+            Material = material,
+            Registration = registration
         };
 
+        LookupAccreditationStatus accreditationStatus = new()
+        {
+            Id = 1,
+            Name = "Active"
+      
+        };
+
+
         _dbContext.Accreditations.AddRange(
-            new List<AccreditationEntity>
+            new List<Accreditation>
             {
-                new AccreditationEntity
+                new Accreditation
                 {
                     Id = 1,
-                    ExternalId = new Guid("11111111-1111-1111-1111-111111111111"), 
+                    ExternalId = new Guid("11111111-1111-1111-1111-111111111111"),
+                    
                     AccreditationYear = 2026,
-                    ApplicationTypeId = 1,
-                    ApplicationType = new(),
+           
+                    //ApplicationType = new(),
                     AccreditationStatusId = 1,
-                    AccreditationStatus = new(),
-                    RegistrationMaterialId = 1,
-                    RegistrationMaterial = registrationMaterial
+                
+                    AccreditationStatus = accreditationStatus,
+                    RegistrationMaterial = registrationMaterial,
+                    ApplicationReferenceNumber = "APP-123456",
                 },
-                new AccreditationEntity
+                new Accreditation
                 {
                     Id = 2,
                     ExternalId = new Guid("22222222-2222-2222-2222-222222222222"),
+              
                     AccreditationYear = 2026,
-                    ApplicationTypeId = 1,
-                    ApplicationType = new(),
+                    //ApplicationTypeId = 1,
+                    //ApplicationType = new(),
                     AccreditationStatusId = 1,
-                    AccreditationStatus = new(),
+                    AccreditationStatus = accreditationStatus,
                     RegistrationMaterialId = 1,
-                    RegistrationMaterial = registrationMaterial
+                    RegistrationMaterial = registrationMaterial,
+                    ApplicationReferenceNumber = "APP-123456",
                 }
             });
         _dbContext.SaveChangesAsync();
@@ -101,7 +133,7 @@ public class AccreditationRepositoryTests
     public async Task Create_ShouldAddNewEntity()
     {
         // Arrange
-        var accreditation = new AccreditationEntity { AccreditationYear = 2026 };
+        var accreditation = new Accreditation { AccreditationYear = 2026, ApplicationReferenceNumber = "APP-123456", };
 
         // Act
         await _repository.Create(accreditation);
@@ -119,7 +151,7 @@ public class AccreditationRepositoryTests
     {
         // Arrange
         var accreditationId = new Guid("11111111-1111-1111-1111-111111111111");
-        var accreditation = new AccreditationEntity { Id = 1, ExternalId = accreditationId, AccreditationYear = 2027 };
+        var accreditation = new Accreditation { Id = 1, ExternalId = accreditationId, AccreditationYear = 2027, ApplicationReferenceNumber = "APP-123456", };
 
         // Act
         await _repository.Update(accreditation);
@@ -129,5 +161,57 @@ public class AccreditationRepositoryTests
         updatedAccreditation.Should().NotBeNull();
         updatedAccreditation.ExternalId.Should().Be(accreditationId);
         updatedAccreditation.AccreditationYear.Should().Be(2027);
+    }
+
+    [TestMethod]
+    public async Task GetAccreditationDetails_NoRecords_ReturnsNull()
+    {
+        // Arrange
+        
+        // Act
+        var result = await _repository.GetAccreditationDetails(new Guid(), It.IsAny<int>(), It.IsAny<int>());
+
+        // Assert
+        result.Should().BeNull();
+    }
+
+    [TestMethod]
+    public async Task GetAccreditationOverviewForOrgId_NoRecordsFound_ReturnsEmptyList()
+    {
+        // Arrange
+        var organisationId = Guid.NewGuid();
+        var orgId = Guid.NewGuid();
+        var accreditations = new List<Accreditation>
+        {
+            new Accreditation
+            {
+                ExternalId = Guid.NewGuid(),
+             
+            },
+            new Accreditation
+            {
+                ExternalId = Guid.NewGuid(),
+                
+            },
+            new Accreditation
+            {
+                ExternalId = Guid.NewGuid(),
+       
+            },
+            new Accreditation
+            {
+                ExternalId = Guid.NewGuid(),
+        
+            }
+        };
+
+        await _dbContext.AddRangeAsync(accreditations);
+        await _dbContext.SaveChangesAsync();
+
+        // Act
+        var result = await _repository.GetAccreditationOverviewForOrgId(orgId);
+
+        // Assert
+        result.Should().BeNull();
     }
 }

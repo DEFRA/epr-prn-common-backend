@@ -160,7 +160,7 @@ public class RegistrationMaterialRepository(ILogger<RegistrationMaterialReposito
     public async Task CreateExemptionReferencesAsync(Guid registrationMaterialId, List<MaterialExemptionReference> exemptionReferences)
     {
         var material = await eprContext.RegistrationMaterials.FirstOrDefaultAsync(rm => rm.ExternalId == registrationMaterialId);
-        
+
         if (material is null) throw new KeyNotFoundException("Material not found.");
 
         foreach (var exemptionReference in exemptionReferences)
@@ -375,28 +375,28 @@ public class RegistrationMaterialRepository(ILogger<RegistrationMaterialReposito
         eprContext.RegistrationMaterials.Remove(existing);
 
         await eprContext.SaveChangesAsync();
-	}
+    }
 
-	public async Task UpdateIsMaterialRegisteredAsync(List<UpdateIsMaterialRegisteredDto> updateIsMaterialRegisteredDto)
-	{
+    public async Task UpdateIsMaterialRegisteredAsync(List<UpdateIsMaterialRegisteredDto> updateIsMaterialRegisteredDto)
+    {
         foreach (var registrationMaterial in updateIsMaterialRegisteredDto)
         {
-			var existing =
-			await eprContext.RegistrationMaterials.SingleOrDefaultAsync(o => o.ExternalId == registrationMaterial.RegistrationMaterialId);
+            var existing =
+            await eprContext.RegistrationMaterials.SingleOrDefaultAsync(o => o.ExternalId == registrationMaterial.RegistrationMaterialId);
 
-			if (existing is null)
-			{
-				throw new KeyNotFoundException("Registration material not found.");
-			}
+            if (existing is null)
+            {
+                throw new KeyNotFoundException("Registration material not found.");
+            }
 
             existing.IsMaterialRegistered = registrationMaterial.IsMaterialRegistered!.Value;
             existing.StatusId = (int)RegistrationMaterialStatus.InProgress;
 
-			eprContext.RegistrationMaterials.Update(existing);
-		}
+            eprContext.RegistrationMaterials.Update(existing);
+        }
 
-		await eprContext.SaveChangesAsync();
-	}
+        await eprContext.SaveChangesAsync();
+    }
 
     public async Task UpdateRegistrationTaskStatusAsync(string taskName, Guid registrationMaterialId, TaskStatuses status)
     {

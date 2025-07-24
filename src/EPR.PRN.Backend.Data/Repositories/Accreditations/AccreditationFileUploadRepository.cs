@@ -1,11 +1,12 @@
 ﻿using EPR.PRN.Backend.API.Common.Enums;
-using EPR.PRN.Backend.Data.DataModels.Accreditations;
-using EPR.PRN.Backend.Data.Interfaces.Accreditations;
+using EPR.PRN.Backend.Data.DataModels.Registrations;
+using EPR.PRN.Backend.Data.Interfaces.Accreditation;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace EPR.PRN.Backend.Data.Repositories.Accreditations;
 
-public class AccreditationFileUploadRepository(EprAccreditationContext eprContext) : IAccreditationFileUploadRepository
+public class AccreditationFileUploadRepository(EprContext eprContext, ILogger<AccreditationFileUploadRepository> logger) : IAccreditationFileUploadRepository
 {
     public async Task<AccreditationFileUpload> GetByExternalId(Guid accreditationFileUploadId)
     {
@@ -39,10 +40,10 @@ public class AccreditationFileUploadRepository(EprAccreditationContext eprContex
             AccreditationId = await GetAccreditationIntegerId(accreditationId),
             SubmissionId = fileUpload.SubmissionId,
             OverseasSiteId = fileUpload.OverseasSiteId,
-            FileName = fileUpload.FileName,
+            Filename = fileUpload.Filename,
             FileId = fileUpload.FileId,
-            UploadedOn = fileUpload.UploadedOn,
-            UploadedBy = fileUpload.UploadedBy,
+            DateUploaded = fileUpload.DateUploaded,
+            UpdatedBy = fileUpload.UpdatedBy,
             FileUploadTypeId = fileUpload.FileUploadTypeId,
             FileUploadStatusId = fileUpload.FileUploadStatusId
         };
@@ -63,10 +64,10 @@ public class AccreditationFileUploadRepository(EprAccreditationContext eprContex
 
         existingEntity.AccreditationId = await GetAccreditationIntegerId(accreditationId);
         existingEntity.OverseasSiteId = fileUpload.OverseasSiteId;
-        existingEntity.FileName = fileUpload.FileName;
+        existingEntity.Filename = fileUpload.Filename;
         existingEntity.FileId = fileUpload.FileId;
-        existingEntity.UploadedOn = fileUpload.UploadedOn;
-        existingEntity.UploadedBy = fileUpload.UploadedBy;
+        existingEntity.DateUploaded = fileUpload.DateUploaded;
+        existingEntity.UpdatedBy = fileUpload.UpdatedBy;
         existingEntity.FileUploadTypeId = fileUpload.FileUploadTypeId;
         existingEntity.FileUploadStatusId = fileUpload.FileUploadStatusId;
 
@@ -91,6 +92,7 @@ public class AccreditationFileUploadRepository(EprAccreditationContext eprContex
 
     private async Task<int> GetAccreditationIntegerId(Guid accreditationId)
     {
+        logger.LogInformation("Retrieving accreditation ID for external ID: {AccreditationId}.", accreditationId);
         var accreditationIdInt = await eprContext.Accreditations.Where(x => x.ExternalId == accreditationId).Select(x => x.Id).SingleOrDefaultAsync();
 
         if (accreditationIdInt == 0)
