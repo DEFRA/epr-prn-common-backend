@@ -14,7 +14,7 @@ public class OverseasAddressBaseDto
     public Guid ExternalId { get; set; }
     public required string OrganisationName { get; set; }
     [MaxLength(20)]
-    public required string PostCode { get; set; }
+    public string? PostCode { get; set; }
     [MaxLength(70)]
     public string? StateProvince { get; set; }
 }
