@@ -500,7 +500,7 @@ public class RegistrationMaterialControllerTests
     [TestMethod]
     [DataRow("Abc 10")]
     [DataRow(null)]
-    public async Task SaveInterimSites_PostCode_ShouldBeNullable(string? postcode)
+    public async Task SaveInterimSites_PostCode_ShouldBeNullable(string postcode = null)
     {
         // Arrange
         var registrationMaterialId = Guid.NewGuid();
