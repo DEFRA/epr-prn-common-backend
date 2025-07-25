@@ -9,6 +9,7 @@ using EPR.PRN.Backend.API.Queries;
 using EPR.PRN.Backend.API.Services.Interfaces;
 using EPR.PRN.Backend.Data.DTO;
 using FluentAssertions;
+using FluentAssertions.Execution;
 using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -494,6 +495,66 @@ public class RegistrationMaterialControllerTests
                 It.IsAny<Exception>(),
                 It.IsAny<Func<It.IsAnyType, Exception, string>>()),
             Times.Once);
+    }
+
+    [TestMethod]
+    [DataRow("Abc 10")]
+    [DataRow(null)]
+    public async Task SaveInterimSites_PostCode_ShouldBeNullable(string? postcode)
+    {
+        // Arrange
+        var registrationMaterialId = Guid.NewGuid();
+
+        var overseasAddressContacts = new List<OverseasAddressContactDto>();
+
+        var overseasAddressWasteCodes = new List<OverseasAddressWasteCodeDto>();
+
+        var overseasAddress = new OverseasAddressDto
+        {
+            ExternalId = Guid.NewGuid(),
+            OrganisationName = "Sample Org",
+            AddressLine1 = "Address Line 1",
+            AddressLine2 = "Suite 100",
+            CityOrTown = "Sample City",
+            StateProvince = "Sample State",
+            PostCode = postcode,
+            CreatedBy = Guid.NewGuid(),
+            UpdatedBy = Guid.NewGuid(),
+            SiteCoordinates = "51.5074,-0.1278",
+            CountryName = "Sample Country",
+            OverseasAddressContacts = overseasAddressContacts,
+            OverseasAddressWasteCodes = overseasAddressWasteCodes
+        };
+
+        var overseasMaterialReprocessingSite = new OverseasMaterialReprocessingSiteDto
+        {
+            OverseasAddress = overseasAddress,
+            InterimSiteAddresses = new List<InterimSiteAddressDto>()
+        };
+
+        var requestDto = new SaveInterimSitesRequestDto
+        {
+            RegistrationMaterialId = Guid.NewGuid(),
+            OverseasMaterialReprocessingSites = new List<OverseasMaterialReprocessingSiteDto>
+            {
+                overseasMaterialReprocessingSite
+            },
+            UserId = Guid.NewGuid()
+        };
+
+        _mediatorMock
+            .Setup(m => m.Send(It.Is<UpsertInterimSiteCommand>(cmd =>
+            cmd.InterimSitesRequestDto == requestDto), It.IsAny<CancellationToken>()))
+            .Returns(Task.FromResult(Unit.Value));
+
+        // Act
+        var result = await _controller.SaveInterimSites(registrationMaterialId, requestDto);
+
+        // Assert
+        using var scope = new AssertionScope();
+        result.Should().BeOfType<NoContentResult>();
+        _mediatorMock.Verify(m => m.Send(It.Is<UpsertInterimSiteCommand>(cmd =>
+            cmd.InterimSitesRequestDto == requestDto), It.IsAny<CancellationToken>()), Times.Once);
     }
 
 
