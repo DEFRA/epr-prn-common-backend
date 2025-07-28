@@ -87,8 +87,8 @@ public class RegistrationControllerTests
         var query = new GetRegistrationsOverviewByOrgIdQuery { OrganisationId = organisationId };
         var expectedResult = new List<RegistrationOverviewDto>
         {
-            new RegistrationOverviewDto { RegistrationId = Guid.NewGuid() },
-            new RegistrationOverviewDto { RegistrationId = Guid.NewGuid() }
+            new RegistrationOverviewDto { Id = Guid.NewGuid() },
+            new RegistrationOverviewDto { Id = Guid.NewGuid() }
         };
         _validationServiceMock
             .Setup(v => v.ValidateAndThrowAsync(It.IsAny<GetRegistrationsOverviewByOrgIdQuery>(), It.IsAny<CancellationToken>()))

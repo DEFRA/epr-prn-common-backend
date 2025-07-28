@@ -12,16 +12,17 @@ public interface IRegistrationMaterialRepository
     Task<List<LookupRegulatorTask>> GetRequiredTasks(int applicationTypeId, bool isMaterialSpecific, int journeyTypeId);
 
     Task<RegistrationMaterial> GetRegistrationMaterialById(Guid registrationMaterialId);
-    Task<Accreditation> GetAccreditation_FileUploadById(Guid accreditationId);
+    Task<DataModels.Registrations.Accreditation> GetAccreditation_FileUploadById(Guid accreditationId);
     Task UpdateRegistrationOutCome(Guid registrationMaterialId, int statusId, string? comment, string? registrationReferenceNumber , Guid User);
     Task RegistrationMaterialsMarkAsDulyMade(Guid registrationMaterialId, int statusId, DateTime DeterminationDate,
             DateTime DulyMadeDate,Guid DulyMadeBy);
     Task<RegistrationMaterial> CreateAsync(Guid registrationId, string material);
-
     Task CreateExemptionReferencesAsync(Guid registrationMaterialId, List<MaterialExemptionReference> exemptionReferences);
     Task<IList<RegistrationMaterial>> GetRegistrationMaterialsByRegistrationId(Guid requestRegistrationId);
     Task UpdateRegistrationMaterialPermits(Guid registrationMaterialId, int permitTypeId, string? permitNumber);
     Task UpdateRegistrationMaterialPermitCapacity(Guid registrationMaterialId, int permitTypeId, decimal? capacityInTonnes, int? periodId);
+
+    Task UpdateMaximumWeightForSiteAsync(Guid registrationMaterialId, decimal weightInTonnes, int periodId);
 
     Task<IEnumerable<LookupMaterialPermit>> GetMaterialPermitTypes();
     Task DeleteAsync(Guid registrationMaterialId);

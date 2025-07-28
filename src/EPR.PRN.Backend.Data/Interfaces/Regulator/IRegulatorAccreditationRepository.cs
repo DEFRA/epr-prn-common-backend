@@ -5,8 +5,8 @@ namespace EPR.PRN.Backend.Data.Interfaces.Regulator;
 
 public interface IRegulatorAccreditationRepository
 {
-    Task<Accreditation> GetAccreditationById(Guid accreditationId);
-    Task<Accreditation> GetAccreditationPaymentFeesById(Guid accreditationId);
+    Task<DataModels.Registrations.Accreditation> GetAccreditationById(Guid accreditationId);
+    Task<DataModels.Registrations.Accreditation> GetAccreditationPaymentFeesById(Guid accreditationId);
     Task AccreditationMarkAsDulyMade(Guid accreditationId, int statusId, DateTime DulyMadeDate, DateTime DeterminationDate, Guid DulyMadeBy);
 
 }

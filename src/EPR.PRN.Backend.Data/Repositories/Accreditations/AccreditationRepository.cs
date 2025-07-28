@@ -1,89 +1,114 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using EPR.PRN.Backend.Data.DataModels.Accreditations;
-using EPR.PRN.Backend.Data.Interfaces.Accreditations;
+using EPR.PRN.Backend.Data.DataModels.Registrations;
+using EPR.PRN.Backend.Data.DTO.Accreditiation;
+using EPR.PRN.Backend.Data.Interfaces.Accreditation;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace EPR.PRN.Backend.Data.Repositories.Accreditations;
 
-public class AccreditationRepository(EprAccreditationContext eprContext) : IAccreditationRepository
+public class AccreditationRepository(EprContext eprContext, IMapper mapper, ILogger<AccreditationRepository> logger) : IAccreditationRepository
 {
-    public async Task<AccreditationEntity?> GetById(Guid accreditationId)
+    public async Task<Accreditation?> GetById(Guid accreditationId)
     {
-        return await eprContext.Accreditations
-            .AsNoTracking()
-            .Include(x => x.ApplicationType)
-            .Include(x => x.AccreditationStatus)
+        logger.LogInformation("Retrieving accreditation details for ExternalId: {AccreditationId}.", accreditationId);
+        var accreditation =  await eprContext.Accreditations
+            .AsNoTracking()            
+            .Include(x => x.AccreditationStatus)           
+            .Include(x => x.RegistrationMaterial)
+                .ThenInclude(x => x.Registration)                
             .Include(x => x.RegistrationMaterial)
                 .ThenInclude(x => x.Material)
             .SingleOrDefaultAsync(x => x.ExternalId.Equals(accreditationId));
+        logger.LogInformation("Retrieved accreditation details for ExternalId: {AccreditationId} with Id {Id}.", accreditationId, accreditation?.Id);
+        return accreditation;
     }
 
-    public async Task<AccreditationEntity?> GetAccreditationDetails(
+    public async Task<Accreditation?> GetAccreditationDetails(
         Guid organisationId,
         int materialId,
         int applicationTypeId)
     {
-        return await eprContext.Accreditations
+        logger.LogInformation("Retrieving accreditation details for OrganisationId: {OrganisationId}, MaterialId: {MaterialId}, ApplicationTypeId: {ApplicationTypeId}.", organisationId, materialId, applicationTypeId);
+        var accreditation =  await eprContext.Accreditations
+            .Include(x => x.RegistrationMaterial)
+                .ThenInclude(x => x.Registration)
             .AsNoTracking()
             .Where(x =>
-                x.OrganisationId == organisationId &&
+                x.RegistrationMaterial.Registration.OrganisationId == organisationId &&
                 x.RegistrationMaterialId == materialId &&
-                x.ApplicationTypeId == applicationTypeId)            
+                x.RegistrationMaterial.Registration.ApplicationTypeId == applicationTypeId)
             .SingleOrDefaultAsync();
+        logger.LogInformation("Retrieved accreditation details for OrganisationId: {OrganisationId}, MaterialId: {MaterialId}, ApplicationTypeId: {ApplicationTypeId} with Id {Id}.", organisationId, materialId, applicationTypeId, accreditation?.Id);
+        return accreditation;
     }
 
-    public async Task Create(AccreditationEntity accreditation)
+    public async Task Create(Accreditation accreditation)
     {
+   
         var currentTimestamp = DateTime.UtcNow;
-        accreditation.CreatedDate = currentTimestamp;
-        accreditation.UpdatedDate = currentTimestamp;
+        accreditation.CreatedOn = currentTimestamp;
+        accreditation.UpdatedOn = currentTimestamp;
         accreditation.ExternalId = Guid.NewGuid();
-
+        accreditation.CreatedBy =  accreditation.ExternalId; // These need to be replaced with the correct ids that must be passed through the apis from the front end.
+        accreditation.UpdatedBy = accreditation.ExternalId;
         eprContext.Accreditations.Add(accreditation);
         await eprContext.SaveChangesAsync();
+        logger.LogInformation("Created new accreditation with ExternalId: {ExternalId} and Id: {Id}", accreditation.ExternalId, accreditation.Id);
     }
 
-    public async Task Update(AccreditationEntity accreditation)
+    public async Task Update(Accreditation accreditation)
     {
+        logger.LogInformation("Updating accreditation with ExternalId: {ExternalId} and Id {Id}.", accreditation.ExternalId, accreditation.Id);
         var existingAccreditation = await eprContext.Accreditations.SingleAsync(x => x.ExternalId.Equals(accreditation.ExternalId));
 
-        existingAccreditation.OrganisationId = accreditation.OrganisationId;
+        /*
+         * There should not be a secenario where the applcation type or organisation id is changed in eiter accreditation or organisation?
+         * 
+         */
+
         existingAccreditation.RegistrationMaterialId = accreditation.RegistrationMaterialId;
-        existingAccreditation.ApplicationTypeId = accreditation.ApplicationTypeId;
         existingAccreditation.AccreditationStatusId = accreditation.AccreditationStatusId;
         existingAccreditation.DecFullName = accreditation.DecFullName;
         existingAccreditation.DecJobTitle = accreditation.DecJobTitle;
-        existingAccreditation.AccreferenceNumber = accreditation.AccreferenceNumber;
+        existingAccreditation.ApplicationReferenceNumber = accreditation.ApplicationReferenceNumber;
         existingAccreditation.AccreditationYear = accreditation.AccreditationYear;
-        existingAccreditation.PrnTonnage = accreditation.PrnTonnage;
-        existingAccreditation.PrnTonnageAndAuthoritiesConfirmed = accreditation.PrnTonnageAndAuthoritiesConfirmed;
+        existingAccreditation.PRNTonnage = accreditation.PRNTonnage;
         existingAccreditation.InfrastructurePercentage = accreditation.InfrastructurePercentage;
-        existingAccreditation.PackagingWastePercentage = accreditation.PackagingWastePercentage;
+        existingAccreditation.RecycledWastePercentage = accreditation.RecycledWastePercentage;
         existingAccreditation.BusinessCollectionsPercentage = accreditation.BusinessCollectionsPercentage;
-        existingAccreditation.NewUsesPercentage = accreditation.NewUsesPercentage;
+        existingAccreditation.NewUsersRecycledPackagingWastePercentage = accreditation.NewUsersRecycledPackagingWastePercentage;
         existingAccreditation.NewMarketsPercentage = accreditation.NewMarketsPercentage;
         existingAccreditation.CommunicationsPercentage = accreditation.CommunicationsPercentage;
-        existingAccreditation.OtherPercentage = accreditation.OtherPercentage;
+        existingAccreditation.NotCoveredOtherCategoriesPercentage = accreditation.NotCoveredOtherCategoriesPercentage;
         existingAccreditation.InfrastructureNotes = accreditation.InfrastructureNotes;
-        existingAccreditation.PackagingWasteNotes = accreditation.PackagingWasteNotes;
+        existingAccreditation.RecycledWasteNotes = accreditation.RecycledWasteNotes;
         existingAccreditation.BusinessCollectionsNotes = accreditation.BusinessCollectionsNotes;
-        existingAccreditation.NewUsesNotes = accreditation.NewUsesNotes;
+        existingAccreditation.NewUsersRecycledPackagingWasteNotes = accreditation.NewUsersRecycledPackagingWasteNotes;
         existingAccreditation.NewMarketsNotes = accreditation.NewMarketsNotes;
         existingAccreditation.CommunicationsNotes = accreditation.CommunicationsNotes;
-        existingAccreditation.OtherNotes = accreditation.OtherNotes;
-        existingAccreditation.BusinessPlanConfirmed = accreditation.BusinessPlanConfirmed;
+        existingAccreditation.NotCoveredOtherCategoriesNotes = accreditation.NotCoveredOtherCategoriesNotes;
         existingAccreditation.UpdatedBy = accreditation.UpdatedBy;
-        existingAccreditation.UpdatedDate = DateTime.UtcNow;
+        existingAccreditation.UpdatedOn = DateTime.UtcNow;
 
         eprContext.Entry(existingAccreditation).State = EntityState.Modified;
         await eprContext.SaveChangesAsync();
+        logger.LogInformation("Updated accreditation with ExternalId: {ExternalId} and Id {Id}.", accreditation.ExternalId, accreditation.Id);  
     }
 
-    [ExcludeFromCodeCoverage]
-    public async Task ClearDownDatabase()
+
+
+    public async Task<IEnumerable<AccreditationOverviewDto>> GetAccreditationOverviewForOrgId(Guid organisationId)
     {
-        // Temporary: Aid to QA whilst Accreditation uses in-memory database.
-        await eprContext.Database.EnsureDeletedAsync();
-        await eprContext.Database.EnsureCreatedAsync();
+        var data= await eprContext.Accreditations
+             .Include(x => x.RegistrationMaterial)
+                .ThenInclude(x => x.Registration)           
+            .Where(a => a.RegistrationMaterial.Registration.OrganisationId == organisationId)            
+            .ToListAsync();
+
+        return mapper.Map<List<AccreditationOverviewDto>>(data);
     }
 }

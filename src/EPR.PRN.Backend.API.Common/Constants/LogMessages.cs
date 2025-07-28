@@ -15,12 +15,15 @@ public static class LogMessages
     public const string UpdateRegulatorRegistrationTask = "UpdateRegulatorRegistrationTask";
     public const string UpdateRegulatorAccreditationTask = "UpdateRegulatorAccreditationTask";
     public const string AccreditationSamplingPlan = "Attempting to get file uploads relating to an accreditation";
-    public const string CreateRegistrationMaterial = "Attempting to create new registration material for registration {0}";
-    public const string GetAllRegistrationMaterials = "Attempting to retrieve all registration materials for registration {0}";
-    public const string DeleteRegistrationMaterial = "Attempting to delete registration material with ID {0}";
-    public const string UpsertRegistrationMaterialContact = "Attempting to upsert the contact for registration material with ID {0}";
+    public const string CreateRegistrationMaterial = "Attempting to create new registration material for registration {RegistrationId}";
+    public const string GetAllRegistrationMaterials = "Attempting to retrieve all registration materials for registration {RegistrationId}";
+    public const string DeleteRegistrationMaterial = "Attempting to delete registration material with ID {RegistrationMaterialId}";
+    public const string UpsertRegistrationMaterialContact = "Attempting to upsert the contact for registration material with ID {Id}";
     public const string AccreditationBusinessPlan = "Attempting to get Business Plan relating to an accreditation";
     public const string SaveOverseasReprocessingSites = "Attempting to save overseas reprocessing sites with ID :{registrationMaterialId}";
+    public const string UpdateMaximumWeight = "Attempting to update the maximum weight the site is capable of processing for the material {RegistrationMaterialId}.";
+    public const string GetOverseasMaterialReprocessingSites = "Attempting to retrieve overseas reprocessing sites including corresponding interim sites for registrationMaterial {RegistrationMaterialId}";
+    public const string SaveInterimSites = "Attempting to save interim sites for :{registrationMaterialId}";
 
     public const string CreateRegistration = "Attempting to create new registration";
     public const string UpdateRegistration = "Attempting to create new registration with ID {0}";
@@ -40,4 +43,8 @@ public static class LogMessages
     public const string RegistrationsOverview = "Attempting to retrieve registrations overview for organisation id :{Id}";    
 	public const string UpdateIsMaterialRegistered = "Attempting to update the registration material IsMaterialRegistered flag.";
     public const string UpsertRegistrationReprocessingDetails = "Attempting to upsert the registration reprocessing details for registration material with ID :{registrationMaterialId}";
+
+    public const string UpdateAccreditationTask = "UpdateAccreditationTask";
+    public const string AccreditationsOverview = "Recieved request for Accreditations overview";
+    public const string UpdateMaterialNotReprocessingReason = "Attempting to update the reason for not reprocessing registration material with ID {RegistrationMaterialId}";
 }
