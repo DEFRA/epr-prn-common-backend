@@ -7,7 +7,7 @@ public class OverseasAddressBaseDto
     [MaxLength(100)]
     public required string AddressLine1 { get; set; }
     [MaxLength(100)]
-    public required string AddressLine2 { get; set; }
+    public string? AddressLine2 { get; set; }
     [MaxLength(70)]
     public required string CityOrTown { get; set; }
     public required string CountryName { get; set; }
