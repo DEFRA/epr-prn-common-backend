@@ -5912,17 +5912,29 @@ GO
 BEGIN TRANSACTION;
 GO
 
-DECLARE @var42 sysname;
-SELECT @var42 = [d].[name]
-FROM [sys].[default_constraints] [d]
-INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
-WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Prn]') AND [c].[name] = N'OrganisationName');
-IF @var42 IS NOT NULL EXEC(N'ALTER TABLE [Prn] DROP CONSTRAINT [' + @var42 + '];');
-ALTER TABLE [Prn] ALTER COLUMN [OrganisationName] nvarchar(160) NOT NULL;
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250709113024_ResizeOrgName'
+)
+BEGIN
+    DECLARE @var46 sysname;
+    SELECT @var46 = [d].[name]
+    FROM [sys].[default_constraints] [d]
+    INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+    WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Prn]') AND [c].[name] = N'OrganisationName');
+    IF @var46 IS NOT NULL EXEC(N'ALTER TABLE [Prn] DROP CONSTRAINT [' + @var46 + '];');
+    ALTER TABLE [Prn] ALTER COLUMN [OrganisationName] nvarchar(160) NOT NULL;
+END;
 GO
 
-INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
-VALUES (N'20250709113024_ResizeOrgName', N'8.0.8');
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20250709113024_ResizeOrgName'
+)
+BEGIN
+    INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+    VALUES (N'20250709113024_ResizeOrgName', N'8.0.8');
+END;
 GO
 
 COMMIT;
