@@ -9,13 +9,11 @@ using EPR.PRN.Backend.API.Queries;
 using EPR.PRN.Backend.API.Services.Interfaces;
 using EPR.PRN.Backend.Data.DTO;
 using FluentAssertions;
-using FluentAssertions.Execution;
 using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace EPR.PRN.Backend.API.UnitTests.Controllers;
 
@@ -498,64 +496,30 @@ public class RegistrationMaterialControllerTests
     }
 
     [TestMethod]
-    [DataRow("Abc 10")]
-    [DataRow(null)]
-    public async Task SaveInterimSites_PostCode_ShouldBeNullable(string postcode = null)
+    public void OverseasAddressBaseDto_AddressLine2_Should_Not_Have_Required_Keyword()
     {
         // Arrange
-        var registrationMaterialId = Guid.NewGuid();
-
-        var overseasAddressContacts = new List<OverseasAddressContactDto>();
-
-        var overseasAddressWasteCodes = new List<OverseasAddressWasteCodeDto>();
-
-        var overseasAddress = new OverseasAddressDto
-        {
-            ExternalId = Guid.NewGuid(),
-            OrganisationName = "Sample Org",
-            AddressLine1 = "Address Line 1",
-            AddressLine2 = "Suite 100",
-            CityOrTown = "Sample City",
-            StateProvince = "Sample State",
-            PostCode = postcode,
-            CreatedBy = Guid.NewGuid(),
-            UpdatedBy = Guid.NewGuid(),
-            SiteCoordinates = "51.5074,-0.1278",
-            CountryName = "Sample Country",
-            OverseasAddressContacts = overseasAddressContacts,
-            OverseasAddressWasteCodes = overseasAddressWasteCodes
-        };
-
-        var overseasMaterialReprocessingSite = new OverseasMaterialReprocessingSiteDto
-        {
-            OverseasAddress = overseasAddress,
-            InterimSiteAddresses = new List<InterimSiteAddressDto>()
-        };
-
-        var requestDto = new SaveInterimSitesRequestDto
-        {
-            RegistrationMaterialId = Guid.NewGuid(),
-            OverseasMaterialReprocessingSites = new List<OverseasMaterialReprocessingSiteDto>
-            {
-                overseasMaterialReprocessingSite
-            },
-            UserId = Guid.NewGuid()
-        };
-
-        _mediatorMock
-            .Setup(m => m.Send(It.Is<UpsertInterimSiteCommand>(cmd =>
-            cmd.InterimSitesRequestDto == requestDto), It.IsAny<CancellationToken>()))
-            .Returns(Task.FromResult(Unit.Value));
+        var property = typeof(OverseasAddressBaseDto).GetProperty(nameof(OverseasAddressBaseDto.AddressLine2));
 
         // Act
-        var result = await _controller.SaveInterimSites(registrationMaterialId, requestDto);
+        var isRequiredKeyword = property != null && property.CustomAttributes
+            .Any(attr => attr.AttributeType == typeof(System.Runtime.CompilerServices.RequiredMemberAttribute));
 
         // Assert
-        using var scope = new AssertionScope();
-        result.Should().BeOfType<NoContentResult>();
-        _mediatorMock.Verify(m => m.Send(It.Is<UpsertInterimSiteCommand>(cmd =>
-            cmd.InterimSitesRequestDto == requestDto), It.IsAny<CancellationToken>()), Times.Once);
+        isRequiredKeyword.Should().BeFalse("AddressLine2 must not have the 'required' keyword");
     }
 
+    [TestMethod]
+    public void OverseasAddressBaseDto_PostCode_Should_Not_Have_Required_Keyword()
+    {
+        // Arrange
+        var property = typeof(OverseasAddressBaseDto).GetProperty(nameof(OverseasAddressBaseDto.PostCode));
 
+        // Act
+        var isRequiredKeyword = property != null && property.CustomAttributes
+            .Any(attr => attr.AttributeType == typeof(System.Runtime.CompilerServices.RequiredMemberAttribute));
+
+        // Assert
+        isRequiredKeyword.Should().BeFalse("PostCode must not have the 'required' keyword");
+    }
 }
