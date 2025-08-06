@@ -12,22 +12,27 @@ public class UpdateCarrierBrokerDealerPermitsHandler(ICarrierBrokerDealerPermitR
         var carrierBrokerDealerPermit = await carrierBrokerDealerPermitRepository.GetByRegistrationId(request.RegistrationId, cancellationToken)
             ?? throw new KeyNotFoundException();
 
-		if (!string.IsNullOrWhiteSpace(request.Dto.WasteCarrierBrokerDealerRegistration))
-		{
-			carrierBrokerDealerPermit.WasteCarrierBrokerDealerRegistration = request.Dto.WasteCarrierBrokerDealerRegistration;
-		}
-		else
-		{
-            carrierBrokerDealerPermit.WasteManagementEnvironmentPermitNumber = request.Dto.WasteLicenseOrPermitNumber;
-            carrierBrokerDealerPermit.InstallationPermitOrPPCNumber = request.Dto.PpcNumber;
-
-            if (request.Dto.WasteExemptionReference != null)
-            {
-                carrierBrokerDealerPermit.WasteExemptionReference = string.Join(',', request.Dto.WasteExemptionReference);
-            }
+        if (!string.IsNullOrWhiteSpace(request.Dto.WasteCarrierBrokerDealerRegistration))
+        {
+            carrierBrokerDealerPermit.WasteCarrierBrokerDealerRegistration = request.Dto.WasteCarrierBrokerDealerRegistration;
         }
 
+        if (!string.IsNullOrWhiteSpace(request.Dto.WasteLicenseOrPermitNumber))
+        {
+            carrierBrokerDealerPermit.WasteManagementEnvironmentPermitNumber = request.Dto.WasteLicenseOrPermitNumber;
+        }
 
+        if (!string.IsNullOrWhiteSpace(request.Dto.PpcNumber))
+        {
+            carrierBrokerDealerPermit.InstallationPermitOrPPCNumber = request.Dto.PpcNumber;
+        }
+
+        if (request.Dto.WasteExemptionReference != null)
+        {
+            carrierBrokerDealerPermit.WasteExemptionReference = string.Join(',', request.Dto.WasteExemptionReference);
+        }
+
+        carrierBrokerDealerPermit.RegisteredWasteCarrierBrokerDealerFlag = request.Dto.RegisteredWasteCarrierBrokerDealerFlag;
         carrierBrokerDealerPermit.UpdatedBy = request.UserId;
         carrierBrokerDealerPermit.UpdatedDate = DateTime.UtcNow;
 

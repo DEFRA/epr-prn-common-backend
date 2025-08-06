@@ -1,4 +1,5 @@
-﻿using EPR.PRN.Backend.Data.DataModels.Registrations;
+﻿using System.Diagnostics.CodeAnalysis;
+using EPR.PRN.Backend.Data.DataModels.Registrations;
 using EPR.PRN.Backend.Data.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics.CodeAnalysis;

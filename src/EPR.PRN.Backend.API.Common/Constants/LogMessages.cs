@@ -26,11 +26,11 @@ public static class LogMessages
     public const string SaveInterimSites = "Attempting to save interim sites for :{registrationMaterialId}";
 
     public const string CreateRegistration = "Attempting to create new registration";
-    public const string UpdateRegistration = "Attempting to create new registration with ID {0}";
+    public const string UpdateRegistration = "Attempting to create new registration with ID {RegistrationId}";
     public const string UpdateRegistrationMaterial = "Attempting to update registration material with External ID {Id}";
     public const string UpdateRegistrationMaterialPermits = "Attempting to update registration material permits with External ID {Id}";
     public const string UpdateRegistrationMaterialPermitCapacity = "Attempting to update registration material permit capacity with External ID {Id}";
-    public const string GetRegistrationByOrganisation = "Attempting to get registration of type {0} for organisation with ID {1}";
+    public const string GetRegistrationByOrganisation = "Attempting to get registration of type {ApplicationTypeId} for organisation with ID {OrganisationId}";
     public const string UpdateRegistrationSiteAddress = "Attempting to update registration site address";
     public const string UpdateRegistrationTaskStatus = "Attempting to update registration task status";
     public const string UpdateApplicationRegistrationTaskStatus = "Attempting to update application registration task status";
@@ -43,6 +43,7 @@ public static class LogMessages
     public const string RegistrationsOverview = "Attempting to retrieve registrations overview for organisation id :{Id}";    
 	public const string UpdateIsMaterialRegistered = "Attempting to update the registration material IsMaterialRegistered flag.";
     public const string UpsertRegistrationReprocessingDetails = "Attempting to upsert the registration reprocessing details for registration material with ID :{registrationMaterialId}";
+    public const string GetRegistrationOverviewById = "Attempting to get registration overview with registration ID {RegistrationId}";
 
     public const string UpdateAccreditationTask = "UpdateAccreditationTask";
     public const string AccreditationsOverview = "Recieved request for Accreditations overview";

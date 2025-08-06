@@ -1,6 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
 using AutoMapper;
 using EPR.PRN.Backend.API.Commands;
+using EPR.PRN.Backend.API.Common.Constants;
 using EPR.PRN.Backend.API.Common.Enums;
 using EPR.PRN.Backend.API.Dto;
 using EPR.PRN.Backend.Data.Interfaces;
@@ -16,7 +17,8 @@ public class CreateRegistrationHandler(IRegistrationRepository repository, IMapp
     {
         var registration = await repository.CreateRegistrationAsync(command.ApplicationTypeId, command.OrganisationId, command.ReprocessingSiteAddress);
 
-        await repository.UpdateRegistrationTaskStatusAsync(nameof(RegistrationTaskType.SiteAddressAndContactDetails),
+        // This will create the registration level tasks.
+        await repository.UpdateRegistrationTaskStatusAsync(ApplicantRegistrationTaskNames.SiteAddressAndContactDetails,
             registration.ExternalId, TaskStatuses.Started);
 
         return mapper.Map<CreateRegistrationDto>(registration);

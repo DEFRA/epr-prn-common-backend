@@ -1,7 +1,8 @@
-﻿using EPR.PRN.Backend.Data.DataModels.Registrations;
+﻿using System.Diagnostics.CodeAnalysis;
 
 namespace EPR.PRN.Backend.API.Dto.Regulator
 {
+    [ExcludeFromCodeCoverage]
     public class RegistrationMaterialSamplingPlanDto:NoteBase
     {
         public required string MaterialName { get; set; }
