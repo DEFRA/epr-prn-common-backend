@@ -69,8 +69,10 @@ namespace EPR.PRN.Backend.API
             services.AddFeatureManagement();
 
             services.AddDbContext<EprContext>(options =>
-                options.UseSqlServer(_config.GetConnectionString("EprConnectionString"))
-            );
+                options.UseSqlServer(_config.GetConnectionString("EprConnectionString"), sqlOptions =>
+                {
+                    sqlOptions.EnableRetryOnFailure();
+                }));
 
             if (_config.GetValue<bool>($"FeatureManagement:{FeatureFlags.EnableAccreditation}"))
             {
