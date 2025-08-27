@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using EPR.PRN.Backend.Data.DataModels.Accreditations;
+using EPR.PRN.Backend.Data.DataModels.Registrations;
 using EPR.PRN.Backend.Data.Repositories.Accreditations;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
@@ -13,17 +13,17 @@ namespace EPR.PRN.Backend.Data.UnitTests.Repositories.Accreditations;
 [TestClass]
 public class AccreditationPrnIssueAuthRepositoryTests
 {
-    private DbContextOptions<EprAccreditationContext> _dbContextOptions;
-    private EprAccreditationContext _context;
+    private DbContextOptions<EprContext> _dbContextOptions;
+    private EprContext _context;
     private AccreditationPrnIssueAuthRepository _repository;
 
     [TestInitialize]
     public void Setup()
     {
-        _dbContextOptions = new DbContextOptionsBuilder<EprAccreditationContext>()
+        _dbContextOptions = new DbContextOptionsBuilder<EprContext>()
             .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
             .Options;
-        _context = new EprAccreditationContext(_dbContextOptions);
+        _context = new EprContext(_dbContextOptions);
         _repository = new AccreditationPrnIssueAuthRepository(_context);
     }
 
@@ -39,7 +39,7 @@ public class AccreditationPrnIssueAuthRepositoryTests
     {
         // Arrange
         var accreditationId = Guid.NewGuid();
-        var accreditation = new AccreditationEntity { Id = 1, ExternalId = accreditationId, OrganisationId = Guid.NewGuid() };
+        var accreditation = new Accreditation { Id = 1, ExternalId = accreditationId,  ApplicationReferenceNumber = string.Empty };
         var auth = new AccreditationPrnIssueAuth
         {
             ExternalId = Guid.NewGuid(),
@@ -79,7 +79,7 @@ public class AccreditationPrnIssueAuthRepositoryTests
     {
         // Arrange
         var accreditationId = Guid.NewGuid();
-        var accreditation = new AccreditationEntity { Id = 2, ExternalId = accreditationId, OrganisationId = Guid.NewGuid() };
+        var accreditation = new Accreditation { Id = 2, ExternalId = accreditationId, ApplicationReferenceNumber = string.Empty };
         var oldAuth = new AccreditationPrnIssueAuth
         {
             ExternalId = Guid.NewGuid(),

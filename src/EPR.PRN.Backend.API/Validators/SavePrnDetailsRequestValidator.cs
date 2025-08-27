@@ -43,7 +43,7 @@
 
             RuleFor(x => x.IssuedToOrgName)
                 .NotEmpty().WithMessage("IssuedToOrgName is required.")
-                .MaximumLength(50).WithMessage("IssuedToOrgName cannot be longer than 50 characters");
+                .MaximumLength(160).WithMessage("IssuedToOrgName cannot be longer than 160 characters");
 
             RuleFor(x => x.IssuedToEPRId)
                 .NotNull().WithMessage("IssuedToEPRId is required.")

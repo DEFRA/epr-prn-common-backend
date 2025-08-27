@@ -537,4 +537,48 @@ public class MaterialRepositoryTests
         result.Should().NotContain(material => material.MaterialCode == "PL" && material.MaterialName == MaterialType.Plastic.ToString()); // Plastic is filtered out as registration already started
         result.Should().Contain(material => material.MaterialCode == "FC" && material.MaterialName == MaterialType.FibreComposite.ToString());
     }
+
+    [TestMethod]
+    public async Task UpdateMaterialNotReprocessingReason_ShouldThrow_WhenRegistrationMaterialNotFound()
+    {
+        // Arrange
+        var registrationMaterialExternalId = Guid.NewGuid();
+
+        // Act & Assert
+        await Assert.ThrowsExceptionAsync<KeyNotFoundException>(async () =>
+        {
+            await _materialRepository.UpdateMaterialNotReprocessingReason(registrationMaterialExternalId, "My reason");
+        });
+    }
+
+    [TestMethod]
+    public async Task UpdateMaterialNotReprocessingReason_ShouldUpdateExistingReprocessingIO_WhenExists()
+    {
+        // Arrange
+        var registrationMaterialId = 5;
+        var registrationMaterialExternalId = Guid.NewGuid();
+        var oldReason = "Supplier Not found";
+        var newReason = "New Reason";
+
+        var registrationMaterials = new List<RegistrationMaterial>
+        {
+            new()
+            {
+                Id = registrationMaterialId,
+                ExternalId = registrationMaterialExternalId,
+                ReasonforNotreg = oldReason
+            }
+        };
+
+        _mockEprContext.Setup(c => c.RegistrationMaterials)
+            .ReturnsDbSet(registrationMaterials);
+
+        // Act
+        await _materialRepository.UpdateMaterialNotReprocessingReason(registrationMaterialExternalId, newReason);
+
+        // Assert
+        _mockEprContext.Verify(c => c.SaveChangesAsync(default), Times.Once);
+        var updatedMaterial = registrationMaterials.Single(r => r.ExternalId == registrationMaterialExternalId);
+        newReason.Should().Be(updatedMaterial.ReasonforNotreg);
+    }
 }

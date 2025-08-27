@@ -1,4 +1,4 @@
-using EPR.PRN.Backend.Data.DataModels.Accreditations;
+using EPR.PRN.Backend.Data.DataModels.Registrations;
 using EPR.PRN.Backend.Data.Repositories.Accreditations;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
@@ -9,17 +9,17 @@ namespace EPR.PRN.Backend.Data.UnitTests.Repositories.Accreditations;
 [TestClass]
 public class OverseasAccreditationSiteRepositoryTests
 {
-    private DbContextOptions<EprAccreditationContext> _dbContextOptions;
-    private EprAccreditationContext _context;
+    private DbContextOptions<EprContext> _dbContextOptions;
+    private EprContext _context;
     private OverseasAccreditationSiteRepository _repository;
 
     [TestInitialize]
     public void Setup()
     {
-        _dbContextOptions = new DbContextOptionsBuilder<EprAccreditationContext>()
+        _dbContextOptions = new DbContextOptionsBuilder<EprContext>()
             .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
             .Options;
-        _context = new EprAccreditationContext(_dbContextOptions);
+        _context = new EprContext(_dbContextOptions);
         _repository = new OverseasAccreditationSiteRepository(_context);
     }
 
@@ -35,7 +35,7 @@ public class OverseasAccreditationSiteRepositoryTests
     {
         // Arrange
         var accreditationId = Guid.NewGuid();
-        var accreditation = new AccreditationEntity { Id = 1, ExternalId = accreditationId, OrganisationId = Guid.NewGuid() };
+        var accreditation = new Accreditation { Id = 1, ExternalId = accreditationId };
         var site = new OverseasAccreditationSite
         {
             ExternalId = accreditationId,
@@ -76,7 +76,7 @@ public class OverseasAccreditationSiteRepositoryTests
     {
         // Arrange
         var accreditationId = Guid.NewGuid();
-        var accreditation = new AccreditationEntity { Id = 1, ExternalId = accreditationId, OrganisationId = Guid.NewGuid() };
+        var accreditation = new Accreditation { Id = 1, ExternalId = accreditationId };
         var site = new OverseasAccreditationSite
         {
             ExternalId = accreditationId,

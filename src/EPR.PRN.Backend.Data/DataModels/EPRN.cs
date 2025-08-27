@@ -16,7 +16,7 @@ namespace EPR.PRN.Backend.Data.DataModels
 		[Required]
 		public Guid OrganisationId { get; set; }
 		
-		[Required, MaxLength(50)]
+		[Required, MaxLength(160)]
 		public required string OrganisationName { get; set; }
 		
 		[MaxLength(50)]

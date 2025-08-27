@@ -2,16 +2,25 @@
 
 using System.Diagnostics.CodeAnalysis;
 using AutoMapper;
+using EPR.PRN.Backend.API.Common.Enums;
 using EPR.PRN.Backend.API.Common.Helpers;
 using EPR.PRN.Backend.API.Dto.Accreditation;
+using EPR.PRN.Backend.API.Helpers;
 using EPR.PRN.Backend.API.Services.Interfaces;
 using EPR.PRN.Backend.Data.DataModels.Accreditations;
-using EPR.PRN.Backend.Data.Interfaces.Accreditations;
+using EPR.PRN.Backend.Data.DataModels.Registrations;
+using EPR.PRN.Backend.Data.DTO;
+using EPR.PRN.Backend.Data.Interfaces;
+using EPR.PRN.Backend.Data.Interfaces.Accreditation;
+using EPR.PRN.Backend.Data.Interfaces.Regulator;
+using EPR.PRN.Backend.Data.Repositories.Regulator;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
 public class AccreditationService(
     IAccreditationRepository repository,
+    IRegistrationRepository registrationRepository,
+    IRegistrationMaterialRepository registrationMaterialRepository,
     IMapper mapper,
     ILogger<AccreditationService> logger,
     IConfiguration configuration) : IAccreditationService
@@ -25,25 +34,47 @@ public class AccreditationService(
     {
         logger.LogInformation("{Logprefix}: AccreditationService - GetorCreateAccreditation: request for organisationId {organisationId} type of material {materialId} and applicationType {applicationTypeId}", logPrefix, organisationId, materialId, applicationTypeId);
 
-        var entity = await repository.GetAccreditationDetails(
-            organisationId,
-            materialId,
-            applicationTypeId);
-
-        if (entity != null)
+        AddressDto reprocessingSiteAddress = new AddressDto
         {
-            return entity.ExternalId;
+            AddressLine1 = "Reprocessing Site Address Line 1",
+            AddressLine2 = "Reprocessing Site Address Line 2",
+            TownCity = "Reprocessing Site Town/City",
+            County = "County",
+            PostCode = "AB12 3CD",
+            GridReference = "TQ12345678",
+            NationId = 1, // Assuming 1 is the ID for England           
+            Country = "United Kingdom",
+        };
+
+        var registration = await registrationRepository.CreateRegistrationAsync(applicationTypeId, organisationId, reprocessingSiteAddress);
+
+
+        if (registration == null)
+        {
+            logger.LogError("{Logprefix}: AccreditationService - GetOrCreateAccreditation: Failed to create registration for organisation {OrganisationId} with application type {ApplicationTypeId}", logPrefix, organisationId, applicationTypeId);
+            throw new NotFoundException("Failed to create registration");
         }
 
-        entity = mapper.Map<AccreditationEntity>(
-            new AccreditationRequestDto
-            {
-                OrganisationId = organisationId,
-                RegistrationMaterialId = materialId,
-                ApplicationTypeId = applicationTypeId,
-                AccreditationStatusId = 1,
-                AccreditationYear = 2026
-            });
+        var materialName = materialId switch
+        {
+            1 => "Plastic",
+            2 => "Steel",
+            3 => "Aluminium",
+            4 => "Glass",
+            5 => "Paper/Board",
+            6 => "Wood",
+            _ => throw new ArgumentException("Invalid material ID")
+        };
+
+        var material = await registrationMaterialRepository.CreateAsync(registration.ExternalId, materialName);
+
+        var entity = new Accreditation
+        {
+            RegistrationMaterialId = material.Id,
+            AccreditationStatusId = 1,
+            AccreditationYear = 2026,
+            ApplicationReferenceNumber = string.Empty
+        };
 
         await repository.Create(entity);
 
@@ -64,7 +95,7 @@ public class AccreditationService(
     {
         logger.LogInformation("{Logprefix}: AccreditationService - CreateAccreditation: request to create accreditation {Accreditation}", logPrefix, LogParameterSanitizer.Sanitize(accreditationDto));
 
-        var entity = mapper.Map<AccreditationEntity>(accreditationDto);
+        var entity = mapper.Map<Accreditation>(accreditationDto);
 
         await repository.Create(entity);
 
@@ -75,15 +106,10 @@ public class AccreditationService(
     {
         logger.LogInformation("{Logprefix}: AccreditationService - UpdateAccreditation: request to update accreditation {Accreditation}", logPrefix, LogParameterSanitizer.Sanitize(accreditationDto));
 
-        var entity = mapper.Map<AccreditationEntity>(accreditationDto);
+        var entity = mapper.Map<Accreditation>(accreditationDto);
 
         await repository.Update(entity);
     }
 
-    [ExcludeFromCodeCoverage]
-    public async Task ClearDownDatabase()
-    {
-        // Temporary: Aid to QA whilst Accreditation uses in-memory database.
-        await repository.ClearDownDatabase();
-    }
+
 }
