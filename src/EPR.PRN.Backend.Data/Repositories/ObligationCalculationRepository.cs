@@ -16,13 +16,19 @@ public class ObligationCalculationRepository(EprContext context, IObligationCalc
 
     public async Task SoftDeleteAndAddObligationCalculationBySubmitterIdAsync(Guid submitterId, int year, List<ObligationCalculation> calculations)
     {
-        await using var transaction = await context.Database.BeginTransactionAsync();
+        var strategy = context.Database.CreateExecutionStrategy();
+        await strategy.ExecuteAsync(async () =>
+        {
+            // Start the transaction
+            await using var transaction = await context.Database.BeginTransactionAsync();
 
-        await updater.SoftDeleteBySubmitterAndYearAsync(submitterId, year);
+            await updater.SoftDeleteBySubmitterAndYearAsync(submitterId, year);
 
-        await context.ObligationCalculations.AddRangeAsync(calculations);
-        await context.SaveChangesAsync();
+            await context.ObligationCalculations.AddRangeAsync(calculations);
+            await context.SaveChangesAsync();
 
-        await transaction.CommitAsync();
+            // Commit the transaction
+            await transaction.CommitAsync();
+        });
     }
 }
