@@ -6,6 +6,7 @@ using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage;
+using Microsoft.Extensions.Logging;
 using Moq;
 using Moq.EntityFrameworkCore;
 
@@ -17,8 +18,8 @@ public class ObligationCalculationRepositoryTests
     private Mock<EprContext> _mockEprContext;
     private IObligationCalculationUpdater _mockUpdater;
     private IObligationCalculationRepository _repository;
+    private ILogger<ObligationCalculationRepository> _logger;
 
-    private readonly Guid organisationId = Guid.NewGuid();
     private readonly Guid drOrganisationId1 = Guid.NewGuid();
     private readonly Guid subOrganisationId1 = Guid.NewGuid();
     private readonly Guid drOrganisationId2 = Guid.NewGuid();
@@ -26,7 +27,6 @@ public class ObligationCalculationRepositoryTests
     private readonly Guid drOrganisationId3 = Guid.NewGuid();
     private readonly Guid csSubmitterId = Guid.NewGuid();
     private readonly int currentYear = DateTime.UtcNow.Year;
-    private readonly DateTime calculatedOn = DateTime.UtcNow;
 
     // This list will be used to mock the ObligationCalculation DbSet
     private List<ObligationCalculation> obligationCalculations;
@@ -53,6 +53,8 @@ public class ObligationCalculationRepositoryTests
             new ObligationCalculation { OrganisationId = drOrganisationId3, MaterialId = 2, MaterialObligationValue = 175, Year = currentYear, SubmitterId = drOrganisationId3, SubmitterTypeId = 2, IsDeleted = true  },
         ];
 
+        _logger = new LoggerFactory().CreateLogger<ObligationCalculationRepository>();
+
         var options = new DbContextOptionsBuilder<EprContext>().Options;
         _mockEprContext = new Mock<EprContext>(options);
         _mockEprContext.Setup(c => c.ObligationCalculations).ReturnsDbSet(obligationCalculations);
@@ -61,24 +63,21 @@ public class ObligationCalculationRepositoryTests
         _mockUpdater = A.Fake<IObligationCalculationUpdater>();
 
         var mockDatabase = new Mock<DatabaseFacade>(_mockEprContext.Object);
-        _mockEprContext.Setup(c => c.Database).Returns(mockDatabase.Object);
 
         var mockTransaction = new Mock<IDbContextTransaction>();
         mockDatabase.Setup(d => d.BeginTransactionAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(mockTransaction.Object);
         mockTransaction.Setup(t => t.DisposeAsync()).Returns(ValueTask.CompletedTask);
 
-        _repository = new ObligationCalculationRepository(_mockEprContext.Object, _mockUpdater);
+        _mockEprContext.Setup(c => c.Database).Returns(mockDatabase.Object);
+        _repository = new ObligationCalculationRepository(_mockEprContext.Object, _logger, _mockUpdater);
     }
 
     [TestMethod]
     public async Task GetObligationCalculationBySubmitterIdAndYear_ReturnsEmpty_WhenCalledWithInvalidId()
     {
-        // Arrange
-        var obligationCalculationRepository = new ObligationCalculationRepository(_mockEprContext.Object, _mockUpdater);
-
         // Act
-        var result = await obligationCalculationRepository.GetObligationCalculationBySubmitterIdAndYear(Guid.NewGuid(), currentYear);
+        var result = await _repository.GetObligationCalculationBySubmitterIdAndYear(Guid.NewGuid(), currentYear);
 
         // Assert
         result.Should().BeEmpty();
@@ -87,11 +86,8 @@ public class ObligationCalculationRepositoryTests
     [TestMethod]
     public async Task GetObligationCalculationBySubmitterIdAndYear_ReturnsObligationCalculation_WhenCalledWithComplianceSchemeId()
     {
-        // Arrange
-        var obligationCalculationRepository = new ObligationCalculationRepository(_mockEprContext.Object, _mockUpdater);
-
         // Act
-        var result = await obligationCalculationRepository.GetObligationCalculationBySubmitterIdAndYear(csSubmitterId, currentYear);
+        var result = await _repository.GetObligationCalculationBySubmitterIdAndYear(csSubmitterId, currentYear);
 
         // Assert
         result.Should().NotBeNull();
@@ -101,11 +97,8 @@ public class ObligationCalculationRepositoryTests
     [TestMethod]
     public async Task GetObligationCalculationBySubmitterIdAndYear_ReturnsResults_WithSubsidiaries_WhenCalledWithDirectRegistrantId()
     {
-        // Arrange
-        var obligationCalculationRepository = new ObligationCalculationRepository(_mockEprContext.Object, _mockUpdater);
-
         // Act
-        var result = await obligationCalculationRepository.GetObligationCalculationBySubmitterIdAndYear(drOrganisationId2, currentYear);
+        var result = await _repository.GetObligationCalculationBySubmitterIdAndYear(drOrganisationId2, currentYear);
 
         // Assert
         result.Should().NotBeNull();
@@ -115,55 +108,59 @@ public class ObligationCalculationRepositoryTests
     [TestMethod]
     public async Task GetObligationCalculationBySubmitterIdAndYear_ReturnsResults_WithNoSubsidiaries_WhenCalledWithDirectRegistrantId()
     {
-        // Arrange
-        var obligationCalculationRepository = new ObligationCalculationRepository(_mockEprContext.Object, _mockUpdater);
-
         // Act
-        var result = await obligationCalculationRepository.GetObligationCalculationBySubmitterIdAndYear(drOrganisationId3, currentYear);
+        var result = await _repository.GetObligationCalculationBySubmitterIdAndYear(drOrganisationId3, currentYear);
 
         // Assert
         result.Should().NotBeNull();
         result.Count.Should().Be(1);
     }
 
-    //[TestMethod]
-    //public async Task SoftDeleteAndAddObligationCalculationBySubmitterIdAsync_ShouldCallUpdaterAndAddNewCalculations()
-    //{
-    //    // Arrange
-    //    var newCalculations = new List<ObligationCalculation>
-    //    {
-    //        new ObligationCalculation { SubmitterId = csSubmitterId, Year = currentYear, MaterialId = 4 },
-    //        new ObligationCalculation { SubmitterId = csSubmitterId, Year = currentYear, MaterialId = 5 }
-    //    };
+    [TestMethod]
+    public void SoftDeleteAndAddObligationCalculationBySubmitterIdAsync_ShouldCallUpdaterAndAddNewCalculations()
+    {
+        // Arrange
+        var newCalculations = new List<ObligationCalculation>
+        {
+            new() { SubmitterId = csSubmitterId, Year = currentYear, MaterialId = 4 },
+            new() { SubmitterId = csSubmitterId, Year = currentYear, MaterialId = 5 }
+        };
 
-    //    // Act
-    //    await _repository.SoftDeleteAndAddObligationCalculationBySubmitterIdAsync(csSubmitterId, currentYear, newCalculations);
+        var obligationCalculationRepository = new ObligationCalculationRepository(_mockEprContext.Object, _logger, _mockUpdater);
 
-    //    // Assert
-    //    A.CallTo(() => _mockUpdater.SoftDeleteBySubmitterAndYearAsync(csSubmitterId, currentYear))
-    //        .MustHaveHappenedOnceExactly();
+        // Act
+        var task = obligationCalculationRepository.ExecuteSoftDeleteAndCalculationsAsync(csSubmitterId, currentYear, newCalculations);
+        task.Wait();
 
-    //    _mockEprContext.Verify(c => c.ObligationCalculations.AddRangeAsync(newCalculations, It.IsAny<CancellationToken>()), Moq.Times.Once);
-    //    _mockEprContext.Verify(c => c.SaveChangesAsync(It.IsAny<CancellationToken>()), Moq.Times.Once);
-    //}
+        // Assert
+        Assert.IsTrue(task.IsCompletedSuccessfully);
 
-    //[TestMethod]
-    //public async Task SoftDeleteAndAddObligationCalculationBySubmitterIdAsync_ShouldWork_WhenNoExistingCalculations()
-    //{
-    //    // Arrange
-    //    var newSubmitterId = Guid.NewGuid();
-    //    var newCalculations = new List<ObligationCalculation>
-    //    {
-    //        new ObligationCalculation { SubmitterId = newSubmitterId, Year = currentYear, MaterialId = 10 }
-    //    };
+        _mockEprContext.Verify(c => c.ObligationCalculations.AddRangeAsync(newCalculations, It.IsAny<CancellationToken>()), Moq.Times.Once);
+        _mockEprContext.Verify(c => c.SaveChangesAsync(It.IsAny<CancellationToken>()), Moq.Times.Once);
+    }
 
-    //    // Act
-    //    await _repository.SoftDeleteAndAddObligationCalculationBySubmitterIdAsync(newSubmitterId, currentYear, newCalculations);
+    [TestMethod]
+    public void SoftDeleteAndAddObligationCalculationBySubmitterIdAsync_ShouldWork_WhenNoExistingCalculations()
+    {
+        // Arrange
+        var newSubmitterId = Guid.NewGuid();
+        var newCalculations = new List<ObligationCalculation>
+        {
+            new() { SubmitterId = newSubmitterId, Year = currentYear, MaterialId = 10 }
+        };
 
-    //    // Assert
-    //    A.CallTo(() => _mockUpdater.SoftDeleteBySubmitterAndYearAsync(newSubmitterId, currentYear))
-    //        .MustHaveHappenedOnceExactly();
-    //    _mockEprContext.Verify(c => c.ObligationCalculations.AddRangeAsync(newCalculations, It.IsAny<CancellationToken>()), Moq.Times.Once);
-    //    _mockEprContext.Verify(c => c.SaveChangesAsync(It.IsAny<CancellationToken>()), Moq.Times.Once);
-    //}
+        var obligationCalculationRepository = new ObligationCalculationRepository(_mockEprContext.Object, _logger, _mockUpdater);
+
+        // Act
+        var task = obligationCalculationRepository.ExecuteSoftDeleteAndCalculationsAsync(newSubmitterId, currentYear, newCalculations);
+        task.Wait();
+
+        // Assert
+        Assert.IsTrue(task.IsCompletedSuccessfully);
+
+        A.CallTo(() => _mockUpdater.SoftDeleteBySubmitterAndYearAsync(newSubmitterId, currentYear))
+            .MustHaveHappenedOnceExactly();
+        _mockEprContext.Verify(c => c.ObligationCalculations.AddRangeAsync(newCalculations, It.IsAny<CancellationToken>()), Moq.Times.Once);
+        _mockEprContext.Verify(c => c.SaveChangesAsync(It.IsAny<CancellationToken>()), Moq.Times.Once);
+    }
 }
