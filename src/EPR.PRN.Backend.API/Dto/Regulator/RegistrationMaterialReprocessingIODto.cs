@@ -16,6 +16,6 @@ public class RegistrationMaterialReprocessingIODto:NoteBase
     public decimal TotalOutputs { get; set; }
     public Guid RegistrationId { get; set; }
     public Guid RegistrationMaterialId { get; set; }
-    public string SiteAddress { get; set; }
+    public string SiteAddress { get; set; } = string.Empty;
     public Guid RegulatorApplicationTaskStatusId { get; set; }
 }

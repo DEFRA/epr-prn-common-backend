@@ -1,7 +1,10 @@
 using EPR.PRN.Backend.API.Commands;
 using EPR.PRN.Backend.API.Common.Enums;
+using EPR.PRN.Backend.Data.DataModels.Registrations;
 using EPR.PRN.Backend.Data.Interfaces.Regulator;
+using EPR.PRN.Backend.Data.Migrations;
 using MediatR;
+using static EPR.PRN.Backend.Obligation.Constants.ObligationConstants;
 
 namespace EPR.PRN.Backend.API.Handlers.Regulator;
 
@@ -19,9 +22,9 @@ public class RegulatorAccreditationMarkAsDulyMadeHandler(
         await rmRepository.AccreditationMarkAsDulyMade(
             request.Id,
             (int)RegulatorTaskStatus.Completed,
-            request.DeterminationDate,
             request.DulyMadeDate,
-             request.DulyMadeBy
+            request.DeterminationDate,
+        request.DulyMadeBy
         );
     }
 }
