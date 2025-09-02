@@ -23,26 +23,27 @@ public class RegistrationRepository(EprContext context, ILogger<RegistrationRepo
              .FirstOrDefaultAsync(cancellationToken);
     }
 
-    public async Task<Registration> CreateRegistrationAsync(int applicationTypeId, Guid organisationId, AddressDto reprocessingSiteAddress)
+    public async Task<Registration> CreateRegistrationAsync(int applicationTypeId, Guid organisationId, 
+        AddressDto address)
     {
         logger.LogInformation("Creating registration for ApplicationTypeId: {ApplicationTypeId} and OrganisationId: {OrganisationId}", applicationTypeId, organisationId);
         var registration = new Registration();
 
         // Reprocessing Site Address
-        if (reprocessingSiteAddress.Id.GetValueOrDefault() == 0)
+        if (address.Id.GetValueOrDefault() == 0)
         {
-            var address = new Address
+            var reprocessingSiteAddress = new Address
             {
-                AddressLine1 = reprocessingSiteAddress.AddressLine1,
-                AddressLine2 = reprocessingSiteAddress.AddressLine2,
-                TownCity = reprocessingSiteAddress.TownCity,
-                County = reprocessingSiteAddress.County,
-                PostCode = reprocessingSiteAddress.PostCode,
-                NationId = reprocessingSiteAddress.NationId,
-                GridReference = reprocessingSiteAddress.GridReference
+                AddressLine1 = address.AddressLine1,
+                AddressLine2 = address.AddressLine2,
+                TownCity = address.TownCity,
+                County = address.County,
+                PostCode = address.PostCode,
+                NationId = address.NationId,
+                GridReference = address.GridReference
             };
 
-            await context.LookupAddresses.AddAsync(address);
+            await context.LookupAddresses.AddAsync(reprocessingSiteAddress);
             await context.SaveChangesAsync();
 
             registration = new Registration
@@ -51,7 +52,7 @@ public class RegistrationRepository(EprContext context, ILogger<RegistrationRepo
                 OrganisationId = organisationId,
                 CreatedBy = Guid.NewGuid(),
                 ExternalId = Guid.NewGuid(),
-                ReprocessingSiteAddressId = address.Id,
+                ReprocessingSiteAddressId = reprocessingSiteAddress.Id,
                 BusinessAddressId = null,
                 LegalDocumentAddressId = null,
                 AssignedOfficerId = 0,
@@ -113,7 +114,7 @@ public class RegistrationRepository(EprContext context, ILogger<RegistrationRepo
         // Handle Business Address
         if (existing.BusinessAddressId is null)
         {
-            // Create new address
+            // Create new reprocessingSiteAddress
             var newBusinessAddress = new Address
             {
                 AddressLine1 = businessAddress.AddressLine1,
@@ -132,7 +133,7 @@ public class RegistrationRepository(EprContext context, ILogger<RegistrationRepo
         }
         else
         {
-            // Update existing address
+            // Update existing reprocessingSiteAddress
             var address = await context.LookupAddresses.FindAsync(existing.BusinessAddressId.Value);
             if (address != null)
             {
@@ -149,7 +150,7 @@ public class RegistrationRepository(EprContext context, ILogger<RegistrationRepo
         // Handle Reprocessing Address
         if (existing.ReprocessingSiteAddressId is null)
         {
-            // Create new address
+            // Create new reprocessingSiteAddress
             var newReprocessingSiteAddress = new Address
             {
                 AddressLine1 = reprocessingSiteAddress.AddressLine1,
@@ -168,7 +169,7 @@ public class RegistrationRepository(EprContext context, ILogger<RegistrationRepo
         }
         else
         {
-            // Update existing address
+            // Update existing reprocessingSiteAddress
             var address = await context.LookupAddresses.FindAsync(existing.ReprocessingSiteAddressId.Value);
             if (address != null)
             {
@@ -185,7 +186,7 @@ public class RegistrationRepository(EprContext context, ILogger<RegistrationRepo
         // Handle Legal Address
         if (existing.LegalDocumentAddressId is null)
         {
-            // Create new address
+            // Create new reprocessingSiteAddress
             var newLegalAddress = new Address
             {
                 AddressLine1 = legalDocumentsAddress.AddressLine1,
@@ -204,7 +205,7 @@ public class RegistrationRepository(EprContext context, ILogger<RegistrationRepo
         }
         else
         {
-            // Update existing address
+            // Update existing reprocessingSiteAddress
             var address = await context.LookupAddresses.FindAsync(existing.LegalDocumentAddressId.Value);
             if (address != null)
             {
