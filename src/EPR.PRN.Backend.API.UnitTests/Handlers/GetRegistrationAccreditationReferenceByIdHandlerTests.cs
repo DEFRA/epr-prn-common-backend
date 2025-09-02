@@ -131,7 +131,7 @@ public class GetRegistrationAccreditationReferenceByIdHandlerTests
             .WithMessage("Reprocessing site address NationId is null.");
     }
 
-    private RegistrationMaterial CreateMaterial(
+    private static RegistrationMaterial CreateMaterial(
         ApplicationOrganisationType appType,
         int? nationId,
         string materialCode,
