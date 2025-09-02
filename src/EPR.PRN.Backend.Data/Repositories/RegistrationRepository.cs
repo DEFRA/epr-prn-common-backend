@@ -24,26 +24,26 @@ public class RegistrationRepository(EprContext context, ILogger<RegistrationRepo
     }
 
     public async Task<Registration> CreateRegistrationAsync(int applicationTypeId, Guid organisationId, 
-        AddressDto address)
+        AddressDto AddressDto)
     {
         logger.LogInformation("Creating registration for ApplicationTypeId: {ApplicationTypeId} and OrganisationId: {OrganisationId}", applicationTypeId, organisationId);
         var registration = new Registration();
 
         // Reprocessing Site Address
-        if (address.Id.GetValueOrDefault() == 0)
+        if (AddressDto.Id.GetValueOrDefault() == 0)
         {
-            var reprocessingSiteAddress = new Address
+            var address = new Address
             {
-                AddressLine1 = address.AddressLine1,
-                AddressLine2 = address.AddressLine2,
-                TownCity = address.TownCity,
-                County = address.County,
-                PostCode = address.PostCode,
-                NationId = address.NationId,
-                GridReference = address.GridReference
+                AddressLine1 = AddressDto.AddressLine1,
+                AddressLine2 = AddressDto.AddressLine2,
+                TownCity = AddressDto.TownCity,
+                County = AddressDto.County,
+                PostCode = AddressDto.PostCode,
+                NationId = AddressDto.NationId,
+                GridReference = AddressDto.GridReference
             };
 
-            await context.LookupAddresses.AddAsync(reprocessingSiteAddress);
+            await context.LookupAddresses.AddAsync(address);
             await context.SaveChangesAsync();
 
             registration = new Registration
@@ -52,7 +52,7 @@ public class RegistrationRepository(EprContext context, ILogger<RegistrationRepo
                 OrganisationId = organisationId,
                 CreatedBy = Guid.NewGuid(),
                 ExternalId = Guid.NewGuid(),
-                ReprocessingSiteAddressId = reprocessingSiteAddress.Id,
+                ReprocessingSiteAddressId = address.Id,
                 BusinessAddressId = null,
                 LegalDocumentAddressId = null,
                 AssignedOfficerId = 0,

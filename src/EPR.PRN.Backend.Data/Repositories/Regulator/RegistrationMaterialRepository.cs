@@ -74,9 +74,9 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
     public async Task RegistrationMaterialsMarkAsDulyMade(
     Guid registrationMaterialId,
     int statusId,
-    DateTime determinationDateUtc,
-    DateTime dulyMadeDateUtc,
-    Guid dulyMadeBy)
+    DateTime DeterminationDate,
+    DateTime DulyMadeDate,
+    Guid DulyMadeBy)
     {
         var material = await eprContext.RegistrationMaterials
             .FirstOrDefaultAsync(rm => rm.ExternalId == registrationMaterialId);
@@ -130,21 +130,21 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
                 ExternalId = Guid.NewGuid(),
                 RegulatorTaskId = taskId,
                 StatusCreatedDate = DateTime.UtcNow,
-                StatusCreatedBy = dulyMadeBy
+                StatusCreatedBy = DulyMadeBy
             };
             await eprContext.RegulatorApplicationTaskStatus.AddAsync(taskStatus);
         }
         else
         {
             taskStatus.TaskStatusId = statusId;
-            taskStatus.StatusUpdatedBy = dulyMadeBy;
+            taskStatus.StatusUpdatedBy = DulyMadeBy;
             taskStatus.StatusUpdatedDate = DateTime.UtcNow;
         }
 
         // Set common fields
-        dulyMade.DulyMadeDate = dulyMadeDateUtc;
-        dulyMade.DulyMadeBy = dulyMadeBy;
-        determinationDate.DeterminateDate = determinationDateUtc;
+        dulyMade.DulyMadeDate = DulyMadeDate;
+        dulyMade.DulyMadeBy = DulyMadeBy;
+        determinationDate.DeterminateDate = DeterminationDate;
 
         // Add new entities if needed
         if (dulyMade.Id == 0)
@@ -171,9 +171,9 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
         await eprContext.SaveChangesAsync();
     }
 
-    public async Task<IList<RegistrationMaterial>> GetRegistrationMaterialsByRegistrationId(Guid registrationId)
+    public async Task<IList<RegistrationMaterial>> GetRegistrationMaterialsByRegistrationId(Guid requestRegistrationId)
     {
-        var existingRegistration = await eprContext.Registrations.SingleOrDefaultAsync(o => o.ExternalId == registrationId);
+        var existingRegistration = await eprContext.Registrations.SingleOrDefaultAsync(o => o.ExternalId == requestRegistrationId);
         if (existingRegistration == null)
         {
             throw new KeyNotFoundException("Registration not found.");
@@ -191,7 +191,7 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
             .Include(o => o.EnvironmentalPermitWasteManagementPeriod)
             .Include(o => o.MaximumReprocessingPeriod)
             .Include(o => o.MaterialExemptionReferences)
-            .Where(o => o.Registration.ExternalId == registrationId)
+            .Where(o => o.Registration.ExternalId == requestRegistrationId)
             .ToList();
 
         return existingMaterials;
