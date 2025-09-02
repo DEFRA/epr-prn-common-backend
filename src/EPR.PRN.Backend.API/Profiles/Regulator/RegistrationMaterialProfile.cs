@@ -80,7 +80,7 @@ public class RegistrationMaterialProfile : Profile
         CreateMap<Accreditation, AccreditationDto>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.ExternalId))
             .ForMember(dest => dest.DeterminationDate, opt => opt.MapFrom(src => src.AccreditationDulyMade != null && src.AccreditationDulyMade.Any()
-                ? src.AccreditationDulyMade.First().DeterminationDate
+                ? src.AccreditationDulyMade[0].DeterminationDate
                 : (DateTime?)null))
             .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.AccreditationStatus.Name))
             .ForMember(dest => dest.ApplicationReference, opt => opt.MapFrom(src => src.ApplicationReferenceNumber));
