@@ -14,7 +14,7 @@ namespace EPR.PRN.Backend.Data.UnitTests.Repositories.Regulator;
 public class RegistrationMaterialRepositoryTests
 {
     private EprContext _context;
-    private IRegistrationMaterialRepository _repository;
+    private RegistrationMaterialRepository _repository;
 
     [TestInitialize]
     public void TestInitialize()
