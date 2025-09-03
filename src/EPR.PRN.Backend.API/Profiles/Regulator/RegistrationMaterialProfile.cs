@@ -203,7 +203,12 @@ public class RegistrationMaterialProfile : Profile
             .ForMember(dest => dest.MaterialName, opt => opt.MapFrom(src => src.RegistrationMaterial.Material.MaterialName))
             .ForMember(dest => dest.SubmittedDate, opt => opt.MapFrom(src => src.CreatedOn))
             .ForMember(dest => dest.ApplicationType, opt => opt.MapFrom(src => src.RegistrationMaterial.Registration.ApplicationTypeId))
-            .ForMember(dest => dest.NationId, opt => opt.MapFrom(src => src.RegistrationMaterial.Registration.ReprocessingSiteAddress.NationId != null ? src.RegistrationMaterial.Registration.ReprocessingSiteAddress.NationId : 0));
+            .ForMember(d => d.NationId, opt => opt.MapFrom(src =>
+                (src.RegistrationMaterial != null
+                 && src.RegistrationMaterial.Registration != null
+                 && src.RegistrationMaterial.Registration.ReprocessingSiteAddress != null)
+                    ? src.RegistrationMaterial.Registration.ReprocessingSiteAddress.NationId
+                    : (int?)null));
     }
 
     private void CreateWasteLicencesMappings()
@@ -372,7 +377,7 @@ public class RegistrationMaterialProfile : Profile
             }).ToList();
     }
 
-    private Guid? GetRegistrationTaskExternalId(List<RegulatorRegistrationTaskStatus>? srcTasks, string taskName)
+    private static Guid? GetRegistrationTaskExternalId(List<RegulatorRegistrationTaskStatus>? srcTasks, string taskName)
     {
         var task = srcTasks?.Find(t => t.Task.Name == taskName);
 

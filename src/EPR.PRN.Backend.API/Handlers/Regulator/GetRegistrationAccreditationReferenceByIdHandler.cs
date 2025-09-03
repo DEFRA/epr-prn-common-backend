@@ -8,9 +8,7 @@ using MediatR;
 namespace EPR.PRN.Backend.API.Handlers.Regulator;
 
 public class GetRegistrationAccreditationReferenceByIdHandler(
-   IRegistrationMaterialRepository rmRepository,
-    IMapper mapper
-) : IRequestHandler<GetRegistrationAccreditationReferenceByIdQuery, RegistrationAccreditationReferenceDto>
+   IRegistrationMaterialRepository rmRepository) : IRequestHandler<GetRegistrationAccreditationReferenceByIdQuery, RegistrationAccreditationReferenceDto>
 {
     public async Task<RegistrationAccreditationReferenceDto> Handle(GetRegistrationAccreditationReferenceByIdQuery request, CancellationToken cancellationToken)
     {
