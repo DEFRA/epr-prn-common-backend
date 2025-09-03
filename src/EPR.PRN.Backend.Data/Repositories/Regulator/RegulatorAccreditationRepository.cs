@@ -32,11 +32,19 @@ public class RegulatorAccreditationRepository(EprContext eprContext) : IRegulato
     public async Task AccreditationMarkAsDulyMade(Guid accreditationId, int statusId, DateTime DulyMadeDate, DateTime DeterminationDate, Guid DulyMadeBy)
     {
         var accreditation = await eprContext.Accreditations.FirstOrDefaultAsync(rm => rm.ExternalId == accreditationId);
-        
-        if (accreditation is null) throw new KeyNotFoundException("Accreditation not found.");
+
+        if (accreditation is null)
+        {
+            throw new KeyNotFoundException("Accreditation not found.");
+        }
+
             var material = await eprContext.RegistrationMaterials.FirstOrDefaultAsync(rm => rm.Id == accreditation.RegistrationMaterialId);
-        
-        if (material is null) throw new KeyNotFoundException("Material not found.");
+
+        if (material is null) 
+        { 
+            throw new KeyNotFoundException("Material not found.");
+        }
+
             var dulyMade = await eprContext.AccreditationDulyMade
                 .FirstOrDefaultAsync(adm => adm.AccreditationId == accreditation.Id)
                 ?? new AccreditationDulyMade
@@ -49,7 +57,9 @@ public class RegulatorAccreditationRepository(EprContext eprContext) : IRegulato
             .FirstOrDefaultAsync(x => x.Id == material.RegistrationId);
 
         if (registration == null)
+        {
             throw new KeyNotFoundException("Registration not found.");
+        }
 
         var determinationDate = await eprContext.AccreditationDeterminationDate
                 .FirstOrDefaultAsync(x => x.AccreditationId == accreditation.Id)

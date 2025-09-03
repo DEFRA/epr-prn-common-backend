@@ -58,7 +58,7 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
                ?? throw new KeyNotFoundException("Accreditation not found.");
     }
 
-    public async Task UpdateRegistrationOutCome(Guid registrationMaterialId, int statusId, string? comment, string registrationReferenceNumber, Guid User)
+    public async Task UpdateRegistrationOutCome(Guid registrationMaterialId, int statusId, string? comment, string? registrationReferenceNumber, Guid User)
     {
         var material = await eprContext.RegistrationMaterials.FirstOrDefaultAsync(rm => rm.ExternalId == registrationMaterialId);
         if (material is null) throw new KeyNotFoundException("Material not found.");
@@ -391,7 +391,7 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
         await eprContext.SaveChangesAsync();
     }
 
-    private IIncludableQueryable<RegistrationMaterial, LookupRegistrationMaterialStatus> GetRegistrationMaterialsWithRelatedEntities()
+    private IIncludableQueryable<RegistrationMaterial, LookupRegistrationMaterialStatus?> GetRegistrationMaterialsWithRelatedEntities()
     {
         var registrationMaterials =
             eprContext.RegistrationMaterials
@@ -453,7 +453,7 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
         return accreditations;
     }
 
-    private IIncludableQueryable<Registration, LookupRegistrationMaterialStatus> GetRegistrationsWithRelatedEntities()
+    private IIncludableQueryable<Registration, LookupRegistrationMaterialStatus?> GetRegistrationsWithRelatedEntities()
     {
         var registrations = eprContext
             .Registrations
