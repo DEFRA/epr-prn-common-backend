@@ -13,7 +13,7 @@ namespace EPR.PRN.Backend.Data.DataModels.Registrations
         public int Id { get; set; }
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid ExternalId { get; set; }
-        public RegistrationMaterial RegistrationMaterial { get; set; }
+        public RegistrationMaterial RegistrationMaterial { get; set; } = null!;
         [ForeignKey("RegistrationMaterial")]
         public int RegistrationMaterialId { get; set; }
         [MaxLength(100)]
