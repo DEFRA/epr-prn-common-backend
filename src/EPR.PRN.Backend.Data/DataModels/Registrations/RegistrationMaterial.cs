@@ -17,10 +17,10 @@ public class RegistrationMaterial
 
     [ForeignKey("Registration")]
     public int RegistrationId { get; set; }
-    public Registration Registration { get; set; }
+    public Registration Registration { get; set; } = null!;
     [ForeignKey("Material")]
     public int MaterialId { get; set; }
-    public LookupMaterial Material { get; set; }
+    public LookupMaterial Material { get; set; } = null!;
     public LookupRegistrationMaterialStatus? Status { get; set; }
     [ForeignKey("Status")]
     public int? StatusId { get; set; }

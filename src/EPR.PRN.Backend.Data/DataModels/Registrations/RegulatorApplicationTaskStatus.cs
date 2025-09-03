@@ -8,7 +8,7 @@ namespace EPR.PRN.Backend.Data.DataModels.Registrations;
 [ExcludeFromCodeCoverage]
 public class RegulatorApplicationTaskStatus : RegulatorTaskStatusBase
 {
-    public RegistrationMaterial RegistrationMaterial { get; set; }
+    public RegistrationMaterial RegistrationMaterial { get; set; } = null!;
     [ForeignKey("RegistrationMaterial")]
     public int? RegistrationMaterialId { get; set; }
     public List<ApplicationTaskStatusQueryNote> ApplicationTaskStatusQueryNotes { get; set; } = new(); 
