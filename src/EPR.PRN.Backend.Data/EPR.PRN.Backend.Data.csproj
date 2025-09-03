@@ -33,19 +33,19 @@
 	<ItemGroup>
 		
 		<SonarQubeSetting Include="sonar.coverage.exclusions">
-			<Value>Migrations/*,Scripts/*</Value>
+			<Value>**/Migrations/**,**/Scripts/**,**/SeedData/**</Value>
 		</SonarQubeSetting>
 	</ItemGroup>
 
 	<ItemGroup>
 		<SonarQubeSetting Include="sonar.cpd.exclusions">
-			<Value>Migrations/*,Scripts/*</Value>
+			<Value>**/Migrations/**,**/Scripts/**,**/SeedData/**</Value>
 		</SonarQubeSetting>
 	</ItemGroup>
 
 	<ItemGroup>
 		<SonarQubeSetting Include="sonar.exclusions">
-			<Value>Scripts/*,SeedData/**</Value>
+			<Value>**/Migrations/**,**/Scripts/**,**/SeedData/**</Value>
 		</SonarQubeSetting>
 	</ItemGroup>
 
