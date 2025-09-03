@@ -14,7 +14,7 @@ namespace EPR.PRN.Backend.Data.UnitTests.Repositories.Regulator;
 public class RegulatorAccreditationRepositoryTests
 {
     private EprContext _context;
-    private IRegulatorAccreditationRepository _repository;
+    private RegulatorAccreditationRepository _repository;
 
     [TestInitialize]
     public void TestInitialize()
