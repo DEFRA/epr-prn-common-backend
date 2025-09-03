@@ -12,8 +12,8 @@ public class UpdateRegulatorAccreditationTaskHandler(IRegulatorAccreditationTask
     {
         var taskStatus = await repository.GetTaskStatusAsync(command.TaskName, command.AccreditationId);
 
-        ValidateAndThrowIfInvalidStatus(command.Status, taskStatus ?? new RegulatorAccreditationTaskStatus());
-        
+         ValidateAndThrowIfInvalidStatus(command.Status, taskStatus);
+
         await repository.UpdateStatusAsync(command.TaskName, command.AccreditationId, command.Status, command.Comments, Guid.NewGuid());
     }
 }
