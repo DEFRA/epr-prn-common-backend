@@ -12,7 +12,7 @@ namespace EPR.PRN.Backend.Data;
 [ExcludeFromCodeCoverage]
 public class EprContext : DbContext
 {
-    private readonly IConfiguration _configuration;
+    private readonly IConfiguration _configuration = null!;
 
     public EprContext()
     {
