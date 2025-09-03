@@ -255,7 +255,7 @@ namespace EPR.PRN.Backend.Data.Repositories
         private static void UpsertOverseasAddressWasteCodes(OverseasAddress overseasAddress, List<OverseasAddressWasteCodeDto> updatedWasteCodes)
         {
             var deletedWastCodes = overseasAddress.OverseasAddressWasteCodes
-                .Where(wc => !updatedWasteCodes.Any(uwc => uwc.ExternalId == wc.ExternalId))
+                .Where(wc => !updatedWasteCodes.Exists(uwc => uwc.ExternalId == wc.ExternalId))
                 .ToList();
 
             overseasAddress.OverseasAddressWasteCodes.RemoveAll(wc => deletedWastCodes.Contains(wc));

@@ -18,6 +18,10 @@ public class EprContext : DbContext
     {
        
     }
+    public EprContext(IConfiguration configuration)
+    {
+        _configuration= configuration;
+    }
 
     public EprContext(DbContextOptions<EprContext> options)
         : base(options)
