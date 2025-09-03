@@ -12,7 +12,7 @@ namespace EPR.PRN.Backend.Data;
 [ExcludeFromCodeCoverage]
 public class EprContext : DbContext
 {
-    private readonly IConfiguration _configuration;
+    private readonly IConfiguration? _configuration;
 
     public EprContext()
     {
@@ -31,7 +31,7 @@ public class EprContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        if (!optionsBuilder.IsConfigured)
+        if (!optionsBuilder.IsConfigured && _configuration is not null)
         {
             optionsBuilder.UseSqlServer(_configuration.GetConnectionString("EprConnectionString"));
         }
