@@ -24,23 +24,23 @@ public class RegistrationRepository(EprContext context, ILogger<RegistrationRepo
     }
 
     public async Task<Registration> CreateRegistrationAsync(int applicationTypeId, Guid organisationId, 
-        AddressDto AddressDto)
+        AddressDto reprocessingSiteAddress)
     {
         logger.LogInformation("Creating registration for ApplicationTypeId: {ApplicationTypeId} and OrganisationId: {OrganisationId}", applicationTypeId, organisationId);
         var registration = new Registration();
 
         // Reprocessing Site Address
-        if (AddressDto.Id.GetValueOrDefault() == 0)
+        if (reprocessingSiteAddress.Id.GetValueOrDefault() == 0)
         {
             var address = new Address
             {
-                AddressLine1 = AddressDto.AddressLine1,
-                AddressLine2 = AddressDto.AddressLine2,
-                TownCity = AddressDto.TownCity,
-                County = AddressDto.County,
-                PostCode = AddressDto.PostCode,
-                NationId = AddressDto.NationId,
-                GridReference = AddressDto.GridReference
+                AddressLine1 = reprocessingSiteAddress.AddressLine1,
+                AddressLine2 = reprocessingSiteAddress.AddressLine2,
+                TownCity = reprocessingSiteAddress.TownCity,
+                County = reprocessingSiteAddress.County,
+                PostCode = reprocessingSiteAddress.PostCode,
+                NationId = reprocessingSiteAddress.NationId,
+                GridReference = reprocessingSiteAddress.GridReference
             };
 
             await context.LookupAddresses.AddAsync(address);
