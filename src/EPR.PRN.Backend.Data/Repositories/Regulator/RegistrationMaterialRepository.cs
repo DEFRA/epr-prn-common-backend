@@ -1,12 +1,10 @@
-﻿using System.Threading.Tasks;
-using EPR.PRN.Backend.API.Common.Constants;
+﻿using EPR.PRN.Backend.API.Common.Constants;
 using EPR.PRN.Backend.API.Common.Enums;
 using EPR.PRN.Backend.Data.DataModels.Registrations;
 using EPR.PRN.Backend.Data.DTO;
 using EPR.PRN.Backend.Data.Interfaces.Regulator;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace EPR.PRN.Backend.Data.Repositories.Regulator;
 
@@ -74,9 +72,9 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
     public async Task RegistrationMaterialsMarkAsDulyMade(
     Guid registrationMaterialId,
     int statusId,
-    DateTime DeterminationDate,
-    DateTime DulyMadeDate,
-    Guid DulyMadeBy)
+    DateTime determinationDateUtc,
+    DateTime dulyMadeDate,
+    Guid dulyMadeBy)
     {
         var material = await eprContext.RegistrationMaterials
             .FirstOrDefaultAsync(rm => rm.ExternalId == registrationMaterialId);
@@ -130,21 +128,22 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
                 ExternalId = Guid.NewGuid(),
                 RegulatorTaskId = taskId,
                 StatusCreatedDate = DateTime.UtcNow,
-                StatusCreatedBy = DulyMadeBy
+                StatusCreatedBy = dulyMadeBy
             };
             await eprContext.RegulatorApplicationTaskStatus.AddAsync(taskStatus);
         }
         else
         {
             taskStatus.TaskStatusId = statusId;
-            taskStatus.StatusUpdatedBy = DulyMadeBy;
+            taskStatus.StatusUpdatedBy = dulyMadeBy;
             taskStatus.StatusUpdatedDate = DateTime.UtcNow;
         }
 
         // Set common fields
-        dulyMade.DulyMadeDate = DulyMadeDate;
-        dulyMade.DulyMadeBy = DulyMadeBy;
-        determinationDate.DeterminateDate = DeterminationDate;
+
+        dulyMade.DulyMadeDate = dulyMadeDate;
+        dulyMade.DulyMadeBy = dulyMadeBy;
+        determinationDate.DeterminateDate = determinationDateUtc;
 
         // Add new entities if needed
         if (dulyMade.Id == 0)
