@@ -156,7 +156,6 @@ namespace EPR.PRN.Backend.Obligation.Services
 			var acceptedTonnageForPrns = GetSumOfTonnageForMaterials(prns, EprnStatus.ACCEPTED.ToString());
 			var awaitingAcceptanceForPrns = GetSumOfTonnageForMaterials(prns, EprnStatus.AWAITINGACCEPTANCE.ToString());
 			var awaitingAcceptanceCount = GetPrnStatusCount(prns, EprnStatus.AWAITINGACCEPTANCE.ToString());
-
 			var recyclingTargets = await recyclingTargetDataService.GetRecyclingTargetsAsync();
 
 			var responseObligationData = new List<ObligationData>();
@@ -170,7 +169,7 @@ namespace EPR.PRN.Backend.Obligation.Services
 				var tonnageAwaitingAcceptance = GetTonnage(npwdMaterialNames, awaitingAcceptanceForPrns);
 				var obligationMaterialCalculations = obligationCalculations.FindAll(x => x.MaterialId == material.Id);
 
-				// Segregate Paper and Fibre obligation data from other material types
+				// Segregate Paper and FibreComposite materials to combine later
 				if (material.MaterialName.Contains(MaterialType.Paper.ToString()) || material.MaterialName.Contains(MaterialType.FibreComposite.ToString()))
 				{
 					paperFibreObligationData.Add(GetObligationData(material.MaterialName, organisationId, obligationMaterialCalculations, tonnageAccepted, tonnageAwaitingAcceptance, recyclingTarget));
@@ -181,11 +180,14 @@ namespace EPR.PRN.Backend.Obligation.Services
 				}
 			}
 
-			// Add Paper and Fibre obligation data and return as Paper
+			// Combine Paper and Fibre obligation data into a single entry for Paper
 			if (paperFibreObligationData.Count > 0)
 			{
 				responseObligationData.Add(GetPaperFibreCompositeObligationData(paperFibreObligationData));
 			}
+
+			// Adjust TonnageOutstanding values including Glass and Glass Re-melt adjustments
+			AdjustTonnageOutstandingForObligations(responseObligationData);
 
 			var obligationModel = new ObligationModel { ObligationData = responseObligationData, NumberOfPrnsAwaitingAcceptance = awaitingAcceptanceCount };
 			return new ObligationCalculationResult { IsSuccess = true, ObligationModel = obligationModel };
@@ -275,6 +277,47 @@ namespace EPR.PRN.Backend.Obligation.Services
 				.Where(x => npwdMaterialNames.Contains(x.MaterialName))
 				.Select(x => x.TotalTonnage)
 				.FirstOrDefault();
+		}
+
+		private static void AdjustTonnageOutstandingForObligations(List<ObligationData> responseObligationData)
+		{
+			// If Glass Re-melt TonnageOutstanding is negative and Glass TonnageOutstanding is positive, subtract the Re-melt value from Glass.
+			ApplySurplusGlassRemeltToRemainingGlass(responseObligationData);
+
+			// Adjust TonnageOutstanding column if TonnageAccepted exceeds ObligationToMeet
+			ResetNegativeTonnageOutstandingToZero(responseObligationData);
+		}
+
+		private static void ApplySurplusGlassRemeltToRemainingGlass(List<ObligationData> responseObligationData)
+		{
+			var glassRemeltData = responseObligationData.FirstOrDefault(data => data.MaterialName == MaterialType.GlassRemelt.ToString()
+										&& data.TonnageOutstanding.HasValue
+										&& data.TonnageOutstanding < 0);
+
+			var glassData = responseObligationData.FirstOrDefault(data => data.MaterialName == MaterialType.Glass.ToString()
+										&& data.TonnageOutstanding.HasValue
+										&& data.TonnageOutstanding > 0);
+
+			if (glassRemeltData == null || glassData == null)
+			{
+				return;
+			}
+			// Apply surplus Glass Re-melt to reduce Glass TonnageOutstanding
+			glassData.TonnageOutstanding += glassRemeltData.TonnageOutstanding;
+
+			// Calculate adjusted remaining Glass PRNs after applying surplus Glass Re-melt PRNs
+			var adjustedRemainingGlassPRNs = glassData.TonnageAccepted + (-glassRemeltData.TonnageOutstanding);
+
+			// Get updated status for Glass after adjustment of TonnageOutstanding
+			glassData.Status = GetStatus(glassData.ObligationToMeet, adjustedRemainingGlassPRNs);
+		}
+
+		private static void ResetNegativeTonnageOutstandingToZero(List<ObligationData> responseObligationData)
+		{
+			foreach (var data in responseObligationData.Where(data => data.TonnageOutstanding.HasValue && data.TonnageOutstanding < 0))
+			{
+				data.TonnageOutstanding = 0;
+			}
 		}
 	}
 }
