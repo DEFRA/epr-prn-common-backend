@@ -314,9 +314,12 @@ namespace EPR.PRN.Backend.Obligation.Services
 
 		private static void ResetNegativeTonnageOutstandingToZero(List<ObligationData> responseObligationData)
 		{
-			foreach (var data in responseObligationData.Where(data => data.TonnageOutstanding.HasValue && data.TonnageOutstanding < 0))
+			foreach (var data in responseObligationData)
 			{
-				data.TonnageOutstanding = 0;
+				if (data.TonnageOutstanding.HasValue && data.TonnageOutstanding < 0)
+				{
+					data.TonnageOutstanding = 0;
+				}
 			}
 		}
 	}
