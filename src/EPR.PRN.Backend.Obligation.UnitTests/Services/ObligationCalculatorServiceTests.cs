@@ -245,23 +245,19 @@ public class ObligationCalculatorServiceTests
 	{
 		// Arrange
 		var materials = GetMaterials();
-		var obligationCalculations = _fixture.CreateMany<ObligationCalculation>(8).ToList();
+		var obligationCalculations = _fixture.Build<ObligationCalculation>()
+										.With(x => x.MaterialObligationValue, 1)
+										.CreateMany(8)
+										.ToList();
+
 		obligationCalculations[0].MaterialId = 1;
-		obligationCalculations[0].MaterialObligationValue = 1;
 		obligationCalculations[1].MaterialId = 2;
-		obligationCalculations[1].MaterialObligationValue = 1;
 		obligationCalculations[2].MaterialId = 3;
-		obligationCalculations[2].MaterialObligationValue = 1;
 		obligationCalculations[3].MaterialId = 4;
-		obligationCalculations[3].MaterialObligationValue = 1;
 		obligationCalculations[4].MaterialId = 5;
-		obligationCalculations[4].MaterialObligationValue = 1;
 		obligationCalculations[5].MaterialId = 6;
-		obligationCalculations[5].MaterialObligationValue = 1;
 		obligationCalculations[6].MaterialId = 7;
-		obligationCalculations[6].MaterialObligationValue = 1;
 		obligationCalculations[7].MaterialId = 8;
-		obligationCalculations[7].MaterialObligationValue = 1;
 
 		var prnList = _fixture.CreateMany<EprnResultsDto>(8).ToList();
 		
