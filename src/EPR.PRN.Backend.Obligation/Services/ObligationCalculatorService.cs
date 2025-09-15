@@ -290,11 +290,11 @@ namespace EPR.PRN.Backend.Obligation.Services
 
 		private static void ApplySurplusGlassRemeltToRemainingGlass(List<ObligationData> responseObligationData)
 		{
-			var glassRemeltData = responseObligationData.FirstOrDefault(data => data.MaterialName == MaterialType.GlassRemelt.ToString()
+			var glassRemeltData = responseObligationData.Find(data => data.MaterialName == MaterialType.GlassRemelt.ToString()
 										&& data.TonnageOutstanding.HasValue
 										&& data.TonnageOutstanding < 0);
 
-			var glassData = responseObligationData.FirstOrDefault(data => data.MaterialName == MaterialType.Glass.ToString()
+			var glassData = responseObligationData.Find(data => data.MaterialName == MaterialType.Glass.ToString()
 										&& data.TonnageOutstanding.HasValue
 										&& data.TonnageOutstanding > 0);
 
