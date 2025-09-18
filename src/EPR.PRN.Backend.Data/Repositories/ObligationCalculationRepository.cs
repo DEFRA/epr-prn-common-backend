@@ -2,11 +2,9 @@
 using EPR.PRN.Backend.Data.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using System.Diagnostics.CodeAnalysis;
 
 namespace EPR.PRN.Backend.Data.Repositories;
 
-[ExcludeFromCodeCoverage]
 public class ObligationCalculationRepository(EprContext context, ILogger<ObligationCalculationRepository> logger, IObligationCalculationUpdater updater) : IObligationCalculationRepository
 {
     private readonly string logPrefix = "[EPR.PRN.Backend.Data.Repositories]";
