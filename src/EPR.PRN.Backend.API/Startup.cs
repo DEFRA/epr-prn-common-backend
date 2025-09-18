@@ -68,14 +68,11 @@ namespace EPR.PRN.Backend.API
             });
             services.AddFeatureManagement();
 
-            services.AddDbContext<EprContext>(options =>
-                options.UseSqlServer(_config.GetConnectionString("EprConnectionString"), sqlOptions =>
-                {
-                    sqlOptions.CommandTimeout(180);
-                    sqlOptions.EnableRetryOnFailure();
-                }));
+			services.AddDbContext<EprContext>(options =>
+				options.UseSqlServer(_config.GetConnectionString("EprConnectionString"))
+			);
 
-            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+			services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
             services.AddDependencies();
 

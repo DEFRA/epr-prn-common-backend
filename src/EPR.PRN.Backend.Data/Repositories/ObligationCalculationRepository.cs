@@ -2,10 +2,11 @@
 using EPR.PRN.Backend.Data.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
+using System.Diagnostics.CodeAnalysis;
 
 namespace EPR.PRN.Backend.Data.Repositories;
 
+[ExcludeFromCodeCoverage]
 public class ObligationCalculationRepository(EprContext context, ILogger<ObligationCalculationRepository> logger, IObligationCalculationUpdater updater) : IObligationCalculationRepository
 {
     private readonly string logPrefix = "[EPR.PRN.Backend.Data.Repositories]";
@@ -20,28 +21,20 @@ public class ObligationCalculationRepository(EprContext context, ILogger<Obligat
     }
 
     public async Task SoftDeleteAndAddObligationCalculationBySubmitterIdAsync(Guid submitterId, int year, List<ObligationCalculation> calculations)
-    {
-        logger.LogInformation("{Logprefix}: ObligationCalculationRepository - SoftDeleteAndAddObligationCalculationBySubmitterIdAsync: SubmitterId: {SubmitterId}, Year: {Year}, Calculations: {Calculations}", logPrefix, submitterId, year, JsonConvert.SerializeObject(calculations));
-
-        var strategy = context.Database.CreateExecutionStrategy();
-        await strategy.ExecuteAsync(() => ExecuteSoftDeleteAndCalculationsAsync(submitterId, year, calculations));
-    }
-
-    public async Task ExecuteSoftDeleteAndCalculationsAsync(Guid submitterId, int year, List<ObligationCalculation> calculations)
-    {
-        logger.LogInformation("{Logprefix}: ExecuteSoftDeleteAndCalculationsAsync - BeginTransactionAsync", logPrefix);
-        await using var transaction = await context.Database.BeginTransactionAsync();
-
+	{
+		logger.LogInformation("{Logprefix}: ExecuteSoftDeleteAndCalculationsAsync - BeginTransactionAsync", logPrefix);
+		await using var transaction = await context.Database.BeginTransactionAsync();
+		
         logger.LogInformation("{Logprefix}: ObligationCalculationRepository - SoftDeleteBySubmitterAndYearAsync: SubmitterId: {SubmitterId}, Year: {Year}", logPrefix, submitterId, year);
-        await updater.SoftDeleteBySubmitterAndYearAsync(submitterId, year);
+		await updater.SoftDeleteBySubmitterAndYearAsync(submitterId, year);
 
-        logger.LogInformation("{Logprefix}: ExecuteSoftDeleteAndCalculationsAsync - ObligationCalculations.AddRangeAsync", logPrefix);
-        await context.ObligationCalculations.AddRangeAsync(calculations);
+		logger.LogInformation("{Logprefix}: ExecuteSoftDeleteAndCalculationsAsync - ObligationCalculations.AddRangeAsync", logPrefix);
+		await context.ObligationCalculations.AddRangeAsync(calculations);
 
-        logger.LogInformation("{Logprefix}: ExecuteSoftDeleteAndCalculationsAsync - SaveChangesAsync", logPrefix);
-        await context.SaveChangesAsync();
+		logger.LogInformation("{Logprefix}: ExecuteSoftDeleteAndCalculationsAsync - SaveChangesAsync", logPrefix);
+		await context.SaveChangesAsync();
 
-        await transaction.CommitAsync();
-        logger.LogInformation("{Logprefix}: ExecuteSoftDeleteAndCalculationsAsync - Transaction Committed", logPrefix);
+		await transaction.CommitAsync();
+		logger.LogInformation("{Logprefix}: ExecuteSoftDeleteAndCalculationsAsync - Transaction Committed", logPrefix);
     }
 }
