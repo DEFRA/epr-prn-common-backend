@@ -18,21 +18,30 @@ public class ObligationCalculationRepository(EprContext context, ILogger<Obligat
                             .ToListAsync();
     }
 
-    public async Task SoftDeleteAndAddObligationCalculationBySubmitterIdAsync(Guid submitterId, int year, List<ObligationCalculation> calculations)
+	public async Task UpsertObligationCalculationsForSubmitterYearAsync(Guid submitterId, int year, List<ObligationCalculation> calculations)
 	{
 		logger.LogInformation("{Logprefix}: ExecuteSoftDeleteAndCalculationsAsync - BeginTransactionAsync", logPrefix);
 		await using var transaction = await context.Database.BeginTransactionAsync();
-		
-        logger.LogInformation("{Logprefix}: ObligationCalculationRepository - SoftDeleteBySubmitterAndYearAsync: SubmitterId: {SubmitterId}, Year: {Year}", logPrefix, submitterId, year);
-		await updater.SoftDeleteBySubmitterAndYearAsync(submitterId, year);
 
-		logger.LogInformation("{Logprefix}: ExecuteSoftDeleteAndCalculationsAsync - ObligationCalculations.AddRangeAsync", logPrefix);
-		await context.ObligationCalculations.AddRangeAsync(calculations);
+		try
+		{
+			logger.LogInformation("{Logprefix}: ObligationCalculationRepository - SoftDeleteBySubmitterAndYearAsync: SubmitterId: {SubmitterId}, Year: {Year}", logPrefix, submitterId, year);
+			await updater.SoftDeleteBySubmitterAndYearAsync(submitterId, year);
 
-		logger.LogInformation("{Logprefix}: ExecuteSoftDeleteAndCalculationsAsync - SaveChangesAsync", logPrefix);
-		await context.SaveChangesAsync();
+			logger.LogInformation("{Logprefix}: ExecuteSoftDeleteAndCalculationsAsync - ObligationCalculations.AddRangeAsync", logPrefix);
+			await context.ObligationCalculations.AddRangeAsync(calculations);
 
-		await transaction.CommitAsync();
-		logger.LogInformation("{Logprefix}: ExecuteSoftDeleteAndCalculationsAsync - Transaction Committed", logPrefix);
-    }
+			logger.LogInformation("{Logprefix}: ExecuteSoftDeleteAndCalculationsAsync - SaveChangesAsync", logPrefix);
+			await context.SaveChangesAsync();
+
+			await transaction.CommitAsync();
+			logger.LogInformation("{Logprefix}: ExecuteSoftDeleteAndCalculationsAsync - Transaction Committed", logPrefix);
+		}
+		catch (Exception ex)
+		{
+			logger.LogError(ex, "{Logprefix}: ExecuteSoftDeleteAndCalculationsAsync - Exception occurred, rolling back - {Message}", logPrefix, ex.Message);
+			await transaction.RollbackAsync();
+			throw;
+		}
+	}
 }
