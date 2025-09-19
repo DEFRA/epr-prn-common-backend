@@ -139,9 +139,10 @@ namespace EPR.PRN.Backend.Data.Repositories
                 await SaveOverseasSitesTransaction(overseasAddressSubmission);
                 await transaction.CommitAsync();
             }
-            catch (Exception)
-            {               
-                throw;
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "An error occurred while saving overseas reprocessing sites.");
+                throw; // Properly re-throw the exception without altering the stack trace
             }
         }
 
@@ -205,7 +206,7 @@ namespace EPR.PRN.Backend.Data.Repositories
             foreach (var overseasAddress in overseasAddresses)
             {
                 var updatedAddress = updatedAddresses
-                    .FirstOrDefault(x => x.ExternalId == overseasAddress.ExternalId)!;
+                    .Find(x => x.ExternalId == overseasAddress.ExternalId)!;
                 overseasAddress.AddressLine1 = updatedAddress.AddressLine1;
                 overseasAddress.AddressLine2 = updatedAddress.AddressLine2;
                 overseasAddress.CityOrTown = updatedAddress.CityOrTown;
@@ -222,7 +223,7 @@ namespace EPR.PRN.Backend.Data.Repositories
             await context.SaveChangesAsync();
         }
 
-        private void UpsertOverseasAddressContact(OverseasAddress overseasAddress, OverseasAddressContactDto contactDto)
+        private static void UpsertOverseasAddressContact(OverseasAddress overseasAddress, OverseasAddressContactDto contactDto)
         {
             if (contactDto == null)
             {
@@ -251,10 +252,10 @@ namespace EPR.PRN.Backend.Data.Repositories
             }
         }
 
-        private void UpsertOverseasAddressWasteCodes(OverseasAddress overseasAddress, List<OverseasAddressWasteCodeDto> updatedWasteCodes)
+        private static void UpsertOverseasAddressWasteCodes(OverseasAddress overseasAddress, List<OverseasAddressWasteCodeDto> updatedWasteCodes)
         {
             var deletedWastCodes = overseasAddress.OverseasAddressWasteCodes
-                .Where(wc => !updatedWasteCodes.Any(uwc => uwc.ExternalId == wc.ExternalId))
+                .Where(wc => !updatedWasteCodes.Exists(uwc => uwc.ExternalId == wc.ExternalId))
                 .ToList();
 
             overseasAddress.OverseasAddressWasteCodes.RemoveAll(wc => deletedWastCodes.Contains(wc));
@@ -271,7 +272,7 @@ namespace EPR.PRN.Backend.Data.Repositories
                 }
                 else
                 {
-                    var existingWasteCode = overseasAddress.OverseasAddressWasteCodes.FirstOrDefault(wc => wc.ExternalId == wasteCode.ExternalId);
+                    var existingWasteCode = overseasAddress.OverseasAddressWasteCodes.Find(wc => wc.ExternalId == wasteCode.ExternalId);
                     if (existingWasteCode != null)
                     {
                         existingWasteCode.CodeName = wasteCode.CodeName;
@@ -283,7 +284,7 @@ namespace EPR.PRN.Backend.Data.Repositories
         private async Task CreateOverseasReprocessingSites(List<OverseasAddressDto> overseasAddresses, List<OverseasAddress> overseasAddressesAfterDb, int registrationId, int registrationMaterialId)
         {
             var overseasAddressesToCreate = overseasAddresses
-                .Where(x => !overseasAddressesAfterDb.Any(y => y.ExternalId == x.ExternalId))
+                .Where(x => !overseasAddressesAfterDb.Exists(y => y.ExternalId == x.ExternalId))
                 .Select(x => new OverseasAddress
                 {
                     ExternalId = Guid.NewGuid(),

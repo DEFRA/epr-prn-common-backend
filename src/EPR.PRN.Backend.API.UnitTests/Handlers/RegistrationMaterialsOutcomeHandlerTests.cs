@@ -145,7 +145,7 @@ public class RegistrationMaterialsOutcomeHandlerTests
 
 
 
-    private RegistrationMaterial CreateMaterial(RegistrationMaterialStatus? status, ApplicationOrganisationType orgType, int? nationId, string materialCode)
+    private static RegistrationMaterial CreateMaterial(RegistrationMaterialStatus? status, ApplicationOrganisationType orgType, int? nationId, string materialCode)
     {
         return new RegistrationMaterial
         {

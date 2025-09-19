@@ -28,16 +28,16 @@ public class GetOverseasMaterialReprocessingSitesHandler(
             if (parent?.OverseasAddress?.ChildInterimConnections == null)
                 continue;
 
-            foreach (var conn in parent.OverseasAddress.ChildInterimConnections)
-            {
-                var interimAddress = conn.OverseasAddress;
+            var interimAddresses = parent.OverseasAddress.ChildInterimConnections
+                .Select(conn => conn.OverseasAddress)
+                .Where(addr => addr?.IsInterimSite == true);
 
-                if (interimAddress.IsInterimSite == true)
-                {
-                    var childDto = mapper.Map<InterimSiteAddressDto>(interimAddress);
-                    dto.InterimSiteAddresses?.Add(childDto);
-                }
+            foreach (var interimAddress in interimAddresses)
+            {
+                var childDto = mapper.Map<InterimSiteAddressDto>(interimAddress);
+                dto.InterimSiteAddresses?.Add(childDto);
             }
+
         }
 
         return result;

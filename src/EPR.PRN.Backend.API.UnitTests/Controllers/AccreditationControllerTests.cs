@@ -1,7 +1,6 @@
 ﻿using AutoFixture;
 using EPR.PRN.Backend.API.Common.Enums;
 using EPR.PRN.Backend.API.Controllers.Accreditation;
-using EPR.PRN.Backend.API.Dto;
 using EPR.PRN.Backend.API.Dto.Accreditation;
 using EPR.PRN.Backend.API.Queries;
 using EPR.PRN.Backend.API.Services.Interfaces;
@@ -23,7 +22,7 @@ public class AccreditationControllerTests
     private Mock<IMediator> _mediatorMock;
     private Mock<ILogger<AccreditationController>> _loggerMock;
     private AccreditationController _controller;
-    private static readonly IFixture _fixture = new Fixture();
+    private static readonly Fixture _fixture = new Fixture();
 
     [TestInitialize]
     public void SetUp()

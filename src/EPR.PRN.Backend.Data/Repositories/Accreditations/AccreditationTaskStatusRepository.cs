@@ -59,7 +59,7 @@ namespace EPR.PRN.Backend.Data.Repositories.Accreditations
                 var task = await _context.LookupApplicantRegistrationTasks.SingleOrDefaultAsync(t => t.Name == taskName
                                                                                         && t.JourneyTypeId == journeyTypeId
                                                                                         && t.ApplicationTypeId == registration!.ApplicationTypeId
-                                                                                        && t.IsMaterialSpecific == true);
+                                                                                        && t.IsMaterialSpecific);
 
                 if (task == null)
                     throw new InvalidOperationException($"No Valid Task Exists: {taskName}");

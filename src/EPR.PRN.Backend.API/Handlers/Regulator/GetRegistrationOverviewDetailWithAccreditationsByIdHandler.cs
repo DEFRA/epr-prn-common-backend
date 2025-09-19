@@ -47,7 +47,7 @@ public class GetRegistrationOverviewDetailWithAccreditationsByIdHandler(
         var requiredTasks = await repo.GetRequiredTasks(applicationTypeId, isMaterialSpecific, journeyTypeId);
 
         var missingTasks = requiredTasks
-            .Where(rt => !existingTasks.Any(r => r.TaskName == rt.Name && r.Year == year))
+            .Where(rt => !existingTasks.Exists(r => r.TaskName == rt.Name && r.Year == year))
             .Select(t => new RegistrationTaskDto { TaskName = t.Name, Status = RegulatorTaskStatus.NotStarted.ToString(), Year = year });
 
         return missingTasks;

@@ -13,8 +13,8 @@ public class LookupMaterial
     public int Id { get; set; }
     [Required]
     [MaxLength(250)]
-    public string MaterialName { get; set; }
+    public string MaterialName { get; set; } = string.Empty;
     [Required]
     [MaxLength(250)]
-    public string MaterialCode { get; set; }        
+    public string MaterialCode { get; set; } = string.Empty;
 }

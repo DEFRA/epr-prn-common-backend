@@ -6,7 +6,7 @@ namespace EPR.PRN.Backend.API.Handlers.Regulator;
 
 public abstract class UpdateRegulatorTaskHandlerBase
 {
-    protected static void ValidateAndThrowIfInvalidStatus(RegulatorTaskStatus commandStatus, RegulatorTaskStatusBase task)
+    protected static void ValidateAndThrowIfInvalidStatus(RegulatorTaskStatus commandStatus, RegulatorTaskStatusBase? task)
     {
         if (task != null)
         {

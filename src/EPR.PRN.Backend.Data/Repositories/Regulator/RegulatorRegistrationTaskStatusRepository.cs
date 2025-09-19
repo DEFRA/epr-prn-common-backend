@@ -4,7 +4,6 @@ using EPR.PRN.Backend.Data.DataModels.Registrations;
 using EPR.PRN.Backend.Data.Interfaces.Regulator;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using System.Threading.Tasks;
 
 namespace EPR.PRN.Backend.Data.Repositories.Regulator
 {
@@ -21,10 +20,7 @@ namespace EPR.PRN.Backend.Data.Repositories.Regulator
 
         public async Task<RegulatorRegistrationTaskStatus?> GetTaskStatusAsync(string TaskName, Guid RegistrationId)
         {
-            if (TaskName == null )
-            {
-                throw new ArgumentNullException(nameof(TaskName));
-            }
+            ArgumentNullException.ThrowIfNull(TaskName);
             return await GetTaskStatus(TaskName, RegistrationId);
         }
 
@@ -57,9 +53,7 @@ namespace EPR.PRN.Backend.Data.Repositories.Regulator
                     Task = task,
                     TaskStatus = statusEntity,
                     StatusCreatedBy = user,
-                    StatusCreatedDate = DateTime.UtcNow,
-                    //StatusUpdatedBy = user,
-                    //StatusUpdatedDate = DateTime.UtcNow,
+                    StatusCreatedDate = DateTime.UtcNow
                 };
 
                 await _context.RegulatorRegistrationTaskStatus.AddAsync(taskStatus);

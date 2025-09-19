@@ -61,7 +61,7 @@ public class RegistrationMaterialProfile : Profile
             .ForMember(dest => dest.Tasks, opt => opt.MapFrom((src, dest, _, context) => MapTasks(src.Tasks, src.AccreditationTasks, context)))
             .ForMember(dest => dest.SiteAddress, opt => opt.MapFrom(src => src.ReprocessingSiteAddress != null ? CreateAddressString(src.ReprocessingSiteAddress) : string.Empty))
             .ForMember(dest => dest.SiteGridReference, opt => opt.MapFrom(src => src.ReprocessingSiteAddress != null ? src.ReprocessingSiteAddress.GridReference : string.Empty))
-            .ForMember(dest => dest.Materials, opt => opt.MapFrom(src => src.Materials.Where(m => m.IsMaterialRegistered)));
+           .ForMember(dest => dest.Materials, opt => opt.MapFrom(src => (src.Materials ?? Enumerable.Empty<RegistrationMaterial>()).Where(m => m.IsMaterialRegistered)));
     }
 
     private void CreateRegistrationMaterialDtoMappings()
@@ -70,7 +70,7 @@ public class RegistrationMaterialProfile : Profile
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.ExternalId))
             .ForMember(dest => dest.RegistrationId, opt => opt.MapFrom(src => src.Registration.ExternalId))
             .ForMember(dest => dest.MaterialName, opt => opt.MapFrom(src => src.Material.MaterialName))
-            .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.Name))
+            .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status != null ? src.Status.Name : null)) 
             .ForMember(dest => dest.ApplicationReferenceNumber, opt => opt.MapFrom(src => src.ApplicationReferenceNumber))
             .ForMember(dest => dest.RegistrationReferenceNumber, opt => opt.MapFrom(src => src.RegistrationReferenceNumber));
     }
@@ -79,7 +79,9 @@ public class RegistrationMaterialProfile : Profile
     {
         CreateMap<Accreditation, AccreditationDto>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.ExternalId))
-            .ForMember(dest => dest.DeterminationDate, opt => opt.MapFrom(src => src.AccreditationDulyMade.FirstOrDefault().DeterminationDate))
+            .ForMember(dest => dest.DeterminationDate, opt => opt.MapFrom(src => src.AccreditationDulyMade != null && src.AccreditationDulyMade.Any()
+                ? src.AccreditationDulyMade[0].DeterminationDate
+                : (DateTime?)null))
             .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.AccreditationStatus.Name))
             .ForMember(dest => dest.ApplicationReference, opt => opt.MapFrom(src => src.ApplicationReferenceNumber));
     }
@@ -122,7 +124,7 @@ public class RegistrationMaterialProfile : Profile
             .ForMember(dest => dest.MaterialName, opt => opt.MapFrom(src => src.Material.MaterialName))
             .ForMember(dest => dest.Status, opt => opt.MapFrom(src => (RegistrationMaterialStatus?)src.StatusId))
             .ForMember(dest => dest.DulyMade, opt => opt.MapFrom(src => src.DulyMade!.DulyMadeDate))
-            .ForMember(dest => dest.DeterminationDate, opt => opt.MapFrom(src => src.DeterminationDate.DeterminateDate));
+        .ForMember(dest => dest.DeterminationDate, opt => opt.MapFrom(src => src.DeterminationDate != null ? src.DeterminationDate.DeterminateDate : (DateTime?)null));
 
         CreateMap<RegistrationMaterial, RegistrationMaterialReprocessingIODto>()
             .ForMember(dest => dest.MaterialName, opt => opt.MapFrom(src => src.Material.MaterialName))
@@ -201,7 +203,12 @@ public class RegistrationMaterialProfile : Profile
             .ForMember(dest => dest.MaterialName, opt => opt.MapFrom(src => src.RegistrationMaterial.Material.MaterialName))
             .ForMember(dest => dest.SubmittedDate, opt => opt.MapFrom(src => src.CreatedOn))
             .ForMember(dest => dest.ApplicationType, opt => opt.MapFrom(src => src.RegistrationMaterial.Registration.ApplicationTypeId))
-            .ForMember(dest => dest.NationId, opt => opt.MapFrom(src => src.RegistrationMaterial.Registration.ReprocessingSiteAddress.NationId != null ? src.RegistrationMaterial.Registration.ReprocessingSiteAddress.NationId : 0));
+            .ForMember(d => d.NationId, opt => opt.MapFrom(src =>
+                (src.RegistrationMaterial != null
+                 && src.RegistrationMaterial.Registration != null
+                 && src.RegistrationMaterial.Registration.ReprocessingSiteAddress != null)
+                    ? src.RegistrationMaterial.Registration.ReprocessingSiteAddress.NationId
+                    : (int?)null));
     }
 
     private void CreateWasteLicencesMappings()
@@ -263,7 +270,7 @@ public class RegistrationMaterialProfile : Profile
         CreateMap<RegistrationMaterial, MaterialsAuthorisedOnSiteInfoDto>()
             .ForMember(dest => dest.MaterialName, opt => opt.MapFrom(src => src.Material.MaterialName))
             .ForMember(dest => dest.IsMaterialRegistered, opt => opt.MapFrom(src => src.IsMaterialRegistered))
-            .ForMember(dest => dest.Reason, opt => opt.MapFrom(src => src.IsMaterialRegistered == false ? src.ReasonforNotreg : string.Empty));
+            .ForMember(dest => dest.Reason, opt => opt.MapFrom(src => !src.IsMaterialRegistered ? src.ReasonforNotreg : string.Empty));
     }
 
     private void CreateMaterialPaymentFeeMappings()
@@ -350,7 +357,7 @@ public class RegistrationMaterialProfile : Profile
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.ExternalId));
     }
 
-    private List<QueryNoteDto> GetRegistrationTaskNotes(List<RegulatorRegistrationTaskStatus>? srcTasks, string taskName)
+    private static List<QueryNoteDto> GetRegistrationTaskNotes(List<RegulatorRegistrationTaskStatus>? srcTasks, string taskName)
     {
         if (srcTasks == null)
         {
@@ -370,16 +377,16 @@ public class RegistrationMaterialProfile : Profile
             }).ToList();
     }
 
-    private Guid? GetRegistrationTaskExternalId(List<RegulatorRegistrationTaskStatus>? srcTasks, string taskName)
+    private static Guid? GetRegistrationTaskExternalId(List<RegulatorRegistrationTaskStatus>? srcTasks, string taskName)
     {
-        var task = srcTasks?.FirstOrDefault(t => t.Task.Name == taskName);
+        var task = srcTasks?.Find(t => t.Task.Name == taskName);
 
         return task?.ExternalId;
     }
 
-    private RegulatorTaskStatus GetRegistrationTaskStatus(List<RegulatorRegistrationTaskStatus>? srcTasks, string taskName)
+    private static RegulatorTaskStatus GetRegistrationTaskStatus(List<RegulatorRegistrationTaskStatus>? srcTasks, string taskName)
     {
-        var task = srcTasks?.FirstOrDefault(t => t.Task.Name == taskName);
+        var task = srcTasks?.Find(t => t.Task.Name == taskName);
 
         if (task != null)
         {
@@ -389,7 +396,7 @@ public class RegistrationMaterialProfile : Profile
         return RegulatorTaskStatus.NotStarted;
     }
 
-    private List<QueryNoteDto> GetApplicationTaskNotes(List<RegulatorApplicationTaskStatus>? srcTasks, string taskName)
+    private static List<QueryNoteDto> GetApplicationTaskNotes(List<RegulatorApplicationTaskStatus>? srcTasks, string taskName)
     {
         if (srcTasks == null)
         {
@@ -409,16 +416,16 @@ public class RegistrationMaterialProfile : Profile
             }).ToList();
     }
 
-    private Guid? GetApplicationTaskExternalId(List<RegulatorApplicationTaskStatus>? srcTasks, string taskName)
+    private static  Guid? GetApplicationTaskExternalId(List<RegulatorApplicationTaskStatus>? srcTasks, string taskName)
     {
-        var task = srcTasks?.FirstOrDefault(t => t.Task.Name == taskName);
+        var task = srcTasks?.Find(t => t.Task.Name == taskName);
 
         return task?.ExternalId;
     }
 
-    private RegulatorTaskStatus GetApplicationTaskStatus(List<RegulatorApplicationTaskStatus>? srcTasks, string taskName)
+    private static RegulatorTaskStatus GetApplicationTaskStatus(List<RegulatorApplicationTaskStatus>? srcTasks, string taskName)
     {
-        var task = srcTasks?.FirstOrDefault(t => t.Task.Name == taskName);
+        var task = srcTasks?.Find(t => t.Task.Name == taskName);
 
         if (task != null)
         {
@@ -428,9 +435,9 @@ public class RegistrationMaterialProfile : Profile
         return RegulatorTaskStatus.NotStarted;
     }
 
-    private RegulatorTaskStatus GetAccreditationTaskStatus(List<RegulatorAccreditationTaskStatus>? srcTasks, string taskName)
+    private static RegulatorTaskStatus GetAccreditationTaskStatus(List<RegulatorAccreditationTaskStatus>? srcTasks, string taskName)
     {
-        var task = srcTasks?.FirstOrDefault(t => t.Task.Name == taskName);
+        var task = srcTasks?.Find(t => t.Task.Name == taskName);
 
         if (task != null)
         {
@@ -489,7 +496,7 @@ public class RegistrationMaterialProfile : Profile
     };
 
 
-    private string CreateAddressString(Address reprocessingSiteAddress) =>
+    private static string CreateAddressString(Address reprocessingSiteAddress) =>
         string.Join(
             ", ",
             new[]
@@ -502,7 +509,7 @@ public class RegistrationMaterialProfile : Profile
             }.Where(addressPart => !string.IsNullOrEmpty(addressPart)));
 
 
-    private void CreateOverseasReprocessingMappings()
+    private  void CreateOverseasReprocessingMappings()
     {
         CreateMap<OverseasMaterialReprocessingSite, OverseasMaterialReprocessingSiteDto>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.ExternalId))

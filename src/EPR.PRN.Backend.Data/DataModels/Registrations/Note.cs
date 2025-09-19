@@ -11,7 +11,7 @@ public class Note
     [Key]
     public int Id { get; set; }
     [MaxLength(500)]
-    public string Notes { get; set; }
+    public string Notes { get; set; } = null!;
     public Guid CreatedBy { get; set; }
     public DateTime CreatedDate { get; set; }
 }

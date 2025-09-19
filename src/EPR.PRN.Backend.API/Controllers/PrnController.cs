@@ -8,7 +8,6 @@ using EPR.PRN.Backend.API.Helpers;
 using EPR.PRN.Backend.API.Models;
 using EPR.PRN.Backend.API.Services.Interfaces;
 using EPR.PRN.Backend.Data.DataModels;
-using EPR.PRN.Backend.Obligation.Constants;
 using EPR.PRN.Backend.Obligation.Dto;
 using EPR.PRN.Backend.Obligation.Interfaces;
 using EPR.PRN.Backend.Obligation.Models;
@@ -56,8 +55,13 @@ public class PrnController(IPrnService prnService,
     [ProducesResponseType(typeof(PaginatedResponseDto<PrnDto>), 200)]
     [ProducesResponseType(400)]
     [ProducesResponseType(401)]
-    public async Task<IActionResult> GetSearchPrns([FromHeader(Name = "X-EPR-ORGANISATION")] Guid orgId, [FromQuery] PaginatedRequestDto request)
+    public async Task<IActionResult> GetSearchPrns([FromHeader(Name = "X-EPR-ORGANISATION")] Guid orgId, [FromQuery] PaginatedRequestDto request, int? page = null,
+    string? search = null,
+    string? filterBy = null,
+    string? sortBy = null)
     {
+        // Parameters are unused intentionally (kept for backward compatibility).
+        // Request is handled through PaginatedRequestDto instead.
         logger.LogInformation("{Logprefix}: PrnController - GetSearchPrns: Api Route api/v1/prn/search/", logPrefix);
         logger.LogInformation("{Logprefix}: PrnController - GetSearchPrns: Search Prns request for user organisation {Organisation} and Search criteria {Searchcriteria}", logPrefix, orgId, JsonConvert.SerializeObject(request));
         if (orgId == Guid.Empty)

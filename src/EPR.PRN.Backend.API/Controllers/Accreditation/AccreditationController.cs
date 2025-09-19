@@ -144,7 +144,7 @@ public class AccreditationController(
     [SwaggerResponse(StatusCodes.Status500InternalServerError, "If an unexpected error occurs.", typeof(ContentResult))]
     public async Task<IActionResult> GetAccreditationsOverviewForOrgId([FromRoute] Guid organisationId)
     {
-        logger.LogInformation(LogMessages.AccreditationsOverview, [organisationId]);
+        logger.LogInformation(LogMessages.AccreditationsOverview, organisationId);
 
         var request = new GetAccreditationsOverviewByOrgIdQuery { OrganisationId = organisationId };
 

@@ -6,6 +6,6 @@ namespace EPR.PRN.Backend.Data.Interfaces.Regulator
     public interface IRegulatorAccreditationTaskStatusRepository
     {
         Task<RegulatorAccreditationTaskStatus?> GetTaskStatusAsync(string TaskName, Guid RegistrationId);
-        Task UpdateStatusAsync(string TaskName, Guid RegistrationId, RegulatorTaskStatus status, string? comments, Guid user);
+        Task UpdateStatusAsync(string TaskName, Guid AccreditationId, RegulatorTaskStatus status, string? comments, Guid user);
     }
 }

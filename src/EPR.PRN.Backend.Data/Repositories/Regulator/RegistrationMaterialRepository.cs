@@ -1,12 +1,10 @@
-﻿using System.Threading.Tasks;
-using EPR.PRN.Backend.API.Common.Constants;
+﻿using EPR.PRN.Backend.API.Common.Constants;
 using EPR.PRN.Backend.API.Common.Enums;
 using EPR.PRN.Backend.Data.DataModels.Registrations;
 using EPR.PRN.Backend.Data.DTO;
 using EPR.PRN.Backend.Data.Interfaces.Regulator;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace EPR.PRN.Backend.Data.Repositories.Regulator;
 
@@ -58,7 +56,7 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
                ?? throw new KeyNotFoundException("Accreditation not found.");
     }
 
-    public async Task UpdateRegistrationOutCome(Guid registrationMaterialId, int statusId, string? comment, string registrationReferenceNumber, Guid User)
+    public async Task UpdateRegistrationOutCome(Guid registrationMaterialId, int statusId, string? comment, string? registrationReferenceNumber, Guid User)
     {
         var material = await eprContext.RegistrationMaterials.FirstOrDefaultAsync(rm => rm.ExternalId == registrationMaterialId);
         if (material is null) throw new KeyNotFoundException("Material not found.");
@@ -75,7 +73,7 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
     Guid registrationMaterialId,
     int statusId,
     DateTime determinationDateUtc,
-    DateTime dulyMadeDateUtc,
+    DateTime dulyMadeDate,
     Guid dulyMadeBy)
     {
         var material = await eprContext.RegistrationMaterials
@@ -142,7 +140,8 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
         }
 
         // Set common fields
-        dulyMade.DulyMadeDate = dulyMadeDateUtc;
+
+        dulyMade.DulyMadeDate = dulyMadeDate;
         dulyMade.DulyMadeBy = dulyMadeBy;
         determinationDate.DeterminateDate = determinationDateUtc;
 
@@ -171,9 +170,9 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
         await eprContext.SaveChangesAsync();
     }
 
-    public async Task<IList<RegistrationMaterial>> GetRegistrationMaterialsByRegistrationId(Guid registrationId)
+    public async Task<IList<RegistrationMaterial>> GetRegistrationMaterialsByRegistrationId(Guid requestRegistrationId)
     {
-        var existingRegistration = await eprContext.Registrations.SingleOrDefaultAsync(o => o.ExternalId == registrationId);
+        var existingRegistration = await eprContext.Registrations.SingleOrDefaultAsync(o => o.ExternalId == requestRegistrationId);
         if (existingRegistration == null)
         {
             throw new KeyNotFoundException("Registration not found.");
@@ -191,7 +190,7 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
             .Include(o => o.EnvironmentalPermitWasteManagementPeriod)
             .Include(o => o.MaximumReprocessingPeriod)
             .Include(o => o.MaterialExemptionReferences)
-            .Where(o => o.Registration.ExternalId == registrationId)
+            .Where(o => o.Registration.ExternalId == requestRegistrationId)
             .ToList();
 
         return existingMaterials;
@@ -391,7 +390,7 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
         await eprContext.SaveChangesAsync();
     }
 
-    private IIncludableQueryable<RegistrationMaterial, LookupRegistrationMaterialStatus> GetRegistrationMaterialsWithRelatedEntities()
+    private IIncludableQueryable<RegistrationMaterial, LookupRegistrationMaterialStatus?> GetRegistrationMaterialsWithRelatedEntities()
     {
         var registrationMaterials =
             eprContext.RegistrationMaterials
@@ -453,7 +452,7 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
         return accreditations;
     }
 
-    private IIncludableQueryable<Registration, LookupRegistrationMaterialStatus> GetRegistrationsWithRelatedEntities()
+    private IIncludableQueryable<Registration, LookupRegistrationMaterialStatus?> GetRegistrationsWithRelatedEntities()
     {
         var registrations = eprContext
             .Registrations

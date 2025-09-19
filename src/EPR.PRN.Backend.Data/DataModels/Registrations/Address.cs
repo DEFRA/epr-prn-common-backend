@@ -11,20 +11,20 @@ public class Address
     public int Id { get; set; }
     
     [MaxLength(200)]
-    public string AddressLine1 { get; set; }
-    
+    public string AddressLine1 { get; set; } = null!;
+
     [MaxLength(200)]
     public string? AddressLine2 { get; set; }
     
     [MaxLength(70)]
-    public string TownCity { get; set; }
+    public string TownCity { get; set; } = null!;
     
     [MaxLength(50)]
     public string? County { get; set; }
     
     [MaxLength(10)]
-    public string PostCode { get; set; }
-    
+    public string PostCode { get; set; } = null!;
+
     public int? NationId { get; set; }
     
     [MaxLength(20)]

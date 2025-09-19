@@ -2,5 +2,5 @@ using MediatR;
 
 namespace EPR.PRN.Backend.API.Queries
 {
-    public record GetCountriesQuery : IRequest<IEnumerable<string>>;
+    public readonly record struct GetCountriesQuery() : IRequest<IEnumerable<string>>;
 }

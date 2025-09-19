@@ -11,10 +11,10 @@ public class RegistrationTaskStatusQueryNote
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     [Key]
     public int Id { get; set; }
-    public Note QueryNote { get; set; }
+    public Note QueryNote { get; set; } = null!;
     [ForeignKey("Note")]
     public int QueryNoteId { get; set; }
-    public RegulatorRegistrationTaskStatus RegulatorRegistrationTaskStatus { get; set; }
+    public RegulatorRegistrationTaskStatus RegulatorRegistrationTaskStatus { get; set; } = null!;
     [ForeignKey("RegulatorRegistrationTaskStatus")]
     public int RegulatorRegistrationTaskStatusId { get; set; }
 

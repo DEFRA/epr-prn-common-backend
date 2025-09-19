@@ -44,8 +44,8 @@ public class RegulatorAccreditationMarkAsDulyMadeHandlerTests
         _rmRepositoryMock.Verify(x => x.AccreditationMarkAsDulyMade(
             Guid.Parse("a9421fc1-a912-42ee-85a5-3e06408759a9"),
             (int)RegulatorTaskStatus.Completed,
-            command.DeterminationDate,
-            command.DulyMadeDate,
+             command.DulyMadeDate,
+            command.DeterminationDate,          
             command.DulyMadeBy
         ), Times.Once);
     }
