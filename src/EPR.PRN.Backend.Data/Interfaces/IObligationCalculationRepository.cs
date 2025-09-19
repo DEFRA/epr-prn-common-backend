@@ -6,6 +6,6 @@ namespace EPR.PRN.Backend.Data.Interfaces
     {
         Task<List<ObligationCalculation>> GetObligationCalculationBySubmitterIdAndYear(Guid submitterId, int year);
 
-        Task SoftDeleteAndAddObligationCalculationBySubmitterIdAsync(Guid submitterId, int year, List<ObligationCalculation> calculations);
+        Task UpsertObligationCalculationsForSubmitterYearAsync(Guid submitterId, int year, List<ObligationCalculation> calculations);
     }
 }

@@ -133,7 +133,7 @@ namespace EPR.PRN.Backend.Obligation.Services
 				throw new ArgumentException("The calculations list cannot be null or empty.", nameof(calculations));
 			}
 
-			await obligationCalculationRepository.SoftDeleteAndAddObligationCalculationBySubmitterIdAsync(submitterId, dateTimeProvider.CurrentYear, calculations);
+			await obligationCalculationRepository.UpsertObligationCalculationsForSubmitterYearAsync(submitterId, dateTimeProvider.CurrentYear, calculations);
 		}
 
 		public async Task<ObligationCalculationResult> GetObligationCalculation(Guid organisationId, int year)
