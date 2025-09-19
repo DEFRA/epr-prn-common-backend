@@ -681,7 +681,7 @@ public class ObligationCalculatorServiceTests
 		await _service.SoftDeleteAndAddObligationCalculationAsync(submitterId, calculations);
 
 		//Assert
-		_mockObligationCalculationRepository.Verify(x => x.SoftDeleteAndAddObligationCalculationBySubmitterIdAsync(submitterId, currentYear, calculations), Times.Once);
+		_mockObligationCalculationRepository.Verify(x => x.UpsertObligationCalculationsForSubmitterYearAsync(submitterId, currentYear, calculations), Times.Once);
 	}
 
 
