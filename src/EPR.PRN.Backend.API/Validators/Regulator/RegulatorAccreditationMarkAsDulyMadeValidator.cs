@@ -14,7 +14,7 @@ public class RegulatorAccreditationMarkAsDulyMadeValidator : AbstractValidator<R
 
         RuleFor(x => x.DulyMadeDate)
             .Must(date => date != DateTime.MinValue)
-            .WithMessage(ValidationMessages.InvalidDulyMadeDate);//
+            .WithMessage(ValidationMessages.InvalidDulyMadeDate);
 
         RuleFor(x => x.DeterminationDate)
             .Must(date => date != DateTime.MinValue)

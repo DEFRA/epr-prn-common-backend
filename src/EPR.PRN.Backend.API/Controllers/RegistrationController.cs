@@ -37,7 +37,7 @@ public class RegistrationController(IMediator mediator
     [ExcludeFromCodeCoverage(Justification = "TODO: To be done as part of create registration user story")]
     public async Task<IActionResult> GetRegistrationByOrganisation([FromRoute]int applicationTypeId, [FromRoute]Guid organisationId)
     {
-        logger.LogInformation(string.Format(LogMessages.GetRegistrationByOrganisation, applicationTypeId, organisationId));
+        logger.LogInformation(LogMessages.GetRegistrationByOrganisation, applicationTypeId, organisationId);
 
         var registration = await mediator.Send(new GetRegistrationByOrganisationQuery
         {
@@ -95,7 +95,7 @@ public class RegistrationController(IMediator mediator
     {
         try
         {
-            logger.LogInformation(string.Format(LogMessages.UpdateRegistration, registrationId.ToString()));
+            logger.LogInformation(LogMessages.UpdateRegistration, registrationId.ToString());
             command.RegistrationId = registrationId;
 
             await validationService.ValidateAndThrowAsync(command);

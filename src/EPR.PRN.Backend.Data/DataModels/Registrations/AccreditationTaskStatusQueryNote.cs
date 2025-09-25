@@ -11,10 +11,10 @@ public class AccreditationTaskStatusQueryNote
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     [Key]
     public int Id { get; set; }
-    public Note Note { get; set; }
+    public Note Note { get; set; } = null!;
     [ForeignKey("Note")]
     public int QueryNoteId { get; set; }
-    public RegulatorAccreditationTaskStatus RegulatorAccreditationTaskStatus { get; set; }
+    public RegulatorAccreditationTaskStatus RegulatorAccreditationTaskStatus { get; set; } = null!;
     [ForeignKey("RegulatorAccreditationTaskStatus")]
     public int RegulatorAccreditationTaskStatusId { get; set; }   
 }

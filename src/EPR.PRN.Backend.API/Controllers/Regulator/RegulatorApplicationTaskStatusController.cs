@@ -43,8 +43,8 @@ public class RegulatorApplicationTaskStatusController(
 
         command.RegulatorApplicationTaskStatusId = Id;
 
-        var validator = new AddApplicationTaskQueryNoteCommandValidator();
-        await validator.ValidateAndThrowAsync(command);
+        var applicationTaskValidator = new AddApplicationTaskQueryNoteCommandValidator();
+        await applicationTaskValidator.ValidateAndThrowAsync(command);
 
         await mediator.Send(command);
 
