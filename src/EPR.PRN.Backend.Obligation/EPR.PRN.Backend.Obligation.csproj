@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="System.Text.Json" Version="8.0.6" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\EPR.PRN.Backend.API.Common\EPR.PRN.Backend.API.Common.csproj" />
     <ProjectReference Include="..\EPR.PRN.Backend.Data\EPR.PRN.Backend.Data.csproj" />
   </ItemGroup>
