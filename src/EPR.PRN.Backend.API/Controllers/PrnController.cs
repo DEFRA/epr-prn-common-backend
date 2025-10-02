@@ -191,7 +191,7 @@ public class PrnController(IPrnService prnService,
     public async Task<IActionResult> CalculateAsync(Guid submitterId, [FromBody] List<SubmissionCalculationRequest> request)
     {
         logger.LogInformation("{Logprefix}: PrnController - CalculateAsync: Api Route api/v1/prn/organisation/{SubmitterId}/calculate", logPrefix, submitterId);
-        logger.LogInformation("{Logprefix}: PrnController - CalculateAsync: request for user organisation {SubmitterId} submissions {SubmissionsRequest}", logPrefix, submitterId, JsonConvert.SerializeObject(request));
+        logger.LogInformation("{Logprefix}: PrnController - CalculateAsync: request for user organisation {SubmitterId} with submission entity count {Count}", logPrefix, submitterId, request?.Count);
 
         if (request == null || request.Count == 0)
         {
@@ -201,7 +201,7 @@ public class PrnController(IPrnService prnService,
 
         if (!ModelState.IsValid)
         {
-            logger.LogError("{Logprefix}: PrnController - CalculateAsync: Invalid submission calculation request provided: {SubmissionsRequest}.", logPrefix, JsonConvert.SerializeObject(request));
+            logger.LogError("{Logprefix}: PrnController - CalculateAsync: Invalid submission calculation request provided for user organisation {SubmitterId}", logPrefix, submitterId);
             return BadRequest(ModelState);
         }
 
@@ -214,13 +214,13 @@ public class PrnController(IPrnService prnService,
                 logger.LogError("{Logprefix}: PrnController - CalculateAsync: Get Calculation Failed - {Errors}", logPrefix, JsonConvert.SerializeObject(calculationResult));
                 return StatusCode(StatusCodes.Status500InternalServerError, new { message = "Calculation failed due to internal errors." });
             }
-            logger.LogInformation("{Logprefix}: PrnController - CalculateAsync: Obligation Calculation returned {CalculationResult}", logPrefix, JsonConvert.SerializeObject(calculationResult.Calculations));
+            logger.LogInformation("{Logprefix}: PrnController - CalculateAsync: Applied recycling target and CalcylateAsync returned with entity count {Count}", logPrefix, calculationResult.Calculations.Count);
 
             logger.LogInformation("{Logprefix}: PrnController - CalculateAsync: calling SoftDeleteAndAddObligationCalculationAsync ", logPrefix);
 
             await obligationCalculatorService.SoftDeleteAndAddObligationCalculationAsync(submitterId, calculationResult.Calculations);
 
-            logger.LogInformation("{Logprefix}: PrnController - CalculateAsync: Obligation Calculation Successful {Calculations}", logPrefix, JsonConvert.SerializeObject(calculationResult.Calculations));
+            logger.LogInformation("{Logprefix}: PrnController - CalculateAsync: Obligation Calculation Successfully upserted into PRN databse", logPrefix);
 
             return Accepted(new { message = "Calculation successful.", data = calculationResult.Calculations });
         }
