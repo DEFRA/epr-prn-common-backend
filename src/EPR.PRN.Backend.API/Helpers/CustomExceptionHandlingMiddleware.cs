@@ -61,7 +61,7 @@ public class CustomExceptionHandlingMiddleware(RequestDelegate next, ILogger<Cus
             detail = ex.Message
         };
 
-        logger.LogError(ex, title);
+        logger.LogError(ex, "An exception occurred: {Title}", title);
         await context.Response.WriteAsJsonAsync(errorResponse);
     }
 }

@@ -60,7 +60,7 @@ public class AccreditationFileUploadService(
         await repository.Delete(accreditationId, fileId);
     }
 
-    private AccreditationFileUploadDto MapEntityToDto(AccreditationFileUpload entity)
+    private static AccreditationFileUploadDto MapEntityToDto(AccreditationFileUpload entity)
     {
 
         // all thie nullable types need to be fixed accross all teams for this model.
@@ -78,7 +78,7 @@ public class AccreditationFileUploadService(
         };
     }
 
-    private AccreditationFileUpload MapDtoToEntity(AccreditationFileUploadDto dto)
+    private static AccreditationFileUpload MapDtoToEntity(AccreditationFileUploadDto dto)
     {
         return new AccreditationFileUpload
         {

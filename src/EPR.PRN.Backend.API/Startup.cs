@@ -16,6 +16,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.FeatureManagement;
 using Swashbuckle.AspNetCore.Annotations;
+using FluentValidation;
 
 namespace EPR.PRN.Backend.API
 {
@@ -42,11 +43,13 @@ namespace EPR.PRN.Backend.API
             {
                 options.ModelBinderProviders.Insert(0, new DateTimeModelBinderProvider());
             });
-            services.AddFluentValidation(fv =>
-            {
-                fv.RegisterValidatorsFromAssemblyContaining<RegistrationOutcomeValidator>();
-                fv.AutomaticValidationEnabled = false;
-            });
+            services
+             .AddFluentValidationAutoValidation(options =>
+             { 
+             options.DisableDataAnnotationsValidation = true; // if you don't want DataAnnotations
+             })
+             .AddFluentValidationClientsideAdapters()
+             .AddValidatorsFromAssemblyContaining<RegistrationOutcomeValidator>();
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen(config =>
             {

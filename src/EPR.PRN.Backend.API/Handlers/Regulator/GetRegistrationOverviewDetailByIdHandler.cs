@@ -20,13 +20,13 @@ public class GetRegistrationOverviewDetailByIdHandler(
         var missingRegistrationTasks = await GetMissingTasks(registration.ApplicationTypeId, false, registrationDto.Tasks);
         registrationDto.Tasks.AddRange(missingRegistrationTasks);
 
-        foreach (var materialDto in registrationDto.Materials)
-        {
-
-            var missingMaterialTasks = await GetMissingTasks(registration.ApplicationTypeId, true, materialDto.Tasks);
-            materialDto.Tasks.AddRange(missingMaterialTasks);
-        }
-
+        await Task.WhenAll(
+            registrationDto.Materials.Select(async materialDto =>
+                materialDto.Tasks.AddRange(
+                    await GetMissingTasks(registration.ApplicationTypeId, true, materialDto.Tasks)
+                )
+            )
+        );
         return registrationDto;
     }
 
@@ -35,7 +35,7 @@ public class GetRegistrationOverviewDetailByIdHandler(
         var requiredTasks = await repo.GetRequiredTasks(applicationTypeId, isMaterialSpecific, 1);
 
         var missingTasks = requiredTasks
-            .Where(rt => existingTasks.All(r => r.TaskName != rt.Name))
+            .Where(rt => existingTasks.TrueForAll(r => r.TaskName != rt.Name))
             .Select(t => new RegistrationTaskDto { TaskName = t.Name, Status = RegulatorTaskStatus.NotStarted.ToString() });
 
         return missingTasks;

@@ -13,15 +13,13 @@ namespace EPR.PRN.Backend.API.UnitTests.Handlers;
 public class GetRegistrationAccreditationReferenceByIdHandlerTests
 {
     private Mock<IRegistrationMaterialRepository> _rmRepositoryMock;
-    private Mock<IMapper> _mapperMock;
     private GetRegistrationAccreditationReferenceByIdHandler _handler;
 
     [TestInitialize]
     public void Setup()
     {
         _rmRepositoryMock = new Mock<IRegistrationMaterialRepository>();
-        _mapperMock = new Mock<IMapper>();
-        _handler = new GetRegistrationAccreditationReferenceByIdHandler(_rmRepositoryMock.Object, _mapperMock.Object);
+        _handler = new GetRegistrationAccreditationReferenceByIdHandler(_rmRepositoryMock.Object);
     }
 
     [TestMethod]
@@ -131,7 +129,7 @@ public class GetRegistrationAccreditationReferenceByIdHandlerTests
             .WithMessage("Reprocessing site address NationId is null.");
     }
 
-    private RegistrationMaterial CreateMaterial(
+    private static RegistrationMaterial CreateMaterial(
         ApplicationOrganisationType appType,
         int? nationId,
         string materialCode,

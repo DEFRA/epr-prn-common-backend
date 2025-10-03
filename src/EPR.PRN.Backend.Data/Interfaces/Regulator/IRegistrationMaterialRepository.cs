@@ -1,5 +1,4 @@
-﻿using EPR.PRN.Backend.API.Common.Enums;
-using EPR.PRN.Backend.Data.DataModels.Registrations;
+﻿using EPR.PRN.Backend.Data.DataModels.Registrations;
 using EPR.PRN.Backend.Data.DTO;
 
 namespace EPR.PRN.Backend.Data.Interfaces.Regulator;
@@ -14,8 +13,8 @@ public interface IRegistrationMaterialRepository
     Task<RegistrationMaterial> GetRegistrationMaterialById(Guid registrationMaterialId);
     Task<DataModels.Registrations.Accreditation> GetAccreditation_FileUploadById(Guid accreditationId);
     Task UpdateRegistrationOutCome(Guid registrationMaterialId, int statusId, string? comment, string? registrationReferenceNumber , Guid User);
-    Task RegistrationMaterialsMarkAsDulyMade(Guid registrationMaterialId, int statusId, DateTime DeterminationDate,
-            DateTime DulyMadeDate,Guid DulyMadeBy);
+    Task RegistrationMaterialsMarkAsDulyMade(Guid registrationMaterialId, int statusId, DateTime determinationDateUtc,
+            DateTime dulyMadeDate,Guid dulyMadeBy);
     Task<RegistrationMaterial> CreateAsync(Guid registrationId, string material);
     Task CreateExemptionReferencesAsync(Guid registrationMaterialId, List<MaterialExemptionReference> exemptionReferences);
     Task<IList<RegistrationMaterial>> GetRegistrationMaterialsByRegistrationId(Guid requestRegistrationId);

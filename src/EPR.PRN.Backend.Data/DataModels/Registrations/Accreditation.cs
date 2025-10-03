@@ -17,11 +17,11 @@ public class Accreditation
 
     [ForeignKey("AccreditationStatus")]
     public int AccreditationStatusId { get; set; }
-    public LookupAccreditationStatus AccreditationStatus { get; set; }
+    public LookupAccreditationStatus AccreditationStatus { get; set; } = null!;
 
     [ForeignKey("RegistrationMaterial")]
     public int RegistrationMaterialId { get; set; }
-    public RegistrationMaterial RegistrationMaterial { get; set; }
+    public RegistrationMaterial RegistrationMaterial { get; set; } = null!;
 
     [MaxLength(50)]
     public string? DecFullName { get; set; }
@@ -82,7 +82,7 @@ public class Accreditation
 
     public List<AccreditationTaskStatus>? AccreditationTasksStatus { get; set; }
 
-    public List<AccreditationDeterminationDate> AccreditationDulyMade { get; set; }        
+    public List<AccreditationDeterminationDate> AccreditationDulyMade { get; set; } = null!;        
    
     public List<AccreditationFileUpload>? FileUploads { get; set; }
 

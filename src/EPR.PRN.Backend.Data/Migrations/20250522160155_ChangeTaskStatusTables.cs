@@ -16,7 +16,7 @@ namespace EPR.PRN.Backend.Data.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-
+            // Intentionally left empty because this migration is irreversible.
         }
     }
 }

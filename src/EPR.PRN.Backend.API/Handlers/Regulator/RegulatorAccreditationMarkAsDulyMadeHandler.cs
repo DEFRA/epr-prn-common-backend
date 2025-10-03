@@ -19,9 +19,9 @@ public class RegulatorAccreditationMarkAsDulyMadeHandler(
         await rmRepository.AccreditationMarkAsDulyMade(
             request.Id,
             (int)RegulatorTaskStatus.Completed,
-            request.DeterminationDate,
             request.DulyMadeDate,
-             request.DulyMadeBy
+            request.DeterminationDate,
+            request.DulyMadeBy
         );
     }
 }

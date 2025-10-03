@@ -11,10 +11,10 @@ public class ApplicationTaskStatusQueryNote
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     [Key]
     public int Id { get; set; }
-    public Note Note { get; set; }
+    public Note Note { get; set; } = null!;
     [ForeignKey("Note")]
     public int QueryNoteId { get; set; }
-    public RegulatorApplicationTaskStatus RegulatorApplicationTaskStatus { get; set; }
+    public RegulatorApplicationTaskStatus RegulatorApplicationTaskStatus { get; set; } = null!;
     [ForeignKey("RegulatorApplicationTaskStatus")]
     public int RegulatorApplicationTaskStatusId { get; set; }   
 }

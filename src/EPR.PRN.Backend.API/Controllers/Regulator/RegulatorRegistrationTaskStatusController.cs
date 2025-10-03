@@ -43,8 +43,8 @@ public class RegulatorRegistrationTaskStatusController(
 
         command.RegulatorRegistrationTaskStatusId = Id;
 
-        var validator = new AddRegistrationTaskQueryNoteCommandValidator();
-        await validator.ValidateAndThrowAsync(command);
+        var RegistrationTaskQueryNoteVvalidator = new AddRegistrationTaskQueryNoteCommandValidator();
+        await RegistrationTaskQueryNoteVvalidator.ValidateAndThrowAsync(command);
 
         await mediator.Send(command);
 

@@ -14,7 +14,7 @@ namespace EPR.PRN.Backend.Data.UnitTests.Repositories.Regulator;
 public class RegulatorAccreditationRepositoryTests
 {
     private EprContext _context;
-    private IRegulatorAccreditationRepository _repository;
+    private RegulatorAccreditationRepository _repository;
 
     [TestInitialize]
     public void TestInitialize()
@@ -501,6 +501,31 @@ public class RegulatorAccreditationRepositoryTests
         _context.LookupMaterialPermit.Add(lookupMaterialPermit);
 
         _context.SaveChanges();
+    }
+
+    [TestMethod]
+    public async Task GetAccreditationById_ReturnsEntity_WhenItExists()
+    {
+        // Arrange
+        var id = Guid.Parse("4bac12f7-f7a9-4df4-b7b5-9c4221860c4d"); // seeded in SeedDatabase()
+
+        // Act
+        var result = await _repository.GetAccreditationById(id);
+
+        // Assert
+        Assert.IsNotNull(result);
+        Assert.AreEqual(id, result.ExternalId);
+    }
+
+    [TestMethod]
+    public async Task GetAccreditationById_ThrowsKeyNotFoundException_WhenNotFound()
+    {
+        // Arrange
+        var missingId = Guid.NewGuid();
+
+        // Act & Assert
+        await Assert.ThrowsExceptionAsync<KeyNotFoundException>(() =>
+            _repository.GetAccreditationById(missingId));
     }
 
     [TestCleanup]
