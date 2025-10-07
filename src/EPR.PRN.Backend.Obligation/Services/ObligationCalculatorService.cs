@@ -76,9 +76,9 @@ namespace EPR.PRN.Backend.Obligation.Services
 		{
 			submitterTypeName = default;
 
-			var submitterType = request.Find(r => !r.SubmitterType.IsNullOrEmpty())?.SubmitterType;
+			var submitterType = request.Find(r => !string.IsNullOrEmpty(r.SubmitterType))?.SubmitterType;
 
-			return !submitterType.IsNullOrEmpty() &&
+			return !string.IsNullOrEmpty(submitterType) &&
 				Enum.TryParse(request[0].SubmitterType, true, out submitterTypeName);
 		}
 
