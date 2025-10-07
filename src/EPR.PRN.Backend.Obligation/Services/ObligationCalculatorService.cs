@@ -8,7 +8,6 @@ using EPR.PRN.Backend.Obligation.Helpers;
 using EPR.PRN.Backend.Obligation.Interfaces;
 using EPR.PRN.Backend.Obligation.Models;
 using Microsoft.Extensions.Logging;
-using Microsoft.IdentityModel.Tokens;
 
 namespace EPR.PRN.Backend.Obligation.Services
 {
@@ -99,7 +98,7 @@ namespace EPR.PRN.Backend.Obligation.Services
 
 			var materialName = materials.FirstOrDefault(m => m.MaterialCode == submission.PackagingMaterial)?.MaterialName;
 
-			if (materialName.IsNullOrEmpty() || !Enum.TryParse(materialName, true, out materialType))
+			if (string.IsNullOrEmpty(materialName) || !Enum.TryParse(materialName, true, out materialType))
 			{
 				logger.LogError("Material provided was not valid: {PackagingMaterial} for OrganisationId: {OrganisationId} and SubmitterId: {SubmitterId}.",
 					submission.PackagingMaterial, submission.OrganisationId, submitterId);
