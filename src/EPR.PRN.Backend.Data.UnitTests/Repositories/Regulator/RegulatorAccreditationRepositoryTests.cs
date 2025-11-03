@@ -85,13 +85,13 @@ public class RegulatorAccreditationRepositoryTests
         await _repository.AccreditationMarkAsDulyMade(accreditationId, statusId, dulyMadeDate, determinationDate, userId);
 
         // Assert
-        var accreditation = await _context.Accreditations.FirstAsync(x => x.ExternalId == accreditationId);
+        var accreditation = await _context.Accreditations.FirstAsync(x => x.ExternalId == accreditationId, CancellationToken.None);
         var dulyMadeEntry = await _context.AccreditationDulyMade
-            .FirstOrDefaultAsync(x => x.AccreditationId == accreditation.Id);
+            .FirstOrDefaultAsync(x => x.AccreditationId == accreditation.Id, CancellationToken.None);
         var determinationEntry = await _context.AccreditationDeterminationDate
-            .FirstOrDefaultAsync(x => x.AccreditationId == accreditation.Id);
+            .FirstOrDefaultAsync(x => x.AccreditationId == accreditation.Id, CancellationToken.None);
         var taskStatusEntry = await _context.RegulatorAccreditationTaskStatus
-            .FirstOrDefaultAsync(x => x.AccreditationId == accreditation.Id && x.TaskStatusId == statusId);
+            .FirstOrDefaultAsync(x => x.AccreditationId == accreditation.Id && x.TaskStatusId == statusId, CancellationToken.None);
 
         using (new AssertionScope())
         {
@@ -162,7 +162,7 @@ public class RegulatorAccreditationRepositoryTests
         await _repository.AccreditationMarkAsDulyMade(accreditationId, statusId, dulyMadeDate, determinationDate, userId);
 
         // Assert
-        var determination = await _context.AccreditationDeterminationDate.FirstOrDefaultAsync(x => x.AccreditationId == accreditation.Id);
+        var determination = await _context.AccreditationDeterminationDate.FirstOrDefaultAsync(x => x.AccreditationId == accreditation.Id, CancellationToken.None);
 
         using (new AssertionScope())
         {
@@ -185,7 +185,7 @@ public class RegulatorAccreditationRepositoryTests
         // Insert an initial determination date to simulate existing record
         var accreditation = await _context.Accreditations
             .Include(x => x.RegistrationMaterial)
-            .FirstAsync(x => x.ExternalId == accreditationId);
+            .FirstAsync(x => x.ExternalId == accreditationId, CancellationToken.None);
 
         var existingDetermination = new AccreditationDeterminationDate
         {
@@ -212,7 +212,7 @@ public class RegulatorAccreditationRepositoryTests
 
         // Assert
         var updatedDetermination = await _context.AccreditationDeterminationDate
-            .FirstOrDefaultAsync(x => x.AccreditationId == accreditation.Id);
+            .FirstOrDefaultAsync(x => x.AccreditationId == accreditation.Id, CancellationToken.None);
 
         using (new AssertionScope())
         {
@@ -232,7 +232,7 @@ public class RegulatorAccreditationRepositoryTests
         var userId = Guid.NewGuid();
 
         var accreditation = await _context.Accreditations
-            .FirstAsync(x => x.ExternalId == accreditationId);
+            .FirstAsync(x => x.ExternalId == accreditationId, CancellationToken.None);
 
         var existingDetermination = new AccreditationDeterminationDate
         {
