@@ -293,7 +293,7 @@ public class RegistrationMaterialRepositoryTests
             Assert.AreEqual(2, result.Id);
             Assert.IsNotNull(result.Materials);
             Assert.IsNotNull(result.AccreditationTasks);
-            Assert.AreEqual(1, result.AccreditationTasks.Count);
+            Assert.HasCount(1, result.AccreditationTasks);
         }
     }
 
@@ -307,7 +307,7 @@ public class RegistrationMaterialRepositoryTests
             Assert.AreEqual(2, result.Id);
             Assert.IsNotNull(result.Materials);
             Assert.IsNotNull(result.AccreditationTasks);
-            Assert.AreEqual(2, result.AccreditationTasks.Count);
+            Assert.HasCount(2, result.AccreditationTasks);
         }
     }
 
