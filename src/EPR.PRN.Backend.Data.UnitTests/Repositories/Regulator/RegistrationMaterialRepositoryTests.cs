@@ -753,7 +753,7 @@ public class RegistrationMaterialRepositoryTests
             ExternalId = id
         };
 
-        await _context.Registrations.AddAsync(registration);
+        await _context.Registrations.AddAsync(registration, CancellationToken.None);
         await _context.SaveChangesAsync(CancellationToken.None);
 
         // Act
@@ -789,8 +789,8 @@ public class RegistrationMaterialRepositoryTests
             MaximumReprocessingPeriodId = 1
         };
 
-        await _context.Registrations.AddAsync(registration);
-        await _context.RegistrationMaterials.AddAsync(registrationMaterial);
+        await _context.Registrations.AddAsync(registration, CancellationToken.None);
+        await _context.RegistrationMaterials.AddAsync(registrationMaterial, CancellationToken.None);
         await _context.SaveChangesAsync(CancellationToken.None);
 
         // Act
@@ -1050,9 +1050,9 @@ public class RegistrationMaterialRepositoryTests
             WasteManagementPeriodId = 1
         };
 
-        await _context.Registrations.AddAsync(registration);
-        await _context.RegistrationMaterials.AddAsync(registrationMaterial);
-        await _context.RegistrationMaterials.AddAsync(registrationMaterial2);
+        await _context.Registrations.AddAsync(registration, CancellationToken.None);
+        await _context.RegistrationMaterials.AddAsync(registrationMaterial, CancellationToken.None);
+        await _context.RegistrationMaterials.AddAsync(registrationMaterial2, CancellationToken.None);
         await _context.SaveChangesAsync(CancellationToken.None);
 
         // Act
@@ -1077,7 +1077,7 @@ public class RegistrationMaterialRepositoryTests
 			StatusId = (int)RegistrationMaterialStatus.Started
 		};
 
-		await _context.RegistrationMaterials.AddAsync(existingMaterial);
+		await _context.RegistrationMaterials.AddAsync(existingMaterial, CancellationToken.None);
 		await _context.SaveChangesAsync(CancellationToken.None);
 
 		var dto = new UpdateIsMaterialRegisteredDto
