@@ -9,7 +9,6 @@ using EPR.PRN.Backend.API.Services.Interfaces;
 using EPR.PRN.Backend.Data.DataModels.Registrations;
 using EPR.PRN.Backend.Data.Interfaces.Accreditation;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 
 public class AccreditationPrnIssueAuthService(
     IAccreditationPrnIssueAuthRepository repository,

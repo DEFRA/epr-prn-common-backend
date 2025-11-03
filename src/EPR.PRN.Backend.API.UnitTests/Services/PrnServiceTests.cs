@@ -1,4 +1,5 @@
-﻿using AutoFixture;
+﻿using System.Diagnostics.CodeAnalysis;
+using AutoFixture;
 using EPR.PRN.Backend.API.Common.Dto;
 using EPR.PRN.Backend.API.Common.Enums;
 using EPR.PRN.Backend.API.Dto;
@@ -12,7 +13,6 @@ using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Moq;
-using System.Diagnostics.CodeAnalysis;
 
 namespace EPR.PRN.Backend.API.UnitTests.Services;
 
@@ -36,7 +36,7 @@ public class PrnServiceTests
         _configurationMock.Setup(c => c["LogPrefix"]).Returns("[EPR.PRN.Backend]");
 
         _systemUnderTest = new PrnService(_mockRepository.Object, _mockLogger.Object, _configurationMock.Object);
-   }
+    }
 
     [TestMethod]
     public async Task GetPrnForOrganisationById_WithValidId_ReturnsExpectedDto()
@@ -481,7 +481,7 @@ public class PrnServiceTests
         dto.EvidenceStatusCode = EprnStatus.CANCELLED;
         dto.IssueDate = issuedDate;
         dto.StatusDate = statusUpdatedDate;
- 
+
         await _systemUnderTest.SavePrnDetails(dto);
 
         prn.CreatedOn.Should().Be(default);

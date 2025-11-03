@@ -1,7 +1,7 @@
 ﻿namespace EPR.PRN.Backend.Data.DTO;
 
 public class OverseasAddressDto
-{ 
+{
     public Guid ExternalId { get; set; }
     public required string OrganisationName { get; set; }
     public required string AddressLine1 { get; set; }

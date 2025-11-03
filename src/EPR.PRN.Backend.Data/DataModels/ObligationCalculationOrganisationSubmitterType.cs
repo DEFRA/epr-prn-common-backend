@@ -4,9 +4,9 @@ namespace EPR.PRN.Backend.Data.DataModels;
 
 public class ObligationCalculationOrganisationSubmitterType
 {
-	[Key]
-	public int Id { get; set; }
+    [Key]
+    public int Id { get; set; }
 
-	[Required]
-	public string TypeName { get; set; } = null!;
+    [Required]
+    public string TypeName { get; set; } = null!;
 }

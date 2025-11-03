@@ -6,15 +6,15 @@ namespace EPR.PRN.Backend.Data.DataModels.Registrations;
 
 [Table("Public.RegistrationTaskStatus")]
 [ExcludeFromCodeCoverage]
-public class ApplicantRegistrationTaskStatus 
+public class ApplicantRegistrationTaskStatus
 {
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     [Key]
     public int Id { get; set; }
-    
+
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public Guid ExternalId { get; set; }
-    
+
     [ForeignKey("Task")]
     public int? TaskId { get; set; }
     public LookupApplicantRegistrationTask Task { get; set; } = null!;

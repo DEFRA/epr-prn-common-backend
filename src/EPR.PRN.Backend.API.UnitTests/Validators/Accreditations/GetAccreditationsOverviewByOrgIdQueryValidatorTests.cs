@@ -1,7 +1,6 @@
 ﻿using EPR.PRN.Backend.API.Constants;
 using EPR.PRN.Backend.API.Queries;
 using EPR.PRN.Backend.API.Validators.Accreditation;
-using FluentValidation;
 using FluentValidation.Results;
 
 namespace EPR.PRN.Backend.API.UnitTests.Validators.Accreditations

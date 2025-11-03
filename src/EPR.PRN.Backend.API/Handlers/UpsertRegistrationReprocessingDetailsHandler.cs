@@ -10,8 +10,8 @@ public class UpsertRegistrationReprocessingDetailsHandler(IMaterialRepository re
 {
     public async Task Handle(RegistrationReprocessingIOCommand command, CancellationToken cancellationToken)
     {
-       var registrationReprocessingIO = mapper.Map<RegistrationReprocessingIO>(command);
+        var registrationReprocessingIO = mapper.Map<RegistrationReprocessingIO>(command);
 
-       await repository.UpsertRegistrationReprocessingDetailsAsync(command.RegistrationMaterialId, registrationReprocessingIO);
+        await repository.UpsertRegistrationReprocessingDetailsAsync(command.RegistrationMaterialId, registrationReprocessingIO);
     }
 }

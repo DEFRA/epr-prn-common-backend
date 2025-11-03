@@ -19,8 +19,8 @@ public class RecyclingTargetDataServiceTests
         var recyclingTargetRepositoryMock = new Mock<IRecyclingTargetRepository>(MockBehavior.Strict);
         recyclingTargetRepositoryMock.Setup(x => x.GetAllAsync())
             .ReturnsAsync(
-			[
-				new RecyclingTarget { Year = currentYear, MaterialNameRT = MaterialType.Aluminium.ToString(), Target = 0.1 },
+            [
+                new RecyclingTarget { Year = currentYear, MaterialNameRT = MaterialType.Aluminium.ToString(), Target = 0.1 },
                 new RecyclingTarget { Year = currentYear, MaterialNameRT = MaterialType.GlassRemelt.ToString(), Target = 0.2 },
                 new RecyclingTarget { Year = currentYear, MaterialNameRT = MaterialType.Glass.ToString(), Target = 0.3 },
                 new RecyclingTarget { Year = currentYear, MaterialNameRT = MaterialType.Paper.ToString(), Target = 0.4 },
@@ -64,11 +64,11 @@ public class RecyclingTargetDataServiceTests
     {
         // Arrange
         var targetYear = DateTime.UtcNow.Year;
-		var recyclingTargetRepositoryMock = new Mock<IRecyclingTargetRepository>(MockBehavior.Strict);
+        var recyclingTargetRepositoryMock = new Mock<IRecyclingTargetRepository>(MockBehavior.Strict);
         recyclingTargetRepositoryMock.Setup(x => x.GetAllAsync())
             .ReturnsAsync(
-			[
-				new RecyclingTarget { Year = targetYear, MaterialNameRT = MaterialType.Aluminium.ToString(), Target = 0.1 },
+            [
+                new RecyclingTarget { Year = targetYear, MaterialNameRT = MaterialType.Aluminium.ToString(), Target = 0.1 },
                 new RecyclingTarget { Year = targetYear, MaterialNameRT = MaterialType.GlassRemelt.ToString(), Target = 0.2 },
                 new RecyclingTarget { Year = targetYear, MaterialNameRT = MaterialType.Glass.ToString(), Target = 0.3 },
                 new RecyclingTarget { Year = targetYear, MaterialNameRT = MaterialType.Paper.ToString(), Target = 0.4 },
@@ -99,8 +99,8 @@ public class RecyclingTargetDataServiceTests
         var recyclingTargetRepositoryMock = new Mock<IRecyclingTargetRepository>(MockBehavior.Strict);
         recyclingTargetRepositoryMock.Setup(x => x.GetAllAsync())
             .ReturnsAsync(
-			[
-			    new RecyclingTarget { Year = 1, MaterialNameRT = "InvalidMaterial", Target = 0.1 }
+            [
+                new RecyclingTarget { Year = 1, MaterialNameRT = "InvalidMaterial", Target = 0.1 }
             ]);
 
         var recyclingTargetDataService = new RecyclingTargetDataService(recyclingTargetRepositoryMock.Object);
@@ -137,8 +137,8 @@ public class RecyclingTargetDataServiceTests
         var recyclingTargetRepositoryMock = new Mock<IRecyclingTargetRepository>(MockBehavior.Strict);
         recyclingTargetRepositoryMock.Setup(x => x.GetAllAsync())
             .ReturnsAsync(
-			[
-			    new RecyclingTarget { Year = 1, MaterialNameRT = MaterialType.Aluminium.ToString(), Target = 0.1 },
+            [
+                new RecyclingTarget { Year = 1, MaterialNameRT = MaterialType.Aluminium.ToString(), Target = 0.1 },
                 new RecyclingTarget { Year = 2, MaterialNameRT = MaterialType.Plastic.ToString(), Target = 0.2 }
             ]);
 
@@ -163,7 +163,7 @@ public class RecyclingTargetDataServiceTests
                     new Dictionary<MaterialType, double>
                     {
                         { MaterialType.Plastic, 0.2 }
-                    } 
+                    }
                 }
             },
             "the data should be grouped by year and transformed correctly"

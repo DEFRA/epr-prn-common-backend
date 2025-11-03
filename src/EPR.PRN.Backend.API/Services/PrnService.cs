@@ -2,6 +2,7 @@
 
 namespace EPR.PRN.Backend.API.Services;
 
+using System.Collections.Generic;
 using EPR.PRN.Backend.API.Common.Dto;
 using EPR.PRN.Backend.API.Common.Enums;
 using EPR.PRN.Backend.API.Dto;
@@ -12,7 +13,6 @@ using EPR.PRN.Backend.API.Services.Interfaces;
 using EPR.PRN.Backend.Data.DataModels;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using System.Collections.Generic;
 
 public class PrnService(IRepository repository, ILogger<PrnService> logger, IConfiguration configuration) : IPrnService
 {
@@ -48,7 +48,7 @@ public class PrnService(IRepository repository, ILogger<PrnService> logger, ICon
         return await repository.GetSyncStatuses(fromDate, toDate);
     }
 
-    public async Task<PaginatedResponseDto<PrnDto>> GetSearchPrnsForOrganisation(Guid orgId, PaginatedRequestDto request)   
+    public async Task<PaginatedResponseDto<PrnDto>> GetSearchPrnsForOrganisation(Guid orgId, PaginatedRequestDto request)
     {
         logger.LogInformation("{Logprefix}: PrnService - GetSearchPrnsForOrganisation: search request for user organisation {Organisation} with criteria {Request}", logPrefix, orgId, JsonConvert.SerializeObject(request));
         var prns = await repository.GetSearchPrnsForOrganisation(orgId, request);
@@ -145,8 +145,8 @@ public class PrnService(IRepository repository, ILogger<PrnService> logger, ICon
     private static bool IsExport(string evidenceNo)
     {
         if (string.IsNullOrEmpty(evidenceNo))
-        {  
-            return false; 
+        {
+            return false;
         }
 
         var val = evidenceNo[..2].Trim();

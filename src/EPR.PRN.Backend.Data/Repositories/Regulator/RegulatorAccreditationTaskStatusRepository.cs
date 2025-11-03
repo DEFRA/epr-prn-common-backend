@@ -4,7 +4,6 @@ using EPR.PRN.Backend.Data.DataModels.Registrations;
 using EPR.PRN.Backend.Data.Interfaces.Regulator;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using System.Threading.Tasks;
 
 namespace EPR.PRN.Backend.Data.Repositories.Regulator
 {
@@ -31,7 +30,7 @@ namespace EPR.PRN.Backend.Data.Repositories.Regulator
             var taskStatus = await GetTaskStatus(TaskName, AccreditationId);
 
             var statusEntity = _context.LookupTaskStatuses.Single(lts => lts.Name == status.ToString());
-            
+
             if (taskStatus == null)
             {
                 var accreditation = await _context.Accreditations

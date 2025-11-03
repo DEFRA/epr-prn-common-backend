@@ -1,21 +1,16 @@
 ﻿namespace EPR.PRN.Backend.API.Services;
 
-using System.Diagnostics.CodeAnalysis;
 using AutoMapper;
-using EPR.PRN.Backend.API.Common.Enums;
 using EPR.PRN.Backend.API.Common.Helpers;
 using EPR.PRN.Backend.API.Dto.Accreditation;
 using EPR.PRN.Backend.API.Helpers;
 using EPR.PRN.Backend.API.Services.Interfaces;
-using EPR.PRN.Backend.Data.DataModels.Accreditations;
 using EPR.PRN.Backend.Data.DataModels.Registrations;
 using EPR.PRN.Backend.Data.DTO;
 using EPR.PRN.Backend.Data.Interfaces;
 using EPR.PRN.Backend.Data.Interfaces.Accreditation;
 using EPR.PRN.Backend.Data.Interfaces.Regulator;
-using EPR.PRN.Backend.Data.Repositories.Regulator;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 
 public class AccreditationService(
     IAccreditationRepository repository,

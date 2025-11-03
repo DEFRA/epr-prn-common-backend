@@ -1,7 +1,7 @@
+using System.Diagnostics.CodeAnalysis;
 using MediatR;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Swashbuckle.AspNetCore.Annotations;
-using System.Diagnostics.CodeAnalysis;
 
 namespace EPR.PRN.Backend.API.Commands;
 
@@ -13,5 +13,5 @@ public class RegulatorAccreditationMarkAsDulyMadeCommand : IRequest
     public Guid Id { get; set; }
     public DateTime DulyMadeDate { get; set; }
     public DateTime DeterminationDate { get; set; }
-    public Guid DulyMadeBy { get; set; } 
+    public Guid DulyMadeBy { get; set; }
 }

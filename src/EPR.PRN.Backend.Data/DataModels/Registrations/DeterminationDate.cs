@@ -18,7 +18,7 @@ namespace EPR.PRN.Backend.Data.DataModels.Registrations
         public DateTime DeterminateDate { get; set; }
 
         [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
-        public bool IsOverdue { get; private set; } 
-        
+        public bool IsOverdue { get; private set; }
+
     }
 }

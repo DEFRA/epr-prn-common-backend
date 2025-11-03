@@ -19,7 +19,7 @@ namespace EPR.PRN.Backend.API.UnitTests.Validators
         [TestMethod]
         public void Should_Have_Error_When_Status_Is_Invalid()
         {
-            var model = new UpdateRegulatorAccreditationTaskCommand { AccreditationId = Guid.NewGuid(),  TaskName = "Test Task", Status = (RegulatorTaskStatus)999, UserName = "UserName" };
+            var model = new UpdateRegulatorAccreditationTaskCommand { AccreditationId = Guid.NewGuid(), TaskName = "Test Task", Status = (RegulatorTaskStatus)999, UserName = "UserName" };
             var result = _validator.TestValidate(model);
             result.ShouldHaveValidationErrorFor(x => x.Status)
                 .WithErrorMessage("Invalid Status value");

@@ -10,6 +10,6 @@ public class CreateExemptionReferencesCommand : IRequest
     [BindNever]
     [SwaggerIgnore]
     public Guid RegistrationMaterialId { get; set; }
-    
+
     public required List<MaterialExemptionReferenceDto> MaterialExemptionReferences { get; set; }
 }

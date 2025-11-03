@@ -6,7 +6,7 @@ namespace EPR.PRN.Backend.API.Helpers
     public class DateTimeModelBinder : IModelBinder
     {
         private readonly string[] _dateFormats;
-        
+
         public DateTimeModelBinder(params string[] dateFormats)
         {
             _dateFormats = dateFormats;
@@ -29,7 +29,7 @@ namespace EPR.PRN.Backend.API.Helpers
             {
                 return Task.CompletedTask;
             }
-            
+
             foreach (var format in _dateFormats)
             {
                 if (DateTime.TryParseExact(value, format, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime date))

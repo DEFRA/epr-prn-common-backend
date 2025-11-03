@@ -1,5 +1,5 @@
-﻿using EPR.PRN.Backend.API.Common.Enums;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
+using EPR.PRN.Backend.API.Common.Enums;
 
 namespace EPR.PRN.Backend.Data.DataModels
 {

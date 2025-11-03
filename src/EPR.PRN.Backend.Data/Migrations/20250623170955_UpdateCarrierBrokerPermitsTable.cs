@@ -46,7 +46,7 @@ namespace EPR.PRN.Backend.Data.Migrations
                 oldClrType: typeof(string),
                 oldType: "nvarchar(max)",
                 oldNullable: true);
-            
+
             migrationBuilder.AddColumn<string>(
                 name: "WasteExemptionReference",
                 table: "Public.CarrierBrokerDealerPermits",

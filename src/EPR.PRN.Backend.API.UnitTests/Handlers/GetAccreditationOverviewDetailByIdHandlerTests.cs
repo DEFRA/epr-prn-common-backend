@@ -1,12 +1,12 @@
 ﻿using AutoMapper;
+using EPR.PRN.Backend.API.Common.Enums;
+using EPR.PRN.Backend.API.Handlers.Regulator;
+using EPR.PRN.Backend.API.Profiles.Regulator;
 using EPR.PRN.Backend.API.Queries;
 using EPR.PRN.Backend.Data.DataModels.Registrations;
 using EPR.PRN.Backend.Data.Interfaces.Regulator;
 using FluentAssertions;
 using Moq;
-using EPR.PRN.Backend.API.Common.Enums;
-using EPR.PRN.Backend.API.Profiles.Regulator;
-using EPR.PRN.Backend.API.Handlers.Regulator;
 
 namespace EPR.PRN.Backend.API.UnitTests.Handlers;
 
@@ -24,7 +24,7 @@ public class GetAccreditationOverviewDetailByIdHandlerTests
 
         var config = new MapperConfiguration(cfg =>
         {
-            cfg.AddProfile<RegistrationMaterialProfile>(); 
+            cfg.AddProfile<RegistrationMaterialProfile>();
         });
         _mapper = config.CreateMapper();
 
@@ -91,16 +91,16 @@ public class GetAccreditationOverviewDetailByIdHandlerTests
         {
             new() { Name = "SiteAddressAndContactDetails" }
         };
-        
+
         var requiredMaterialTasks = new List<LookupRegulatorTask>
         {
             new() { Name = "BusinessAddress" }
         };
-        
+
         _repoMock.Setup(x => x.GetRegistrationByExternalIdAndYear(registrationId, year)).ReturnsAsync(registration);
         _repoMock.Setup(x => x.GetRequiredTasks(101, false, 2)).ReturnsAsync(requiredTasks);
         _repoMock.Setup(x => x.GetRequiredTasks(101, true, 2)).ReturnsAsync(requiredMaterialTasks);
-        
+
         var query = new GetRegistrationOverviewDetailWithAccreditationsByIdQuery { Id = registrationId, Year = year };
 
         // Act
@@ -142,8 +142,8 @@ public class GetAccreditationOverviewDetailByIdHandlerTests
                     Material = new LookupMaterial { MaterialName = "Plastic" },
                     IsMaterialRegistered = true,
                     Tasks = [],
-                    Accreditations = new List<Accreditation>{ 
-                        new Accreditation{ 
+                    Accreditations = new List<Accreditation>{
+                        new Accreditation{
                         AccreditationYear = year,
                         ApplicationReferenceNumber = "APP-12345",
                         }

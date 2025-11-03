@@ -13,7 +13,7 @@ public class ObligationCalculation
     public Guid OrganisationId { get; set; }
 
     [Required]
-	public int MaterialId { get; set; }
+    public int MaterialId { get; set; }
 
     [Required]
     public int MaterialObligationValue { get; set; }
@@ -27,16 +27,16 @@ public class ObligationCalculation
     [Required]
     public int Tonnage { get; set; }
 
-	[Required]
-	public Guid SubmitterId { get; set; }
+    [Required]
+    public Guid SubmitterId { get; set; }
 
-	[Required]
-	public int SubmitterTypeId { get; set; }
+    [Required]
+    public int SubmitterTypeId { get; set; }
 
-	[Required]
-	public bool IsDeleted { get; set; }
+    [Required]
+    public bool IsDeleted { get; set; }
 
-	public Material Material { get; set; } = null!;
+    public Material Material { get; set; } = null!;
 
-	public ObligationCalculationOrganisationSubmitterType ObligationCalculationOrganisationSubmitterType { get; set; } = null!;
+    public ObligationCalculationOrganisationSubmitterType ObligationCalculationOrganisationSubmitterType { get; set; } = null!;
 }

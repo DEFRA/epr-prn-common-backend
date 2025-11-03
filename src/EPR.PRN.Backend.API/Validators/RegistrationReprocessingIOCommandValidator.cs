@@ -1,5 +1,4 @@
-﻿using EPR.PRN.Backend.API.Commands;
-using EPR.PRN.Backend.Data.DTO;
+﻿using EPR.PRN.Backend.Data.DTO;
 using FluentValidation;
 
 namespace EPR.PRN.Backend.API.Validators;

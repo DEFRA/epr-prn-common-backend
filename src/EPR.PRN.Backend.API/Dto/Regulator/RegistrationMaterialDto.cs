@@ -1,17 +1,14 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
-using System.Diagnostics.CodeAnalysis;
-using EPR.PRN.Backend.Data.DataModels.Registrations;
+﻿using System.Diagnostics.CodeAnalysis;
 
 namespace EPR.PRN.Backend.API.Dto.Regulator;
 
 [ExcludeFromCodeCoverage]
 public class RegistrationMaterialDto
 {
-    public Guid Id { get; set; } 
+    public Guid Id { get; set; }
     public Guid RegistrationId { get; set; }
     public required string MaterialName { get; set; }
-    public int MaterialId { get; set; } 
+    public int MaterialId { get; set; }
     public string? Status { get; set; }
     public int StatusId { get; set; }
     public string? StatusUpdatedBy { get; init; }

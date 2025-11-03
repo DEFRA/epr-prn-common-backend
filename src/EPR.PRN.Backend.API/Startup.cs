@@ -1,14 +1,12 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Serialization;
-
-using EPR.PRN.Backend.API.Validators.Regulator;
 using EPR.PRN.Backend.API.Common.Constants;
 using EPR.PRN.Backend.API.Configs;
-using EPR.PRN.Backend.API.Handlers;
 using EPR.PRN.Backend.API.Helpers;
 using EPR.PRN.Backend.API.Middlewares;
+using EPR.PRN.Backend.API.Validators.Regulator;
 using EPR.PRN.Backend.Data;
-
+using FluentValidation;
 using FluentValidation.AspNetCore;
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
@@ -16,19 +14,18 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.FeatureManagement;
 using Swashbuckle.AspNetCore.Annotations;
-using FluentValidation;
 
 namespace EPR.PRN.Backend.API
 {
     [ExcludeFromCodeCoverage]
-	public class Startup
-	{
-		private readonly IConfiguration _config;
+    public class Startup
+    {
+        private readonly IConfiguration _config;
 
-		public Startup(IHostEnvironment env, IConfiguration config)
-		{
-			_config = config;
-		}
+        public Startup(IHostEnvironment env, IConfiguration config)
+        {
+            _config = config;
+        }
 
         public void ConfigureServices(IServiceCollection services)
         {
@@ -45,8 +42,8 @@ namespace EPR.PRN.Backend.API
             });
             services
              .AddFluentValidationAutoValidation(options =>
-             { 
-             options.DisableDataAnnotationsValidation = true; // if you don't want DataAnnotations
+             {
+                 options.DisableDataAnnotationsValidation = true; // if you don't want DataAnnotations
              })
              .AddFluentValidationClientsideAdapters()
              .AddValidatorsFromAssemblyContaining<RegistrationOutcomeValidator>();
@@ -71,13 +68,13 @@ namespace EPR.PRN.Backend.API
             });
             services.AddFeatureManagement();
 
-			services.AddDbContext<EprContext>(options =>
-				options.UseSqlServer(_config.GetConnectionString("EprConnectionString"), sqlOptions =>
-				{
-					sqlOptions.CommandTimeout(300);
-				}));
+            services.AddDbContext<EprContext>(options =>
+                options.UseSqlServer(_config.GetConnectionString("EprConnectionString"), sqlOptions =>
+                {
+                    sqlOptions.CommandTimeout(300);
+                }));
 
-			services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
             services.AddDependencies();
 
@@ -115,7 +112,7 @@ namespace EPR.PRN.Backend.API
                     Predicate = _ => true,
                     ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
                 }).AllowAnonymous();
-            }); 
+            });
         }
 
         private void AddHealthChecks(IServiceCollection services)

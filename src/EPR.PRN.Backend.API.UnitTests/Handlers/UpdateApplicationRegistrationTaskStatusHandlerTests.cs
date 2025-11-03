@@ -1,12 +1,8 @@
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Moq;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
-using EPR.PRN.Backend.API.Handlers;
 using EPR.PRN.Backend.API.Commands;
-using EPR.PRN.Backend.Data.Interfaces;
 using EPR.PRN.Backend.API.Common.Enums;
+using EPR.PRN.Backend.API.Handlers;
+using EPR.PRN.Backend.Data.Interfaces;
+using Moq;
 
 namespace EPR.PRN.Backend.API.UnitTests.Handlers
 {

@@ -93,9 +93,9 @@ public class RegistrationMaterialControllerTests
         {
             RegistrationReferenceNumber = "R25ER2475638626AL" // Ensure the required property is set
         };
-        
 
-        _validatorMock 
+
+        _validatorMock
             .Setup(v => v.ValidateAsync(command, default))
             .ReturnsAsync(new ValidationResult());
 
@@ -224,7 +224,7 @@ public class RegistrationMaterialControllerTests
         // Arrange
         var registrationId = Guid.Parse("4bac12f7-f7a9-4df4-b7b5-9c4221860c4d");
 
-       
+
         var expectedDto = new RegistrationSiteAddressDto();
 
         _mediatorMock
@@ -260,7 +260,7 @@ public class RegistrationMaterialControllerTests
         okResult.Should().NotBeNull();
         okResult!.Value.Should().BeEquivalentTo(expectedDto);
     }
-    
+
     [TestMethod]
     public async Task GetMaterialPaymentFeeById_ReturnsOk_WithExpectedResult()
     {
@@ -296,15 +296,15 @@ public class RegistrationMaterialControllerTests
         var registrationMaterialId = Guid.Parse("a9421fc1-a912-42ee-85a5-3e06408759a9");
         var command = new RegistrationMaterialsMarkAsDulyMadeCommand
         {
-            DulyMadeDate= new DateTime(2025, 5, 12),
+            DulyMadeDate = new DateTime(2025, 5, 12),
             DeterminationDate = new DateTime(2025, 7, 12),
-            DulyMadeBy= new Guid("3fa85f64-5717-4562-b3fc-2c963f66afa6")
+            DulyMadeBy = new Guid("3fa85f64-5717-4562-b3fc-2c963f66afa6")
         };
 
         var controller = new RegistrationMaterialController(
             _mediatorMock.Object,
             _validatorMock.Object,
-            validator,            
+            validator,
             _loggerMock.Object
         );
 

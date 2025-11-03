@@ -16,7 +16,7 @@ public class UpdateRegistrationMaterialPermitCapacityCommandValidator : Abstract
             .WithMessage("Weight must be a number greater than 0");
 
         RuleFor(x => x.CapacityInTonnes)
-            .Must(x => x!= 0)
+            .Must(x => x != 0)
             .WithMessage("Weight must be a number greater than 0");
 
         RuleFor(x => x.CapacityInTonnes)

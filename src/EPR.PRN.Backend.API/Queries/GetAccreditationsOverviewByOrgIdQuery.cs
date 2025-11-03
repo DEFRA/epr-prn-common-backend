@@ -1,6 +1,6 @@
-﻿using EPR.PRN.Backend.Data.DTO.Accreditiation;
+﻿using System.ComponentModel.DataAnnotations;
+using EPR.PRN.Backend.Data.DTO.Accreditiation;
 using MediatR;
-using System.ComponentModel.DataAnnotations;
 
 namespace EPR.PRN.Backend.API.Queries
 {

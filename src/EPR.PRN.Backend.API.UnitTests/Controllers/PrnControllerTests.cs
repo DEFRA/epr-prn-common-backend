@@ -1,4 +1,5 @@
-﻿using AutoFixture;
+﻿using System.Net;
+using AutoFixture;
 using BackendAccountService.Core.Models.Request;
 using EPR.PRN.Backend.API.Common.Dto;
 using EPR.PRN.Backend.API.Common.Enums;
@@ -21,7 +22,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
-using System.Net;
 
 namespace EPR.PRN.Backend.API.UnitTests.Controllers;
 
@@ -39,11 +39,11 @@ public class PrnControllerTests
     private static readonly IFixture _fixture = new Fixture();
     private readonly List<Guid> organisationIds = [];
     private readonly Guid organisationId = Guid.NewGuid();
-	private readonly Guid submitterId = Guid.NewGuid(); // Either ComplianceSchemeId or DR OrganisationId
-	private readonly Guid prnId = Guid.NewGuid();
+    private readonly Guid submitterId = Guid.NewGuid(); // Either ComplianceSchemeId or DR OrganisationId
+    private readonly Guid prnId = Guid.NewGuid();
     private readonly Guid userId = Guid.NewGuid();
 
-	[TestInitialize]
+    [TestInitialize]
     public void TestInitialize()
     {
         _mockPrnService = new Mock<IPrnService>();
@@ -150,10 +150,10 @@ public class PrnControllerTests
 
         result.Should().NotBeNull();
         result.StatusCode.Should().Be((int)HttpStatusCode.InternalServerError);
-	}
+    }
 
-	[TestMethod]
-	public async Task CalculateAsync_WhenRequestIsNull_ReturnsBadRequest()
+    [TestMethod]
+    public async Task CalculateAsync_WhenRequestIsNull_ReturnsBadRequest()
     {
         var result = await _systemUnderTest.CalculateAsync(submitterId, null);
 

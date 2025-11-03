@@ -1,4 +1,5 @@
-﻿using AutoFixture;
+﻿using System.Net;
+using AutoFixture;
 using EPR.PRN.Backend.API.Commands;
 using EPR.PRN.Backend.API.Common.Enums;
 using EPR.PRN.Backend.API.Controllers.Regulator;
@@ -9,7 +10,6 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
-using System.Net;
 
 namespace EPR.PRN.Backend.API.UnitTests.Controllers.Regulator;
 
@@ -120,7 +120,7 @@ public class RegulatorRegistrationTaskStatusControllerTests
         };
 
         // Assert
-        
+
         Func<Task> act = () => _systemUnderTest.RegistrationTaskQueryNote(taskId, command);
 
         await act.Should().ThrowAsync<ValidationException>();

@@ -1,4 +1,3 @@
-using EPR.PRN.Backend.API.Commands;
 using EPR.PRN.Backend.API.Validators;
 using EPR.PRN.Backend.Data.DTO;
 using FluentValidation.TestHelper;

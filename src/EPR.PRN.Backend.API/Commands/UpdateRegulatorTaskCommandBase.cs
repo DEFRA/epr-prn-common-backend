@@ -1,6 +1,6 @@
-﻿using EPR.PRN.Backend.API.Common.Enums;
+﻿using System.ComponentModel.DataAnnotations;
+using EPR.PRN.Backend.API.Common.Enums;
 using MediatR;
-using System.ComponentModel.DataAnnotations;
 
 namespace EPR.PRN.Backend.API.Commands;
 public abstract class UpdateRegulatorTaskCommandBase : IRequest

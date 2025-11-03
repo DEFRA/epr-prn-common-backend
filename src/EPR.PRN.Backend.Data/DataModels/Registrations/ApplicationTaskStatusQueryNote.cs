@@ -7,7 +7,7 @@ namespace EPR.PRN.Backend.Data.DataModels.Registrations;
 [ExcludeFromCodeCoverage]
 [Table("Public.ApplicationTaskStatusQueryNote")]
 public class ApplicationTaskStatusQueryNote
-{    
+{
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     [Key]
     public int Id { get; set; }
@@ -16,5 +16,5 @@ public class ApplicationTaskStatusQueryNote
     public int QueryNoteId { get; set; }
     public RegulatorApplicationTaskStatus RegulatorApplicationTaskStatus { get; set; } = null!;
     [ForeignKey("RegulatorApplicationTaskStatus")]
-    public int RegulatorApplicationTaskStatusId { get; set; }   
+    public int RegulatorApplicationTaskStatusId { get; set; }
 }

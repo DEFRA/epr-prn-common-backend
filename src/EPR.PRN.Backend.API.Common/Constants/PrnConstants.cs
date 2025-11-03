@@ -40,13 +40,13 @@
             public const string GlassOther = "Glass Other";
             public const string GlassMelt = "Glass Re-melt";
             public const string PaperFiber = "Paper/board";
-			public const string Plastic = "Plastic";
+            public const string Plastic = "Plastic";
             public const string Steel = "Steel";
             public const string Wood = "Wood";
 
-			public const string PaperComposting = "Paper Composting";
-			public const string WoodComposting = "Wood Composting";
-		}
+            public const string PaperComposting = "Paper Composting";
+            public const string WoodComposting = "Wood Composting";
+        }
 
         public static class ExporterCodePrefixes
         {

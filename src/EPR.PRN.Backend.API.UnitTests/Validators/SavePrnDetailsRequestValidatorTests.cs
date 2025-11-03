@@ -8,7 +8,7 @@ namespace EPR.PRN.Backend.API.UnitTests.Validators
     [TestClass]
     public class SavePrnDetailsRequestValidatorTests
     {
-        
+
         [TestMethod]
         [DataRow("AccreditationNo", null)]
         [DataRow("AccreditationYear", null)]
@@ -22,7 +22,7 @@ namespace EPR.PRN.Backend.API.UnitTests.Validators
         [DataRow("ProducerAgency", null)]
         [DataRow("RecoveryProcessCode", null)]
         [DataRow("StatusDate", null)]
-        public void Test_SavePrnDetailsRequestValidator_Returns_Correct_ValidationResultOnNullInput(string propertyName , object propertyValue)
+        public void Test_SavePrnDetailsRequestValidator_Returns_Correct_ValidationResultOnNullInput(string propertyName, object propertyValue)
         {
             var validator = new SavePrnDetailsRequestValidator();
 
@@ -88,7 +88,7 @@ namespace EPR.PRN.Backend.API.UnitTests.Validators
                 AccreditationYear = 2018,
                 DecemberWaste = true,
                 EvidenceMaterial = "Aluminium",
-                EvidenceNo = Guid.NewGuid().ToString(),                
+                EvidenceNo = Guid.NewGuid().ToString(),
                 EvidenceTonnes = 5000,
                 IssueDate = DateTime.UtcNow.AddDays(-5),
                 IssuedByNPWDCode = "NPWD367742",
@@ -125,11 +125,11 @@ namespace EPR.PRN.Backend.API.UnitTests.Validators
 
             // Assert
             result.Should().NotBeNull();
-            
+
             var errorPropertyNames = result.Errors.Select(x => x.PropertyName);
             var cancelledDatePropertyName = nameof(dto.CancelledDate);
 
-            _ = isCancelledStatus 
+            _ = isCancelledStatus
                 ? errorPropertyNames.Should().Contain(cancelledDatePropertyName)
                 : errorPropertyNames.Should().NotContain(cancelledDatePropertyName);
         }

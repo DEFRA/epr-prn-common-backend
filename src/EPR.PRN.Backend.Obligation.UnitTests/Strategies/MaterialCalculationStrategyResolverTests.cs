@@ -1,10 +1,10 @@
-﻿using EPR.PRN.Backend.API.Common.Enums;
+﻿using System.Diagnostics.CodeAnalysis;
+using EPR.PRN.Backend.API.Common.Enums;
 using EPR.PRN.Backend.Obligation.Interfaces;
 using EPR.PRN.Backend.Obligation.Strategies;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Moq;
-using System.Diagnostics.CodeAnalysis;
 
 namespace EPR.PRN.Backend.Obligation.UnitTests.Strategies;
 
@@ -39,7 +39,7 @@ public class MaterialCalculationStrategyResolverTests
 
         // Assert
         result.Should().NotBeNull();
-		result.Should().Be(strategyMock.Object);
+        result.Should().Be(strategyMock.Object);
     }
 
     [TestMethod]

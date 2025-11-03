@@ -1,7 +1,7 @@
-﻿using EPR.PRN.Backend.Data.DataModels.Accreditations;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics.CodeAnalysis;
+using EPR.PRN.Backend.Data.DataModels.Accreditations;
 
 namespace EPR.PRN.Backend.Data.DataModels.Registrations;
 
@@ -77,13 +77,13 @@ public class Accreditation
     public string? NotCoveredOtherCategoriesNotes { get; set; }
 
     public int? AccreditationYear { get; set; }
-   
+
     public List<RegulatorAccreditationTaskStatus>? Tasks { get; set; }
 
     public List<AccreditationTaskStatus>? AccreditationTasksStatus { get; set; }
 
-    public List<AccreditationDeterminationDate> AccreditationDulyMade { get; set; } = null!;        
-   
+    public List<AccreditationDeterminationDate> AccreditationDulyMade { get; set; } = null!;
+
     public List<AccreditationFileUpload>? FileUploads { get; set; }
 
     public List<AccreditationPrnIssueAuth>? AccreditationPrnIssueAuths { get; set; }

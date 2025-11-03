@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using EPR.PRN.Backend.API.Commands.ExporterJourney;
+﻿using EPR.PRN.Backend.API.Commands.ExporterJourney;
 using EPR.PRN.Backend.API.Dto.ExporterJourney;
 using EPR.PRN.Backend.API.Validators.ExportJourney;
 using FluentValidation.TestHelper;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace EPR.PRN.Backend.API.UnitTests.Validators.ExportJourney
 {

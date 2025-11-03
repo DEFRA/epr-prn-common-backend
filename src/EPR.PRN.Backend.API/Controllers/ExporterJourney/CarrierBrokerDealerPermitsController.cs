@@ -2,11 +2,11 @@
 using EPR.PRN.Backend.API.Common.Constants;
 using EPR.PRN.Backend.API.Dto.ExporterJourney;
 using EPR.PRN.Backend.API.Queries.ExporterJourney;
+using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.FeatureManagement.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
-using FluentValidation;
 
 namespace EPR.PRN.Backend.API.Controllers.ExporterJourney;
 
@@ -59,7 +59,7 @@ public class CarrierBrokerDealerPermitsController(IMediator mediator,
             var created = await mediator.Send(new CreateCarrierBrokerDealerPermitsCommand
             {
                 UserId = userId,
-                RegistrationId = registrationId, 
+                RegistrationId = registrationId,
                 WasteCarrierBrokerDealerRegistration = dto.WasteCarrierBrokerDealerRegistration
             });
 

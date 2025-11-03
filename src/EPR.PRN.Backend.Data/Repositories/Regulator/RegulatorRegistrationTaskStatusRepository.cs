@@ -104,17 +104,17 @@ namespace EPR.PRN.Backend.Data.Repositories.Regulator
             {
                 throw new KeyNotFoundException("Cannot insert query because the Regulator Registration Task Status is completed.");
             }
-            else if(queryBy == Guid.Empty)
+            else if (queryBy == Guid.Empty)
             {
                 throw new ArgumentException("invalid user.");
             }
 
-                var querynote = new Note
-                {
-                    Notes = note,
-                    CreatedBy = queryBy,
-                    CreatedDate = DateTime.UtcNow
-                };
+            var querynote = new Note
+            {
+                Notes = note,
+                CreatedBy = queryBy,
+                CreatedDate = DateTime.UtcNow
+            };
             await _context.QueryNote.AddAsync(querynote);
 
             var registrationTaskStatusQueryNotes = new RegistrationTaskStatusQueryNote
@@ -124,7 +124,7 @@ namespace EPR.PRN.Backend.Data.Repositories.Regulator
             };
             await _context.RegistrationTaskStatusQueryNotes.AddAsync(registrationTaskStatusQueryNotes);
 
-          
+
 
             await _context.SaveChangesAsync();
 

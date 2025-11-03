@@ -12,7 +12,7 @@ public class AccreditationDeterminationDate
     public int Id { get; set; }
     public Guid ExternalId { get; set; }
     [ForeignKey("Accreditation")]
-    public int AccreditationId { get; set; }   
-    public Accreditation? Accreditation { get; set; }    
+    public int AccreditationId { get; set; }
+    public Accreditation? Accreditation { get; set; }
     public DateTime DeterminationDate { get; set; }
-  }
+}

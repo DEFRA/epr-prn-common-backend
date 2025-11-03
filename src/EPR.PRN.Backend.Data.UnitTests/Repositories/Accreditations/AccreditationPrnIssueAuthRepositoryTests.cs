@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using EPR.PRN.Backend.Data.DataModels.Registrations;
+﻿using EPR.PRN.Backend.Data.DataModels.Registrations;
 using EPR.PRN.Backend.Data.Repositories.Accreditations;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace EPR.PRN.Backend.Data.UnitTests.Repositories.Accreditations;
 
@@ -39,7 +34,7 @@ public class AccreditationPrnIssueAuthRepositoryTests
     {
         // Arrange
         var accreditationId = Guid.NewGuid();
-        var accreditation = new Accreditation { Id = 1, ExternalId = accreditationId,  ApplicationReferenceNumber = string.Empty };
+        var accreditation = new Accreditation { Id = 1, ExternalId = accreditationId, ApplicationReferenceNumber = string.Empty };
         var auth = new AccreditationPrnIssueAuth
         {
             ExternalId = Guid.NewGuid(),
@@ -49,7 +44,7 @@ public class AccreditationPrnIssueAuthRepositoryTests
         };
         _context.Accreditations.Add(accreditation);
         _context.AccreditationPrnIssueAuths.Add(auth);
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(CancellationToken.None);
 
         // Act
         var result = await _repository.GetByAccreditationId(accreditationId);
@@ -89,7 +84,7 @@ public class AccreditationPrnIssueAuthRepositoryTests
         };
         _context.Accreditations.Add(accreditation);
         _context.AccreditationPrnIssueAuths.Add(oldAuth);
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(CancellationToken.None);
 
         var newAuth = new AccreditationPrnIssueAuth
         {

@@ -1,6 +1,5 @@
 ﻿using EPR.PRN.Backend.API.Common.Constants;
 using EPR.PRN.Backend.API.Common.Enums;
-using EPR.PRN.Backend.Data.DataModels;
 using EPR.PRN.Backend.Data.DataModels.Registrations;
 using EPR.PRN.Backend.Data.DTO;
 using EPR.PRN.Backend.Data.Repositories;
@@ -8,11 +7,7 @@ using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using Microsoft.Testing.Platform.Extensions;
 using Moq;
-using Moq.EntityFrameworkCore;
-using System.Xml.XPath;
 
 namespace EPR.PRN.Backend.Data.UnitTests.Repositories;
 
@@ -305,10 +300,10 @@ public class OverseasAddressTests
             StatusId = 1,
             IsMaterialRegistered = false,
         });
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(CancellationToken.None);
 
         _context.LookupCountries.Add(new LookupCountry { Id = 1, Name = "CountryA" });
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(CancellationToken.None);
 
         var existingExternalId = new Guid("6497f0b0-d55d-4462-a6e2-f32733bec6ea");
 
@@ -336,7 +331,7 @@ public class OverseasAddressTests
             },
         };
         _context.OverseasAddress.Add(existingAddress);
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(CancellationToken.None);
 
         var updateDto = new UpdateOverseasAddressDto
         {
@@ -438,7 +433,7 @@ public class OverseasAddressTests
             StatusId = 1,
             IsMaterialRegistered = false
         });
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(CancellationToken.None);
 
         var existingToKeep = new OverseasAddress
         {
@@ -479,7 +474,7 @@ public class OverseasAddressTests
         };
 
         _context.OverseasAddress.AddRange(existingToKeep, existingToDelete, existingToKeepDifferentRegistrationId);
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(CancellationToken.None);
 
         var updateDto = new UpdateOverseasAddressDto
         {
@@ -529,7 +524,7 @@ public class OverseasAddressTests
             StatusId = 1,
             IsMaterialRegistered = false
         });
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(CancellationToken.None);
 
         var existingToKeep = new OverseasAddress
         {
@@ -570,7 +565,7 @@ public class OverseasAddressTests
         };
 
         _context.OverseasAddress.AddRange(existingToKeep, existingToDelete, existingToKeepDifferentRegistrationId);
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(CancellationToken.None);
 
         var updateDto = new UpdateOverseasAddressDto
         {

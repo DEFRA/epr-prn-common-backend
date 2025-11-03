@@ -1,5 +1,4 @@
 ﻿using EPR.PRN.Backend.API.Commands.ExporterJourney;
-using EPR.PRN.Backend.API.Dto.ExporterJourney;
 using EPR.PRN.Backend.API.Handlers.ExporterJourney;
 using EPR.PRN.Backend.Data.DataModels.Registrations;
 using EPR.PRN.Backend.Data.Interfaces;
@@ -79,7 +78,7 @@ public class CreateCarrierBrokerDealerPermitsHandlerTests
         {
             UserId = Guid.NewGuid(),
             RegistrationId = registration.ExternalId,
-			WasteCarrierBrokerDealerRegistration = "Test 1"
+            WasteCarrierBrokerDealerRegistration = "Test 1"
         };
 
         // Act

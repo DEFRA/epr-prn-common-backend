@@ -15,7 +15,7 @@ public class OverseasAccreditationSiteController(IOverseasAccreditationSiteServi
     [HttpGet("{accreditationId}")]
     [ProducesResponseType(typeof(OverseasAccreditationSiteDto), 200)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> GetAllByAccreditationId([FromRoute]Guid accreditationId)
+    public async Task<IActionResult> GetAllByAccreditationId([FromRoute] Guid accreditationId)
     {
         var overseasAccreditationSites = await overseasAccreditationSiteService.GetAllByAccreditationId(accreditationId);
 
@@ -29,7 +29,7 @@ public class OverseasAccreditationSiteController(IOverseasAccreditationSiteServi
 
     [HttpPost("{accreditationId}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<IActionResult> Post([FromRoute]Guid accreditationId, [FromBody]OverseasAccreditationSiteDto request)
+    public async Task<IActionResult> Post([FromRoute] Guid accreditationId, [FromBody] OverseasAccreditationSiteDto request)
     {
         await overseasAccreditationSiteService.PostByAccreditationId(accreditationId, request);
 

@@ -10,5 +10,5 @@ namespace EPR.PRN.Backend.Obligation.Interfaces
         Task<CalculationResult> CalculateAsync(Guid submitterId, List<SubmissionCalculationRequest> request);
 
         Task SoftDeleteAndAddObligationCalculationAsync(Guid submitterId, List<ObligationCalculation> calculations);
-	}
+    }
 }

@@ -11,9 +11,9 @@ public class UpdateRegistrationMaterialPermitCapacityHandler(IRegistrationMateri
     {
         // Update Permit Capacity
         await repository
-            .UpdateRegistrationMaterialPermitCapacity(command.RegistrationMaterialId, 
-                                                      command.PermitTypeId, 
-                                                      command.CapacityInTonnes, 
+            .UpdateRegistrationMaterialPermitCapacity(command.RegistrationMaterialId,
+                                                      command.PermitTypeId,
+                                                      command.CapacityInTonnes,
                                                       command.PeriodId);
     }
 }

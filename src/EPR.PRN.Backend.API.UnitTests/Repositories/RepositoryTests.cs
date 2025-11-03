@@ -1,4 +1,5 @@
-﻿using AutoFixture;
+﻿using System.Diagnostics.CodeAnalysis;
+using AutoFixture;
 using EPR.PRN.Backend.API.Repositories;
 using EPR.PRN.Backend.Data;
 using EPR.PRN.Backend.Data.DataModels;
@@ -8,7 +9,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Moq;
-using System.Diagnostics.CodeAnalysis;
 
 namespace EPR.PRN.Backend.API.UnitTests.Repositories;
 
@@ -37,7 +37,7 @@ public class RepositoryTests
 
         _fixture = new Fixture();
         _mockContext = new Mock<EprContext>();
-        
+
         _mockLogger = new Mock<ILogger<Repository>>();
         _configurationMock = new Mock<IConfiguration>();
         _configurationMock.Setup(c => c["LogPrefix"]).Returns("[EPR.PRN.Backend]");
@@ -53,10 +53,10 @@ public class RepositoryTests
         data[0].PrnStatusId = data[1].PrnStatusId = data[2].PrnStatusId = 1;
 
         using var context = new EprContext(_contextOptions);
-        if (await context.Database.EnsureCreatedAsync())
+        if (await context.Database.EnsureCreatedAsync(CancellationToken.None))
         {
             context.AddRange(data);
-            await context.SaveChangesAsync();
+            await context.SaveChangesAsync(CancellationToken.None);
         }
         //Act
         var repo = new Repository(context, _mockLogger.Object, _configurationMock.Object);
@@ -76,10 +76,10 @@ public class RepositoryTests
         data[0].PrnStatusId = data[1].PrnStatusId = data[2].PrnStatusId = 1;
 
         using var context = new EprContext(_contextOptions);
-        if (await context.Database.EnsureCreatedAsync())
+        if (await context.Database.EnsureCreatedAsync(CancellationToken.None))
         {
             context.AddRange(data);
-            await context.SaveChangesAsync();
+            await context.SaveChangesAsync(CancellationToken.None);
         }
         //Act
         var repo = new Repository(context, _mockLogger.Object, _configurationMock.Object);
@@ -97,10 +97,10 @@ public class RepositoryTests
         data[0].PrnStatusId = data[1].PrnStatusId = data[2].PrnStatusId = 2;
 
         using var context = new EprContext(_contextOptions);
-        if (await context.Database.EnsureCreatedAsync())
+        if (await context.Database.EnsureCreatedAsync(CancellationToken.None))
         {
             context.AddRange(data);
-            await context.SaveChangesAsync();
+            await context.SaveChangesAsync(CancellationToken.None);
         }
         //Act
         var repo = new Repository(context, _mockLogger.Object, _configurationMock.Object);
@@ -126,10 +126,10 @@ public class RepositoryTests
         statusHistory.PrnIdFk = data[0].Id;
         statusHistory.PrnStatusIdFk = data[0].PrnStatusId;
         using var context = new EprContext(_contextOptions);
-        if (await context.Database.EnsureCreatedAsync())
+        if (await context.Database.EnsureCreatedAsync(CancellationToken.None))
         {
             context.AddRange(data);
-            await context.SaveChangesAsync();
+            await context.SaveChangesAsync(CancellationToken.None);
         }
         //Act
         var repo = new Repository(context, _mockLogger.Object, _configurationMock.Object);
@@ -160,16 +160,16 @@ public class RepositoryTests
         data[1].PrnStatusId = 2;
         data[1].AccreditationYear = "2024";
 
-		data[2].PrnNumber = "PRN003";
-		data[2].StatusUpdatedOn = new DateTime(2024, 12, 12, 0, 0, 0, DateTimeKind.Utc);
-		data[2].PrnStatusId = 2;
-		data[2].AccreditationYear = "2024";
+        data[2].PrnNumber = "PRN003";
+        data[2].StatusUpdatedOn = new DateTime(2024, 12, 12, 0, 0, 0, DateTimeKind.Utc);
+        data[2].PrnStatusId = 2;
+        data[2].AccreditationYear = "2024";
 
-		using var context = new EprContext(_contextOptions);
-        if (await context.Database.EnsureCreatedAsync())
+        using var context = new EprContext(_contextOptions);
+        if (await context.Database.EnsureCreatedAsync(CancellationToken.None))
         {
             context.AddRange(data);
-            await context.SaveChangesAsync();
+            await context.SaveChangesAsync(CancellationToken.None);
         }
 
         //Act
@@ -220,11 +220,11 @@ public class RepositoryTests
     };
 
         using var context = new EprContext(_contextOptions);
-        if (await context.Database.EnsureCreatedAsync())
+        if (await context.Database.EnsureCreatedAsync(CancellationToken.None))
         {
             await context.AddRangeAsync(prnData);  // Add Eprn entities
             await context.AddRangeAsync(syncData); // Add PEprNpwdSync entities
-            await context.SaveChangesAsync();
+            await context.SaveChangesAsync(CancellationToken.None);
         }
 
         // Act
@@ -251,10 +251,10 @@ public class RepositoryTests
     {
         var prns = _fixture.CreateMany<Eprn>().ToList();
         using var context = new EprContext(_contextOptions);
-        if (await context.Database.EnsureCreatedAsync())
+        if (await context.Database.EnsureCreatedAsync(CancellationToken.None))
         {
             context.AddRange(prns);
-            await context.SaveChangesAsync();
+            await context.SaveChangesAsync(CancellationToken.None);
         }
         _repository = new Repository(context, _mockLogger.Object, _configurationMock.Object);
         var result = await _repository.GetPrnsForPrnNumbers([prns[0].PrnNumber, prns[1].PrnNumber]);
@@ -268,7 +268,7 @@ public class RepositoryTests
     {
         var syncPepr = _fixture.CreateMany<PEprNpwdSync>().ToList();
         using var context = new EprContext(_contextOptions);
-        await context.Database.EnsureCreatedAsync();
+        await context.Database.EnsureCreatedAsync(CancellationToken.None);
 
         _repository = new Repository(context, _mockLogger.Object, _configurationMock.Object);
         await _repository.InsertPeprNpwdSyncPrns(syncPepr);

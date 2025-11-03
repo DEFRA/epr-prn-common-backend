@@ -1,4 +1,3 @@
-using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics.CodeAnalysis;
 
@@ -11,5 +10,5 @@ public class RegulatorApplicationTaskStatus : RegulatorTaskStatusBase
     public RegistrationMaterial RegistrationMaterial { get; set; } = null!;
     [ForeignKey("RegistrationMaterial")]
     public int? RegistrationMaterialId { get; set; }
-    public List<ApplicationTaskStatusQueryNote> ApplicationTaskStatusQueryNotes { get; set; } = new(); 
+    public List<ApplicationTaskStatusQueryNote> ApplicationTaskStatusQueryNotes { get; set; } = new();
 }

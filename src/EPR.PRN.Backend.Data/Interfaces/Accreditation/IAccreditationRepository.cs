@@ -3,7 +3,7 @@
 namespace EPR.PRN.Backend.Data.Interfaces.Accreditation;
 
 public interface IAccreditationRepository
-{    
+{
     Task<DataModels.Registrations.Accreditation?> GetById(Guid accreditationId);
 
     Task<DataModels.Registrations.Accreditation?> GetAccreditationDetails(

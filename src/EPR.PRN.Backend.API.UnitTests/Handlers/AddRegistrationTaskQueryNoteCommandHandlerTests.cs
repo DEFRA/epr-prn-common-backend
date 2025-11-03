@@ -2,7 +2,6 @@ using AutoFixture;
 using EPR.PRN.Backend.API.Commands;
 using EPR.PRN.Backend.API.Handlers.Regulator;
 using EPR.PRN.Backend.Data.Interfaces.Regulator;
-using EPR.PRN.Backend.Data.Repositories.Regulator;
 using FluentAssertions;
 using Moq;
 
@@ -11,7 +10,7 @@ namespace EPR.PRN.Backend.API.UnitTests.Handlers;
 [TestClass]
 public class AddRegistrationTaskQueryNoteCommandHandlerTests
 {
-   
+
     private Mock<IRegulatorRegistrationTaskStatusRepository> _mockRepository;
     private RegistrationTaskQueryNoteHandler _handler;
     private static readonly IFixture _fixture = new Fixture();

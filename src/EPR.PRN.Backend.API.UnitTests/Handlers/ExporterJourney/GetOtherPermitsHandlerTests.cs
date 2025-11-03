@@ -67,7 +67,7 @@ public class GetCarrierBrokerDealerPermitsHandlerTests
         {
             Id = 1,
             ExternalId = Guid.NewGuid(),
-            Registration = registration, 
+            Registration = registration,
             RegistrationId = registration.Id,
             WasteManagementEnvironmentPermitNumber = "test 1",
             InstallationPermitOrPPCNumber = "test 2",

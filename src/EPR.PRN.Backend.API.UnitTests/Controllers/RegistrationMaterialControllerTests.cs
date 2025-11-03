@@ -14,7 +14,6 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace EPR.PRN.Backend.API.UnitTests.Controllers;
 
@@ -43,7 +42,7 @@ public class RegistrationMaterialControllerTests
     {
         // Arrange  
         var command = new CreateExemptionReferencesCommand
-        {           
+        {
             MaterialExemptionReferences = new List<MaterialExemptionReferenceDto>()
         };
 
@@ -191,26 +190,26 @@ public class RegistrationMaterialControllerTests
         result.Should().BeEquivalentTo(expectedResult);
     }
 
-	[TestMethod]
-	public async Task UpdateIsMaterialRegisteredAsync_ShouldReturnNoContent()
-	{
-		// Arrange
-		var dtoList = _fixture.Create<List<UpdateIsMaterialRegisteredDto>>();
+    [TestMethod]
+    public async Task UpdateIsMaterialRegisteredAsync_ShouldReturnNoContent()
+    {
+        // Arrange
+        var dtoList = _fixture.Create<List<UpdateIsMaterialRegisteredDto>>();
 
-		_mediatorMock
-			.Setup(m => m.Send(It.IsAny<UpdateIsMaterialRegisteredCommand>(), It.IsAny<CancellationToken>()))
-			.Returns(Task.CompletedTask);
+        _mediatorMock
+            .Setup(m => m.Send(It.IsAny<UpdateIsMaterialRegisteredCommand>(), It.IsAny<CancellationToken>()))
+            .Returns(Task.CompletedTask);
 
-		// Act
-		var result = await _controller.UpdateIsMaterialRegisteredAsync(dtoList);
+        // Act
+        var result = await _controller.UpdateIsMaterialRegisteredAsync(dtoList);
 
-		// Assert
-		result.Should().BeOfType<NoContentResult>();
-		_mediatorMock.Verify(m =>
-			m.Send(It.Is<UpdateIsMaterialRegisteredCommand>(cmd =>
-				cmd.UpdateIsMaterialRegisteredDto.SequenceEqual(dtoList)
-			), It.IsAny<CancellationToken>()), Times.Once);
-	}
+        // Assert
+        result.Should().BeOfType<NoContentResult>();
+        _mediatorMock.Verify(m =>
+            m.Send(It.Is<UpdateIsMaterialRegisteredCommand>(cmd =>
+                cmd.UpdateIsMaterialRegisteredDto.SequenceEqual(dtoList)
+            ), It.IsAny<CancellationToken>()), Times.Once);
+    }
 
     [TestMethod]
     public async Task UpsertRegistrationMaterialContactAsync_EnsureCorrectResult()
@@ -218,7 +217,7 @@ public class RegistrationMaterialControllerTests
         // Arrange  
         var registrationMaterialId = Guid.NewGuid();
         var registrationMaterialContact = _fixture.Create<RegistrationMaterialContactDto>();
-        
+
         // Expectations  
         _mediatorMock
             .Setup(m => m.Send(It.IsAny<UpsertRegistrationMaterialContactCommand>(), It.IsAny<CancellationToken>()))
@@ -229,7 +228,7 @@ public class RegistrationMaterialControllerTests
 
         // Assert  
         result.Should().BeOfType<OkObjectResult>();
-        
+
         var okResult = result as OkObjectResult;
         okResult!.Value.Should().BeEquivalentTo(registrationMaterialContact);
     }
@@ -264,7 +263,7 @@ public class RegistrationMaterialControllerTests
         // Arrange
         var registrationMaterialId = new Guid("3041bf68-6943-4fa0-8a02-7a8c587acf1d");
         var dto = new OverseasAddressSubmissionDto
-        {            
+        {
             OverseasAddresses = new List<OverseasAddressDto>
             {
                 new OverseasAddressDto
@@ -276,7 +275,7 @@ public class RegistrationMaterialControllerTests
                     CityOrTown = "London",
                     CountryName = "United Kingdom",
                     CreatedBy = Guid.NewGuid(),
-                    
+
                 }
             }
         };
@@ -300,7 +299,7 @@ public class RegistrationMaterialControllerTests
     public async Task SaveOverseasReprocessingSites_ShouldThrowNullReferenceException_WhenSubmissionIsNull()
     {
         // Act
-        Func<Task> act = async () => await _controller.SaveOverseasReprocessingSites(Guid.Empty ,null!);
+        Func<Task> act = async () => await _controller.SaveOverseasReprocessingSites(Guid.Empty, null!);
 
         // Assert
         await act.Should().ThrowAsync<NullReferenceException>();
@@ -317,7 +316,7 @@ public class RegistrationMaterialControllerTests
             .ThrowsAsync(new InvalidOperationException("Mediator failed"));
 
         // Act
-        Func<Task> act = async () => await _controller.SaveOverseasReprocessingSites(Guid.NewGuid() ,dto);
+        Func<Task> act = async () => await _controller.SaveOverseasReprocessingSites(Guid.NewGuid(), dto);
 
         // Assert
         await act.Should().ThrowAsync<InvalidOperationException>()
@@ -477,7 +476,7 @@ public class RegistrationMaterialControllerTests
             .Setup(m => m.Send(It.Is<UpsertInterimSiteCommand>(cmd =>
             cmd.InterimSitesRequestDto == dto), It.IsAny<CancellationToken>()))
             .Returns(Task.FromResult(Unit.Value));
-        
+
         // Act
         var result = await _controller.SaveInterimSites(registrationMaterialId, dto);
 

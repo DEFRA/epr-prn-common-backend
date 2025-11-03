@@ -1,5 +1,4 @@
 using System.Diagnostics.CodeAnalysis;
-using EPR.PRN.Backend.API.Dto;
 using EPR.PRN.Backend.API.Dto.Regulator;
 using MediatR;
 

@@ -14,14 +14,14 @@ public class GlassCalculationStrategyTests
 {
     private Mock<IMaterialCalculationService> _mockCalculationService;
     private Mock<IDateTimeProvider> _mockDateTimeProvider;
-	private GlassCalculationStrategy _strategy;
+    private GlassCalculationStrategy _strategy;
 
     [TestInitialize]
     public void SetUp()
     {
         _mockCalculationService = new Mock<IMaterialCalculationService>();
-		_mockDateTimeProvider = new Mock<IDateTimeProvider>();
-		_strategy = new GlassCalculationStrategy(_mockCalculationService.Object, _mockDateTimeProvider.Object);
+        _mockDateTimeProvider = new Mock<IDateTimeProvider>();
+        _strategy = new GlassCalculationStrategy(_mockCalculationService.Object, _mockDateTimeProvider.Object);
     }
 
     [TestMethod]
@@ -50,20 +50,20 @@ public class GlassCalculationStrategyTests
 
     [TestMethod]
     [DataRow(200, 0.60, 0.40, 120, 80, 0)]
-	[DataRow(1523, 0.65, 0.57, 990, 565, 1)]
-	[DataRow(2345, 0.73, 0.71, 1712, 1214, 2 )]
-	[DataRow(1234, 0.68, 0.69, 840, 580, 3)]
-	public void Calculate_ShouldReturnCorrectObligationCalculations(int materialWeight, double glassRecyclingTarget, double remeltRecyclingTarget, int expectedGlassObligationValue, int expectedRemeltObligationValue, int yearOffSet)
+    [DataRow(1523, 0.65, 0.57, 990, 565, 1)]
+    [DataRow(2345, 0.73, 0.71, 1712, 1214, 2)]
+    [DataRow(1234, 0.68, 0.69, 840, 580, 3)]
+    public void Calculate_ShouldReturnCorrectObligationCalculations(int materialWeight, double glassRecyclingTarget, double remeltRecyclingTarget, int expectedGlassObligationValue, int expectedRemeltObligationValue, int yearOffSet)
     {
-		// Arrange
-		var organisationId = Guid.NewGuid();
-		var currentYear = DateTime.UtcNow.Year + yearOffSet;
-		var calculatedOn = DateTime.UtcNow.AddYears(yearOffSet);
-		_mockDateTimeProvider.Setup(m => m.UtcNow).Returns(calculatedOn);
-		_mockDateTimeProvider.Setup(m => m.CurrentYear).Returns(currentYear);
-		var submissionPeriod = $"{currentYear - 1}";
+        // Arrange
+        var organisationId = Guid.NewGuid();
+        var currentYear = DateTime.UtcNow.Year + yearOffSet;
+        var calculatedOn = DateTime.UtcNow.AddYears(yearOffSet);
+        _mockDateTimeProvider.Setup(m => m.UtcNow).Returns(calculatedOn);
+        _mockDateTimeProvider.Setup(m => m.CurrentYear).Returns(currentYear);
+        var submissionPeriod = $"{currentYear - 1}";
 
-		var calculationRequest = new SubmissionCalculationRequest
+        var calculationRequest = new SubmissionCalculationRequest
         {
             SubmissionPeriod = submissionPeriod,
             PackagingMaterial = "GL",
@@ -71,9 +71,9 @@ public class GlassCalculationStrategyTests
             OrganisationId = organisationId,
             SubmitterId = organisationId,
             SubmitterType = ObligationCalculationOrganisationSubmitterTypeName.DirectRegistrant.ToString()
-		};
+        };
 
-		var materials = new List<Material>()
+        var materials = new List<Material>()
         {
             new() {
                 Id = 6,
@@ -81,13 +81,13 @@ public class GlassCalculationStrategyTests
                 MaterialCode = "GL"
             },
             new() {
-			    Id = 7,
-			    MaterialName = MaterialType.GlassRemelt.ToString(),
-			    MaterialCode = "GR"
-		    }
-		};
+                Id = 7,
+                MaterialName = MaterialType.GlassRemelt.ToString(),
+                MaterialCode = "GR"
+            }
+        };
 
-		var recyclingTargets = new Dictionary<int, Dictionary<MaterialType, double>>
+        var recyclingTargets = new Dictionary<int, Dictionary<MaterialType, double>>
         {
             {
                 currentYear,
@@ -102,8 +102,8 @@ public class GlassCalculationStrategyTests
         var request = new CalculationRequestDto
         {
             MaterialType = MaterialType.Glass,
-			Materials = materials,
-			SubmissionCalculationRequest = calculationRequest,
+            Materials = materials,
+            SubmissionCalculationRequest = calculationRequest,
             SubmitterId = organisationId,
             RecyclingTargets = recyclingTargets
         };
@@ -130,11 +130,11 @@ public class GlassCalculationStrategyTests
         glassCalculation.Year.Should().Be(currentYear);
         glassCalculation.CalculatedOn.Should().Be(calculatedOn);
 
-		remeltCalculation.Should().NotBeNull();
-		remeltCalculation.MaterialObligationValue.Should().Be(expectedRemeltObligationValue);
-		remeltCalculation.OrganisationId.Should().Be(organisationId);
-		remeltCalculation.Tonnage.Should().Be(materialWeight);
-		remeltCalculation.Year.Should().Be(currentYear);
-		remeltCalculation.CalculatedOn.Should().Be(calculatedOn);
+        remeltCalculation.Should().NotBeNull();
+        remeltCalculation.MaterialObligationValue.Should().Be(expectedRemeltObligationValue);
+        remeltCalculation.OrganisationId.Should().Be(organisationId);
+        remeltCalculation.Tonnage.Should().Be(materialWeight);
+        remeltCalculation.Year.Should().Be(currentYear);
+        remeltCalculation.CalculatedOn.Should().Be(calculatedOn);
     }
 }

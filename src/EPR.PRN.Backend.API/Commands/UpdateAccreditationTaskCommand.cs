@@ -15,7 +15,7 @@ namespace EPR.PRN.Backend.API.Commands
         public required string TaskName { get; set; }
 
         [Required]
-       // [MaxLength(50)]
+        // [MaxLength(50)]
         public required TaskStatuses Status { get; set; }
 
 

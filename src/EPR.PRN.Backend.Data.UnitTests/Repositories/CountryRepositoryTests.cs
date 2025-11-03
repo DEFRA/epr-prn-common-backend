@@ -1,12 +1,7 @@
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using EPR.PRN.Backend.Data;
 using EPR.PRN.Backend.Data.DataModels.Registrations;
 using EPR.PRN.Backend.Data.Repositories.Lookup;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace EPR.PRN.Backend.Data.UnitTests.Repositories
 {
@@ -52,7 +47,7 @@ namespace EPR.PRN.Backend.Data.UnitTests.Repositories
             // Assert
             result.Should().NotBeNull();
             result.Should().HaveCount(2);
-            result.Select(c => c.Name).Should().Contain(new[] { uk, france});
+            result.Select(c => c.Name).Should().Contain(new[] { uk, france });
         }
     }
 }

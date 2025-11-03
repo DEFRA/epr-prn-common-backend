@@ -34,7 +34,7 @@ namespace EPR.PRN.Backend.API.UnitTests.Handlers
             var externalId = Guid.NewGuid();
             var query = new GetAccreditationsOverviewByOrgIdQuery { OrganisationId = organisationId };
 
-            var expectedDto  = _fixture.CreateMany<AccreditationOverviewDto>(3);
+            var expectedDto = _fixture.CreateMany<AccreditationOverviewDto>(3);
 
 
             _mockAccreditationRepository.Setup(x => x.GetAccreditationOverviewForOrgId(organisationId))

@@ -2,6 +2,6 @@
 
 namespace EPR.PRN.Backend.Data.DTO;
 
-public class RegistrationReprocessingIOCommand : RegistrationReprocessingIORequestDto,IRequest
+public class RegistrationReprocessingIOCommand : RegistrationReprocessingIORequestDto, IRequest
 {
 }

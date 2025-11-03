@@ -85,8 +85,12 @@ public class OverseasAccreditationSiteServiceTests
     {
         // Arrange
         var accreditationId = Guid.NewGuid();
-        var request = new OverseasAccreditationSiteDto {
-            ExternalId = accreditationId, OrganisationName = "Hun Manet Recycler Ltd", MeetConditionsOfExportId = 2, SiteCheckStatusId = 2
+        var request = new OverseasAccreditationSiteDto
+        {
+            ExternalId = accreditationId,
+            OrganisationName = "Hun Manet Recycler Ltd",
+            MeetConditionsOfExportId = 2,
+            SiteCheckStatusId = 2
         };
 
         // Act

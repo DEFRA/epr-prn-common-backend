@@ -1,5 +1,7 @@
 ﻿namespace EPR.PRN.Backend.API.Repositories;
 
+using System.Collections.Generic;
+using System.Linq.Expressions;
 using EPR.PRN.Backend.API.Common.Dto;
 using EPR.PRN.Backend.API.Common.Enums;
 using EPR.PRN.Backend.API.Dto;
@@ -9,8 +11,6 @@ using EPR.PRN.Backend.Data.DataModels;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using Newtonsoft.Json;
-using System.Collections.Generic;
-using System.Linq.Expressions;
 using static EPR.PRN.Backend.API.Common.Constants.PrnConstants;
 
 public class Repository(EprContext eprContext, ILogger<Repository> logger, IConfiguration configuration) : IRepository
@@ -295,7 +295,7 @@ public class Repository(EprContext eprContext, ILogger<Repository> logger, IConf
                     // put back status and status date in Prn
                     entity.PrnStatusId = existingPrn.PrnStatusId;
                     entity.StatusUpdatedOn = existingPrn.StatusUpdatedOn;
-                    
+
                     // put back status in status history
                     statusHistory.PrnStatusIdFk = entity.PrnStatusId;
                     statusHistory.Comment = $"{incomingStatus} => {((EprnStatus)entity.PrnStatusId).ToString()}";

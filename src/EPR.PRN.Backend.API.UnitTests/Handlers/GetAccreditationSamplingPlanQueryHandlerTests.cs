@@ -7,11 +7,6 @@ using EPR.PRN.Backend.Data.Interfaces.Regulator;
 using FluentAssertions;
 using FluentAssertions.Execution;
 using Moq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace EPR.PRN.Backend.API.UnitTests.Handlers
 {

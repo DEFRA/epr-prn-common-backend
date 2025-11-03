@@ -93,7 +93,7 @@ namespace EPR.PRN.Backend.Data.UnitTests.Repositories.Regulator
             taskStatus.RegistrationMaterial.ExternalId.Should().Be(registrationMaterialId);
             taskStatus.TaskStatus.Name.Should().Be(status.ToString());
             taskStatus.StatusCreatedBy.Should().Be(user);
-           
+
         }
 
         [TestMethod]
@@ -126,7 +126,7 @@ namespace EPR.PRN.Backend.Data.UnitTests.Repositories.Regulator
             taskStatus.RegistrationMaterial.ExternalId.Should().Be(registrationMaterialId);
             taskStatus.TaskStatus.Name.Should().Be(status.ToString());
             taskStatus.StatusCreatedBy.Should().Be(user);
-           
+
         }
 
         [TestMethod]

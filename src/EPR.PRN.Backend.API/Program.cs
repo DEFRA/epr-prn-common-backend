@@ -1,7 +1,7 @@
 namespace EPR.PRN.Backend
 {
-    using EPR.PRN.Backend.API;
     using System.Diagnostics.CodeAnalysis;
+    using EPR.PRN.Backend.API;
 
     [ExcludeFromCodeCoverage]
     public static class Program

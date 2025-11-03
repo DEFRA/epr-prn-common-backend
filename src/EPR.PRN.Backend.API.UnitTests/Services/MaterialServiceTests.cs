@@ -1,5 +1,4 @@
 ﻿using EPR.PRN.Backend.API.Dto;
-using EPR.PRN.Backend.API.Queries;
 using EPR.PRN.Backend.API.Services;
 using EPR.PRN.Backend.Data.DataModels;
 using EPR.PRN.Backend.Data.Interfaces;

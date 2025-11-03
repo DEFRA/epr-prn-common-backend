@@ -1,6 +1,6 @@
-using FluentValidation;
 using System.Diagnostics.CodeAnalysis;
 using System.Net;
+using FluentValidation;
 
 namespace EPR.PRN.Backend.API.Helpers;
 

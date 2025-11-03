@@ -4,7 +4,6 @@ using EPR.PRN.Backend.API.Dto.Accreditation;
 using EPR.PRN.Backend.API.Services.Interfaces;
 using EPR.PRN.Backend.Data.DataModels.Registrations;
 using EPR.PRN.Backend.Data.Interfaces.Accreditation;
-using Microsoft.Extensions.Logging;
 
 namespace EPR.PRN.Backend.API.Services;
 

@@ -1,12 +1,8 @@
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 using EPR.PRN.Backend.API.Controllers;
 using EPR.PRN.Backend.API.Queries;
 using FluentAssertions;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 
 namespace EPR.PRN.Backend.API.UnitTests.Controllers.Lookups

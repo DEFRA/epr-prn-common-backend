@@ -1,9 +1,5 @@
 using EPR.PRN.Backend.Data.Interfaces;
 using MediatR;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace EPR.PRN.Backend.API.Queries;
 

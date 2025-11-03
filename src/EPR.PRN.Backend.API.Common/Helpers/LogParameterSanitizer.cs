@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 
 namespace EPR.PRN.Backend.API.Common.Helpers
 {
@@ -16,7 +11,7 @@ namespace EPR.PRN.Backend.API.Common.Helpers
         /// <returns>string value with no careriage returns or line feeds.</returns>
         public static string Sanitize(dynamic param)
         {
-            string jsonString = JsonConvert.SerializeObject(param);          
+            string jsonString = JsonConvert.SerializeObject(param);
             return jsonString.ReplaceLineEndings(string.Empty);
         }
     }

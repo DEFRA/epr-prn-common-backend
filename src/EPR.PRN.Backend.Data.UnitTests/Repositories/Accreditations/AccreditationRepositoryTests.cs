@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using EPR.PRN.Backend.Data.DataModels.Accreditations;
 using EPR.PRN.Backend.Data.DataModels.Registrations;
 using EPR.PRN.Backend.Data.Repositories.Accreditations;
 using FluentAssertions;
@@ -23,7 +22,7 @@ public class AccreditationRepositoryTests
         var options = new DbContextOptionsBuilder<EprContext>()
             .UseInMemoryDatabase(databaseName: "TestDatabase" + Guid.NewGuid().ToString())
             .Options;
-        _mapper = new Mock<IMapper> ();
+        _mapper = new Mock<IMapper>();
         _dbContext = new EprContext(options);
         _mockLogger = new Mock<ILogger<AccreditationRepository>>();
         _repository = new AccreditationRepository(_dbContext, _mapper.Object, _mockLogger.Object);
@@ -58,7 +57,7 @@ public class AccreditationRepositoryTests
         {
             Id = 1,
             Name = "Active"
-      
+
         };
 
 
@@ -69,12 +68,12 @@ public class AccreditationRepositoryTests
                 {
                     Id = 1,
                     ExternalId = new Guid("11111111-1111-1111-1111-111111111111"),
-                    
+
                     AccreditationYear = 2026,
            
                     //ApplicationType = new(),
                     AccreditationStatusId = 1,
-                
+
                     AccreditationStatus = accreditationStatus,
                     RegistrationMaterial = registrationMaterial,
                     ApplicationReferenceNumber = "APP-123456",
@@ -83,7 +82,7 @@ public class AccreditationRepositoryTests
                 {
                     Id = 2,
                     ExternalId = new Guid("22222222-2222-2222-2222-222222222222"),
-              
+
                     AccreditationYear = 2026,
                     //ApplicationTypeId = 1,
                     //ApplicationType = new(),
@@ -94,7 +93,7 @@ public class AccreditationRepositoryTests
                     ApplicationReferenceNumber = "APP-123456",
                 }
             });
-        _dbContext.SaveChangesAsync();
+        _dbContext.SaveChangesAsync(CancellationToken.None);
     }
 
     [TestCleanup]
@@ -167,7 +166,7 @@ public class AccreditationRepositoryTests
     public async Task GetAccreditationDetails_NoRecords_ReturnsNull()
     {
         // Arrange
-        
+
         // Act
         var result = await _repository.GetAccreditationDetails(new Guid(), It.IsAny<int>(), It.IsAny<int>());
 
@@ -186,27 +185,27 @@ public class AccreditationRepositoryTests
             new Accreditation
             {
                 ExternalId = Guid.NewGuid(),
-             
+
             },
             new Accreditation
             {
                 ExternalId = Guid.NewGuid(),
-                
+
             },
             new Accreditation
             {
                 ExternalId = Guid.NewGuid(),
-       
+
             },
             new Accreditation
             {
                 ExternalId = Guid.NewGuid(),
-        
+
             }
         };
 
         await _dbContext.AddRangeAsync(accreditations);
-        await _dbContext.SaveChangesAsync();
+        await _dbContext.SaveChangesAsync(CancellationToken.None);
 
         // Act
         var result = await _repository.GetAccreditationOverviewForOrgId(orgId);

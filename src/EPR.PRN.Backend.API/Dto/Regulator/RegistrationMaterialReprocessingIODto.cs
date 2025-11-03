@@ -1,6 +1,6 @@
 ﻿namespace EPR.PRN.Backend.API.Dto.Regulator;
 
-public class RegistrationMaterialReprocessingIODto:NoteBase
+public class RegistrationMaterialReprocessingIODto : NoteBase
 {
     public required string MaterialName { get; set; }
     public required string SourcesOfPackagingWaste { get; set; }

@@ -10,11 +10,11 @@ public class RegistrationDto
     public Guid Id { get; set; }
 
     public int ApplicationTypeId { get; set; }
-    
+
     public Guid OrganisationId { get; set; }
-    
+
     public int RegistrationStatusId { get; set; }
-    
+
     public AddressDto? BusinessAddress { get; set; }
 
     public AddressDto? ReprocessingSiteAddress { get; set; }

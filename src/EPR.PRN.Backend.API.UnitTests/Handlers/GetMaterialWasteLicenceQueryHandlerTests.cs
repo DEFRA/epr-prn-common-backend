@@ -61,7 +61,7 @@ public class GetMaterialWasteLicenceQueryHandlerTests
                 }
             },
             MaximumReprocessingCapacityTonne = 123,
-            MaximumReprocessingPeriod = new LookupPeriod { Name = "Per Year"},
+            MaximumReprocessingPeriod = new LookupPeriod { Name = "Per Year" },
         };
 
         _rmRepositoryMock

@@ -14,8 +14,8 @@ namespace EPR.PRN.Backend.Data.DTO.Registration
         public int MaterialId { get; set; }
 
         public string? Material { get; set; }
-        
-         public string? MaterialCode { get; set; }       
+
+        public string? MaterialCode { get; set; }
 
         public int ApplicationTypeId { get; set; }
 
@@ -30,7 +30,7 @@ namespace EPR.PRN.Backend.Data.DTO.Registration
         public AddressDto? ReprocessingSiteAddress { get; set; }
 
         public int? RegistrationYear { get; set; }
-        
-        public int? AccreditationYear { get; set; }       
+
+        public int? AccreditationYear { get; set; }
     }
 }

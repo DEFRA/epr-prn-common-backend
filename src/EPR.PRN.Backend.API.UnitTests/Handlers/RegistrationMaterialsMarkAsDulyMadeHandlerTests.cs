@@ -59,7 +59,7 @@ public class RegistrationMaterialsMarkAsDulyMadeHandlerTests
             RegistrationMaterialId = Guid.Parse("a9421fc1-a912-42ee-85a5-3e06408759a9"),
             DeterminationDate = DateTime.UtcNow,
             DulyMadeDate = DateTime.UtcNow.AddDays(-1),
-            DulyMadeBy =new Guid("CE564609-4455-4C29-818B-497F06567A6C")
+            DulyMadeBy = new Guid("CE564609-4455-4C29-818B-497F06567A6C")
         };
 
         _rmRepositoryMock.Setup(x => x.GetRegistrationMaterialById(command.RegistrationMaterialId))

@@ -40,8 +40,8 @@ public class GlassCalculationStrategy : IMaterialCalculationStrategy
                 Year = currentYear,
                 Tonnage = calculationRequest.SubmissionCalculationRequest.PackagingMaterialWeight,
                 SubmitterId = calculationRequest.SubmitterId,
-				SubmitterTypeId = calculationRequest.SubmitterTypeId
-			},
+                SubmitterTypeId = calculationRequest.SubmitterTypeId
+            },
             new ObligationCalculation
             {
                 MaterialId = calculationRequest.Materials.First(m => m.MaterialName == MaterialType.GlassRemelt.ToString()).Id,
@@ -50,9 +50,9 @@ public class GlassCalculationStrategy : IMaterialCalculationStrategy
                 MaterialObligationValue = remelt,
                 Year = currentYear,
                 Tonnage = calculationRequest.SubmissionCalculationRequest.PackagingMaterialWeight,
-				SubmitterId = calculationRequest.SubmitterId,
-				SubmitterTypeId = calculationRequest.SubmitterTypeId
-			}
+                SubmitterId = calculationRequest.SubmitterId,
+                SubmitterTypeId = calculationRequest.SubmitterTypeId
+            }
         ];
     }
 }

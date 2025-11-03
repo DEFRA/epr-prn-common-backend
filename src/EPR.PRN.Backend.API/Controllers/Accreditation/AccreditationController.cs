@@ -1,5 +1,6 @@
 ﻿namespace EPR.PRN.Backend.API.Controllers.Accreditation;
 
+using System.Net;
 using EPR.PRN.Backend.API.Common.Constants;
 using EPR.PRN.Backend.API.Common.Enums;
 using EPR.PRN.Backend.API.Dto.Accreditation;
@@ -11,8 +12,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.FeatureManagement.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
-using System.Diagnostics.CodeAnalysis;
-using System.Net;
 
 [ApiController]
 [ApiVersion("1.0")]
@@ -42,7 +41,7 @@ public class AccreditationController(
     [HttpGet("{accreditationId}")]
     [ProducesResponseType(typeof(AccreditationDto), 200)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> Get([FromRoute]Guid accreditationId)
+    public async Task<IActionResult> Get([FromRoute] Guid accreditationId)
     {
         AccreditationDto accreditation = await accreditationService.GetAccreditationById(accreditationId);
 
@@ -56,7 +55,7 @@ public class AccreditationController(
 
     [HttpPost]
     [ProducesResponseType(typeof(AccreditationDto), StatusCodes.Status200OK)]
-    public async Task<IActionResult> Post([FromBody]AccreditationRequestDto request)
+    public async Task<IActionResult> Post([FromBody] AccreditationRequestDto request)
     {
         Guid externalId;
         if (request.ExternalId == null)
@@ -118,7 +117,7 @@ public class AccreditationController(
         }
 
         var fileUpload = await accreditationFileUploadService.GetByExternalId(externalId);
-        
+
         return Ok(fileUpload);
     }
 

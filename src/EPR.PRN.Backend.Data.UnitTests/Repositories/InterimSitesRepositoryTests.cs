@@ -55,10 +55,10 @@ public class InterimSitesRepositoryTests
         _regMaterialId = registrationMaterial.Id;
         _regId = registration.Id;
 
-        
+
         _context.LookupCountries.Add(new LookupCountry { Id = 1, Name = "TestCountry" });
 
-        
+
         _context.LookupTaskStatuses.Add(new LookupTaskStatus
         {
             Id = 5,

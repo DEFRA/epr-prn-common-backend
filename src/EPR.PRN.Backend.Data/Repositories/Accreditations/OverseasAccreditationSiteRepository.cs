@@ -22,7 +22,7 @@ public class OverseasAccreditationSiteRepository(EprContext eprContext) : IOvers
             accreditationIdInt = await eprContext.Accreditations.Where(x => x.ExternalId == accreditationId).Select(x => x.Id).SingleAsync();
 
         overseasAccreditationSite.ExternalId = accreditationId;
-        overseasAccreditationSite.AccreditationId = accreditationIdInt; 
+        overseasAccreditationSite.AccreditationId = accreditationIdInt;
         eprContext.OverseasAccreditationSites.Add(overseasAccreditationSite);
 
         await eprContext.SaveChangesAsync();

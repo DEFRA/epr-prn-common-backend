@@ -1,12 +1,9 @@
 ﻿using EPR.PRN.Backend.API.Common.Constants;
-using EPR.PRN.Backend.API.Common.Enums;
 using EPR.PRN.Backend.Data.DataModels.Registrations;
-using EPR.PRN.Backend.Data.Interfaces.Regulator;
 using EPR.PRN.Backend.Data.Repositories.Regulator;
 using FluentAssertions;
 using FluentAssertions.Execution;
 using Microsoft.EntityFrameworkCore;
-using Moq;
 
 namespace EPR.PRN.Backend.Data.UnitTests.Repositories.Regulator;
 
@@ -79,7 +76,7 @@ public class RegulatorAccreditationRepositoryTests
             IsMaterialSpecific = true
         });
 
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(CancellationToken.None);
 
         // Act
         await _repository.AccreditationMarkAsDulyMade(accreditationId, statusId, dulyMadeDate, determinationDate, userId);
@@ -156,7 +153,7 @@ public class RegulatorAccreditationRepositoryTests
         _context.RegistrationMaterials.Add(material);
         _context.Accreditations.Add(accreditation);
         _context.LookupTasks.Add(lookupTask);
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(CancellationToken.None);
 
         // Act
         await _repository.AccreditationMarkAsDulyMade(accreditationId, statusId, dulyMadeDate, determinationDate, userId);
@@ -205,7 +202,7 @@ public class RegulatorAccreditationRepositoryTests
             IsMaterialSpecific = true
         });
 
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(CancellationToken.None);
 
         // Act
         await _repository.AccreditationMarkAsDulyMade(accreditationId, statusId, dulyMadeDate, newDeterminationDate, userId);
@@ -252,7 +249,7 @@ public class RegulatorAccreditationRepositoryTests
             IsMaterialSpecific = true
         });
 
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(CancellationToken.None);
 
         // Act
         await _repository.AccreditationMarkAsDulyMade(accreditationId, statusId, dulyMadeDate, newDeterminationDate, userId);

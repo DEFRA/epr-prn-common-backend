@@ -1,4 +1,5 @@
-﻿using EPR.PRN.Backend.API.Common.Enums;
+﻿using System.Diagnostics.CodeAnalysis;
+using EPR.PRN.Backend.API.Common.Enums;
 using EPR.PRN.Backend.API.Common.Exceptions;
 using EPR.PRN.Backend.Data.DataModels.Registrations;
 using EPR.PRN.Backend.Data.DTO;
@@ -7,7 +8,6 @@ using EPR.PRN.Backend.Data.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.Extensions.Logging;
-using System.Diagnostics.CodeAnalysis;
 
 namespace EPR.PRN.Backend.Data.Repositories;
 
@@ -23,7 +23,7 @@ public class RegistrationRepository(EprContext context, ILogger<RegistrationRepo
              .FirstOrDefaultAsync(cancellationToken);
     }
 
-    public async Task<Registration> CreateRegistrationAsync(int applicationTypeId, Guid organisationId, 
+    public async Task<Registration> CreateRegistrationAsync(int applicationTypeId, Guid organisationId,
         AddressDto reprocessingSiteAddress)
     {
         logger.LogInformation("Creating registration for ApplicationTypeId: {ApplicationTypeId} and OrganisationId: {OrganisationId}", applicationTypeId, organisationId);
@@ -62,7 +62,7 @@ public class RegistrationRepository(EprContext context, ILogger<RegistrationRepo
 
             context.Registrations.Add(registration);
         }
-        
+
         await context.SaveChangesAsync();
 
         logger.LogInformation("Successfully created registration for ApplicationTypeId: {ApplicationTypeId} and OrganisationId: {OrganisationId}", applicationTypeId, organisationId);
@@ -303,7 +303,7 @@ public class RegistrationRepository(EprContext context, ILogger<RegistrationRepo
         await context.SaveChangesAsync();
     }
 
-    private IIncludableQueryable<Registration,List<RegistrationMaterial>?> LoadRegistrationWithRelatedEntities()
+    private IIncludableQueryable<Registration, List<RegistrationMaterial>?> LoadRegistrationWithRelatedEntities()
     {
         return context.Registrations
             .AsSplitQuery()
