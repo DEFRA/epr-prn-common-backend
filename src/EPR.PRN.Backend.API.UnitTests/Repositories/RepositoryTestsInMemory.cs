@@ -542,7 +542,7 @@ public class RepositoryTestsInMemory
         var savedEnt = await _context.Prn.FirstOrDefaultAsync(x => x.PrnNumber == dto.EvidenceNo, CancellationToken.None);
         savedEnt.Should().NotBeNull();
 
-        var savedHistory = await _context.PrnStatusHistory.FirstOrDefaultAsync(x => x.PrnIdFk == savedEnt.Id);
+        var savedHistory = await _context.PrnStatusHistory.FirstOrDefaultAsync(x => x.PrnIdFk == savedEnt.Id, CancellationToken.None);
         savedHistory.Should().NotBeNull();
     }
 

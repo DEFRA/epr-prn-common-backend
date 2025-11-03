@@ -224,7 +224,7 @@ public class RepositoryTests
         if (await context.Database.EnsureCreatedAsync(CancellationToken.None))
         {
             await context.AddRangeAsync(prnData, CancellationToken.None);  // Add Eprn entities
-            await context.AddRangeAsync(syncData); // Add PEprNpwdSync entities
+            await context.AddRangeAsync(syncData, CancellationToken.None); // Add PEprNpwdSync entities
             await context.SaveChangesAsync(CancellationToken.None);
         }
 

@@ -39,7 +39,7 @@ public class ValidationServiceTests
                              .Returns(validatorMock.Object);
 
         // Act
-        var result = await _validationService.ValidateAsync(testModel);
+        var result = await _validationService.ValidateAsync(testModel, CancellationToken.None);
 
         // Assert
 
@@ -60,7 +60,7 @@ public class ValidationServiceTests
         // Act & Assert
         var exception = await Assert.ThrowsExactlyAsync<InvalidOperationException>(async () =>
         {
-            await _validationService.ValidateAsync(testModel);
+            await _validationService.ValidateAsync(testModel, CancellationToken.None);
         });
 
         exception.Message.Should().Be("No validator found for type TestModel");
@@ -76,7 +76,7 @@ public class ValidationServiceTests
         var validationService = new ValidationService(_serviceProviderMock.Object);
 
         // Act
-        Func<Task> act = async () => await validationService.ValidateAsync(new TestModel());
+        Func<Task> act = async () => await validationService.ValidateAsync(new TestModel(), CancellationToken.None);
 
         // Assert
         await act.Should().ThrowAsync<InvalidOperationException>()
@@ -93,7 +93,7 @@ public class ValidationServiceTests
         var validationService = new ValidationService(_serviceProviderMock.Object);
 
         // Act
-        Func<Task> act = async () => await validationService.ValidateAndThrowAsync(new TestModel());
+        Func<Task> act = async () => await validationService.ValidateAndThrowAsync(new TestModel(), CancellationToken.None);
 
         // Assert
         await act.Should().ThrowAsync<InvalidOperationException>()
