@@ -94,7 +94,7 @@ public class AccreditationRepositoryTests
                     ApplicationReferenceNumber = "APP-123456",
                 }
             });
-        _dbContext.SaveChangesAsync();
+        _dbContext.SaveChangesAsync(CancellationToken.None);
     }
 
     [TestCleanup]
@@ -206,7 +206,7 @@ public class AccreditationRepositoryTests
         };
 
         await _dbContext.AddRangeAsync(accreditations);
-        await _dbContext.SaveChangesAsync();
+        await _dbContext.SaveChangesAsync(CancellationToken.None);
 
         // Act
         var result = await _repository.GetAccreditationOverviewForOrgId(orgId);

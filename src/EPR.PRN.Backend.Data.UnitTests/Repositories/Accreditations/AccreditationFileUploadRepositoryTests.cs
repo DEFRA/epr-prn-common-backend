@@ -81,7 +81,7 @@ public class AccreditationFileUploadRepositoryTests
         };
 
         _dbContext.AccreditationFileUploads.AddRange(fileUploads);
-        _dbContext.SaveChangesAsync();
+        _dbContext.SaveChangesAsync(CancellationToken.None);
     }
 
     [TestCleanup]
@@ -98,7 +98,7 @@ public class AccreditationFileUploadRepositoryTests
         var fileUploadId = Guid.NewGuid();
         var entityToReturn = await _dbContext.AccreditationFileUploads.FirstAsync();
         entityToReturn.ExternalId = fileUploadId;
-        await _dbContext.SaveChangesAsync();
+        await _dbContext.SaveChangesAsync(CancellationToken.None);
 
         // Act
         var result = await _repository.GetByExternalId(fileUploadId);
@@ -242,7 +242,7 @@ public class AccreditationFileUploadRepositoryTests
         var fileUploadId = Guid.NewGuid();
         var entityToUpdate = await _dbContext.AccreditationFileUploads.FirstAsync();
         entityToUpdate.ExternalId = fileUploadId;
-        await _dbContext.SaveChangesAsync();
+        await _dbContext.SaveChangesAsync(CancellationToken.None);
 
         var updatedEntity = new AccreditationFileUpload
         {
@@ -294,7 +294,7 @@ public class AccreditationFileUploadRepositoryTests
         var fileId = Guid.NewGuid();
         var entityToUpdate = await _dbContext.AccreditationFileUploads.FirstAsync();
         entityToUpdate.FileId = fileId;
-        await _dbContext.SaveChangesAsync();
+        await _dbContext.SaveChangesAsync(CancellationToken.None);
 
         // Act
         await _repository.Delete(_accreditationId, fileId);

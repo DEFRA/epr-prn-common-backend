@@ -100,7 +100,7 @@ public class RegistrationRepositoryTestsInMemory
         _context.Add(accreditationStatus);
         _context.Add(material);
         _context.Add(registration);
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(CancellationToken.None);
         // Act
         var result = await _repository.GetRegistrationsOverviewForOrgIdAsync(organisationId);
         // Assert
@@ -215,7 +215,7 @@ public class RegistrationRepositoryTestsInMemory
         _context.Add(accreditationStatus2);
         _context.Add(material);
         _context.AddRange(registrations);
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(CancellationToken.None);
         // Act
         var result = await _repository.GetRegistrationsOverviewForOrgIdAsync(organisationId);
         // Assert
@@ -282,7 +282,7 @@ public class RegistrationRepositoryTestsInMemory
         };
         _context.Add(registrationWithNullMaterials);
         _context.Add(registrationWithEmptyMaterials);
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(CancellationToken.None);
         // Act
         var result = await _repository.GetRegistrationsOverviewForOrgIdAsync(organisationId);
         // Assert

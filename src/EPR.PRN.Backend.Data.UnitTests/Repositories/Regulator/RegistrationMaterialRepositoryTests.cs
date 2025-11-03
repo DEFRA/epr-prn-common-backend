@@ -418,7 +418,7 @@ public class RegistrationMaterialRepositoryTests
             IsMaterialSpecific = true
         });
 
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(CancellationToken.None);
 
         // Act
         await _repository.RegistrationMaterialsMarkAsDulyMade(registrationMaterialId, statusId, determinationDate, dulyMadeDate, userId);
@@ -480,7 +480,7 @@ public class RegistrationMaterialRepositoryTests
         _context.LookupMaterials.Add(lookupMaterial);
         _context.LookupRegistrationMaterialStatuses.Add(materialStatus);
         _context.RegistrationMaterials.Add(registrationMaterial);
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(CancellationToken.None);
 
         // Act
         await _repository.CreateExemptionReferencesAsync(registrationMaterial.ExternalId, exemptionReferences);
@@ -530,7 +530,7 @@ public class RegistrationMaterialRepositoryTests
         _context.LookupMaterials.Add(lookupMaterial);
         _context.LookupRegistrationMaterialStatuses.Add(materialStatus);
         _context.RegistrationMaterials.Add(registrationMaterial);
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(CancellationToken.None);
 
         // Act
         await _repository.CreateExemptionReferencesAsync(registrationMaterial.ExternalId, new List<MaterialExemptionReference>());
@@ -573,7 +573,7 @@ public class RegistrationMaterialRepositoryTests
             RegistrationMaterialId = 1
         });
 
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(CancellationToken.None);
         // Act
         await _repository.RegistrationMaterialsMarkAsDulyMade(registrationMaterialId, statusId, determinationDate, dulyMadeDate, userId);
 
@@ -625,7 +625,7 @@ public class RegistrationMaterialRepositoryTests
             RegistrationId = 9999 // No such Registration seeded  
         };
         _context.RegistrationMaterials.Add(newMaterial);
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(CancellationToken.None);
 
         // Act & Assert  
         await Assert.ThrowsExactlyAsync<KeyNotFoundException>(() =>
@@ -658,7 +658,7 @@ public class RegistrationMaterialRepositoryTests
             IsMaterialSpecific = true
         });
 
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(CancellationToken.None);
 
         // Act
         await _repository.RegistrationMaterialsMarkAsDulyMade(materialId, 3, determinationDate, dulyMadeDate, userId);
@@ -754,7 +754,7 @@ public class RegistrationMaterialRepositoryTests
         };
 
         await _context.Registrations.AddAsync(registration);
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(CancellationToken.None);
 
         // Act
         var result = await _repository.GetRegistrationMaterialsByRegistrationId(id);
@@ -791,7 +791,7 @@ public class RegistrationMaterialRepositoryTests
 
         await _context.Registrations.AddAsync(registration);
         await _context.RegistrationMaterials.AddAsync(registrationMaterial);
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(CancellationToken.None);
 
         // Act
         var result = await _repository.GetRegistrationMaterialsByRegistrationId(id);
@@ -829,7 +829,7 @@ public class RegistrationMaterialRepositoryTests
         });
 
         _context.MaterialExemptionReferences.AddRange(exemptions);
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(CancellationToken.None);
 
         // Act
         await _repository.UpdateRegistrationMaterialPermits(registrationMaterialId, (int)MaterialPermitType.WasteExemption, null);
@@ -870,7 +870,7 @@ public class RegistrationMaterialRepositoryTests
         };
 
         _context.MaterialExemptionReferences.AddRange(exemptions);
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(CancellationToken.None);
 
         // Act
         await _repository.UpdateRegistrationMaterialPermits(registrationMaterialId, permitTypeId, permitNumber);
@@ -1053,7 +1053,7 @@ public class RegistrationMaterialRepositoryTests
         await _context.Registrations.AddAsync(registration);
         await _context.RegistrationMaterials.AddAsync(registrationMaterial);
         await _context.RegistrationMaterials.AddAsync(registrationMaterial2);
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(CancellationToken.None);
 
         // Act
         await _repository.DeleteAsync(registrationMaterialExternalId);
@@ -1078,7 +1078,7 @@ public class RegistrationMaterialRepositoryTests
 		};
 
 		await _context.RegistrationMaterials.AddAsync(existingMaterial);
-		await _context.SaveChangesAsync();
+		await _context.SaveChangesAsync(CancellationToken.None);
 
 		var dto = new UpdateIsMaterialRegisteredDto
 		{

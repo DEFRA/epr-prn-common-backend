@@ -46,7 +46,7 @@ public class OverseasAccreditationSiteRepositoryTests
         };
         _context.Accreditations.Add(accreditation);
         _context.OverseasAccreditationSites.Add(site);
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(CancellationToken.None);
 
         // Act
         var result = await _repository.GetAllByAccreditationId(accreditationId);
@@ -86,7 +86,7 @@ public class OverseasAccreditationSiteRepositoryTests
             SiteCheckStatusId = 2
         };
         _context.Accreditations.Add(accreditation);
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(CancellationToken.None);
 
         // Act
         await _repository.PostByAccreditationId(accreditationId, site);

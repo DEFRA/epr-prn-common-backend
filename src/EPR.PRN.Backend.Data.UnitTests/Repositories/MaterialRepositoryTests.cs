@@ -441,7 +441,7 @@ public class MaterialRepositoryTests
         await _context.RegistrationMaterials.AddAsync(registrationMaterial);
         await _context.LookupApplicantRegistrationTasks.AddAsync(task);
         await _context.LookupTaskStatuses.AddAsync(status);
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(CancellationToken.None);
 
         // Act
         await _materialRepositoryFull.UpdateApplicationRegistrationTaskStatusAsync("NewTask", registrationMaterialId, TaskStatuses.Completed);
@@ -477,7 +477,7 @@ public class MaterialRepositoryTests
         };
 
         await _context.RegistrationTaskStatus.AddAsync(taskStatus);
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(CancellationToken.None);
 
         // Act
         await _materialRepositoryFull.UpdateApplicationRegistrationTaskStatusAsync("ExistingTask", registrationMaterialId, TaskStatuses.Completed);
@@ -494,7 +494,7 @@ public class MaterialRepositoryTests
         var registrationId = Guid.NewGuid();
         var status = new LookupTaskStatus { Name = TaskStatuses.Completed.ToString() };
         await _context.LookupTaskStatuses.AddAsync(status);
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(CancellationToken.None);
 
         // Act
         Func<Task> act = async () => await _materialRepositoryFull.UpdateApplicationRegistrationTaskStatusAsync("AnyTask", registrationId, TaskStatuses.Completed);
@@ -515,7 +515,7 @@ public class MaterialRepositoryTests
         await _context.Registrations.AddAsync(registration);
         await _context.RegistrationMaterials.AddAsync(registrationMaterial);
         await _context.LookupTaskStatuses.AddAsync(status);
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(CancellationToken.None);
 
         // Act
         Func<Task> act = async () => await _materialRepositoryFull.UpdateApplicationRegistrationTaskStatusAsync("MissingTask", registrationMaterialId, TaskStatuses.Completed);

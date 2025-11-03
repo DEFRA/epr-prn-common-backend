@@ -79,7 +79,7 @@ public class RegulatorAccreditationRepositoryTests
             IsMaterialSpecific = true
         });
 
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(CancellationToken.None);
 
         // Act
         await _repository.AccreditationMarkAsDulyMade(accreditationId, statusId, dulyMadeDate, determinationDate, userId);
@@ -156,7 +156,7 @@ public class RegulatorAccreditationRepositoryTests
         _context.RegistrationMaterials.Add(material);
         _context.Accreditations.Add(accreditation);
         _context.LookupTasks.Add(lookupTask);
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(CancellationToken.None);
 
         // Act
         await _repository.AccreditationMarkAsDulyMade(accreditationId, statusId, dulyMadeDate, determinationDate, userId);
@@ -205,7 +205,7 @@ public class RegulatorAccreditationRepositoryTests
             IsMaterialSpecific = true
         });
 
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(CancellationToken.None);
 
         // Act
         await _repository.AccreditationMarkAsDulyMade(accreditationId, statusId, dulyMadeDate, newDeterminationDate, userId);
@@ -252,7 +252,7 @@ public class RegulatorAccreditationRepositoryTests
             IsMaterialSpecific = true
         });
 
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(CancellationToken.None);
 
         // Act
         await _repository.AccreditationMarkAsDulyMade(accreditationId, statusId, dulyMadeDate, newDeterminationDate, userId);
