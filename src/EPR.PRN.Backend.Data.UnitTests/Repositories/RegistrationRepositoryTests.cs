@@ -54,7 +54,7 @@ public class RegistrationRepositoryTests
             ExternalId = registrationId
         };
 
-        await _context.Registrations.AddAsync(existing);
+        await _context.Registrations.AddAsync(existing, CancellationToken.None);
         await _context.SaveChangesAsync(CancellationToken.None);
 
         // Act
@@ -93,10 +93,10 @@ public class RegistrationRepositoryTests
             TaskStatus = taskStatusEntity
         };
 
-        await _context.Registrations.AddAsync(registration);
-        await _context.LookupApplicantRegistrationTasks.AddAsync(task);
-        await _context.LookupTaskStatuses.AddAsync(taskStatusEntity);
-        await _context.RegistrationTaskStatus.AddAsync(status);
+        await _context.Registrations.AddAsync(registration, CancellationToken.None);
+        await _context.LookupApplicantRegistrationTasks.AddAsync(task, CancellationToken.None);
+        await _context.LookupTaskStatuses.AddAsync(taskStatusEntity, CancellationToken.None);
+        await _context.RegistrationTaskStatus.AddAsync(status, CancellationToken.None);
         await _context.SaveChangesAsync(CancellationToken.None);
 
         // Act
@@ -117,9 +117,9 @@ public class RegistrationRepositoryTests
         var task = new LookupApplicantRegistrationTask { Name = "NewTask", ApplicationTypeId = 1, IsMaterialSpecific = false };
         var status = new LookupTaskStatus { Name = nameof(TaskStatuses.Completed) };
 
-        await _context.Registrations.AddAsync(registration);
-        await _context.LookupApplicantRegistrationTasks.AddAsync(task);
-        await _context.LookupTaskStatuses.AddAsync(status);
+        await _context.Registrations.AddAsync(registration, CancellationToken.None);
+        await _context.LookupApplicantRegistrationTasks.AddAsync(task, CancellationToken.None);
+        await _context.LookupTaskStatuses.AddAsync(status, CancellationToken.None);
         await _context.SaveChangesAsync(CancellationToken.None);
 
         // Act
@@ -141,8 +141,8 @@ public class RegistrationRepositoryTests
         var oldStatus = new LookupTaskStatus { Name = TaskStatuses.Started.ToString() };
         var newStatus = new LookupTaskStatus { Name = TaskStatuses.Completed.ToString() };
 
-        await _context.Registrations.AddAsync(registration);
-        await _context.LookupApplicantRegistrationTasks.AddAsync(task);
+        await _context.Registrations.AddAsync(registration, CancellationToken.None);
+        await _context.LookupApplicantRegistrationTasks.AddAsync(task, CancellationToken.None);
         await _context.LookupTaskStatuses.AddRangeAsync(oldStatus, newStatus);
 
         var taskStatus = new ApplicantRegistrationTaskStatus
@@ -152,7 +152,7 @@ public class RegistrationRepositoryTests
             TaskStatus = oldStatus
         };
 
-        await _context.RegistrationTaskStatus.AddAsync(taskStatus);
+        await _context.RegistrationTaskStatus.AddAsync(taskStatus, CancellationToken.None);
         await _context.SaveChangesAsync(CancellationToken.None);
 
         // Act
@@ -169,7 +169,7 @@ public class RegistrationRepositoryTests
         // Arrange
         var registrationId = Guid.NewGuid();
         var status = new LookupTaskStatus { Name = TaskStatuses.Completed.ToString() };
-        await _context.LookupTaskStatuses.AddAsync(status);
+        await _context.LookupTaskStatuses.AddAsync(status, CancellationToken.None);
         await _context.SaveChangesAsync(CancellationToken.None);
 
         // Act
@@ -187,8 +187,8 @@ public class RegistrationRepositoryTests
         var registration = new Registration { Id = 3, ApplicationTypeId = 10, ExternalId = registrationId};
         var status = new LookupTaskStatus { Name = TaskStatuses.Completed.ToString() };
 
-        await _context.Registrations.AddAsync(registration);
-        await _context.LookupTaskStatuses.AddAsync(status);
+        await _context.Registrations.AddAsync(registration, CancellationToken.None);
+        await _context.LookupTaskStatuses.AddAsync(status, CancellationToken.None);
         await _context.SaveChangesAsync(CancellationToken.None);
 
         // Act
@@ -496,7 +496,7 @@ public class RegistrationRepositoryTests
                 }
             }
         };
-        await _context.Registrations.AddAsync(registration);
+        await _context.Registrations.AddAsync(registration, CancellationToken.None);
         await _context.SaveChangesAsync(CancellationToken.None);
         // Act
         var result = await _repository.GetRegistrationsOverviewForOrgIdAsync(organisationId);
@@ -524,7 +524,7 @@ public class RegistrationRepositoryTests
             RegistrationStatusId = 2,
             Materials = null
         };
-        await _context.Registrations.AddAsync(registration);
+        await _context.Registrations.AddAsync(registration, CancellationToken.None);
         await _context.SaveChangesAsync(CancellationToken.None);
         // Act
         var result = await _repository.GetRegistrationsOverviewForOrgIdAsync(organisationId);
@@ -562,7 +562,7 @@ public class RegistrationRepositoryTests
                 }
             }
         };
-        await _context.Registrations.AddAsync(registration);
+        await _context.Registrations.AddAsync(registration, CancellationToken.None);
         await _context.SaveChangesAsync(CancellationToken.None);
         // Act
         var result = await _repository.GetRegistrationsOverviewForOrgIdAsync(organisationId);

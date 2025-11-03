@@ -57,7 +57,7 @@ public class RepositoryTestsInMemory
     public async Task GetSearchPrnsForOrganisation_WithSearchTerm_FiltersResults()
     {
         // Arrange
-        var orgId = (await _context.Prn.FirstAsync()).OrganisationId;
+        var orgId = (await _context.Prn.FirstAsync(CancellationToken.None)).OrganisationId;
         var request = new PaginatedRequestDto
         {
             Page = 1,
@@ -75,7 +75,7 @@ public class RepositoryTestsInMemory
     [TestMethod]
     public async Task GetSearchPrnsForOrganisation_Returns_CorrectResults()
     {
-        var orgId = (await _context.Prn.FirstAsync()).OrganisationId;
+        var orgId = (await _context.Prn.FirstAsync(CancellationToken.None)).OrganisationId;
         var request = new PaginatedRequestDto
         {
             Page = 1,
@@ -90,7 +90,7 @@ public class RepositoryTestsInMemory
     [TestMethod]
     public async Task GetSearchPrnsForOrganisation_Returns_Empty_When_NoMatch()
     {
-        var orgId = (await _context.Prn.FirstAsync()).OrganisationId;
+        var orgId = (await _context.Prn.FirstAsync(CancellationToken.None)).OrganisationId;
         var request = new PaginatedRequestDto
         {
             Page = 1,
@@ -104,7 +104,7 @@ public class RepositoryTestsInMemory
     [TestMethod]
     public async Task GetSearchPrnsForOrganisation_Paginates_Correctly()
     {
-        var orgId = (await _context.Prn.FirstAsync()).OrganisationId;
+        var orgId = (await _context.Prn.FirstAsync(CancellationToken.None)).OrganisationId;
         var request = new PaginatedRequestDto
         {
             Page = 1,
@@ -118,7 +118,7 @@ public class RepositoryTestsInMemory
     [TestMethod]
     public async Task GetSearchPrnsForOrganisation_Filters_By_SearchTerm()
     {
-        var orgId = (await _context.Prn.FirstAsync()).OrganisationId;
+        var orgId = (await _context.Prn.FirstAsync(CancellationToken.None)).OrganisationId;
         var request = new PaginatedRequestDto
         {
             Page = 1,

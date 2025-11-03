@@ -399,9 +399,9 @@ public class OverseasAddressTests
         var allAddresses = await _context.OverseasAddress
             .Include(a => a.OverseasAddressContacts)
             .Include(a => a.OverseasAddressWasteCodes)
-            .ToListAsync();
+            .ToListAsync(CancellationToken.None);
         var allTasks = await _context.RegistrationTaskStatus
-            .ToListAsync();
+            .ToListAsync(CancellationToken.None);
         // Old address updated
         var updated = allAddresses.First(a => a.ExternalId == existingExternalId);
         updated.AddressLine1.Should().Be("New Line 1");
@@ -507,7 +507,7 @@ public class OverseasAddressTests
         await _materialRepository.SaveOverseasReprocessingSites(updateDto);
 
         // Assert
-        var allAddresses = await _context.OverseasAddress.ToListAsync();
+        var allAddresses = await _context.OverseasAddress.ToListAsync(CancellationToken.None);
         allAddresses.Should().Contain(a => a.ExternalId == existingToKeep.ExternalId);
         allAddresses.Should().NotContain(a => a.ExternalId == existingToDelete.ExternalId);
     }
@@ -609,12 +609,12 @@ public class OverseasAddressTests
         await _materialRepository.SaveOverseasReprocessingSites(updateDto);
 
         // Assert
-        var allAddresses = await _context.OverseasAddress.ToListAsync();
+        var allAddresses = await _context.OverseasAddress.ToListAsync(CancellationToken.None);
         allAddresses.Should().Contain(a => a.ExternalId == existingToKeep.ExternalId);
         allAddresses.Should().NotContain(a => a.ExternalId == existingToDelete.ExternalId);
-        var allContacts = await _context.OverseasAddressContact.ToListAsync();
+        var allContacts = await _context.OverseasAddressContact.ToListAsync(CancellationToken.None);
         allContacts.Should().ContainSingle(a => a.FullName == "Test Name");
-        var allWasteCodes = await _context.OverseasAddressWasteCode.ToListAsync();
+        var allWasteCodes = await _context.OverseasAddressWasteCode.ToListAsync(CancellationToken.None);
         allWasteCodes.Should().ContainSingle(a => a.CodeName == "NewCode");
     }
 

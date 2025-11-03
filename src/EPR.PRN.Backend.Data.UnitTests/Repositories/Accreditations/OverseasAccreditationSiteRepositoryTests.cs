@@ -92,7 +92,7 @@ public class OverseasAccreditationSiteRepositoryTests
         await _repository.PostByAccreditationId(accreditationId, site);
 
         // Assert
-        var newSite = await _context.OverseasAccreditationSites.Where(x => x.ExternalId == accreditationId).ToListAsync();
+        var newSite = await _context.OverseasAccreditationSites.Where(x => x.ExternalId == accreditationId).ToListAsync(CancellationToken.None);
         newSite.Should().ContainSingle();
         newSite[0].AccreditationId.Should().Be(accreditation.Id);
         newSite[0].ExternalId.Should().Be(accreditationId);

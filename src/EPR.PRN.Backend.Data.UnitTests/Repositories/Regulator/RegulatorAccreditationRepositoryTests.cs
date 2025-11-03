@@ -260,7 +260,7 @@ public class RegulatorAccreditationRepositoryTests
         // Assert
         var determinationRecords = await _context.AccreditationDeterminationDate
             .Where(x => x.AccreditationId == accreditation.Id)
-            .ToListAsync();
+            .ToListAsync(CancellationToken.None);
 
         using (new AssertionScope())
         {

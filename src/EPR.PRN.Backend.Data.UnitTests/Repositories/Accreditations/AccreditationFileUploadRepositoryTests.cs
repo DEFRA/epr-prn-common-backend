@@ -96,7 +96,7 @@ public class AccreditationFileUploadRepositoryTests
     {
         // Arrange
         var fileUploadId = Guid.NewGuid();
-        var entityToReturn = await _dbContext.AccreditationFileUploads.FirstAsync();
+        var entityToReturn = await _dbContext.AccreditationFileUploads.FirstAsync(CancellationToken.None);
         entityToReturn.ExternalId = fileUploadId;
         await _dbContext.SaveChangesAsync(CancellationToken.None);
 
@@ -240,7 +240,7 @@ public class AccreditationFileUploadRepositoryTests
     {
         // Arrange
         var fileUploadId = Guid.NewGuid();
-        var entityToUpdate = await _dbContext.AccreditationFileUploads.FirstAsync();
+        var entityToUpdate = await _dbContext.AccreditationFileUploads.FirstAsync(CancellationToken.None);
         entityToUpdate.ExternalId = fileUploadId;
         await _dbContext.SaveChangesAsync(CancellationToken.None);
 
@@ -292,7 +292,7 @@ public class AccreditationFileUploadRepositoryTests
     {
         // Arrange
         var fileId = Guid.NewGuid();
-        var entityToUpdate = await _dbContext.AccreditationFileUploads.FirstAsync();
+        var entityToUpdate = await _dbContext.AccreditationFileUploads.FirstAsync(CancellationToken.None);
         entityToUpdate.FileId = fileId;
         await _dbContext.SaveChangesAsync(CancellationToken.None);
 
