@@ -14,6 +14,6 @@ public class GetMaterialsByRegistrationIdQueryHandler(
 ) : IRequestHandler<GetMaterialsByRegistrationIdQuery, IList<MaterialDto>>
 {
     /// <inheritdoc />>.
-    public async Task<IList<MaterialDto>> Handle(GetMaterialsByRegistrationIdQuery request, CancellationToken cancellationToken) 
+    public async Task<IList<MaterialDto>> Handle(GetMaterialsByRegistrationIdQuery request, CancellationToken cancellationToken)
         => await materialService.GetMaterialsByRegistrationIdQuery(request.RegistrationId);
 }

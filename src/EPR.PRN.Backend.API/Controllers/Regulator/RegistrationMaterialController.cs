@@ -1,4 +1,5 @@
-﻿using EPR.PRN.Backend.API.Commands;
+﻿using System.Net;
+using EPR.PRN.Backend.API.Commands;
 using EPR.PRN.Backend.API.Common.Constants;
 using EPR.PRN.Backend.API.Dto.Regulator;
 using EPR.PRN.Backend.API.Queries;
@@ -7,7 +8,6 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.FeatureManagement.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
-using System.Net;
 
 namespace EPR.PRN.Backend.API.Controllers.Regulator;
 
@@ -180,7 +180,7 @@ public class RegistrationMaterialController(IMediator mediator
     #endregion Get Methods
 
     #region Post Methods
-    
+
     [HttpPost("registrationMaterials/{Id}/outcome")]
     [ProducesResponseType(StatusCodes.Status204NoContent, Type = typeof(NoContentResult))]
     [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]

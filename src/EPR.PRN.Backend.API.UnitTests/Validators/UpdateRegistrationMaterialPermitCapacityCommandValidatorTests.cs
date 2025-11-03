@@ -72,7 +72,7 @@ public class UpdateRegistrationMaterialPermitCapacityCommandValidatorTests
         var result = _validator.TestValidate(command);
 
         result.ShouldHaveValidationErrorFor(x => x.CapacityInTonnes);
-              //.WithErrorMessage("Weight must be a number greater than 0");
+        //.WithErrorMessage("Weight must be a number greater than 0");
     }
 
     [TestMethod]

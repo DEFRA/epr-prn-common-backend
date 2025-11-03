@@ -1,9 +1,9 @@
+using EPR.PRN.Backend.API.Controllers.Accreditation;
 using EPR.PRN.Backend.API.Dto.Accreditation;
 using EPR.PRN.Backend.API.Services.Interfaces;
-using Microsoft.AspNetCore.Mvc;
 using FluentAssertions;
+using Microsoft.AspNetCore.Mvc;
 using Moq;
-using EPR.PRN.Backend.API.Controllers.Accreditation;
 
 namespace EPR.PRN.Backend.API.UnitTests.Controllers;
 
@@ -66,8 +66,12 @@ public class OverseasAccreditationSiteControllerTests
     {
         // Arrange
         var accreditationId = Guid.NewGuid();
-        var request = new OverseasAccreditationSiteDto {
-            ExternalId = accreditationId, OrganisationName = "Hun Manet Recycler Ltd", MeetConditionsOfExportId = 2, SiteCheckStatusId = 2
+        var request = new OverseasAccreditationSiteDto
+        {
+            ExternalId = accreditationId,
+            OrganisationName = "Hun Manet Recycler Ltd",
+            MeetConditionsOfExportId = 2,
+            SiteCheckStatusId = 2
         };
 
         // Act

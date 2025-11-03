@@ -14,15 +14,15 @@ namespace EPR.PRN.Backend.Obligation.UnitTests.Strategies;
 public class GeneralCalculationStrategyTests
 {
     private Mock<IMaterialCalculationService> _mockCalculationService;
-	private Mock<IDateTimeProvider> _mockDateTimeProvider;
-	private GeneralCalculationStrategy _strategy;
+    private Mock<IDateTimeProvider> _mockDateTimeProvider;
+    private GeneralCalculationStrategy _strategy;
 
     [TestInitialize]
     public void SetUp()
     {
         _mockCalculationService = new Mock<IMaterialCalculationService>();
-		_mockDateTimeProvider = new Mock<IDateTimeProvider>();
-		_strategy = new GeneralCalculationStrategy(_mockCalculationService.Object, _mockDateTimeProvider.Object);
+        _mockDateTimeProvider = new Mock<IDateTimeProvider>();
+        _strategy = new GeneralCalculationStrategy(_mockCalculationService.Object, _mockDateTimeProvider.Object);
     }
 
     [TestMethod]
@@ -51,42 +51,42 @@ public class GeneralCalculationStrategyTests
     }
 
     [TestMethod]
-	[DataRow(100, 0.70, 70, 0)]
-	[DataRow(101, 0.70, 71, 0)]
+    [DataRow(100, 0.70, 70, 0)]
+    [DataRow(101, 0.70, 71, 0)]
     [DataRow(101, 0.71, 72, 1)]
-	[DataRow(101, 0.72, 73, 2)]
-	[DataRow(101, 0.73, 74, 3)]
-	[DataRow(101, 0.74, 75, 4)]
-	public void Calculate_ShouldReturnCorrectObligationCalculation(int materialWeight, double recyclingTarget, int expectedRoundedMaterialObligationValue, int yearOffSet)
+    [DataRow(101, 0.72, 73, 2)]
+    [DataRow(101, 0.73, 74, 3)]
+    [DataRow(101, 0.74, 75, 4)]
+    public void Calculate_ShouldReturnCorrectObligationCalculation(int materialWeight, double recyclingTarget, int expectedRoundedMaterialObligationValue, int yearOffSet)
     {
         // Arrange
         var organisationId = Guid.NewGuid();
         var submitterId = Guid.NewGuid();
-		var currentYear = DateTime.UtcNow.Year + yearOffSet;
-		var calculatedOn = DateTime.UtcNow.AddYears(yearOffSet);
-		_mockDateTimeProvider.Setup(m => m.UtcNow).Returns(calculatedOn);
-		_mockDateTimeProvider.Setup(m => m.CurrentYear).Returns(currentYear);
-		var submissionPeriod = $"{currentYear - 1}";
+        var currentYear = DateTime.UtcNow.Year + yearOffSet;
+        var calculatedOn = DateTime.UtcNow.AddYears(yearOffSet);
+        _mockDateTimeProvider.Setup(m => m.UtcNow).Returns(calculatedOn);
+        _mockDateTimeProvider.Setup(m => m.CurrentYear).Returns(currentYear);
+        var submissionPeriod = $"{currentYear - 1}";
 
-		var calculationRequest = new SubmissionCalculationRequest
+        var calculationRequest = new SubmissionCalculationRequest
         {
             PackagingMaterial = "PL",
             PackagingMaterialWeight = materialWeight,
             OrganisationId = organisationId,
             SubmissionPeriod = submissionPeriod,
-			SubmitterId = submitterId,
-			SubmitterType = ObligationCalculationOrganisationSubmitterTypeName.DirectRegistrant.ToString()
-		};
+            SubmitterId = submitterId,
+            SubmitterType = ObligationCalculationOrganisationSubmitterTypeName.DirectRegistrant.ToString()
+        };
 
         var materialType = MaterialType.Plastic;
         var material = new Material
-		{
-			Id = 1,
-			MaterialName = materialType.ToString(),
-			MaterialCode = "PL"
-		};
+        {
+            Id = 1,
+            MaterialName = materialType.ToString(),
+            MaterialCode = "PL"
+        };
 
-		var recyclingTargets = new Dictionary<int, Dictionary<MaterialType, double>>
+        var recyclingTargets = new Dictionary<int, Dictionary<MaterialType, double>>
         {
             {
                 currentYear,
@@ -114,60 +114,60 @@ public class GeneralCalculationStrategyTests
         // Assert
         result.Should().NotBeNull();
         result.Should().HaveCount(1);
-		result[0].MaterialId.Should().Be(1);
-		result[0].MaterialObligationValue.Should().Be(expectedRoundedMaterialObligationValue);
+        result[0].MaterialId.Should().Be(1);
+        result[0].MaterialObligationValue.Should().Be(expectedRoundedMaterialObligationValue);
         result[0].OrganisationId.Should().Be(organisationId);
         result[0].Year.Should().Be(currentYear);
         result[0].Tonnage.Should().Be(materialWeight);
-		result[0].CalculatedOn.Should().Be(calculatedOn);
+        result[0].CalculatedOn.Should().Be(calculatedOn);
     }
 
-	[TestMethod]
-	public void Calculate_ShouldThrowKeyNotFoundException_WhenRecyclingTargetYearNotFound()
-	{
-		// Arrange
-		var organisationId = Guid.NewGuid();
-		var calculationRequest = new SubmissionCalculationRequest
-		{
-			PackagingMaterial = "PL",
-			PackagingMaterialWeight = 100,
-			OrganisationId = organisationId,
-			SubmissionPeriod = "2025",
+    [TestMethod]
+    public void Calculate_ShouldThrowKeyNotFoundException_WhenRecyclingTargetYearNotFound()
+    {
+        // Arrange
+        var organisationId = Guid.NewGuid();
+        var calculationRequest = new SubmissionCalculationRequest
+        {
+            PackagingMaterial = "PL",
+            PackagingMaterialWeight = 100,
+            OrganisationId = organisationId,
+            SubmissionPeriod = "2025",
             SubmitterId = organisationId,
-			SubmitterType = ObligationCalculationOrganisationSubmitterTypeName.DirectRegistrant.ToString()
-		};
+            SubmitterType = ObligationCalculationOrganisationSubmitterTypeName.DirectRegistrant.ToString()
+        };
 
-		var materialType = MaterialType.Plastic;
-		var material = new Material
-		{
-			Id = 1,
-			MaterialName = materialType.ToString(),
-			MaterialCode = "PL"
-		};
+        var materialType = MaterialType.Plastic;
+        var material = new Material
+        {
+            Id = 1,
+            MaterialName = materialType.ToString(),
+            MaterialCode = "PL"
+        };
 
-		var recyclingTargets = new Dictionary<int, Dictionary<MaterialType, double>>
-		{
-			{
-				DateTime.UtcNow.Year - 1, // Use a past year to trigger the exception
+        var recyclingTargets = new Dictionary<int, Dictionary<MaterialType, double>>
+        {
+            {
+                DateTime.UtcNow.Year - 1, // Use a past year to trigger the exception
                 new Dictionary<MaterialType, double>
-				{
-					{ materialType, 0.7 }
-				}
-			}
-		};
+                {
+                    { materialType, 0.7 }
+                }
+            }
+        };
 
-		var request = new CalculationRequestDto
-		{
-			SubmissionCalculationRequest = calculationRequest,
-			RecyclingTargets = recyclingTargets,
-			MaterialType = materialType,
-			Materials = [material],
-			SubmitterId = organisationId
-		};
+        var request = new CalculationRequestDto
+        {
+            SubmissionCalculationRequest = calculationRequest,
+            RecyclingTargets = recyclingTargets,
+            MaterialType = materialType,
+            Materials = [material],
+            SubmitterId = organisationId
+        };
 
-		// Act & Assert
-		Action act = () => _strategy.Calculate(request);
+        // Act & Assert
+        Action act = () => _strategy.Calculate(request);
 
-		act.Should().Throw<KeyNotFoundException>();
-	}
+        act.Should().Throw<KeyNotFoundException>();
+    }
 }

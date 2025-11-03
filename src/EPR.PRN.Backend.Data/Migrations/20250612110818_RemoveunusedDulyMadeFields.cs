@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -39,7 +38,7 @@ namespace EPR.PRN.Backend.Data.Migrations
                 name: "TaskStatusId",
                 table: "Public.DulyMade");
 
-                   }
+        }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)

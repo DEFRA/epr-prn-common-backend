@@ -3,11 +3,6 @@ using EPR.PRN.Backend.API.Handlers.Regulator;
 using EPR.PRN.Backend.Data.DTO;
 using EPR.PRN.Backend.Data.Interfaces;
 using Moq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace EPR.PRN.Backend.API.UnitTests.Handlers
 {

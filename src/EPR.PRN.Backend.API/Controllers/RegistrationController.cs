@@ -35,7 +35,7 @@ public class RegistrationController(IMediator mediator
     [SwaggerResponse(StatusCodes.Status400BadRequest, "If the request is invalid or a validation error occurs.", typeof(ProblemDetails))]
     [SwaggerResponse(StatusCodes.Status500InternalServerError, "If an unexpected error occurs.", typeof(ContentResult))]
     [ExcludeFromCodeCoverage(Justification = "TODO: To be done as part of create registration user story")]
-    public async Task<IActionResult> GetRegistrationByOrganisation([FromRoute]int applicationTypeId, [FromRoute]Guid organisationId)
+    public async Task<IActionResult> GetRegistrationByOrganisation([FromRoute] int applicationTypeId, [FromRoute] Guid organisationId)
     {
         logger.LogInformation(LogMessages.GetRegistrationByOrganisation, applicationTypeId, organisationId);
 
@@ -91,7 +91,7 @@ public class RegistrationController(IMediator mediator
     [SwaggerResponse(StatusCodes.Status404NotFound, "If an existing registration is not found", typeof(ProblemDetails))]
     [SwaggerResponse(StatusCodes.Status500InternalServerError, "If an unexpected error occurs.", typeof(ContentResult))]
     [ExcludeFromCodeCoverage(Justification = "TODO: To be done as part of create registration user story")]
-    public async Task<IActionResult> UpdateRegistration([FromRoute]Guid registrationId, [FromBody] UpdateRegistrationCommand command)
+    public async Task<IActionResult> UpdateRegistration([FromRoute] Guid registrationId, [FromBody] UpdateRegistrationCommand command)
     {
         try
         {
@@ -206,10 +206,10 @@ public class RegistrationController(IMediator mediator
     public async Task<IActionResult> GetRegistrationsOverviewForOrgId([FromRoute] Guid organisationId)
     {
         logger.LogInformation(LogMessages.RegistrationsOverview, organisationId);
-        
+
         var request = new GetRegistrationsOverviewByOrgIdQuery { OrganisationId = organisationId };
         await validationService.ValidateAndThrowAsync(request);
-        
+
         var result = await mediator.Send(request);
 
         return Ok(result);

@@ -45,7 +45,7 @@ namespace EPR.PRN.Backend.Data.UnitTests.Repositories
             new PrnStatus { Id = 2, StatusName = EprnStatus.AWAITINGACCEPTANCE.ToString() }
             };
             await _context.PrnStatus.AddRangeAsync(prnStatuses);
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(CancellationToken.None);
 
             // Act
             var result = _repository.GetAcceptedAndAwaitingPrnsByYear(organisationId, year);

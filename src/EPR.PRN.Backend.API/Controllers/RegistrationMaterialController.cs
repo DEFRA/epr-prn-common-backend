@@ -1,21 +1,17 @@
-﻿using AutoMapper;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Net;
+using AutoMapper;
 using EPR.PRN.Backend.API.Commands;
 using EPR.PRN.Backend.API.Common.Constants;
 using EPR.PRN.Backend.API.Dto;
 using EPR.PRN.Backend.API.Dto.Regulator;
-using EPR.PRN.Backend.API.Handlers;
 using EPR.PRN.Backend.API.Queries;
 using EPR.PRN.Backend.API.Services.Interfaces;
-using EPR.PRN.Backend.Data.DataModels;
-using EPR.PRN.Backend.Data.DataModels.Registrations;
 using EPR.PRN.Backend.Data.DTO;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.FeatureManagement.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
-using System.Diagnostics.CodeAnalysis;
-using System.Net;
-using EPR.PRN.Backend.API.Services;
 
 namespace EPR.PRN.Backend.API.Controllers;
 
@@ -37,7 +33,7 @@ public class RegistrationMaterialController(
         Description = "attempting to get existing registration materials associated with a registration."
     )]
     [SwaggerResponse(StatusCodes.Status500InternalServerError, "If an unexpected error occurs.", typeof(ContentResult))]
-    public async Task<IActionResult> GetAllRegistrationMaterials([FromRoute]Guid registrationId)
+    public async Task<IActionResult> GetAllRegistrationMaterials([FromRoute] Guid registrationId)
     {
         logger.LogInformation(LogMessages.GetAllRegistrationMaterials, registrationId);
 
@@ -164,7 +160,7 @@ public class RegistrationMaterialController(
     )]
     [SwaggerResponse(StatusCodes.Status200OK)]
     [SwaggerResponse(StatusCodes.Status500InternalServerError, "If an unexpected error occurs.", typeof(ContentResult))]
-    public async Task<IActionResult> DeleteRegistrationMaterial([FromRoute]Guid registrationMaterialId)
+    public async Task<IActionResult> DeleteRegistrationMaterial([FromRoute] Guid registrationMaterialId)
     {
         logger.LogInformation(LogMessages.DeleteRegistrationMaterial, registrationMaterialId);
 
@@ -176,21 +172,21 @@ public class RegistrationMaterialController(
         return Ok();
     }
 
-	[HttpPost("registrationMaterials/UpdateIsMaterialRegistered")]
-	[ProducesResponseType(StatusCodes.Status204NoContent)]
-	[SwaggerResponse(StatusCodes.Status500InternalServerError, "If an unexpected error occurs.", typeof(ContentResult))]
-	[SwaggerOperation(
-	Summary = "updates an existing registration material IsMaterialRegistered flag",
-	Description = "attempting to update the registration material IsMaterialRegistered flag."
-	)]
-	public async Task<IActionResult> UpdateIsMaterialRegisteredAsync([FromBody] List<UpdateIsMaterialRegisteredDto> request)
-	{
-		logger.LogInformation(LogMessages.UpdateIsMaterialRegistered);
+    [HttpPost("registrationMaterials/UpdateIsMaterialRegistered")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [SwaggerResponse(StatusCodes.Status500InternalServerError, "If an unexpected error occurs.", typeof(ContentResult))]
+    [SwaggerOperation(
+    Summary = "updates an existing registration material IsMaterialRegistered flag",
+    Description = "attempting to update the registration material IsMaterialRegistered flag."
+    )]
+    public async Task<IActionResult> UpdateIsMaterialRegisteredAsync([FromBody] List<UpdateIsMaterialRegisteredDto> request)
+    {
+        logger.LogInformation(LogMessages.UpdateIsMaterialRegistered);
 
-		await mediator.Send(new UpdateIsMaterialRegisteredCommand { UpdateIsMaterialRegisteredDto = request });
+        await mediator.Send(new UpdateIsMaterialRegisteredCommand { UpdateIsMaterialRegisteredDto = request });
 
-		return NoContent();
-	}
+        return NoContent();
+    }
 
     [HttpPost("registrationMaterials/{id:Guid}/contact")]
     [ProducesResponseType(typeof(RegistrationMaterialContactDto), StatusCodes.Status200OK)]
@@ -212,7 +208,7 @@ public class RegistrationMaterialController(
             RegistrationMaterialId = id,
             UserId = registrationMaterialContact.UserId
         };
-        
+
         await validationService.ValidateAndThrowAsync(command);
 
         var result = await mediator.Send(command);
@@ -319,7 +315,7 @@ public class RegistrationMaterialController(
 
         return Ok();
     }
-    
+
     [HttpGet("registrationMaterials/{registrationMaterialId:guid}/overseasMaterialReprocessingSites")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<OverseasMaterialReprocessingSiteDto>))]
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]

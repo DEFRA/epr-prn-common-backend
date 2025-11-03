@@ -80,14 +80,14 @@ namespace EPR.PRN.Backend.Data.UnitTests.Repositories.Regulator
             {
                 ExternalId = accreditationId,
                 ApplicationReferenceNumber = "A1234",
-                RegistrationMaterial = new RegistrationMaterial 
-                { 
-                    ExternalId = registrationMaterialId, 
+                RegistrationMaterial = new RegistrationMaterial
+                {
+                    ExternalId = registrationMaterialId,
                     Registration = new Registration
-                                    {
-                                        ExternalId = registrationId,
-                                        ApplicationTypeId = 1
-                                    }
+                    {
+                        ExternalId = registrationId,
+                        ApplicationTypeId = 1
+                    }
                 }
             });
 
@@ -233,7 +233,7 @@ namespace EPR.PRN.Backend.Data.UnitTests.Repositories.Regulator
             await act.Should().ThrowAsync<RegulatorInvalidOperationException>();
         }
 
-       
+
         [TestMethod]
         public async Task UpdateStatusAsync_ShouldThrowInvalidOperationException_WhenLookupTaskStatusNotFound()
         {

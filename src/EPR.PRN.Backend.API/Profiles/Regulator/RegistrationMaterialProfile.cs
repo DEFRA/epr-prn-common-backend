@@ -1,5 +1,4 @@
-﻿using System.Linq.Expressions;
-using AutoMapper;
+﻿using AutoMapper;
 using EPR.PRN.Backend.API.Common.Constants;
 using EPR.PRN.Backend.API.Common.Enums;
 using EPR.PRN.Backend.API.Common.Exceptions;
@@ -70,7 +69,7 @@ public class RegistrationMaterialProfile : Profile
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.ExternalId))
             .ForMember(dest => dest.RegistrationId, opt => opt.MapFrom(src => src.Registration.ExternalId))
             .ForMember(dest => dest.MaterialName, opt => opt.MapFrom(src => src.Material.MaterialName))
-            .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status != null ? src.Status.Name : null)) 
+            .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status != null ? src.Status.Name : null))
             .ForMember(dest => dest.ApplicationReferenceNumber, opt => opt.MapFrom(src => src.ApplicationReferenceNumber))
             .ForMember(dest => dest.RegistrationReferenceNumber, opt => opt.MapFrom(src => src.RegistrationReferenceNumber));
     }
@@ -416,7 +415,7 @@ public class RegistrationMaterialProfile : Profile
             }).ToList();
     }
 
-    private static  Guid? GetApplicationTaskExternalId(List<RegulatorApplicationTaskStatus>? srcTasks, string taskName)
+    private static Guid? GetApplicationTaskExternalId(List<RegulatorApplicationTaskStatus>? srcTasks, string taskName)
     {
         var task = srcTasks?.Find(t => t.Task.Name == taskName);
 
@@ -509,7 +508,7 @@ public class RegistrationMaterialProfile : Profile
             }.Where(addressPart => !string.IsNullOrEmpty(addressPart)));
 
 
-    private  void CreateOverseasReprocessingMappings()
+    private void CreateOverseasReprocessingMappings()
     {
         CreateMap<OverseasMaterialReprocessingSite, OverseasMaterialReprocessingSiteDto>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.ExternalId))

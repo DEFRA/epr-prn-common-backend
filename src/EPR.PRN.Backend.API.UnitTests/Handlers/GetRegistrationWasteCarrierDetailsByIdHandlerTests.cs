@@ -25,7 +25,7 @@ public class GetRegistrationWasteCarrierDetailsByIdHandlerTests
 
         var config = new MapperConfiguration(cfg =>
         {
-            cfg.AddProfile<RegistrationMaterialProfile>(); 
+            cfg.AddProfile<RegistrationMaterialProfile>();
         });
         _mapper = config.CreateMapper();
 

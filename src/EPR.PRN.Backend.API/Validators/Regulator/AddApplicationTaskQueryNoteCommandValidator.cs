@@ -9,7 +9,7 @@ public class AddApplicationTaskQueryNoteCommandValidator : AbstractValidator<Add
     {
         RuleFor(x => x.RegulatorApplicationTaskStatusId)
             .NotEmpty().WithMessage("Regulator Application Task Status Id is required")
-            .NotEqual(Guid.Empty).WithMessage("Regulator Application Task Status is invalid Id ");           
+            .NotEqual(Guid.Empty).WithMessage("Regulator Application Task Status is invalid Id ");
 
         RuleFor(x => x.Note)
             .NotEmpty().WithMessage("Note is required")

@@ -1,12 +1,12 @@
 ﻿using AutoMapper;
+using EPR.PRN.Backend.API.Common.Enums;
+using EPR.PRN.Backend.API.Handlers.Regulator;
+using EPR.PRN.Backend.API.Profiles.Regulator;
 using EPR.PRN.Backend.API.Queries;
 using EPR.PRN.Backend.Data.DataModels.Registrations;
 using EPR.PRN.Backend.Data.Interfaces.Regulator;
 using FluentAssertions;
 using Moq;
-using EPR.PRN.Backend.API.Common.Enums;
-using EPR.PRN.Backend.API.Handlers.Regulator;
-using EPR.PRN.Backend.API.Profiles.Regulator;
 
 namespace EPR.PRN.Backend.API.UnitTests.Handlers;
 
@@ -24,7 +24,7 @@ public class GetRegistrationOverviewDetailByIdHandlerTests
 
         var config = new MapperConfiguration(cfg =>
         {
-            cfg.AddProfile<RegistrationMaterialProfile>(); 
+            cfg.AddProfile<RegistrationMaterialProfile>();
         });
         _mapper = config.CreateMapper();
 
@@ -71,16 +71,16 @@ public class GetRegistrationOverviewDetailByIdHandlerTests
         {
             new() { Name = "SiteAddressAndContactDetails" }
         };
-        
+
         var requiredMaterialTasks = new List<LookupRegulatorTask>
         {
             new() { Name = "BusinessAddress" }
         };
-        
+
         _repoMock.Setup(x => x.GetRegistrationById(registrationId)).ReturnsAsync(registration);
         _repoMock.Setup(x => x.GetRequiredTasks(101, false, 1)).ReturnsAsync(requiredTasks);
         _repoMock.Setup(x => x.GetRequiredTasks(101, true, 1)).ReturnsAsync(requiredMaterialTasks);
-        
+
         var query = new GetRegistrationOverviewDetailByIdQuery { Id = registrationId };
 
         // Act
@@ -180,7 +180,7 @@ public class GetRegistrationOverviewDetailByIdHandlerTests
 
         _repoMock.Setup(x => x.GetRegistrationById(registrationId)).ReturnsAsync(registration);
         _repoMock.Setup(x => x.GetRequiredTasks(101, false, 1)).ReturnsAsync(requiredTasks);
-        
+
         var query = new GetRegistrationOverviewDetailByIdQuery { Id = registrationId };
 
         // Act

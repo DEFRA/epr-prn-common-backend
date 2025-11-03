@@ -10,7 +10,7 @@ namespace EPR.PRN.Backend.API.UnitTests.Handlers;
 [TestClass]
 public class AddApplicationTaskQueryNoteCommandHandlerTests
 {
-   
+
     private Mock<IRegulatorApplicationTaskStatusRepository> _mockRepository;
     private AddApplicationTaskQueryNoteHandler _handler;
     private static readonly IFixture _fixture = new Fixture();

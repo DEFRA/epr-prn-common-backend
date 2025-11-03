@@ -17,5 +17,5 @@ public class GetRegistrationSiteAddressByIdHandler(
         var siteAddressDto = registration.ReprocessingSiteAddress != null ? mapper.Map<RegistrationSiteAddressDto>(registration) : new RegistrationSiteAddressDto();
 
         return siteAddressDto;
-    }    
+    }
 }

@@ -1,7 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using AutoMapper;
 using EPR.PRN.Backend.API.Dto.Accreditation;
-using EPR.PRN.Backend.Data.DataModels.Accreditations;
 using EPR.PRN.Backend.Data.DataModels.Registrations;
 using EPR.PRN.Backend.Data.DTO.Accreditiation;
 
@@ -17,18 +16,18 @@ public class AccreditationProfile : Profile
         CreateMap<AccreditationPrnIssueAuth, AccreditationPrnIssueAuthDto>();
         CreateMap<AccreditationPrnIssueAuthRequestDto, AccreditationPrnIssueAuth>();
 
-        CreateMap<Accreditation, AccreditationDto>()       
-            .ForMember(dest => dest.MaterialName, opt => opt.MapFrom(src => src.RegistrationMaterial.Material.MaterialName))            
-            .ForMember(dest => dest.AccreditationStatusId, opt => opt.MapFrom(src => src.AccreditationStatusId))            
-            .ForMember(dest => dest.ApplicationTypeId, opt => opt.MapFrom(src => src.RegistrationMaterial.Registration.ApplicationTypeId))            
+        CreateMap<Accreditation, AccreditationDto>()
+            .ForMember(dest => dest.MaterialName, opt => opt.MapFrom(src => src.RegistrationMaterial.Material.MaterialName))
+            .ForMember(dest => dest.AccreditationStatusId, opt => opt.MapFrom(src => src.AccreditationStatusId))
+            .ForMember(dest => dest.ApplicationTypeId, opt => opt.MapFrom(src => src.RegistrationMaterial.Registration.ApplicationTypeId))
             .ForMember(dest => dest.RegistrationMaterialId, opt => opt.MapFrom(src => src.RegistrationMaterialId))
-            .ForMember(des => des.AccreferenceNumber, opt => opt.MapFrom(src => src.ApplicationReferenceNumber))            
+            .ForMember(des => des.AccreferenceNumber, opt => opt.MapFrom(src => src.ApplicationReferenceNumber))
             .ForMember(des => des.AccreditationYear, opt => opt.MapFrom(src => src.AccreditationYear))
 
             .ForMember(des => des.NewMarketsPercentage, opt => opt.MapFrom(src => src.NewMarketsPercentage))
             .ForMember(des => des.BusinessCollectionsPercentage, opt => opt.MapFrom(src => src.BusinessCollectionsPercentage))
             .ForMember(des => des.InfrastructurePercentage, opt => opt.MapFrom(src => src.InfrastructurePercentage))
-            .ForMember(des => des.CommunicationsPercentage, opt => opt.MapFrom(src => src.CommunicationsPercentage))            
+            .ForMember(des => des.CommunicationsPercentage, opt => opt.MapFrom(src => src.CommunicationsPercentage))
             .ForMember(des => des.OtherPercentage, opt => opt.MapFrom(src => src.NotCoveredOtherCategoriesPercentage))
             .ForMember(des => des.NewUsesPercentage, opt => opt.MapFrom(src => src.NewUsersRecycledPackagingWastePercentage))
             .ForMember(des => des.PackagingWastePercentage, opt => opt.MapFrom(src => src.RecycledWastePercentage))

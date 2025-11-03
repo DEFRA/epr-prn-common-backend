@@ -1,19 +1,16 @@
 ﻿using EPR.PRN.Backend.API.Commands;
+using EPR.PRN.Backend.API.Common.Enums;
 using EPR.PRN.Backend.API.Controllers.Regulator;
 using EPR.PRN.Backend.API.Dto.Regulator;
 using EPR.PRN.Backend.API.Queries;
-
 using FluentAssertions;
+using FluentAssertions.Execution;
 using FluentValidation;
 using FluentValidation.Results;
-using FluentAssertions.Execution;
-
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-
 using Moq;
-using EPR.PRN.Backend.API.Common.Enums;
 
 namespace EPR.PRN.Backend.API.UnitTests.Controllers.Regulator;
 

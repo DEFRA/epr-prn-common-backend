@@ -1,10 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc.ApiExplorer;
+﻿using System.Diagnostics.CodeAnalysis;
+using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.FeatureManagement;
 using Microsoft.FeatureManagement.Mvc;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
-using System.Diagnostics.CodeAnalysis;
 
 namespace EPR.PRN.Backend.API.Helpers;
 
@@ -79,7 +79,7 @@ public class FeatureEnabledDocumentFilter(IFeatureManager featureManager) : IDoc
 
         return false;
     }
-    
+
     private async Task<bool> AreAllFeaturesEnabled(IEnumerable<string> features)
     {
         foreach (var feature in features)

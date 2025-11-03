@@ -1,7 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using AutoMapper;
-using AutoMapper.QueryableExtensions;
-using EPR.PRN.Backend.Data.DataModels.Accreditations;
+﻿using AutoMapper;
 using EPR.PRN.Backend.Data.DataModels.Registrations;
 using EPR.PRN.Backend.Data.DTO.Accreditiation;
 using EPR.PRN.Backend.Data.Interfaces.Accreditation;
@@ -15,11 +12,11 @@ public class AccreditationRepository(EprContext eprContext, IMapper mapper, ILog
     public async Task<Accreditation?> GetById(Guid accreditationId)
     {
         logger.LogInformation("Retrieving accreditation details for ExternalId: {AccreditationId}.", accreditationId);
-        var accreditation =  await eprContext.Accreditations
-            .AsNoTracking()            
-            .Include(x => x.AccreditationStatus)           
+        var accreditation = await eprContext.Accreditations
+            .AsNoTracking()
+            .Include(x => x.AccreditationStatus)
             .Include(x => x.RegistrationMaterial)
-                .ThenInclude(x => x.Registration)                
+                .ThenInclude(x => x.Registration)
             .Include(x => x.RegistrationMaterial)
                 .ThenInclude(x => x.Material)
             .SingleOrDefaultAsync(x => x.ExternalId.Equals(accreditationId));
@@ -33,7 +30,7 @@ public class AccreditationRepository(EprContext eprContext, IMapper mapper, ILog
         int applicationTypeId)
     {
         logger.LogInformation("Retrieving accreditation details for OrganisationId: {OrganisationId}, MaterialId: {MaterialId}, ApplicationTypeId: {ApplicationTypeId}.", organisationId, materialId, applicationTypeId);
-        var accreditation =  await eprContext.Accreditations
+        var accreditation = await eprContext.Accreditations
             .Include(x => x.RegistrationMaterial)
                 .ThenInclude(x => x.Registration)
             .AsNoTracking()
@@ -48,12 +45,12 @@ public class AccreditationRepository(EprContext eprContext, IMapper mapper, ILog
 
     public async Task Create(Accreditation accreditation)
     {
-   
+
         var currentTimestamp = DateTime.UtcNow;
         accreditation.CreatedOn = currentTimestamp;
         accreditation.UpdatedOn = currentTimestamp;
         accreditation.ExternalId = Guid.NewGuid();
-        accreditation.CreatedBy =  accreditation.ExternalId; // These need to be replaced with the correct ids that must be passed through the apis from the front end.
+        accreditation.CreatedBy = accreditation.ExternalId; // These need to be replaced with the correct ids that must be passed through the apis from the front end.
         accreditation.UpdatedBy = accreditation.ExternalId;
         eprContext.Accreditations.Add(accreditation);
         await eprContext.SaveChangesAsync();
@@ -96,17 +93,17 @@ public class AccreditationRepository(EprContext eprContext, IMapper mapper, ILog
 
         eprContext.Entry(existingAccreditation).State = EntityState.Modified;
         await eprContext.SaveChangesAsync();
-        logger.LogInformation("Updated accreditation with ExternalId: {ExternalId} and Id {Id}.", accreditation.ExternalId, accreditation.Id);  
+        logger.LogInformation("Updated accreditation with ExternalId: {ExternalId} and Id {Id}.", accreditation.ExternalId, accreditation.Id);
     }
 
 
 
     public async Task<IEnumerable<AccreditationOverviewDto>> GetAccreditationOverviewForOrgId(Guid organisationId)
     {
-        var data= await eprContext.Accreditations
+        var data = await eprContext.Accreditations
              .Include(x => x.RegistrationMaterial)
-                .ThenInclude(x => x.Registration)           
-            .Where(a => a.RegistrationMaterial.Registration.OrganisationId == organisationId)            
+                .ThenInclude(x => x.Registration)
+            .Where(a => a.RegistrationMaterial.Registration.OrganisationId == organisationId)
             .ToListAsync();
 
         return mapper.Map<List<AccreditationOverviewDto>>(data);

@@ -25,10 +25,11 @@ public class UpdateApplicationRegistrationTaskStatusCommandValidatorTests
         // Arrange
         var registrationId = Guid.NewGuid();
         var command = new UpdateApplicationRegistrationTaskStatusCommand
-        { 
-            Status = validStatus, 
-            RegistrationId = registrationId, 
-            TaskName = "Test Task" };
+        {
+            Status = validStatus,
+            RegistrationId = registrationId,
+            TaskName = "Test Task"
+        };
 
         // Act
         var result = await _validator.TestValidateAsync(command);
@@ -45,12 +46,12 @@ public class UpdateApplicationRegistrationTaskStatusCommandValidatorTests
         // Arrange
         var registrationId = Guid.NewGuid();
         var command = new UpdateApplicationRegistrationTaskStatusCommand
-        { 
+        {
             Status = invalidStatus,
             RegistrationId = registrationId,
             TaskName = "Test Task"
         };
-    
+
         // Act
         var result = await _validator.TestValidateAsync(command);
 

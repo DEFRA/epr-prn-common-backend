@@ -12,9 +12,9 @@ public interface IRegistrationMaterialRepository
 
     Task<RegistrationMaterial> GetRegistrationMaterialById(Guid registrationMaterialId);
     Task<DataModels.Registrations.Accreditation> GetAccreditation_FileUploadById(Guid accreditationId);
-    Task UpdateRegistrationOutCome(Guid registrationMaterialId, int statusId, string? comment, string? registrationReferenceNumber , Guid User);
+    Task UpdateRegistrationOutCome(Guid registrationMaterialId, int statusId, string? comment, string? registrationReferenceNumber, Guid User);
     Task RegistrationMaterialsMarkAsDulyMade(Guid registrationMaterialId, int statusId, DateTime determinationDateUtc,
-            DateTime dulyMadeDate,Guid dulyMadeBy);
+            DateTime dulyMadeDate, Guid dulyMadeBy);
     Task<RegistrationMaterial> CreateAsync(Guid registrationId, string material);
     Task CreateExemptionReferencesAsync(Guid registrationMaterialId, List<MaterialExemptionReference> exemptionReferences);
     Task<IList<RegistrationMaterial>> GetRegistrationMaterialsByRegistrationId(Guid requestRegistrationId);
@@ -25,5 +25,5 @@ public interface IRegistrationMaterialRepository
 
     Task<IEnumerable<LookupMaterialPermit>> GetMaterialPermitTypes();
     Task DeleteAsync(Guid registrationMaterialId);
-	Task UpdateIsMaterialRegisteredAsync(List<UpdateIsMaterialRegisteredDto> updateIsMaterialRegisteredDto);
+    Task UpdateIsMaterialRegisteredAsync(List<UpdateIsMaterialRegisteredDto> updateIsMaterialRegisteredDto);
 }

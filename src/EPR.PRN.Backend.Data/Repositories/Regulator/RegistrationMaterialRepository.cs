@@ -241,7 +241,7 @@ public class RegistrationMaterialRepository(EprContext eprContext) : IRegistrati
 
         if ((MaterialPermitType)permitTypeId is not MaterialPermitType.WasteExemption)
         {
-           eprContext.MaterialExemptionReferences.RemoveRange(eprContext.MaterialExemptionReferences.Where(o => o.RegistrationMaterialId == registrationMaterial.Id).ToList());
+            eprContext.MaterialExemptionReferences.RemoveRange(eprContext.MaterialExemptionReferences.Where(o => o.RegistrationMaterialId == registrationMaterial.Id).ToList());
         }
 
         // Permit Number

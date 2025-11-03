@@ -1,14 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using EPR.PRN.Backend.API.Common.Enums;
-using EPR.PRN.Backend.API.Common.Exceptions;
+﻿using EPR.PRN.Backend.API.Common.Enums;
 using EPR.PRN.Backend.Data.DataModels.Accreditations;
-using EPR.PRN.Backend.Data.DataModels.Registrations;
 using EPR.PRN.Backend.Data.Interfaces.Accreditation;
-using EPR.PRN.Backend.Data.Repositories.Regulator;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -30,7 +22,7 @@ namespace EPR.PRN.Backend.Data.Repositories.Accreditations
             return await GetTaskStatus(taskName, accreditationId);
         }
 
-        public async Task UpdateStatusAsync(string taskName, Guid accreditationId, TaskStatuses status) 
+        public async Task UpdateStatusAsync(string taskName, Guid accreditationId, TaskStatuses status)
         {
             _logger.LogInformation("Updating status for task with TaskName {TaskName} And AccreditationId {AccreditationId} to {Status}", taskName, accreditationId, status);
 

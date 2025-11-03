@@ -6,6 +6,6 @@ public class NoteBase
     public Guid OrganisationId { get; init; }
     public List<QueryNoteDto> QueryNotes { get; set; } = [];
     public RegulatorTaskStatus TaskStatus { get; set; }
-    
+
 }
 

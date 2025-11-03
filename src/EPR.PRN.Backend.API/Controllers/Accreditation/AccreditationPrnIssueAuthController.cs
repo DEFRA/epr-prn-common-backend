@@ -1,6 +1,5 @@
 ﻿namespace EPR.PRN.Backend.API.Controllers.Accreditation;
 
-using System.Net;
 using EPR.PRN.Backend.API.Common.Constants;
 using EPR.PRN.Backend.API.Dto.Accreditation;
 using EPR.PRN.Backend.API.Services.Interfaces;
@@ -16,7 +15,7 @@ public class AccreditationPrnIssueAuthController(IAccreditationPrnIssueAuthServi
     [HttpGet("{accreditationId}")]
     [ProducesResponseType(typeof(AccreditationPrnIssueAuthDto), 200)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> GetByAccreditationId([FromRoute]Guid accreditationId)
+    public async Task<IActionResult> GetByAccreditationId([FromRoute] Guid accreditationId)
     {
         List<AccreditationPrnIssueAuthDto> accreditationPrnIssueAuths = await accreditationPrnIssueAuthService.GetByAccreditationId(accreditationId);
 
@@ -30,7 +29,7 @@ public class AccreditationPrnIssueAuthController(IAccreditationPrnIssueAuthServi
 
     [HttpPost("{accreditationId}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
-    public async Task<IActionResult> Post([FromRoute]Guid accreditationId, [FromBody]List<AccreditationPrnIssueAuthRequestDto> request)
+    public async Task<IActionResult> Post([FromRoute] Guid accreditationId, [FromBody] List<AccreditationPrnIssueAuthRequestDto> request)
     {
         await accreditationPrnIssueAuthService.ReplaceAllByAccreditationId(accreditationId, request);
 

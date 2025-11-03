@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using AutoMapper;
+﻿using AutoMapper;
 using EPR.PRN.Backend.API.Dto.Accreditation;
 using EPR.PRN.Backend.API.Profiles;
 using EPR.PRN.Backend.API.Services;
@@ -97,7 +96,7 @@ public class AccreditationPrnIssueAuthServiceTests
             new AccreditationPrnIssueAuthRequestDto { PersonExternalId = Guid.NewGuid() },
             new AccreditationPrnIssueAuthRequestDto { PersonExternalId = Guid.NewGuid() }
         };
-        
+
         // Act
         await _service.ReplaceAllByAccreditationId(accreditationId, request);
 

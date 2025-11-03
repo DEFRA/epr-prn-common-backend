@@ -5,5 +5,5 @@ namespace EPR.PRN.Backend.API.Commands;
 
 public class UpdateIsMaterialRegisteredCommand : IRequest
 {
-	public List<UpdateIsMaterialRegisteredDto> UpdateIsMaterialRegisteredDto { get; set; } = [];
+    public List<UpdateIsMaterialRegisteredDto> UpdateIsMaterialRegisteredDto { get; set; } = [];
 }

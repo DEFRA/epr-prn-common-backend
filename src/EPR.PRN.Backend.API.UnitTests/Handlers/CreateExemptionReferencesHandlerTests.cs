@@ -10,13 +10,13 @@ namespace EPR.PRN.Backend.API.UnitTests.Handlers;
 [TestClass]
 public class CreateExemptionReferencesHandlerTests
 {
-    private Mock<IRegistrationMaterialRepository> _repositoryMock;    
+    private Mock<IRegistrationMaterialRepository> _repositoryMock;
     private CreateExemptionReferencesHandler _handler;
 
     [TestInitialize]
     public void Setup()
     {
-        _repositoryMock = new Mock<IRegistrationMaterialRepository>();        
+        _repositoryMock = new Mock<IRegistrationMaterialRepository>();
         _handler = new CreateExemptionReferencesHandler(_repositoryMock.Object);
     }
 
@@ -30,7 +30,7 @@ public class CreateExemptionReferencesHandlerTests
             RegistrationMaterialId = registrationMaterialId,
             MaterialExemptionReferences = new List<MaterialExemptionReferenceDto>()
         };
-      
+
         var mappedExemptions = command.MaterialExemptionReferences
             .Select(dto => new MaterialExemptionReference { ReferenceNo = dto.ReferenceNumber })
             .ToList();
@@ -52,7 +52,7 @@ public class CreateExemptionReferencesHandlerTests
             It.Is<List<MaterialExemptionReference>>(l => l.Count == mappedExemptions.Count)),
             Times.Once);
     }
-    
+
     [TestMethod]
     public async Task Handle_ShouldPassCorrectExemptionReferencesToRepository()
     {
@@ -86,7 +86,7 @@ public class CreateExemptionReferencesHandlerTests
         await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        Assert.IsNotNull(actualExemptions);        
+        Assert.IsNotNull(actualExemptions);
         Assert.AreEqual(expectedExemptions.Count, actualExemptions.Count);
 
         for (int i = 0; i < expectedExemptions.Count; i++)

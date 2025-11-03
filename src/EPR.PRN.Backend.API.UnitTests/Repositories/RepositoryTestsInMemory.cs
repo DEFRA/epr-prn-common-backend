@@ -192,7 +192,7 @@ public class RepositoryTestsInMemory
         data[0].PrnStatusId = (int)status;
 
         _context.Prn.AddRange(data);
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(CancellationToken.None);
 
         var result = await _repository.GetSearchPrnsForOrganisation(orgId, request);
 
@@ -223,7 +223,7 @@ public class RepositoryTestsInMemory
                            .CreateMany().ToArray();
 
         _context.Prn.AddRange(data);
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(CancellationToken.None);
 
         var result = await _repository.GetSearchPrnsForOrganisation(orgId, request);
 
@@ -254,7 +254,7 @@ public class RepositoryTestsInMemory
         data[0].TonnageValue = 200;
 
         _context.Prn.AddRange(data);
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(CancellationToken.None);
 
         var result = await _repository.GetSearchPrnsForOrganisation(orgId, request);
 
@@ -292,7 +292,7 @@ public class RepositoryTestsInMemory
         data[0].MaterialName = PrnConstants.Materials.Aluminium;
 
         _context.Prn.AddRange(data);
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(CancellationToken.None);
 
         var result = await _repository.GetSearchPrnsForOrganisation(orgId, request);
 
@@ -330,7 +330,7 @@ public class RepositoryTestsInMemory
         data[0].IssueDate = DateTime.UtcNow;
 
         _context.Prn.AddRange(data);
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(CancellationToken.None);
 
         var result = await _repository.GetSearchPrnsForOrganisation(orgId, request);
 
@@ -368,7 +368,7 @@ public class RepositoryTestsInMemory
         data[0].IssuedByOrg = "Beta";
 
         _context.Prn.AddRange(data);
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(CancellationToken.None);
 
         var result = await _repository.GetSearchPrnsForOrganisation(orgId, request);
 
@@ -406,7 +406,7 @@ public class RepositoryTestsInMemory
         data[2].DecemberWaste = true;
 
         _context.Prn.AddRange(data);
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(CancellationToken.None);
 
         var result = await _repository.GetSearchPrnsForOrganisation(orgId, request);
 
@@ -437,7 +437,7 @@ public class RepositoryTestsInMemory
         data[2].IssueDate = DateTime.UtcNow;
 
         _context.Prn.AddRange(data);
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(CancellationToken.None);
 
         var result = await _repository.GetSearchPrnsForOrganisation(orgId, request);
 
@@ -717,7 +717,7 @@ public class RepositoryTestsInMemory
 
         var entity = CreateEprnEntityFromDto(dto);
         await _repository.SavePrnDetails(entity);
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(CancellationToken.None);
 
         var awaitingAcceptancePrn = await _context.Prn.AsNoTracking().SingleAsync(x => x.PrnNumber == dto.EvidenceNo);
         awaitingAcceptancePrn.PrnStatusId = (int)EprnStatus.AWAITINGACCEPTANCE;
@@ -727,7 +727,7 @@ public class RepositoryTestsInMemory
 
         // Assert
         var updatedPrn = await _context.Prn.SingleAsync(x => x.PrnNumber == dto.EvidenceNo);
-        updatedPrn.PrnStatusId.Should().Be((int) eOldStatus);
+        updatedPrn.PrnStatusId.Should().Be((int)eOldStatus);
 
         _mockLogger.Verify(logger => logger.Log(
             LogLevel.Information,
@@ -775,10 +775,10 @@ public class RepositoryTestsInMemory
 
         var entity = CreateEprnEntityFromDto(dto);
         await _repository.SavePrnDetails(entity);
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(CancellationToken.None);
 
         var newPrn = await _context.Prn.AsNoTracking().SingleAsync(x => x.PrnNumber == dto.EvidenceNo);
-        newPrn.PrnStatusId = (int) eNewStatus;
+        newPrn.PrnStatusId = (int)eNewStatus;
 
         // Act
         await _repository.SavePrnDetails(newPrn);

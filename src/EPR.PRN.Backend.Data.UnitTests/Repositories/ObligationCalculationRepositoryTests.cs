@@ -116,88 +116,88 @@ public class ObligationCalculationRepositoryTests
         result.Count.Should().Be(1);
     }
 
-	[TestMethod]
-	public async Task SoftDeleteAndAddObligationCalculationBySubmitterIdAsync_ShouldCallUpdaterAndAddNewCalculations()
-	{
-		// Arrange
-		var newCalculations = new List<ObligationCalculation>
-	    {
-		    new() { SubmitterId = csSubmitterId, Year = currentYear, MaterialId = 4 },
-		    new() { SubmitterId = csSubmitterId, Year = currentYear, MaterialId = 5 }
-	    };
+    [TestMethod]
+    public async Task SoftDeleteAndAddObligationCalculationBySubmitterIdAsync_ShouldCallUpdaterAndAddNewCalculations()
+    {
+        // Arrange
+        var newCalculations = new List<ObligationCalculation>
+        {
+            new() { SubmitterId = csSubmitterId, Year = currentYear, MaterialId = 4 },
+            new() { SubmitterId = csSubmitterId, Year = currentYear, MaterialId = 5 }
+        };
 
-		var mockTransaction = new Mock<IDbContextTransaction>();
-		_mockEprContext.Setup(c => c.Database.BeginTransactionAsync(It.IsAny<CancellationToken>()))
-			.ReturnsAsync(mockTransaction.Object);
+        var mockTransaction = new Mock<IDbContextTransaction>();
+        _mockEprContext.Setup(c => c.Database.BeginTransactionAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(mockTransaction.Object);
 
-		var obligationCalculationRepository = new ObligationCalculationRepository(_mockEprContext.Object, _logger, _mockUpdater);
+        var obligationCalculationRepository = new ObligationCalculationRepository(_mockEprContext.Object, _logger, _mockUpdater);
 
-		// Act
-		await obligationCalculationRepository.UpsertObligationCalculationsForSubmitterYearAsync(csSubmitterId, currentYear, newCalculations);
+        // Act
+        await obligationCalculationRepository.UpsertObligationCalculationsForSubmitterYearAsync(csSubmitterId, currentYear, newCalculations);
 
-		// Assert
+        // Assert
 
-		A.CallTo(() => _mockUpdater.SoftDeleteBySubmitterAndYearAsync(csSubmitterId, currentYear))
-			.MustHaveHappenedOnceExactly();
-		_mockEprContext.Verify(c => c.ObligationCalculations.AddRangeAsync(newCalculations, It.IsAny<CancellationToken>()), Moq.Times.Once);
-		_mockEprContext.Verify(c => c.SaveChangesAsync(It.IsAny<CancellationToken>()), Moq.Times.Once);
-		mockTransaction.Verify(t => t.CommitAsync(It.IsAny<CancellationToken>()), Moq.Times.Once);
-	}
+        A.CallTo(() => _mockUpdater.SoftDeleteBySubmitterAndYearAsync(csSubmitterId, currentYear))
+            .MustHaveHappenedOnceExactly();
+        _mockEprContext.Verify(c => c.ObligationCalculations.AddRangeAsync(newCalculations, It.IsAny<CancellationToken>()), Moq.Times.Once);
+        _mockEprContext.Verify(c => c.SaveChangesAsync(It.IsAny<CancellationToken>()), Moq.Times.Once);
+        mockTransaction.Verify(t => t.CommitAsync(It.IsAny<CancellationToken>()), Moq.Times.Once);
+    }
 
-	[TestMethod]
-	public async Task SoftDeleteAndAddObligationCalculationBySubmitterIdAsync_ShouldWork_WhenNoExistingCalculations()
-	{
-		// Arrange
-		var newSubmitterId = Guid.NewGuid();
-		var newCalculations = new List<ObligationCalculation>
-	    {
-		    new() { SubmitterId = newSubmitterId, Year = currentYear, MaterialId = 10 }
-	    };
+    [TestMethod]
+    public async Task SoftDeleteAndAddObligationCalculationBySubmitterIdAsync_ShouldWork_WhenNoExistingCalculations()
+    {
+        // Arrange
+        var newSubmitterId = Guid.NewGuid();
+        var newCalculations = new List<ObligationCalculation>
+        {
+            new() { SubmitterId = newSubmitterId, Year = currentYear, MaterialId = 10 }
+        };
 
-		var mockTransaction = new Mock<IDbContextTransaction>();
-		_mockEprContext.Setup(c => c.Database.BeginTransactionAsync(It.IsAny<CancellationToken>()))
-			.ReturnsAsync(mockTransaction.Object);
+        var mockTransaction = new Mock<IDbContextTransaction>();
+        _mockEprContext.Setup(c => c.Database.BeginTransactionAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(mockTransaction.Object);
 
-		var obligationCalculationRepository = new ObligationCalculationRepository(_mockEprContext.Object, _logger, _mockUpdater);
+        var obligationCalculationRepository = new ObligationCalculationRepository(_mockEprContext.Object, _logger, _mockUpdater);
 
-		// Act
-		await obligationCalculationRepository.UpsertObligationCalculationsForSubmitterYearAsync(newSubmitterId, currentYear, newCalculations);
+        // Act
+        await obligationCalculationRepository.UpsertObligationCalculationsForSubmitterYearAsync(newSubmitterId, currentYear, newCalculations);
 
-		// Assert
-		A.CallTo(() => _mockUpdater.SoftDeleteBySubmitterAndYearAsync(newSubmitterId, currentYear))
-			.MustHaveHappenedOnceExactly();
-		_mockEprContext.Verify(c => c.ObligationCalculations.AddRangeAsync(newCalculations, It.IsAny<CancellationToken>()), Moq.Times.Once);
-		_mockEprContext.Verify(c => c.SaveChangesAsync(It.IsAny<CancellationToken>()), Moq.Times.Once);
-		mockTransaction.Verify(t => t.CommitAsync(It.IsAny<CancellationToken>()), Moq.Times.Once);
-	}
+        // Assert
+        A.CallTo(() => _mockUpdater.SoftDeleteBySubmitterAndYearAsync(newSubmitterId, currentYear))
+            .MustHaveHappenedOnceExactly();
+        _mockEprContext.Verify(c => c.ObligationCalculations.AddRangeAsync(newCalculations, It.IsAny<CancellationToken>()), Moq.Times.Once);
+        _mockEprContext.Verify(c => c.SaveChangesAsync(It.IsAny<CancellationToken>()), Moq.Times.Once);
+        mockTransaction.Verify(t => t.CommitAsync(It.IsAny<CancellationToken>()), Moq.Times.Once);
+    }
 
-	[TestMethod]
-	public async Task SoftDeleteAndAddObligationCalculationBySubmitterIdAsync_ShouldRollback_WhenExceptionOccurs()
-	{
-		// Arrange
-		var newCalculations = new List<ObligationCalculation>
-	    {
-		    new() { SubmitterId = csSubmitterId, Year = currentYear, MaterialId = 99 }
-	    };
+    [TestMethod]
+    public async Task SoftDeleteAndAddObligationCalculationBySubmitterIdAsync_ShouldRollback_WhenExceptionOccurs()
+    {
+        // Arrange
+        var newCalculations = new List<ObligationCalculation>
+        {
+            new() { SubmitterId = csSubmitterId, Year = currentYear, MaterialId = 99 }
+        };
 
-		var mockTransaction = new Mock<IDbContextTransaction>();
-		_mockEprContext.Setup(c => c.Database.BeginTransactionAsync(It.IsAny<CancellationToken>()))
-			.ReturnsAsync(mockTransaction.Object);
+        var mockTransaction = new Mock<IDbContextTransaction>();
+        _mockEprContext.Setup(c => c.Database.BeginTransactionAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(mockTransaction.Object);
 
-		// Simulate exception on SaveChangesAsync
-		_mockEprContext.Setup(c => c.SaveChangesAsync(It.IsAny<CancellationToken>()))
-			.ThrowsAsync(new InvalidOperationException("Database Errror"));
+        // Simulate exception on SaveChangesAsync
+        _mockEprContext.Setup(c => c.SaveChangesAsync(It.IsAny<CancellationToken>()))
+            .ThrowsAsync(new InvalidOperationException("Database Errror"));
 
-		var obligationCalculationRepository = new ObligationCalculationRepository(_mockEprContext.Object, _logger, _mockUpdater);
+        var obligationCalculationRepository = new ObligationCalculationRepository(_mockEprContext.Object, _logger, _mockUpdater);
 
-		// Act & Assert
-		await Assert.ThrowsExactlyAsync<InvalidOperationException>(async () =>
-			await obligationCalculationRepository.UpsertObligationCalculationsForSubmitterYearAsync(csSubmitterId, currentYear, newCalculations));
+        // Act & Assert
+        await Assert.ThrowsExactlyAsync<InvalidOperationException>(async () =>
+            await obligationCalculationRepository.UpsertObligationCalculationsForSubmitterYearAsync(csSubmitterId, currentYear, newCalculations));
 
-		// Verify rollback called
-		mockTransaction.Verify(t => t.RollbackAsync(It.IsAny<CancellationToken>()), Moq.Times.Once);
+        // Verify rollback called
+        mockTransaction.Verify(t => t.RollbackAsync(It.IsAny<CancellationToken>()), Moq.Times.Once);
 
-		// Verify commit NOT called
-		mockTransaction.Verify(t => t.CommitAsync(It.IsAny<CancellationToken>()), Moq.Times.Never);
-	}
+        // Verify commit NOT called
+        mockTransaction.Verify(t => t.CommitAsync(It.IsAny<CancellationToken>()), Moq.Times.Never);
+    }
 }

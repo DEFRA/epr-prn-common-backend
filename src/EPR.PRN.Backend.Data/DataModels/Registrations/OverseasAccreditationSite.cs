@@ -43,5 +43,5 @@ public class OverseasAccreditationSite
     public int SiteCheckStatusId { get; set; }
     public LookupSiteCheckStatus? SiteCheckStatus { get; set; }
 
-    
+
 }

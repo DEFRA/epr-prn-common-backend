@@ -1,16 +1,13 @@
 ﻿using EPR.PRN.Backend.API.Commands;
 using EPR.PRN.Backend.API.Common.Enums;
-using EPR.PRN.Backend.API.Common.Exceptions;
-using EPR.PRN.Backend.API.Handlers.Regulator;
 using EPR.PRN.Backend.API.Helpers;
-using EPR.PRN.Backend.API.Repositories;
 using EPR.PRN.Backend.Data.DataModels.Registrations;
 using EPR.PRN.Backend.Data.Interfaces.Accreditation;
 using MediatR;
 
 namespace EPR.PRN.Backend.API.Handlers.Accreditation
 {
-    
+
     public class UpdateAccreditationTaskHandler(IAccreditationTaskStatusRepository repository)
     : IRequestHandler<UpdateAccreditationTaskCommand>
     {
@@ -64,6 +61,6 @@ namespace EPR.PRN.Backend.API.Handlers.Accreditation
             }
         }
     }
-    
-    
+
+
 }

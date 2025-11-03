@@ -1,6 +1,4 @@
 ﻿using AutoMapper;
-using EPR.PRN.Backend.API.Common.Constants;
-using EPR.PRN.Backend.API.Common.Enums;
 using EPR.PRN.Backend.API.Handlers.Regulator;
 using EPR.PRN.Backend.API.Profiles.Regulator;
 using EPR.PRN.Backend.API.Queries;
@@ -25,7 +23,7 @@ public class GetMaterialsAuthorisedOnSiteByIdHandlerTests
 
         var config = new MapperConfiguration(cfg =>
         {
-            cfg.AddProfile<RegistrationMaterialProfile>(); 
+            cfg.AddProfile<RegistrationMaterialProfile>();
         });
         _mapper = config.CreateMapper();
 

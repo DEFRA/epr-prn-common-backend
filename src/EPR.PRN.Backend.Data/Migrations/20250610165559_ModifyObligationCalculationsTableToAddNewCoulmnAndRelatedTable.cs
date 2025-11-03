@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -13,10 +12,10 @@ namespace EPR.PRN.Backend.Data.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-			// Remove exisitng rows from ObligationCalculations table
-			migrationBuilder.Sql(@"DELETE FROM ObligationCalculations");
+            // Remove exisitng rows from ObligationCalculations table
+            migrationBuilder.Sql(@"DELETE FROM ObligationCalculations");
 
-			migrationBuilder.AddColumn<Guid>(
+            migrationBuilder.AddColumn<Guid>(
                 name: "SubmitterId",
                 table: "ObligationCalculations",
                 type: "uniqueidentifier",

@@ -1,8 +1,6 @@
-﻿using EPR.PRN.Backend.Data.DataModels.Registrations;
-
-namespace EPR.PRN.Backend.API.Dto.Regulator
+﻿namespace EPR.PRN.Backend.API.Dto.Regulator
 {
-    public class RegistrationMaterialSamplingPlanDto:NoteBase
+    public class RegistrationMaterialSamplingPlanDto : NoteBase
     {
         public required string MaterialName { get; set; }
         public List<RegistrationMaterialSamplingPlanFileDto> Files { get; set; } = [];

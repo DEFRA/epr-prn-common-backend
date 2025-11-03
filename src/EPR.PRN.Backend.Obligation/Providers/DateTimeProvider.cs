@@ -4,7 +4,7 @@ namespace EPR.PRN.Backend.Obligation.Providers;
 
 public class DateTimeProvider : IDateTimeProvider
 {
-	public DateTime UtcNow => DateTime.UtcNow;
+    public DateTime UtcNow => DateTime.UtcNow;
 
-	public int CurrentYear => DateTime.UtcNow.Year;
+    public int CurrentYear => DateTime.UtcNow.Year;
 }

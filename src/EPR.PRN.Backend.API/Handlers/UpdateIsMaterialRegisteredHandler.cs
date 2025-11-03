@@ -5,12 +5,12 @@ using MediatR;
 namespace EPR.PRN.Backend.API.Handlers;
 
 public class UpdateIsMaterialRegisteredHandler(IRegistrationMaterialRepository repository)
-	: IRequestHandler<UpdateIsMaterialRegisteredCommand>
+    : IRequestHandler<UpdateIsMaterialRegisteredCommand>
 {
-	public async Task Handle(UpdateIsMaterialRegisteredCommand command, CancellationToken cancellationToken)
-	{
-		// Update IsMaterialRegistered
-		await repository
-			.UpdateIsMaterialRegisteredAsync(command.UpdateIsMaterialRegisteredDto);
-	}
+    public async Task Handle(UpdateIsMaterialRegisteredCommand command, CancellationToken cancellationToken)
+    {
+        // Update IsMaterialRegistered
+        await repository
+            .UpdateIsMaterialRegisteredAsync(command.UpdateIsMaterialRegisteredDto);
+    }
 }

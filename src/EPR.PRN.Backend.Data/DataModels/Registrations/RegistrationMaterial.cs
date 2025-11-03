@@ -1,5 +1,4 @@
-﻿using EPR.PRN.Backend.API.Common.Enums;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics.CodeAnalysis;
 
@@ -25,9 +24,9 @@ public class RegistrationMaterial
     [ForeignKey("Status")]
     public int? StatusId { get; set; }
     public string? RegistrationReferenceNumber { get; set; } = null;
-    public string? Comments { get; set; } = string.Empty;        
+    public string? Comments { get; set; } = string.Empty;
     public DateTime StatusUpdatedDate { get; set; }
-    public Guid? StatusUpdatedBy { get; set; } 
+    public Guid? StatusUpdatedBy { get; set; }
     public string? ReasonforNotreg { get; set; } = string.Empty;
     public LookupMaterialPermit? PermitType { get; set; }
     [ForeignKey("PermitType")]

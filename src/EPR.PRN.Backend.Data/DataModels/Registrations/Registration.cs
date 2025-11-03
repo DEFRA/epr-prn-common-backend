@@ -19,7 +19,7 @@ public class Registration
 
     [ForeignKey("BusinessAddress")]
     public int? BusinessAddressId { get; set; }
-    
+
     public Address? BusinessAddress { get; set; }
 
     [ForeignKey("ReprocessingSiteAddress")]
@@ -32,7 +32,7 @@ public class Registration
     public int? LegalDocumentAddressId { get; set; }
 
     public Address? LegalDocumentAddress { get; set; }
-    
+
     public int AssignedOfficerId { get; set; }
     public Guid CreatedBy { get; set; }
     public DateTime CreatedDate { get; set; }

@@ -4,7 +4,6 @@ using EPR.PRN.Backend.API.Queries;
 using FluentAssertions;
 using FluentAssertions.Execution;
 using MediatR;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;

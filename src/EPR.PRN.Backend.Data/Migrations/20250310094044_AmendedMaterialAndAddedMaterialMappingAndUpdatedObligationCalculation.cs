@@ -127,14 +127,14 @@ namespace EPR.PRN.Backend.Data.Migrations
                     { 9, "Glass Re-melt", 7 }
                 });
 
-			// Add MaterialId as Nullable (to prevent errors)
-			migrationBuilder.AddColumn<int>(
-				name: "MaterialId",
-				table: "ObligationCalculations",
-				nullable: true);
+            // Add MaterialId as Nullable (to prevent errors)
+            migrationBuilder.AddColumn<int>(
+                name: "MaterialId",
+                table: "ObligationCalculations",
+                nullable: true);
 
-			// Update MaterialId based on MaterialName
-			migrationBuilder.Sql(@"
+            // Update MaterialId based on MaterialName
+            migrationBuilder.Sql(@"
                 BEGIN
                     IF COL_LENGTH('ObligationCalculations', 'MaterialName') IS NOT NULL
                     BEGIN
@@ -147,18 +147,18 @@ namespace EPR.PRN.Backend.Data.Migrations
                 END;
             ");
 
-			// Make MaterialId Non-Nullable
-			migrationBuilder.AlterColumn<int>(
-				name: "MaterialId",
-				table: "ObligationCalculations",
-				nullable: false);
+            // Make MaterialId Non-Nullable
+            migrationBuilder.AlterColumn<int>(
+                name: "MaterialId",
+                table: "ObligationCalculations",
+                nullable: false);
 
-			// Remove MaterialName from Calculation
-			migrationBuilder.DropColumn(
-				name: "MaterialName",
-				table: "ObligationCalculations");
+            // Remove MaterialName from Calculation
+            migrationBuilder.DropColumn(
+                name: "MaterialName",
+                table: "ObligationCalculations");
 
-			migrationBuilder.CreateIndex(
+            migrationBuilder.CreateIndex(
                 name: "IX_ObligationCalculations_MaterialId",
                 table: "ObligationCalculations",
                 column: "MaterialId");
@@ -184,18 +184,18 @@ namespace EPR.PRN.Backend.Data.Migrations
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
-		{
+        {
             // Add Back MaterialName Column
-			migrationBuilder.AddColumn<string>(
-				name: "MaterialName",
-				table: "ObligationCalculations",
-				type: "nvarchar(20)",
-				maxLength: 20,
-				nullable: false,
-				defaultValue: "");
+            migrationBuilder.AddColumn<string>(
+                name: "MaterialName",
+                table: "ObligationCalculations",
+                type: "nvarchar(20)",
+                maxLength: 20,
+                nullable: false,
+                defaultValue: "");
 
-			// Restore MaterialName Data
-			migrationBuilder.Sql(@"
+            // Restore MaterialName Data
+            migrationBuilder.Sql(@"
                 BEGIN
                     IF COL_LENGTH('ObligationCalculations', 'MaterialId') IS NOT NULL
                     BEGIN
@@ -208,20 +208,20 @@ namespace EPR.PRN.Backend.Data.Migrations
                 END;
             ");
 
-			// Drop Foreign Key Constraint
-			migrationBuilder.DropForeignKey(
-				name: "FK_ObligationCalculations_Material_MaterialId",
-				table: "ObligationCalculations");
+            // Drop Foreign Key Constraint
+            migrationBuilder.DropForeignKey(
+                name: "FK_ObligationCalculations_Material_MaterialId",
+                table: "ObligationCalculations");
 
-			// Drop Index
-			migrationBuilder.DropIndex(
-				name: "IX_ObligationCalculations_MaterialId",
-				table: "ObligationCalculations");
+            // Drop Index
+            migrationBuilder.DropIndex(
+                name: "IX_ObligationCalculations_MaterialId",
+                table: "ObligationCalculations");
 
-			// Drop MaterialId Column
-			migrationBuilder.DropColumn(
-				name: "MaterialId",
-				table: "ObligationCalculations");
+            // Drop MaterialId Column
+            migrationBuilder.DropColumn(
+                name: "MaterialId",
+                table: "ObligationCalculations");
 
             migrationBuilder.DropTable(
                 name: "PrnMaterialMapping");

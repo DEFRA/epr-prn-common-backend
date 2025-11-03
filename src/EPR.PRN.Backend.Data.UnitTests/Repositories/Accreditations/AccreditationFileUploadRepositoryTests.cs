@@ -27,8 +27,8 @@ public class AccreditationFileUploadRepositoryTests
         _mockLogger = new Mock<ILogger<AccreditationFileUploadRepository>>();
         _repository = new AccreditationFileUploadRepository(_dbContext, _mockLogger.Object);
 
-        
-        var accreditation = new Accreditation { Id = 1, ExternalId = _accreditationId, ApplicationReferenceNumber =  string.Empty };
+
+        var accreditation = new Accreditation { Id = 1, ExternalId = _accreditationId, ApplicationReferenceNumber = string.Empty };
         _dbContext.Accreditations.Add(accreditation);
 
         var fileUploads = new List<AccreditationFileUpload>
@@ -81,7 +81,7 @@ public class AccreditationFileUploadRepositoryTests
         };
 
         _dbContext.AccreditationFileUploads.AddRange(fileUploads);
-        _dbContext.SaveChangesAsync();
+        _dbContext.SaveChangesAsync(CancellationToken.None);
     }
 
     [TestCleanup]
@@ -98,7 +98,7 @@ public class AccreditationFileUploadRepositoryTests
         var fileUploadId = Guid.NewGuid();
         var entityToReturn = await _dbContext.AccreditationFileUploads.FirstAsync();
         entityToReturn.ExternalId = fileUploadId;
-        await _dbContext.SaveChangesAsync();
+        await _dbContext.SaveChangesAsync(CancellationToken.None);
 
         // Act
         var result = await _repository.GetByExternalId(fileUploadId);
@@ -129,7 +129,7 @@ public class AccreditationFileUploadRepositoryTests
         // Arrange
 
         // Act
-        var result = await _repository.GetByAccreditationId(_accreditationId, 
+        var result = await _repository.GetByAccreditationId(_accreditationId,
             (int)AccreditationFileUploadType.SamplingAndInspectionPlan, (int)AccreditationFileUploadStatus.UploadComplete);
 
         // Assert
@@ -226,7 +226,7 @@ public class AccreditationFileUploadRepositoryTests
     public async Task Create_ThrowsException_WhenAccreditationNotFound()
     {
         // Arrange
-        
+
         // Act
         Func<Task> act = async () => await _repository.Create(Guid.NewGuid(), new AccreditationFileUpload { Filename = string.Empty, UpdatedBy = string.Empty });
 
@@ -242,7 +242,7 @@ public class AccreditationFileUploadRepositoryTests
         var fileUploadId = Guid.NewGuid();
         var entityToUpdate = await _dbContext.AccreditationFileUploads.FirstAsync();
         entityToUpdate.ExternalId = fileUploadId;
-        await _dbContext.SaveChangesAsync();
+        await _dbContext.SaveChangesAsync(CancellationToken.None);
 
         var updatedEntity = new AccreditationFileUpload
         {
@@ -278,7 +278,7 @@ public class AccreditationFileUploadRepositoryTests
     public async Task Update_ThrowsException_WhenFileUploadNotFound()
     {
         // Arrange
-        
+
         // Act
         Func<Task> act = async () => await _repository.Update(_accreditationId, new AccreditationFileUpload { Filename = string.Empty, ExternalId = Guid.NewGuid(), UpdatedBy = string.Empty });
 
@@ -294,7 +294,7 @@ public class AccreditationFileUploadRepositoryTests
         var fileId = Guid.NewGuid();
         var entityToUpdate = await _dbContext.AccreditationFileUploads.FirstAsync();
         entityToUpdate.FileId = fileId;
-        await _dbContext.SaveChangesAsync();
+        await _dbContext.SaveChangesAsync(CancellationToken.None);
 
         // Act
         await _repository.Delete(_accreditationId, fileId);

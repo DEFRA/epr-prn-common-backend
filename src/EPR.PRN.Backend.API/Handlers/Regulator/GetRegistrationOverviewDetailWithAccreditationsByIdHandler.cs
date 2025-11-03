@@ -17,7 +17,7 @@ public class GetRegistrationOverviewDetailWithAccreditationsByIdHandler(
         var registration = await repo.GetRegistrationByExternalIdAndYear(request.Id, request.Year);
         var registrationDto = mapper.Map<RegistrationOverviewDto>(registration);
 
-        List<int> accreditationYears = new List<int>{ };
+        List<int> accreditationYears = new List<int> { };
 
         foreach (var materialDto in registrationDto.Materials)
         {

@@ -41,7 +41,7 @@ public class UpsertInterimSiteHandlerTests
                                 CityOrTown = "Test City",
                                 CountryName = "TestCountry",
                                 PostCode = "987654"
-                                
+
                             },
                             new InterimSiteAddressDto
                             {

@@ -1,5 +1,6 @@
 ﻿namespace EPR.PRN.Backend.API.Controllers;
 
+using System.Net;
 using BackendAccountService.Core.Models.Request;
 using EPR.PRN.Backend.API.Common.Dto;
 using EPR.PRN.Backend.API.Configs;
@@ -15,15 +16,14 @@ using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
-using System.Net;
 
 [ApiController]
 [ApiVersion("1.0")]
 [Route("api/v{version:apiVersion}/prn")]
-public class PrnController(IPrnService prnService, 
-    ILogger<PrnController> logger, 
-    IObligationCalculatorService obligationCalculatorService, 
-    IOptions<PrnObligationCalculationConfig> config, 
+public class PrnController(IPrnService prnService,
+    ILogger<PrnController> logger,
+    IObligationCalculatorService obligationCalculatorService,
+    IOptions<PrnObligationCalculationConfig> config,
     IConfiguration configuration,
     IValidator<SavePrnDetailsRequest> savePrnDetailsRequestValidator) : ControllerBase
 {

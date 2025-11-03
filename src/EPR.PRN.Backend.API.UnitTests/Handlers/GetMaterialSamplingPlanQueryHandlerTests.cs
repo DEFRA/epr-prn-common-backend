@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using EPR.PRN.Backend.API.Common.Enums;
 using EPR.PRN.Backend.API.Handlers.Regulator;
 using EPR.PRN.Backend.API.Profiles.Regulator;
 using EPR.PRN.Backend.API.Queries;
@@ -53,7 +52,7 @@ public class GetMaterialSamplingPlanQueryHandlerTests
             FileUploads = new List<RegistrationFileUpload>{
                 new RegistrationFileUpload
                 {
-                    
+
                     Filename = "Filename",
                     FileUploadType = new LookupFileUploadType{ Name = "Upload" },
                     FileUploadStatus = new LookupFileUploadStatus{ Name = "Uploaded"},

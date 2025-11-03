@@ -2,7 +2,6 @@
 using EPR.PRN.Backend.API.Common.Enums;
 using EPR.PRN.Backend.Data.DataModels.Registrations;
 using EPR.PRN.Backend.Data.DTO;
-using EPR.PRN.Backend.Data.Interfaces.Regulator;
 using EPR.PRN.Backend.Data.Repositories.Regulator;
 using FluentAssertions;
 using FluentAssertions.Execution;
@@ -418,7 +417,7 @@ public class RegistrationMaterialRepositoryTests
             IsMaterialSpecific = true
         });
 
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(CancellationToken.None);
 
         // Act
         await _repository.RegistrationMaterialsMarkAsDulyMade(registrationMaterialId, statusId, determinationDate, dulyMadeDate, userId);
@@ -444,7 +443,7 @@ public class RegistrationMaterialRepositoryTests
             taskStatusEntry.StatusCreatedDate.Date.Should().Be(DateTime.UtcNow.Date);
         }
     }
-    
+
     [TestMethod]
     public async Task CreateRegistrationMaterialWithExemptionsAsync_ShouldCreateMaterialAndExemptions()
     {
@@ -480,7 +479,7 @@ public class RegistrationMaterialRepositoryTests
         _context.LookupMaterials.Add(lookupMaterial);
         _context.LookupRegistrationMaterialStatuses.Add(materialStatus);
         _context.RegistrationMaterials.Add(registrationMaterial);
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(CancellationToken.None);
 
         // Act
         await _repository.CreateExemptionReferencesAsync(registrationMaterial.ExternalId, exemptionReferences);
@@ -499,7 +498,7 @@ public class RegistrationMaterialRepositoryTests
             createdMaterial.MaterialExemptionReferences!.Select(x => x.ReferenceNo).Should().Contain("EXEMPT789");
         }
     }
-    
+
     [TestMethod]
     public async Task CreateRegistrationMaterialWithExemptionsAsync_ShouldAllowEmptyExemptions()
     {
@@ -530,7 +529,7 @@ public class RegistrationMaterialRepositoryTests
         _context.LookupMaterials.Add(lookupMaterial);
         _context.LookupRegistrationMaterialStatuses.Add(materialStatus);
         _context.RegistrationMaterials.Add(registrationMaterial);
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(CancellationToken.None);
 
         // Act
         await _repository.CreateExemptionReferencesAsync(registrationMaterial.ExternalId, new List<MaterialExemptionReference>());
@@ -573,7 +572,7 @@ public class RegistrationMaterialRepositoryTests
             RegistrationMaterialId = 1
         });
 
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(CancellationToken.None);
         // Act
         await _repository.RegistrationMaterialsMarkAsDulyMade(registrationMaterialId, statusId, determinationDate, dulyMadeDate, userId);
 
@@ -625,13 +624,13 @@ public class RegistrationMaterialRepositoryTests
             RegistrationId = 9999 // No such Registration seeded  
         };
         _context.RegistrationMaterials.Add(newMaterial);
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(CancellationToken.None);
 
         // Act & Assert  
         await Assert.ThrowsExactlyAsync<KeyNotFoundException>(() =>
             _repository.RegistrationMaterialsMarkAsDulyMade(materialId, 3, DateTime.UtcNow.AddDays(84), DateTime.UtcNow, Guid.NewGuid()));
     }
-  
+
     [TestMethod]
     public async Task RegistrationMaterialsMarkAsDulyMade_ShouldUpdateDeterminationDate_WhenItAlreadyExists()
     {
@@ -658,7 +657,7 @@ public class RegistrationMaterialRepositoryTests
             IsMaterialSpecific = true
         });
 
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(CancellationToken.None);
 
         // Act
         await _repository.RegistrationMaterialsMarkAsDulyMade(materialId, 3, determinationDate, dulyMadeDate, userId);
@@ -679,7 +678,7 @@ public class RegistrationMaterialRepositoryTests
         var id = Guid.Parse("a9421fc1-a912-42ee-85a5-3e06408759a9");
 
         // Act
-        await _repository.UpdateRegistrationOutCome(id, 2, null, null,Guid.Empty);
+        await _repository.UpdateRegistrationOutCome(id, 2, null, null, Guid.Empty);
         var updated = await _context.RegistrationMaterials.FindAsync(1);
 
         // Assert
@@ -719,7 +718,7 @@ public class RegistrationMaterialRepositoryTests
     public async Task CreateAsync_ExistingRegistrationMaterial_ShouldThrow()
     {
         // Act
-        var result = await _repository.CreateAsync(Guid.Parse("4bac12f7-f7a9-4df4-b7b5-9c4221860c4d"),"Plastic");
+        var result = await _repository.CreateAsync(Guid.Parse("4bac12f7-f7a9-4df4-b7b5-9c4221860c4d"), "Plastic");
 
         // Assert
         result.Registration.ExternalId.Should().Be("4bac12f7-f7a9-4df4-b7b5-9c4221860c4d");
@@ -738,7 +737,7 @@ public class RegistrationMaterialRepositoryTests
 
     [TestMethod]
     public async Task GetRegistrationMaterialsByRegistrationId_RegistrationIdDoesNotExists()
-    { 
+    {
         await Assert.ThrowsExactlyAsync<KeyNotFoundException>(() => _repository.GetRegistrationMaterialsByRegistrationId(Guid.NewGuid()));
     }
 
@@ -754,7 +753,7 @@ public class RegistrationMaterialRepositoryTests
         };
 
         await _context.Registrations.AddAsync(registration);
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(CancellationToken.None);
 
         // Act
         var result = await _repository.GetRegistrationMaterialsByRegistrationId(id);
@@ -791,7 +790,7 @@ public class RegistrationMaterialRepositoryTests
 
         await _context.Registrations.AddAsync(registration);
         await _context.RegistrationMaterials.AddAsync(registrationMaterial);
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(CancellationToken.None);
 
         // Act
         var result = await _repository.GetRegistrationMaterialsByRegistrationId(id);
@@ -829,7 +828,7 @@ public class RegistrationMaterialRepositoryTests
         });
 
         _context.MaterialExemptionReferences.AddRange(exemptions);
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(CancellationToken.None);
 
         // Act
         await _repository.UpdateRegistrationMaterialPermits(registrationMaterialId, (int)MaterialPermitType.WasteExemption, null);
@@ -870,7 +869,7 @@ public class RegistrationMaterialRepositoryTests
         };
 
         _context.MaterialExemptionReferences.AddRange(exemptions);
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(CancellationToken.None);
 
         // Act
         await _repository.UpdateRegistrationMaterialPermits(registrationMaterialId, permitTypeId, permitNumber);
@@ -1053,7 +1052,7 @@ public class RegistrationMaterialRepositoryTests
         await _context.Registrations.AddAsync(registration);
         await _context.RegistrationMaterials.AddAsync(registrationMaterial);
         await _context.RegistrationMaterials.AddAsync(registrationMaterial2);
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(CancellationToken.None);
 
         // Act
         await _repository.DeleteAsync(registrationMaterialExternalId);
@@ -1064,48 +1063,48 @@ public class RegistrationMaterialRepositoryTests
         loaded.First().ExternalId.Should().Be(registrationMaterialExternalId2);
     }
 
-	[TestMethod]
-	public async Task UpdateIsMaterialRegisteredAsync_ShouldUpdateMaterialStatus()
-	{
-		// Arrange
-		var materialId = Guid.NewGuid();
-		var existingMaterial = new RegistrationMaterial
-		{
-			Id = 20,
-			ExternalId = materialId,
-			IsMaterialRegistered = false,
-			StatusId = (int)RegistrationMaterialStatus.Started
-		};
+    [TestMethod]
+    public async Task UpdateIsMaterialRegisteredAsync_ShouldUpdateMaterialStatus()
+    {
+        // Arrange
+        var materialId = Guid.NewGuid();
+        var existingMaterial = new RegistrationMaterial
+        {
+            Id = 20,
+            ExternalId = materialId,
+            IsMaterialRegistered = false,
+            StatusId = (int)RegistrationMaterialStatus.Started
+        };
 
-		await _context.RegistrationMaterials.AddAsync(existingMaterial);
-		await _context.SaveChangesAsync();
+        await _context.RegistrationMaterials.AddAsync(existingMaterial);
+        await _context.SaveChangesAsync(CancellationToken.None);
 
-		var dto = new UpdateIsMaterialRegisteredDto
-		{
-			RegistrationMaterialId = materialId,
-			IsMaterialRegistered = true
-		};
+        var dto = new UpdateIsMaterialRegisteredDto
+        {
+            RegistrationMaterialId = materialId,
+            IsMaterialRegistered = true
+        };
 
-		// Act
-		await _repository.UpdateIsMaterialRegisteredAsync(new List<UpdateIsMaterialRegisteredDto> { dto });
+        // Act
+        await _repository.UpdateIsMaterialRegisteredAsync(new List<UpdateIsMaterialRegisteredDto> { dto });
 
-		// Assert
-		var updatedMaterial = await _context.RegistrationMaterials.SingleAsync(m => m.ExternalId == materialId);
-		updatedMaterial.IsMaterialRegistered.Should().BeTrue();
-		updatedMaterial.StatusId.Should().Be((int)RegistrationMaterialStatus.InProgress);
-	}
+        // Assert
+        var updatedMaterial = await _context.RegistrationMaterials.SingleAsync(m => m.ExternalId == materialId);
+        updatedMaterial.IsMaterialRegistered.Should().BeTrue();
+        updatedMaterial.StatusId.Should().Be((int)RegistrationMaterialStatus.InProgress);
+    }
 
-	[TestMethod]
-	public async Task UpdateIsMaterialRegisteredAsync_ShouldThrow_WhenNotFound()
-	{
-		var dto = new UpdateIsMaterialRegisteredDto
-		{
-			RegistrationMaterialId = Guid.NewGuid(),
-			IsMaterialRegistered = true
-		};
+    [TestMethod]
+    public async Task UpdateIsMaterialRegisteredAsync_ShouldThrow_WhenNotFound()
+    {
+        var dto = new UpdateIsMaterialRegisteredDto
+        {
+            RegistrationMaterialId = Guid.NewGuid(),
+            IsMaterialRegistered = true
+        };
 
-		await Assert.ThrowsExactlyAsync<KeyNotFoundException>(() => _repository.UpdateIsMaterialRegisteredAsync(new List<UpdateIsMaterialRegisteredDto> { dto }));
-	}
+        await Assert.ThrowsExactlyAsync<KeyNotFoundException>(() => _repository.UpdateIsMaterialRegisteredAsync(new List<UpdateIsMaterialRegisteredDto> { dto }));
+    }
 
     [TestCleanup]
     public void Cleanup()

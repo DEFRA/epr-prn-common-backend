@@ -1,6 +1,5 @@
-﻿using EPR.PRN.Backend.API.Dto.ExporterJourney;
+﻿using System.Diagnostics.CodeAnalysis;
 using MediatR;
-using System.Diagnostics.CodeAnalysis;
 
 namespace EPR.PRN.Backend.API.Commands.ExporterJourney;
 
@@ -11,5 +10,5 @@ public class CreateCarrierBrokerDealerPermitsCommand : IRequest<bool>
 
     public Guid RegistrationId { get; set; }
 
-	public required string WasteCarrierBrokerDealerRegistration { get; set; }
+    public required string WasteCarrierBrokerDealerRegistration { get; set; }
 }

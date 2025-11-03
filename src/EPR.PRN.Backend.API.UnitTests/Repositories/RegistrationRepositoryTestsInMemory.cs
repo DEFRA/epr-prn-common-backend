@@ -1,13 +1,10 @@
 ﻿using AutoFixture;
-using EPR.PRN.Backend.Data;
+using EPR.PRN.Backend.Data.DataModels.Registrations;
 using EPR.PRN.Backend.Data.Repositories;
-using EPR.PRN.Backend.Data.DTO.Registration;
-using EPR.PRN.Backend.Data.DataModels;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
-using EPR.PRN.Backend.Data.DataModels.Registrations;
 namespace EPR.PRN.Backend.Data.UnitTests.Repositories;
 [TestClass]
 public class RegistrationRepositoryTestsInMemory
@@ -15,7 +12,7 @@ public class RegistrationRepositoryTestsInMemory
     private Mock<ILogger<RegistrationRepository>> _mockLogger;
     private EprContext _context;
     private RegistrationRepository _repository;
-    private readonly Fixture _fixture = new();
+
     [TestInitialize]
     public void Setup()
     {
@@ -32,7 +29,7 @@ public class RegistrationRepositoryTestsInMemory
         _context.Database.EnsureDeleted();
         _context.Dispose();
     }
-    
+
     [TestMethod]
     public async Task GetRegistrationsOverviewForOrgIdAsync_ReturnsEmptyList_WhenNoRegistrationsExist()
     {
@@ -44,7 +41,7 @@ public class RegistrationRepositoryTestsInMemory
         result.Should().NotBeNull();
         result.Should().BeEmpty();
     }
-    
+
     [TestMethod]
     public async Task GetRegistrationsOverviewForOrgIdAsync_ReturnsRegistrations_WithMaterialsAndAccreditations()
     {
@@ -100,7 +97,7 @@ public class RegistrationRepositoryTestsInMemory
         _context.Add(accreditationStatus);
         _context.Add(material);
         _context.Add(registration);
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(CancellationToken.None);
         // Act
         var result = await _repository.GetRegistrationsOverviewForOrgIdAsync(organisationId);
         // Assert
@@ -114,7 +111,7 @@ public class RegistrationRepositoryTestsInMemory
         overview.ReprocessingSiteAddress.Should().NotBeNull();
         overview.ReprocessingSiteAddress!.AddressLine1.Should().Be("123 Test St");
     }
-    
+
     [TestMethod]
     public async Task GetRegistrationsOverviewForOrgIdAsync_HandlesMultipleRegistrations()
     {
@@ -215,7 +212,7 @@ public class RegistrationRepositoryTestsInMemory
         _context.Add(accreditationStatus2);
         _context.Add(material);
         _context.AddRange(registrations);
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(CancellationToken.None);
         // Act
         var result = await _repository.GetRegistrationsOverviewForOrgIdAsync(organisationId);
         // Assert
@@ -282,7 +279,7 @@ public class RegistrationRepositoryTestsInMemory
         };
         _context.Add(registrationWithNullMaterials);
         _context.Add(registrationWithEmptyMaterials);
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(CancellationToken.None);
         // Act
         var result = await _repository.GetRegistrationsOverviewForOrgIdAsync(organisationId);
         // Assert

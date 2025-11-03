@@ -10,12 +10,13 @@ public class UpdateRegistrationSiteAddressCommandValidator : AbstractValidator<U
         RuleFor(x => x.RegistrationId)
             .NotEmpty()
             .WithMessage("RegistrationId is required");
-        
+
         RuleFor(x => x.ReprocessingSiteAddress)
             .NotNull()
             .WithMessage("Reprocessing Site Address is required");
 
-        When(x => x.ReprocessingSiteAddress?.Id.GetValueOrDefault() == 0, () => {
+        When(x => x.ReprocessingSiteAddress?.Id.GetValueOrDefault() == 0, () =>
+        {
 
             RuleFor(x => x.ReprocessingSiteAddress.NationId)
             .NotEmpty()

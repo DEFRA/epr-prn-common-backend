@@ -1,10 +1,9 @@
-using EPR.PRN.Backend.API.Common.Enums;
 using System.Diagnostics.CodeAnalysis;
 
 namespace EPR.PRN.Backend.API.Dto.Regulator;
 
 [ExcludeFromCodeCoverage]
-public class RegistrationSiteAddressDto: NoteBase
+public class RegistrationSiteAddressDto : NoteBase
 {
     public Guid RegistrationId { get; set; }
     public int NationId { get; set; }

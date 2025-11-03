@@ -1,10 +1,10 @@
-using EPR.PRN.Backend.API.Common.Enums;
 using System.Diagnostics.CodeAnalysis;
+using EPR.PRN.Backend.API.Common.Enums;
 
 namespace EPR.PRN.Backend.API.Dto.Regulator;
 
 [ExcludeFromCodeCoverage]
-public class MaterialPaymentFeeDto:NoteBase
+public class MaterialPaymentFeeDto : NoteBase
 {
     public Guid RegistrationId { get; set; }
     public int NationId { get; set; }

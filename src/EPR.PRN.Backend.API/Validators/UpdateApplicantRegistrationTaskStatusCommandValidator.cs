@@ -8,11 +8,11 @@ public class UpdateApplicantRegistrationTaskStatusCommandValidator : AbstractVal
 {
     public UpdateApplicantRegistrationTaskStatusCommandValidator()
     {
-        var allowedStatuses = new[] 
-        { 
-            TaskStatuses.Started, 
-            TaskStatuses.Queried, 
-            TaskStatuses.Completed 
+        var allowedStatuses = new[]
+        {
+            TaskStatuses.Started,
+            TaskStatuses.Queried,
+            TaskStatuses.Completed
         };
 
         RuleFor(x => x.Status)

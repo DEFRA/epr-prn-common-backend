@@ -1,7 +1,6 @@
 ﻿using EPR.PRN.Backend.API.Commands;
 using EPR.PRN.Backend.API.Constants;
 using EPR.PRN.Backend.API.Validators.Regulator;
-using FluentValidation;
 
 
 namespace EPR.PRN.Backend.API.UnitTests.Validators.Regulator

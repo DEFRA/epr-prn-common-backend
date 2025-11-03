@@ -17,7 +17,7 @@ public abstract class LookupBase
 
 [Table("Lookup.RegistrationMaterialStatus")]
 [ExcludeFromCodeCoverage]
-public class LookupRegistrationMaterialStatus : LookupBase{}
+public class LookupRegistrationMaterialStatus : LookupBase { }
 
 [Table("Lookup.AccreditationStatus")]
 [ExcludeFromCodeCoverage]
@@ -51,7 +51,8 @@ public class LookupApplicantRegistrationTask : LookupBase
 
 [Table("Lookup.TaskStatus")]
 [ExcludeFromCodeCoverage]
-public class LookupTaskStatus : LookupBase {
+public class LookupTaskStatus : LookupBase
+{
     public static int Completed { get; set; }
     [MaxLength(100)]
     public override required string Name { get; set; }
@@ -63,7 +64,8 @@ public class LookupMaterialPermit : LookupBase { }
 
 [Table("Lookup.ApplicationType")]
 [ExcludeFromCodeCoverage]
-public class LookupApplicationType : LookupBase { 
+public class LookupApplicationType : LookupBase
+{
     [MaxLength(100)]
     public override required string Name { get; set; }
 }

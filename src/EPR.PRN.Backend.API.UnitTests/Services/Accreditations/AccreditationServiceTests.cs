@@ -1,17 +1,16 @@
-﻿using EPR.PRN.Backend.API.Dto.Accreditation;
+﻿using AutoMapper;
+using EPR.PRN.Backend.API.Dto.Accreditation;
+using EPR.PRN.Backend.API.Profiles;
 using EPR.PRN.Backend.API.Services;
-using EPR.PRN.Backend.Data.DataModels.Accreditations;
+using EPR.PRN.Backend.Data.DataModels.Registrations;
+using EPR.PRN.Backend.Data.DTO;
+using EPR.PRN.Backend.Data.Interfaces;
+using EPR.PRN.Backend.Data.Interfaces.Accreditation;
+using EPR.PRN.Backend.Data.Interfaces.Regulator;
 using FluentAssertions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Moq;
-using AutoMapper;
-using EPR.PRN.Backend.API.Profiles;
-using EPR.PRN.Backend.Data.DataModels.Registrations;
-using EPR.PRN.Backend.Data.Interfaces;
-using EPR.PRN.Backend.Data.Interfaces.Regulator;
-using EPR.PRN.Backend.Data.DTO;
-using EPR.PRN.Backend.Data.Interfaces.Accreditation;
 
 namespace EPR.PRN.Backend.API.UnitTests.Services.Accreditations;
 
@@ -52,9 +51,9 @@ public class AccreditationServiceTests
     }
 
     [TestMethod]
-    [DataRow(1,1)]
-    [DataRow(1,2)]
-    [DataRow(1,3)]
+    [DataRow(1, 1)]
+    [DataRow(1, 2)]
+    [DataRow(1, 3)]
     [DataRow(2, 4)]
     [DataRow(2, 5)]
     [DataRow(2, 6)]
@@ -68,7 +67,7 @@ public class AccreditationServiceTests
 
 
         _repositoryMock
-            .Setup(r => r.GetAccreditationDetails(organisationId,materialId,applicationTypeId))
+            .Setup(r => r.GetAccreditationDetails(organisationId, materialId, applicationTypeId))
             .ReturnsAsync(accreditation);
         // Mock _registrationRepository and _registrationMaterialRepositoryMock to return a material and registration
         Guid regMaterialId = Guid.NewGuid();
@@ -92,8 +91,8 @@ public class AccreditationServiceTests
 
         _registrationMaterialRepositoryMock
             .Setup(r => r.CreateAsync(It.IsAny<Guid>(), It.IsAny<string>()))
-            .ReturnsAsync(new RegistrationMaterial { Id = materialId, RegistrationId = 1});
-        
+            .ReturnsAsync(new RegistrationMaterial { Id = materialId, RegistrationId = 1 });
+
 
 
 
@@ -225,7 +224,7 @@ public class AccreditationServiceTests
 
         // Act
         var result = await _service.GetAccreditationById(id);
-  
+
 
         // Assert
         result.Should().NotBeNull();
@@ -240,7 +239,7 @@ public class AccreditationServiceTests
         result.RegistrationMaterialId.Should().Be(entity.RegistrationMaterialId);
         //result.ApplicationTypeId.Should().Be(entity.ApplicationTypeId);
         result.AccreditationStatusId.Should().Be(entity.AccreditationStatusId);
-   
+
 
 
     }
@@ -272,12 +271,12 @@ public class AccreditationServiceTests
             AccreditationStatusId = 3,
             PrnTonnageAndAuthoritiesConfirmed = false
         };
-        
+
         // Act
         await _service.CreateAccreditation(requestDto);
 
         // Assert
-        _repositoryMock.Verify(r => r.Create(It.Is<Accreditation>(x => 
+        _repositoryMock.Verify(r => r.Create(It.Is<Accreditation>(x =>
             //x.OrganisationId == requestDto.OrganisationId &&
             x.RegistrationMaterialId == requestDto.RegistrationMaterialId &&
             //x.ApplicationTypeId == requestDto.ApplicationTypeId &&
@@ -297,7 +296,7 @@ public class AccreditationServiceTests
             ApplicationTypeId = 2,
             AccreditationStatusId = 3
         };
-        
+
         // Act
         await _service.UpdateAccreditation(requestDto);
 

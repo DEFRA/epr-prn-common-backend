@@ -1,16 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using EPR.PRN.Backend.API.Commands;
+﻿using EPR.PRN.Backend.API.Commands;
 using EPR.PRN.Backend.API.Common.Enums;
-using EPR.PRN.Backend.API.Handlers;
 using EPR.PRN.Backend.API.Handlers.Accreditation;
 using EPR.PRN.Backend.API.Helpers;
 using EPR.PRN.Backend.Data.DataModels.Accreditations;
 using EPR.PRN.Backend.Data.DataModels.Registrations;
-using EPR.PRN.Backend.Data.Interfaces;
 using EPR.PRN.Backend.Data.Interfaces.Accreditation;
 using FluentAssertions;
 using Moq;
@@ -21,8 +14,8 @@ namespace EPR.PRN.Backend.API.UnitTests.Handlers
     public class UpdateAccreditationTaskHandlerTests
     {
         [TestMethod]
-        [DataRow("InProgress","Completed")]
-        [DataRow("NotStarted","InProgress")]
+        [DataRow("InProgress", "Completed")]
+        [DataRow("NotStarted", "InProgress")]
         [DataRow("InProgress", "Queried")]
         [DataRow("Queried", "Completed")]
         [DataRow("Queried", "Queried")]
@@ -53,7 +46,7 @@ namespace EPR.PRN.Backend.API.UnitTests.Handlers
             var task = handler.Handle(command, CancellationToken.None);
 
             // Assert
-            task.IsCompleted.Should().BeTrue();         
+            task.IsCompleted.Should().BeTrue();
             return Task.CompletedTask;
         }
 
@@ -97,7 +90,7 @@ namespace EPR.PRN.Backend.API.UnitTests.Handlers
         [TestMethod]
         public async Task Handle_ThrowsInvalidOperationException_WhenTaskStatusIsNull()
         {
-    
+
             // Arrange
             var mockRepo = new Mock<IAccreditationTaskStatusRepository>();
 

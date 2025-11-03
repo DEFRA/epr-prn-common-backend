@@ -79,7 +79,7 @@ public class GetRegistrationByOrganisationQueryHandlerTests
                 }
             }
         };
-    
+
         var address = new Address
         {
             AddressLine1 = "address line 1",
@@ -100,7 +100,7 @@ public class GetRegistrationByOrganisationQueryHandlerTests
             RegistrationId = 1,
             TaskId = 1,
             TaskStatusId = 1,
-            Task = new LookupApplicantRegistrationTask{ApplicationTypeId = 1, Id = 1, IsMaterialSpecific = false, Name = "SiteDetails"}
+            Task = new LookupApplicantRegistrationTask { ApplicationTypeId = 1, Id = 1, IsMaterialSpecific = false, Name = "SiteDetails" }
         };
 
         var registration = new Registration

@@ -14,5 +14,5 @@ public interface IMaterialService
     /// <returns>Collection of materials, if any.</returns>
     Task<IList<MaterialDto>> GetAllMaterialsAsync(CancellationToken cancellationToken);
 
-    Task<IList<MaterialDto>> GetMaterialsByRegistrationIdQuery(Guid registrationId);    
+    Task<IList<MaterialDto>> GetMaterialsByRegistrationIdQuery(Guid registrationId);
 }

@@ -1,7 +1,4 @@
-using System;
 using System.Net;
-using System.Threading;
-using System.Threading.Tasks;
 using AutoFixture;
 using EPR.PRN.Backend.API.Commands;
 using EPR.PRN.Backend.API.Common.Enums;
@@ -45,7 +42,7 @@ namespace EPR.PRN.Backend.API.UnitTests.Controllers
         {
             // Arrange
             var command = _fixture.Create<UpdateAccreditationTaskCommand>();
-            
+
             var validationResult = new ValidationResult();
             _validatorMock.Setup(x => x.Validate(It.IsAny<UpdateAccreditationTaskCommand>())).Returns(validationResult);
 

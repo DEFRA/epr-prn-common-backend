@@ -17,5 +17,5 @@ public class GetRegistrationWasteCarrierDetailsByIdHandler(
         var wasteCarrierDto = mapper.Map<RegistrationWasteCarrierDto>(registration);
 
         return wasteCarrierDto;
-    }    
+    }
 }

@@ -1,4 +1,3 @@
-using AutoMapper;
 using EPR.PRN.Backend.API.Dto;
 using EPR.PRN.Backend.API.Dto.Regulator;
 using EPR.PRN.Backend.API.Queries;
@@ -46,7 +45,7 @@ public class GetRegistrationByOrganisationQueryHandler(
                 TaskName = t.Task.Name
             }).ToList();
         }
-    
+
         return mapped;
     }
 

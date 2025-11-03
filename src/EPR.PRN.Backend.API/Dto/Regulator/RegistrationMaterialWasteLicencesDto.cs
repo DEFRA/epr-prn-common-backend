@@ -1,6 +1,6 @@
 ﻿namespace EPR.PRN.Backend.API.Dto.Regulator
 {
-    public class RegistrationMaterialWasteLicencesDto:NoteBase
+    public class RegistrationMaterialWasteLicencesDto : NoteBase
     {
         public required string PermitType { get; set; }
         public required string[] LicenceNumbers { get; set; }

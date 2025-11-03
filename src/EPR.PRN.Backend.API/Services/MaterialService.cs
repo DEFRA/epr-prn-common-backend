@@ -29,7 +29,7 @@ public class MaterialService(ILogger<MaterialService> logger, IMaterialRepositor
         }
 
         _logger.LogInformation("Found {Count} materials.", materials.Count());
-            
+
         return materials.Select(m => new MaterialDto
         {
             Name = m.MaterialName,

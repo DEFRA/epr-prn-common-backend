@@ -7,7 +7,6 @@ using FluentAssertions;
 using FluentAssertions.Execution;
 using FluentValidation;
 using MediatR;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -54,7 +53,7 @@ public class RegistrationControllerTests
         }
     }
 
-    
+
     [TestMethod]
     public async Task GetRegistrationsOverviewForOrgId_NoRegistrations_ReturnsOkWithEmptyList()
     {

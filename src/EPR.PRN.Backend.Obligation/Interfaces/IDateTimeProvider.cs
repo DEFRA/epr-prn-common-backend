@@ -2,8 +2,8 @@
 
 public interface IDateTimeProvider
 {
-	DateTime UtcNow { get; }
+    DateTime UtcNow { get; }
 
-	int CurrentYear { get; }
+    int CurrentYear { get; }
 }
 

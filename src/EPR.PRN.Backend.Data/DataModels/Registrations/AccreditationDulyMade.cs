@@ -12,7 +12,7 @@ public class AccreditationDulyMade
     public int Id { get; set; }
     public Guid ExternalId { get; set; }
     [ForeignKey("Accreditation")]
-    public int AccreditationId { get; set; }      
+    public int AccreditationId { get; set; }
     public DateTime? DulyMadeDate { get; set; }
     public Guid? DulyMadeBy { get; set; }
-  }
+}

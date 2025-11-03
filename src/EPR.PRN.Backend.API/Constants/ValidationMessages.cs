@@ -1,6 +1,4 @@
-﻿using Newtonsoft.Json;
-
-namespace EPR.PRN.Backend.API.Constants;
+﻿namespace EPR.PRN.Backend.API.Constants;
 
 public static class ValidationMessages
 {
@@ -15,7 +13,7 @@ public static class ValidationMessages
     public const string InvalidDulyMadeDate = "Invalid registration material DulyMadeDate is invalid.";
     public const string InvalidDeterminationDate = "Invalid registration material DeterminationDate is invalid.";
     public const string DeterminationDate12WeekRule = "DeterminationDate must be at least 12 weeks after DulyMadeDate.";
-    public const string DulyMadeByRequired= "DulyMadeBy is required.";
+    public const string DulyMadeByRequired = "DulyMadeBy is required.";
     public const string RegistrationOrganisationIdRequired = "Orgnaisation Id is required.";
     public const string AccreditationOrganisationIdRequired = "AccreditationOrganisationIdRequired Id is Required";
 }

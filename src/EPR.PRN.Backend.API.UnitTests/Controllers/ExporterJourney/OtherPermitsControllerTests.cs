@@ -1,10 +1,6 @@
-﻿using EPR.PRN.Backend.API.Commands;
-using EPR.PRN.Backend.API.Commands.ExporterJourney;
-using EPR.PRN.Backend.API.Common.Enums;
+﻿using EPR.PRN.Backend.API.Commands.ExporterJourney;
 using EPR.PRN.Backend.API.Controllers.ExporterJourney;
-using EPR.PRN.Backend.API.Controllers.Regulator;
 using EPR.PRN.Backend.API.Dto.ExporterJourney;
-using EPR.PRN.Backend.API.Dto.Regulator;
 using EPR.PRN.Backend.API.Queries.ExporterJourney;
 using FluentAssertions;
 using FluentValidation;
@@ -163,9 +159,9 @@ public class OtherPermitsControllerTests
         var registrationId = Guid.Parse("a9421fc1-a912-42ee-85a5-3e06408759a9");
         var requestDto = new UpdateCarrierBrokerDealerPermitsDto
         {
-            PpcNumber = "xxxxxxxxxxxxxxxxxxxxxxxx", 
-            WasteCarrierBrokerDealerRegistration = "abc", 
-            WasteLicenseOrPermitNumber = "abc", 
+            PpcNumber = "xxxxxxxxxxxxxxxxxxxxxxxx",
+            WasteCarrierBrokerDealerRegistration = "abc",
+            WasteLicenseOrPermitNumber = "abc",
             WasteExemptionReference = new List<string>()
         };
 

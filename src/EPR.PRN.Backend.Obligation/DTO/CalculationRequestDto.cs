@@ -14,8 +14,8 @@ namespace EPR.PRN.Backend.Obligation.Dto
 
         public List<Material> Materials { get; set; } = [];
 
-		public int SubmitterTypeId { get; set; }
+        public int SubmitterTypeId { get; set; }
 
-		public Dictionary<int, Dictionary<MaterialType, double>> RecyclingTargets { get; set; } = [];
+        public Dictionary<int, Dictionary<MaterialType, double>> RecyclingTargets { get; set; } = [];
     }
 }

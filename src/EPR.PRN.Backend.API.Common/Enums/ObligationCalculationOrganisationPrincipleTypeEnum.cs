@@ -2,6 +2,6 @@
 
 public enum ObligationCalculationOrganisationSubmitterTypeName
 {
-	ComplianceScheme = 1,
-	DirectRegistrant = 2,
+    ComplianceScheme = 1,
+    DirectRegistrant = 2,
 }

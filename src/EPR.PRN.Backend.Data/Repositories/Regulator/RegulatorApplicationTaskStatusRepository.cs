@@ -90,7 +90,7 @@ namespace EPR.PRN.Backend.Data.Repositories.Regulator
                 taskStatus.StatusUpdatedDate = DateTime.UtcNow;
 
                 _context.RegulatorApplicationTaskStatus.Update(taskStatus);
-                
+
             }
 
             await _context.SaveChangesAsync();
@@ -110,18 +110,18 @@ namespace EPR.PRN.Backend.Data.Repositories.Regulator
                 throw new KeyNotFoundException("Cannot insert query because the Regulator Application Task Status is completed.");
             }
             var querynote = new Note
-                {
-                    Notes = note,
-                    CreatedBy = queryBy,
-                    CreatedDate = DateTime.UtcNow
-                };
+            {
+                Notes = note,
+                CreatedBy = queryBy,
+                CreatedDate = DateTime.UtcNow
+            };
             await _context.QueryNote.AddAsync(querynote);
 
-            var applicationTaskStatusQueryNotes =  new ApplicationTaskStatusQueryNote
-                {
-                    Note = querynote,
-                    RegulatorApplicationTaskStatusId = applicationTaskStatus.Id
-                };
+            var applicationTaskStatusQueryNotes = new ApplicationTaskStatusQueryNote
+            {
+                Note = querynote,
+                RegulatorApplicationTaskStatusId = applicationTaskStatus.Id
+            };
             await _context.ApplicationTaskStatusQueryNotes.AddAsync(applicationTaskStatusQueryNotes);
 
             await _context.SaveChangesAsync();
@@ -135,6 +135,6 @@ namespace EPR.PRN.Backend.Data.Repositories.Regulator
             return await _context.RegulatorApplicationTaskStatus.Include(ts => ts.Task).Include(ts => ts.TaskStatus).Include(y => y.RegistrationMaterial).FirstOrDefaultAsync(x => x.Task.Name == TaskName && x.RegistrationMaterial.ExternalId == RegistrationMaterialId);
         }
 
-       
+
     }
 }

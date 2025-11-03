@@ -1,5 +1,4 @@
-﻿using Azure.Core;
-using EPR.PRN.Backend.API.Common.Constants;
+﻿using EPR.PRN.Backend.API.Common.Constants;
 using EPR.PRN.Backend.API.Common.Enums;
 using EPR.PRN.Backend.API.Common.Exceptions;
 using EPR.PRN.Backend.Data.DataModels;
@@ -8,8 +7,6 @@ using EPR.PRN.Backend.Data.DTO;
 using EPR.PRN.Backend.Data.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Linq.Expressions;
 
 namespace EPR.PRN.Backend.Data.Repositories
 {

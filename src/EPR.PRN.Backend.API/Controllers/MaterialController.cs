@@ -52,7 +52,7 @@ public class MaterialController(
     public BadRequestObjectResult ThrowInvalidRegistrationId(ILogger<MaterialController> logger, Guid? registrationId)
     {
         logger.LogError("Invalid Guid format for registrationId - {registrationId}", registrationId);
-        
+
         return BadRequest(new { Message = $"Invalid Guid format for registrationId : {registrationId}" });
     }
 }

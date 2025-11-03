@@ -31,7 +31,7 @@ public class UpdateRegistrationSiteAddressCommandValidatorTests
 
         var result = _validator.TestValidate(model);
 
-        result.ShouldHaveValidationErrorFor(x => x.RegistrationId);              ;
+        result.ShouldHaveValidationErrorFor(x => x.RegistrationId); ;
     }
 
     [TestMethod]

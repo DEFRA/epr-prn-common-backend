@@ -5,7 +5,6 @@ using EPR.PRN.Backend.API.Handlers.Regulator;
 using EPR.PRN.Backend.Data.DataModels.Registrations;
 using EPR.PRN.Backend.Data.Interfaces.Regulator;
 using FluentAssertions;
-using MediatR;
 using Moq;
 
 namespace EPR.PRN.Backend.API.Tests.Handlers

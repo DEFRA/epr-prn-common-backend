@@ -25,7 +25,7 @@ public class GetRegistrationSiteAddressByIdHandlerTests
 
         var config = new MapperConfiguration(cfg =>
         {
-            cfg.AddProfile<RegistrationMaterialProfile>(); 
+            cfg.AddProfile<RegistrationMaterialProfile>();
         });
         _mapper = config.CreateMapper();
 
@@ -60,7 +60,7 @@ public class GetRegistrationSiteAddressByIdHandlerTests
 
         // Assert
         result.Should().NotBeNull();
-        result.SiteAddress.Should().Contain("Recycle Road"); 
+        result.SiteAddress.Should().Contain("Recycle Road");
     }
 
     [TestMethod]
@@ -87,7 +87,7 @@ public class GetRegistrationSiteAddressByIdHandlerTests
         result.Should().NotBeNull();
         result.SiteAddress.Should().BeNullOrEmpty();
     }
-    
+
     [TestMethod]
     public async Task Handle_ShouldMapQueryNotesCorrectly_WhenValidQueryNotesExist()
     {
@@ -110,7 +110,7 @@ public class GetRegistrationSiteAddressByIdHandlerTests
         {
             ExternalId = registrationId,
             ReprocessingSiteAddressId = 123,
-            ApplicationTypeId=1,
+            ApplicationTypeId = 1,
             ReprocessingSiteAddress = new Address
             {
                 AddressLine1 = "123 Mapper Street",
@@ -191,7 +191,7 @@ public class GetRegistrationSiteAddressByIdHandlerTests
         result.SiteAddress.Should().Contain("Empty Tasks Street");
         registration.Tasks.Should().BeEmpty();
     }
-    
+
     [TestMethod]
     public async Task Handle_ShouldReturnEmptyDto_WhenRegistrationIsNull()
     {

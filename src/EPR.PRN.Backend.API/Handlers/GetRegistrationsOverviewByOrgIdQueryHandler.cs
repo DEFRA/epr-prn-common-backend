@@ -5,7 +5,7 @@ using RegistrationOverviewDto = EPR.PRN.Backend.Data.DTO.Registration.Registrati
 
 namespace EPR.PRN.Backend.API.Handlers;
 
-public class GetRegistrationsOverviewByOrgIdHandler(IRegistrationRepository repo) 
+public class GetRegistrationsOverviewByOrgIdHandler(IRegistrationRepository repo)
     : IRequestHandler<GetRegistrationsOverviewByOrgIdQuery, IEnumerable<RegistrationOverviewDto>>
 {
     public async Task<IEnumerable<RegistrationOverviewDto>> Handle(GetRegistrationsOverviewByOrgIdQuery request, CancellationToken cancellationToken)

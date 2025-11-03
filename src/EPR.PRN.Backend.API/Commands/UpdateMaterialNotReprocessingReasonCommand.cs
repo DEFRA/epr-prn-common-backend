@@ -1,5 +1,4 @@
-﻿using EPR.PRN.Backend.API.Dto;
-using MediatR;
+﻿using MediatR;
 
 namespace EPR.PRN.Backend.API.Commands;
 

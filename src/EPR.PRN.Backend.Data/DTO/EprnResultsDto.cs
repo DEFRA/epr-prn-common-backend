@@ -1,5 +1,5 @@
-﻿using EPR.PRN.Backend.Data.DataModels;
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics.CodeAnalysis;
+using EPR.PRN.Backend.Data.DataModels;
 
 namespace EPR.PRN.Backend.Data.Dto
 {

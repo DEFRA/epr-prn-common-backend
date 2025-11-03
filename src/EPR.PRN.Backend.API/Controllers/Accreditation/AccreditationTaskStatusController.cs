@@ -1,12 +1,9 @@
 ﻿using EPR.PRN.Backend.API.Commands;
-using System.ComponentModel.DataAnnotations;
 using EPR.PRN.Backend.API.Common.Constants;
+using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using Microsoft.FeatureManagement.Mvc;
-using EPR.PRN.Backend.API.Controllers.Regulator;
-using FluentValidation;
 
 namespace EPR.PRN.Backend.API.Controllers.Accreditation
 {

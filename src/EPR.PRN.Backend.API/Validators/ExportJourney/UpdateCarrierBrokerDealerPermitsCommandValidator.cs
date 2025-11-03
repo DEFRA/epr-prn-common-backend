@@ -1,6 +1,6 @@
-﻿using EPR.PRN.Backend.API.Commands.ExporterJourney;
+﻿using System.Diagnostics.CodeAnalysis;
+using EPR.PRN.Backend.API.Commands.ExporterJourney;
 using FluentValidation;
-using System.Diagnostics.CodeAnalysis;
 
 namespace EPR.PRN.Backend.API.Validators.ExportJourney
 {
@@ -18,16 +18,16 @@ namespace EPR.PRN.Backend.API.Validators.ExportJourney
             RuleFor(x => x.Dto.PpcNumber)
                 .MaximumLength(20).WithMessage("PpcNumber must not exceed 20 characters");
 
-			When(x => x.Dto.WasteExemptionReference != null, () =>
-			{
+            When(x => x.Dto.WasteExemptionReference != null, () =>
+            {
 #pragma warning disable CS8602 // Dereference of a possibly null reference.
-				RuleFor(x => x.Dto.WasteExemptionReference)
-				.Must(item => item.Count <= 5).WithMessage("WasteExemptionReference must not exceed 5 values")
-				.ForEach(item =>
-					item.MaximumLength(20).WithMessage("WasteExemptionReference must not exceed 20 characters")
-				);
+                RuleFor(x => x.Dto.WasteExemptionReference)
+                .Must(item => item.Count <= 5).WithMessage("WasteExemptionReference must not exceed 5 values")
+                .ForEach(item =>
+                    item.MaximumLength(20).WithMessage("WasteExemptionReference must not exceed 20 characters")
+                );
 #pragma warning restore CS8602 // Dereference of a possibly null reference.
-			});
-		}
-	}
+            });
+        }
+    }
 }

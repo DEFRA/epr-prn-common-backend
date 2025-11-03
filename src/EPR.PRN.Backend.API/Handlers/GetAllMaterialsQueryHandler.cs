@@ -14,6 +14,6 @@ public class GetAllMaterialsQueryHandler(
 ) : IRequestHandler<GetAllMaterialsQuery, IList<MaterialDto>>
 {
     /// <inheritdoc />>.
-    public async Task<IList<MaterialDto>> Handle(GetAllMaterialsQuery request, CancellationToken cancellationToken) 
+    public async Task<IList<MaterialDto>> Handle(GetAllMaterialsQuery request, CancellationToken cancellationToken)
         => await materialService.GetAllMaterialsAsync(cancellationToken);
 }

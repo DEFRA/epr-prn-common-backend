@@ -1,9 +1,6 @@
-﻿using EPR.PRN.Backend.API.Common.Enums;
-using EPR.PRN.Backend.API.Common.Exceptions;
-using EPR.PRN.Backend.Data.DataModels.Registrations;
+﻿using EPR.PRN.Backend.Data.DataModels.Registrations;
 using EPR.PRN.Backend.Data.Interfaces.Regulator;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Query;
 
 namespace EPR.PRN.Backend.Data.Repositories.Regulator;
 
@@ -38,20 +35,20 @@ public class RegulatorAccreditationRepository(EprContext eprContext) : IRegulato
             throw new KeyNotFoundException("Accreditation not found.");
         }
 
-            var material = await eprContext.RegistrationMaterials.FirstOrDefaultAsync(rm => rm.Id == accreditation.RegistrationMaterialId);
+        var material = await eprContext.RegistrationMaterials.FirstOrDefaultAsync(rm => rm.Id == accreditation.RegistrationMaterialId);
 
-        if (material is null) 
-        { 
+        if (material is null)
+        {
             throw new KeyNotFoundException("Material not found.");
         }
 
-            var dulyMade = await eprContext.AccreditationDulyMade
-                .FirstOrDefaultAsync(adm => adm.AccreditationId == accreditation.Id)
-                ?? new AccreditationDulyMade
-                {
-                    AccreditationId = accreditation.Id,
-                    ExternalId = Guid.NewGuid()
-                };
+        var dulyMade = await eprContext.AccreditationDulyMade
+            .FirstOrDefaultAsync(adm => adm.AccreditationId == accreditation.Id)
+            ?? new AccreditationDulyMade
+            {
+                AccreditationId = accreditation.Id,
+                ExternalId = Guid.NewGuid()
+            };
 
         var registration = await eprContext.Registrations
             .FirstOrDefaultAsync(x => x.Id == material.RegistrationId);
