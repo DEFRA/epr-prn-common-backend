@@ -907,7 +907,7 @@ public class RegistrationMaterialRepositoryTests
                 break;
         }
 
-        var loaded = await _context.MaterialExemptionReferences.Where(o => o.RegistrationMaterialId == 1).ToListAsync();
+        var loaded = await _context.MaterialExemptionReferences.Where(o => o.RegistrationMaterialId == 1).ToListAsync(CancellationToken.None);
         loaded.Should().BeEmpty();
     }
 
