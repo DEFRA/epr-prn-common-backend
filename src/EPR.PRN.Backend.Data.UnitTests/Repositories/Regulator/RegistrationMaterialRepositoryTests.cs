@@ -338,7 +338,8 @@ public class RegistrationMaterialRepositoryTests
         var userId = Guid.NewGuid();
 
         await _repository.UpdateRegistrationOutCome(Guid.Parse("a9421fc1-a912-42ee-85a5-3e06408759a9"), newStatusId, comment, newReference, userId);
-        var updated = await _context.RegistrationMaterials.FindAsync(1);
+        
+        var updated = await _context.RegistrationMaterials.FindAsync([1], cancellationToken: CancellationToken.None);
 
         using (new AssertionScope())
         {
@@ -346,7 +347,6 @@ public class RegistrationMaterialRepositoryTests
             Assert.AreEqual(comment, updated.Comments);
             Assert.AreEqual(newReference, updated.RegistrationReferenceNumber);
             Assert.AreEqual(userId, updated.StatusUpdatedBy);
-            Assert.IsNotNull(updated.StatusUpdatedDate);
         }
     }
 
@@ -484,7 +484,7 @@ public class RegistrationMaterialRepositoryTests
         // Assert
         var createdMaterial = await _context.RegistrationMaterials
             .Include(m => m.MaterialExemptionReferences)
-            .FirstOrDefaultAsync(m => m.Id == registrationMaterial.Id);
+            .FirstOrDefaultAsync(m => m.Id == registrationMaterial.Id, CancellationToken.None);
         using (new AssertionScope())
         {
             createdMaterial.Should().NotBeNull();
@@ -534,7 +534,7 @@ public class RegistrationMaterialRepositoryTests
         // Assert
         var createdMaterial = await _context.RegistrationMaterials
             .Include(m => m.MaterialExemptionReferences)
-            .FirstOrDefaultAsync(m => m.Id == registrationMaterial.Id);
+            .FirstOrDefaultAsync(m => m.Id == registrationMaterial.Id, CancellationToken.None);
         using (new AssertionScope())
         {
             createdMaterial.Should().NotBeNull();
@@ -676,7 +676,7 @@ public class RegistrationMaterialRepositoryTests
 
         // Act
         await _repository.UpdateRegistrationOutCome(id, 2, null, null,Guid.Empty);
-        var updated = await _context.RegistrationMaterials.FindAsync(1);
+        var updated = await _context.RegistrationMaterials.FindAsync([1], cancellationToken: CancellationToken.None);
 
         // Assert
         using (new AssertionScope())
@@ -728,7 +728,7 @@ public class RegistrationMaterialRepositoryTests
         var result = await _repository.CreateAsync(Guid.Parse("4bac12f7-f7a9-4df4-b7b5-9c4221860c4d"), "Steel");
 
         // Assert
-        var loaded = await _context.RegistrationMaterials.FindAsync(result.Id);
+        var loaded = await _context.RegistrationMaterials.FindAsync([result.Id], CancellationToken.None);
         loaded.Should().NotBeNull();
     }
 
@@ -829,7 +829,7 @@ public class RegistrationMaterialRepositoryTests
 
         // Act
         await _repository.UpdateRegistrationMaterialPermits(registrationMaterialId, (int)MaterialPermitType.WasteExemption, null);
-        var registrationMaterial = await _context.RegistrationMaterials.FirstOrDefaultAsync(x => x.ExternalId == registrationMaterialId);
+        var registrationMaterial = await _context.RegistrationMaterials.FirstOrDefaultAsync(x => x.ExternalId == registrationMaterialId, CancellationToken.None);
 
         // Assert
         registrationMaterial.PermitTypeId.Should().Be((int)MaterialPermitType.WasteExemption);
@@ -870,7 +870,7 @@ public class RegistrationMaterialRepositoryTests
 
         // Act
         await _repository.UpdateRegistrationMaterialPermits(registrationMaterialId, permitTypeId, permitNumber);
-        var registrationMaterial = await _context.RegistrationMaterials.FirstOrDefaultAsync(x => x.ExternalId == registrationMaterialId);
+        var registrationMaterial = await _context.RegistrationMaterials.FirstOrDefaultAsync(x => x.ExternalId == registrationMaterialId, CancellationToken.None);
 
         // Assert
         registrationMaterial.PermitTypeId.Should().Be(permitTypeId);

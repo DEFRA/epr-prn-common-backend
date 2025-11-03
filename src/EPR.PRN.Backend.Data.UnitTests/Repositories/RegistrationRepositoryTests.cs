@@ -227,7 +227,7 @@ public class RegistrationRepositoryTests
         var updatedRegistration = await _context.Registrations.FirstAsync(r => r.Id == registration.Id, cancellationToken: CancellationToken.None);
         updatedRegistration.ReprocessingSiteAddressId.Should().NotBeNull();
 
-        var reprocAddress = await _context.LookupAddresses.FindAsync(updatedRegistration.ReprocessingSiteAddressId);
+        var reprocAddress = await _context.LookupAddresses.FindAsync([updatedRegistration.ReprocessingSiteAddressId], cancellationToken: CancellationToken.None);
 
         reprocAddress!.AddressLine1.Should().Be("123 Test St");
     }
@@ -275,7 +275,7 @@ public class RegistrationRepositoryTests
         await _repository.UpdateSiteAddressAsync(registrationId, reprocessingAddress);
 
         // Assert
-        var updatedRegistration = await _context.Registrations.FindAsync(registration.Id);
+        var updatedRegistration = await _context.Registrations.FindAsync([registration.Id], CancellationToken.None);
         updatedRegistration!.ReprocessingSiteAddressId.Should().Be(101);
     }
 
@@ -323,7 +323,7 @@ public class RegistrationRepositoryTests
         await _repository.UpdateAsync(registrationId, businessAddress, reprocessingAddress, legalAddress);
 
         // Assert
-        var updatedRegistration = await _context.Registrations.FindAsync(registration.Id);
+        var updatedRegistration = await _context.Registrations.FindAsync([registration.Id], CancellationToken.None);
         updatedRegistration!.BusinessAddressId.Should().Be(1);
         updatedRegistration!.ReprocessingSiteAddressId.Should().Be(2);
         updatedRegistration!.LegalDocumentAddressId.Should().Be(3);
@@ -360,7 +360,7 @@ public class RegistrationRepositoryTests
         await _repository.UpdateAsync(registrationId, businessAddress, reprocessingAddress, legalAddress);
 
         // Assert
-        var updatedRegistration = await _context.Registrations.FindAsync(registration.Id);
+        var updatedRegistration = await _context.Registrations.FindAsync([registration.Id], CancellationToken.None);
         updatedRegistration!.BusinessAddressId.Should().Be(101);
         updatedRegistration!.ReprocessingSiteAddressId.Should().Be(101);
         updatedRegistration!.LegalDocumentAddressId.Should().Be(101);
@@ -423,7 +423,7 @@ public class RegistrationRepositoryTests
         });
 
         // Assert
-        var loaded = await _context.Registrations.FindAsync(result.Id);
+        var loaded = await _context.Registrations.FindAsync([result.Id], CancellationToken.None);
         result.Id.Should().Be(1);
         loaded.Should().BeEquivalentTo(new Registration
         {
