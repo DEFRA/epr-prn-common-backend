@@ -2,7 +2,6 @@
 using EPR.PRN.Backend.API.Common.Enums;
 using EPR.PRN.Backend.Data.DataModels.Registrations;
 using EPR.PRN.Backend.Data.DTO;
-using EPR.PRN.Backend.Data.Interfaces.Regulator;
 using EPR.PRN.Backend.Data.Repositories.Regulator;
 using FluentAssertions;
 using FluentAssertions.Execution;
@@ -75,8 +74,7 @@ public class RegistrationMaterialRepositoryTests
 
             Tasks = new List<RegulatorApplicationTaskStatus>
         {
-            new RegulatorApplicationTaskStatus
-            {
+            new() {
                 Id = 1,
                 RegulatorTaskId = 1,
                 TaskStatusId = 1,
@@ -122,7 +120,7 @@ public class RegistrationMaterialRepositoryTests
                 Task = task
             }
         },
-            Materials = new List<RegistrationMaterial> { material }
+            Materials = [material]
         };
 
         var Accreditation_registration = new Registration
@@ -342,7 +340,7 @@ public class RegistrationMaterialRepositoryTests
         var userId = Guid.NewGuid();
 
         await _repository.UpdateRegistrationOutCome(Guid.Parse("a9421fc1-a912-42ee-85a5-3e06408759a9"), newStatusId, comment, newReference, userId);
-        var updated = await _context.RegistrationMaterials.FindAsync(1);
+        var updated = await _context.RegistrationMaterials.FindAsync(1, CancellationToken.None);
 
         using (new AssertionScope())
         {
@@ -425,11 +423,11 @@ public class RegistrationMaterialRepositoryTests
 
         // Assert
         var dulyMadeEntry = await _context.DulyMade
-            .FirstOrDefaultAsync(x => x.RegistrationMaterial.ExternalId == registrationMaterialId);
+            .FirstOrDefaultAsync(x => x.RegistrationMaterial.ExternalId == registrationMaterialId, CancellationToken.None);
         var savedDeterminationDate = await _context.DeterminationDate
-            .FirstOrDefaultAsync(x => x.RegistrationMaterialId == 1);
+            .FirstOrDefaultAsync(x => x.RegistrationMaterialId == 1, CancellationToken.None;
         var taskStatusEntry = await _context.RegulatorApplicationTaskStatus
-            .FirstOrDefaultAsync(x => x.RegistrationMaterial.ExternalId == registrationMaterialId && x.TaskStatusId == statusId);
+            .FirstOrDefaultAsync(x => x.RegistrationMaterial.ExternalId == registrationMaterialId && x.TaskStatusId == statusId, CancellationToken.None);
 
         using (new AssertionScope())
         {
