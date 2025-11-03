@@ -68,7 +68,7 @@ public class RepositoryTestsInMemory
         var result = await _repository.GetSearchPrnsForOrganisation(orgId, request);
         // Assert
         Assert.IsNotNull(result);
-        Assert.AreEqual(2, result.Items.Count);
+        Assert.HasCount(2, result.Items);
         Assert.IsTrue(result.Items.Any(i => i.PrnNumber.Contains("searchTerm")));
     }
 
@@ -83,7 +83,7 @@ public class RepositoryTestsInMemory
             Search = "searchTerm1"
         };
         var result = await _repository.GetSearchPrnsForOrganisation(orgId, request);
-        Assert.AreEqual(1, result.Items.Count);
+        Assert.HasCount(1, result.Items);
         Assert.AreEqual("searchTerm1", result.Items[0].PrnNumber);
     }
 
@@ -98,7 +98,7 @@ public class RepositoryTestsInMemory
             Search = "nonexistent"
         };
         var result = await _repository.GetSearchPrnsForOrganisation(orgId, request);
-        Assert.AreEqual(0, result.Items.Count);
+        Assert.HasCount(0, result.Items);
     }
 
     [TestMethod]
@@ -111,7 +111,7 @@ public class RepositoryTestsInMemory
             PageSize = 1
         };
         var result = await _repository.GetSearchPrnsForOrganisation(orgId, request);
-        Assert.AreEqual(1, result.Items.Count);
+        Assert.HasCount(1, result.Items);
         Assert.AreEqual(2, result.TotalItems);
     }
 
@@ -126,7 +126,7 @@ public class RepositoryTestsInMemory
             Search = "Org2"
         };
         var result = await _repository.GetSearchPrnsForOrganisation(orgId, request);
-        Assert.AreEqual(1, result.Items.Count);
+        Assert.HasCount(1, result.Items);
         Assert.AreEqual("Org2", result.Items[0].IssuedByOrg);
     }
 
@@ -147,7 +147,7 @@ public class RepositoryTestsInMemory
         var result = await _repository.GetSearchPrnsForOrganisation(orgId, request);
         // Assert
         Assert.IsNotNull(result);
-        Assert.AreEqual(0, result.Items.Count);
+        Assert.HasCount(0, result.Items);
         Assert.AreEqual(0, result.TotalItems);
         Assert.AreEqual(request.Page, result.CurrentPage);
         Assert.AreEqual(request.PageSize, result.PageSize);
@@ -539,7 +539,7 @@ public class RepositoryTestsInMemory
 
         await _repository.SavePrnDetails(entity);
 
-        var savedEnt = await _context.Prn.FirstOrDefaultAsync(x => x.PrnNumber == dto.EvidenceNo);
+        var savedEnt = await _context.Prn.FirstOrDefaultAsync(x => x.PrnNumber == dto.EvidenceNo, CancellationToken.None);
         savedEnt.Should().NotBeNull();
 
         var savedHistory = await _context.PrnStatusHistory.FirstOrDefaultAsync(x => x.PrnIdFk == savedEnt.Id);
@@ -581,7 +581,7 @@ public class RepositoryTestsInMemory
 
         await _repository.SavePrnDetails(entity);
 
-        var savedEnt = await _context.Prn.FirstOrDefaultAsync(x => x.PrnNumber == dto.EvidenceNo);
+        var savedEnt = await _context.Prn.FirstOrDefaultAsync(x => x.PrnNumber == dto.EvidenceNo, CancellationToken.None);
 
         //updating 
         var updatingEntity = CreateEprnEntityFromDto(dto);
@@ -589,7 +589,7 @@ public class RepositoryTestsInMemory
 
         await _repository.SavePrnDetails(updatingEntity);
 
-        var updatedEntity = await _context.Prn.FirstOrDefaultAsync(x => x.PrnNumber == dto.EvidenceNo);
+        var updatedEntity = await _context.Prn.FirstOrDefaultAsync(x => x.PrnNumber == dto.EvidenceNo, CancellationToken.None);
 
         savedEnt.ExternalId.Should().Be(updatedEntity.ExternalId);
         updatedEntity.MaterialName.Should().Be("UpdatingMaterial");
@@ -630,7 +630,7 @@ public class RepositoryTestsInMemory
 
         await _repository.SavePrnDetails(entity);
 
-        var newPrn = await _context.Prn.SingleAsync(x => x.PrnNumber == dto.EvidenceNo);
+        var newPrn = await _context.Prn.SingleAsync(x => x.PrnNumber == dto.EvidenceNo, CancellationToken.None);
         newPrn.Should().NotBeNull();
         newPrn.CreatedOn.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromMinutes(5));
         newPrn.LastUpdatedDate.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromMinutes(5));
@@ -670,12 +670,12 @@ public class RepositoryTestsInMemory
         var entity = CreateEprnEntityFromDto(dto);
         await _repository.SavePrnDetails(entity);
 
-        var newPrn = await _context.Prn.SingleAsync(x => x.PrnNumber == dto.EvidenceNo);
+        var newPrn = await _context.Prn.SingleAsync(x => x.PrnNumber == dto.EvidenceNo, CancellationToken.None);
         DateTime createdDate = newPrn.CreatedOn;
         DateTime updatedDate = newPrn.LastUpdatedDate;
         await _repository.SavePrnDetails(newPrn);
 
-        var updatedPrn = await _context.Prn.SingleAsync(x => x.PrnNumber == dto.EvidenceNo);
+        var updatedPrn = await _context.Prn.SingleAsync(x => x.PrnNumber == dto.EvidenceNo, CancellationToken.None);
         updatedPrn.CreatedOn.Should().Be(createdDate);
         updatedPrn.LastUpdatedDate.Should().BeAfter(updatedDate);
     }
@@ -719,14 +719,14 @@ public class RepositoryTestsInMemory
         await _repository.SavePrnDetails(entity);
         await _context.SaveChangesAsync(CancellationToken.None);
 
-        var awaitingAcceptancePrn = await _context.Prn.AsNoTracking().SingleAsync(x => x.PrnNumber == dto.EvidenceNo);
+        var awaitingAcceptancePrn = await _context.Prn.AsNoTracking().SingleAsync(x => x.PrnNumber == dto.EvidenceNo, CancellationToken.None);
         awaitingAcceptancePrn.PrnStatusId = (int)EprnStatus.AWAITINGACCEPTANCE;
 
         // Act
         await _repository.SavePrnDetails(awaitingAcceptancePrn);
 
         // Assert
-        var updatedPrn = await _context.Prn.SingleAsync(x => x.PrnNumber == dto.EvidenceNo);
+        var updatedPrn = await _context.Prn.SingleAsync(x => x.PrnNumber == dto.EvidenceNo, CancellationToken.None);
         updatedPrn.PrnStatusId.Should().Be((int) eOldStatus);
 
         _mockLogger.Verify(logger => logger.Log(
@@ -777,14 +777,14 @@ public class RepositoryTestsInMemory
         await _repository.SavePrnDetails(entity);
         await _context.SaveChangesAsync(CancellationToken.None);
 
-        var newPrn = await _context.Prn.AsNoTracking().SingleAsync(x => x.PrnNumber == dto.EvidenceNo);
+        var newPrn = await _context.Prn.AsNoTracking().SingleAsync(x => x.PrnNumber == dto.EvidenceNo, CancellationToken.None);
         newPrn.PrnStatusId = (int) eNewStatus;
 
         // Act
         await _repository.SavePrnDetails(newPrn);
 
         // Assert
-        var updatedPrn = await _context.Prn.SingleAsync(x => x.PrnNumber == dto.EvidenceNo);
+        var updatedPrn = await _context.Prn.SingleAsync(x => x.PrnNumber == dto.EvidenceNo, CancellationToken.None);
         updatedPrn.PrnStatusId.Should().Be((int)eNewStatus);
 
         _mockLogger.Verify(logger => logger.Log(

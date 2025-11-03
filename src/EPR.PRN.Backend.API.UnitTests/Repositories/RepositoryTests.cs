@@ -1,4 +1,5 @@
-﻿using AutoFixture;
+﻿using System.Diagnostics.CodeAnalysis;
+using AutoFixture;
 using EPR.PRN.Backend.API.Repositories;
 using EPR.PRN.Backend.Data;
 using EPR.PRN.Backend.Data.DataModels;
@@ -8,7 +9,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Moq;
-using System.Diagnostics.CodeAnalysis;
 
 namespace EPR.PRN.Backend.API.UnitTests.Repositories;
 
@@ -48,7 +48,7 @@ public class RepositoryTests
     [TestMethod]
     public async Task GetAllPrnByOrganisationId_Returns_Prns()
     {
-        //Arrange
+        // Arrange
         var data = _fixture.CreateMany<Eprn>().ToArray();
         data[0].PrnStatusId = data[1].PrnStatusId = data[2].PrnStatusId = 1;
 
@@ -58,10 +58,11 @@ public class RepositoryTests
             context.AddRange(data);
             await context.SaveChangesAsync(CancellationToken.None);
         }
-        //Act
+
+        // Act
         var repo = new Repository(context, _mockLogger.Object, _configurationMock.Object);
 
-        //Assert
+        // Assert
         var prns = await repo.GetAllPrnByOrganisationId(data[0].OrganisationId);
 
         prns.Should().ContainSingle();
@@ -138,7 +139,7 @@ public class RepositoryTests
         repo.AddPrnStatusHistory(statusHistory);
         await repo.SaveTransaction(transaction);
 
-        var history = await context.PrnStatusHistory.Where(p => p.CreatedByUser == statusHistory.CreatedByUser).ToListAsync();
+        var history = await context.PrnStatusHistory.Where(p => p.CreatedByUser == statusHistory.CreatedByUser).ToListAsync(CancellationToken.None);
         history.Should().HaveCount(1);
     }
 
@@ -195,34 +196,34 @@ public class RepositoryTests
     public async Task GetSyncStatus_ReturnsMappedPrnStatusSyncs()
     {
         // Arrange
-        var fromDate = new DateTime(2024, 11, 22);
-        var toDate = new DateTime(2024, 11, 24);
+        var fromDate = new DateTime(2024, 11, 22, 0, 0, 0, DateTimeKind.Local);
+        var toDate = new DateTime(2024, 11, 24, 0, 0, 0, DateTimeKind.Local);
 
         // Create the Eprn entities
         var prnData = _fixture.CreateMany<Eprn>().ToArray();
         prnData[0].PrnStatusId = 1;
         prnData[0].Id = 1;
         prnData[0].PrnNumber = "PRN001";
-        prnData[0].StatusUpdatedOn = new DateTime(2024, 11, 23);
+        prnData[0].StatusUpdatedOn = new DateTime(2024, 11, 23, 0, 0, 0, DateTimeKind.Local);
         prnData[0].OrganisationName = "Org1";
 
         prnData[1].PrnStatusId = 2;
         prnData[1].Id = 2;
         prnData[1].PrnNumber = "PRN002";
-        prnData[1].StatusUpdatedOn = new DateTime(2024, 11, 23);
+        prnData[1].StatusUpdatedOn = new DateTime(2024, 11, 23, 0, 0, 0, DateTimeKind.Local);
         prnData[1].OrganisationName = "Org2";
 
         // Create the PEprNpwdSync entities
         var syncData = new List<PEprNpwdSync>
     {
-        new PEprNpwdSync { PRNId = 1, PRNStatusId = 1, CreatedOn= new DateTime(2024, 11, 23), Id=1 },
-        new PEprNpwdSync { PRNId = 2, PRNStatusId = 2, CreatedOn = new DateTime(2024, 11, 23),Id=2 }
+        new PEprNpwdSync { PRNId = 1, PRNStatusId = 1, CreatedOn= new DateTime(2024, 11, 23, 0, 0, 0, DateTimeKind.Local), Id=1 },
+        new PEprNpwdSync { PRNId = 2, PRNStatusId = 2, CreatedOn = new DateTime(2024, 11, 23, 0, 0, 0, DateTimeKind.Local),Id=2 }
     };
 
         using var context = new EprContext(_contextOptions);
         if (await context.Database.EnsureCreatedAsync(CancellationToken.None))
         {
-            await context.AddRangeAsync(prnData);  // Add Eprn entities
+            await context.AddRangeAsync(prnData, CancellationToken.None);  // Add Eprn entities
             await context.AddRangeAsync(syncData); // Add PEprNpwdSync entities
             await context.SaveChangesAsync(CancellationToken.None);
         }
