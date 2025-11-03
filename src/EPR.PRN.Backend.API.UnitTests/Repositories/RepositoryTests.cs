@@ -178,7 +178,7 @@ public class RepositoryTests
 
         //Assert
         Assert.IsNotNull(result);
-        Assert.AreEqual(2, result.Count);
+        Assert.HasCount(2, result);
 
         var firstPrn = result[0];
         Assert.AreEqual("PRN001", firstPrn.EvidenceNo);
@@ -233,7 +233,7 @@ public class RepositoryTests
 
         // Assert
         Assert.IsNotNull(result);
-        Assert.AreEqual(2, result.Count);
+        Assert.HasCount(2, result);
 
         var firstSync = result.First(x => x.PrnNumber == "PRN001");
         Assert.AreEqual("PRN001", firstSync.PrnNumber);

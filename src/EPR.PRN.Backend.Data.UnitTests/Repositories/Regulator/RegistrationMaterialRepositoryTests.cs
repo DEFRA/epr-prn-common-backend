@@ -328,7 +328,7 @@ public class RegistrationMaterialRepositoryTests
         var result = await _repository.GetRequiredTasks(1, false, 1);
         using (new AssertionScope())
         {
-            Assert.AreEqual(1, result.Count);
+            Assert.HasCount(1, result);
             Assert.AreEqual("SiteAddressAndContactDetails", result[0].Name);
         }
     }
