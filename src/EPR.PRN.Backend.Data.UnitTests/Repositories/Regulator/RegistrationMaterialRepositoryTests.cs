@@ -425,7 +425,7 @@ public class RegistrationMaterialRepositoryTests
         var dulyMadeEntry = await _context.DulyMade
             .FirstOrDefaultAsync(x => x.RegistrationMaterial.ExternalId == registrationMaterialId, CancellationToken.None);
         var savedDeterminationDate = await _context.DeterminationDate
-            .FirstOrDefaultAsync(x => x.RegistrationMaterialId == 1, CancellationToken.None;
+            .FirstOrDefaultAsync(x => x.RegistrationMaterialId == 1, CancellationToken.None);
         var taskStatusEntry = await _context.RegulatorApplicationTaskStatus
             .FirstOrDefaultAsync(x => x.RegistrationMaterial.ExternalId == registrationMaterialId && x.TaskStatusId == statusId, CancellationToken.None);
 
