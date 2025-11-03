@@ -17,7 +17,7 @@ public class ObligationCalculationRepositoryTests
 {
     private Mock<EprContext> _mockEprContext;
     private IObligationCalculationUpdater _mockUpdater;
-    private IObligationCalculationRepository _repository;
+    private ObligationCalculationRepository _repository;
     private ILogger<ObligationCalculationRepository> _logger;
 
     private readonly Guid drOrganisationId1 = Guid.NewGuid();

@@ -920,7 +920,7 @@ public class RegistrationMaterialRepositoryTests
 
         // Act
         await _repository.UpdateRegistrationMaterialPermitCapacity(registrationMaterialId, (int)permitTypeId, capacityInTonnesAsDecimal, periodId);
-        var registrationMaterial = await _context.RegistrationMaterials.FirstOrDefaultAsync(x => x.ExternalId == registrationMaterialId);
+        var registrationMaterial = await _context.RegistrationMaterials.FirstOrDefaultAsync(x => x.ExternalId == registrationMaterialId, CancellationToken.None);
 
         // Assert
         switch (permitTypeId)
@@ -1086,7 +1086,7 @@ public class RegistrationMaterialRepositoryTests
 		await _repository.UpdateIsMaterialRegisteredAsync(new List<UpdateIsMaterialRegisteredDto> { dto });
 
 		// Assert
-		var updatedMaterial = await _context.RegistrationMaterials.SingleAsync(m => m.ExternalId == materialId);
+		var updatedMaterial = await _context.RegistrationMaterials.SingleAsync(m => m.ExternalId == materialId, CancellationToken.None);
 		updatedMaterial.IsMaterialRegistered.Should().BeTrue();
 		updatedMaterial.StatusId.Should().Be((int)RegistrationMaterialStatus.InProgress);
 	}
