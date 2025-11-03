@@ -224,10 +224,10 @@ public class RegistrationRepositoryTests
         await _repository.UpdateSiteAddressAsync(registrationId, reprocessingAddress);
 
         // Assert
-        var updatedRegistration = await _context.Registrations.FirstAsync(r => r.Id == registration.Id, CancellationToken.None);
+        var updatedRegistration = await _context.Registrations.FirstAsync(r => r.Id == registration.Id, cancellationToken: CancellationToken.None);
         updatedRegistration.ReprocessingSiteAddressId.Should().NotBeNull();
 
-        var reprocAddress = await _context.LookupAddresses.FindAsync(updatedRegistration.ReprocessingSiteAddressId, CancellationToken.None);
+        var reprocAddress = await _context.LookupAddresses.FindAsync(updatedRegistration.ReprocessingSiteAddressId);
 
         reprocAddress!.AddressLine1.Should().Be("123 Test St");
     }
@@ -275,7 +275,7 @@ public class RegistrationRepositoryTests
         await _repository.UpdateSiteAddressAsync(registrationId, reprocessingAddress);
 
         // Assert
-        var updatedRegistration = await _context.Registrations.FindAsync(registration.Id, CancellationToken.None);
+        var updatedRegistration = await _context.Registrations.FindAsync(registration.Id);
         updatedRegistration!.ReprocessingSiteAddressId.Should().Be(101);
     }
 
@@ -624,7 +624,7 @@ public class RegistrationRepositoryTests
                 }
             }
         };
-        await _context.Registrations.AddRangeAsync(registrations);
+        await _context.Registrations.AddRangeAsync(registrations, CancellationToken.None);
         await _context.SaveChangesAsync(CancellationToken.None);
         // Act
         var result = await _repository.GetRegistrationsOverviewForOrgIdAsync(organisationId);

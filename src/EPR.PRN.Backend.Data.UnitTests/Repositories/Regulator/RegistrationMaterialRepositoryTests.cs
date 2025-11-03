@@ -72,8 +72,8 @@ public class RegistrationMaterialRepositoryTests
             Material = lookupMaterial,
             IsMaterialRegistered = true,
 
-            Tasks = new List<RegulatorApplicationTaskStatus>
-        {
+            Tasks =
+        [
             new() {
                 Id = 1,
                 RegulatorTaskId = 1,
@@ -81,7 +81,7 @@ public class RegistrationMaterialRepositoryTests
                 TaskStatus = taskStatus,
                 Task = task
             }
-        },
+        ],
             PermitType = lookupMaterialPermit,
             EnvironmentalPermitWasteManagementPeriod = lookupPeriod,
             EnvironmentalPermitWasteManagementTonne = 100,
@@ -109,17 +109,16 @@ public class RegistrationMaterialRepositoryTests
             ReprocessingSiteAddress = address,
             BusinessAddress = address,
             LegalDocumentAddress = address,
-            Tasks = new List<RegulatorRegistrationTaskStatus>
-        {
-            new RegulatorRegistrationTaskStatus
-            {
+            Tasks =
+        [
+            new() {
                 Id = 1,
                 RegulatorTaskId = 1,
                 TaskStatusId = 1,
                 TaskStatus = taskStatus,
                 Task = task
             }
-        },
+        ],
             Materials = [material]
         };
 
@@ -133,8 +132,7 @@ public class RegistrationMaterialRepositoryTests
             LegalDocumentAddress = address,
             AccreditationTasks = new List<RegulatorAccreditationRegistrationTaskStatus>
             {
-                new RegulatorAccreditationRegistrationTaskStatus
-                {
+                new() {
                     Id = 2,
                     RegulatorTaskId = 1,
                     TaskStatusId = 1,
@@ -143,7 +141,7 @@ public class RegistrationMaterialRepositoryTests
                     AccreditationYear = 2025,
 
                 },
-                new RegulatorAccreditationRegistrationTaskStatus
+                new()
                 {
                     Id = 3,
                     RegulatorTaskId = 1,
@@ -154,7 +152,7 @@ public class RegistrationMaterialRepositoryTests
                 }
             },
             Materials = new List<RegistrationMaterial> {
-                new RegistrationMaterial {
+                new() {
                     Id = 2,
                     ExternalId = Guid.Parse("a9421fc1-a912-42ee-85a5-3e06408754a9"),
                     MaterialId = 1,
@@ -165,9 +163,9 @@ public class RegistrationMaterialRepositoryTests
                     Material = lookupMaterial,
                     IsMaterialRegistered = true,
 
-                    Tasks = new List<RegulatorApplicationTaskStatus>
-                    {
-                        new RegulatorApplicationTaskStatus
+                    Tasks =
+                    [
+                        new()
                         {
                             Id = 3,
                             RegulatorTaskId = 1,
@@ -175,7 +173,7 @@ public class RegistrationMaterialRepositoryTests
                             TaskStatus = taskStatus,
                             Task = task
                         }
-                    },
+                    ],
                     PermitType = lookupMaterialPermit,
                     EnvironmentalPermitWasteManagementPeriod = lookupPeriod,
                     EnvironmentalPermitWasteManagementTonne = 100,
@@ -194,7 +192,7 @@ public class RegistrationMaterialRepositoryTests
                             }
                         },
                     Accreditations = new List<Accreditation>{
-                        new Accreditation
+                        new()
                         {
                             Id = 1,
                             ExternalId = Guid.Parse("4c632765-7652-42ae-8527-23f10a971c28"),
@@ -207,9 +205,9 @@ public class RegistrationMaterialRepositoryTests
                                 Id = 1,
                                 Name = "Pending"
                             },
-                            Tasks = new List<RegulatorAccreditationTaskStatus>
-                            {
-                                new RegulatorAccreditationTaskStatus
+                            Tasks =
+                            [
+                                new()
                                 {
                                     Id = 1,
                                     RegulatorTaskId = 1,
@@ -217,7 +215,7 @@ public class RegistrationMaterialRepositoryTests
                                     TaskStatus = taskStatus,
                                     Task = task
                                 }
-                            }
+                            ]
                         },
                                                 new Accreditation
                         {
@@ -231,9 +229,9 @@ public class RegistrationMaterialRepositoryTests
                                 Id = 2,
                                 Name = "Granted"
                             },
-                            Tasks = new List<RegulatorAccreditationTaskStatus>
-                            {
-                                new RegulatorAccreditationTaskStatus
+                            Tasks =
+                            [
+                                new()
                                 {
                                     Id = 2,
                                     RegulatorTaskId = 1,
@@ -241,7 +239,7 @@ public class RegistrationMaterialRepositoryTests
                                     TaskStatus = taskStatus,
                                     Task = task
                                 }
-                            }
+                            ]
                         }
                     }
                 }
@@ -340,7 +338,7 @@ public class RegistrationMaterialRepositoryTests
         var userId = Guid.NewGuid();
 
         await _repository.UpdateRegistrationOutCome(Guid.Parse("a9421fc1-a912-42ee-85a5-3e06408759a9"), newStatusId, comment, newReference, userId);
-        var updated = await _context.RegistrationMaterials.FindAsync(1, CancellationToken.None);
+        var updated = await _context.RegistrationMaterials.FindAsync(1);
 
         using (new AssertionScope())
         {
@@ -521,7 +519,7 @@ public class RegistrationMaterialRepositoryTests
             Status = materialStatus,
             Material = lookupMaterial,
             IsMaterialRegistered = false,
-            MaterialExemptionReferences = new List<MaterialExemptionReference>()
+            MaterialExemptionReferences = []
         };
 
         _context.Registrations.Add(registration);
@@ -577,11 +575,11 @@ public class RegistrationMaterialRepositoryTests
 
         // Assert
         var dulyMadeEntry = await _context.DulyMade
-            .FirstOrDefaultAsync(x => x.RegistrationMaterial.ExternalId == registrationMaterialId);
+            .FirstOrDefaultAsync(x => x.RegistrationMaterial.ExternalId == registrationMaterialId, CancellationToken.None);
         var savedDeterminationDate = await _context.DeterminationDate
-            .FirstOrDefaultAsync(x => x.RegistrationMaterialId == 1);
+            .FirstOrDefaultAsync(x => x.RegistrationMaterialId == 1, CancellationToken.None);
         var taskStatusEntry = await _context.RegulatorApplicationTaskStatus
-            .FirstOrDefaultAsync(x => x.RegistrationMaterial.ExternalId == registrationMaterialId && x.TaskStatusId == statusId);
+            .FirstOrDefaultAsync(x => x.RegistrationMaterial.ExternalId == registrationMaterialId && x.TaskStatusId == statusId, CancellationToken.None);
 
         using (new AssertionScope())
         {
@@ -665,7 +663,7 @@ public class RegistrationMaterialRepositoryTests
         using (new AssertionScope())
         {
 
-            var updatedDeterminationDate = await _context.DeterminationDate.FirstOrDefaultAsync(x => x.RegistrationMaterialId == 1);
+            var updatedDeterminationDate = await _context.DeterminationDate.FirstOrDefaultAsync(x => x.RegistrationMaterialId == 1, CancellationToken.None);
             updatedDeterminationDate!.DeterminateDate.Should().Be(determinationDate);
         }
     }
@@ -840,7 +838,7 @@ public class RegistrationMaterialRepositoryTests
         registrationMaterial.InstallationPermitNumber.Should().BeNull();
         registrationMaterial.PPCPermitNumber.Should().BeNull();
 
-        var loaded = _context.MaterialExemptionReferences.Where(o => o.RegistrationMaterialId == 1).ToList();
+        var loaded = await _context.MaterialExemptionReferences.Where(o => o.RegistrationMaterialId == 1).ToListAsync(CancellationToken.None);
         loaded.Should().BeEquivalentTo(expected, o => o.Excluding(x => x.RegistrationMaterial));
     }
 
@@ -1057,9 +1055,9 @@ public class RegistrationMaterialRepositoryTests
         await _repository.DeleteAsync(registrationMaterialExternalId);
 
         // Assert
-        var loaded = _context.RegistrationMaterials.Where(o => o.RegistrationId == 10).ToList();
+        var loaded = await _context.RegistrationMaterials.Where(o => o.RegistrationId == 10).ToListAsync(CancellationToken.None);
         loaded.Should().HaveCount(1);
-        loaded.First().ExternalId.Should().Be(registrationMaterialExternalId2);
+        loaded[0].ExternalId.Should().Be(registrationMaterialExternalId2);
     }
 
 	[TestMethod]

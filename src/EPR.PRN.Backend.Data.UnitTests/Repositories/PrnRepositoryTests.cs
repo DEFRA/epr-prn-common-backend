@@ -38,7 +38,7 @@ namespace EPR.PRN.Backend.Data.UnitTests.Repositories
             prns[1].OrganisationId = organisationId;
             prns[1].PrnStatusId = 2; // AWAITINGACCEPTANCE
             prns[1].ObligationYear = year.ToString();
-            await _context.Prn.AddRangeAsync(prns);
+            await _context.Prn.AddRangeAsync(prns, CancellationToken.None);
             var prnStatuses = new[]
             {
             new PrnStatus { Id = 1, StatusName = EprnStatus.ACCEPTED.ToString() },
