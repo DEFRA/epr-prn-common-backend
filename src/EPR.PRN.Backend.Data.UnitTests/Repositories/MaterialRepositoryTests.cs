@@ -153,7 +153,7 @@ public class MaterialRepositoryTests
             .ReturnsDbSet(new List<RegistrationMaterial>());
 
         // Act & Assert
-        await Assert.ThrowsExceptionAsync<KeyNotFoundException>(async () =>
+        await Assert.ThrowsExactlyAsync<KeyNotFoundException>(async () =>
         {
             await _materialRepository.UpsertRegistrationMaterialContact(registrationMaterialExternalId, userId);
         });
@@ -169,7 +169,7 @@ public class MaterialRepositoryTests
             .ReturnsDbSet([]);
 
         // Act & Assert
-        await Assert.ThrowsExceptionAsync<KeyNotFoundException>(async () =>
+        await Assert.ThrowsExactlyAsync<KeyNotFoundException>(async () =>
         {
             await _materialRepository.UpsertRegistrationReprocessingDetailsAsync(registrationMaterialExternalId, registrationReprocessingIO);
         });
@@ -545,7 +545,7 @@ public class MaterialRepositoryTests
         var registrationMaterialExternalId = Guid.NewGuid();
 
         // Act & Assert
-        await Assert.ThrowsExceptionAsync<KeyNotFoundException>(async () =>
+        await Assert.ThrowsExactlyAsync<KeyNotFoundException>(async () =>
         {
             await _materialRepository.UpdateMaterialNotReprocessingReason(registrationMaterialExternalId, "My reason");
         });

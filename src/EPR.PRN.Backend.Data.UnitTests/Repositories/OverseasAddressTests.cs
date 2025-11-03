@@ -639,14 +639,14 @@ public class OverseasAddressTests
                     PostCode = "12345",
                     SiteCoordinates = "51.5074, -0.1278",
                     CountryName = "CountryA",
-                    OverseasAddressContacts = new List<OverseasAddressContactDto>(),
-                    OverseasAddressWasteCodes = new List<OverseasAddressWasteCodeDto>(),
+                    OverseasAddressContacts = [],
+                    OverseasAddressWasteCodes = [],
                 }
            ]
         };
 
         // Act & Assert
-        await Assert.ThrowsExceptionAsync<KeyNotFoundException>(async () =>
+        await Assert.ThrowsExactlyAsync<KeyNotFoundException>(async () =>
         {
             await _materialRepository.SaveOverseasReprocessingSites(updateDto);
         });

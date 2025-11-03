@@ -191,7 +191,7 @@ public class ObligationCalculationRepositoryTests
 		var obligationCalculationRepository = new ObligationCalculationRepository(_mockEprContext.Object, _logger, _mockUpdater);
 
 		// Act & Assert
-		await Assert.ThrowsExceptionAsync<InvalidOperationException>(async () =>
+		await Assert.ThrowsExactlyAsync<InvalidOperationException>(async () =>
 			await obligationCalculationRepository.UpsertObligationCalculationsForSubmitterYearAsync(csSubmitterId, currentYear, newCalculations));
 
 		// Verify rollback called

@@ -284,7 +284,7 @@ public class RegistrationMaterialRepositoryTests
     [TestMethod]
     public async Task GetRegistrationById_ShouldThrowKeyNotFoundException_WhenNotFound()
     {
-        await Assert.ThrowsExceptionAsync<KeyNotFoundException>(() => _repository.GetRegistrationById(Guid.Parse("cd9dcc80-fcf5-4f46-addd-b8a256f735a3")));
+        await Assert.ThrowsExactlyAsync<KeyNotFoundException>(() => _repository.GetRegistrationById(Guid.Parse("cd9dcc80-fcf5-4f46-addd-b8a256f735a3")));
     }
 
     [TestMethod]
@@ -318,7 +318,7 @@ public class RegistrationMaterialRepositoryTests
     [TestMethod]
     public async Task GetRegistrationByExternalIdAndYear_ShouldThrowKeyNotFoundException_WhenNotFound()
     {
-        await Assert.ThrowsExceptionAsync<KeyNotFoundException>(() => _repository.GetRegistrationByExternalIdAndYear(Guid.Parse("cd9dcc80-fcf5-4f46-addd-b8a256f735a3"), 2025));
+        await Assert.ThrowsExactlyAsync<KeyNotFoundException>(() => _repository.GetRegistrationByExternalIdAndYear(Guid.Parse("cd9dcc80-fcf5-4f46-addd-b8a256f735a3"), 2025));
     }
 
 
@@ -358,7 +358,7 @@ public class RegistrationMaterialRepositoryTests
     public async Task UpdateRegistrationOutCome_ShouldThrow_WhenMaterialNotFound()
     {
         var userId = Guid.NewGuid();
-        await Assert.ThrowsExceptionAsync<KeyNotFoundException>(() =>
+        _ = await Assert.ThrowsExactlyAsync<KeyNotFoundException>(() =>
             _repository.UpdateRegistrationOutCome(Guid.Parse("cd9dcc80-fcf5-4f46-addd-b8a256f735a3"), 1, "Test", "REF", userId));
     }
 
@@ -379,7 +379,7 @@ public class RegistrationMaterialRepositoryTests
     [TestMethod]
     public async Task GetRegistrationMaterialById_ShouldThrow_WhenNotFound()
     {
-        await Assert.ThrowsExceptionAsync<KeyNotFoundException>(() => _repository.GetRegistrationMaterialById(Guid.Parse("cd9dcc80-fcf5-4f46-addd-b8a256f735a3")));
+        await Assert.ThrowsExactlyAsync<KeyNotFoundException>(() => _repository.GetRegistrationMaterialById(Guid.Parse("cd9dcc80-fcf5-4f46-addd-b8a256f735a3")));
     }
 
     [TestMethod]
@@ -396,7 +396,7 @@ public class RegistrationMaterialRepositoryTests
     [TestMethod]
     public async Task GetAccreditation_FileUploadById_ShouldThrow_WhenNotFound()
     {
-        await Assert.ThrowsExceptionAsync<KeyNotFoundException>(() => _repository.GetAccreditation_FileUploadById(Guid.Parse("cd9dcc80-fcf5-4f46-addd-b8a256f735a3")));
+        await Assert.ThrowsExactlyAsync<KeyNotFoundException>(() => _repository.GetAccreditation_FileUploadById(Guid.Parse("cd9dcc80-fcf5-4f46-addd-b8a256f735a3")));
     }
 
     [TestMethod]
@@ -610,7 +610,7 @@ public class RegistrationMaterialRepositoryTests
         var userId = Guid.NewGuid();
 
         // Act & Assert
-        await Assert.ThrowsExceptionAsync<KeyNotFoundException>(() =>
+        await Assert.ThrowsExactlyAsync<KeyNotFoundException>(() =>
             _repository.RegistrationMaterialsMarkAsDulyMade(nonExistentId, statusId, determinationDate, dulyMadeDate, userId));
     }
 
@@ -628,7 +628,7 @@ public class RegistrationMaterialRepositoryTests
         await _context.SaveChangesAsync();
 
         // Act & Assert  
-        await Assert.ThrowsExceptionAsync<KeyNotFoundException>(() =>
+        await Assert.ThrowsExactlyAsync<KeyNotFoundException>(() =>
             _repository.RegistrationMaterialsMarkAsDulyMade(materialId, 3, DateTime.UtcNow.AddDays(84), DateTime.UtcNow, Guid.NewGuid()));
     }
   
@@ -706,13 +706,13 @@ public class RegistrationMaterialRepositoryTests
     [TestMethod]
     public async Task GetRegistrationMaterial_FileUploadById_ShouldThrow_WhenNotFound()
     {
-        await Assert.ThrowsExceptionAsync<KeyNotFoundException>(() => _repository.GetRegistrationMaterial_FileUploadById(Guid.Parse("cd9dcc80-fcf5-4f46-addd-b8a256f735a3")));
+        await Assert.ThrowsExactlyAsync<KeyNotFoundException>(() => _repository.GetRegistrationMaterial_FileUploadById(Guid.Parse("cd9dcc80-fcf5-4f46-addd-b8a256f735a3")));
     }
 
     [TestMethod]
     public async Task CreateAsync_NoExistingRegistration_ShouldThrowException()
     {
-        await Assert.ThrowsExceptionAsync<KeyNotFoundException>(() => _repository.CreateAsync(Guid.NewGuid(), "Steel"));
+        await Assert.ThrowsExactlyAsync<KeyNotFoundException>(() => _repository.CreateAsync(Guid.NewGuid(), "Steel"));
     }
 
     [TestMethod]
@@ -739,7 +739,7 @@ public class RegistrationMaterialRepositoryTests
     [TestMethod]
     public async Task GetRegistrationMaterialsByRegistrationId_RegistrationIdDoesNotExists()
     { 
-        await Assert.ThrowsExceptionAsync<KeyNotFoundException>(() => _repository.GetRegistrationMaterialsByRegistrationId(Guid.NewGuid()));
+        await Assert.ThrowsExactlyAsync<KeyNotFoundException>(() => _repository.GetRegistrationMaterialsByRegistrationId(Guid.NewGuid()));
     }
 
     [TestMethod]
@@ -907,11 +907,11 @@ public class RegistrationMaterialRepositoryTests
                 break;
         }
 
-        var loaded = _context.MaterialExemptionReferences.Where(o => o.RegistrationMaterialId == 1).ToList();
+        var loaded = await _context.MaterialExemptionReferences.Where(o => o.RegistrationMaterialId == 1).ToListAsync();
         loaded.Should().BeEmpty();
     }
 
-    [DataTestMethod]
+    [TestMethod]
     [DataRow(MaterialPermitType.PollutionPreventionAndControlPermit, 2000, 2)]
     [DataRow(MaterialPermitType.WasteManagementLicence, 3000, 3)]
     [DataRow(MaterialPermitType.InstallationPermit, 4000, 4)]
@@ -977,7 +977,7 @@ public class RegistrationMaterialRepositoryTests
     {
         var registrationMaterialId = Guid.NewGuid();
 
-        await Assert.ThrowsExceptionAsync<KeyNotFoundException>(() => _repository.UpdateRegistrationMaterialPermits(registrationMaterialId, 2, "TestPermit"));
+        await Assert.ThrowsExactlyAsync<KeyNotFoundException>(() => _repository.UpdateRegistrationMaterialPermits(registrationMaterialId, 2, "TestPermit"));
     }
 
     [TestMethod]
@@ -1003,7 +1003,7 @@ public class RegistrationMaterialRepositoryTests
     public async Task DeleteRegistrationMaterial_NotFound_ThrowException()
     {
         // Act & Assert
-        await Assert.ThrowsExceptionAsync<KeyNotFoundException>(() => _repository.DeleteAsync(Guid.NewGuid()));
+        await Assert.ThrowsExactlyAsync<KeyNotFoundException>(() => _repository.DeleteAsync(Guid.NewGuid()));
     }
 
     [TestMethod]
@@ -1104,7 +1104,7 @@ public class RegistrationMaterialRepositoryTests
 			IsMaterialRegistered = true
 		};
 
-		await Assert.ThrowsExceptionAsync<KeyNotFoundException>(() => _repository.UpdateIsMaterialRegisteredAsync(new List<UpdateIsMaterialRegisteredDto> { dto }));
+		await Assert.ThrowsExactlyAsync<KeyNotFoundException>(() => _repository.UpdateIsMaterialRegisteredAsync(new List<UpdateIsMaterialRegisteredDto> { dto }));
 	}
 
     [TestCleanup]

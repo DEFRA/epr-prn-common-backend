@@ -46,7 +46,7 @@ public class RegulatorAccreditationRepositoryTests
     [TestMethod]
     public async Task GetRegistrationById_ShouldThrowKeyNotFoundException_WhenNotFound()
     {
-        await Assert.ThrowsExceptionAsync<KeyNotFoundException>(() => _repository.GetAccreditationPaymentFeesById(Guid.Parse("cd9dcc80-fcf5-4f46-addd-b8a256f735a3")));
+        await Assert.ThrowsExactlyAsync<KeyNotFoundException>(() => _repository.GetAccreditationPaymentFeesById(Guid.Parse("cd9dcc80-fcf5-4f46-addd-b8a256f735a3")));
     }
 
 
@@ -54,7 +54,7 @@ public class RegulatorAccreditationRepositoryTests
     public async Task AccreditationMarkAsDulyMade_Throws_WhenAccreditationNotFound()
     {
         // Act & Assert
-        await Assert.ThrowsExceptionAsync<KeyNotFoundException>(() =>
+        await Assert.ThrowsExactlyAsync<KeyNotFoundException>(() =>
             _repository.AccreditationMarkAsDulyMade(Guid.NewGuid(), 1, DateTime.UtcNow, DateTime.UtcNow, Guid.NewGuid()));
     }
 
@@ -524,7 +524,7 @@ public class RegulatorAccreditationRepositoryTests
         var missingId = Guid.NewGuid();
 
         // Act & Assert
-        await Assert.ThrowsExceptionAsync<KeyNotFoundException>(() =>
+        await Assert.ThrowsExactlyAsync<KeyNotFoundException>(() =>
             _repository.GetAccreditationById(missingId));
     }
 
