@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using EPR.PRN.Backend.Data.DataModels.Accreditations;
 using EPR.PRN.Backend.Data.DataModels.Registrations;
 using EPR.PRN.Backend.Data.Repositories.Accreditations;
 using FluentAssertions;
@@ -94,7 +93,7 @@ public class AccreditationRepositoryTests
                     ApplicationReferenceNumber = "APP-123456",
                 }
             });
-        _dbContext.SaveChangesAsync();
+        _dbContext.SaveChangesAsync(CancellationToken.None);
     }
 
     [TestCleanup]
@@ -140,7 +139,7 @@ public class AccreditationRepositoryTests
 
         // Assert
         var accreditationId = accreditation.ExternalId;
-        var updatedAccreditation = await _dbContext.Accreditations.SingleAsync(x => x.ExternalId == accreditationId);
+        var updatedAccreditation = await _dbContext.Accreditations.SingleAsync(x => x.ExternalId == accreditationId, CancellationToken.None);
         updatedAccreditation.Should().NotBeNull();
         updatedAccreditation.ExternalId.Should().Be(accreditationId);
         updatedAccreditation.AccreditationYear.Should().Be(2026);
@@ -157,7 +156,7 @@ public class AccreditationRepositoryTests
         await _repository.Update(accreditation);
 
         // Assert
-        var updatedAccreditation = await _dbContext.Accreditations.SingleAsync(x => x.ExternalId == accreditationId);
+        var updatedAccreditation = await _dbContext.Accreditations.SingleAsync(x => x.ExternalId == accreditationId, CancellationToken.None);
         updatedAccreditation.Should().NotBeNull();
         updatedAccreditation.ExternalId.Should().Be(accreditationId);
         updatedAccreditation.AccreditationYear.Should().Be(2027);
@@ -205,8 +204,8 @@ public class AccreditationRepositoryTests
             }
         };
 
-        await _dbContext.AddRangeAsync(accreditations);
-        await _dbContext.SaveChangesAsync();
+        await _dbContext.AddRangeAsync(accreditations, CancellationToken.None);
+        await _dbContext.SaveChangesAsync(CancellationToken.None);
 
         // Act
         var result = await _repository.GetAccreditationOverviewForOrgId(orgId);

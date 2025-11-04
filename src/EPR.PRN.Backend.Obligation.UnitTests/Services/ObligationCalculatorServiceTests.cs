@@ -692,7 +692,7 @@ public class ObligationCalculatorServiceTests
 		var calculations = new List<ObligationCalculation>();
 
 		// Act & Assert
-		await Assert.ThrowsExceptionAsync<ArgumentException>(() =>
+		await Assert.ThrowsExactlyAsync<ArgumentException>(() =>
 			_service.SoftDeleteAndAddObligationCalculationAsync(Guid.NewGuid(), calculations));
 	}
 
@@ -703,7 +703,7 @@ public class ObligationCalculatorServiceTests
 		List<ObligationCalculation> calculations = null;
 
 		// Act & Assert
-		await Assert.ThrowsExceptionAsync<ArgumentException>(() =>
+		await Assert.ThrowsExactlyAsync<ArgumentException>(() =>
 			_service.SoftDeleteAndAddObligationCalculationAsync(Guid.NewGuid(), calculations));
 	}
 
