@@ -46,7 +46,7 @@ public class OverseasAccreditationSiteRepositoryTests
         };
         _context.Accreditations.Add(accreditation);
         _context.OverseasAccreditationSites.Add(site);
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(CancellationToken.None);
 
         // Act
         var result = await _repository.GetAllByAccreditationId(accreditationId);
@@ -86,13 +86,13 @@ public class OverseasAccreditationSiteRepositoryTests
             SiteCheckStatusId = 2
         };
         _context.Accreditations.Add(accreditation);
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(CancellationToken.None);
 
         // Act
         await _repository.PostByAccreditationId(accreditationId, site);
 
         // Assert
-        var newSite = await _context.OverseasAccreditationSites.Where(x => x.ExternalId == accreditationId).ToListAsync();
+        var newSite = await _context.OverseasAccreditationSites.Where(x => x.ExternalId == accreditationId).ToListAsync(CancellationToken.None);
         newSite.Should().ContainSingle();
         newSite[0].AccreditationId.Should().Be(accreditation.Id);
         newSite[0].ExternalId.Should().Be(accreditationId);

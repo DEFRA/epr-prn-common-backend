@@ -38,11 +38,10 @@ public class UpdateMaterialNotReprocessingReasonHandlerTest
     }
 
     [TestMethod]
-    [ExpectedException(typeof(NullReferenceException))]
     public async Task Handle_ShouldThrow_WhenCommandIsNull()
     {
         // Act
-        await _handler.Handle(null, CancellationToken.None);
+        await Assert.ThrowsExactlyAsync<NullReferenceException>(async () => await _handler.Handle(null, CancellationToken.None));
     }
 
     [TestMethod]
@@ -55,7 +54,7 @@ public class UpdateMaterialNotReprocessingReasonHandlerTest
             .ThrowsAsync(new InvalidOperationException("Database error"));
 
         // Act & Assert
-        await Assert.ThrowsExceptionAsync<InvalidOperationException>(() =>
+        await Assert.ThrowsExactlyAsync<InvalidOperationException>(() =>
             _handler.Handle(command, CancellationToken.None));
     }
 

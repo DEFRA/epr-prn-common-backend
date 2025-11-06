@@ -17,7 +17,7 @@ public class ObligationCalculationRepositoryTests
 {
     private Mock<EprContext> _mockEprContext;
     private IObligationCalculationUpdater _mockUpdater;
-    private IObligationCalculationRepository _repository;
+    private ObligationCalculationRepository _repository;
     private ILogger<ObligationCalculationRepository> _logger;
 
     private readonly Guid drOrganisationId1 = Guid.NewGuid();
@@ -191,7 +191,7 @@ public class ObligationCalculationRepositoryTests
 		var obligationCalculationRepository = new ObligationCalculationRepository(_mockEprContext.Object, _logger, _mockUpdater);
 
 		// Act & Assert
-		await Assert.ThrowsExceptionAsync<InvalidOperationException>(async () =>
+		await Assert.ThrowsExactlyAsync<InvalidOperationException>(async () =>
 			await obligationCalculationRepository.UpsertObligationCalculationsForSubmitterYearAsync(csSubmitterId, currentYear, newCalculations));
 
 		// Verify rollback called

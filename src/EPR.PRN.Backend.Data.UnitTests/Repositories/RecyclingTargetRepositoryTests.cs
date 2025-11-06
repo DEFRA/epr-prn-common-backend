@@ -91,6 +91,6 @@ public class RecyclingTargetRepositoryTests
 
         // Assert
         Assert.IsNotNull(result);
-        Assert.AreEqual(48, result.Count());
+        Assert.HasCount(48, result);
     }
 }
