@@ -7,52 +7,44 @@ namespace EPR.PRN.Backend.Obligation.Strategies;
 
 public class GlassCalculationStrategy : IMaterialCalculationStrategy
 {
-    private readonly IMaterialCalculationService _calculationService;
-    private readonly IDateTimeProvider _dateTimeProvider;
+	private readonly IMaterialCalculationService _calculationService;
 
-    public GlassCalculationStrategy(IMaterialCalculationService calculationService, IDateTimeProvider dateTimeProvider)
-    {
-        _calculationService = calculationService;
-        _dateTimeProvider = dateTimeProvider;
-    }
-    public bool CanHandle(MaterialType materialType) => materialType == MaterialType.Glass;
+	public GlassCalculationStrategy(IMaterialCalculationService calculationService)
+	{
+		_calculationService = calculationService;
+	}
+	public bool CanHandle(MaterialType materialType) => materialType == MaterialType.Glass;
 
-    public List<ObligationCalculation> Calculate(CalculationRequestDto calculationRequest)
-    {
-        var calculatedOn = _dateTimeProvider.UtcNow;
-        var currentYear = _dateTimeProvider.CurrentYear;
+	public List<ObligationCalculation> Calculate(CalculationRequestDto calculationRequest)
+	{
+		var calculatedOn = DateTime.UtcNow;
+		var submission = calculationRequest.SubmissionCalculationRequest;
+		var complianceYear = calculationRequest.ComplianceYear;
 
-        var (remelt, remainder) = _calculationService.CalculateGlass
-        (
-            calculationRequest.RecyclingTargets[currentYear][MaterialType.Glass],
-            calculationRequest.RecyclingTargets[currentYear][MaterialType.GlassRemelt],
-            calculationRequest.SubmissionCalculationRequest.PackagingMaterialWeight
-        );
+		var recyclingTarget = calculationRequest.RecyclingTargets[complianceYear];
+		var (glassRemeltValue, glassRemainderValue) = _calculationService.CalculateGlass(
+			recyclingTarget[MaterialType.Glass],
+			recyclingTarget[MaterialType.GlassRemelt],
+			submission.PackagingMaterialWeight
+		);
 
-        return
-        [
-            new ObligationCalculation
-            {
-                MaterialId = calculationRequest.Materials.First(m => m.MaterialName == MaterialType.Glass.ToString()).Id,
-                CalculatedOn = calculatedOn,
-                OrganisationId = calculationRequest.SubmissionCalculationRequest.OrganisationId,
-                MaterialObligationValue = remainder,
-                Year = currentYear,
-                Tonnage = calculationRequest.SubmissionCalculationRequest.PackagingMaterialWeight,
-                SubmitterId = calculationRequest.SubmitterId,
-				SubmitterTypeId = calculationRequest.SubmitterTypeId
-			},
-            new ObligationCalculation
-            {
-                MaterialId = calculationRequest.Materials.First(m => m.MaterialName == MaterialType.GlassRemelt.ToString()).Id,
-                CalculatedOn = calculatedOn,
-                OrganisationId = calculationRequest.SubmissionCalculationRequest.OrganisationId,
-                MaterialObligationValue = remelt,
-                Year = currentYear,
-                Tonnage = calculationRequest.SubmissionCalculationRequest.PackagingMaterialWeight,
-				SubmitterId = calculationRequest.SubmitterId,
-				SubmitterTypeId = calculationRequest.SubmitterTypeId
-			}
-        ];
-    }
+		var materialsByName = calculationRequest.Materials.ToDictionary(m => m.MaterialName, StringComparer.OrdinalIgnoreCase);
+		ObligationCalculation CreateObligation(MaterialType type, int materialObligationValue) => new()
+		{
+			MaterialId = materialsByName[type.ToString()].Id,
+			CalculatedOn = calculatedOn,
+			OrganisationId = submission.OrganisationId,
+			MaterialObligationValue = materialObligationValue,
+			Year = complianceYear,
+			Tonnage = submission.PackagingMaterialWeight,
+			SubmitterId = calculationRequest.SubmitterId,
+			SubmitterTypeId = calculationRequest.SubmitterTypeId
+		};
+
+		return
+		[
+			CreateObligation(MaterialType.Glass, glassRemainderValue),
+			CreateObligation(MaterialType.GlassRemelt, glassRemeltValue)
+		];
+	}
 }
