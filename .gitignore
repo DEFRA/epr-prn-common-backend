@@ -16,7 +16,7 @@
 StyleCop.Cache
 npm-debug.log
 appsettings.Test.json
- 
+
 /*.sln.DotSettings.user
 /*/.vscode/
 .vscode
@@ -37,3 +37,5 @@ appsettings.Test.json
 **/EPR.PRN.Backend.Obligation.UnitTests/TestResults
 **/EPR.PRN.Backend.API.UnitTests/coveragereport
 **/EPR.PRN.Backend.API.UnitTests/TestResults
+
+.idea
