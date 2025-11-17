@@ -16,6 +16,8 @@ namespace EPR.PRN.Backend.Obligation.Dto
 
 		public int SubmitterTypeId { get; set; }
 
+        public int ComplianceYear { get; set; }
+
 		public Dictionary<int, Dictionary<MaterialType, double>> RecyclingTargets { get; set; } = [];
     }
 }
