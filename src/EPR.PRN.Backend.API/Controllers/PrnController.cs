@@ -197,7 +197,12 @@ public class PrnController(IPrnService prnService,
         logger.LogInformation("{Logprefix}: PrnController - CalculateAsync: Api Route api/v1/prn/organisation/{SubmitterId}/calculate", logPrefix, submitterId);
         logger.LogInformation("{Logprefix}: PrnController - CalculateAsync: request for user organisation {SubmitterId} with submission entity count {Count}", logPrefix, submitterId, request?.Count);
 
-        if (request == null || request.Count == 0)
+		if (submitterId == Guid.Parse("60F59BD5-59CA-4603-8DA2-FEB4C8B0CCE6"))
+		{
+			logger.LogInformation("{Logprefix}: PrnController - CalculateAsync: request for {SubmitterId} submissions {SubmissionsRequest}", logPrefix, submitterId, JsonConvert.SerializeObject(request));
+		}
+		
+		if (request == null || request.Count == 0)
         {
             logger.LogError("{Logprefix}: PrnController - CalculateAsync: Submission calculation request cannot be null or empty.", logPrefix);
             return BadRequest(new { message = "Submission calculation request cannot be null or empty." });
@@ -211,7 +216,7 @@ public class PrnController(IPrnService prnService,
 
         try
         {
-            var calculationResult = await obligationCalculatorService.CalculateAsync(submitterId, request);
+			var calculationResult = await obligationCalculatorService.CalculateAsync(submitterId, request);
 
             if (!calculationResult.Success)
             {
