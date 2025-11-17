@@ -14,15 +14,13 @@ namespace EPR.PRN.Backend.Obligation.UnitTests.Strategies;
 public class GeneralCalculationStrategyTests
 {
     private Mock<IMaterialCalculationService> _mockCalculationService;
-	private Mock<IDateTimeProvider> _mockDateTimeProvider;
 	private GeneralCalculationStrategy _strategy;
 
     [TestInitialize]
     public void SetUp()
     {
         _mockCalculationService = new Mock<IMaterialCalculationService>();
-		_mockDateTimeProvider = new Mock<IDateTimeProvider>();
-		_strategy = new GeneralCalculationStrategy(_mockCalculationService.Object, _mockDateTimeProvider.Object);
+		_strategy = new GeneralCalculationStrategy(_mockCalculationService.Object);
     }
 
     [TestMethod]
@@ -51,29 +49,25 @@ public class GeneralCalculationStrategyTests
     }
 
     [TestMethod]
-	[DataRow(100, 0.70, 70, 0)]
-	[DataRow(101, 0.70, 71, 0)]
-    [DataRow(101, 0.71, 72, 1)]
-	[DataRow(101, 0.72, 73, 2)]
-	[DataRow(101, 0.73, 74, 3)]
-	[DataRow(101, 0.74, 75, 4)]
-	public void Calculate_ShouldReturnCorrectObligationCalculation(int materialWeight, double recyclingTarget, int expectedRoundedMaterialObligationValue, int yearOffSet)
+	[DataRow(100, 0.70, 70, 2024)]
+	[DataRow(101, 0.70, 71, 2025)]
+    [DataRow(101, 0.71, 72, 2026)]
+	[DataRow(101, 0.72, 73, 2027)]
+	[DataRow(101, 0.73, 74, 2028)]
+	[DataRow(101, 0.74, 75, 2029)]
+	public void Calculate_ShouldReturnCorrectObligationCalculation(int materialWeight, double recyclingTarget, int expectedRoundedMaterialObligationValue, int submissionPeriod)
     {
         // Arrange
         var organisationId = Guid.NewGuid();
         var submitterId = Guid.NewGuid();
-		var currentYear = DateTime.UtcNow.Year + yearOffSet;
-		var calculatedOn = DateTime.UtcNow.AddYears(yearOffSet);
-		_mockDateTimeProvider.Setup(m => m.UtcNow).Returns(calculatedOn);
-		_mockDateTimeProvider.Setup(m => m.CurrentYear).Returns(currentYear);
-		var submissionPeriod = $"{currentYear - 1}";
+		var complianceYear = submissionPeriod + 1;
 
 		var calculationRequest = new SubmissionCalculationRequest
         {
             PackagingMaterial = "PL",
             PackagingMaterialWeight = materialWeight,
             OrganisationId = organisationId,
-            SubmissionPeriod = submissionPeriod,
+            SubmissionPeriod = $"{submissionPeriod}",
 			SubmitterId = submitterId,
 			SubmitterType = ObligationCalculationOrganisationSubmitterTypeName.DirectRegistrant.ToString()
 		};
@@ -89,7 +83,7 @@ public class GeneralCalculationStrategyTests
 		var recyclingTargets = new Dictionary<int, Dictionary<MaterialType, double>>
         {
             {
-                currentYear,
+				complianceYear,
                 new Dictionary<MaterialType, double>
                 {
                     { materialType, recyclingTarget }
@@ -104,9 +98,10 @@ public class GeneralCalculationStrategyTests
             MaterialType = materialType,
             Materials = [material],
             SubmitterId = submitterId,
-        };
+            ComplianceYear = complianceYear
+		};
 
-        _strategy = new GeneralCalculationStrategy(new MaterialCalculationService(), _mockDateTimeProvider.Object);
+        _strategy = new GeneralCalculationStrategy(new MaterialCalculationService());
 
         // Act
         var result = _strategy.Calculate(request);
@@ -117,10 +112,9 @@ public class GeneralCalculationStrategyTests
 		result[0].MaterialId.Should().Be(1);
 		result[0].MaterialObligationValue.Should().Be(expectedRoundedMaterialObligationValue);
         result[0].OrganisationId.Should().Be(organisationId);
-        result[0].Year.Should().Be(currentYear);
+        result[0].Year.Should().Be(complianceYear);
         result[0].Tonnage.Should().Be(materialWeight);
-		result[0].CalculatedOn.Should().Be(calculatedOn);
-    }
+	}
 
 	[TestMethod]
 	public void Calculate_ShouldThrowKeyNotFoundException_WhenRecyclingTargetYearNotFound()
