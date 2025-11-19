@@ -2,21 +2,21 @@
 
 namespace EPR.PRN.Backend.Obligation.Services
 {
-    public class MaterialCalculationService : IMaterialCalculationService
-    {
-        public int Calculate(double target, int tonnage)
-        {
-            return (int)Math.Ceiling(target * tonnage);
-        }
+	public class MaterialCalculationService : IMaterialCalculationService
+	{
+		public int Calculate(double target, int tonnage)
+		{
+			return (int)Math.Ceiling((decimal)target * tonnage);
+		}
 
-        public (int remelt, int remainder) CalculateGlass(double target, double remeltTarget, int tonnage)
-        {
-            var initialTarget = target * tonnage;
-            var glassRemelt = (int)Math.Ceiling(remeltTarget * initialTarget);
-            var glassTotal = (int)Math.Ceiling(initialTarget);
-            var glassOther = glassTotal - glassRemelt;
+		public (int remelt, int remainder) CalculateGlass(double target, double remeltTarget, int tonnage)
+		{
+			var initialTarget = (decimal)target * tonnage;
+			var glassRemelt = (int)Math.Ceiling((decimal)remeltTarget * initialTarget);
+			var glassTotal = (int)Math.Ceiling(initialTarget);
+			var glassOther = glassTotal - glassRemelt;
 
-            return (glassRemelt, glassOther);
-        }
-    }
+			return (glassRemelt, glassOther);
+		}
+	}
 }
