@@ -14,7 +14,6 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace EPR.PRN.Backend.API.UnitTests.Controllers;
 
@@ -496,5 +495,31 @@ public class RegistrationMaterialControllerTests
             Times.Once);
     }
 
+    [TestMethod]
+    public void OverseasAddressBaseDto_AddressLine2_Should_Not_Have_Required_Keyword()
+    {
+        // Arrange
+        var property = typeof(OverseasAddressBaseDto).GetProperty(nameof(OverseasAddressBaseDto.AddressLine2));
 
+        // Act
+        var isRequiredKeyword = property != null && property.CustomAttributes
+            .Any(attr => attr.AttributeType == typeof(System.Runtime.CompilerServices.RequiredMemberAttribute));
+
+        // Assert
+        isRequiredKeyword.Should().BeFalse("AddressLine2 must not have the 'required' keyword");
+    }
+
+    [TestMethod]
+    public void OverseasAddressBaseDto_PostCode_Should_Not_Have_Required_Keyword()
+    {
+        // Arrange
+        var property = typeof(OverseasAddressBaseDto).GetProperty(nameof(OverseasAddressBaseDto.PostCode));
+
+        // Act
+        var isRequiredKeyword = property != null && property.CustomAttributes
+            .Any(attr => attr.AttributeType == typeof(System.Runtime.CompilerServices.RequiredMemberAttribute));
+
+        // Assert
+        isRequiredKeyword.Should().BeFalse("PostCode must not have the 'required' keyword");
+    }
 }
