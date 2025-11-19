@@ -153,7 +153,7 @@ public class MaterialRepositoryTests
             .ReturnsDbSet(new List<RegistrationMaterial>());
 
         // Act & Assert
-        await Assert.ThrowsExceptionAsync<KeyNotFoundException>(async () =>
+        await Assert.ThrowsExactlyAsync<KeyNotFoundException>(async () =>
         {
             await _materialRepository.UpsertRegistrationMaterialContact(registrationMaterialExternalId, userId);
         });
@@ -169,7 +169,7 @@ public class MaterialRepositoryTests
             .ReturnsDbSet([]);
 
         // Act & Assert
-        await Assert.ThrowsExceptionAsync<KeyNotFoundException>(async () =>
+        await Assert.ThrowsExactlyAsync<KeyNotFoundException>(async () =>
         {
             await _materialRepository.UpsertRegistrationReprocessingDetailsAsync(registrationMaterialExternalId, registrationReprocessingIO);
         });
@@ -437,11 +437,11 @@ public class MaterialRepositoryTests
         var task = new LookupApplicantRegistrationTask { Name = "NewTask", ApplicationTypeId = 1, IsMaterialSpecific = true };
         var status = new LookupTaskStatus { Name = nameof(TaskStatuses.Completed) };
 
-        await _context.Registrations.AddAsync(registration);
-        await _context.RegistrationMaterials.AddAsync(registrationMaterial);
-        await _context.LookupApplicantRegistrationTasks.AddAsync(task);
-        await _context.LookupTaskStatuses.AddAsync(status);
-        await _context.SaveChangesAsync();
+        await _context.Registrations.AddAsync(registration, CancellationToken.None);
+        await _context.RegistrationMaterials.AddAsync(registrationMaterial, CancellationToken.None);
+        await _context.LookupApplicantRegistrationTasks.AddAsync(task, CancellationToken.None);
+        await _context.LookupTaskStatuses.AddAsync(status, CancellationToken.None);
+        await _context.SaveChangesAsync(CancellationToken.None);
 
         // Act
         await _materialRepositoryFull.UpdateApplicationRegistrationTaskStatusAsync("NewTask", registrationMaterialId, TaskStatuses.Completed);
@@ -463,9 +463,9 @@ public class MaterialRepositoryTests
         var oldStatus = new LookupTaskStatus { Name = TaskStatuses.Started.ToString() };
         var newStatus = new LookupTaskStatus { Name = TaskStatuses.Completed.ToString() };
 
-        await _context.Registrations.AddAsync(registration);
-        await _context.RegistrationMaterials.AddAsync(registrationMaterial);
-        await _context.LookupApplicantRegistrationTasks.AddAsync(task);
+        await _context.Registrations.AddAsync(registration, CancellationToken.None);
+        await _context.RegistrationMaterials.AddAsync(registrationMaterial, CancellationToken.None);
+        await _context.LookupApplicantRegistrationTasks.AddAsync(task, CancellationToken.None);
         await _context.LookupTaskStatuses.AddRangeAsync(oldStatus, newStatus);
 
         var taskStatus = new ApplicantRegistrationTaskStatus
@@ -476,8 +476,8 @@ public class MaterialRepositoryTests
             RegistrationMaterialId = registrationMaterial.Id,
         };
 
-        await _context.RegistrationTaskStatus.AddAsync(taskStatus);
-        await _context.SaveChangesAsync();
+        await _context.RegistrationTaskStatus.AddAsync(taskStatus, CancellationToken.None);
+        await _context.SaveChangesAsync(CancellationToken.None);
 
         // Act
         await _materialRepositoryFull.UpdateApplicationRegistrationTaskStatusAsync("ExistingTask", registrationMaterialId, TaskStatuses.Completed);
@@ -493,8 +493,8 @@ public class MaterialRepositoryTests
         // Arrange
         var registrationId = Guid.NewGuid();
         var status = new LookupTaskStatus { Name = TaskStatuses.Completed.ToString() };
-        await _context.LookupTaskStatuses.AddAsync(status);
-        await _context.SaveChangesAsync();
+        await _context.LookupTaskStatuses.AddAsync(status, CancellationToken.None);
+        await _context.SaveChangesAsync(CancellationToken.None);
 
         // Act
         Func<Task> act = async () => await _materialRepositoryFull.UpdateApplicationRegistrationTaskStatusAsync("AnyTask", registrationId, TaskStatuses.Completed);
@@ -512,10 +512,10 @@ public class MaterialRepositoryTests
         var registration = new Registration { Id = 1, ApplicationTypeId = 1, ExternalId = Guid.NewGuid() };
         var status = new LookupTaskStatus { Name = TaskStatuses.Completed.ToString() };
 
-        await _context.Registrations.AddAsync(registration);
-        await _context.RegistrationMaterials.AddAsync(registrationMaterial);
-        await _context.LookupTaskStatuses.AddAsync(status);
-        await _context.SaveChangesAsync();
+        await _context.Registrations.AddAsync(registration, CancellationToken.None);
+        await _context.RegistrationMaterials.AddAsync(registrationMaterial, CancellationToken.None);
+        await _context.LookupTaskStatuses.AddAsync(status, CancellationToken.None);
+        await _context.SaveChangesAsync(CancellationToken.None);
 
         // Act
         Func<Task> act = async () => await _materialRepositoryFull.UpdateApplicationRegistrationTaskStatusAsync("MissingTask", registrationMaterialId, TaskStatuses.Completed);
@@ -545,7 +545,7 @@ public class MaterialRepositoryTests
         var registrationMaterialExternalId = Guid.NewGuid();
 
         // Act & Assert
-        await Assert.ThrowsExceptionAsync<KeyNotFoundException>(async () =>
+        await Assert.ThrowsExactlyAsync<KeyNotFoundException>(async () =>
         {
             await _materialRepository.UpdateMaterialNotReprocessingReason(registrationMaterialExternalId, "My reason");
         });

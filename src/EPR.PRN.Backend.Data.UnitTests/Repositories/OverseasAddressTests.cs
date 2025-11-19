@@ -305,10 +305,10 @@ public class OverseasAddressTests
             StatusId = 1,
             IsMaterialRegistered = false,
         });
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(CancellationToken.None);
 
         _context.LookupCountries.Add(new LookupCountry { Id = 1, Name = "CountryA" });
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(CancellationToken.None);
 
         var existingExternalId = new Guid("6497f0b0-d55d-4462-a6e2-f32733bec6ea");
 
@@ -336,7 +336,7 @@ public class OverseasAddressTests
             },
         };
         _context.OverseasAddress.Add(existingAddress);
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(CancellationToken.None);
 
         var updateDto = new UpdateOverseasAddressDto
         {
@@ -399,9 +399,9 @@ public class OverseasAddressTests
         var allAddresses = await _context.OverseasAddress
             .Include(a => a.OverseasAddressContacts)
             .Include(a => a.OverseasAddressWasteCodes)
-            .ToListAsync();
+            .ToListAsync(CancellationToken.None);
         var allTasks = await _context.RegistrationTaskStatus
-            .ToListAsync();
+            .ToListAsync(CancellationToken.None);
         // Old address updated
         var updated = allAddresses.First(a => a.ExternalId == existingExternalId);
         updated.AddressLine1.Should().Be("New Line 1");
@@ -438,7 +438,7 @@ public class OverseasAddressTests
             StatusId = 1,
             IsMaterialRegistered = false
         });
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(CancellationToken.None);
 
         var existingToKeep = new OverseasAddress
         {
@@ -479,7 +479,7 @@ public class OverseasAddressTests
         };
 
         _context.OverseasAddress.AddRange(existingToKeep, existingToDelete, existingToKeepDifferentRegistrationId);
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(CancellationToken.None);
 
         var updateDto = new UpdateOverseasAddressDto
         {
@@ -507,7 +507,7 @@ public class OverseasAddressTests
         await _materialRepository.SaveOverseasReprocessingSites(updateDto);
 
         // Assert
-        var allAddresses = await _context.OverseasAddress.ToListAsync();
+        var allAddresses = await _context.OverseasAddress.ToListAsync(CancellationToken.None);
         allAddresses.Should().Contain(a => a.ExternalId == existingToKeep.ExternalId);
         allAddresses.Should().NotContain(a => a.ExternalId == existingToDelete.ExternalId);
     }
@@ -529,7 +529,7 @@ public class OverseasAddressTests
             StatusId = 1,
             IsMaterialRegistered = false
         });
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(CancellationToken.None);
 
         var existingToKeep = new OverseasAddress
         {
@@ -570,7 +570,7 @@ public class OverseasAddressTests
         };
 
         _context.OverseasAddress.AddRange(existingToKeep, existingToDelete, existingToKeepDifferentRegistrationId);
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(CancellationToken.None);
 
         var updateDto = new UpdateOverseasAddressDto
         {
@@ -609,12 +609,12 @@ public class OverseasAddressTests
         await _materialRepository.SaveOverseasReprocessingSites(updateDto);
 
         // Assert
-        var allAddresses = await _context.OverseasAddress.ToListAsync();
+        var allAddresses = await _context.OverseasAddress.ToListAsync(CancellationToken.None);
         allAddresses.Should().Contain(a => a.ExternalId == existingToKeep.ExternalId);
         allAddresses.Should().NotContain(a => a.ExternalId == existingToDelete.ExternalId);
-        var allContacts = await _context.OverseasAddressContact.ToListAsync();
+        var allContacts = await _context.OverseasAddressContact.ToListAsync(CancellationToken.None);
         allContacts.Should().ContainSingle(a => a.FullName == "Test Name");
-        var allWasteCodes = await _context.OverseasAddressWasteCode.ToListAsync();
+        var allWasteCodes = await _context.OverseasAddressWasteCode.ToListAsync(CancellationToken.None);
         allWasteCodes.Should().ContainSingle(a => a.CodeName == "NewCode");
     }
 
@@ -639,14 +639,14 @@ public class OverseasAddressTests
                     PostCode = "12345",
                     SiteCoordinates = "51.5074, -0.1278",
                     CountryName = "CountryA",
-                    OverseasAddressContacts = new List<OverseasAddressContactDto>(),
-                    OverseasAddressWasteCodes = new List<OverseasAddressWasteCodeDto>(),
+                    OverseasAddressContacts = [],
+                    OverseasAddressWasteCodes = [],
                 }
            ]
         };
 
         // Act & Assert
-        await Assert.ThrowsExceptionAsync<KeyNotFoundException>(async () =>
+        await Assert.ThrowsExactlyAsync<KeyNotFoundException>(async () =>
         {
             await _materialRepository.SaveOverseasReprocessingSites(updateDto);
         });

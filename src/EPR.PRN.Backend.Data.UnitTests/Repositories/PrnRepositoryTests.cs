@@ -38,14 +38,14 @@ namespace EPR.PRN.Backend.Data.UnitTests.Repositories
             prns[1].OrganisationId = organisationId;
             prns[1].PrnStatusId = 2; // AWAITINGACCEPTANCE
             prns[1].ObligationYear = year.ToString();
-            await _context.Prn.AddRangeAsync(prns);
+            await _context.Prn.AddRangeAsync(prns, CancellationToken.None);
             var prnStatuses = new[]
             {
             new PrnStatus { Id = 1, StatusName = EprnStatus.ACCEPTED.ToString() },
             new PrnStatus { Id = 2, StatusName = EprnStatus.AWAITINGACCEPTANCE.ToString() }
             };
-            await _context.PrnStatus.AddRangeAsync(prnStatuses);
-            await _context.SaveChangesAsync();
+            await _context.PrnStatus.AddRangeAsync(prnStatuses, CancellationToken.None);
+            await _context.SaveChangesAsync(CancellationToken.None);
 
             // Act
             var result = _repository.GetAcceptedAndAwaitingPrnsByYear(organisationId, year);

@@ -9,35 +9,40 @@ public class GeneralCalculationStrategy : IMaterialCalculationStrategy
 {
     private readonly List<MaterialType> _generalMaterials;
     private readonly IMaterialCalculationService _calculationService;
-    private readonly IDateTimeProvider _dateTimeProvider;
 
-    public GeneralCalculationStrategy(IMaterialCalculationService calculationService, IDateTimeProvider dateTimeProvider)
+    public GeneralCalculationStrategy(IMaterialCalculationService calculationService)
     {
         _generalMaterials = Enum.GetValues(typeof(MaterialType)).Cast<MaterialType>().Where(m => m != MaterialType.Glass && m != MaterialType.GlassRemelt).ToList();
         _calculationService = calculationService;
-        _dateTimeProvider = dateTimeProvider;
     }
     public bool CanHandle(MaterialType materialType) => _generalMaterials.Contains(materialType);
 
     public List<ObligationCalculation> Calculate(CalculationRequestDto calculationRequest)
-    {
-        var calculatedOn = _dateTimeProvider.UtcNow;
-        var currentYear = _dateTimeProvider.CurrentYear;
+	{
+		var calculatedOn = DateTime.UtcNow;
+		var submission = calculationRequest.SubmissionCalculationRequest;
+		var complianceYear = calculationRequest.ComplianceYear;
 
-        var calculation = new ObligationCalculation
-        {
-            MaterialId = calculationRequest.Materials.First(m => m.MaterialName == calculationRequest.MaterialType.ToString()).Id,
-            CalculatedOn = calculatedOn,
-			OrganisationId = calculationRequest.SubmissionCalculationRequest.OrganisationId,
-			MaterialObligationValue = _calculationService.Calculate
-            (
-                calculationRequest.RecyclingTargets[currentYear][calculationRequest.MaterialType],
-                calculationRequest.SubmissionCalculationRequest.PackagingMaterialWeight
-            ),
-            Year = currentYear,
-            Tonnage = calculationRequest.SubmissionCalculationRequest.PackagingMaterialWeight,
+		var recyclingTarget = calculationRequest.RecyclingTargets[complianceYear];
+		var materialId = calculationRequest.Materials
+		.First(m => m.MaterialName == calculationRequest.MaterialType.ToString())
+		.Id;
+
+		var materialObligationValue = _calculationService.Calculate(
+			recyclingTarget[calculationRequest.MaterialType],
+			submission.PackagingMaterialWeight
+		);
+
+		var calculation = new ObligationCalculation
+		{
+			MaterialId = materialId,
+			CalculatedOn = calculatedOn,
+			OrganisationId = submission.OrganisationId,
+			MaterialObligationValue = materialObligationValue,
+			Year = complianceYear,
+			Tonnage = submission.PackagingMaterialWeight,
 			SubmitterId = calculationRequest.SubmitterId,
-            SubmitterTypeId = calculationRequest.SubmitterTypeId
+			SubmitterTypeId = calculationRequest.SubmitterTypeId
 		};
 
         return [calculation];

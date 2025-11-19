@@ -54,8 +54,8 @@ public class RegistrationRepositoryTests
             ExternalId = registrationId
         };
 
-        await _context.Registrations.AddAsync(existing);
-        await _context.SaveChangesAsync();
+        await _context.Registrations.AddAsync(existing, CancellationToken.None);
+        await _context.SaveChangesAsync(CancellationToken.None);
 
         // Act
         var result = await _repository.GetAsync(registrationId);
@@ -93,11 +93,11 @@ public class RegistrationRepositoryTests
             TaskStatus = taskStatusEntity
         };
 
-        await _context.Registrations.AddAsync(registration);
-        await _context.LookupApplicantRegistrationTasks.AddAsync(task);
-        await _context.LookupTaskStatuses.AddAsync(taskStatusEntity);
-        await _context.RegistrationTaskStatus.AddAsync(status);
-        await _context.SaveChangesAsync();
+        await _context.Registrations.AddAsync(registration, CancellationToken.None);
+        await _context.LookupApplicantRegistrationTasks.AddAsync(task, CancellationToken.None);
+        await _context.LookupTaskStatuses.AddAsync(taskStatusEntity, CancellationToken.None);
+        await _context.RegistrationTaskStatus.AddAsync(status, CancellationToken.None);
+        await _context.SaveChangesAsync(CancellationToken.None);
 
         // Act
         var result = await _repository.GetTaskStatusAsync("TestTask", registrationId);
@@ -117,10 +117,10 @@ public class RegistrationRepositoryTests
         var task = new LookupApplicantRegistrationTask { Name = "NewTask", ApplicationTypeId = 1, IsMaterialSpecific = false };
         var status = new LookupTaskStatus { Name = nameof(TaskStatuses.Completed) };
 
-        await _context.Registrations.AddAsync(registration);
-        await _context.LookupApplicantRegistrationTasks.AddAsync(task);
-        await _context.LookupTaskStatuses.AddAsync(status);
-        await _context.SaveChangesAsync();
+        await _context.Registrations.AddAsync(registration, CancellationToken.None);
+        await _context.LookupApplicantRegistrationTasks.AddAsync(task, CancellationToken.None);
+        await _context.LookupTaskStatuses.AddAsync(status, CancellationToken.None);
+        await _context.SaveChangesAsync(CancellationToken.None);
 
         // Act
         await _repository.UpdateRegistrationTaskStatusAsync("NewTask", registrationId, TaskStatuses.Completed);
@@ -141,8 +141,8 @@ public class RegistrationRepositoryTests
         var oldStatus = new LookupTaskStatus { Name = TaskStatuses.Started.ToString() };
         var newStatus = new LookupTaskStatus { Name = TaskStatuses.Completed.ToString() };
 
-        await _context.Registrations.AddAsync(registration);
-        await _context.LookupApplicantRegistrationTasks.AddAsync(task);
+        await _context.Registrations.AddAsync(registration, CancellationToken.None);
+        await _context.LookupApplicantRegistrationTasks.AddAsync(task, CancellationToken.None);
         await _context.LookupTaskStatuses.AddRangeAsync(oldStatus, newStatus);
 
         var taskStatus = new ApplicantRegistrationTaskStatus
@@ -152,8 +152,8 @@ public class RegistrationRepositoryTests
             TaskStatus = oldStatus
         };
 
-        await _context.RegistrationTaskStatus.AddAsync(taskStatus);
-        await _context.SaveChangesAsync();
+        await _context.RegistrationTaskStatus.AddAsync(taskStatus, CancellationToken.None);
+        await _context.SaveChangesAsync(CancellationToken.None);
 
         // Act
         await _repository.UpdateRegistrationTaskStatusAsync("ExistingTask", registrationId, TaskStatuses.Completed);
@@ -169,8 +169,8 @@ public class RegistrationRepositoryTests
         // Arrange
         var registrationId = Guid.NewGuid();
         var status = new LookupTaskStatus { Name = TaskStatuses.Completed.ToString() };
-        await _context.LookupTaskStatuses.AddAsync(status);
-        await _context.SaveChangesAsync();
+        await _context.LookupTaskStatuses.AddAsync(status, CancellationToken.None);
+        await _context.SaveChangesAsync(CancellationToken.None);
 
         // Act
         Func<Task> act = async () => await _repository.UpdateRegistrationTaskStatusAsync("AnyTask", registrationId, TaskStatuses.Completed);
@@ -187,9 +187,9 @@ public class RegistrationRepositoryTests
         var registration = new Registration { Id = 3, ApplicationTypeId = 10, ExternalId = registrationId};
         var status = new LookupTaskStatus { Name = TaskStatuses.Completed.ToString() };
 
-        await _context.Registrations.AddAsync(registration);
-        await _context.LookupTaskStatuses.AddAsync(status);
-        await _context.SaveChangesAsync();
+        await _context.Registrations.AddAsync(registration, CancellationToken.None);
+        await _context.LookupTaskStatuses.AddAsync(status, CancellationToken.None);
+        await _context.SaveChangesAsync(CancellationToken.None);
 
         // Act
         Func<Task> act = async () => await _repository.UpdateRegistrationTaskStatusAsync("MissingTask", registrationId, TaskStatuses.Completed);
@@ -206,7 +206,7 @@ public class RegistrationRepositoryTests
         var registrationId = Guid.NewGuid();
         var registration = new Registration { Id = 1, ExternalId = registrationId };
         _context.Registrations.Add(registration);
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(CancellationToken.None);
 
         var reprocessingAddress = new AddressDto
         {
@@ -224,10 +224,10 @@ public class RegistrationRepositoryTests
         await _repository.UpdateSiteAddressAsync(registrationId, reprocessingAddress);
 
         // Assert
-        var updatedRegistration = await _context.Registrations.FirstAsync(r => r.Id == registration.Id);
+        var updatedRegistration = await _context.Registrations.FirstAsync(r => r.Id == registration.Id, cancellationToken: CancellationToken.None);
         updatedRegistration.ReprocessingSiteAddressId.Should().NotBeNull();
 
-        var reprocAddress = await _context.LookupAddresses.FindAsync(updatedRegistration.ReprocessingSiteAddressId);
+        var reprocAddress = await _context.LookupAddresses.FindAsync([updatedRegistration.ReprocessingSiteAddressId], cancellationToken: CancellationToken.None);
 
         reprocAddress!.AddressLine1.Should().Be("123 Test St");
     }
@@ -267,7 +267,7 @@ public class RegistrationRepositoryTests
 
         _context.Registrations.Add(registration);
         _context.LookupAddresses.Add(lookupAddress);
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(CancellationToken.None);
 
         var reprocessingAddress = new AddressDto { Id = 101 };
 
@@ -275,7 +275,7 @@ public class RegistrationRepositoryTests
         await _repository.UpdateSiteAddressAsync(registrationId, reprocessingAddress);
 
         // Assert
-        var updatedRegistration = await _context.Registrations.FindAsync(registration.Id);
+        var updatedRegistration = await _context.Registrations.FindAsync([registration.Id], CancellationToken.None);
         updatedRegistration!.ReprocessingSiteAddressId.Should().Be(101);
     }
 
@@ -291,7 +291,7 @@ public class RegistrationRepositoryTests
 
         _context.Registrations.Add(registration);
 
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(CancellationToken.None);
 
         var businessAddress = new AddressDto { Id = 101, AddressLine1 = "Address line 1" };
         var reprocessingAddress = new AddressDto { Id = 101, AddressLine1 = "Address line 1" };
@@ -313,7 +313,7 @@ public class RegistrationRepositoryTests
 
         _context.Registrations.Add(registration);
 
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(CancellationToken.None);
 
         var businessAddress = new AddressDto { Id = 101, AddressLine1 = "Address line 1" };
         var reprocessingAddress = new AddressDto { Id = 101, AddressLine1 = "Address line 1" };
@@ -323,7 +323,7 @@ public class RegistrationRepositoryTests
         await _repository.UpdateAsync(registrationId, businessAddress, reprocessingAddress, legalAddress);
 
         // Assert
-        var updatedRegistration = await _context.Registrations.FindAsync(registration.Id);
+        var updatedRegistration = await _context.Registrations.FindAsync([registration.Id], CancellationToken.None);
         updatedRegistration!.BusinessAddressId.Should().Be(1);
         updatedRegistration!.ReprocessingSiteAddressId.Should().Be(2);
         updatedRegistration!.LegalDocumentAddressId.Should().Be(3);
@@ -350,7 +350,7 @@ public class RegistrationRepositoryTests
         _context.Registrations.Add(registration);
         _context.LookupAddresses.Add(address);
 
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(CancellationToken.None);
 
         var businessAddress = new AddressDto { Id = 101, AddressLine1 = "new Address line 1" };
         var reprocessingAddress = new AddressDto { Id = 101, AddressLine1 = "new Address line 1" };
@@ -360,7 +360,7 @@ public class RegistrationRepositoryTests
         await _repository.UpdateAsync(registrationId, businessAddress, reprocessingAddress, legalAddress);
 
         // Assert
-        var updatedRegistration = await _context.Registrations.FindAsync(registration.Id);
+        var updatedRegistration = await _context.Registrations.FindAsync([registration.Id], CancellationToken.None);
         updatedRegistration!.BusinessAddressId.Should().Be(101);
         updatedRegistration!.ReprocessingSiteAddressId.Should().Be(101);
         updatedRegistration!.LegalDocumentAddressId.Should().Be(101);
@@ -375,7 +375,7 @@ public class RegistrationRepositoryTests
 
         _context.Registrations.Add(registration);
 
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(CancellationToken.None);
 
         // Act
         var result = await _repository.GetByOrganisationAsync(1, organisationId);
@@ -394,7 +394,7 @@ public class RegistrationRepositoryTests
 
         _context.Registrations.Add(registration);
 
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(CancellationToken.None);
 
         // Act
         var result = await _repository.GetByOrganisationAsync(2, organisationId);
@@ -423,7 +423,7 @@ public class RegistrationRepositoryTests
         });
 
         // Assert
-        var loaded = await _context.Registrations.FindAsync(result.Id);
+        var loaded = await _context.Registrations.FindAsync([result.Id], CancellationToken.None);
         result.Id.Should().Be(1);
         loaded.Should().BeEquivalentTo(new Registration
         {
@@ -496,8 +496,8 @@ public class RegistrationRepositoryTests
                 }
             }
         };
-        await _context.Registrations.AddAsync(registration);
-        await _context.SaveChangesAsync();
+        await _context.Registrations.AddAsync(registration, CancellationToken.None);
+        await _context.SaveChangesAsync(CancellationToken.None);
         // Act
         var result = await _repository.GetRegistrationsOverviewForOrgIdAsync(organisationId);
         // Assert
@@ -524,8 +524,8 @@ public class RegistrationRepositoryTests
             RegistrationStatusId = 2,
             Materials = null
         };
-        await _context.Registrations.AddAsync(registration);
-        await _context.SaveChangesAsync();
+        await _context.Registrations.AddAsync(registration, CancellationToken.None);
+        await _context.SaveChangesAsync(CancellationToken.None);
         // Act
         var result = await _repository.GetRegistrationsOverviewForOrgIdAsync(organisationId);
         // Assert
@@ -562,8 +562,8 @@ public class RegistrationRepositoryTests
                 }
             }
         };
-        await _context.Registrations.AddAsync(registration);
-        await _context.SaveChangesAsync();
+        await _context.Registrations.AddAsync(registration, CancellationToken.None);
+        await _context.SaveChangesAsync(CancellationToken.None);
         // Act
         var result = await _repository.GetRegistrationsOverviewForOrgIdAsync(organisationId);
         // Assert
@@ -624,8 +624,8 @@ public class RegistrationRepositoryTests
                 }
             }
         };
-        await _context.Registrations.AddRangeAsync(registrations);
-        await _context.SaveChangesAsync();
+        await _context.Registrations.AddRangeAsync(registrations, CancellationToken.None);
+        await _context.SaveChangesAsync(CancellationToken.None);
         // Act
         var result = await _repository.GetRegistrationsOverviewForOrgIdAsync(organisationId);
         // Assert

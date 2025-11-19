@@ -46,7 +46,7 @@ public class RegulatorAccreditationRepositoryTests
     [TestMethod]
     public async Task GetRegistrationById_ShouldThrowKeyNotFoundException_WhenNotFound()
     {
-        await Assert.ThrowsExceptionAsync<KeyNotFoundException>(() => _repository.GetAccreditationPaymentFeesById(Guid.Parse("cd9dcc80-fcf5-4f46-addd-b8a256f735a3")));
+        await Assert.ThrowsExactlyAsync<KeyNotFoundException>(() => _repository.GetAccreditationPaymentFeesById(Guid.Parse("cd9dcc80-fcf5-4f46-addd-b8a256f735a3")));
     }
 
 
@@ -54,7 +54,7 @@ public class RegulatorAccreditationRepositoryTests
     public async Task AccreditationMarkAsDulyMade_Throws_WhenAccreditationNotFound()
     {
         // Act & Assert
-        await Assert.ThrowsExceptionAsync<KeyNotFoundException>(() =>
+        await Assert.ThrowsExactlyAsync<KeyNotFoundException>(() =>
             _repository.AccreditationMarkAsDulyMade(Guid.NewGuid(), 1, DateTime.UtcNow, DateTime.UtcNow, Guid.NewGuid()));
     }
 
@@ -79,19 +79,19 @@ public class RegulatorAccreditationRepositoryTests
             IsMaterialSpecific = true
         });
 
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(CancellationToken.None);
 
         // Act
         await _repository.AccreditationMarkAsDulyMade(accreditationId, statusId, dulyMadeDate, determinationDate, userId);
 
         // Assert
-        var accreditation = await _context.Accreditations.FirstAsync(x => x.ExternalId == accreditationId);
+        var accreditation = await _context.Accreditations.FirstAsync(x => x.ExternalId == accreditationId, CancellationToken.None);
         var dulyMadeEntry = await _context.AccreditationDulyMade
-            .FirstOrDefaultAsync(x => x.AccreditationId == accreditation.Id);
+            .FirstOrDefaultAsync(x => x.AccreditationId == accreditation.Id, CancellationToken.None);
         var determinationEntry = await _context.AccreditationDeterminationDate
-            .FirstOrDefaultAsync(x => x.AccreditationId == accreditation.Id);
+            .FirstOrDefaultAsync(x => x.AccreditationId == accreditation.Id, CancellationToken.None);
         var taskStatusEntry = await _context.RegulatorAccreditationTaskStatus
-            .FirstOrDefaultAsync(x => x.AccreditationId == accreditation.Id && x.TaskStatusId == statusId);
+            .FirstOrDefaultAsync(x => x.AccreditationId == accreditation.Id && x.TaskStatusId == statusId, CancellationToken.None);
 
         using (new AssertionScope())
         {
@@ -156,13 +156,13 @@ public class RegulatorAccreditationRepositoryTests
         _context.RegistrationMaterials.Add(material);
         _context.Accreditations.Add(accreditation);
         _context.LookupTasks.Add(lookupTask);
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(CancellationToken.None);
 
         // Act
         await _repository.AccreditationMarkAsDulyMade(accreditationId, statusId, dulyMadeDate, determinationDate, userId);
 
         // Assert
-        var determination = await _context.AccreditationDeterminationDate.FirstOrDefaultAsync(x => x.AccreditationId == accreditation.Id);
+        var determination = await _context.AccreditationDeterminationDate.FirstOrDefaultAsync(x => x.AccreditationId == accreditation.Id, CancellationToken.None);
 
         using (new AssertionScope())
         {
@@ -185,7 +185,7 @@ public class RegulatorAccreditationRepositoryTests
         // Insert an initial determination date to simulate existing record
         var accreditation = await _context.Accreditations
             .Include(x => x.RegistrationMaterial)
-            .FirstAsync(x => x.ExternalId == accreditationId);
+            .FirstAsync(x => x.ExternalId == accreditationId, CancellationToken.None);
 
         var existingDetermination = new AccreditationDeterminationDate
         {
@@ -205,14 +205,14 @@ public class RegulatorAccreditationRepositoryTests
             IsMaterialSpecific = true
         });
 
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(CancellationToken.None);
 
         // Act
         await _repository.AccreditationMarkAsDulyMade(accreditationId, statusId, dulyMadeDate, newDeterminationDate, userId);
 
         // Assert
         var updatedDetermination = await _context.AccreditationDeterminationDate
-            .FirstOrDefaultAsync(x => x.AccreditationId == accreditation.Id);
+            .FirstOrDefaultAsync(x => x.AccreditationId == accreditation.Id, CancellationToken.None);
 
         using (new AssertionScope())
         {
@@ -232,7 +232,7 @@ public class RegulatorAccreditationRepositoryTests
         var userId = Guid.NewGuid();
 
         var accreditation = await _context.Accreditations
-            .FirstAsync(x => x.ExternalId == accreditationId);
+            .FirstAsync(x => x.ExternalId == accreditationId, CancellationToken.None);
 
         var existingDetermination = new AccreditationDeterminationDate
         {
@@ -252,7 +252,7 @@ public class RegulatorAccreditationRepositoryTests
             IsMaterialSpecific = true
         });
 
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(CancellationToken.None);
 
         // Act
         await _repository.AccreditationMarkAsDulyMade(accreditationId, statusId, dulyMadeDate, newDeterminationDate, userId);
@@ -260,7 +260,7 @@ public class RegulatorAccreditationRepositoryTests
         // Assert
         var determinationRecords = await _context.AccreditationDeterminationDate
             .Where(x => x.AccreditationId == accreditation.Id)
-            .ToListAsync();
+            .ToListAsync(CancellationToken.None);
 
         using (new AssertionScope())
         {
@@ -524,7 +524,7 @@ public class RegulatorAccreditationRepositoryTests
         var missingId = Guid.NewGuid();
 
         // Act & Assert
-        await Assert.ThrowsExceptionAsync<KeyNotFoundException>(() =>
+        await Assert.ThrowsExactlyAsync<KeyNotFoundException>(() =>
             _repository.GetAccreditationById(missingId));
     }
 

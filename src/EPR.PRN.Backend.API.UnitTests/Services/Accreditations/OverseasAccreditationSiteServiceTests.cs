@@ -120,7 +120,6 @@ public class OverseasAccreditationSiteServiceTests
 
         // Touch every property
         Assert.AreEqual(1, entity.Id);
-        Assert.IsNotNull(entity.ExternalId);
         Assert.AreEqual("Test Org", entity.OrganisationName);
         Assert.AreEqual(2024, entity.StartYear);
         Assert.AreEqual(2025, entity.ExpiryYear);

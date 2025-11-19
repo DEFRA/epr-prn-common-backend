@@ -37,7 +37,7 @@ public class UpdateCarrierBrokerDealerPermitsHandlerTests
         };
 
         // Act, Assert
-        await Assert.ThrowsExceptionAsync<KeyNotFoundException>(() => _handler.Handle(command, CancellationToken.None));
+        await Assert.ThrowsExactlyAsync<KeyNotFoundException>(() => _handler.Handle(command, CancellationToken.None));
     }
 
     [TestMethod]
