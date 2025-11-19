@@ -204,7 +204,7 @@ public class GetRegistrationSiteAddressByIdHandlerTests
             .ReturnsAsync((Registration)null!);
 
         // Act & Assert
-        await Assert.ThrowsExceptionAsync<NullReferenceException>(async () =>
+        await Assert.ThrowsExactlyAsync<NullReferenceException>(async () =>
         {
             await _handler.Handle(query, CancellationToken.None);
         });

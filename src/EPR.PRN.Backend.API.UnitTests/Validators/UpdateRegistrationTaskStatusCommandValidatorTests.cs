@@ -31,7 +31,7 @@ public class UpdateRegistrationTaskStatusCommandValidatorTests
             TaskName = "Test Task" };
 
         // Act
-        var result = await _validator.TestValidateAsync(command);
+        var result = await _validator.TestValidateAsync(command, cancellationToken: CancellationToken.None);
 
         // Assert
         result.IsValid.Should().BeTrue();
@@ -52,7 +52,7 @@ public class UpdateRegistrationTaskStatusCommandValidatorTests
         };
     
         // Act
-        var result = await _validator.TestValidateAsync(command);
+        var result = await _validator.TestValidateAsync(command, cancellationToken: CancellationToken.None);
 
         // Assert
         result.IsValid.Should().BeFalse();

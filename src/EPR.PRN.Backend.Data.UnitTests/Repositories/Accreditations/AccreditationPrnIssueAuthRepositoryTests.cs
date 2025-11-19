@@ -49,7 +49,7 @@ public class AccreditationPrnIssueAuthRepositoryTests
         };
         _context.Accreditations.Add(accreditation);
         _context.AccreditationPrnIssueAuths.Add(auth);
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(CancellationToken.None);
 
         // Act
         var result = await _repository.GetByAccreditationId(accreditationId);
@@ -89,7 +89,7 @@ public class AccreditationPrnIssueAuthRepositoryTests
         };
         _context.Accreditations.Add(accreditation);
         _context.AccreditationPrnIssueAuths.Add(oldAuth);
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(CancellationToken.None);
 
         var newAuth = new AccreditationPrnIssueAuth
         {
@@ -101,7 +101,7 @@ public class AccreditationPrnIssueAuthRepositoryTests
         await _repository.ReplaceAllByAccreditationId(accreditationId, newList);
 
         // Assert
-        var all = await _context.AccreditationPrnIssueAuths.Where(x => x.AccreditationExternalId == accreditationId).ToListAsync();
+        var all = await _context.AccreditationPrnIssueAuths.Where(x => x.AccreditationExternalId == accreditationId).ToListAsync(CancellationToken.None);
         all.Should().ContainSingle();
         all[0].PersonExternalId.Should().Be(newAuth.PersonExternalId);
         all[0].AccreditationId.Should().Be(accreditation.Id);
