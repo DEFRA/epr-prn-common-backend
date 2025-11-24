@@ -17,8 +17,7 @@ namespace EPR.PRN.Backend.Obligation.Services
 		ILogger<ObligationCalculatorService> logger,
 		IPrnRepository prnRepository,
 		IMaterialRepository materialRepository,
-		IObligationCalculationOrganisationSubmitterTypeRepository submitterTypeRepository,
-		IDateTimeProvider dateTimeProvider) : IObligationCalculatorService
+		IObligationCalculationOrganisationSubmitterTypeRepository submitterTypeRepository) : IObligationCalculatorService
 	{
 		public async Task<CalculationResult> CalculateAsync(Guid submitterId, List<SubmissionCalculationRequest> request)
 		{
@@ -39,11 +38,18 @@ namespace EPR.PRN.Backend.Obligation.Services
 
 			foreach (var submission in request)
 			{
+				if (!TryValidateSubmissionPeriod(submission, submitterId, out var submissionYear))
+					continue;
+
 				if (!TryValidateMaterial(submission, submitterId, materials, out var materialType))
 					continue;
 
 				if (!TryResolveStrategy(materialType, submission.PackagingMaterial, submitterId, submission.OrganisationId, out var strategy))
 					continue;
+
+				// Compliance year is calculated as the year after the submission period year
+				// e.g., for submission period 2024, compliance year is 2025
+				var complianceYear = submissionYear + 1;
 
 				var calculationRequest = new CalculationRequestDto
 				{
@@ -52,7 +58,8 @@ namespace EPR.PRN.Backend.Obligation.Services
 					MaterialType = materialType,
 					Materials = [.. materials],
 					SubmitterTypeId = submitterTypeId,
-					RecyclingTargets = recyclingTargets
+					RecyclingTargets = recyclingTargets,
+					ComplianceYear = complianceYear
 				};
 
 				calculations.AddRange(strategy?.Calculate(calculationRequest)!);
@@ -67,6 +74,20 @@ namespace EPR.PRN.Backend.Obligation.Services
 			}
 
 			return result;
+		}
+
+		private bool TryValidateSubmissionPeriod(
+			SubmissionCalculationRequest submission,
+			Guid submitterId,
+			out int submissionYear)
+		{
+			if (!int.TryParse(submission.SubmissionPeriod, out submissionYear))
+			{
+				logger.LogError("SubmissionPeriod provided was not valid: {SubmissionPeriod} for OrganisationId: {OrganisationId} and SubmitterId: {SubmitterId}.",
+					submission.SubmissionPeriod, submission.OrganisationId, submitterId);
+				return false;
+			}
+			return true;
 		}
 
 		private static bool TryParseSubmitterType(
@@ -131,8 +152,8 @@ namespace EPR.PRN.Backend.Obligation.Services
 			{
 				throw new ArgumentException("The calculations list cannot be null or empty.", nameof(calculations));
 			}
-
-			await obligationCalculationRepository.UpsertObligationCalculationsForSubmitterYearAsync(submitterId, dateTimeProvider.CurrentYear, calculations);
+			var complianceYear = calculations[0].Year;
+			await obligationCalculationRepository.UpsertObligationCalculationsForSubmitterYearAsync(submitterId, complianceYear, calculations);
 		}
 
 		public async Task<ObligationCalculationResult> GetObligationCalculation(Guid organisationId, int year)
