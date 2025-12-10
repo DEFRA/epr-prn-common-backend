@@ -67,6 +67,8 @@ namespace EPR.PRN.Backend.API.Dto
         public DateTime LastUpdatedDate { get; set; }
 
         public bool IsExport { get; set; }
+        
+        public string? SourceSystemId { get; set; }
 
         public static implicit operator PrnDto(Eprn prn)
         {
@@ -101,8 +103,10 @@ namespace EPR.PRN.Backend.API.Dto
                 ReprocessingSite = prn.ReprocessingSite,
                 ReprocessorExporterAgency = prn.ReprocessorExporterAgency,
                 Signature = prn.Signature,
-                TonnageValue = prn.TonnageValue
+                TonnageValue = prn.TonnageValue,
+                SourceSystemId = prn.SourceSystemId
             };
         }
+
     }
 }
