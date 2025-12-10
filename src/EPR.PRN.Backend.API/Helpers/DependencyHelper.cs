@@ -14,7 +14,6 @@ using EPR.PRN.Backend.Data.Repositories.Accreditations;
 using EPR.PRN.Backend.Data.Repositories.Lookup;
 using EPR.PRN.Backend.Data.Repositories.Regulator;
 using EPR.PRN.Backend.Obligation.Interfaces;
-using EPR.PRN.Backend.Obligation.Providers;
 using EPR.PRN.Backend.Obligation.Services;
 using EPR.PRN.Backend.Obligation.Strategies;
 using FluentValidation;
@@ -55,7 +54,6 @@ namespace EPR.PRN.Backend.API.Helpers
                 .AddScoped<IRegulatorAccreditationRepository, RegulatorAccreditationRepository>()
                 .AddScoped<IRegulatorAccreditationTaskStatusRepository, RegulatorAccreditationTaskStatusRepository>()
 
-                .AddScoped<IDateTimeProvider, DateTimeProvider>()
                 .AddScoped<IAccreditationService, AccreditationService>()
                 .AddScoped<IAccreditationPrnIssueAuthService, AccreditationPrnIssueAuthService>()
                 .AddScoped<IAccreditationFileUploadService, AccreditationFileUploadService>()
@@ -67,7 +65,6 @@ namespace EPR.PRN.Backend.API.Helpers
                 .AddScoped<IRegistrationRepository, RegistrationRepository>()
                 .AddScoped<ILookupCountryRepository, CountryRepository>()
                 .AddScoped<ICarrierBrokerDealerPermitRepository, CarrierBrokerDealerPermitRepository>()
-                .AddScoped<IDateTimeProvider, DateTimeProvider>()
                 .AddScoped<IAccreditationTaskStatusRepository, AccreditationTaskStatusRepository>();
 
             return services;
