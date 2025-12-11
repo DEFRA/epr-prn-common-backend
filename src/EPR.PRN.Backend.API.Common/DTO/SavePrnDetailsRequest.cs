@@ -34,5 +34,6 @@
         public string? ReprocessingSite { get; set; }
         public DateTime? StatusDate { get; set; }
         public string? CreatedByUser { get; set; }
+        public string? SourceSystemId { get; set; }
     }
 }
