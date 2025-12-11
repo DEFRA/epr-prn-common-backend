@@ -46,15 +46,17 @@ public class Repository(EprContext eprContext, ILogger<Repository> logger, IConf
                                 p.PrnNumber,
                                 ps.StatusName,
                                 p.StatusUpdatedOn,
-                                p.AccreditationYear
+                                p.AccreditationYear,
+                                p.SourceSystemId
                             }).ToListAsync();
 
         var prnUpdateStatuses = result.Select(p => new PrnUpdateStatus
         {
             EvidenceNo = p.PrnNumber,
             EvidenceStatusCode = MapStatusCode((EprnStatus)Enum.Parse(typeof(EprnStatus), p.StatusName)),
-            StatusDate = p.StatusUpdatedOn.HasValue ? p.StatusUpdatedOn.Value.ToUniversalTime() : null,
-            AccreditationYear = p.AccreditationYear
+            StatusDate = p.StatusUpdatedOn?.ToUniversalTime(),
+            AccreditationYear = p.AccreditationYear,
+            SourceSystemId = p.SourceSystemId
         }).ToList();
 
         return prnUpdateStatuses;
@@ -70,7 +72,8 @@ public class Repository(EprContext eprContext, ILogger<Repository> logger, IConf
                                 p.PrnNumber,
                                 ps.PRNStatusId,
                                 p.OrganisationName,
-                                ps.CreatedOn
+                                ps.CreatedOn,
+                                p.SourceSystemId
                             }).ToListAsync();
 
         var prnStatusSync = result.Select(p => new PrnStatusSync
@@ -78,7 +81,8 @@ public class Repository(EprContext eprContext, ILogger<Repository> logger, IConf
             PrnNumber = p.PrnNumber,
             StatusName = MapStatusCode((EprnStatus)p.PRNStatusId),
             OrganisationName = p.OrganisationName,
-            UpdatedOn = p.CreatedOn
+            UpdatedOn = p.CreatedOn,
+            SourceSystemId = p.SourceSystemId
         }).ToList();
 
         return prnStatusSync;
