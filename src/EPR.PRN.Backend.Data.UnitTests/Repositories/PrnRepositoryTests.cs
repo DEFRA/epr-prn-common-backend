@@ -41,19 +41,19 @@ namespace EPR.PRN.Backend.Data.UnitTests.Repositories
             await _context.Prn.AddRangeAsync(prns, CancellationToken.None);
             var prnStatuses = new[]
             {
-            new PrnStatus { Id = 1, StatusName = EprnStatus.ACCEPTED.ToString() },
-            new PrnStatus { Id = 2, StatusName = EprnStatus.AWAITINGACCEPTANCE.ToString() }
+            new PrnStatus { Id = 1, StatusName = nameof(EprnStatus.ACCEPTED) },
+            new PrnStatus { Id = 2, StatusName = nameof(EprnStatus.AWAITINGACCEPTANCE) }
             };
             await _context.PrnStatus.AddRangeAsync(prnStatuses, CancellationToken.None);
             await _context.SaveChangesAsync(CancellationToken.None);
 
             // Act
-            var result = _repository.GetAcceptedAndAwaitingPrnsByYear(organisationId, year);
+            var result = _repository.GetAcceptedAndAwaitingPrnsByYear(organisationId, year).ToList();
 
             // Assert
             result.Should().HaveCount(2);
-            result.Should().ContainSingle(r => r.Status.StatusName == EprnStatus.ACCEPTED.ToString());
-            result.Should().ContainSingle(r => r.Status.StatusName == EprnStatus.AWAITINGACCEPTANCE.ToString());
+            result.Should().ContainSingle(r => r.Status.StatusName == nameof(EprnStatus.ACCEPTED));
+            result.Should().ContainSingle(r => r.Status.StatusName == nameof(EprnStatus.AWAITINGACCEPTANCE));
         }
     }
 }

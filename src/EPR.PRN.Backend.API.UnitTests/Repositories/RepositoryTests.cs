@@ -49,10 +49,10 @@ public class RepositoryTests
     public async Task GetAllPrnByOrganisationId_Returns_Prns()
     {
         // Arrange
-        var data = _fixture.CreateMany<Eprn>().ToArray();
+        var data = _fixture.CreateMany<Eprn>().ToList();
         data[0].PrnStatusId = data[1].PrnStatusId = data[2].PrnStatusId = 1;
 
-        using var context = new EprContext(_contextOptions);
+        await using var context = new EprContext(_contextOptions);
         if (await context.Database.EnsureCreatedAsync(CancellationToken.None))
         {
             context.AddRange(data);
@@ -73,10 +73,10 @@ public class RepositoryTests
     public async Task GetPrnForOrganisationById_Returns_Prn()
     {
         //Arrange
-        var data = _fixture.CreateMany<Eprn>().ToArray();
+        var data = _fixture.CreateMany<Eprn>().ToList();
         data[0].PrnStatusId = data[1].PrnStatusId = data[2].PrnStatusId = 1;
 
-        using var context = new EprContext(_contextOptions);
+        await using var context = new EprContext(_contextOptions);
         if (await context.Database.EnsureCreatedAsync(CancellationToken.None))
         {
             context.AddRange(data);
@@ -94,10 +94,10 @@ public class RepositoryTests
     public async Task SaveTransaction_SavesDataInDB()
     {
         //Arrange
-        var data = _fixture.CreateMany<Eprn>().ToArray();
+        var data = _fixture.CreateMany<Eprn>().ToList();
         data[0].PrnStatusId = data[1].PrnStatusId = data[2].PrnStatusId = 2;
 
-        using var context = new EprContext(_contextOptions);
+        await using var context = new EprContext(_contextOptions);
         if (await context.Database.EnsureCreatedAsync(CancellationToken.None))
         {
             context.AddRange(data);
@@ -114,19 +114,19 @@ public class RepositoryTests
         var prn = await repo.GetPrnForOrganisationById(data[0].OrganisationId, data[0].ExternalId);
 
         //Asset
-        prn.PrnStatusId.Should().Be(3);
+        prn!.PrnStatusId.Should().Be(3);
     }
 
     [TestMethod]
     public async Task AddPrnHistory()
     {
         //Arrange
-        var data = _fixture.CreateMany<Eprn>().ToArray();
+        var data = _fixture.CreateMany<Eprn>().ToList();
         var statusHistory = _fixture.Create<PrnStatusHistory>();
         data[0].PrnStatusId = data[1].PrnStatusId = data[2].PrnStatusId = 2;
         statusHistory.PrnIdFk = data[0].Id;
         statusHistory.PrnStatusIdFk = data[0].PrnStatusId;
-        using var context = new EprContext(_contextOptions);
+        await using var context = new EprContext(_contextOptions);
         if (await context.Database.EnsureCreatedAsync(CancellationToken.None))
         {
             context.AddRange(data);
@@ -150,11 +150,12 @@ public class RepositoryTests
         var fromDate = new DateTime(2021, 11, 22, 0, 0, 0, DateTimeKind.Utc);
         var toDate = new DateTime(2024, 11, 24, 0, 0, 0, DateTimeKind.Utc);
 
-        var data = _fixture.CreateMany<Eprn>().ToArray();
+        var data = _fixture.CreateMany<Eprn>().ToList();
         data[0].PrnNumber = "PRN001";
         data[0].StatusUpdatedOn = new DateTime(2024, 11, 23, 0, 0, 0, DateTimeKind.Utc);
         data[0].PrnStatusId = 1;
         data[0].AccreditationYear = "2023";
+        data[0].SourceSystemId = "Test";
 
         data[1].PrnNumber = "PRN002";
         data[1].StatusUpdatedOn = new DateTime(2024, 11, 22, 0, 0, 0, DateTimeKind.Utc);
@@ -166,7 +167,7 @@ public class RepositoryTests
 		data[2].PrnStatusId = 2;
 		data[2].AccreditationYear = "2024";
 
-		using var context = new EprContext(_contextOptions);
+        await using var context = new EprContext(_contextOptions);
         if (await context.Database.EnsureCreatedAsync(CancellationToken.None))
         {
             context.AddRange(data);
@@ -185,6 +186,7 @@ public class RepositoryTests
         Assert.AreEqual("PRN001", firstPrn.EvidenceNo);
         Assert.AreEqual("2023", firstPrn.AccreditationYear);
         Assert.AreEqual("EV-ACCEP", firstPrn.EvidenceStatusCode);
+        Assert.AreEqual("Test", firstPrn.SourceSystemId);
 
         var secondPrn = result[1];
         Assert.AreEqual("PRN002", secondPrn.EvidenceNo);
@@ -220,7 +222,7 @@ public class RepositoryTests
         new PEprNpwdSync { PRNId = 2, PRNStatusId = 2, CreatedOn = new DateTime(2024, 11, 23, 0, 0, 0, DateTimeKind.Local),Id=2 }
     };
 
-        using var context = new EprContext(_contextOptions);
+        await using var context = new EprContext(_contextOptions);
         if (await context.Database.EnsureCreatedAsync(CancellationToken.None))
         {
             await context.AddRangeAsync(prnData, CancellationToken.None);  // Add Eprn entities
@@ -251,7 +253,7 @@ public class RepositoryTests
     public async Task GetPrnsForPrnNumbers_ReturnMatchingPrns()
     {
         var prns = _fixture.CreateMany<Eprn>().ToList();
-        using var context = new EprContext(_contextOptions);
+        await using var context = new EprContext(_contextOptions);
         if (await context.Database.EnsureCreatedAsync(CancellationToken.None))
         {
             context.AddRange(prns);
@@ -268,7 +270,7 @@ public class RepositoryTests
     public async Task InsertPeprNpwdSyncPrns_ReturnMatchingPrns()
     {
         var syncPepr = _fixture.CreateMany<PEprNpwdSync>().ToList();
-        using var context = new EprContext(_contextOptions);
+        await using var context = new EprContext(_contextOptions);
         await context.Database.EnsureCreatedAsync(CancellationToken.None);
 
         _repository = new Repository(context, _mockLogger.Object, _configurationMock.Object);

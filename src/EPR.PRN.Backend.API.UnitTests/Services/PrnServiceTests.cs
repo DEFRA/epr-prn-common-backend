@@ -24,7 +24,7 @@ public class PrnServiceTests
     private Mock<IRepository> _mockRepository;
     private Mock<ILogger<PrnService>> _mockLogger;
     private Mock<IConfiguration> _configurationMock;
-    private static readonly IFixture _fixture = new Fixture();
+    private static readonly IFixture Fixture = new Fixture();
 
     [TestInitialize]
     public void Init()
@@ -43,7 +43,7 @@ public class PrnServiceTests
     {
         var prnId = Guid.NewGuid();
         var orgId = Guid.NewGuid();
-        var expectedPrn = _fixture.Create<Eprn>();
+        var expectedPrn = Fixture.Create<Eprn>();
 
         _mockRepository.Setup(r => r.GetPrnForOrganisationById(orgId, prnId)).ReturnsAsync(expectedPrn);
 
@@ -69,7 +69,7 @@ public class PrnServiceTests
     public async Task GetAllPrnByOrganisationId_WithInValidId_ReturnsNull()
     {
         var orgId = Guid.NewGuid();
-        var expectedPrns = _fixture.CreateMany<Eprn>().ToList();
+        var expectedPrns = Fixture.CreateMany<Eprn>().ToList();
         _mockRepository.Setup(r => r.GetAllPrnByOrganisationId(orgId)).ReturnsAsync(expectedPrns);
 
         var result = await _systemUnderTest.GetAllPrnByOrganisationId(orgId);
@@ -81,7 +81,7 @@ public class PrnServiceTests
     public async Task UpdateStatus_throwsNotFoundIfNoPrnRecordsForOrg()
     {
         var orgId = Guid.NewGuid();
-        var prnUpdates = _fixture.CreateMany<PrnUpdateStatusDto>().ToList();
+        var prnUpdates = Fixture.CreateMany<PrnUpdateStatusDto>().ToList();
 
         _mockRepository.Setup(r => r.GetAllPrnByOrganisationId(orgId)).ReturnsAsync([]);
 
@@ -95,8 +95,8 @@ public class PrnServiceTests
     public async Task UpdateStatus_throwsNotFoundIfPrnInUpdateDoesntExists()
     {
         var orgId = Guid.NewGuid();
-        var availablePrns = _fixture.CreateMany<Eprn>().ToList();
-        var prnUpdates = _fixture.CreateMany<PrnUpdateStatusDto>().ToList();
+        var availablePrns = Fixture.CreateMany<Eprn>().ToList();
+        var prnUpdates = Fixture.CreateMany<PrnUpdateStatusDto>().ToList();
 
         _mockRepository.Setup(r => r.GetAllPrnByOrganisationId(orgId)).ReturnsAsync(availablePrns);
 
@@ -110,8 +110,8 @@ public class PrnServiceTests
     public async Task UpdateStatus_throwsConflictExceptionIfStatusNotInAwaitingAcceptanceOrNotSame()
     {
         var orgId = Guid.NewGuid();
-        var availablePrns = _fixture.CreateMany<Eprn>().ToList();
-        var prnUpdates = _fixture.CreateMany<PrnUpdateStatusDto>().ToList();
+        var availablePrns = Fixture.CreateMany<Eprn>().ToList();
+        var prnUpdates = Fixture.CreateMany<PrnUpdateStatusDto>().ToList();
 
         availablePrns[0].ExternalId = prnUpdates[0].PrnId;
         availablePrns[1].ExternalId = prnUpdates[1].PrnId;
@@ -131,8 +131,8 @@ public class PrnServiceTests
     public async Task UpdateStatus_ShouldNotThrowsConflictExceptionIfStatusInAwaitingAcceptanceOrSame()
     {
         var orgId = Guid.NewGuid();
-        var availablePrns = _fixture.CreateMany<Eprn>().ToList();
-        var prnUpdates = _fixture.CreateMany<PrnUpdateStatusDto>().ToList();
+        var availablePrns = Fixture.CreateMany<Eprn>().ToList();
+        var prnUpdates = Fixture.CreateMany<PrnUpdateStatusDto>().ToList();
 
         availablePrns[0].ExternalId = prnUpdates[0].PrnId;
         availablePrns[1].ExternalId = prnUpdates[1].PrnId;
@@ -154,8 +154,8 @@ public class PrnServiceTests
     public async Task UpdateStatus_ShouldThrowsConflictExceptionIfSamePrnIsTriedToUpdateMultiple()
     {
         var orgId = Guid.NewGuid();
-        var availablePrns = _fixture.CreateMany<Eprn>().ToList();
-        var prnUpdates = _fixture.CreateMany<PrnUpdateStatusDto>().ToList();
+        var availablePrns = Fixture.CreateMany<Eprn>().ToList();
+        var prnUpdates = Fixture.CreateMany<PrnUpdateStatusDto>().ToList();
 
         availablePrns[0].ExternalId = prnUpdates[0].PrnId = prnUpdates[1].PrnId;
         availablePrns[2].ExternalId = prnUpdates[2].PrnId;
@@ -180,8 +180,8 @@ public class PrnServiceTests
     {
         var orgId = Guid.NewGuid();
         var userId = Guid.NewGuid();
-        var availablePrns = _fixture.CreateMany<Eprn>().ToList();
-        var prnUpdates = _fixture.CreateMany<PrnUpdateStatusDto>().ToList();
+        var availablePrns = Fixture.CreateMany<Eprn>().ToList();
+        var prnUpdates = Fixture.CreateMany<PrnUpdateStatusDto>().ToList();
 
         availablePrns[0].ExternalId = prnUpdates[0].PrnId;
         availablePrns[1].ExternalId = prnUpdates[1].PrnId;
@@ -222,8 +222,8 @@ public class PrnServiceTests
     public async Task GetSearchPrnsForOrganisation_ReturnsRepsoneGotFromRepo()
     {
         var orgId = Guid.NewGuid();
-        var request = _fixture.Create<PaginatedRequestDto>();
-        var repoResponse = _fixture.Create<PaginatedResponseDto<PrnDto>>();
+        var request = Fixture.Create<PaginatedRequestDto>();
+        var repoResponse = Fixture.Create<PaginatedResponseDto<PrnDto>>();
 
         _mockRepository.Setup(s => s.GetSearchPrnsForOrganisation(orgId, request)).ReturnsAsync(repoResponse);
 
@@ -239,7 +239,7 @@ public class PrnServiceTests
         var toDate = DateTime.UtcNow;
         var mockPrns = new List<PrnUpdateStatus>
         {
-            new() { EvidenceNo = "123", EvidenceStatusCode = "Modified", AccreditationYear= "2014" },
+            new() { EvidenceNo = "123", EvidenceStatusCode = "Modified", AccreditationYear= "2014", SourceSystemId = "test"},
             new() { EvidenceNo = "456", EvidenceStatusCode = "Unchanged", AccreditationYear= "2014" }
         };
 
@@ -403,7 +403,6 @@ public class PrnServiceTests
     {
         Eprn createdEntity = null;
         string evidenceNo = string.Empty;
-        bool expectedIsExportValue = false;
 
         _mockRepository.Setup(s => s.SavePrnDetails(It.IsAny<Eprn>())).Callback<Eprn>(x => createdEntity = x);
 
@@ -442,7 +441,7 @@ public class PrnServiceTests
         await _systemUnderTest.SavePrnDetails(dto);
         _mockRepository.Verify(x => x.SavePrnDetails(It.IsAny<Eprn>()), Times.Once());
 
-        createdEntity.IsExport.Should().Be(expectedIsExportValue);
+        createdEntity.IsExport.Should().BeFalse();
     }
 
     [TestMethod]
@@ -454,7 +453,7 @@ public class PrnServiceTests
 
         _mockRepository.Setup(s => s.SavePrnDetails(It.IsAny<Eprn>())).Callback<Eprn>(x => prn = x);
 
-        var dto = _fixture.Create<SavePrnDetailsRequest>();
+        var dto = Fixture.Create<SavePrnDetailsRequest>();
         dto.EvidenceStatusCode = EprnStatus.AWAITINGACCEPTANCE;
         dto.IssueDate = issuedDate;
         dto.StatusDate = statusUpdatedDate;
@@ -476,7 +475,7 @@ public class PrnServiceTests
 
         _mockRepository.Setup(s => s.SavePrnDetails(It.IsAny<Eprn>())).Callback<Eprn>(x => prn = x);
 
-        var dto = _fixture.Create<SavePrnDetailsRequest>();
+        var dto = Fixture.Create<SavePrnDetailsRequest>();
         dto.CancelledDate = statusUpdatedDate.AddDays(1);
         dto.EvidenceStatusCode = EprnStatus.CANCELLED;
         dto.IssueDate = issuedDate;
@@ -493,7 +492,7 @@ public class PrnServiceTests
     [TestMethod]
     public async Task InsertPeprNpwdSyncPrns_throwsNotFoundIfNoPrnRecordsForEvidence()
     {
-        var syncPrns = _fixture.CreateMany<InsertSyncedPrn>().ToList();
+        var syncPrns = Fixture.CreateMany<InsertSyncedPrn>().ToList();
 
         _mockRepository.Setup(r => r.GetPrnsForPrnNumbers(It.IsAny<List<string>>())).ReturnsAsync([]);
 
@@ -507,8 +506,8 @@ public class PrnServiceTests
     public async Task InsertPeprNpwdSyncPrns_CallsDBWithCorrectData()
     {
         var expectedPeprSync = new List<PEprNpwdSync>();
-        var syncPrns = _fixture.CreateMany<InsertSyncedPrn>().ToList();
-        var prns = _fixture.CreateMany<Eprn>().ToList();
+        var syncPrns = Fixture.CreateMany<InsertSyncedPrn>().ToList();
+        var prns = Fixture.CreateMany<Eprn>().ToList();
         prns[0].PrnNumber = syncPrns[0].EvidenceNo;
         prns[1].PrnNumber = syncPrns[1].EvidenceNo;
         prns[2].PrnNumber = syncPrns[2].EvidenceNo;
