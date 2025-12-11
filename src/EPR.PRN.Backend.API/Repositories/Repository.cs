@@ -1,11 +1,11 @@
 ﻿namespace EPR.PRN.Backend.API.Repositories;
 
 using EPR.PRN.Backend.API.Common.Dto;
-using Common.Enums;
-using Dto;
-using Interfaces;
-using Data;
-using Data.DataModels;
+using EPR.PRN.Backend.API.Common.Enums;
+using EPR.PRN.Backend.API.Dto;
+using EPR.PRN.Backend.API.Repositories.Interfaces;
+using EPR.PRN.Backend.Data;
+using EPR.PRN.Backend.Data.DataModels;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using Newtonsoft.Json;
@@ -15,47 +15,46 @@ using static EPR.PRN.Backend.API.Common.Constants.PrnConstants;
 
 public class Repository(EprContext eprContext, ILogger<Repository> logger, IConfiguration configuration) : IRepository
 {
-    private readonly string? _logPrefix = string.IsNullOrEmpty(configuration["LogPrefix"]) ? "[EPR.PRN.Backend]" : configuration["LogPrefix"];
+    protected readonly EprContext _eprContext = eprContext;
+    private readonly string? logPrefix = string.IsNullOrEmpty(configuration["LogPrefix"]) ? "[EPR.PRN.Backend]" : configuration["LogPrefix"];
 
     private IQueryable<Eprn> GetAllPrnsForOrganisation(Guid orgId)
     {
-        logger.LogInformation("{Logprefix}: Repository - GetAllPrnsForOrganisation: request for organisation {Organisation}", _logPrefix, orgId);
-        var prns = eprContext.Prn.Where(x => x.OrganisationId == orgId);
-        logger.LogInformation("{Logprefix}: PrnService - GetAllPrnsForOrganisation: Prns fetched {Prns}", _logPrefix, JsonConvert.SerializeObject(prns));
+        logger.LogInformation("{Logprefix}: Repository - GetAllPrnsForOrganisation: request for organisation {Organisation}", logPrefix, orgId);
+        var prns = _eprContext.Prn.Where(x => x.OrganisationId == orgId);
+        logger.LogInformation("{Logprefix}: PrnService - GetAllPrnsForOrganisation: Prns fetched {Prns}", logPrefix, JsonConvert.SerializeObject(prns));
         return prns;
     }
 
     public async Task<List<Eprn>> GetAllPrnByOrganisationId(Guid orgId)
     {
-        logger.LogInformation("{Logprefix}: Repository - GetAllPrnByOrganisationId: request for organisation {Organisation}", _logPrefix, orgId);
+        logger.LogInformation("{Logprefix}: Repository - GetAllPrnByOrganisationId: request for organisation {Organisation}", logPrefix, orgId);
         var prns = await GetAllPrnsForOrganisation(orgId).ToListAsync();
-        logger.LogInformation("{Logprefix}: PrnService - GetAllPrnByOrganisationId: Prns fetched {Prns}", _logPrefix, JsonConvert.SerializeObject(prns));
+        logger.LogInformation("{Logprefix}: PrnService - GetAllPrnByOrganisationId: Prns fetched {Prns}", logPrefix, JsonConvert.SerializeObject(prns));
         return prns;
     }
 
     public async Task<List<PrnUpdateStatus>> GetModifiedPrnsbyDate(DateTime fromDate, DateTime toDate)
     {
-        var result = await (from p in eprContext.Prn
-                            join ps in eprContext.PrnStatus on p.PrnStatusId equals ps.Id
+        var result = await (from p in _eprContext.Prn
+                            join ps in _eprContext.PrnStatus on p.PrnStatusId equals ps.Id
                             where p.StatusUpdatedOn >= fromDate && p.StatusUpdatedOn <= toDate
                             && (p.PrnStatusId == 1 || p.PrnStatusId == 2)
-                            && !eprContext.PEprNpwdSync.Any(s => p.Id == s.PRNId && p.PrnStatusId == s.PRNStatusId)
+                            && !_eprContext.PEprNpwdSync.Any(s => p.Id == s.PRNId && p.PrnStatusId == s.PRNStatusId)
                             select new
                             {
                                 p.PrnNumber,
                                 ps.StatusName,
                                 p.StatusUpdatedOn,
-                                p.AccreditationYear,
-                                p.SourceSystemId
+                                p.AccreditationYear
                             }).ToListAsync();
 
         var prnUpdateStatuses = result.Select(p => new PrnUpdateStatus
         {
             EvidenceNo = p.PrnNumber,
             EvidenceStatusCode = MapStatusCode((EprnStatus)Enum.Parse(typeof(EprnStatus), p.StatusName)),
-            StatusDate = p.StatusUpdatedOn?.ToUniversalTime(),
-            AccreditationYear = p.AccreditationYear,
-            SourceSystemId = p.SourceSystemId
+            StatusDate = p.StatusUpdatedOn.HasValue ? p.StatusUpdatedOn.Value.ToUniversalTime() : null,
+            AccreditationYear = p.AccreditationYear
         }).ToList();
 
         return prnUpdateStatuses;
@@ -63,16 +62,15 @@ public class Repository(EprContext eprContext, ILogger<Repository> logger, IConf
 
     public async Task<List<PrnStatusSync>> GetSyncStatuses(DateTime fromDate, DateTime toDate)
     {
-        var result = await (from p in eprContext.Prn
-                            join ps in eprContext.PEprNpwdSync on p.Id equals ps.PRNId
+        var result = await (from p in _eprContext.Prn
+                            join ps in _eprContext.PEprNpwdSync on p.Id equals ps.PRNId
                             where ps.CreatedOn >= fromDate && ps.CreatedOn < toDate
                             select new
                             {
                                 p.PrnNumber,
                                 ps.PRNStatusId,
                                 p.OrganisationName,
-                                ps.CreatedOn,
-                                p.SourceSystemId
+                                ps.CreatedOn
                             }).ToListAsync();
 
         var prnStatusSync = result.Select(p => new PrnStatusSync
@@ -80,8 +78,7 @@ public class Repository(EprContext eprContext, ILogger<Repository> logger, IConf
             PrnNumber = p.PrnNumber,
             StatusName = MapStatusCode((EprnStatus)p.PRNStatusId),
             OrganisationName = p.OrganisationName,
-            UpdatedOn = p.CreatedOn,
-            SourceSystemId = p.SourceSystemId
+            UpdatedOn = p.CreatedOn
         }).ToList();
 
         return prnStatusSync;
@@ -89,28 +86,28 @@ public class Repository(EprContext eprContext, ILogger<Repository> logger, IConf
 
     public async Task<Eprn?> GetPrnForOrganisationById(Guid orgId, Guid prnId)
     {
-        logger.LogInformation("{Logprefix}: Repository - GetPrnForOrganisationById: request for organisation {Organisation}, Prn {PrnId}", _logPrefix, orgId, prnId);
+        logger.LogInformation("{Logprefix}: Repository - GetPrnForOrganisationById: request for organisation {Organisation}, Prn {PrnId}", logPrefix, orgId, prnId);
         var eprn = await GetAllPrnsForOrganisation(orgId).FirstOrDefaultAsync(p => p.ExternalId == prnId);
-        logger.LogInformation("{Logprefix}: Repository - GetPrnForOrganisationById: Eprn fetched {Eprn}", _logPrefix, JsonConvert.SerializeObject(eprn));
+        logger.LogInformation("{Logprefix}: Repository - GetPrnForOrganisationById: Eprn fetched {Eprn}", logPrefix, JsonConvert.SerializeObject(eprn));
         return eprn;
     }
 
     public async Task SaveTransaction(IDbContextTransaction transaction)
     {
-        logger.LogInformation("{Logprefix}: Repository - SaveTransaction: Saving Transaction", _logPrefix);
-        await eprContext.SaveChangesAsync();
+        logger.LogInformation("{Logprefix}: Repository - SaveTransaction: Saving Transaction", logPrefix);
+        await _eprContext.SaveChangesAsync();
         await transaction.CommitAsync();
     }
 
     public IDbContextTransaction BeginTransaction()
     {
-        return eprContext.Database.BeginTransaction();
+        return _eprContext.Database.BeginTransaction();
     }
 
     public void AddPrnStatusHistory(PrnStatusHistory prnStatusHistory)
     {
-        logger.LogInformation("{Logprefix}: Repository - AddPrnStatusHistory: {PrnStatusHistory}", _logPrefix, JsonConvert.SerializeObject(prnStatusHistory));
-        eprContext.PrnStatusHistory.Add(prnStatusHistory);
+        logger.LogInformation("{Logprefix}: Repository - AddPrnStatusHistory: {PrnStatusHistory}", logPrefix, JsonConvert.SerializeObject(prnStatusHistory));
+        _eprContext.PrnStatusHistory.Add(prnStatusHistory);
     }
 
     private static string MapStatusCode(EprnStatus status)
@@ -139,19 +136,19 @@ public class Repository(EprContext eprContext, ILogger<Repository> logger, IConf
 
             Filters.AwaitingAll => p => p.PrnStatusId == (int)EprnStatus.AWAITINGACCEPTANCE,
 
-            Filters.AwaitingAluminium => p => p.PrnStatusId == (int)EprnStatus.AWAITINGACCEPTANCE && p.MaterialName == Materials.Aluminium,
+            Filters.AwaitingAluminium => p => p.PrnStatusId == (int)EprnStatus.AWAITINGACCEPTANCE && p.MaterialName == Common.Constants.PrnConstants.Materials.Aluminium,
 
-            Filters.AwaitingGlassOther => p => p.PrnStatusId == (int)EprnStatus.AWAITINGACCEPTANCE && p.MaterialName == Materials.GlassOther,
+            Filters.AwaitingGlassOther => p => p.PrnStatusId == (int)EprnStatus.AWAITINGACCEPTANCE && p.MaterialName == Common.Constants.PrnConstants.Materials.GlassOther,
 
-            Filters.AwaitingGlassMelt => p => p.PrnStatusId == (int)EprnStatus.AWAITINGACCEPTANCE && p.MaterialName == Materials.GlassMelt,
+            Filters.AwaitingGlassMelt => p => p.PrnStatusId == (int)EprnStatus.AWAITINGACCEPTANCE && p.MaterialName == Common.Constants.PrnConstants.Materials.GlassMelt,
 
-            Filters.AwaitngPaperFiber => p => p.PrnStatusId == (int)EprnStatus.AWAITINGACCEPTANCE && p.MaterialName == Materials.PaperFiber,
+            Filters.AwaitngPaperFiber => p => p.PrnStatusId == (int)EprnStatus.AWAITINGACCEPTANCE && p.MaterialName == Common.Constants.PrnConstants.Materials.PaperFiber,
 
-            Filters.AwaitngPlastic => p => p.PrnStatusId == (int)EprnStatus.AWAITINGACCEPTANCE && p.MaterialName == Materials.Plastic,
+            Filters.AwaitngPlastic => p => p.PrnStatusId == (int)EprnStatus.AWAITINGACCEPTANCE && p.MaterialName == Common.Constants.PrnConstants.Materials.Plastic,
 
-            Filters.AwaitngSteel => p => p.PrnStatusId == (int)EprnStatus.AWAITINGACCEPTANCE && p.MaterialName == Materials.Steel,
+            Filters.AwaitngSteel => p => p.PrnStatusId == (int)EprnStatus.AWAITINGACCEPTANCE && p.MaterialName == Common.Constants.PrnConstants.Materials.Steel,
 
-            Filters.AwaitngWood => p => p.PrnStatusId == (int)EprnStatus.AWAITINGACCEPTANCE && p.MaterialName == Materials.Wood,
+            Filters.AwaitngWood => p => p.PrnStatusId == (int)EprnStatus.AWAITINGACCEPTANCE && p.MaterialName == Common.Constants.PrnConstants.Materials.Wood,
 
             _ => sm => true
         };
@@ -177,9 +174,9 @@ public class Repository(EprContext eprContext, ILogger<Repository> logger, IConf
 
     public async Task<PaginatedResponseDto<PrnDto>> GetSearchPrnsForOrganisation(Guid orgId, PaginatedRequestDto request)
     {
-        logger.LogInformation("{Logprefix}: Repository - GetSearchPrnsForOrganisation: Organisation: {OrgId}, Request: {PaginatedRequest}", _logPrefix, orgId, JsonConvert.SerializeObject(request));
+        logger.LogInformation("{Logprefix}: Repository - GetSearchPrnsForOrganisation: Organisation: {OrgId}, Request: {PaginatedRequest}", logPrefix, orgId, JsonConvert.SerializeObject(request));
         var prns = GetAllPrnsForOrganisation(orgId);
-        logger.LogInformation("{Logprefix}: Repository - GetSearchPrnsForOrganisation: GetAllPrnsForOrganisation for Organisation: {OrgId}, Fetched: {PaginatedRequest}", _logPrefix, orgId, JsonConvert.SerializeObject(prns));
+        logger.LogInformation("{Logprefix}: Repository - GetSearchPrnsForOrganisation: GetAllPrnsForOrganisation for Organisation: {OrgId}, Fetched: {PaginatedRequest}", logPrefix, orgId, JsonConvert.SerializeObject(prns));
 
         var prnNumbers = prns.Select(prn => prn.PrnNumber).OrderBy(prnNumber => prnNumber).Distinct();
         var issuedByOrgs = prns.Select(prn => prn.IssuedByOrg).OrderBy(issuedByOrg => issuedByOrg).Distinct();
@@ -253,7 +250,7 @@ public class Repository(EprContext eprContext, ILogger<Repository> logger, IConf
             TypeAhead = typeAhead
         };
 
-        logger.LogInformation("{Logprefix}: Repository - GetSearchPrnsForOrganisation: returning: {DtoObject}", _logPrefix, JsonConvert.SerializeObject(dtoObject));
+        logger.LogInformation("{Logprefix}: Repository - GetSearchPrnsForOrganisation: returning: {DtoObject}", logPrefix, JsonConvert.SerializeObject(dtoObject));
         return dtoObject;
     }
 
@@ -263,7 +260,7 @@ public class Repository(EprContext eprContext, ILogger<Repository> logger, IConf
         {
             var currentTimestamp = DateTime.UtcNow;
 
-            var existingPrn = await eprContext.Prn.FirstOrDefaultAsync(x => x.PrnNumber == entity.PrnNumber);
+            var existingPrn = await _eprContext.Prn.FirstOrDefaultAsync(x => x.PrnNumber == entity.PrnNumber);
 
             var statusHistory = new PrnStatusHistory
             {
@@ -273,7 +270,7 @@ public class Repository(EprContext eprContext, ILogger<Repository> logger, IConf
                 CreatedOn = currentTimestamp,
             };
 
-            var prnLogVal = entity.PrnNumber.Replace(Environment.NewLine, "");
+            var prnLogVal = entity.PrnNumber?.Replace(Environment.NewLine, "");
 
             // Add new PRN
             if (existingPrn == null)
@@ -283,7 +280,7 @@ public class Repository(EprContext eprContext, ILogger<Repository> logger, IConf
                 entity.ExternalId = Guid.NewGuid();
                 List<PrnStatusHistory> history = [statusHistory];
                 entity.PrnStatusHistories = history;
-                eprContext.Prn.Add(entity);
+                _eprContext.Prn.Add(entity);
 
                 logger.LogInformation("Attempting to add new Prn entity with PrnNumber : {PrnNumber}", prnLogVal);
             }
@@ -310,34 +307,34 @@ public class Repository(EprContext eprContext, ILogger<Repository> logger, IConf
                 entity.LastUpdatedDate = currentTimestamp;
                 entity.Id = existingPrn.Id;
                 entity.ExternalId = existingPrn.ExternalId;
-                eprContext.Entry(existingPrn).State = EntityState.Modified;
-                eprContext.Entry(existingPrn).CurrentValues.SetValues(entity);
+                _eprContext.Entry(existingPrn).State = EntityState.Modified;
+                _eprContext.Entry(existingPrn).CurrentValues.SetValues(entity);
 
                 statusHistory.PrnIdFk = existingPrn.Id;
-                logger.LogInformation("Attempting to update Prn entity with PrnNumber : {PrnNumber} and {Id}", prnLogVal, entity.Id);
+                logger.LogInformation("Attempting to update Prn entity with PrnNumber : {PrnNumber} and {Id}", prnLogVal, entity?.Id);
 
                 // Add Prn status history
-                eprContext.PrnStatusHistory.Add(statusHistory);
+                _eprContext.PrnStatusHistory.Add(statusHistory);
             }
 
-            await eprContext.SaveChangesAsync();
-            logger.LogInformation("Prn Entity successfully upserted. PrnNumber : {PrnNumber} and {Id}", prnLogVal, entity.Id);
+            await _eprContext.SaveChangesAsync();
+            logger.LogInformation("Prn Entity successfully upserted. PrnNumber : {PrnNumber} and {Id}", prnLogVal, entity?.Id);
         }
         catch (Exception ex)
         {
-            logger.LogError(exception: ex, "{Logprefix}: Error Message: {Message}", _logPrefix, ex.Message);
+            logger.LogError(exception: ex, "{Logprefix}: Error Message: {Message}", logPrefix, ex.Message);
             throw;
         }
     }
 
     public async Task<List<Eprn>> GetPrnsForPrnNumbers(List<string> prnNumbers)
     {
-        return await eprContext.Prn.Where(p => prnNumbers.Contains(p.PrnNumber)).AsNoTracking().ToListAsync();
+        return await _eprContext.Prn.Where(p => prnNumbers.Contains(p.PrnNumber)).AsNoTracking().ToListAsync();
     }
 
     public async Task InsertPeprNpwdSyncPrns(List<PEprNpwdSync> syncedPrns)
     {
-        await eprContext.PEprNpwdSync.AddRangeAsync(syncedPrns);
-        await eprContext.SaveChangesAsync();
+        await _eprContext.PEprNpwdSync.AddRangeAsync(syncedPrns);
+        await _eprContext.SaveChangesAsync();
     }
 }
