@@ -101,9 +101,8 @@ namespace EPR.PRN.Backend.API.Dto
                 ReprocessingSite = prn.ReprocessingSite,
                 ReprocessorExporterAgency = prn.ReprocessorExporterAgency,
                 Signature = prn.Signature,
-                TonnageValue = prn.TonnageValue,
+                TonnageValue = prn.TonnageValue
             };
         }
-
     }
 }
