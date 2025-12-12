@@ -3,7 +3,6 @@ using EPR.PRN.Backend.API.Common.Constants;
 using EPR.PRN.Backend.API.Common.Dto;
 using EPR.PRN.Backend.API.Common.Enums;
 using EPR.PRN.Backend.API.Dto;
-using EPR.PRN.Backend.API.Helpers;
 using EPR.PRN.Backend.API.Repositories;
 using EPR.PRN.Backend.Data;
 using EPR.PRN.Backend.Data.DataModels;
@@ -469,7 +468,41 @@ public class RepositoryTestsInMemory
         };
     }
 
-    
+    private static Eprn CreateEprnEntityFromDto(SavePrnDetailsRequest prn)
+    {
+        if (prn == null) return null;
+
+        Eprn prnEntity = new()
+        {
+            AccreditationNumber = prn.AccreditationNo!,
+            AccreditationYear = prn.AccreditationYear.ToString()!,
+            DecemberWaste = prn.DecemberWaste!.Value,
+            PrnNumber = prn.EvidenceNo!,
+            PrnStatusId = (int)prn.EvidenceStatusCode!.Value,
+            TonnageValue = prn.EvidenceTonnes!.Value,
+            IssueDate = prn.IssueDate!.Value,
+            IssuedByOrg = prn.IssuedByOrgName!,
+            MaterialName = prn.EvidenceMaterial!,
+            OrganisationName = prn.IssuedToOrgName!,
+            OrganisationId = prn.IssuedToEPRId!.Value,
+            IssuerNotes = prn.IssuerNotes,
+            IssuerReference = prn.IssuerRef!,
+            ObligationYear = prn.ObligationYear.ToString()!,
+            PackagingProducer = string.Empty, // Not defined in NPWD to PRN mapping requirements
+            PrnSignatory = prn.PrnSignatory,
+            PrnSignatoryPosition = prn.PrnSignatoryPosition,
+            ProducerAgency = prn.ProducerAgency!,
+            ProcessToBeUsed = prn.RecoveryProcessCode,
+            ReprocessingSite = prn.ReprocessorAgency,
+            StatusUpdatedOn = prn.StatusDate,
+            LastUpdatedDate = prn.StatusDate!.Value,
+            ExternalId = Guid.Empty,
+            ReprocessorExporterAgency = string.Empty,// Not defined in NPWD to PRN mapping requirements
+            Signature = null,  // Not defined in NPWD to PRN mapping requirements
+        };
+
+        return prnEntity;
+    }
 
     [TestMethod]
     public async Task SavePrnDetails_SavesPrnAndHistory_Correctly()
@@ -500,10 +533,9 @@ public class RepositoryTestsInMemory
             RecoveryProcessCode = "N11",
             ReprocessorAgency = "BEX",
             StatusDate = DateTime.UtcNow,
-            SourceSystemId = "SSI1"
         };
 
-        var entity = dto.ConvertToEprn();
+        var entity = CreateEprnEntityFromDto(dto);
 
         await _repository.SavePrnDetails(entity);
 
@@ -545,14 +577,14 @@ public class RepositoryTestsInMemory
             StatusDate = DateTime.UtcNow,
         };
 
-        var entity = dto.ConvertToEprn();
+        var entity = CreateEprnEntityFromDto(dto);
 
         await _repository.SavePrnDetails(entity);
 
         var savedEnt = await _context.Prn.FirstOrDefaultAsync(x => x.PrnNumber == dto.EvidenceNo, CancellationToken.None);
 
         //updating 
-        var updatingEntity = dto.ConvertToEprn();
+        var updatingEntity = CreateEprnEntityFromDto(dto);
         updatingEntity.MaterialName = "UpdatingMaterial";
 
         await _repository.SavePrnDetails(updatingEntity);
@@ -594,7 +626,7 @@ public class RepositoryTestsInMemory
             StatusDate = DateTime.UtcNow.AddDays(-5),
         };
 
-        var entity = dto.ConvertToEprn();
+        var entity = CreateEprnEntityFromDto(dto);
 
         await _repository.SavePrnDetails(entity);
 
@@ -635,7 +667,7 @@ public class RepositoryTestsInMemory
             StatusDate = DateTime.UtcNow.AddDays(-5),
         };
 
-        var entity = dto.ConvertToEprn();
+        var entity = CreateEprnEntityFromDto(dto);
         await _repository.SavePrnDetails(entity);
 
         var newPrn = await _context.Prn.SingleAsync(x => x.PrnNumber == dto.EvidenceNo, CancellationToken.None);
@@ -683,7 +715,7 @@ public class RepositoryTestsInMemory
             StatusDate = DateTime.UtcNow.AddDays(-5),
         };
 
-        var entity = dto.ConvertToEprn();
+        var entity = CreateEprnEntityFromDto(dto);
         await _repository.SavePrnDetails(entity);
         await _context.SaveChangesAsync(CancellationToken.None);
 
@@ -741,7 +773,7 @@ public class RepositoryTestsInMemory
             StatusDate = DateTime.UtcNow.AddDays(-5),
         };
 
-        var entity =dto.ConvertToEprn();
+        var entity = CreateEprnEntityFromDto(dto);
         await _repository.SavePrnDetails(entity);
         await _context.SaveChangesAsync(CancellationToken.None);
 
