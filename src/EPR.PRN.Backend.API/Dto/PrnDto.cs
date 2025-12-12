@@ -68,8 +68,6 @@ namespace EPR.PRN.Backend.API.Dto
 
         public bool IsExport { get; set; }
         
-        public string? SourceSystemId { get; set; }
-
         public static implicit operator PrnDto(Eprn prn)
         {
             return new PrnDto()
@@ -104,7 +102,6 @@ namespace EPR.PRN.Backend.API.Dto
                 ReprocessorExporterAgency = prn.ReprocessorExporterAgency,
                 Signature = prn.Signature,
                 TonnageValue = prn.TonnageValue,
-                SourceSystemId = prn.SourceSystemId
             };
         }
 
