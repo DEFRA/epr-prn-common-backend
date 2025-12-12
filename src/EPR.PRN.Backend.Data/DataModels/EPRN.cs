@@ -87,6 +87,9 @@ namespace EPR.PRN.Backend.Data.DataModels
 		public bool IsExport { get; set; }
 
 		public virtual ICollection<PrnStatusHistory> PrnStatusHistories { get; set; } = null!;
+		
+		[MaxLength(40)]
+		public string? SourceSystemId { get; set; } = null;
 
-    }
+	}
 }

@@ -67,7 +67,7 @@ namespace EPR.PRN.Backend.API.Dto
         public DateTime LastUpdatedDate { get; set; }
 
         public bool IsExport { get; set; }
-
+        
         public static implicit operator PrnDto(Eprn prn)
         {
             return new PrnDto()

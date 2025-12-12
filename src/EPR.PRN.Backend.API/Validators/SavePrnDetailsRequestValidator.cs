@@ -6,6 +6,7 @@
 
     public class SavePrnDetailsRequestValidator : AbstractValidator<SavePrnDetailsRequest>
     {
+        public const string ErrorMessageSourceSystemId = "SourceSystemId cannot be longer than 40 characters";
         public SavePrnDetailsRequestValidator()
         {
             RuleFor(x => x.AccreditationNo)
@@ -87,6 +88,10 @@
             RuleFor(x => x.CreatedByUser)
                 .NotNull().WithMessage("CreatedByUser is required.")
                 .MaximumLength(20).WithMessage("CreatedByUser cannot be longer than 20 characters");
+            
+            RuleFor(x => x.SourceSystemId)
+                .MaximumLength(40).WithMessage(ErrorMessageSourceSystemId)
+                .When(x => !string.IsNullOrWhiteSpace(x.SourceSystemId));
         }
     }
 }
