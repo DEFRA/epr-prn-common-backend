@@ -5939,3 +5939,28 @@ GO
 
 COMMIT;
 GO
+
+BEGIN TRANSACTION;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20251209155250_AddSourceSystemIdField'
+)
+BEGIN
+ALTER TABLE [Prn] ADD [SourceSystemId] nvarchar(40) NULL;
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20251209155250_AddSourceSystemIdField'
+)
+BEGIN
+INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+VALUES (N'20251209155250_AddSourceSystemIdField', N'8.0.8');
+END;
+GO
+
+COMMIT;
+GO
