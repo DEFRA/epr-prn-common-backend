@@ -68,7 +68,7 @@ public class MapperTests
         var eprn = prn.ConvertToEprn();
         eprn.ObligationYear.Should().Be(Common.Constants.PrnConstants.ObligationYearDefault.ToString());
     }
-    // todo what about all the other things that can be null but mercilessly ignored with ! operators.  
+    // what about all the other things that can be null but mercilessly ignored with ! operators.  
     // all of those need to be handled and tested here.
     
     [TestMethod]
@@ -88,7 +88,7 @@ public class MapperTests
     [DataRow(" 1234", false)]
     [DataRow("E 123", false)]
     [DataRow("AEXXX", false)]
-    [DataRow("  EXXXX  ", false)] // todo i'm failre sure this is wrong, it should pass but the code is bad
+    [DataRow("  EXXXX  ", false)] // i'm fairly sure this is wrong, it should pass but the code is bad
     public void ShouldVerifyIfIsExport(string input, bool expected)
     {
         Assert.AreEqual(expected, Mappers.IsExport(input));

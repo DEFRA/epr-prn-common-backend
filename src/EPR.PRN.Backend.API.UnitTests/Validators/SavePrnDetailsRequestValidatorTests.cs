@@ -8,7 +8,35 @@ namespace EPR.PRN.Backend.API.UnitTests.Validators
     [TestClass]
     public class SavePrnDetailsRequestValidatorTests
     {
-        
+        private readonly SavePrnDetailsRequest _validPrn = new SavePrnDetailsRequest()
+        {
+            AccreditationNo = "ABC",
+            AccreditationYear = 2018,
+            DecemberWaste = true,
+            EvidenceMaterial = "Aluminium",
+            EvidenceNo = "123",                
+            EvidenceTonnes = 5000,
+            EvidenceStatusCode = EprnStatus.ACCEPTED,
+            IssueDate = DateTime.UtcNow.AddDays(-5),
+            CreatedByUser = "a",
+            IssuedByNPWDCode = "NPWD367742",
+            IssuedByOrgName = "ANB",
+            IssuedToEPRId = Guid.NewGuid(),
+            IssuedToNPWDCode = "NPWD557742",
+            IssuedToOrgName = "ZNZ",
+            IssuerNotes = "no notes",
+            IssuerRef = "ANB-1123",
+            MaterialOperationCode = "R-PLA",
+            ObligationYear = 2025,
+            PrnSignatory = "Pat Anderson",
+            PrnSignatoryPosition = "Director",
+            ProducerAgency = "TTL",
+            RecoveryProcessCode = "N11",
+            ReprocessorAgency = "BEX",
+            StatusDate = DateTime.UtcNow,
+        };
+
+
         [TestMethod]
         [DataRow("AccreditationNo", null)]
         [DataRow("AccreditationYear", null)]
@@ -196,6 +224,30 @@ namespace EPR.PRN.Backend.API.UnitTests.Validators
             // Assert
             result.Should().NotBeNull();
             result.Errors.Select(x => x.PropertyName).Should().Contain(propertyName);
+        }
+        
+        
+        [TestMethod]
+        [DataRow("0123456789012345678901234567890123456789",true)]
+        [DataRow("01234567890123456789012345678901234567890",false)]
+        [DataRow("",true)]
+        [DataRow("                                          ",true)]
+        [DataRow(null,true)]
+        public void Test_SavePrnDetailsRequestValidator_ShouldValidateSourceSystemId(string ssi, bool valid)
+        {
+            var validator = new SavePrnDetailsRequestValidator();
+            _validPrn.SourceSystemId = ssi;
+            
+            var result = validator.Validate(_validPrn);
+
+            result.Should().NotBeNull();
+            if (valid)
+                result.Errors.Should().BeEmpty();
+            else
+            {
+                var e = result.Errors.Find(x => x.PropertyName == nameof(_validPrn.SourceSystemId));
+                e.ErrorMessage.Should().Be(SavePrnDetailsRequestValidator.ErrorMessageSourceSystemId);
+            }
         }
     }
 }

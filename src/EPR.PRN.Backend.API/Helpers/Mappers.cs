@@ -46,8 +46,8 @@ public static class Mappers
     {
         if (string.IsNullOrEmpty(evidenceNo)) return false;
 
-        // todo this will fail with an unhandled exception if the string is < 2 in length but not empty
-        // it probably should be var val = evidenceNo.Trim()[..2];
+        // this will fail with an unhandled exception if the string is < 2 in length but not empty
+        // this whole functon should be Trim then StartsWith
         var val = evidenceNo[..2].Trim();
 
         return string.Equals(val, PrnConstants.ExporterCodePrefixes.EaExport,
