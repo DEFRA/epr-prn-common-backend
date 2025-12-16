@@ -258,7 +258,7 @@ public class Repository(EprContext eprContext, ILogger<Repository> logger, IConf
         return dtoObject;
     }
 
-    public async Task SavePrnDetails(Eprn entity)
+    public async Task<Eprn> SavePrnDetails(Eprn entity)
     {
         try
         {
@@ -285,6 +285,7 @@ public class Repository(EprContext eprContext, ILogger<Repository> logger, IConf
                 List<PrnStatusHistory> history = [statusHistory];
                 entity.PrnStatusHistories = history;
                 _eprContext.Prn.Add(entity);
+                existingPrn = entity;
 
                 logger.LogInformation("Attempting to add new Prn entity with PrnNumber : {PrnNumber}", prnLogVal);
             }
@@ -323,6 +324,7 @@ public class Repository(EprContext eprContext, ILogger<Repository> logger, IConf
 
             await _eprContext.SaveChangesAsync();
             logger.LogInformation("Prn Entity successfully upserted. PrnNumber : {PrnNumber} and {Id}", prnLogVal, entity?.Id);
+            return existingPrn;
         }
         catch (Exception ex)
         {

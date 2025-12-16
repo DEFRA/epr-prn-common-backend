@@ -4,6 +4,7 @@
     using System.Diagnostics.CodeAnalysis;
     using EPR.PRN.Backend.API.Common.Enums;
 
+    //this will be removed when NPWD is decommissioned
     [ExcludeFromCodeCoverage]
     public class SavePrnDetailsRequest
     {

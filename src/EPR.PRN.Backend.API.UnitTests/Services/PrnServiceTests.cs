@@ -49,6 +49,8 @@ public class PrnServiceTests
 
         var result = await _systemUnderTest.GetPrnForOrganisationById(orgId, prnId);
 
+        result.Should().BeEquivalentTo(expectedPrn, o => o.Excluding(p => p.PrnStatusHistories));
+        // casting uses the overriden asignment operator in PrnDto
         result.Should().BeEquivalentTo((PrnDto)expectedPrn);
     }
 
@@ -280,7 +282,7 @@ public class PrnServiceTests
     [TestMethod]
     public async Task SavePrnDetails_ReturnsWithoutError_OnSuccessfullySave()
     {
-        _mockRepository.Setup(s => s.SavePrnDetails(It.IsAny<Eprn>())).Returns(Task.CompletedTask);
+        _mockRepository.Setup(s => s.SavePrnDetails(It.IsAny<Eprn>())).Returns(Task.FromResult(_fixture.Create<Eprn>()));
 
         var dto = new SavePrnDetailsRequest()
         {
