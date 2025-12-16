@@ -1,5 +1,6 @@
 using System.Net;
 using EPR.PRN.Backend.API.Common.Dto;
+using EPR.PRN.Backend.API.Profiles;
 using EPR.PRN.Backend.Data.DataModels;
 using FluentAssertions;
 using Moq;
@@ -48,8 +49,11 @@ public class PrnControllerV2Tests
     public async Task ShouldAcceptValidModel()
     {
         var model = CreateValidModel();
+        Eprn returned = null; 
+        _application.PrnService.Setup(s => s.SaveEprnDetails(It.IsAny<Eprn>())).Callback((Eprn e) => returned = e);
         await _application.CallPostEndpoint("api/v2/prn/prn-details", model, HttpStatusCode.OK);
         _application.PrnService.Verify(s => s.SaveEprnDetails(It.IsAny<Eprn>()));
+        returned.Should().BeEquivalentTo(PrnProfile.CreateMapper().Map<Eprn>(model));
     }
     
     private static string ToJsonWithoutField(object obj, string propertyName)

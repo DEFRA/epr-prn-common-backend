@@ -49,7 +49,7 @@ public class SavePrnDetailsRequestValidatorV2Tests
     }
 
     [TestMethod]
-    public void Valid_model_has_no_validation_errors()
+    public void ShouldAcceptValidModel()
     {
         var model = CreateValidModel();
 
@@ -60,7 +60,7 @@ public class SavePrnDetailsRequestValidatorV2Tests
 
     [TestMethod]
     [DataRow("")]
-    public void AccreditationNumber_ShouldFailWhenInvalid(string value)
+    public void ShouldNotAcceptAccreditationNumberWhenInvalid(string value)
     {
         var model = CreateValidModel();
         model.AccreditationNumber = value;
@@ -76,7 +76,7 @@ public class SavePrnDetailsRequestValidatorV2Tests
     [DataRow("10000")]
     [DataRow("")]
     [DataRow("abdf")]
-    public void AccredidationYear_ShouldFailWhenInvalid(string value)
+    public void ShouldNotAcceptAccreditationYearWhenInvalid(string value)
     {
         var model = CreateValidModel();
         model.AccreditationYear = value;
@@ -91,7 +91,7 @@ public class SavePrnDetailsRequestValidatorV2Tests
     [DataRow("1899")]
     [DataRow("10000")]
     [DataRow("abdf")]
-    public void AccredidationYear_ShouldPassWhenValid(string year)
+    public void ShouldAcceptAccreditationYearWhenValid(string year)
     {
         var model = CreateValidModel();
         model.AccreditationYear = year;
@@ -103,14 +103,14 @@ public class SavePrnDetailsRequestValidatorV2Tests
     }
 
     [TestMethod]
-    public void Required_guid_fields_fail_when_empty()
+    public void ShouldNotAcceptRequiredGuidFieldsWhenEmpty()
     {
         var model = CreateValidModel();
         model.OrganisationId = Guid.Empty;
 
         var results = Validate(model);
 
-        results.Should().ContainSingle(r =>
+        results.Should().Contain(r =>
                 r.PropertyName == nameof(SavePrnDetailsRequestV2.OrganisationId));
     }
 
@@ -132,7 +132,7 @@ public class SavePrnDetailsRequestValidatorV2Tests
     [DataRow(nameof(SavePrnDetailsRequestV2.ProducerAgency), PrnConstants.MaxLengthProducerAgency)]
     [DataRow(nameof(SavePrnDetailsRequestV2.Signature), PrnConstants.MaxLengthSignature)]
     [DataRow(nameof(SavePrnDetailsRequestV2.ReprocessingSite), PrnConstants.MaxLengthReprocessingSite)]
-    public void MaxLength_fields_fail_when_exceeded(string propertyName, int length)
+    public void ShouldNotAcceptFieldsWithMaxLenghtWhenLengthExceeded(string propertyName, int length)
     {
         var model = CreateValidModel();
         typeof(SavePrnDetailsRequestV2)
@@ -167,7 +167,7 @@ public class SavePrnDetailsRequestValidatorV2Tests
     [DataRow(nameof(SavePrnDetailsRequestV2.CreatedBy), 1)]
     [DataRow(nameof(SavePrnDetailsRequestV2.SourceSystemId), 1)]
     [DataRow(nameof(SavePrnDetailsRequestV2.ReprocessingSite), 1)]
-    public void MinLength_fields_fail_when_too_small(string propertyName, int length)
+    public void ShouldNotAcceptFieldsWithMinLenghtWhenLengthTooShort(string propertyName, int length)
     {
         var model = CreateValidModel();
         typeof(SavePrnDetailsRequestV2)
@@ -191,7 +191,7 @@ public class SavePrnDetailsRequestValidatorV2Tests
     }
 
     [TestMethod]
-    public void TonnageValue_fails_when_negative()
+    public void ShouldNotAcceptTonnageValueWhenNegative()
     {
         var model = CreateValidModel();
         model.TonnageValue = -1;
