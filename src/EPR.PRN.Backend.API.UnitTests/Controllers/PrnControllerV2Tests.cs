@@ -1,4 +1,5 @@
 using System.Net;
+using EPR.PRN.Backend.API.Common.Constants;
 using EPR.PRN.Backend.API.Common.Dto;
 using EPR.PRN.Backend.API.Profiles;
 using EPR.PRN.Backend.Data.DataModels;
@@ -52,7 +53,19 @@ public class PrnControllerV2Tests
         _application.PrnService.Setup(s => s.SaveEprnDetails(It.IsAny<Eprn>())).Callback((Eprn e) => returned = e);
         await _application.CallPostEndpoint("api/v2/prn/prn-details", model, HttpStatusCode.OK);
         _application.PrnService.Verify(s => s.SaveEprnDetails(It.IsAny<Eprn>()));
-        returned.Should().BeEquivalentTo(PrnProfile.CreateMapper().Map<Eprn>(model));
+        model.Should().BeEquivalentTo(returned, o => o
+            .Excluding(e => e.Id)
+            .Excluding(e => e.ObligationYear)
+            .Excluding(e => e.CreatedOn)
+            .Excluding(e => e.LastUpdatedBy)
+            .Excluding(e => e.LastUpdatedDate)
+            .Excluding(e => e.PrnStatusHistories));
+        returned.Id.Should().Be(0);
+        returned.ObligationYear.Should().Be(null);
+        returned.CreatedOn.Should().Be(default);
+        returned.LastUpdatedBy.Should().Be(Guid.Empty);
+        returned.LastUpdatedDate.Should().Be(default);
+        returned.PrnStatusHistories.Should().BeNull();
     }
     
     private static string ToJsonWithoutField(object obj, string propertyName)

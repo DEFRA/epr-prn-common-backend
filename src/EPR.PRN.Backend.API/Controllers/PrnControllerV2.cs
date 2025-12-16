@@ -32,7 +32,8 @@ public class PrnControllerV2(
 
         try
         {
-            await prnService.SaveEprnDetails(_mapper.Map<Eprn>(requestV2));
+            var eprn = _mapper.Map<Eprn>(requestV2);
+            await prnService.SaveEprnDetails(eprn);
 
             return Ok();
         }
