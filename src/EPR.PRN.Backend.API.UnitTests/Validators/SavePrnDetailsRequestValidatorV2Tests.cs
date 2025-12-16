@@ -156,23 +156,23 @@ public class SavePrnDetailsRequestValidatorV2Tests
     }
 
     [TestMethod]
-    [DataRow(nameof(SavePrnDetailsRequestV2.AccreditationNumber), 1)]
-    [DataRow(nameof(SavePrnDetailsRequestV2.MaterialName), 1)]
-    [DataRow(nameof(SavePrnDetailsRequestV2.PrnNumber), 1)]
-    [DataRow(nameof(SavePrnDetailsRequestV2.IssuedByOrg), 1)]
-    [DataRow(nameof(SavePrnDetailsRequestV2.OrganisationName), 1)]
-    [DataRow(nameof(SavePrnDetailsRequestV2.PackagingProducer), 1)]
-    [DataRow(nameof(SavePrnDetailsRequestV2.ProcessToBeUsed), 1)]
-    [DataRow(nameof(SavePrnDetailsRequestV2.ReprocessorExporterAgency), 1)]
-    [DataRow(nameof(SavePrnDetailsRequestV2.CreatedBy), 1)]
-    [DataRow(nameof(SavePrnDetailsRequestV2.SourceSystemId), 1)]
-    [DataRow(nameof(SavePrnDetailsRequestV2.ReprocessingSite), 1)]
-    public void ShouldNotAcceptFieldsWithMinLengthWhenLengthTooShort(string propertyName, int length)
+    [DataRow(nameof(SavePrnDetailsRequestV2.AccreditationNumber))]
+    [DataRow(nameof(SavePrnDetailsRequestV2.MaterialName))]
+    [DataRow(nameof(SavePrnDetailsRequestV2.PrnNumber))]
+    [DataRow(nameof(SavePrnDetailsRequestV2.IssuedByOrg))]
+    [DataRow(nameof(SavePrnDetailsRequestV2.OrganisationName))]
+    [DataRow(nameof(SavePrnDetailsRequestV2.PackagingProducer))]
+    [DataRow(nameof(SavePrnDetailsRequestV2.ProcessToBeUsed))]
+    [DataRow(nameof(SavePrnDetailsRequestV2.ReprocessorExporterAgency))]
+    [DataRow(nameof(SavePrnDetailsRequestV2.CreatedBy))]
+    [DataRow(nameof(SavePrnDetailsRequestV2.SourceSystemId))]
+    [DataRow(nameof(SavePrnDetailsRequestV2.ReprocessingSite))]
+    public void ShouldNotAcceptFieldsWithNotEmptyWhenEmpty(string propertyName)
     {
         var model = CreateValidModel();
         typeof(SavePrnDetailsRequestV2)
             .GetProperty(propertyName)!
-            .SetValue(model, new string('x', length - 1));
+            .SetValue(model, "");
 
         var results = Validate(model);
 
@@ -183,7 +183,7 @@ public class SavePrnDetailsRequestValidatorV2Tests
         model = CreateValidModel();
         typeof(SavePrnDetailsRequestV2)
             .GetProperty(propertyName)!
-            .SetValue(model, new string('x', length));
+            .SetValue(model, "test");
 
         results = Validate(model);
 
