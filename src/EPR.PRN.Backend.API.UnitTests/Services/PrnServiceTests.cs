@@ -49,6 +49,8 @@ public class PrnServiceTests
 
         var result = await _systemUnderTest.GetPrnForOrganisationById(orgId, prnId);
 
+        result.Should().BeEquivalentTo(expectedPrn, o => o.Excluding(p => p.PrnStatusHistories));
+        // casting uses the overriden asignment operator in PrnDto
         result.Should().BeEquivalentTo((PrnDto)expectedPrn);
     }
 
