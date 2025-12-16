@@ -118,11 +118,11 @@ public class PrnService(IRepository repository, ILogger<PrnService> logger, ICon
     /// <summary>
     /// This is for RREPW
     /// </summary>
-    public async Task SaveEprnDetails(Eprn prn)
+    public async Task<Eprn> SaveEprnDetails(Eprn prn)
     {
         try
         {
-            await repository.SavePrnDetails(prn);
+            return await repository.SavePrnDetails(prn);
         }
         catch (Exception ex)
         {

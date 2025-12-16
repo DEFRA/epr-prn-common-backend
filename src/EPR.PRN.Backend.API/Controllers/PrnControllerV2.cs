@@ -1,10 +1,12 @@
 using System.Net;
 using AutoMapper;
 using EPR.PRN.Backend.API.Common.Dto;
+using EPR.PRN.Backend.API.Dto;
 using EPR.PRN.Backend.API.Profiles;
 using EPR.PRN.Backend.API.Services.Interfaces;
 using EPR.PRN.Backend.Data.DataModels;
 using FluentValidation;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EPR.PRN.Backend.API.Controllers;
@@ -19,23 +21,24 @@ public class PrnControllerV2(
 {
     private readonly IMapper _mapper = PrnProfile.CreateMapper();
 
-    [HttpPost("prn-details")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [HttpPost]
+    [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> SaveAsync([FromBody] SavePrnDetailsRequestV2 requestV2)
+    public async Task<ActionResult<PrnDto>> SaveAsync([FromBody] SavePrnDetailsRequestV2 requestV2)
     {
         var validationResult = await savePrnDetailsRequestV2Validator.ValidateAsync(requestV2);
 
         if (!validationResult.IsValid)
-            return new BadRequestObjectResult(validationResult.Errors);
+            return  BadRequest(validationResult.Errors);
 
         try
         {
             var eprn = _mapper.Map<Eprn>(requestV2);
-            await prnService.SaveEprnDetails(eprn);
+            var created = await prnService.SaveEprnDetails(eprn);
+            var createdDto = _mapper.Map<PrnDto>(created);
 
-            return Ok();
+            return Created($"api/v1/prn/{created.Id}", created);
         }
         catch (Exception ex)
         {

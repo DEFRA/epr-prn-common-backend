@@ -1,7 +1,6 @@
 using System.Net;
-using EPR.PRN.Backend.API.Common.Constants;
 using EPR.PRN.Backend.API.Common.Dto;
-using EPR.PRN.Backend.API.Profiles;
+using EPR.PRN.Backend.API.Dto;
 using EPR.PRN.Backend.Data.DataModels;
 using FluentAssertions;
 using Moq;
@@ -49,23 +48,29 @@ public class PrnControllerV2Tests
     public async Task ShouldAcceptValidModel()
     {
         var model = CreateValidModel();
-        Eprn returned = null; 
-        _application.PrnService.Setup(s => s.SaveEprnDetails(It.IsAny<Eprn>())).Callback((Eprn e) => returned = e);
-        await _application.CallPostEndpoint("api/v2/prn/prn-details", model, HttpStatusCode.OK);
+        Eprn dbObj = null; 
+        _application.PrnService.Setup(s => s.SaveEprnDetails(It.IsAny<Eprn>())).Callback((Eprn e) => dbObj = e).ReturnsAsync((Eprn e) => e);
+        var returned = await _application.CallPostEndpoint<SavePrnDetailsRequestV2,PrnDto>("api/v2/prn", model);
         _application.PrnService.Verify(s => s.SaveEprnDetails(It.IsAny<Eprn>()));
-        model.Should().BeEquivalentTo(returned, o => o
+        model.Should().BeEquivalentTo(dbObj, o => o
             .Excluding(e => e.Id)
             .Excluding(e => e.ObligationYear)
             .Excluding(e => e.CreatedOn)
             .Excluding(e => e.LastUpdatedBy)
             .Excluding(e => e.LastUpdatedDate)
             .Excluding(e => e.PrnStatusHistories));
-        returned.Id.Should().Be(0);
-        returned.ObligationYear.Should().Be(null);
-        returned.CreatedOn.Should().Be(default);
-        returned.LastUpdatedBy.Should().Be(Guid.Empty);
-        returned.LastUpdatedDate.Should().Be(default);
-        returned.PrnStatusHistories.Should().BeNull();
+        dbObj.Id.Should().Be(0);
+        dbObj.ObligationYear.Should().Be(null);
+        dbObj.CreatedOn.Should().Be(default);
+        dbObj.LastUpdatedBy.Should().Be(Guid.Empty);
+        dbObj.LastUpdatedDate.Should().Be(default);
+        dbObj.PrnStatusHistories.Should().BeNull();
+
+        returned.created.Should().BeEquivalentTo(dbObj, o => o
+            .Excluding(p => p.PrnStatusHistories)
+            .Excluding(p => p.SourceSystemId)
+        );
+        returned.location.Should().Be("api/v1/prn/0");
     }
     
     private static string ToJsonWithoutField(object obj, string propertyName)
