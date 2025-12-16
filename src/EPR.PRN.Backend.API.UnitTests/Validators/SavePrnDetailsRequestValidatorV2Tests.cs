@@ -132,7 +132,7 @@ public class SavePrnDetailsRequestValidatorV2Tests
     [DataRow(nameof(SavePrnDetailsRequestV2.ProducerAgency), PrnConstants.MaxLengthProducerAgency)]
     [DataRow(nameof(SavePrnDetailsRequestV2.Signature), PrnConstants.MaxLengthSignature)]
     [DataRow(nameof(SavePrnDetailsRequestV2.ReprocessingSite), PrnConstants.MaxLengthReprocessingSite)]
-    public void ShouldNotAcceptFieldsWithMaxLenghtWhenLengthExceeded(string propertyName, int length)
+    public void ShouldNotAcceptFieldsWithMaxLengthWhenLengthExceeded(string propertyName, int length)
     {
         var model = CreateValidModel();
         typeof(SavePrnDetailsRequestV2)
@@ -167,7 +167,7 @@ public class SavePrnDetailsRequestValidatorV2Tests
     [DataRow(nameof(SavePrnDetailsRequestV2.CreatedBy), 1)]
     [DataRow(nameof(SavePrnDetailsRequestV2.SourceSystemId), 1)]
     [DataRow(nameof(SavePrnDetailsRequestV2.ReprocessingSite), 1)]
-    public void ShouldNotAcceptFieldsWithMinLenghtWhenLengthTooShort(string propertyName, int length)
+    public void ShouldNotAcceptFieldsWithMinLengthWhenLengthTooShort(string propertyName, int length)
     {
         var model = CreateValidModel();
         typeof(SavePrnDetailsRequestV2)

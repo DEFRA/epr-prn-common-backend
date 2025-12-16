@@ -4,7 +4,6 @@ using EPR.PRN.Backend.API.Profiles;
 using EPR.PRN.Backend.Data.DataModels;
 using FluentAssertions;
 using Moq;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace EPR.PRN.Backend.API.UnitTests.Controllers;

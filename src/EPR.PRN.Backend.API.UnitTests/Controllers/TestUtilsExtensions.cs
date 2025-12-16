@@ -311,7 +311,6 @@ public static class TestUtilsExtensions
         var jObj = JObject.Parse(content);
         jObj["title"]!.Value<string>().Should().Be("One or more validation errors occurred.");
         var errs = jObj["errors"]?["$"]?.Select(s => s.Value<string>())!.ToList();
-        Console.WriteLine(string.Join("\n", errs));
         errs!.FirstOrDefault(s => s.Contains(propertyName, StringComparison.CurrentCultureIgnoreCase)).Should().NotBeNull();
     }
     public static async Task ShouldHaveValidationErrorMessage(this HttpResponseMessage response, string propertyName)
