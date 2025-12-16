@@ -99,11 +99,30 @@ public class PrnService(IRepository repository, ILogger<PrnService> logger, ICon
         await repository.SaveTransaction(transaction);
     }
 
+    /// <summary>
+    /// This is for NPWD and will be phased out when that system is phased out
+    /// </summary>
     public async Task SavePrnDetails(SavePrnDetailsRequest prn)
     {
         try
         {
             await repository.SavePrnDetails(prn.ConvertToEprn());
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(exception: ex, "{Logprefix}: Error Message: {Message}", logPrefix, ex.Message);
+            throw new OperationCanceledException("Error encountered when attempting to map and save PRN requst. Please see the logs for details.");
+        }
+    }
+    
+    /// <summary>
+    /// This is for RREPW
+    /// </summary>
+    public async Task SaveEprnDetails(Eprn prn)
+    {
+        try
+        {
+            await repository.SavePrnDetails(prn);
         }
         catch (Exception ex)
         {

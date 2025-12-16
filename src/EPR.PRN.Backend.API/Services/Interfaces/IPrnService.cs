@@ -16,6 +16,7 @@ public interface IPrnService
     Task<PaginatedResponseDto<PrnDto>> GetSearchPrnsForOrganisation(Guid orgId, PaginatedRequestDto request);
     Task<List<PrnUpdateStatus>?> GetModifiedPrnsbyDate(DateTime fromDate, DateTime toDate);
     Task SavePrnDetails(SavePrnDetailsRequest prn);
+    Task SaveEprnDetails(Eprn prn);
     Task InsertPeprNpwdSyncPrns(List<InsertSyncedPrn> syncedPrns);
     Task<List<PrnStatusSync>?> GetSyncStatuses(DateTime fromDate, DateTime toDate);
 }

@@ -44,6 +44,7 @@ namespace EPR.PRN.Backend.API.Helpers
                 .AddScoped<IObligationCalculationOrganisationSubmitterTypeRepository, ObligationCalculationOrganisationSubmitterTypeRepository>()
                 .AddScoped<IPrnRepository, PrnRepository>()
                 .AddScoped<IValidator<SavePrnDetailsRequest>, SavePrnDetailsRequestValidator>()
+                .AddScoped<IValidator<SavePrnDetailsRequestV2>, SavePrnDetailsRequestV2Validator>()
                 .AddScoped<IValidator<UpdateRegistrationCommand>, UpdateRegistrationCommandValidator>()
                 .AddScoped<IValidator<UpdateRegulatorRegistrationTaskCommand>, UpdateRegulatorRegistrationTaskCommandValidator>()
                 .AddScoped<IValidator<UpdateRegulatorApplicationTaskCommand>, UpdateRegulatorApplicationTaskCommandValidator>()

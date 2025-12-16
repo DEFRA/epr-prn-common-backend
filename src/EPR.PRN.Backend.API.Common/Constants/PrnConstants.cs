@@ -2,6 +2,26 @@
 {
     public static class PrnConstants
     {
+        // Max length constants
+        public const int MaxLengthPrnNumber = 20;
+        public const int MaxLengthOrganisationName = 160;
+        public const int MaxLengthProducerAgency = 50;
+        public const int MaxLengthReprocessorExporterAgency = 50;
+        public const int MaxLengthMaterialName = 20;
+        public const int MaxLengthIssuerNotes = 200;
+        public const int MaxLengthIssuerReference = 200;
+        public const int MaxLengthPrnSignatory = 50;
+        public const int MaxLengthPrnSignatoryPosition = 50;
+        public const int MaxLengthSignature = 100;
+        public const int MaxLengthProcessToBeUsed = 20;
+        public const int MaxLengthIssuedByOrg = 50;
+        public const int MaxLengthAccreditationNumber = 20;
+        public const int MaxLengthReprocessingSite = 100;
+        public const int MaxLengthAccreditationYear = 10;
+        public const int MaxLengthObligationYear = 10;
+        public const int MaxLengthPackagingProducer = 100;
+        public const int MaxLengthCreatedBy = 20;
+        public const int MaxLengthSourceSystemId = 40;
         public const int ObligationYearDefault = 9999;
 
         public static class Filters
