@@ -6,7 +6,6 @@ using EPR.PRN.Backend.API.Profiles;
 using EPR.PRN.Backend.API.Services.Interfaces;
 using EPR.PRN.Backend.Data.DataModels;
 using FluentValidation;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EPR.PRN.Backend.API.Controllers;
@@ -30,15 +29,14 @@ public class PrnControllerV2(
         var validationResult = await savePrnDetailsRequestV2Validator.ValidateAsync(requestV2);
 
         if (!validationResult.IsValid)
-            return  BadRequest(validationResult.Errors);
+            return BadRequest(validationResult.Errors);
 
         try
         {
             var eprn = _mapper.Map<Eprn>(requestV2);
-            var created = await prnService.SaveEprnDetails(eprn);
-            var createdDto = _mapper.Map<PrnDto>(created);
+            var createdDto = _mapper.Map<PrnDto>(await prnService.SaveEprnDetails(eprn));
 
-            return Created($"api/v1/prn/{created.Id}", created);
+            return Created($"api/v1/prn/{createdDto.Id}", createdDto);
         }
         catch (Exception ex)
         {

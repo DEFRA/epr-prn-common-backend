@@ -77,7 +77,6 @@ public class PrnControllerV2Tests
     {
         var jObj = JObject.FromObject(obj);
         jObj.Remove(propertyName);
-        Console.WriteLine(jObj);
         return jObj.ToString();
     }
     
@@ -101,7 +100,7 @@ public class PrnControllerV2Tests
     {
         var model = CreateValidModel();
         var json = ToJsonWithoutField(model, propertyName);
-        var response = await _application.CallPostEndpointWithJson("api/v2/prn/prn-details", json, HttpStatusCode.BadRequest);
+        var response = await _application.CallPostEndpointWithJson("api/v2/prn/", json, HttpStatusCode.BadRequest);
         await response.ShouldHaveRequiredErrorMessage(propertyName);
         _application.PrnService.Verify(s => s.SaveEprnDetails(It.IsAny<Eprn>()), Times.Never);
     }
@@ -124,7 +123,7 @@ public class PrnControllerV2Tests
     {
         var model = CreateValidModel();
         model.GetType().GetProperty(propertyName)!.SetValue(model, "");
-        var response = await _application.CallPostEndpoint("api/v2/prn/prn-details", model, HttpStatusCode.BadRequest);
+        var response = await _application.CallPostEndpoint("api/v2/prn/", model, HttpStatusCode.BadRequest);
         await response.ShouldHaveValidationErrorMessage(propertyName);
         _application.PrnService.Verify(s => s.SaveEprnDetails(It.IsAny<Eprn>()), Times.Never);
     }
