@@ -60,7 +60,6 @@ public class PrnControllerV2Tests
             .Excluding(e => e.IssuerReference)
             .Excluding(e => e.Signature)
             .Excluding(e => e.IssueDate)
-            .Excluding(e => e.ProcessToBeUsed)
             .Excluding(e => e.PackagingProducer)
             .Excluding(e => e.CreatedBy)
         );
@@ -75,7 +74,6 @@ public class PrnControllerV2Tests
         dbObj.IssuerReference.Should().BeNull();
         dbObj.Signature.Should().BeNull();
         dbObj.IssueDate.Should().Be(default);
-        dbObj.ProcessToBeUsed.Should().BeNull();
         dbObj.CreatedBy.Should().BeNull();
 
         returned.created.Should().BeEquivalentTo(dbObj, o => o
@@ -108,6 +106,7 @@ public class PrnControllerV2Tests
     [DataRow(nameof(SavePrnDetailsRequestV2.PrnNumber))]
     [DataRow(nameof(SavePrnDetailsRequestV2.MaterialName))]
     [DataRow(nameof(SavePrnDetailsRequestV2.ProcessToBeUsed))]
+    [DataRow(nameof(SavePrnDetailsRequestV2.StatusUpdatedOn))]
     public async Task ShouldValidateRequiredFields(string propertyName)
     {
         var model = CreateValidModel();
@@ -119,7 +118,6 @@ public class PrnControllerV2Tests
     
     [TestMethod]
     [DataRow(nameof(SavePrnDetailsRequestV2.PrnSignatoryPosition))]
-    [DataRow(nameof(SavePrnDetailsRequestV2.StatusUpdatedOn))]
     [DataRow(nameof(SavePrnDetailsRequestV2.IssuerNotes))]
     [DataRow(nameof(SavePrnDetailsRequestV2.ReprocessingSite))]
     public async Task NonRequiredFieldsCanBeOmmitted(string propertyName)
