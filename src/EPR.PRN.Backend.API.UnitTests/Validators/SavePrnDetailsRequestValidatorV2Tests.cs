@@ -137,7 +137,6 @@ public class SavePrnDetailsRequestValidatorV2Tests
     [DataRow(nameof(SavePrnDetailsRequestV2.OrganisationName))]
     [DataRow(nameof(SavePrnDetailsRequestV2.AccreditationNumber))]
     [DataRow(nameof(SavePrnDetailsRequestV2.AccreditationYear))]
-    [DataRow(nameof(SavePrnDetailsRequestV2.ReprocessingSite))]
     [DataRow(nameof(SavePrnDetailsRequestV2.MaterialName))]
     [DataRow(nameof(SavePrnDetailsRequestV2.PrnNumber))]
     [DataRow(nameof(SavePrnDetailsRequestV2.ReprocessorExporterAgency))]
@@ -170,6 +169,7 @@ public class SavePrnDetailsRequestValidatorV2Tests
     [TestMethod]
     [DataRow(nameof(SavePrnDetailsRequestV2.PrnSignatoryPosition))]
     [DataRow(nameof(SavePrnDetailsRequestV2.IssuerNotes))]
+    [DataRow(nameof(SavePrnDetailsRequestV2.ReprocessingSite))]
     public void ShouldAcceptOptionalFieldsWhenEmpty(string propertyName)
     {
         var strings = new List<string> { "", null, "  " };

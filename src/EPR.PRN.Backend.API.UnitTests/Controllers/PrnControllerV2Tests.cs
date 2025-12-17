@@ -101,7 +101,6 @@ public class PrnControllerV2Tests
     [DataRow(nameof(SavePrnDetailsRequestV2.AccreditationNumber))]
     [DataRow(nameof(SavePrnDetailsRequestV2.AccreditationYear))]
     [DataRow(nameof(SavePrnDetailsRequestV2.ReprocessorExporterAgency))]
-    [DataRow(nameof(SavePrnDetailsRequestV2.ReprocessingSite))]
     [DataRow(nameof(SavePrnDetailsRequestV2.DecemberWaste))]
     [DataRow(nameof(SavePrnDetailsRequestV2.IsExport))]
     [DataRow(nameof(SavePrnDetailsRequestV2.TonnageValue))]
@@ -120,6 +119,7 @@ public class PrnControllerV2Tests
     [DataRow(nameof(SavePrnDetailsRequestV2.PrnSignatoryPosition))]
     [DataRow(nameof(SavePrnDetailsRequestV2.StatusUpdatedOn))]
     [DataRow(nameof(SavePrnDetailsRequestV2.IssuerNotes))]
+    [DataRow(nameof(SavePrnDetailsRequestV2.ReprocessingSite))]
     public async Task NonRequiredFieldsCanBeOmmitted(string propertyName)
     {
         var model = CreateValidModel();
@@ -136,7 +136,6 @@ public class PrnControllerV2Tests
     [DataRow(nameof(SavePrnDetailsRequestV2.OrganisationName))]
     [DataRow(nameof(SavePrnDetailsRequestV2.AccreditationNumber))]
     [DataRow(nameof(SavePrnDetailsRequestV2.AccreditationYear))]
-    [DataRow(nameof(SavePrnDetailsRequestV2.ReprocessingSite))]
     public async Task ShouldValidateMinLengthFields(string propertyName)
     {
         var model = CreateValidModel();

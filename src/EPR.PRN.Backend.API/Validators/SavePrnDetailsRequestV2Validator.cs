@@ -31,7 +31,7 @@ public class SavePrnDetailsRequestV2Validator : AbstractValidator<SavePrnDetails
 
         RuleFor(x => x.MaterialName).MandatoryString(PrnConstants.MaxLengthMaterialName);
 
-        RuleFor(x => x.ReprocessingSite).MandatoryString(PrnConstants.MaxLengthReprocessingSite);
+        RuleFor(x => x.ReprocessingSite).OptionalString(PrnConstants.MaxLengthReprocessingSite);
 
         RuleFor(x => x.TonnageValue)
             .Must(x => x >= 0).WithMessage("{PropertyName} must be valid positive value.");
