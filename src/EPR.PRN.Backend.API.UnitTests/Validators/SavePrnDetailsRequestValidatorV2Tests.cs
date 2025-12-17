@@ -19,30 +19,22 @@ public class SavePrnDetailsRequestValidatorV2Tests
     {
         return new SavePrnDetailsRequestV2
         {
-            ExternalId = Guid.NewGuid(),
             PrnNumber = "PRN123",
             OrganisationId = Guid.NewGuid(),
             OrganisationName = "Org",
-            ProducerAgency = "Producer",
             ReprocessorExporterAgency = "Reprocessor",
             PrnStatusId = 1,
             TonnageValue = 2,
             MaterialName = "Plastic",
             IssuerNotes = "Notes",
-            IssuerReference = "Ref",
             PrnSignatory = "Sig",
             PrnSignatoryPosition = "Role",
-            Signature = "Signature",
-            IssueDate = DateTime.UtcNow,
-            ProcessToBeUsed = "PROC",
             DecemberWaste = true,
             StatusUpdatedOn = DateTime.UtcNow,
             IssuedByOrg = "Issuer",
             AccreditationNumber = "ACC123",
             ReprocessingSite = "Site",
             AccreditationYear = "2024",
-            PackagingProducer = "Packager",
-            CreatedBy = "user",
             IsExport = false,
             SourceSystemId = "SYS"
         };
@@ -108,18 +100,12 @@ public class SavePrnDetailsRequestValidatorV2Tests
     [DataRow(nameof(SavePrnDetailsRequestV2.PrnNumber), PrnConstants.MaxLengthPrnNumber)]
     [DataRow(nameof(SavePrnDetailsRequestV2.IssuedByOrg), PrnConstants.MaxLengthIssuedByOrg)]
     [DataRow(nameof(SavePrnDetailsRequestV2.OrganisationName), PrnConstants.MaxLengthOrganisationName)]
-    [DataRow(nameof(SavePrnDetailsRequestV2.PackagingProducer), PrnConstants.MaxLengthPackagingProducer)]
-    [DataRow(nameof(SavePrnDetailsRequestV2.ProcessToBeUsed), PrnConstants.MaxLengthProcessToBeUsed)]
     [DataRow(nameof(SavePrnDetailsRequestV2.ReprocessorExporterAgency),
         PrnConstants.MaxLengthReprocessorExporterAgency)]
     [DataRow(nameof(SavePrnDetailsRequestV2.IssuerNotes), PrnConstants.MaxLengthIssuerNotes)]
-    [DataRow(nameof(SavePrnDetailsRequestV2.IssuerReference), PrnConstants.MaxLengthIssuerReference)]
     [DataRow(nameof(SavePrnDetailsRequestV2.PrnSignatory), PrnConstants.MaxLengthPrnSignatory)]
     [DataRow(nameof(SavePrnDetailsRequestV2.PrnSignatoryPosition), PrnConstants.MaxLengthPrnSignatoryPosition)]
-    [DataRow(nameof(SavePrnDetailsRequestV2.CreatedBy), PrnConstants.MaxLengthCreatedBy)]
     [DataRow(nameof(SavePrnDetailsRequestV2.SourceSystemId), PrnConstants.MaxLengthSourceSystemId)]
-    [DataRow(nameof(SavePrnDetailsRequestV2.ProducerAgency), PrnConstants.MaxLengthProducerAgency)]
-    [DataRow(nameof(SavePrnDetailsRequestV2.Signature), PrnConstants.MaxLengthSignature)]
     [DataRow(nameof(SavePrnDetailsRequestV2.ReprocessingSite), PrnConstants.MaxLengthReprocessingSite)]
     public void ShouldNotAcceptFieldsWithMaxLengthWhenLengthExceeded(string propertyName, int length)
     {
@@ -183,13 +169,7 @@ public class SavePrnDetailsRequestValidatorV2Tests
     [DataRow(nameof(SavePrnDetailsRequestV2.PrnSignatoryPosition))]
     [DataRow(nameof(SavePrnDetailsRequestV2.MaterialName))]
     [DataRow(nameof(SavePrnDetailsRequestV2.IssuerNotes))]
-    [DataRow(nameof(SavePrnDetailsRequestV2.ProducerAgency))]
-    [DataRow(nameof(SavePrnDetailsRequestV2.ProcessToBeUsed))]
     [DataRow(nameof(SavePrnDetailsRequestV2.ReprocessorExporterAgency))]
-    [DataRow(nameof(SavePrnDetailsRequestV2.IssuerReference))]
-    [DataRow(nameof(SavePrnDetailsRequestV2.CreatedBy))]
-    [DataRow(nameof(SavePrnDetailsRequestV2.PackagingProducer))]
-    [DataRow(nameof(SavePrnDetailsRequestV2.Signature))]
     public void ShouldAcceptOptionalFieldsWhenEmpty(string propertyName)
     {
         var strings = new List<string> { "", null, "  " };

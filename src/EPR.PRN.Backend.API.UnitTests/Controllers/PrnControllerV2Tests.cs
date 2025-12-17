@@ -17,30 +17,22 @@ public class PrnControllerV2Tests
     {
         return new SavePrnDetailsRequestV2
         {
-            ExternalId = Guid.NewGuid(),
             PrnNumber = "PRN123",
             OrganisationId = Guid.NewGuid(),
             OrganisationName = "Org",
-            ProducerAgency = "Producer",
             ReprocessorExporterAgency = "Reprocessor",
             PrnStatusId = 1,
             TonnageValue = 0,
             MaterialName = "Plastic",
             IssuerNotes = "Notes",
-            IssuerReference = "Ref",
             PrnSignatory = "Sig",
             PrnSignatoryPosition = "Role",
-            Signature = "Signature",
-            IssueDate = DateTime.UtcNow,
-            ProcessToBeUsed = "PROC",
             DecemberWaste = true,
             StatusUpdatedOn = DateTime.UtcNow,
             IssuedByOrg = "Issuer",
             AccreditationNumber = "ACC123",
             ReprocessingSite = "Site",
             AccreditationYear = "2024",
-            PackagingProducer = "Packager",
-            CreatedBy = "user",
             IsExport = false,
             SourceSystemId = "SYS"
         };
