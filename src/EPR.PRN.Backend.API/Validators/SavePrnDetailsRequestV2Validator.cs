@@ -10,7 +10,7 @@ public class SavePrnDetailsRequestV2Validator : AbstractValidator<SavePrnDetails
     {
         RuleFor(x => x.SourceSystemId).MandatoryString(PrnConstants.MaxLengthSourceSystemId);
         
-        RuleFor(x => x.PrnNumber).OptionalString(PrnConstants.MaxLengthPrnNumber);
+        RuleFor(x => x.PrnNumber).MandatoryString(PrnConstants.MaxLengthPrnNumber);
 
         RuleFor(x => x.PrnSignatory).MandatoryString(PrnConstants.MaxLengthPrnSignatory);
 
