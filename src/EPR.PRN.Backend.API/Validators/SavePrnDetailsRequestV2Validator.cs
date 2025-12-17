@@ -38,7 +38,7 @@ public class SavePrnDetailsRequestV2Validator : AbstractValidator<SavePrnDetails
 
         RuleFor(x => x.IssuerNotes).OptionalString(PrnConstants.MaxLengthIssuerNotes);
 
-        RuleFor(x => x.ReprocessorExporterAgency).OptionalString(PrnConstants.MaxLengthReprocessorExporterAgency);
+        RuleFor(x => x.ReprocessorExporterAgency).MandatoryString(PrnConstants.MaxLengthReprocessorExporterAgency);
     }
 }
 
