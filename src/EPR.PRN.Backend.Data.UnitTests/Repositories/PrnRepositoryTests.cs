@@ -35,7 +35,8 @@ public class PrnRepositoryTests
         AccreditationYear = "2024",
         IsExport = false,
         SourceSystemId = "SYS",
-        ProcessToBeUsed = "R4"
+        ProcessToBeUsed = "R4",
+        ObligationYear = "2025"
     };
     [TestInitialize]
     public void Setup()

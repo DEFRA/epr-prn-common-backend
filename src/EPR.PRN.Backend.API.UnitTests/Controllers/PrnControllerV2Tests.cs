@@ -35,7 +35,8 @@ public class PrnControllerV2Tests
             AccreditationYear = "2024",
             IsExport = false,
             SourceSystemId = "SYS",
-            ProcessToBeUsed = "R4"
+            ProcessToBeUsed = "R4",
+            ObligationYear = "2025"
         };
     }
 
@@ -50,7 +51,6 @@ public class PrnControllerV2Tests
         _application.PrnService.Verify(s => s.SaveEprnDetails(It.IsAny<Eprn>()));
         model.Should().BeEquivalentTo(dbObj, o => o
             .Excluding(e => e.Id)
-            .Excluding(e => e.ObligationYear)
             .Excluding(e => e.CreatedOn)
             .Excluding(e => e.LastUpdatedBy)
             .Excluding(e => e.LastUpdatedDate)
@@ -64,7 +64,6 @@ public class PrnControllerV2Tests
             .Excluding(e => e.CreatedBy)
         );
         dbObj.Id.Should().Be(0);
-        dbObj.ObligationYear.Should().Be(null);
         dbObj.CreatedOn.Should().Be(default);
         dbObj.LastUpdatedBy.Should().Be(Guid.Empty);
         dbObj.LastUpdatedDate.Should().Be(default);
@@ -107,6 +106,7 @@ public class PrnControllerV2Tests
     [DataRow(nameof(SavePrnDetailsRequestV2.MaterialName))]
     [DataRow(nameof(SavePrnDetailsRequestV2.ProcessToBeUsed))]
     [DataRow(nameof(SavePrnDetailsRequestV2.StatusUpdatedOn))]
+    [DataRow(nameof(SavePrnDetailsRequestV2.ObligationYear))]
     public async Task ShouldValidateRequiredFields(string propertyName)
     {
         var model = CreateValidModel();

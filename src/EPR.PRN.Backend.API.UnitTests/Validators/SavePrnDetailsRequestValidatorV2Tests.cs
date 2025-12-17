@@ -37,7 +37,8 @@ public class SavePrnDetailsRequestValidatorV2Tests
             AccreditationYear = "2024",
             IsExport = false,
             SourceSystemId = "SYS",
-            ProcessToBeUsed = "R4"
+            ProcessToBeUsed = "R4",
+            ObligationYear = "2025"
         };
     }
 
@@ -109,6 +110,7 @@ public class SavePrnDetailsRequestValidatorV2Tests
     [DataRow(nameof(SavePrnDetailsRequestV2.SourceSystemId), PrnConstants.MaxLengthSourceSystemId)]
     [DataRow(nameof(SavePrnDetailsRequestV2.ReprocessingSite), PrnConstants.MaxLengthReprocessingSite)]
     [DataRow(nameof(SavePrnDetailsRequestV2.ProcessToBeUsed), PrnConstants.MaxLengthProcessToBeUsed)]
+    [DataRow(nameof(SavePrnDetailsRequestV2.ObligationYear), PrnConstants.MaxLengthObligationYear)]
     public void ShouldNotAcceptFieldsWithMaxLengthWhenLengthExceeded(string propertyName, int length)
     {
         var model = CreateValidModel();
@@ -143,6 +145,7 @@ public class SavePrnDetailsRequestValidatorV2Tests
     [DataRow(nameof(SavePrnDetailsRequestV2.PrnNumber))]
     [DataRow(nameof(SavePrnDetailsRequestV2.ReprocessorExporterAgency))]
     [DataRow(nameof(SavePrnDetailsRequestV2.ProcessToBeUsed))]
+    [DataRow(nameof(SavePrnDetailsRequestV2.ObligationYear))]
     public void ShouldNotAcceptMandatoryFieldsWhenEmpty(string propertyName)
     {
         var strings = new List<string> { "", null, "  " };
