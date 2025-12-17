@@ -105,6 +105,8 @@ public class PrnControllerV2Tests
     [DataRow(nameof(SavePrnDetailsRequestV2.DecemberWaste))]
     [DataRow(nameof(SavePrnDetailsRequestV2.IsExport))]
     [DataRow(nameof(SavePrnDetailsRequestV2.TonnageValue))]
+    [DataRow(nameof(SavePrnDetailsRequestV2.PrnNumber))]
+    [DataRow(nameof(SavePrnDetailsRequestV2.MaterialName))]
     public async Task ShouldValidateRequiredFields(string propertyName)
     {
         var model = CreateValidModel();
@@ -115,10 +117,8 @@ public class PrnControllerV2Tests
     }
     
     [TestMethod]
-    [DataRow(nameof(SavePrnDetailsRequestV2.PrnNumber))]
     [DataRow(nameof(SavePrnDetailsRequestV2.PrnSignatoryPosition))]
     [DataRow(nameof(SavePrnDetailsRequestV2.StatusUpdatedOn))]
-    [DataRow(nameof(SavePrnDetailsRequestV2.MaterialName))]
     [DataRow(nameof(SavePrnDetailsRequestV2.IssuerNotes))]
     public async Task NonRequiredFieldsCanBeOmmitted(string propertyName)
     {

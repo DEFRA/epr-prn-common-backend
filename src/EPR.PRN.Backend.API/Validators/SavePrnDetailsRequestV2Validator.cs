@@ -29,7 +29,7 @@ public class SavePrnDetailsRequestV2Validator : AbstractValidator<SavePrnDetails
             .Must(x => int.TryParse(x, out var v) && v is > 1900 and <= 9999)
             .WithMessage("{PropertyName} must be a valid year value.");
 
-        RuleFor(x => x.MaterialName).OptionalString(PrnConstants.MaxLengthMaterialName);
+        RuleFor(x => x.MaterialName).MandatoryString(PrnConstants.MaxLengthMaterialName);
 
         RuleFor(x => x.ReprocessingSite).MandatoryString(PrnConstants.MaxLengthReprocessingSite);
 
