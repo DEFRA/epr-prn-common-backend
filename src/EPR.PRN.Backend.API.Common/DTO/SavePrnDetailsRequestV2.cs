@@ -22,13 +22,4 @@ public class SavePrnDetailsRequestV2
     public required bool IsExport { get; set; }
     public required int TonnageValue { get; set; }
     public string? IssuerNotes { get; set; }
-    // not set in rrepw below here
-    public DateTime IssueDate { get; set; }
-    public string PackagingProducer { get; set; } = "";
-    public string? ProcessToBeUsed { get; set; }
-    public string? IssuerReference { get; set; }
-    public string? CreatedBy { get; set; }
-    public string ProducerAgency { get; set; } = "";
-    public Guid ExternalId { get; set; }
-    public string? Signature { get; set; }
 }
