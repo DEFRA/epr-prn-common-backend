@@ -93,12 +93,18 @@ public class PrnControllerV2Tests
 
     [TestMethod]
     [DataRow(nameof(SavePrnDetailsRequestV2.SourceSystemId))]
+    [DataRow(nameof(SavePrnDetailsRequestV2.PrnStatusId))]
     [DataRow(nameof(SavePrnDetailsRequestV2.PrnSignatory))]
     [DataRow(nameof(SavePrnDetailsRequestV2.IssuedByOrg))]
+    [DataRow(nameof(SavePrnDetailsRequestV2.OrganisationId))]
     [DataRow(nameof(SavePrnDetailsRequestV2.OrganisationName))]
     [DataRow(nameof(SavePrnDetailsRequestV2.AccreditationNumber))]
     [DataRow(nameof(SavePrnDetailsRequestV2.AccreditationYear))]
+    [DataRow(nameof(SavePrnDetailsRequestV2.ReprocessorExporterAgency))]
     [DataRow(nameof(SavePrnDetailsRequestV2.ReprocessingSite))]
+    [DataRow(nameof(SavePrnDetailsRequestV2.DecemberWaste))]
+    [DataRow(nameof(SavePrnDetailsRequestV2.IsExport))]
+    [DataRow(nameof(SavePrnDetailsRequestV2.TonnageValue))]
     public async Task ShouldValidateRequiredFields(string propertyName)
     {
         var model = CreateValidModel();
@@ -107,7 +113,22 @@ public class PrnControllerV2Tests
         await response.ShouldHaveRequiredErrorMessage(propertyName);
         _application.PrnService.Verify(s => s.SaveEprnDetails(It.IsAny<Eprn>()), Times.Never);
     }
-
+    
+    [TestMethod]
+    [DataRow(nameof(SavePrnDetailsRequestV2.PrnNumber))]
+    [DataRow(nameof(SavePrnDetailsRequestV2.PrnSignatoryPosition))]
+    [DataRow(nameof(SavePrnDetailsRequestV2.StatusUpdatedOn))]
+    [DataRow(nameof(SavePrnDetailsRequestV2.MaterialName))]
+    [DataRow(nameof(SavePrnDetailsRequestV2.IssuerNotes))]
+    public async Task NonRequiredFieldsCanBeOmmitted(string propertyName)
+    {
+        var model = CreateValidModel();
+        var json = ToJsonWithoutField(model, propertyName);
+        _application.PrnService.Setup(s => s.SaveEprnDetails(It.IsAny<Eprn>()))
+            .ReturnsAsync((Eprn e) => e);
+        await _application.CallPostEndpointWithJson("api/v2/prn/", json);
+    }
+    
     [TestMethod]
     [DataRow(nameof(SavePrnDetailsRequestV2.SourceSystemId))]
     [DataRow(nameof(SavePrnDetailsRequestV2.PrnSignatory))]
