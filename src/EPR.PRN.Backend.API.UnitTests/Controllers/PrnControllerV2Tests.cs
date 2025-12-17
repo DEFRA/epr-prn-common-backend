@@ -53,13 +53,29 @@ public class PrnControllerV2Tests
             .Excluding(e => e.CreatedOn)
             .Excluding(e => e.LastUpdatedBy)
             .Excluding(e => e.LastUpdatedDate)
-            .Excluding(e => e.PrnStatusHistories));
+            .Excluding(e => e.PrnStatusHistories)
+            .Excluding(e => e.ExternalId)
+            .Excluding(e => e.ProducerAgency)
+            .Excluding(e => e.IssuerReference)
+            .Excluding(e => e.Signature)
+            .Excluding(e => e.IssueDate)
+            .Excluding(e => e.ProcessToBeUsed)
+            .Excluding(e => e.PackagingProducer)
+            .Excluding(e => e.CreatedBy)
+        );
         dbObj.Id.Should().Be(0);
         dbObj.ObligationYear.Should().Be(null);
         dbObj.CreatedOn.Should().Be(default);
         dbObj.LastUpdatedBy.Should().Be(Guid.Empty);
         dbObj.LastUpdatedDate.Should().Be(default);
         dbObj.PrnStatusHistories.Should().BeNull();
+        dbObj.ExternalId.Should().Be(Guid.Empty);
+        dbObj.ProducerAgency.Should().BeNull();
+        dbObj.IssuerReference.Should().BeNull();
+        dbObj.Signature.Should().BeNull();
+        dbObj.IssueDate.Should().Be(default);
+        dbObj.ProcessToBeUsed.Should().BeNull();
+        dbObj.CreatedBy.Should().BeNull();
 
         returned.created.Should().BeEquivalentTo(dbObj, o => o
             .Excluding(p => p.PrnStatusHistories)
