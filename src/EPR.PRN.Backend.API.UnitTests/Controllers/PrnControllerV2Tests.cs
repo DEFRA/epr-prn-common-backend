@@ -12,6 +12,7 @@ namespace EPR.PRN.Backend.API.UnitTests.Controllers;
 public class PrnControllerV2Tests
 {
     private readonly CustomWebApplicationFactory<Startup> _application = new();
+
     private static SavePrnDetailsRequestV2 CreateValidModel()
     {
         return new SavePrnDetailsRequestV2
@@ -44,13 +45,15 @@ public class PrnControllerV2Tests
             SourceSystemId = "SYS"
         };
     }
+
     [TestMethod]
     public async Task ShouldAcceptValidModel()
     {
         var model = CreateValidModel();
-        Eprn dbObj = null; 
-        _application.PrnService.Setup(s => s.SaveEprnDetails(It.IsAny<Eprn>())).Callback((Eprn e) => dbObj = e).ReturnsAsync((Eprn e) => e);
-        var returned = await _application.CallPostEndpoint<SavePrnDetailsRequestV2,PrnDto>("api/v2/prn", model);
+        Eprn dbObj = null;
+        _application.PrnService.Setup(s => s.SaveEprnDetails(It.IsAny<Eprn>())).Callback((Eprn e) => dbObj = e)
+            .ReturnsAsync((Eprn e) => e);
+        var returned = await _application.CallPostEndpoint<SavePrnDetailsRequestV2, PrnDto>("api/v2/prn", model);
         _application.PrnService.Verify(s => s.SaveEprnDetails(It.IsAny<Eprn>()));
         model.Should().BeEquivalentTo(dbObj, o => o
             .Excluding(e => e.Id)
@@ -72,29 +75,21 @@ public class PrnControllerV2Tests
         );
         returned.location.Should().Be("api/v1/prn/0");
     }
-    
+
     private static string ToJsonWithoutField(object obj, string propertyName)
     {
         var jObj = JObject.FromObject(obj);
         jObj.Remove(propertyName);
         return jObj.ToString();
     }
-    
+
     [TestMethod]
-    [DataRow(nameof(SavePrnDetailsRequestV2.AccreditationNumber))]
-    [DataRow(nameof(SavePrnDetailsRequestV2.AccreditationYear))]
-    [DataRow(nameof(SavePrnDetailsRequestV2.MaterialName))]
-    [DataRow(nameof(SavePrnDetailsRequestV2.PrnNumber))]
+    [DataRow(nameof(SavePrnDetailsRequestV2.SourceSystemId))]
+    [DataRow(nameof(SavePrnDetailsRequestV2.PrnSignatory))]
     [DataRow(nameof(SavePrnDetailsRequestV2.IssuedByOrg))]
     [DataRow(nameof(SavePrnDetailsRequestV2.OrganisationName))]
-    [DataRow(nameof(SavePrnDetailsRequestV2.OrganisationId))]
-    [DataRow(nameof(SavePrnDetailsRequestV2.PackagingProducer))]
-    [DataRow(nameof(SavePrnDetailsRequestV2.ReprocessorExporterAgency))]
-    [DataRow(nameof(SavePrnDetailsRequestV2.IssuerReference))]
-    [DataRow(nameof(SavePrnDetailsRequestV2.CreatedBy))]
-    [DataRow(nameof(SavePrnDetailsRequestV2.SourceSystemId))]
-    [DataRow(nameof(SavePrnDetailsRequestV2.ProducerAgency))]
-    [DataRow(nameof(SavePrnDetailsRequestV2.ExternalId))]
+    [DataRow(nameof(SavePrnDetailsRequestV2.AccreditationNumber))]
+    [DataRow(nameof(SavePrnDetailsRequestV2.AccreditationYear))]
     [DataRow(nameof(SavePrnDetailsRequestV2.ReprocessingSite))]
     public async Task ShouldValidateRequiredFields(string propertyName)
     {
@@ -104,20 +99,14 @@ public class PrnControllerV2Tests
         await response.ShouldHaveRequiredErrorMessage(propertyName);
         _application.PrnService.Verify(s => s.SaveEprnDetails(It.IsAny<Eprn>()), Times.Never);
     }
-    
-    
+
     [TestMethod]
-    [DataRow(nameof(SavePrnDetailsRequestV2.AccreditationNumber))]
-    [DataRow(nameof(SavePrnDetailsRequestV2.AccreditationYear))]
-    [DataRow(nameof(SavePrnDetailsRequestV2.MaterialName))]
-    [DataRow(nameof(SavePrnDetailsRequestV2.PrnNumber))]
+    [DataRow(nameof(SavePrnDetailsRequestV2.SourceSystemId))]
+    [DataRow(nameof(SavePrnDetailsRequestV2.PrnSignatory))]
     [DataRow(nameof(SavePrnDetailsRequestV2.IssuedByOrg))]
     [DataRow(nameof(SavePrnDetailsRequestV2.OrganisationName))]
-    [DataRow(nameof(SavePrnDetailsRequestV2.PackagingProducer))]
-    [DataRow(nameof(SavePrnDetailsRequestV2.ReprocessorExporterAgency))]
-    [DataRow(nameof(SavePrnDetailsRequestV2.CreatedBy))]
-    [DataRow(nameof(SavePrnDetailsRequestV2.SourceSystemId))]
-    [DataRow(nameof(SavePrnDetailsRequestV2.ProducerAgency))]
+    [DataRow(nameof(SavePrnDetailsRequestV2.AccreditationNumber))]
+    [DataRow(nameof(SavePrnDetailsRequestV2.AccreditationYear))]
     [DataRow(nameof(SavePrnDetailsRequestV2.ReprocessingSite))]
     public async Task ShouldValidateMinLengthFields(string propertyName)
     {
