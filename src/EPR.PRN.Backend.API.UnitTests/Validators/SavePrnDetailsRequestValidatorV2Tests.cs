@@ -19,32 +19,26 @@ public class SavePrnDetailsRequestValidatorV2Tests
     {
         return new SavePrnDetailsRequestV2
         {
-            ExternalId = Guid.NewGuid(),
             PrnNumber = "PRN123",
             OrganisationId = Guid.NewGuid(),
             OrganisationName = "Org",
-            ProducerAgency = "Producer",
             ReprocessorExporterAgency = "Reprocessor",
             PrnStatusId = 1,
             TonnageValue = 2,
             MaterialName = "Plastic",
             IssuerNotes = "Notes",
-            IssuerReference = "Ref",
             PrnSignatory = "Sig",
             PrnSignatoryPosition = "Role",
-            Signature = "Signature",
-            IssueDate = DateTime.UtcNow,
-            ProcessToBeUsed = "PROC",
             DecemberWaste = true,
             StatusUpdatedOn = DateTime.UtcNow,
             IssuedByOrg = "Issuer",
             AccreditationNumber = "ACC123",
             ReprocessingSite = "Site",
             AccreditationYear = "2024",
-            PackagingProducer = "Packager",
-            CreatedBy = "user",
             IsExport = false,
-            SourceSystemId = "SYS"
+            SourceSystemId = "SYS",
+            ProcessToBeUsed = "R4",
+            ObligationYear = "2025"
         };
     }
 
@@ -59,22 +53,8 @@ public class SavePrnDetailsRequestValidatorV2Tests
     }
 
     [TestMethod]
-    [DataRow("")]
-    public void ShouldNotAcceptAccreditationNumberWhenInvalid(string value)
-    {
-        var model = CreateValidModel();
-        model.AccreditationNumber = value;
-
-        var results = Validate(model);
-
-        results.Should().ContainSingle(r =>
-            r.PropertyName ==nameof(SavePrnDetailsRequestV2.AccreditationNumber));
-    }
-
-    [TestMethod]
     [DataRow("1899")]
     [DataRow("10000")]
-    [DataRow("")]
     [DataRow("abdf")]
     public void ShouldNotAcceptAccreditationYearWhenInvalid(string value)
     {
@@ -83,8 +63,9 @@ public class SavePrnDetailsRequestValidatorV2Tests
 
         var results = Validate(model);
 
-        results.Should().Contain(r =>
-            r.PropertyName == nameof(SavePrnDetailsRequestV2.AccreditationYear));
+        var res = results.FirstOrDefault(r => r.PropertyName == nameof(SavePrnDetailsRequestV2.AccreditationYear));
+        res.Should().NotBeNull();
+        res!.ToString().Should().Be("Accreditation Year must be a valid year value.");
     }
 
     [TestMethod]
@@ -110,8 +91,9 @@ public class SavePrnDetailsRequestValidatorV2Tests
 
         var results = Validate(model);
 
-        results.Should().Contain(r =>
-                r.PropertyName == nameof(SavePrnDetailsRequestV2.OrganisationId));
+        var res = results.FirstOrDefault(r => r.PropertyName == nameof(SavePrnDetailsRequestV2.OrganisationId));
+        res.Should().NotBeNull();
+        res!.ToString().Should().EndWith(" must be a valid GUID");
     }
 
     [TestMethod]
@@ -120,18 +102,15 @@ public class SavePrnDetailsRequestValidatorV2Tests
     [DataRow(nameof(SavePrnDetailsRequestV2.PrnNumber), PrnConstants.MaxLengthPrnNumber)]
     [DataRow(nameof(SavePrnDetailsRequestV2.IssuedByOrg), PrnConstants.MaxLengthIssuedByOrg)]
     [DataRow(nameof(SavePrnDetailsRequestV2.OrganisationName), PrnConstants.MaxLengthOrganisationName)]
-    [DataRow(nameof(SavePrnDetailsRequestV2.PackagingProducer), PrnConstants.MaxLengthPackagingProducer)]
-    [DataRow(nameof(SavePrnDetailsRequestV2.ProcessToBeUsed), PrnConstants.MaxLengthProcessToBeUsed)]
-    [DataRow(nameof(SavePrnDetailsRequestV2.ReprocessorExporterAgency), PrnConstants.MaxLengthReprocessorExporterAgency)]
+    [DataRow(nameof(SavePrnDetailsRequestV2.ReprocessorExporterAgency),
+        PrnConstants.MaxLengthReprocessorExporterAgency)]
     [DataRow(nameof(SavePrnDetailsRequestV2.IssuerNotes), PrnConstants.MaxLengthIssuerNotes)]
-    [DataRow(nameof(SavePrnDetailsRequestV2.IssuerReference), PrnConstants.MaxLengthIssuerReference)]
     [DataRow(nameof(SavePrnDetailsRequestV2.PrnSignatory), PrnConstants.MaxLengthPrnSignatory)]
     [DataRow(nameof(SavePrnDetailsRequestV2.PrnSignatoryPosition), PrnConstants.MaxLengthPrnSignatoryPosition)]
-    [DataRow(nameof(SavePrnDetailsRequestV2.CreatedBy), PrnConstants.MaxLengthCreatedBy)]
     [DataRow(nameof(SavePrnDetailsRequestV2.SourceSystemId), PrnConstants.MaxLengthSourceSystemId)]
-    [DataRow(nameof(SavePrnDetailsRequestV2.ProducerAgency), PrnConstants.MaxLengthProducerAgency)]
-    [DataRow(nameof(SavePrnDetailsRequestV2.Signature), PrnConstants.MaxLengthSignature)]
     [DataRow(nameof(SavePrnDetailsRequestV2.ReprocessingSite), PrnConstants.MaxLengthReprocessingSite)]
+    [DataRow(nameof(SavePrnDetailsRequestV2.ProcessToBeUsed), PrnConstants.MaxLengthProcessToBeUsed)]
+    [DataRow(nameof(SavePrnDetailsRequestV2.ObligationYear), PrnConstants.MaxLengthObligationYear)]
     public void ShouldNotAcceptFieldsWithMaxLengthWhenLengthExceeded(string propertyName, int length)
     {
         var model = CreateValidModel();
@@ -141,14 +120,14 @@ public class SavePrnDetailsRequestValidatorV2Tests
 
         var results = Validate(model);
 
-        results.Should().Contain(r =>
-            r.PropertyName == propertyName);
-
+        var res = results.FirstOrDefault(r => r.PropertyName == propertyName);
+        res.Should().NotBeNull();
+        res!.ToString().Should().EndWith($" cannot be longer than {length} characters.");
 
         model = CreateValidModel();
         typeof(SavePrnDetailsRequestV2)
             .GetProperty(propertyName)!
-            .SetValue(model, new string('x', length));
+            .SetValue(model, new string('2', length));
 
         results = Validate(model);
 
@@ -156,49 +135,83 @@ public class SavePrnDetailsRequestValidatorV2Tests
     }
 
     [TestMethod]
-    [DataRow(nameof(SavePrnDetailsRequestV2.AccreditationNumber))]
-    [DataRow(nameof(SavePrnDetailsRequestV2.MaterialName))]
-    [DataRow(nameof(SavePrnDetailsRequestV2.PrnNumber))]
+    [DataRow(nameof(SavePrnDetailsRequestV2.SourceSystemId))]
+    [DataRow(nameof(SavePrnDetailsRequestV2.PrnSignatory))]
     [DataRow(nameof(SavePrnDetailsRequestV2.IssuedByOrg))]
     [DataRow(nameof(SavePrnDetailsRequestV2.OrganisationName))]
-    [DataRow(nameof(SavePrnDetailsRequestV2.PackagingProducer))]
-    [DataRow(nameof(SavePrnDetailsRequestV2.ProcessToBeUsed))]
+    [DataRow(nameof(SavePrnDetailsRequestV2.AccreditationNumber))]
+    [DataRow(nameof(SavePrnDetailsRequestV2.AccreditationYear))]
+    [DataRow(nameof(SavePrnDetailsRequestV2.MaterialName))]
+    [DataRow(nameof(SavePrnDetailsRequestV2.PrnNumber))]
     [DataRow(nameof(SavePrnDetailsRequestV2.ReprocessorExporterAgency))]
-    [DataRow(nameof(SavePrnDetailsRequestV2.CreatedBy))]
-    [DataRow(nameof(SavePrnDetailsRequestV2.SourceSystemId))]
-    [DataRow(nameof(SavePrnDetailsRequestV2.ReprocessingSite))]
-    public void ShouldNotAcceptFieldsWithNotEmptyWhenEmpty(string propertyName)
+    [DataRow(nameof(SavePrnDetailsRequestV2.ProcessToBeUsed))]
+    [DataRow(nameof(SavePrnDetailsRequestV2.ObligationYear))]
+    public void ShouldNotAcceptMandatoryFieldsWhenEmpty(string propertyName)
     {
+        var strings = new List<string> { "", null, "  " };
         var model = CreateValidModel();
+        foreach (var s in strings)
+        {
+            typeof(SavePrnDetailsRequestV2)
+                .GetProperty(propertyName)!
+                .SetValue(model, s);
+
+            var results = Validate(model);
+
+            var res = results.FirstOrDefault(r => r.PropertyName == propertyName);
+            res.Should().NotBeNull();
+            res!.ToString().Should().EndWith(" is required.");
+        }
+
         typeof(SavePrnDetailsRequestV2)
             .GetProperty(propertyName)!
-            .SetValue(model, "");
+            .SetValue(model, "2024");
 
-        var results = Validate(model);
+        var results2 = Validate(model);
 
-        results.Should().Contain(r =>
-            r.PropertyName == propertyName);
-
-
-        model = CreateValidModel();
-        typeof(SavePrnDetailsRequestV2)
-            .GetProperty(propertyName)!
-            .SetValue(model, "test");
-
-        results = Validate(model);
-
-        results.Should().BeEmpty();
+        results2.Should().BeEmpty();
     }
 
     [TestMethod]
-    public void ShouldNotAcceptTonnageValueWhenNegative()
+    [DataRow(nameof(SavePrnDetailsRequestV2.PrnSignatoryPosition))]
+    [DataRow(nameof(SavePrnDetailsRequestV2.IssuerNotes))]
+    [DataRow(nameof(SavePrnDetailsRequestV2.ReprocessingSite))]
+    public void ShouldAcceptOptionalFieldsWhenEmpty(string propertyName)
+    {
+        var strings = new List<string> { "", null, "  " };
+        var model = CreateValidModel();
+        foreach (var s in strings)
+        {
+            typeof(SavePrnDetailsRequestV2)
+                .GetProperty(propertyName)!
+                .SetValue(model, s);
+
+            var results = Validate(model);
+
+            results.Should().BeEmpty();
+        }
+    }
+
+    [TestMethod]
+    [DataRow(-1)]
+    [DataRow(0)]
+    [DataRow(1)]
+    public void ShouldOnlyAcceptValidTonnages(int tonnageValue)
     {
         var model = CreateValidModel();
-        model.TonnageValue = -1;
+        model.TonnageValue = tonnageValue;
 
         var results = Validate(model);
 
-        results.Should().Contain(r =>
-            r.PropertyName == nameof(SavePrnDetailsRequestV2.TonnageValue));
+        if (tonnageValue < 0)
+        {
+            var res = results.FirstOrDefault(r => r.PropertyName == nameof(SavePrnDetailsRequestV2.TonnageValue));
+            res.Should().NotBeNull();
+            res!.ToString().Should().Be("Tonnage Value must be valid positive value.");
+        }
+        else
+        {
+            results.Should().BeEmpty();
+        }
     }
 }
