@@ -34,7 +34,8 @@ public class PrnControllerV2Tests
             ReprocessingSite = "Site",
             AccreditationYear = "2024",
             IsExport = false,
-            SourceSystemId = "SYS"
+            SourceSystemId = "SYS",
+            ProcessToBeUsed = "R4"
         };
     }
 
@@ -106,6 +107,7 @@ public class PrnControllerV2Tests
     [DataRow(nameof(SavePrnDetailsRequestV2.TonnageValue))]
     [DataRow(nameof(SavePrnDetailsRequestV2.PrnNumber))]
     [DataRow(nameof(SavePrnDetailsRequestV2.MaterialName))]
+    [DataRow(nameof(SavePrnDetailsRequestV2.ProcessToBeUsed))]
     public async Task ShouldValidateRequiredFields(string propertyName)
     {
         var model = CreateValidModel();
@@ -136,6 +138,7 @@ public class PrnControllerV2Tests
     [DataRow(nameof(SavePrnDetailsRequestV2.OrganisationName))]
     [DataRow(nameof(SavePrnDetailsRequestV2.AccreditationNumber))]
     [DataRow(nameof(SavePrnDetailsRequestV2.AccreditationYear))]
+    [DataRow(nameof(SavePrnDetailsRequestV2.ProcessToBeUsed))]
     public async Task ShouldValidateMinLengthFields(string propertyName)
     {
         var model = CreateValidModel();

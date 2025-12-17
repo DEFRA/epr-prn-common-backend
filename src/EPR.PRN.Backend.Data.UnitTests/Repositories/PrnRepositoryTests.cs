@@ -34,7 +34,8 @@ public class PrnRepositoryTests
         ReprocessingSite = "Site",
         AccreditationYear = "2024",
         IsExport = false,
-        SourceSystemId = "SYS"
+        SourceSystemId = "SYS",
+        ProcessToBeUsed = "R4"
     };
     [TestInitialize]
     public void Setup()
