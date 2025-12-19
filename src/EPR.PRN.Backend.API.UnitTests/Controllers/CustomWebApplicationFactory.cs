@@ -6,20 +6,16 @@ using Moq;
 
 namespace EPR.PRN.Backend.API.UnitTests.Controllers;
 
-public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStartup> where TStartup : class
+public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStartup>
+    where TStartup : class
 {
-    public CustomWebApplicationFactory()
-    {
-        Client = CreateClient();
-    }
-
-    public HttpClient Client { get; }
-
     public Mock<IPrnService> PrnService { get; } = new();
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
-        builder.UseEnvironment("UnitTest");
-        builder.ConfigureTestServices(services => { services.ReplaceService(PrnService.Object); });
+        builder.ConfigureTestServices(services =>
+        {
+            services.ReplaceService(PrnService.Object);
+        });
     }
 }

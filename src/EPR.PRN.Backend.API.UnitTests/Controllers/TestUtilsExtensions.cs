@@ -16,29 +16,29 @@ public static class TestUtilsExtensions
     }
 
     public static async Task<string> CallGetEndpoint(
-        this CustomWebApplicationFactory<Startup> application,
+        this HttpClient client,
         string url,
         HttpStatusCode expectedResponse
     )
     {
-        application.Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
             "TestScheme",
             "test-token"
         );
-        var response = await application.Client.GetAsync(url);
+        var response = await client.GetAsync(url);
 
         response.ShouldHaveStatus(expectedResponse);
         return await response.Content.ReadAsStringAsync();
     }
 
     public static async Task<T> CallGetEndpoint<T>(
-        this CustomWebApplicationFactory<Startup> application,
+        this HttpClient client,
         string url,
         HttpStatusCode expectedResponse = HttpStatusCode.OK,
         NameValueCollection queryParameters = null
     )
     {
-        var uriBuilder = new UriBuilder(new Uri(application.Client.BaseAddress!, url));
+        var uriBuilder = new UriBuilder(new Uri(client.BaseAddress!, url));
 
         if (queryParameters is not null)
             uriBuilder.Query = queryParameters.ToString() ?? "";
@@ -51,7 +51,7 @@ public static class TestUtilsExtensions
 
         request.Headers.Authorization = new AuthenticationHeaderValue("TestScheme", "test-token");
 
-        var response = await application.Client.SendAsync(request);
+        var response = await client.SendAsync(request);
         if (!response.IsSuccessStatusCode)
         {
             var content = await response.Content.ReadAsStringAsync();
@@ -63,7 +63,7 @@ public static class TestUtilsExtensions
     }
 
     public static async Task<TResponse> CallGetEndpoint<TResponse, TQuery>(
-        this CustomWebApplicationFactory<Startup> application,
+        this HttpClient client,
         string url,
         TQuery query,
         HttpStatusCode expectedResponse = HttpStatusCode.OK
@@ -73,9 +73,9 @@ public static class TestUtilsExtensions
         {
             Method = HttpMethod.Get,
             Headers = { Authorization = new AuthenticationHeaderValue("TestScheme", "test-token") },
-            RequestUri = new Uri(application.Client.BaseAddress!, url + ToQueryString(query)),
+            RequestUri = new Uri(client.BaseAddress!, url + ToQueryString(query)),
         };
-        var response = await application.Client.SendAsync(request);
+        var response = await client.SendAsync(request);
         response.ShouldHaveStatus(expectedResponse);
         return await response.GetContent<TResponse>();
     }
@@ -104,27 +104,27 @@ public static class TestUtilsExtensions
     }
 
     public static async Task CallDeleteEndpoint(
-        this CustomWebApplicationFactory<Startup> application,
+        this HttpClient client,
         string url,
         HttpStatusCode expectedResponse = HttpStatusCode.NoContent
     )
     {
-        application.Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
             "TestScheme",
             "test-token"
         );
-        var response = await application.Client.DeleteAsync(url);
+        var response = await client.DeleteAsync(url);
         response.StatusCode.Should().Be(expectedResponse);
     }
 
     public static async Task CallDeleteEndpoint<TRequest>(
-        this CustomWebApplicationFactory<Startup> application,
+        this HttpClient client,
         string url,
         TRequest request,
         HttpStatusCode expectedResponse = HttpStatusCode.NoContent
     )
     {
-        var response = await application.Client.SendAsync(
+        var response = await client.SendAsync(
             new HttpRequestMessage
             {
                 Content = new StringContent(
@@ -136,30 +136,30 @@ public static class TestUtilsExtensions
                 {
                     Authorization = new AuthenticationHeaderValue("TestScheme", "test-token"),
                 },
-                RequestUri = new Uri(application.Client.BaseAddress!, url),
+                RequestUri = new Uri(client.BaseAddress!, url),
             }
         );
         response.StatusCode.Should().Be(expectedResponse);
     }
 
     public static async Task<(T cloned, string location)> CallCloneEndpoint<T>(
-        this CustomWebApplicationFactory<Startup> application,
+        this HttpClient client,
         string url,
         HttpStatusCode expectedStatus = HttpStatusCode.Created
     )
         where T : class
     {
-        application.Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
             "Bearer",
             "test-token"
         );
-        var response = await application.Client.PostAsync(url, null);
+        var response = await client.PostAsync(url, null);
         response.ShouldHaveStatus(expectedStatus);
         return (await response.GetContent<T>(), response.Headers.Location?.ToString() ?? "");
     }
 
     public static async Task<TResponse> CallPutEndpoint<TRequest, TResponse>(
-        this CustomWebApplicationFactory<Startup> application,
+        this HttpClient client,
         string url,
         TRequest request,
         HttpStatusCode expectedStatus = HttpStatusCode.OK
@@ -167,11 +167,11 @@ public static class TestUtilsExtensions
         where TResponse : class
         where TRequest : class
     {
-        application.Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
             "Bearer",
             "test-token"
         );
-        var response = await application.Client.PutAsync(
+        var response = await client.PutAsync(
             url,
             new StringContent(
                 JsonConvert.SerializeObject(request),
@@ -184,18 +184,18 @@ public static class TestUtilsExtensions
     }
 
     public static async Task CallPutEndpoint<TRequest>(
-        this CustomWebApplicationFactory<Startup> application,
+        this HttpClient client,
         string url,
         TRequest request,
         HttpStatusCode expectedStatus = HttpStatusCode.OK
     )
         where TRequest : class
     {
-        application.Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
             "Bearer",
             "test-token"
         );
-        var response = await application.Client.PutAsync(
+        var response = await client.PutAsync(
             url,
             new StringContent(
                 JsonConvert.SerializeObject(request),
@@ -209,7 +209,7 @@ public static class TestUtilsExtensions
         TRequest,
         TCreated
     >(
-        this CustomWebApplicationFactory<Startup> application,
+        this HttpClient client,
         string url,
         TRequest data,
         HttpStatusCode expectedStatus = HttpStatusCode.Created
@@ -217,7 +217,7 @@ public static class TestUtilsExtensions
         where TRequest : class
         where TCreated : class
     {
-        var response = await application.Client.PostAsync(
+        var response = await client.PostAsync(
             url,
             new StringContent(
                 JsonConvert.SerializeObject(data),
@@ -236,15 +236,14 @@ public static class TestUtilsExtensions
     }
 
     public static async Task<HttpResponseMessage> CallPostEndpoint<TRequest>(
-        this CustomWebApplicationFactory<Startup> application,
+        this HttpClient client,
         string url,
         TRequest data,
         HttpStatusCode expectedStatus = HttpStatusCode.Created
     )
         where TRequest : class
     {
-       
-        var response = await application.Client.PostAsync(
+        var response = await client.PostAsync(
             url,
             new StringContent(
                 JsonConvert.SerializeObject(data),
@@ -252,58 +251,55 @@ public static class TestUtilsExtensions
             )
         );
         response.ShouldHaveStatus(expectedStatus);
-        
+
         return response;
     }
 
     public static async Task<HttpResponseMessage> CallPostEndpointWithJson(
-        this CustomWebApplicationFactory<Startup> application,
+        this HttpClient client,
         string url,
         string data,
         HttpStatusCode expectedStatus = HttpStatusCode.Created
     )
     {
-        var response = await application.Client.PostAsync(
+        var response = await client.PostAsync(
             url,
-            new StringContent(
-                data,
-                new MediaTypeHeaderValue(HttpContentTypes.Json)
-            )
+            new StringContent(data, new MediaTypeHeaderValue(HttpContentTypes.Json))
         );
         response.ShouldHaveStatus(expectedStatus);
-        
+
         return response;
     }
+
     public static async Task CallPostEndpoint(
-        this CustomWebApplicationFactory<Startup> application,
+        this HttpClient client,
         string url,
         HttpStatusCode expectedStatus = HttpStatusCode.Created
     )
     {
-        application.Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
             "Bearer",
             "test-token"
         );
-        var response = await application.Client.PostAsync(
-            url,
-            new StringContent("")
-        );
+        var response = await client.PostAsync(url, new StringContent(""));
         response.ShouldHaveStatus(expectedStatus);
     }
 
     public static void ReplaceService<T>(this IServiceCollection services, T service)
         where T : class
     {
-        var descriptors = services
-            .Where(d => d.ServiceType == typeof(T))
-            .ToList();
+        var descriptors = services.Where(d => d.ServiceType == typeof(T)).ToList();
 
         // Remove each matching service
         foreach (var descriptor in descriptors)
             services.Remove(descriptor);
         services.AddSingleton(service);
     }
-    public static async Task ShouldHaveRequiredErrorMessage(this HttpResponseMessage response, string propertyName)
+
+    public static async Task ShouldHaveRequiredErrorMessage(
+        this HttpResponseMessage response,
+        string propertyName
+    )
     {
         response.IsSuccessStatusCode.Should().BeFalse();
         var content = await response.Content.ReadAsStringAsync();
@@ -311,9 +307,18 @@ public static class TestUtilsExtensions
         var jObj = JObject.Parse(content);
         jObj["title"]!.Value<string>().Should().Be("One or more validation errors occurred.");
         var errs = jObj["errors"]?["$"]?.Select(s => s.Value<string>())!.ToList();
-        errs!.FirstOrDefault(s => s.Contains(propertyName, StringComparison.CurrentCultureIgnoreCase)).Should().NotBeNull();
+        errs!
+            .FirstOrDefault(s =>
+                s.Contains(propertyName, StringComparison.CurrentCultureIgnoreCase)
+            )
+            .Should()
+            .NotBeNull();
     }
-    public static async Task ShouldHaveValidationErrorMessage(this HttpResponseMessage response, string propertyName)
+
+    public static async Task ShouldHaveValidationErrorMessage(
+        this HttpResponseMessage response,
+        string propertyName
+    )
     {
         response.IsSuccessStatusCode.Should().BeFalse();
         var content = await response.Content.ReadAsStringAsync();
