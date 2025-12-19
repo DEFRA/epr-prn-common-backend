@@ -6,9 +6,6 @@
 
     public class SavePrnDetailsRequestValidator : AbstractValidator<SavePrnDetailsRequest>
     {
-        public const string ErrorMessageSourceSystemId =
-            "SourceSystemId cannot be longer than 40 characters";
-
         public SavePrnDetailsRequestValidator()
         {
             RuleFor(x => x.AccreditationNo)
