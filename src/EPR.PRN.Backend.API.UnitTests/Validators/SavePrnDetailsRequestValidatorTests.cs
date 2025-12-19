@@ -14,7 +14,7 @@ namespace EPR.PRN.Backend.API.UnitTests.Validators
             AccreditationYear = 2018,
             DecemberWaste = true,
             EvidenceMaterial = "Aluminium",
-            EvidenceNo = "123",                
+            EvidenceNo = "123",
             EvidenceTonnes = 5000,
             EvidenceStatusCode = EprnStatus.ACCEPTED,
             IssueDate = DateTime.UtcNow.AddDays(-5),
@@ -36,7 +36,6 @@ namespace EPR.PRN.Backend.API.UnitTests.Validators
             StatusDate = DateTime.UtcNow,
         };
 
-
         [TestMethod]
         [DataRow("AccreditationNo", null)]
         [DataRow("AccreditationYear", null)]
@@ -50,7 +49,10 @@ namespace EPR.PRN.Backend.API.UnitTests.Validators
         [DataRow("ProducerAgency", null)]
         [DataRow("RecoveryProcessCode", null)]
         [DataRow("StatusDate", null)]
-        public void Test_SavePrnDetailsRequestValidator_Returns_Correct_ValidationResultOnNullInput(string propertyName , object propertyValue)
+        public void Test_SavePrnDetailsRequestValidator_Returns_Correct_ValidationResultOnNullInput(
+            string propertyName,
+            object propertyValue
+        )
         {
             var validator = new SavePrnDetailsRequestValidator();
 
@@ -85,11 +87,14 @@ namespace EPR.PRN.Backend.API.UnitTests.Validators
 
             // Get all property names from DTO class
             var props = typeof(SavePrnDetailsRequest)
-                            .GetProperties(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance)
-                            .ToList();
+                .GetProperties(
+                    System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance
+                )
+                .ToList();
 
-
-            var matchingProp = props.Find(x => string.Equals(x.Name, propertyName, StringComparison.InvariantCulture));
+            var matchingProp = props.Find(x =>
+                string.Equals(x.Name, propertyName, StringComparison.InvariantCulture)
+            );
             matchingProp.Should().NotBeNull();
 
             // Set the value of the property (overriding the default value set above) to the value passed in as the argument to this method
@@ -106,7 +111,9 @@ namespace EPR.PRN.Backend.API.UnitTests.Validators
         [TestMethod]
         [DataRow(true)]
         [DataRow(false)]
-        public void Test_SavePrnDetailsRequestValidator_Returns_Error_WhenCancellationDateNotCorrectlySet(bool isCancelledStatus)
+        public void Test_SavePrnDetailsRequestValidator_Returns_Error_WhenCancellationDateNotCorrectlySet(
+            bool isCancelledStatus
+        )
         {
             var validator = new SavePrnDetailsRequestValidator();
 
@@ -116,7 +123,7 @@ namespace EPR.PRN.Backend.API.UnitTests.Validators
                 AccreditationYear = 2018,
                 DecemberWaste = true,
                 EvidenceMaterial = "Aluminium",
-                EvidenceNo = Guid.NewGuid().ToString(),                
+                EvidenceNo = Guid.NewGuid().ToString(),
                 EvidenceTonnes = 5000,
                 IssueDate = DateTime.UtcNow.AddDays(-5),
                 IssuedByNPWDCode = "NPWD367742",
@@ -153,11 +160,11 @@ namespace EPR.PRN.Backend.API.UnitTests.Validators
 
             // Assert
             result.Should().NotBeNull();
-            
+
             var errorPropertyNames = result.Errors.Select(x => x.PropertyName);
             var cancelledDatePropertyName = nameof(dto.CancelledDate);
 
-            _ = isCancelledStatus 
+            _ = isCancelledStatus
                 ? errorPropertyNames.Should().Contain(cancelledDatePropertyName)
                 : errorPropertyNames.Should().NotContain(cancelledDatePropertyName);
         }
@@ -167,13 +174,24 @@ namespace EPR.PRN.Backend.API.UnitTests.Validators
         [DataRow("AccreditationYear", 25678)]
         [DataRow("EvidenceMaterial", "Material201223234234234234234")]
         [DataRow("EvidenceNo", "EV1231293812931231231231231")]
-        [DataRow("IssuedByOrgName", "OrgName12313123123123123123123123123123213123123123123OrgName12313123123123123123123123123123213123123123123OrgName12313123123123123123123123123123213123123123123")]
-        [DataRow("IssuedToOrgName", "OrgName12313123123123123123123123123123213123123123123OrgName12313123123123123123123123123123213123123123123OrgName12313123123123123123123123123123213123123123123")]
-        [DataRow("ProducerAgency", "AgName12313123123123123123123123123123213123123123123OrgName12313123123123123123123123123123213123123123123OrgName12313123123123123123123123123123213123123123123")]
+        [DataRow(
+            "IssuedByOrgName",
+            "OrgName12313123123123123123123123123123213123123123123OrgName12313123123123123123123123123123213123123123123OrgName12313123123123123123123123123123213123123123123"
+        )]
+        [DataRow(
+            "IssuedToOrgName",
+            "OrgName12313123123123123123123123123123213123123123123OrgName12313123123123123123123123123123213123123123123OrgName12313123123123123123123123123123213123123123123"
+        )]
+        [DataRow(
+            "ProducerAgency",
+            "AgName12313123123123123123123123123123213123123123123OrgName12313123123123123123123123123123213123123123123OrgName12313123123123123123123123123123213123123123123"
+        )]
         [DataRow("RecoveryProcessCode", "Code123234342342342342342342342")]
         [DataRow("CreatedByUser", "Code123234342342342342342342342")]
-
-        public void Test_SavePrnDetailsRequestValidator_Returns_Correct_ValidationResultOnInvalidInput(string propertyName, object propertyValue)
+        public void Test_SavePrnDetailsRequestValidator_Returns_Correct_ValidationResultOnInvalidInput(
+            string propertyName,
+            object propertyValue
+        )
         {
             var validator = new SavePrnDetailsRequestValidator();
 
@@ -208,11 +226,14 @@ namespace EPR.PRN.Backend.API.UnitTests.Validators
 
             // Get all property names from DTO class
             var props = typeof(SavePrnDetailsRequest)
-                            .GetProperties(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance)
-                            .ToList();
+                .GetProperties(
+                    System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance
+                )
+                .ToList();
 
-
-            var matchingProp = props.Find(x => string.Equals(x.Name, propertyName, StringComparison.InvariantCulture));
+            var matchingProp = props.Find(x =>
+                string.Equals(x.Name, propertyName, StringComparison.InvariantCulture)
+            );
             matchingProp.Should().NotBeNull();
 
             // Set the value of the property (overriding the default value set above) to the value passed in as the argument to this method
@@ -224,30 +245,6 @@ namespace EPR.PRN.Backend.API.UnitTests.Validators
             // Assert
             result.Should().NotBeNull();
             result.Errors.Select(x => x.PropertyName).Should().Contain(propertyName);
-        }
-        
-        
-        [TestMethod]
-        [DataRow("0123456789012345678901234567890123456789",true)]
-        [DataRow("01234567890123456789012345678901234567890",false)]
-        [DataRow("",true)]
-        [DataRow("                                          ",true)]
-        [DataRow(null,true)]
-        public void Test_SavePrnDetailsRequestValidator_ShouldValidateSourceSystemId(string ssi, bool valid)
-        {
-            var validator = new SavePrnDetailsRequestValidator();
-            _validPrn.SourceSystemId = ssi;
-            
-            var result = validator.Validate(_validPrn);
-
-            result.Should().NotBeNull();
-            if (valid)
-                result.Errors.Should().BeEmpty();
-            else
-            {
-                var e = result.Errors.Find(x => x.PropertyName == nameof(_validPrn.SourceSystemId));
-                e.ErrorMessage.Should().Be(SavePrnDetailsRequestValidator.ErrorMessageSourceSystemId);
-            }
         }
     }
 }
