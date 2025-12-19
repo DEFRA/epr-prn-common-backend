@@ -1,9 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Reflection;
 using EPR.PRN.Backend.API.Common.Constants;
+using EPR.PRN.Backend.Data.Helpers;
 
 namespace EPR.PRN.Backend.Data.DataModels
 {
-	public class Eprn
+    public class Eprn
     {
         [Key]
         public int Id { get; set; }
@@ -91,5 +93,24 @@ namespace EPR.PRN.Backend.Data.DataModels
 
         [MaxLength(PrnConstants.MaxLengthSourceSystemId)]
         public string? SourceSystemId { get; set; } = null;
+
+        public Eprn CreateCopyWithTruncatedStrings()
+        {
+            var ret = (Eprn)MemberwiseClone();
+            foreach (var p in typeof(Eprn).GetProperties())
+            {
+                if (p.GetValue(ret) is string s)
+                {
+                    p.SetValue(
+                        ret,
+                        s?.TruncateString(
+                            maxLength: p.GetCustomAttribute<MaxLengthAttribute>()?.Length
+                                ?? int.MaxValue
+                        )
+                    );
+                }
+            }
+            return ret;
+        }
     }
 }

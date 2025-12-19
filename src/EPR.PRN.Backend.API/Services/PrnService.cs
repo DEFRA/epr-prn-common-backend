@@ -3,6 +3,7 @@
 namespace EPR.PRN.Backend.API.Services;
 
 using System.Collections.Generic;
+using EPR.PRN.Backend.API.Common.Constants;
 using EPR.PRN.Backend.API.Common.Dto;
 using EPR.PRN.Backend.API.Common.Enums;
 using EPR.PRN.Backend.API.Dto;
@@ -208,7 +209,8 @@ public class PrnService(
     {
         try
         {
-            return await repository.SavePrnDetails(prn);
+            var truncated = prn.CreateCopyWithTruncatedStrings();
+            return await repository.SavePrnDetails(truncated);
         }
         catch (Exception ex)
         {
