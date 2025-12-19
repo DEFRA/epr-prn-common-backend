@@ -1,7 +1,9 @@
 using System.Net;
 using EPR.PRN.Backend.API.Common.Dto;
+using EPR.PRN.Backend.API.Common.Enums;
 using EPR.PRN.Backend.API.Dto;
 using EPR.PRN.Backend.Data.DataModels;
+using EprPrnIntegration.Common.Models.Rpd;
 using FluentAssertions;
 using Moq;
 using Newtonsoft.Json.Linq;
@@ -11,7 +13,23 @@ namespace EPR.PRN.Backend.API.UnitTests.Controllers;
 [TestClass]
 public class PrnControllerV2Tests
 {
-    private readonly CustomWebApplicationFactory<Startup> _application = new();
+    private static CustomWebApplicationFactory<Startup> _application = null!;
+
+    private static HttpClient _client = null!;
+
+    [ClassInitialize]
+    public static void Init(TestContext _)
+    {
+        _application = new();
+        _client = _application.CreateClient();
+    }
+
+    [ClassCleanup]
+    public static void Cleanup()
+    {
+        _client.Dispose();
+        _application.Dispose();
+    }
 
     private static SavePrnDetailsRequestV2 CreateValidModel()
     {
@@ -20,10 +38,10 @@ public class PrnControllerV2Tests
             PrnNumber = "PRN123",
             OrganisationId = Guid.NewGuid(),
             OrganisationName = "Org",
-            ReprocessorExporterAgency = "Reprocessor",
-            PrnStatusId = 1,
+            ReprocessorExporterAgency = RpdReprocessorExporterAgency.EnvironmentAgency,
+            PrnStatusId = (int)EprnStatus.AWAITINGACCEPTANCE,
             TonnageValue = 0,
-            MaterialName = "Plastic",
+            MaterialName = RpdMaterialName.Aluminium,
             IssuerNotes = "Notes",
             PrnSignatory = "Sig",
             PrnSignatoryPosition = "Role",
@@ -33,10 +51,10 @@ public class PrnControllerV2Tests
             AccreditationNumber = "ACC123",
             ReprocessingSite = "Site",
             AccreditationYear = "2024",
-            IsExport = false,
+            IsExport = true,
             SourceSystemId = "SYS",
-            ProcessToBeUsed = "R4",
-            ObligationYear = "2025"
+            ProcessToBeUsed = RpdProcesses.R3,
+            ObligationYear = "2025",
         };
     }
 
@@ -45,24 +63,33 @@ public class PrnControllerV2Tests
     {
         var model = CreateValidModel();
         Eprn dbObj = null;
-        _application.PrnService.Setup(s => s.SaveEprnDetails(It.IsAny<Eprn>())).Callback((Eprn e) => dbObj = e)
+        _application
+            .PrnService.Setup(s => s.SaveEprnDetails(It.IsAny<Eprn>()))
+            .Callback((Eprn e) => dbObj = e)
             .ReturnsAsync((Eprn e) => e);
-        var returned = await _application.CallPostEndpoint<SavePrnDetailsRequestV2, PrnDto>("api/v2/prn", model);
-        _application.PrnService.Verify(s => s.SaveEprnDetails(It.IsAny<Eprn>()));
-        model.Should().BeEquivalentTo(dbObj, o => o
-            .Excluding(e => e.Id)
-            .Excluding(e => e.CreatedOn)
-            .Excluding(e => e.LastUpdatedBy)
-            .Excluding(e => e.LastUpdatedDate)
-            .Excluding(e => e.PrnStatusHistories)
-            .Excluding(e => e.ExternalId)
-            .Excluding(e => e.ProducerAgency)
-            .Excluding(e => e.IssuerReference)
-            .Excluding(e => e.Signature)
-            .Excluding(e => e.IssueDate)
-            .Excluding(e => e.PackagingProducer)
-            .Excluding(e => e.CreatedBy)
+        var returned = await _client.CallPostEndpoint<SavePrnDetailsRequestV2, PrnDto>(
+            "api/v2/prn",
+            model
         );
+        _application.PrnService.Verify(s => s.SaveEprnDetails(It.IsAny<Eprn>()));
+        model
+            .Should()
+            .BeEquivalentTo(
+                dbObj,
+                o =>
+                    o.Excluding(e => e.Id)
+                        .Excluding(e => e.CreatedOn)
+                        .Excluding(e => e.LastUpdatedBy)
+                        .Excluding(e => e.LastUpdatedDate)
+                        .Excluding(e => e.PrnStatusHistories)
+                        .Excluding(e => e.ExternalId)
+                        .Excluding(e => e.ProducerAgency)
+                        .Excluding(e => e.IssuerReference)
+                        .Excluding(e => e.Signature)
+                        .Excluding(e => e.IssueDate)
+                        .Excluding(e => e.PackagingProducer)
+                        .Excluding(e => e.CreatedBy)
+            );
         dbObj.Id.Should().Be(0);
         dbObj.CreatedOn.Should().Be(default);
         dbObj.LastUpdatedBy.Should().Be(Guid.Empty);
@@ -75,10 +102,12 @@ public class PrnControllerV2Tests
         dbObj.IssueDate.Should().Be(default);
         dbObj.CreatedBy.Should().BeNull();
 
-        returned.created.Should().BeEquivalentTo(dbObj, o => o
-            .Excluding(p => p.PrnStatusHistories)
-            .Excluding(p => p.SourceSystemId)
-        );
+        returned
+            .created.Should()
+            .BeEquivalentTo(
+                dbObj,
+                o => o.Excluding(p => p.PrnStatusHistories).Excluding(p => p.SourceSystemId)
+            );
         returned.location.Should().Be("api/v1/prn/0");
     }
 
@@ -107,15 +136,58 @@ public class PrnControllerV2Tests
     [DataRow(nameof(SavePrnDetailsRequestV2.ProcessToBeUsed))]
     [DataRow(nameof(SavePrnDetailsRequestV2.StatusUpdatedOn))]
     [DataRow(nameof(SavePrnDetailsRequestV2.ObligationYear))]
-    public async Task ShouldValidateRequiredFields(string propertyName)
+    public async Task ShouldValidateRequiredFields_Missing(string propertyName)
     {
         var model = CreateValidModel();
+        model.IssuerNotes = Guid.NewGuid().ToString();
         var json = ToJsonWithoutField(model, propertyName);
-        var response = await _application.CallPostEndpointWithJson("api/v2/prn/", json, HttpStatusCode.BadRequest);
-        await response.ShouldHaveRequiredErrorMessage(propertyName);
-        _application.PrnService.Verify(s => s.SaveEprnDetails(It.IsAny<Eprn>()), Times.Never);
+        var response = await _client.CallPostEndpointWithJson(
+            "api/v2/prn/",
+            json,
+            HttpStatusCode.BadRequest
+        );
+        await response.ShouldHaveValidationErrorMessage(propertyName);
+        _application.PrnService.Verify(
+            s => s.SaveEprnDetails(It.Is<Eprn>(e => e.IssuerNotes == model.IssuerNotes)),
+            Times.Never
+        );
     }
-    
+
+    [TestMethod]
+    [DataRow(nameof(SavePrnDetailsRequestV2.SourceSystemId))]
+    [DataRow(nameof(SavePrnDetailsRequestV2.PrnStatusId))]
+    [DataRow(nameof(SavePrnDetailsRequestV2.PrnSignatory))]
+    [DataRow(nameof(SavePrnDetailsRequestV2.IssuedByOrg))]
+    [DataRow(nameof(SavePrnDetailsRequestV2.OrganisationId))]
+    [DataRow(nameof(SavePrnDetailsRequestV2.OrganisationName))]
+    [DataRow(nameof(SavePrnDetailsRequestV2.AccreditationNumber))]
+    [DataRow(nameof(SavePrnDetailsRequestV2.AccreditationYear))]
+    [DataRow(nameof(SavePrnDetailsRequestV2.ReprocessorExporterAgency))]
+    [DataRow(nameof(SavePrnDetailsRequestV2.DecemberWaste))]
+    [DataRow(nameof(SavePrnDetailsRequestV2.IsExport))]
+    [DataRow(nameof(SavePrnDetailsRequestV2.TonnageValue))]
+    [DataRow(nameof(SavePrnDetailsRequestV2.PrnNumber))]
+    [DataRow(nameof(SavePrnDetailsRequestV2.MaterialName))]
+    [DataRow(nameof(SavePrnDetailsRequestV2.ProcessToBeUsed))]
+    [DataRow(nameof(SavePrnDetailsRequestV2.StatusUpdatedOn))]
+    [DataRow(nameof(SavePrnDetailsRequestV2.ObligationYear))]
+    public async Task ShouldValidateRequiredFields_Null(string propertyName)
+    {
+        var model = CreateValidModel();
+        model.GetType().GetProperty(propertyName)!.SetValue(model, null);
+        model.IssuerNotes = Guid.NewGuid().ToString();
+        var response = await _client.CallPostEndpoint(
+            "api/v2/prn/",
+            model,
+            HttpStatusCode.BadRequest
+        );
+        await response.ShouldHaveValidationErrorMessage(propertyName);
+        _application.PrnService.Verify(
+            s => s.SaveEprnDetails(It.Is<Eprn>(e => e.IssuerNotes == model.IssuerNotes)),
+            Times.Never
+        );
+    }
+
     [TestMethod]
     [DataRow(nameof(SavePrnDetailsRequestV2.PrnSignatoryPosition))]
     [DataRow(nameof(SavePrnDetailsRequestV2.IssuerNotes))]
@@ -124,11 +196,12 @@ public class PrnControllerV2Tests
     {
         var model = CreateValidModel();
         var json = ToJsonWithoutField(model, propertyName);
-        _application.PrnService.Setup(s => s.SaveEprnDetails(It.IsAny<Eprn>()))
+        _application
+            .PrnService.Setup(s => s.SaveEprnDetails(It.IsAny<Eprn>()))
             .ReturnsAsync((Eprn e) => e);
-        await _application.CallPostEndpointWithJson("api/v2/prn/", json);
+        await _client.CallPostEndpointWithJson("api/v2/prn/", json);
     }
-    
+
     [TestMethod]
     [DataRow(nameof(SavePrnDetailsRequestV2.SourceSystemId))]
     [DataRow(nameof(SavePrnDetailsRequestV2.PrnSignatory))]
@@ -140,9 +213,22 @@ public class PrnControllerV2Tests
     public async Task ShouldValidateMinLengthFields(string propertyName)
     {
         var model = CreateValidModel();
+        model.IssuerNotes = Guid.NewGuid().ToString();
         model.GetType().GetProperty(propertyName)!.SetValue(model, "");
-        var response = await _application.CallPostEndpoint("api/v2/prn/", model, HttpStatusCode.BadRequest);
+        var response = await _client.CallPostEndpoint(
+            "api/v2/prn/",
+            model,
+            HttpStatusCode.BadRequest
+        );
         await response.ShouldHaveValidationErrorMessage(propertyName);
-        _application.PrnService.Verify(s => s.SaveEprnDetails(It.IsAny<Eprn>()), Times.Never);
+        _application.PrnService.Verify(
+            s => s.SaveEprnDetails(It.Is<Eprn>(e => e.IssuerNotes == model.IssuerNotes)),
+            Times.Never
+        );
+    }
+
+    public void Dispose()
+    {
+        _application.Dispose();
     }
 }
