@@ -25,34 +25,43 @@ public static class Mappers
             OrganisationId = prn.IssuedToEPRId!.Value,
             IssuerNotes = prn.IssuerNotes,
             IssuerReference = prn.IssuerRef!,
-            ObligationYear = prn.ObligationYear?.ToString() ?? PrnConstants.ObligationYearDefault.ToString(),
+            ObligationYear =
+                prn.ObligationYear?.ToString() ?? PrnConstants.ObligationYearDefault.ToString(),
             PackagingProducer = prn.ProducerAgency!,
             PrnSignatory = prn.PrnSignatory,
             PrnSignatoryPosition = prn.PrnSignatoryPosition,
             ProducerAgency = prn.ProducerAgency!,
             ProcessToBeUsed = prn.RecoveryProcessCode,
             ReprocessingSite = string.Empty,
-            StatusUpdatedOn = prn.EvidenceStatusCode == EprnStatus.CANCELLED ? prn.CancelledDate : prn.StatusDate,
+            StatusUpdatedOn =
+                prn.EvidenceStatusCode == EprnStatus.CANCELLED ? prn.CancelledDate : prn.StatusDate,
             ExternalId = Guid.Empty, // set value in repo when inserting and set to new guid
             ReprocessorExporterAgency = prn.ReprocessorAgency!,
-            Signature = null, 
+            Signature = null,
             IsExport = IsExport(prn.EvidenceNo),
             CreatedBy = prn.CreatedByUser!,
-            SourceSystemId = prn.SourceSystemId
+            SourceSystemId = null,
         };
     }
 
     public static bool IsExport(string? evidenceNo)
     {
-        if (string.IsNullOrEmpty(evidenceNo)) return false;
+        if (string.IsNullOrEmpty(evidenceNo))
+            return false;
 
         // this will fail with an unhandled exception if the string is < 2 in length but not empty
         // this whole functon should be Trim then StartsWith
         var val = evidenceNo[..2].Trim();
 
-        return string.Equals(val, PrnConstants.ExporterCodePrefixes.EaExport,
-                   StringComparison.InvariantCultureIgnoreCase)
-               || string.Equals(val, PrnConstants.ExporterCodePrefixes.SepaExport,
-                   StringComparison.InvariantCultureIgnoreCase);
+        return string.Equals(
+                val,
+                PrnConstants.ExporterCodePrefixes.EaExport,
+                StringComparison.InvariantCultureIgnoreCase
+            )
+            || string.Equals(
+                val,
+                PrnConstants.ExporterCodePrefixes.SepaExport,
+                StringComparison.InvariantCultureIgnoreCase
+            );
     }
 }

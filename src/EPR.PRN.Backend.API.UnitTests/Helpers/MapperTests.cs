@@ -32,25 +32,24 @@ public class MapperTests
             OrganisationId = prn.IssuedToEPRId!.Value,
             IssuerNotes = prn.IssuerNotes,
             IssuerReference = prn.IssuerRef!,
-            ObligationYear = prn.ObligationYear!.ToString() ,
+            ObligationYear = prn.ObligationYear!.ToString(),
             PackagingProducer = prn.ProducerAgency!,
             PrnSignatory = prn.PrnSignatory,
             PrnSignatoryPosition = prn.PrnSignatoryPosition,
             ProducerAgency = prn.ProducerAgency!,
             ProcessToBeUsed = prn.RecoveryProcessCode,
             ReprocessingSite = string.Empty,
-            StatusUpdatedOn =  prn.CancelledDate,
-            ExternalId = Guid.Empty, 
+            StatusUpdatedOn = prn.CancelledDate,
+            ExternalId = Guid.Empty,
             ReprocessorExporterAgency = prn.ReprocessorAgency!,
-            Signature = null,  
+            Signature = null,
             IsExport = true,
             CreatedBy = prn.CreatedByUser!,
-            SourceSystemId = prn.SourceSystemId,
-            
+            SourceSystemId = null,
         };
         prn.ConvertToEprn().Should().BeEquivalentTo(expected);
     }
-    
+
     [TestMethod]
     public void ShouldMapSavePrnDetailsequestToEprn_EvidenceStatusCode()
     {
@@ -66,11 +65,13 @@ public class MapperTests
         var prn = new Fixture().Create<SavePrnDetailsRequest>();
         prn.ObligationYear = null;
         var eprn = prn.ConvertToEprn();
-        eprn.ObligationYear.Should().Be(Common.Constants.PrnConstants.ObligationYearDefault.ToString());
+        eprn.ObligationYear.Should()
+            .Be(Common.Constants.PrnConstants.ObligationYearDefault.ToString());
     }
-    // what about all the other things that can be null but mercilessly ignored with ! operators.  
+
+    // what about all the other things that can be null but mercilessly ignored with ! operators.
     // all of those need to be handled and tested here.
-    
+
     [TestMethod]
     [DataRow(null)]
     [DataRow("")]
@@ -83,7 +84,7 @@ public class MapperTests
     [DataRow("EX123", true)]
     [DataRow("ex999", true)]
     [DataRow("SX123", true)]
-    [DataRow("sx77", true)] 
+    [DataRow("sx77", true)]
     [DataRow("XX123", false)]
     [DataRow(" 1234", false)]
     [DataRow("E 123", false)]
@@ -93,5 +94,4 @@ public class MapperTests
     {
         Assert.AreEqual(expected, Mappers.IsExport(input));
     }
-
 }
