@@ -19,8 +19,6 @@ public class SavePrnDetailsRequestV2Validator : AbstractValidator<SavePrnDetails
 
         RuleFor(x => x.PrnSignatory).MandatoryString();
 
-        RuleFor(x => x.PrnSignatoryPosition).OptionalString();
-
         RuleFor(x => x.StatusUpdatedOn).Mandatory();
 
         RuleFor(x => x.IssuedByOrg).MandatoryString();
@@ -38,13 +36,7 @@ public class SavePrnDetailsRequestV2Validator : AbstractValidator<SavePrnDetails
         RuleFor(x => x.ReprocessorExporterAgency)
             .MustBeOneOf(RpdReprocessorExporterAgency.GetAll());
 
-        RuleFor(x => x.ReprocessingSite)
-            .OptionalString(PrnConstants.MaxLengthReprocessingSite)
-            .When(x => x.IsExport == true);
-
-        RuleFor(x => x.ReprocessingSite)
-            .MandatoryString(PrnConstants.MaxLengthReprocessingSite)
-            .When(x => x.IsExport == false);
+        RuleFor(x => x.ReprocessingSite).MandatoryString().When(x => x.IsExport == false);
 
         RuleFor(x => x.DecemberWaste).Mandatory();
 
@@ -55,7 +47,7 @@ public class SavePrnDetailsRequestV2Validator : AbstractValidator<SavePrnDetails
             .Must(x => x >= 0)
             .WithMessage("{PropertyName} must be valid positive value.");
 
-        RuleFor(x => x.IssuerNotes).OptionalString(PrnConstants.MaxLengthIssuerNotes);
+        RuleFor(x => x.IssuerNotes).OptionalString();
 
         RuleFor(x => x.ProcessToBeUsed).MustBeOneOf(RpdProcesses.GetAll());
 

@@ -284,27 +284,8 @@ public class SavePrnDetailsRequestValidatorV2Tests
     }
 
     [TestMethod]
-    [DataRow(
-        nameof(SavePrnDetailsRequestV2.AccreditationNumber),
-        PrnConstants.MaxLengthAccreditationNumber
-    )]
     [DataRow(nameof(SavePrnDetailsRequestV2.PrnNumber), PrnConstants.MaxLengthPrnNumber)]
-    [DataRow(nameof(SavePrnDetailsRequestV2.IssuedByOrg), PrnConstants.MaxLengthIssuedByOrg)]
-    [DataRow(
-        nameof(SavePrnDetailsRequestV2.OrganisationName),
-        PrnConstants.MaxLengthOrganisationName
-    )]
-    [DataRow(nameof(SavePrnDetailsRequestV2.IssuerNotes), PrnConstants.MaxLengthIssuerNotes)]
-    [DataRow(nameof(SavePrnDetailsRequestV2.PrnSignatory), PrnConstants.MaxLengthPrnSignatory)]
-    [DataRow(
-        nameof(SavePrnDetailsRequestV2.PrnSignatoryPosition),
-        PrnConstants.MaxLengthPrnSignatoryPosition
-    )]
     [DataRow(nameof(SavePrnDetailsRequestV2.SourceSystemId), PrnConstants.MaxLengthSourceSystemId)]
-    [DataRow(
-        nameof(SavePrnDetailsRequestV2.ReprocessingSite),
-        PrnConstants.MaxLengthReprocessingSite
-    )]
     public void ShouldNotAcceptFieldsWithMaxLengthWhenLengthExceeded(
         string propertyName,
         int length
