@@ -7,7 +7,9 @@ namespace EPR.PRN.Backend.Data.Helpers
             if (string.IsNullOrEmpty(input) || input.Length <= maxLength)
                 return input;
 
-            return string.Concat(input.AsSpan(0, maxLength - 3), "...");
+            return maxLength < 3
+                ? string.Empty
+                : string.Concat(input.AsSpan(0, maxLength - 3), "...");
         }
     }
 }
