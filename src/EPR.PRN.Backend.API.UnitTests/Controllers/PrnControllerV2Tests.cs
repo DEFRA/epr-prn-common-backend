@@ -38,7 +38,7 @@ public class PrnControllerV2Tests
             PrnNumber = "PRN123",
             OrganisationId = Guid.NewGuid(),
             OrganisationName = "Org",
-            ReprocessorExporterAgency = "Reprocessor",
+            ReprocessorExporterAgency = RpdReprocessorExporterAgency.EnvironmentAgency,
             PrnStatusId = (int)EprnStatus.AWAITINGACCEPTANCE,
             TonnageValue = 0,
             MaterialName = RpdMaterialName.Aluminium,
@@ -51,9 +51,9 @@ public class PrnControllerV2Tests
             AccreditationNumber = "ACC123",
             ReprocessingSite = "Site",
             AccreditationYear = "2024",
-            IsExport = false,
+            IsExport = true,
             SourceSystemId = "SYS",
-            ProcessToBeUsed = "R4",
+            ProcessToBeUsed = RpdProcesses.R3,
             ObligationYear = "2025",
         };
     }
