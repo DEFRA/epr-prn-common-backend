@@ -328,8 +328,8 @@ public class PrnServiceTests
     public async Task SaveEprnDetails_SavesValidData()
     {
         _mockRepository.Setup(s => s.SavePrnDetails(It.IsAny<Eprn>())).ReturnsAsync((Eprn e) => e);
-        var dto = CreateValidModelV2();
-        var eprn = await _systemUnderTest.SaveEprnDetails(PrnProfile.CreateMapper().Map<Eprn>(dto));
+        var dto = DataGenerator.CreateValidSavePrnDetailsRequestV2();
+        var eprn = await _systemUnderTest.SaveEprnDetails(PrnMapper.CreateMapper().Map<Eprn>(dto));
         dto.Should().BeEquivalentTo(eprn, o => o.ExcludingMissingMembers());
     }
 
@@ -360,13 +360,13 @@ public class PrnServiceTests
     public async Task ShouldNotTruncateFieldsWithLimits(string propertyName, int length)
     {
         _mockRepository.Setup(s => s.SavePrnDetails(It.IsAny<Eprn>())).ReturnsAsync((Eprn e) => e);
-        var model = CreateValidModelV2();
+        var model = DataGenerator.CreateValidSavePrnDetailsRequestV2();
         model.SourceSystemId = Guid.NewGuid().ToString();
         var expected = new string('A', length);
         model.GetType().GetProperty(propertyName)!.SetValue(model, expected);
 
         var eprn = await _systemUnderTest.SaveEprnDetails(
-            PrnProfile.CreateMapper().Map<Eprn>(model)
+            PrnMapper.CreateMapper().Map<Eprn>(model)
         );
         eprn.GetType().GetProperty(propertyName).GetValue(eprn)!.ToString().Should().Be(expected);
     }
@@ -393,73 +393,15 @@ public class PrnServiceTests
     public async Task ShouldTruncateFieldsThatExceedLimits(string propertyName, int length)
     {
         _mockRepository.Setup(s => s.SavePrnDetails(It.IsAny<Eprn>())).ReturnsAsync((Eprn e) => e);
-        var model = CreateValidModelV2();
+        var model = DataGenerator.CreateValidSavePrnDetailsRequestV2();
         model.SourceSystemId = Guid.NewGuid().ToString();
         var expected = new string('A', length - 3) + "...";
         model.GetType().GetProperty(propertyName)!.SetValue(model, expected + 1);
 
         var eprn = await _systemUnderTest.SaveEprnDetails(
-            PrnProfile.CreateMapper().Map<Eprn>(model)
+            PrnMapper.CreateMapper().Map<Eprn>(model)
         );
         eprn.GetType().GetProperty(propertyName).GetValue(eprn)!.ToString().Should().Be(expected);
-    }
-
-    private static SavePrnDetailsRequest CreateValidModel()
-    {
-        return new SavePrnDetailsRequest()
-        {
-            AccreditationNo = "ABC",
-            AccreditationYear = 2018,
-            CancelledDate = DateTime.UtcNow.AddDays(-1),
-            DecemberWaste = true,
-            EvidenceMaterial = "Aluminium",
-            EvidenceNo = Guid.NewGuid().ToString(),
-            EvidenceStatusCode = EprnStatus.AWAITINGACCEPTANCE,
-            EvidenceTonnes = 5000,
-            IssueDate = DateTime.UtcNow.AddDays(-5),
-            IssuedByNPWDCode = "NPWD367742",
-            IssuedByOrgName = "ANB",
-            IssuedToEPRId = Guid.NewGuid(),
-            IssuedToNPWDCode = "NPWD557742",
-            IssuedToOrgName = "ZNZ",
-            IssuerNotes = "no notes",
-            IssuerRef = "ANB-1123",
-            MaterialOperationCode = "R-PLA",
-            ObligationYear = 2025,
-            PrnSignatory = "Pat Anderson",
-            PrnSignatoryPosition = "Director",
-            ProducerAgency = "TTL",
-            RecoveryProcessCode = "N11",
-            ReprocessorAgency = "BEX",
-            StatusDate = DateTime.UtcNow,
-        };
-    }
-
-    private static SavePrnDetailsRequestV2 CreateValidModelV2()
-    {
-        return new SavePrnDetailsRequestV2()
-        {
-            PrnNumber = "PRN123",
-            OrganisationId = Guid.NewGuid(),
-            OrganisationName = "Org",
-            ReprocessorExporterAgency = RpdReprocessorExporterAgency.EnvironmentAgency,
-            PrnStatusId = (int)EprnStatus.AWAITINGACCEPTANCE,
-            TonnageValue = 0,
-            MaterialName = RpdMaterialName.Aluminium,
-            IssuerNotes = "Notes",
-            PrnSignatory = "Sig",
-            PrnSignatoryPosition = "Role",
-            DecemberWaste = true,
-            StatusUpdatedOn = DateTime.UtcNow,
-            IssuedByOrg = "Issuer",
-            AccreditationNumber = "ACC123",
-            ReprocessingSite = "Site",
-            AccreditationYear = "2024",
-            IsExport = true,
-            SourceSystemId = "SYS",
-            ProcessToBeUsed = RpdProcesses.R3,
-            ObligationYear = "2025",
-        };
     }
 
     [TestMethod]
@@ -468,7 +410,7 @@ public class PrnServiceTests
         _mockRepository
             .Setup(s => s.SavePrnDetails(It.IsAny<Eprn>()))
             .Returns(Task.FromResult(_fixture.Create<Eprn>()));
-        var dto = CreateValidModel();
+        var dto = DataGenerator.CreateValidSavePrnDetailsRequest();
         await _systemUnderTest.SavePrnDetails(dto);
         _mockRepository.Verify(x => x.SavePrnDetails(It.IsAny<Eprn>()), Times.Once());
     }
@@ -478,7 +420,7 @@ public class PrnServiceTests
     {
         _mockRepository.Setup(s => s.SavePrnDetails(It.IsAny<Eprn>())).Throws<Exception>();
 
-        var dto = CreateValidModel();
+        var dto = DataGenerator.CreateValidSavePrnDetailsRequest();
 
         var call = () => _systemUnderTest.SavePrnDetails(dto);
         await call.Should().ThrowAsync<Exception>();
@@ -500,7 +442,7 @@ public class PrnServiceTests
             .Setup(s => s.SavePrnDetails(It.IsAny<Eprn>()))
             .Callback<Eprn>(x => createdEntity = x);
 
-        var dto = CreateValidModel();
+        var dto = DataGenerator.CreateValidSavePrnDetailsRequest();
 
         // OVerride Evidence no with input argument from Test data
         dto.EvidenceNo = evidenceNo;
@@ -522,7 +464,7 @@ public class PrnServiceTests
             .Setup(s => s.SavePrnDetails(It.IsAny<Eprn>()))
             .Callback<Eprn>(x => createdEntity = x);
 
-        var dto = CreateValidModel();
+        var dto = DataGenerator.CreateValidSavePrnDetailsRequest();
 
         // OVerride Evidence no with input argument from Test data
         dto.EvidenceNo = evidenceNo;

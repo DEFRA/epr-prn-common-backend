@@ -17,37 +17,10 @@ public class SavePrnDetailsRequestValidatorV2Tests
         return validator.Validate(model).Errors;
     }
 
-    private static SavePrnDetailsRequestV2 CreateValidModel()
-    {
-        return new SavePrnDetailsRequestV2
-        {
-            PrnNumber = "PRN123",
-            OrganisationId = Guid.NewGuid(),
-            OrganisationName = "Org",
-            ReprocessorExporterAgency = RpdReprocessorExporterAgency.EnvironmentAgency,
-            PrnStatusId = (int)EprnStatus.CANCELLED,
-            TonnageValue = 2,
-            MaterialName = RpdMaterialName.Aluminium,
-            IssuerNotes = "Notes",
-            PrnSignatory = "Sig",
-            PrnSignatoryPosition = "Role",
-            DecemberWaste = true,
-            StatusUpdatedOn = DateTime.UtcNow,
-            IssuedByOrg = "Issuer",
-            AccreditationNumber = "ACC123",
-            ReprocessingSite = "Site",
-            AccreditationYear = "2024",
-            IsExport = true,
-            SourceSystemId = "SYS",
-            ProcessToBeUsed = RpdProcesses.R3,
-            ObligationYear = "2025",
-        };
-    }
-
     [TestMethod]
     public void ShouldAcceptValidModel()
     {
-        var model = CreateValidModel();
+        var model = DataGenerator.CreateValidSavePrnDetailsRequestV2();
 
         var results = Validate(model);
 
@@ -63,7 +36,7 @@ public class SavePrnDetailsRequestValidatorV2Tests
     [DataRow((int)EprnStatus.REJECTED, false)]
     public void ShouldOnlyAcceptValidPrnStatusId(int? value, bool valid)
     {
-        var model = CreateValidModel();
+        var model = DataGenerator.CreateValidSavePrnDetailsRequestV2();
         model.PrnStatusId = value;
 
         var results = Validate(model);
@@ -86,7 +59,7 @@ public class SavePrnDetailsRequestValidatorV2Tests
     [DataRow(null)]
     public void ShouldNotAcceptAccreditationYearWhenInvalid(string value)
     {
-        var model = CreateValidModel();
+        var model = DataGenerator.CreateValidSavePrnDetailsRequestV2();
         model.AccreditationYear = value;
 
         var results = Validate(model);
@@ -104,7 +77,7 @@ public class SavePrnDetailsRequestValidatorV2Tests
     [DataRow("2024")]
     public void ShouldAcceptAccreditationYearWhenValid(string year)
     {
-        var model = CreateValidModel();
+        var model = DataGenerator.CreateValidSavePrnDetailsRequestV2();
         model.AccreditationYear = year;
 
         var results = Validate(model);
@@ -119,7 +92,7 @@ public class SavePrnDetailsRequestValidatorV2Tests
     [DataRow(null)]
     public void ShouldNotAcceptObligationYearWhenInvalid(string value)
     {
-        var model = CreateValidModel();
+        var model = DataGenerator.CreateValidSavePrnDetailsRequestV2();
         model.ObligationYear = value;
 
         var results = Validate(model);
@@ -137,7 +110,7 @@ public class SavePrnDetailsRequestValidatorV2Tests
     [DataRow("2024")]
     public void ShouldAcceptObligationYearWhenValid(string year)
     {
-        var model = CreateValidModel();
+        var model = DataGenerator.CreateValidSavePrnDetailsRequestV2();
         model.ObligationYear = year;
 
         var results = Validate(model);
@@ -148,7 +121,7 @@ public class SavePrnDetailsRequestValidatorV2Tests
     [TestMethod]
     public void ShouldNotAcceptRequiredGuidFieldsWhenEmpty()
     {
-        var model = CreateValidModel();
+        var model = DataGenerator.CreateValidSavePrnDetailsRequestV2();
         model.OrganisationId = Guid.Empty;
 
         var results = Validate(model);
@@ -173,7 +146,7 @@ public class SavePrnDetailsRequestValidatorV2Tests
     [DataRow(null, false)]
     public void ShouldOnlyAcceptValidMaterialNames(string materialName, bool valid)
     {
-        var model = CreateValidModel();
+        var model = DataGenerator.CreateValidSavePrnDetailsRequestV2();
         model.MaterialName = materialName;
 
         var results = Validate(model);
@@ -203,7 +176,7 @@ public class SavePrnDetailsRequestValidatorV2Tests
     [DataRow(null, false)]
     public void ShouldOnlyAcceptValidRpdReprocessorExporterAgency(string rea, bool valid)
     {
-        var model = CreateValidModel();
+        var model = DataGenerator.CreateValidSavePrnDetailsRequestV2();
         model.ReprocessorExporterAgency = rea;
 
         var results = Validate(model);
@@ -232,7 +205,7 @@ public class SavePrnDetailsRequestValidatorV2Tests
     [DataRow(null, false)]
     public void ShouldOnlyAcceptValidProcessesToBeUsed(string processToBeUsed, bool valid)
     {
-        var model = CreateValidModel();
+        var model = DataGenerator.CreateValidSavePrnDetailsRequestV2();
         model.ProcessToBeUsed = processToBeUsed;
 
         var results = Validate(model);
@@ -251,7 +224,7 @@ public class SavePrnDetailsRequestValidatorV2Tests
     [TestMethod]
     public void ShouldEnforceReprocessingSiteIfPRN()
     {
-        var model = CreateValidModel();
+        var model = DataGenerator.CreateValidSavePrnDetailsRequestV2();
         // this means PRN
         model.IsExport = false;
         var strings = new List<string> { "", "  ", null };
@@ -272,7 +245,7 @@ public class SavePrnDetailsRequestValidatorV2Tests
     [TestMethod]
     public void ShouldNotEnforceReprocessingSiteIfNotPRN()
     {
-        var model = CreateValidModel();
+        var model = DataGenerator.CreateValidSavePrnDetailsRequestV2();
         // this means not PRN
         model.IsExport = true;
         var strings = new List<string> { "", "  ", "Valid Site", null };
@@ -291,7 +264,7 @@ public class SavePrnDetailsRequestValidatorV2Tests
         int length
     )
     {
-        var model = CreateValidModel();
+        var model = DataGenerator.CreateValidSavePrnDetailsRequestV2();
         typeof(SavePrnDetailsRequestV2)
             .GetProperty(propertyName)!
             .SetValue(model, new string('x', length + 1));
@@ -302,7 +275,7 @@ public class SavePrnDetailsRequestValidatorV2Tests
         res.Should().NotBeNull();
         res!.ToString().Should().EndWith($" cannot be longer than {length} characters.");
 
-        model = CreateValidModel();
+        model = DataGenerator.CreateValidSavePrnDetailsRequestV2();
         typeof(SavePrnDetailsRequestV2)
             .GetProperty(propertyName)!
             .SetValue(model, new string('2', length));
@@ -326,7 +299,7 @@ public class SavePrnDetailsRequestValidatorV2Tests
     [DataRow(nameof(SavePrnDetailsRequestV2.IsExport))]
     public void ShouldNotAcceptMandatoryFieldsWhenNull(string propertyName)
     {
-        var model = CreateValidModel();
+        var model = DataGenerator.CreateValidSavePrnDetailsRequestV2();
         typeof(SavePrnDetailsRequestV2).GetProperty(propertyName)!.SetValue(model, null);
 
         var results = Validate(model);
@@ -342,7 +315,7 @@ public class SavePrnDetailsRequestValidatorV2Tests
     [DataRow(nameof(SavePrnDetailsRequestV2.IssuerNotes))]
     public void ShouldAcceptOptionalFieldsWhenNull(string propertyName)
     {
-        var model = CreateValidModel();
+        var model = DataGenerator.CreateValidSavePrnDetailsRequestV2();
         typeof(SavePrnDetailsRequestV2).GetProperty(propertyName)!.SetValue(model, null);
 
         Validate(model).Should().BeEmpty();
@@ -358,7 +331,7 @@ public class SavePrnDetailsRequestValidatorV2Tests
     public void ShouldNotAcceptMandatoryStringFieldsWhenEmpty(string propertyName)
     {
         var strings = new List<string> { "", "  " };
-        var model = CreateValidModel();
+        var model = DataGenerator.CreateValidSavePrnDetailsRequestV2();
         foreach (var s in strings)
         {
             typeof(SavePrnDetailsRequestV2).GetProperty(propertyName)!.SetValue(model, s);
@@ -384,7 +357,7 @@ public class SavePrnDetailsRequestValidatorV2Tests
     public void ShouldAcceptOptionalFieldsWhenEmpty(string propertyName)
     {
         var strings = new List<string> { "", null, "  " };
-        var model = CreateValidModel();
+        var model = DataGenerator.CreateValidSavePrnDetailsRequestV2();
         foreach (var s in strings)
         {
             typeof(SavePrnDetailsRequestV2).GetProperty(propertyName)!.SetValue(model, s);
@@ -401,7 +374,7 @@ public class SavePrnDetailsRequestValidatorV2Tests
     [DataRow(1)]
     public void ShouldOnlyAcceptValidTonnages(int tonnageValue)
     {
-        var model = CreateValidModel();
+        var model = DataGenerator.CreateValidSavePrnDetailsRequestV2();
         model.TonnageValue = tonnageValue;
 
         var results = Validate(model);

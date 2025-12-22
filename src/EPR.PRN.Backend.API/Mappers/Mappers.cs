@@ -6,7 +6,7 @@ using EPR.PRN.Backend.Data.DataModels;
 namespace EPR.PRN.Backend.API.Helpers;
 
 // todo this should use AutoMapper
-public static class Mappers
+public static class NpwdPrnMapper
 {
     public static Eprn ConvertToEprn(this SavePrnDetailsRequest prn)
     {

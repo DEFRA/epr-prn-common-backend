@@ -5,16 +5,17 @@ using EPR.PRN.Backend.Data.DataModels;
 
 namespace EPR.PRN.Backend.API.Profiles;
 
-public class PrnProfile : Profile
+public class PrnMapper : Profile
 {
-    public PrnProfile()
+    public PrnMapper()
     {
-        CreateMap<SavePrnDetailsRequestV2, Eprn>();
+        CreateMap<SavePrnDetailsRequestV2, Eprn>()
+            .ForMember(e => e.IssuerReference, o => o.MapFrom(""));
         CreateMap<Eprn, PrnDto>();
     }
 
     public static IMapper CreateMapper()
     {
-        return new MapperConfiguration(cfg => cfg.AddProfile<PrnProfile>()).CreateMapper();
+        return new MapperConfiguration(cfg => cfg.AddProfile<PrnMapper>()).CreateMapper();
     }
 }
