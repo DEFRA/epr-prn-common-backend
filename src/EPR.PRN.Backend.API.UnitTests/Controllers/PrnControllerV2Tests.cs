@@ -41,7 +41,7 @@ public class PrnControllerV2Tests
             .PrnService.Setup(s => s.SaveEprnDetails(It.IsAny<Eprn>()))
             .Callback((Eprn e) => dbObj = e)
             .ReturnsAsync((Eprn e) => e);
-        var returned = await _client.CallPostEndpoint<SavePrnDetailsRequestV2, PrnDto>(
+        var (created, location) = await _client.CallPostEndpoint<SavePrnDetailsRequestV2, PrnDto>(
             "api/v2/prn",
             model
         );
@@ -63,6 +63,7 @@ public class PrnControllerV2Tests
                         .Excluding(e => e.IssueDate)
                         .Excluding(e => e.PackagingProducer)
                         .Excluding(e => e.CreatedBy)
+                        .Excluding(e => e.IssuerReference)
             );
         dbObj.Id.Should().Be(0);
         dbObj.CreatedOn.Should().Be(default);
@@ -71,18 +72,21 @@ public class PrnControllerV2Tests
         dbObj.PrnStatusHistories.Should().BeNull();
         dbObj.ExternalId.Should().Be(Guid.Empty);
         dbObj.ProducerAgency.Should().BeNull();
-        dbObj.IssuerReference.Should().BeNull();
         dbObj.Signature.Should().BeNull();
         dbObj.IssueDate.Should().Be(default);
         dbObj.CreatedBy.Should().BeNull();
+        dbObj.IssuerReference.Should().Be("");
 
-        returned
-            .created.Should()
+        created
+            .Should()
             .BeEquivalentTo(
                 dbObj,
-                o => o.Excluding(p => p.PrnStatusHistories).Excluding(p => p.SourceSystemId)
+                o =>
+                    o.Excluding(p => p.PrnStatusHistories)
+                        .Excluding(p => p.SourceSystemId)
+                        .Excluding(p => p.IssuerReference)
             );
-        returned.location.Should().Be("api/v1/prn/0");
+        location.Should().Be("api/v1/prn/0");
     }
 
     private static string ToJsonWithoutField(object obj, string propertyName)

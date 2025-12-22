@@ -3,6 +3,8 @@ using EPR.PRN.Backend.API.Profiles;
 using EPR.PRN.Backend.Data.DataModels;
 using FluentAssertions;
 
+namespace EPR.PRN.Backend.API.UnitTests.Mappers;
+
 [TestClass]
 public class MapperTests
 {
