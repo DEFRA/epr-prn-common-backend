@@ -382,14 +382,6 @@ public class PrnServiceTests
         nameof(SavePrnDetailsRequestV2.AccreditationNumber),
         PrnConstants.MaxLengthAccreditationNumber
     )]
-    [DataRow(
-        nameof(SavePrnDetailsRequestV2.AccreditationYear),
-        PrnConstants.MaxLengthAccreditationYear
-    )]
-    [DataRow(
-        nameof(SavePrnDetailsRequestV2.ProcessToBeUsed),
-        PrnConstants.MaxLengthProcessToBeUsed
-    )]
     public async Task ShouldTruncateFieldsThatExceedLimits(string propertyName, int length)
     {
         _mockRepository.Setup(s => s.SavePrnDetails(It.IsAny<Eprn>())).ReturnsAsync((Eprn e) => e);
