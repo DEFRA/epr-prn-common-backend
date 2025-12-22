@@ -16,7 +16,8 @@ namespace EPR.PRN.Backend.API.Controllers;
 public class PrnControllerV2(
     IPrnService prnService,
     ILogger<PrnControllerV2> logger,
-    IValidator<SavePrnDetailsRequestV2> savePrnDetailsRequestV2Validator) : ControllerBase
+    IValidator<SavePrnDetailsRequestV2> savePrnDetailsRequestV2Validator
+) : ControllerBase
 {
     private readonly IMapper _mapper = PrnProfile.CreateMapper();
 

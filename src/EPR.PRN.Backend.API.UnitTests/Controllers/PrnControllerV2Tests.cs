@@ -1,4 +1,5 @@
 using System.Net;
+using EPR.PRN.Backend.API.Common.Constants;
 using EPR.PRN.Backend.API.Common.Dto;
 using EPR.PRN.Backend.API.Common.Enums;
 using EPR.PRN.Backend.API.Dto;
@@ -225,10 +226,5 @@ public class PrnControllerV2Tests
             s => s.SaveEprnDetails(It.Is<Eprn>(e => e.IssuerNotes == model.IssuerNotes)),
             Times.Never
         );
-    }
-
-    public void Dispose()
-    {
-        _application.Dispose();
     }
 }

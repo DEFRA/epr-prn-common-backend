@@ -1,9 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using EPR.PRN.Backend.API.Common.Constants;
+using EPR.PRN.Backend.Data.Helpers;
 
 namespace EPR.PRN.Backend.Data.DataModels
 {
-	public class Eprn
+    public class Eprn
     {
         [Key]
         public int Id { get; set; }
@@ -91,5 +92,22 @@ namespace EPR.PRN.Backend.Data.DataModels
 
         [MaxLength(PrnConstants.MaxLengthSourceSystemId)]
         public string? SourceSystemId { get; set; } = null;
+
+        public (Eprn truncatedEprn, List<string> truncatedFields) CreateCopyWithTruncatedStrings()
+        {
+            var ret = (Eprn)MemberwiseClone();
+            var excludeProperties = new List<string>
+            {
+                nameof(SourceSystemId),
+                nameof(PrnNumber),
+                nameof(AccreditationYear),
+                nameof(MaterialName),
+                nameof(ReprocessorExporterAgency),
+                nameof(ProcessToBeUsed),
+                nameof(ObligationYear),
+            };
+            var truncated = ret.TruncateStringsBasedOnMaxLengthAttributes(excludeProperties);
+            return (ret, truncated);
+        }
     }
 }

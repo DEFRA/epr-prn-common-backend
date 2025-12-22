@@ -1,18 +1,21 @@
-﻿using AutoFixture;
+﻿using System.Diagnostics.CodeAnalysis;
+using AutoFixture;
+using EPR.PRN.Backend.API.Common.Constants;
 using EPR.PRN.Backend.API.Common.Dto;
 using EPR.PRN.Backend.API.Common.Enums;
 using EPR.PRN.Backend.API.Dto;
 using EPR.PRN.Backend.API.Helpers;
 using EPR.PRN.Backend.API.Models;
+using EPR.PRN.Backend.API.Profiles;
 using EPR.PRN.Backend.API.Repositories.Interfaces;
 using EPR.PRN.Backend.API.Services;
 using EPR.PRN.Backend.Data.DataModels;
+using EprPrnIntegration.Common.Models.Rpd;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Moq;
-using System.Diagnostics.CodeAnalysis;
 
 namespace EPR.PRN.Backend.API.UnitTests.Services;
 
@@ -35,8 +38,12 @@ public class PrnServiceTests
         _configurationMock = new Mock<IConfiguration>();
         _configurationMock.Setup(c => c["LogPrefix"]).Returns("[EPR.PRN.Backend]");
 
-        _systemUnderTest = new PrnService(_mockRepository.Object, _mockLogger.Object, _configurationMock.Object);
-   }
+        _systemUnderTest = new PrnService(
+            _mockRepository.Object,
+            _mockLogger.Object,
+            _configurationMock.Object
+        );
+    }
 
     [TestMethod]
     public async Task GetPrnForOrganisationById_WithValidId_ReturnsExpectedDto()
@@ -45,7 +52,9 @@ public class PrnServiceTests
         var orgId = Guid.NewGuid();
         var expectedPrn = _fixture.Create<Eprn>();
 
-        _mockRepository.Setup(r => r.GetPrnForOrganisationById(orgId, prnId)).ReturnsAsync(expectedPrn);
+        _mockRepository
+            .Setup(r => r.GetPrnForOrganisationById(orgId, prnId))
+            .ReturnsAsync(expectedPrn);
 
         var result = await _systemUnderTest.GetPrnForOrganisationById(orgId, prnId);
 
@@ -60,7 +69,9 @@ public class PrnServiceTests
         var prnId = Guid.NewGuid();
         var orgId = Guid.NewGuid();
 
-        _mockRepository.Setup(r => r.GetPrnForOrganisationById(orgId, prnId)).ReturnsAsync((Eprn)null);
+        _mockRepository
+            .Setup(r => r.GetPrnForOrganisationById(orgId, prnId))
+            .ReturnsAsync((Eprn)null);
 
         var result = await _systemUnderTest.GetPrnForOrganisationById(orgId, prnId);
 
@@ -76,9 +87,12 @@ public class PrnServiceTests
 
         var result = await _systemUnderTest.GetAllPrnByOrganisationId(orgId);
 
-        result.Should().BeEquivalentTo(expectedPrns, o => o
-            .Excluding(p => p.PrnStatusHistories)
-            .Excluding(p => p.SourceSystemId));
+        result
+            .Should()
+            .BeEquivalentTo(
+                expectedPrns,
+                o => o.Excluding(p => p.PrnStatusHistories).Excluding(p => p.SourceSystemId)
+            );
     }
 
     [TestMethod]
@@ -164,8 +178,10 @@ public class PrnServiceTests
         availablePrns[0].ExternalId = prnUpdates[0].PrnId = prnUpdates[1].PrnId;
         availablePrns[2].ExternalId = prnUpdates[2].PrnId;
 
-        availablePrns[0].PrnStatusId = availablePrns[1].PrnStatusId =
-        availablePrns[2].PrnStatusId = (int)EprnStatus.AWAITINGACCEPTANCE;
+        availablePrns[0].PrnStatusId =
+            availablePrns[1].PrnStatusId =
+            availablePrns[2].PrnStatusId =
+                (int)EprnStatus.AWAITINGACCEPTANCE;
 
         prnUpdates[0].Status = EprnStatus.ACCEPTED;
         prnUpdates[1].Status = EprnStatus.AWAITINGACCEPTANCE;
@@ -191,11 +207,12 @@ public class PrnServiceTests
         availablePrns[1].ExternalId = prnUpdates[1].PrnId;
         availablePrns[2].ExternalId = prnUpdates[2].PrnId;
 
-        availablePrns[0].PrnStatusId = availablePrns[1].PrnStatusId =
-            availablePrns[2].PrnStatusId = (int)EprnStatus.AWAITINGACCEPTANCE;
+        availablePrns[0].PrnStatusId =
+            availablePrns[1].PrnStatusId =
+            availablePrns[2].PrnStatusId =
+                (int)EprnStatus.AWAITINGACCEPTANCE;
 
-        prnUpdates[0].Status = prnUpdates[1].Status =
-            prnUpdates[2].Status = EprnStatus.ACCEPTED;
+        prnUpdates[0].Status = prnUpdates[1].Status = prnUpdates[2].Status = EprnStatus.ACCEPTED;
 
         _mockRepository.Setup(r => r.GetAllPrnByOrganisationId(orgId)).ReturnsAsync(availablePrns);
 
@@ -203,10 +220,24 @@ public class PrnServiceTests
 
         availablePrns.Should().AllSatisfy(x => x.PrnStatusId.Should().Be((int)EprnStatus.ACCEPTED));
         availablePrns.Should().AllSatisfy(x => x.LastUpdatedBy.Should().Be(userId));
-        availablePrns.Should().AllSatisfy(x => x.StatusUpdatedOn.Should().BeCloseTo(DateTime.UtcNow, new TimeSpan(0, 10, 0)));
-        availablePrns.Should().AllSatisfy(x => x.StatusUpdatedOn.Should().BeCloseTo(DateTime.UtcNow, new TimeSpan(0, 10, 0)));
-        _mockRepository.Verify(x => x.SaveTransaction(It.IsAny<IDbContextTransaction>()), Times.Once());
-        _mockRepository.Verify(x => x.AddPrnStatusHistory(It.IsAny<PrnStatusHistory>()), Times.Exactly(3));
+        availablePrns
+            .Should()
+            .AllSatisfy(x =>
+                x.StatusUpdatedOn.Should().BeCloseTo(DateTime.UtcNow, new TimeSpan(0, 10, 0))
+            );
+        availablePrns
+            .Should()
+            .AllSatisfy(x =>
+                x.StatusUpdatedOn.Should().BeCloseTo(DateTime.UtcNow, new TimeSpan(0, 10, 0))
+            );
+        _mockRepository.Verify(
+            x => x.SaveTransaction(It.IsAny<IDbContextTransaction>()),
+            Times.Once()
+        );
+        _mockRepository.Verify(
+            x => x.AddPrnStatusHistory(It.IsAny<PrnStatusHistory>()),
+            Times.Exactly(3)
+        );
     }
 
     [TestMethod]
@@ -215,7 +246,9 @@ public class PrnServiceTests
         DateTime fromDate = DateTime.UtcNow;
         DateTime toDate = DateTime.UtcNow;
         List<PrnStatusSync> prnStatusSyncs = new List<PrnStatusSync>();
-        _mockRepository.Setup(r => r.GetSyncStatuses(fromDate, toDate)).ReturnsAsync(prnStatusSyncs);
+        _mockRepository
+            .Setup(r => r.GetSyncStatuses(fromDate, toDate))
+            .ReturnsAsync(prnStatusSyncs);
 
         var result = await _systemUnderTest.GetSyncStatuses(fromDate, toDate);
 
@@ -229,7 +262,9 @@ public class PrnServiceTests
         var request = _fixture.Create<PaginatedRequestDto>();
         var repoResponse = _fixture.Create<PaginatedResponseDto<PrnDto>>();
 
-        _mockRepository.Setup(s => s.GetSearchPrnsForOrganisation(orgId, request)).ReturnsAsync(repoResponse);
+        _mockRepository
+            .Setup(s => s.GetSearchPrnsForOrganisation(orgId, request))
+            .ReturnsAsync(repoResponse);
 
         var result = await _systemUnderTest.GetSearchPrnsForOrganisation(orgId, request);
         result.Should().Be(repoResponse);
@@ -243,8 +278,18 @@ public class PrnServiceTests
         var toDate = DateTime.UtcNow;
         var mockPrns = new List<PrnUpdateStatus>
         {
-            new() { EvidenceNo = "123", EvidenceStatusCode = "Modified", AccreditationYear= "2014" },
-            new() { EvidenceNo = "456", EvidenceStatusCode = "Unchanged", AccreditationYear= "2014" }
+            new()
+            {
+                EvidenceNo = "123",
+                EvidenceStatusCode = "Modified",
+                AccreditationYear = "2014",
+            },
+            new()
+            {
+                EvidenceNo = "456",
+                EvidenceStatusCode = "Unchanged",
+                AccreditationYear = "2014",
+            },
         };
 
         _mockRepository
@@ -280,11 +325,80 @@ public class PrnServiceTests
     }
 
     [TestMethod]
-    public async Task SavePrnDetails_ReturnsWithoutError_OnSuccessfullySave()
+    public async Task SaveEprnDetails_SavesValidData()
     {
-        _mockRepository.Setup(s => s.SavePrnDetails(It.IsAny<Eprn>())).Returns(Task.FromResult(_fixture.Create<Eprn>()));
+        _mockRepository.Setup(s => s.SavePrnDetails(It.IsAny<Eprn>())).ReturnsAsync((Eprn e) => e);
+        var dto = CreateValidModelV2();
+        var eprn = await _systemUnderTest.SaveEprnDetails(PrnProfile.CreateMapper().Map<Eprn>(dto));
+        dto.Should().BeEquivalentTo(eprn, o => o.ExcludingMissingMembers());
+    }
 
-        var dto = new SavePrnDetailsRequest()
+    [TestMethod]
+    [DataRow(nameof(SavePrnDetailsRequestV2.PrnSignatory), PrnConstants.MaxLengthPrnSignatory)]
+    [DataRow(
+        nameof(SavePrnDetailsRequestV2.PrnSignatoryPosition),
+        PrnConstants.MaxLengthPrnSignatoryPosition
+    )]
+    [DataRow(nameof(SavePrnDetailsRequestV2.IssuedByOrg), PrnConstants.MaxLengthIssuedByOrg)]
+    [DataRow(
+        nameof(SavePrnDetailsRequestV2.OrganisationName),
+        PrnConstants.MaxLengthOrganisationName
+    )]
+    [DataRow(
+        nameof(SavePrnDetailsRequestV2.AccreditationNumber),
+        PrnConstants.MaxLengthAccreditationNumber
+    )]
+    [DataRow(
+        nameof(SavePrnDetailsRequestV2.ReprocessorExporterAgency),
+        PrnConstants.MaxLengthReprocessorExporterAgency
+    )]
+    [DataRow(
+        nameof(SavePrnDetailsRequestV2.ReprocessingSite),
+        PrnConstants.MaxLengthReprocessingSite
+    )]
+    [DataRow(nameof(SavePrnDetailsRequestV2.IssuerNotes), PrnConstants.MaxLengthIssuerNotes)]
+    public async Task ShouldNotTruncateFieldsWithLimits(string propertyName, int length)
+    {
+        _mockRepository.Setup(s => s.SavePrnDetails(It.IsAny<Eprn>())).ReturnsAsync((Eprn e) => e);
+        var model = CreateValidModelV2();
+        model.SourceSystemId = Guid.NewGuid().ToString();
+        var expected = new string('A', length);
+        model.GetType().GetProperty(propertyName)!.SetValue(model, expected);
+
+        var eprn = await _systemUnderTest.SaveEprnDetails(
+            PrnProfile.CreateMapper().Map<Eprn>(model)
+        );
+        eprn.GetType().GetProperty(propertyName).GetValue(eprn)!.ToString().Should().Be(expected);
+    }
+
+    [TestMethod]
+    [DataRow(nameof(SavePrnDetailsRequestV2.PrnSignatory), PrnConstants.MaxLengthPrnSignatory)]
+    [DataRow(nameof(SavePrnDetailsRequestV2.IssuedByOrg), PrnConstants.MaxLengthIssuedByOrg)]
+    [DataRow(
+        nameof(SavePrnDetailsRequestV2.OrganisationName),
+        PrnConstants.MaxLengthOrganisationName
+    )]
+    [DataRow(
+        nameof(SavePrnDetailsRequestV2.AccreditationNumber),
+        PrnConstants.MaxLengthAccreditationNumber
+    )]
+    public async Task ShouldTruncateFieldsThatExceedLimits(string propertyName, int length)
+    {
+        _mockRepository.Setup(s => s.SavePrnDetails(It.IsAny<Eprn>())).ReturnsAsync((Eprn e) => e);
+        var model = CreateValidModelV2();
+        model.SourceSystemId = Guid.NewGuid().ToString();
+        var expected = new string('A', length - 3) + "...";
+        model.GetType().GetProperty(propertyName)!.SetValue(model, expected + 1);
+
+        var eprn = await _systemUnderTest.SaveEprnDetails(
+            PrnProfile.CreateMapper().Map<Eprn>(model)
+        );
+        eprn.GetType().GetProperty(propertyName).GetValue(eprn)!.ToString().Should().Be(expected);
+    }
+
+    private static SavePrnDetailsRequest CreateValidModel()
+    {
+        return new SavePrnDetailsRequest()
         {
             AccreditationNo = "ABC",
             AccreditationYear = 2018,
@@ -311,7 +425,42 @@ public class PrnServiceTests
             ReprocessorAgency = "BEX",
             StatusDate = DateTime.UtcNow,
         };
+    }
 
+    private static SavePrnDetailsRequestV2 CreateValidModelV2()
+    {
+        return new SavePrnDetailsRequestV2()
+        {
+            PrnNumber = "PRN123",
+            OrganisationId = Guid.NewGuid(),
+            OrganisationName = "Org",
+            ReprocessorExporterAgency = RpdReprocessorExporterAgency.EnvironmentAgency,
+            PrnStatusId = (int)EprnStatus.AWAITINGACCEPTANCE,
+            TonnageValue = 0,
+            MaterialName = RpdMaterialName.Aluminium,
+            IssuerNotes = "Notes",
+            PrnSignatory = "Sig",
+            PrnSignatoryPosition = "Role",
+            DecemberWaste = true,
+            StatusUpdatedOn = DateTime.UtcNow,
+            IssuedByOrg = "Issuer",
+            AccreditationNumber = "ACC123",
+            ReprocessingSite = "Site",
+            AccreditationYear = "2024",
+            IsExport = true,
+            SourceSystemId = "SYS",
+            ProcessToBeUsed = RpdProcesses.R3,
+            ObligationYear = "2025",
+        };
+    }
+
+    [TestMethod]
+    public async Task SavePrnDetails_ReturnsWithoutError_OnSuccessfullySave()
+    {
+        _mockRepository
+            .Setup(s => s.SavePrnDetails(It.IsAny<Eprn>()))
+            .Returns(Task.FromResult(_fixture.Create<Eprn>()));
+        var dto = CreateValidModel();
         await _systemUnderTest.SavePrnDetails(dto);
         _mockRepository.Verify(x => x.SavePrnDetails(It.IsAny<Eprn>()), Times.Once());
     }
@@ -321,33 +470,7 @@ public class PrnServiceTests
     {
         _mockRepository.Setup(s => s.SavePrnDetails(It.IsAny<Eprn>())).Throws<Exception>();
 
-        var dto = new SavePrnDetailsRequest()
-        {
-            AccreditationNo = "ABC",
-            AccreditationYear = 2018,
-            CancelledDate = DateTime.UtcNow.AddDays(-1),
-            DecemberWaste = true,
-            EvidenceMaterial = "Aluminium",
-            EvidenceNo = Guid.NewGuid().ToString(),
-            EvidenceStatusCode = EprnStatus.AWAITINGACCEPTANCE,
-            EvidenceTonnes = 5000,
-            IssueDate = DateTime.UtcNow.AddDays(-5),
-            IssuedByNPWDCode = "NPWD367742",
-            IssuedByOrgName = "ANB",
-            IssuedToEPRId = Guid.NewGuid(),
-            IssuedToNPWDCode = "NPWD557742",
-            IssuedToOrgName = "ZNZ",
-            IssuerNotes = "no notes",
-            IssuerRef = "ANB-1123",
-            MaterialOperationCode = "R-PLA",
-            ObligationYear = 2025,
-            PrnSignatory = "Pat Anderson",
-            PrnSignatoryPosition = "Director",
-            ProducerAgency = "TTL",
-            RecoveryProcessCode = "N11",
-            ReprocessorAgency = "BEX",
-            StatusDate = DateTime.UtcNow,
-        };
+        var dto = CreateValidModel();
 
         var call = () => _systemUnderTest.SavePrnDetails(dto);
         await call.Should().ThrowAsync<Exception>();
@@ -358,40 +481,18 @@ public class PrnServiceTests
     [DataRow("EA26899222", false)]
     [DataRow("EX26899222", true)]
     [DataRow("SX26899222", true)]
-    public async Task SavePrnDetails_SetsIsExportCorrectly_BeforeSaving(string evidenceNo, bool expectedIsExportValue)
+    public async Task SavePrnDetails_SetsIsExportCorrectly_BeforeSaving(
+        string evidenceNo,
+        bool expectedIsExportValue
+    )
     {
         Eprn createdEntity = null;
 
-        _mockRepository.Setup(s => s.SavePrnDetails(It.IsAny<Eprn>())).Callback<Eprn>(x => createdEntity = x);
+        _mockRepository
+            .Setup(s => s.SavePrnDetails(It.IsAny<Eprn>()))
+            .Callback<Eprn>(x => createdEntity = x);
 
-        var dto = new SavePrnDetailsRequest()
-        {
-            AccreditationNo = "ABC",
-            AccreditationYear = 2018,
-            CancelledDate = DateTime.UtcNow.AddDays(-1),
-            DecemberWaste = true,
-            EvidenceMaterial = "Aluminium",
-            EvidenceNo = Guid.NewGuid().ToString(),
-            EvidenceStatusCode = EprnStatus.AWAITINGACCEPTANCE,
-            EvidenceTonnes = 5000,
-            IssueDate = DateTime.UtcNow.AddDays(-5),
-            IssuedByNPWDCode = "NPWD367742",
-            IssuedByOrgName = "ANB",
-            IssuedToEPRId = Guid.NewGuid(),
-            IssuedToNPWDCode = "NPWD557742",
-            IssuedToOrgName = "ZNZ",
-            IssuerNotes = "no notes",
-            IssuerRef = "ANB-1123",
-            MaterialOperationCode = "R-PLA",
-            ObligationYear = 2025,
-            PrnSignatory = "Pat Anderson",
-            PrnSignatoryPosition = "Director",
-            ProducerAgency = "TTL",
-            RecoveryProcessCode = "N11",
-            ReprocessorAgency = "BEX",
-            StatusDate = DateTime.UtcNow,
-            CreatedByUser = "UserTest",
-        };
+        var dto = CreateValidModel();
 
         // OVerride Evidence no with input argument from Test data
         dto.EvidenceNo = evidenceNo;
@@ -409,36 +510,11 @@ public class PrnServiceTests
         string evidenceNo = string.Empty;
         bool expectedIsExportValue = false;
 
-        _mockRepository.Setup(s => s.SavePrnDetails(It.IsAny<Eprn>())).Callback<Eprn>(x => createdEntity = x);
+        _mockRepository
+            .Setup(s => s.SavePrnDetails(It.IsAny<Eprn>()))
+            .Callback<Eprn>(x => createdEntity = x);
 
-        var dto = new SavePrnDetailsRequest()
-        {
-            AccreditationNo = "ABC",
-            AccreditationYear = 2018,
-            CancelledDate = DateTime.UtcNow.AddDays(-1),
-            DecemberWaste = true,
-            EvidenceMaterial = "Aluminium",
-            EvidenceNo = string.Empty,
-            EvidenceStatusCode = EprnStatus.AWAITINGACCEPTANCE,
-            EvidenceTonnes = 5000,
-            IssueDate = DateTime.UtcNow.AddDays(-5),
-            IssuedByNPWDCode = "NPWD367742",
-            IssuedByOrgName = "ANB",
-            IssuedToEPRId = Guid.NewGuid(),
-            IssuedToNPWDCode = "NPWD557742",
-            IssuedToOrgName = "ZNZ",
-            IssuerNotes = "no notes",
-            IssuerRef = "ANB-1123",
-            MaterialOperationCode = "R-PLA",
-            ObligationYear = 2025,
-            PrnSignatory = "Pat Anderson",
-            PrnSignatoryPosition = "Director",
-            ProducerAgency = "TTL",
-            RecoveryProcessCode = "N11",
-            ReprocessorAgency = "BEX",
-            StatusDate = DateTime.UtcNow,
-            CreatedByUser = "UserTest",
-        };
+        var dto = CreateValidModel();
 
         // OVerride Evidence no with input argument from Test data
         dto.EvidenceNo = evidenceNo;
@@ -485,7 +561,7 @@ public class PrnServiceTests
         dto.EvidenceStatusCode = EprnStatus.CANCELLED;
         dto.IssueDate = issuedDate;
         dto.StatusDate = statusUpdatedDate;
- 
+
         await _systemUnderTest.SavePrnDetails(dto);
 
         prn.CreatedOn.Should().Be(default);
@@ -499,7 +575,9 @@ public class PrnServiceTests
     {
         var syncPrns = _fixture.CreateMany<InsertSyncedPrn>().ToList();
 
-        _mockRepository.Setup(r => r.GetPrnsForPrnNumbers(It.IsAny<List<string>>())).ReturnsAsync([]);
+        _mockRepository
+            .Setup(r => r.GetPrnsForPrnNumbers(It.IsAny<List<string>>()))
+            .ReturnsAsync([]);
 
         await _systemUnderTest
             .Invoking(x => x.InsertPeprNpwdSyncPrns(syncPrns))
@@ -517,16 +595,25 @@ public class PrnServiceTests
         prns[1].PrnNumber = syncPrns[1].EvidenceNo;
         prns[2].PrnNumber = syncPrns[2].EvidenceNo;
 
-        _mockRepository.Setup(r => r.GetPrnsForPrnNumbers(It.IsAny<List<string>>())).ReturnsAsync(prns);
-        _mockRepository.Setup(r => r.InsertPeprNpwdSyncPrns(It.IsAny<List<PEprNpwdSync>>()))
+        _mockRepository
+            .Setup(r => r.GetPrnsForPrnNumbers(It.IsAny<List<string>>()))
+            .ReturnsAsync(prns);
+        _mockRepository
+            .Setup(r => r.InsertPeprNpwdSyncPrns(It.IsAny<List<PEprNpwdSync>>()))
             .Callback<List<PEprNpwdSync>>(p => expectedPeprSync = p);
 
         await _systemUnderTest.InsertPeprNpwdSyncPrns(syncPrns);
 
-        _mockRepository.Verify(x => x.InsertPeprNpwdSyncPrns(It.IsAny<List<PEprNpwdSync>>()), Times.Once());
+        _mockRepository.Verify(
+            x => x.InsertPeprNpwdSyncPrns(It.IsAny<List<PEprNpwdSync>>()),
+            Times.Once()
+        );
 
         expectedPeprSync.Count.Should().Be(3);
         expectedPeprSync.Select(p => p.PRNId).Should().BeEquivalentTo(prns.Select(p => p.Id));
-        expectedPeprSync.Select(p => p.PRNStatusId).Should().BeEquivalentTo(syncPrns.Select(p => (int)p.EvidenceStatus));
+        expectedPeprSync
+            .Select(p => p.PRNStatusId)
+            .Should()
+            .BeEquivalentTo(syncPrns.Select(p => (int)p.EvidenceStatus));
     }
 }

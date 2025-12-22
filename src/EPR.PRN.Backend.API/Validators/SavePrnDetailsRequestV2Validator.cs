@@ -17,21 +17,17 @@ public class SavePrnDetailsRequestV2Validator : AbstractValidator<SavePrnDetails
         RuleFor(x => x.PrnStatusId)
             .MustBeOneOf([(int)EprnStatus.CANCELLED, (int)EprnStatus.AWAITINGACCEPTANCE]);
 
-        RuleFor(x => x.PrnSignatory).MandatoryString(PrnConstants.MaxLengthPrnSignatory);
-
-        RuleFor(x => x.PrnSignatoryPosition)
-            .OptionalString(PrnConstants.MaxLengthPrnSignatoryPosition);
+        RuleFor(x => x.PrnSignatory).MandatoryString();
 
         RuleFor(x => x.StatusUpdatedOn).Mandatory();
 
-        RuleFor(x => x.IssuedByOrg).MandatoryString(PrnConstants.MaxLengthIssuedByOrg);
+        RuleFor(x => x.IssuedByOrg).MandatoryString();
 
         RuleFor(x => x.OrganisationId).MandatoryGuid();
 
-        RuleFor(x => x.OrganisationName).MandatoryString(PrnConstants.MaxLengthOrganisationName);
+        RuleFor(x => x.OrganisationName).MandatoryString();
 
-        RuleFor(x => x.AccreditationNumber)
-            .MandatoryString(PrnConstants.MaxLengthAccreditationNumber);
+        RuleFor(x => x.AccreditationNumber).MandatoryString();
 
         RuleFor(x => x.AccreditationYear).MustBeValidYear();
 
@@ -40,13 +36,7 @@ public class SavePrnDetailsRequestV2Validator : AbstractValidator<SavePrnDetails
         RuleFor(x => x.ReprocessorExporterAgency)
             .MustBeOneOf(RpdReprocessorExporterAgency.GetAll());
 
-        RuleFor(x => x.ReprocessingSite)
-            .OptionalString(PrnConstants.MaxLengthReprocessingSite)
-            .When(x => x.IsExport == true);
-
-        RuleFor(x => x.ReprocessingSite)
-            .MandatoryString(PrnConstants.MaxLengthReprocessingSite)
-            .When(x => x.IsExport == false);
+        RuleFor(x => x.ReprocessingSite).MandatoryString().When(x => x.IsExport == false);
 
         RuleFor(x => x.DecemberWaste).Mandatory();
 
@@ -57,7 +47,7 @@ public class SavePrnDetailsRequestV2Validator : AbstractValidator<SavePrnDetails
             .Must(x => x >= 0)
             .WithMessage("{PropertyName} must be valid positive value.");
 
-        RuleFor(x => x.IssuerNotes).OptionalString(PrnConstants.MaxLengthIssuerNotes);
+        RuleFor(x => x.IssuerNotes).OptionalString();
 
         RuleFor(x => x.ProcessToBeUsed).MustBeOneOf(RpdProcesses.GetAll());
 
@@ -98,13 +88,13 @@ public static class ValidationExtensions
 
     public static IRuleBuilderOptions<T, string?> MandatoryString<T>(
         this IRuleBuilder<T, string?> ruleBuilder,
-        int length
+        int? length = null
     )
     {
         return ruleBuilder
             .Must(s => !string.IsNullOrWhiteSpace(s))
             .WithMessage("{PropertyName} is required.")
-            .MaximumLength(length)
+            .MaximumLength(length ?? int.MaxValue)
             .WithMessage($"{{PropertyName}} cannot be longer than {length} characters.");
     }
 
@@ -117,11 +107,11 @@ public static class ValidationExtensions
 
     public static IRuleBuilderOptions<T, string?> OptionalString<T>(
         this IRuleBuilder<T, string?> ruleBuilder,
-        int length
+        int? length = null
     )
     {
         return ruleBuilder
-            .MaximumLength(length)
+            .MaximumLength(length ?? int.MaxValue)
             .WithMessage($"{{PropertyName}} cannot be longer than {length} characters.");
     }
 }
