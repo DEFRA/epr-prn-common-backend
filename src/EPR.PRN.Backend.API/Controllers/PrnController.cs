@@ -142,7 +142,7 @@ public class PrnController(
     }
 
     [HttpGet("ModifiedPrnsbyDate")]
-    [ProducesResponseType(typeof(List<PrnUpdateStatus>), 200)]
+    [ProducesResponseType(typeof(List<NpwdPrnUpdateStatus>), 200)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetModifiedPrnsbyDate(
@@ -154,7 +154,7 @@ public class PrnController(
             return BadRequest(ModelState);
         }
 
-        var prns = await prnService.GetModifiedPrnsbyDate(request.From, request.To);
+        var prns = await prnService.GetModifiedNpwdPrnsbyDate(request.From, request.To);
         if (prns == null || prns.Count == 0)
             return StatusCode(StatusCodes.Status204NoContent);
 

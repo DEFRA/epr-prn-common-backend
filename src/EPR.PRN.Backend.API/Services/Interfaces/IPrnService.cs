@@ -14,6 +14,7 @@ public interface IPrnService
         Guid orgId,
         PaginatedRequestDto request
     );
+    Task<List<NpwdPrnUpdateStatus>?> GetModifiedNpwdPrnsbyDate(DateTime fromDate, DateTime toDate);
     Task<List<PrnUpdateStatus>?> GetModifiedPrnsbyDate(DateTime fromDate, DateTime toDate);
     Task SavePrnDetails(SavePrnDetailsRequest prn);
     Task<Eprn> SaveEprnDetails(Eprn prn);

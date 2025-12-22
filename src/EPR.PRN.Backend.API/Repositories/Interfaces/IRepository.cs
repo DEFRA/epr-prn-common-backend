@@ -16,6 +16,10 @@
             Guid orgId,
             PaginatedRequestDto request
         );
+        Task<List<NpwdPrnUpdateStatus>> GetModifiedNpwdPrnsbyDate(
+            DateTime fromDate,
+            DateTime toDate
+        );
         Task<List<PrnUpdateStatus>> GetModifiedPrnsbyDate(DateTime fromDate, DateTime toDate);
         Task<List<PrnStatusSync>> GetSyncStatuses(DateTime fromDate, DateTime toDate);
         Task<Eprn> SavePrnDetails(Eprn entity);

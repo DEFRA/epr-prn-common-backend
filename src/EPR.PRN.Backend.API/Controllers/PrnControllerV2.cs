@@ -1,5 +1,6 @@
 using System.Net;
 using AutoMapper;
+using BackendAccountService.Core.Models.Request;
 using EPR.PRN.Backend.API.Common.Dto;
 using EPR.PRN.Backend.API.Dto;
 using EPR.PRN.Backend.API.Profiles;
@@ -45,5 +46,18 @@ public class PrnControllerV2(
             logger.LogError(ex, "Recieved Unhandled exception");
             return Problem("Internal Server Error", null, (int)HttpStatusCode.InternalServerError);
         }
+    }
+
+    [HttpGet("modified-prns")]
+    [ProducesResponseType(typeof(List<PrnUpdateStatus>), 200)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<List<PrnUpdateStatus>>> GetModifiedPrns(
+        [FromQuery] ModifiedPrnsbyDateRequest request
+    )
+    {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
+        return Ok(await prnService.GetModifiedPrnsbyDate(request.From, request.To));
     }
 }

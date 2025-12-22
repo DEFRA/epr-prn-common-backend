@@ -62,14 +62,20 @@ public class PrnService(
         return prns;
     }
 
+    public async Task<List<NpwdPrnUpdateStatus>> GetModifiedNpwdPrnsbyDate(
+        DateTime fromDate,
+        DateTime toDate
+    )
+    {
+        return await repository.GetModifiedNpwdPrnsbyDate(fromDate, toDate);
+    }
+
     public async Task<List<PrnUpdateStatus>> GetModifiedPrnsbyDate(
         DateTime fromDate,
         DateTime toDate
     )
     {
-        var modifiedPrns = await repository.GetModifiedPrnsbyDate(fromDate, toDate);
-
-        return modifiedPrns ?? null;
+        return await repository.GetModifiedPrnsbyDate(fromDate, toDate);
     }
 
     public async Task<List<PrnStatusSync>> GetSyncStatuses(DateTime fromDate, DateTime toDate)

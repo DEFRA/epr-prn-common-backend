@@ -276,7 +276,7 @@ public class PrnServiceTests
         // Arrange
         var fromDate = DateTime.UtcNow.AddDays(-7);
         var toDate = DateTime.UtcNow;
-        var mockPrns = new List<PrnUpdateStatus>
+        var mockPrns = new List<NpwdPrnUpdateStatus>
         {
             new()
             {
@@ -293,7 +293,7 @@ public class PrnServiceTests
         };
 
         _mockRepository
-            .Setup(repo => repo.GetModifiedPrnsbyDate(fromDate, toDate))
+            .Setup(repo => repo.GetModifiedNpwdPrnsbyDate(fromDate, toDate))
             .ReturnsAsync(mockPrns);
 
         // Act
