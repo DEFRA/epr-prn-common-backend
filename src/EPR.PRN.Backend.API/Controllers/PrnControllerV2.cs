@@ -7,7 +7,6 @@ using EPR.PRN.Backend.API.Services.Interfaces;
 using EPR.PRN.Backend.Data.DataModels;
 using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
 
 namespace EPR.PRN.Backend.API.Controllers;
 
