@@ -93,7 +93,7 @@ namespace EPR.PRN.Backend.Data.DataModels
         [MaxLength(PrnConstants.MaxLengthSourceSystemId)]
         public string? SourceSystemId { get; set; } = null;
 
-        public Eprn CreateCopyWithTruncatedStrings()
+        public (Eprn truncatedEprn, List<string> truncatedFields) CreateCopyWithTruncatedStrings()
         {
             var ret = (Eprn)MemberwiseClone();
             var excludeProperties = new List<string>
@@ -106,8 +106,8 @@ namespace EPR.PRN.Backend.Data.DataModels
                 nameof(ProcessToBeUsed),
                 nameof(ObligationYear),
             };
-            ret.TruncateStringsBasedOnMaxLengthAttributes(excludeProperties);
-            return ret;
+            var truncated = ret.TruncateStringsBasedOnMaxLengthAttributes(excludeProperties);
+            return (ret, truncated);
         }
     }
 }

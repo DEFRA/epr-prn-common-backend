@@ -209,8 +209,16 @@ public class PrnService(
     {
         try
         {
-            var truncated = prn.CreateCopyWithTruncatedStrings();
-            return await repository.SavePrnDetails(truncated);
+            var (truncatedEprn, truncatedFields) = prn.CreateCopyWithTruncatedStrings();
+            if (truncatedFields.Count != 0)
+            {
+                logger.LogWarning(
+                    "{Logprefix}: The following fields were truncated due to exceeding max length: {TruncatedFields}",
+                    logPrefix,
+                    string.Join(", ", truncatedFields)
+                );
+            }
+            return await repository.SavePrnDetails(truncatedEprn);
         }
         catch (Exception ex)
         {

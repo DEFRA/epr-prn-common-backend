@@ -85,7 +85,7 @@ public class StringHelperTests
             InitOnlyLongString = "This string has no max length attribute",
         };
 
-        testObj.TruncateStringsBasedOnMaxLengthAttributes();
+        var truncated = testObj.TruncateStringsBasedOnMaxLengthAttributes();
 
         testObj.ShortString.Should().Be("Short");
         testObj.NullString.Should().BeNull();
@@ -95,6 +95,8 @@ public class StringHelperTests
         testObj.NoMaxLengthString.Should().Be("This string has no max length attribute");
         testObj.InitOnlyLongString.Should().Be("Th...");
         testObj.ReadonlyString.Should().Be("This string is readonly");
+
+        truncated.Should().BeEquivalentTo(new List<string> { "LongString", "InitOnlyLongString" });
     }
 
     [TestMethod]
@@ -107,10 +109,13 @@ public class StringHelperTests
             ShortString3 = "ggggg",
         };
 
-        testObj.TruncateStringsBasedOnMaxLengthAttributes([nameof(TestClass2.ShortString2)]);
+        var truncated = testObj.TruncateStringsBasedOnMaxLengthAttributes([
+            nameof(TestClass2.ShortString2),
+        ]);
 
         testObj.ShortString1.Should().Be("a...");
         testObj.ShortString2.Should().Be("defgh");
         testObj.ShortString3.Should().Be("g...");
+        truncated.Should().BeEquivalentTo(new List<string> { "ShortString1", "ShortString3" });
     }
 }

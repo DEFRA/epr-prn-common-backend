@@ -16,8 +16,9 @@ public class EprnTests
     public void ShouldNotTruncateEprnStringsWhenNotTooLong()
     {
         var eprn = _fixture.Create<Eprn>();
-        var eprnTruncated = eprn.CreateCopyWithTruncatedStrings();
-        eprnTruncated.Should().BeEquivalentTo(eprn);
+        var (truncatedEprn, truncatedFields) = eprn.CreateCopyWithTruncatedStrings();
+        truncatedEprn.Should().BeEquivalentTo(eprn);
+        truncatedFields.Should().BeEmpty();
     }
 
     [TestMethod]
@@ -40,13 +41,14 @@ public class EprnTests
 
         typeof(Eprn).GetProperty(propertyName).SetValue(eprn, overlongValue);
 
-        var truncated = eprn.CreateCopyWithTruncatedStrings();
-        var resultValue = (string)typeof(Eprn).GetProperty(propertyName).GetValue(truncated);
+        var (truncatedEprn, truncatedFields) = eprn.CreateCopyWithTruncatedStrings();
+        var resultValue = (string)typeof(Eprn).GetProperty(propertyName).GetValue(truncatedEprn);
 
         resultValue.Should().NotBeNull();
         resultValue!.Length.Should().Be(maxLength);
         resultValue[..(maxLength - 3)].All(c => c == 'A').Should().BeTrue();
         resultValue.Should().EndWith("...");
+        truncatedFields.Should().ContainSingle().Which.Should().Be(propertyName);
     }
 
     [TestMethod]
@@ -67,9 +69,10 @@ public class EprnTests
 
         typeof(Eprn).GetProperty(propertyName).SetValue(eprn, overlongValue);
 
-        var truncated = eprn.CreateCopyWithTruncatedStrings();
-        var resultValue = (string)typeof(Eprn).GetProperty(propertyName).GetValue(truncated);
+        var (truncatedEprn, truncatedFields) = eprn.CreateCopyWithTruncatedStrings();
+        var resultValue = (string)typeof(Eprn).GetProperty(propertyName).GetValue(truncatedEprn);
 
         resultValue.Should().Be(overlongValue);
+        truncatedFields.Should().BeEmpty();
     }
 }

@@ -19,12 +19,13 @@ namespace EPR.PRN.Backend.Data.Helpers
                 : string.Concat(input.AsSpan(0, maxLength - 3), "...");
         }
 
-        public static void TruncateStringsBasedOnMaxLengthAttributes<T>(
+        public static List<string> TruncateStringsBasedOnMaxLengthAttributes<T>(
             this T obj,
             List<string>? excludeProperties = null
         )
             where T : class
         {
+            var ret = new List<string>();
             foreach (var p in typeof(T).GetProperties())
             {
                 if (
@@ -35,9 +36,15 @@ namespace EPR.PRN.Backend.Data.Helpers
                     && p.GetCustomAttribute<MaxLengthAttribute>() is MaxLengthAttribute maxAttribute
                 )
                 {
-                    p.SetValue(obj, s?.TruncateString(maxLength: maxAttribute.Length));
+                    var truncated = TruncateString(s, maxAttribute.Length);
+                    if (truncated != s)
+                    {
+                        p.SetValue(obj, truncated);
+                        ret.Add(p.Name);
+                    }
                 }
             }
+            return ret;
         }
     }
 }
