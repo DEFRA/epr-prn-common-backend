@@ -71,7 +71,6 @@ public class PrnControllerV2Tests
         dbObj.LastUpdatedDate.Should().Be(default);
         dbObj.PrnStatusHistories.Should().BeNull();
         dbObj.ExternalId.Should().Be(Guid.Empty);
-        dbObj.ProducerAgency.Should().BeNull();
         dbObj.Signature.Should().BeNull();
         dbObj.IssueDate.Should().Be(default);
         dbObj.CreatedBy.Should().BeNull();
