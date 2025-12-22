@@ -10,7 +10,9 @@ public class PrnMapper : Profile
     public PrnMapper()
     {
         CreateMap<SavePrnDetailsRequestV2, Eprn>()
-            .ForMember(e => e.IssuerReference, o => o.MapFrom(s => ""));
+            .ForMember(e => e.IssuerReference, o => o.MapFrom(s => ""))
+            .ForMember(e => e.PackagingProducer, o => o.MapFrom(s => ""))
+            .ForMember(e => e.ProducerAgency, o => o.MapFrom(s => ""));
         CreateMap<Eprn, PrnDto>();
     }
 

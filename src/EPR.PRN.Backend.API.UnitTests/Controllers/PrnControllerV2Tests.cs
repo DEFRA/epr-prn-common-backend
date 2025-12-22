@@ -76,6 +76,8 @@ public class PrnControllerV2Tests
         dbObj.IssueDate.Should().Be(default);
         dbObj.CreatedBy.Should().BeNull();
         dbObj.IssuerReference.Should().Be("");
+        dbObj.PackagingProducer.Should().Be("");
+        dbObj.ProducerAgency.Should().Be("");
 
         created
             .Should()
