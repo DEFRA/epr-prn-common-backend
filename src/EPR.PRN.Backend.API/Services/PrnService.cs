@@ -213,8 +213,10 @@ public class PrnService(
             if (truncatedFields.Count != 0)
             {
                 logger.LogWarning(
-                    "{Logprefix}: The following fields were truncated due to exceeding max length: {TruncatedFields}",
+                    "{Logprefix}: PRN {PrnNumber} {SourceSystemId} The following fields were truncated due to exceeding max length: {TruncatedFields}",
                     logPrefix,
+                    prn.PrnNumber,
+                    prn.SourceSystemId,
                     string.Join(", ", truncatedFields)
                 );
             }
