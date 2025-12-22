@@ -32,43 +32,16 @@ public class PrnControllerV2Tests
         _application.Dispose();
     }
 
-    private static SavePrnDetailsRequestV2 CreateValidModel()
-    {
-        return new SavePrnDetailsRequestV2
-        {
-            PrnNumber = "PRN123",
-            OrganisationId = Guid.NewGuid(),
-            OrganisationName = "Org",
-            ReprocessorExporterAgency = RpdReprocessorExporterAgency.EnvironmentAgency,
-            PrnStatusId = (int)EprnStatus.AWAITINGACCEPTANCE,
-            TonnageValue = 0,
-            MaterialName = RpdMaterialName.Aluminium,
-            IssuerNotes = "Notes",
-            PrnSignatory = "Sig",
-            PrnSignatoryPosition = "Role",
-            DecemberWaste = true,
-            StatusUpdatedOn = DateTime.UtcNow,
-            IssuedByOrg = "Issuer",
-            AccreditationNumber = "ACC123",
-            ReprocessingSite = "Site",
-            AccreditationYear = "2024",
-            IsExport = true,
-            SourceSystemId = "SYS",
-            ProcessToBeUsed = RpdProcesses.R3,
-            ObligationYear = "2025",
-        };
-    }
-
     [TestMethod]
     public async Task ShouldAcceptValidModel()
     {
-        var model = CreateValidModel();
+        var model = DataGenerator.CreateValidSavePrnDetailsRequestV2();
         Eprn dbObj = null;
         _application
             .PrnService.Setup(s => s.SaveEprnDetails(It.IsAny<Eprn>()))
             .Callback((Eprn e) => dbObj = e)
             .ReturnsAsync((Eprn e) => e);
-        var returned = await _client.CallPostEndpoint<SavePrnDetailsRequestV2, PrnDto>(
+        var (created, location) = await _client.CallPostEndpoint<SavePrnDetailsRequestV2, PrnDto>(
             "api/v2/prn",
             model
         );
@@ -90,6 +63,7 @@ public class PrnControllerV2Tests
                         .Excluding(e => e.IssueDate)
                         .Excluding(e => e.PackagingProducer)
                         .Excluding(e => e.CreatedBy)
+                        .Excluding(e => e.IssuerReference)
             );
         dbObj.Id.Should().Be(0);
         dbObj.CreatedOn.Should().Be(default);
@@ -97,19 +71,23 @@ public class PrnControllerV2Tests
         dbObj.LastUpdatedDate.Should().Be(default);
         dbObj.PrnStatusHistories.Should().BeNull();
         dbObj.ExternalId.Should().Be(Guid.Empty);
-        dbObj.ProducerAgency.Should().BeNull();
-        dbObj.IssuerReference.Should().BeNull();
         dbObj.Signature.Should().BeNull();
         dbObj.IssueDate.Should().Be(default);
         dbObj.CreatedBy.Should().BeNull();
+        dbObj.IssuerReference.Should().Be("");
+        dbObj.PackagingProducer.Should().Be("");
+        dbObj.ProducerAgency.Should().Be("");
 
-        returned
-            .created.Should()
+        created
+            .Should()
             .BeEquivalentTo(
                 dbObj,
-                o => o.Excluding(p => p.PrnStatusHistories).Excluding(p => p.SourceSystemId)
+                o =>
+                    o.Excluding(p => p.PrnStatusHistories)
+                        .Excluding(p => p.SourceSystemId)
+                        .Excluding(p => p.IssuerReference)
             );
-        returned.location.Should().Be("api/v1/prn/0");
+        location.Should().Be("api/v1/prn/0");
     }
 
     private static string ToJsonWithoutField(object obj, string propertyName)
@@ -139,7 +117,7 @@ public class PrnControllerV2Tests
     [DataRow(nameof(SavePrnDetailsRequestV2.ObligationYear))]
     public async Task ShouldValidateRequiredFields_Missing(string propertyName)
     {
-        var model = CreateValidModel();
+        var model = DataGenerator.CreateValidSavePrnDetailsRequestV2();
         model.IssuerNotes = Guid.NewGuid().ToString();
         var json = ToJsonWithoutField(model, propertyName);
         var response = await _client.CallPostEndpointWithJson(
@@ -174,7 +152,7 @@ public class PrnControllerV2Tests
     [DataRow(nameof(SavePrnDetailsRequestV2.ObligationYear))]
     public async Task ShouldValidateRequiredFields_Null(string propertyName)
     {
-        var model = CreateValidModel();
+        var model = DataGenerator.CreateValidSavePrnDetailsRequestV2();
         model.GetType().GetProperty(propertyName)!.SetValue(model, null);
         model.IssuerNotes = Guid.NewGuid().ToString();
         var response = await _client.CallPostEndpoint(
@@ -195,7 +173,7 @@ public class PrnControllerV2Tests
     [DataRow(nameof(SavePrnDetailsRequestV2.ReprocessingSite))]
     public async Task NonRequiredFieldsCanBeOmmitted(string propertyName)
     {
-        var model = CreateValidModel();
+        var model = DataGenerator.CreateValidSavePrnDetailsRequestV2();
         var json = ToJsonWithoutField(model, propertyName);
         _application
             .PrnService.Setup(s => s.SaveEprnDetails(It.IsAny<Eprn>()))
@@ -213,7 +191,7 @@ public class PrnControllerV2Tests
     [DataRow(nameof(SavePrnDetailsRequestV2.ProcessToBeUsed))]
     public async Task ShouldValidateMinLengthFields(string propertyName)
     {
-        var model = CreateValidModel();
+        var model = DataGenerator.CreateValidSavePrnDetailsRequestV2();
         model.IssuerNotes = Guid.NewGuid().ToString();
         model.GetType().GetProperty(propertyName)!.SetValue(model, "");
         var response = await _client.CallPostEndpoint(

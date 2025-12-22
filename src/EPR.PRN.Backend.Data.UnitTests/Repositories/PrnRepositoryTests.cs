@@ -36,20 +36,19 @@ public class PrnRepositoryTests
         IsExport = false,
         SourceSystemId = "SYS",
         ProcessToBeUsed = "R4",
-        ObligationYear = "2025"
+        ObligationYear = "2025",
     };
+
     [TestInitialize]
     public void Setup()
     {
         var connection = new SqliteConnection("DataSource=:memory:");
         connection.Open(); // Keep the connection open for the lifetime of the context
 
-        var options = new DbContextOptionsBuilder<EprContext>()
-            .UseSqlite(connection)
-            .Options;
+        var options = new DbContextOptionsBuilder<EprContext>().UseSqlite(connection).Options;
 
         _context = new EprContext(options);
-        _context.Database.EnsureCreated(); 
+        _context.Database.EnsureCreated();
 
         _repository = new PrnRepository(_context);
     }
@@ -57,11 +56,11 @@ public class PrnRepositoryTests
     [TestMethod]
     public async Task CanAddValidSavePrnDetailsRequestV2()
     {
-        var prn = PrnProfile.CreateMapper().Map<Eprn>(_validSavePrnDetailsRequestV2);
+        var prn = PrnMapper.CreateMapper().Map<Eprn>(_validSavePrnDetailsRequestV2);
         var added = await _context.AddAsync(prn, CancellationToken.None);
         added.Entity.Should().BeEquivalentTo(prn);
     }
-    
+
     [TestMethod]
     public async Task GetAcceptedAndAwaitingPrnsByYearAsync_ReturnsFilteredPrns()
     {
@@ -71,8 +70,8 @@ public class PrnRepositoryTests
         var fixture = new Fixture();
         var prnStatuses = new[]
         {
-            new PrnStatus {  StatusName = nameof(EprnStatus.ACCEPTED) },
-            new PrnStatus {  StatusName = nameof(EprnStatus.AWAITINGACCEPTANCE) }
+            new PrnStatus { StatusName = nameof(EprnStatus.ACCEPTED) },
+            new PrnStatus { StatusName = nameof(EprnStatus.AWAITINGACCEPTANCE) },
         };
         await _context.PrnStatus.AddRangeAsync(prnStatuses, CancellationToken.None);
         await _context.SaveChangesAsync(CancellationToken.None);
@@ -92,6 +91,8 @@ public class PrnRepositoryTests
         // Assert
         result.Should().HaveCount(2);
         result.Should().ContainSingle(r => r.Status.StatusName == nameof(EprnStatus.ACCEPTED));
-        result.Should().ContainSingle(r => r.Status.StatusName == nameof(EprnStatus.AWAITINGACCEPTANCE));
+        result
+            .Should()
+            .ContainSingle(r => r.Status.StatusName == nameof(EprnStatus.AWAITINGACCEPTANCE));
     }
 }

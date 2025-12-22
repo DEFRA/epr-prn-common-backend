@@ -7,6 +7,7 @@ using EPR.PRN.Backend.API.Services.Interfaces;
 using EPR.PRN.Backend.Data.DataModels;
 using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace EPR.PRN.Backend.API.Controllers;
 
@@ -19,7 +20,7 @@ public class PrnControllerV2(
     IValidator<SavePrnDetailsRequestV2> savePrnDetailsRequestV2Validator
 ) : ControllerBase
 {
-    private readonly IMapper _mapper = PrnProfile.CreateMapper();
+    private readonly IMapper _mapper = PrnMapper.CreateMapper();
 
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]

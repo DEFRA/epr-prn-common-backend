@@ -77,7 +77,7 @@ public class MapperTests
     [DataRow("")]
     public void ReturnsFalse_WhenNullOrEmpty(string input)
     {
-        Assert.IsFalse(Mappers.IsExport(input));
+        Assert.IsFalse(NpwdPrnMapper.IsExport(input));
     }
 
     [TestMethod]
@@ -92,6 +92,6 @@ public class MapperTests
     [DataRow("  EXXXX  ", false)] // i'm fairly sure this is wrong, it should pass but the code is bad
     public void ShouldVerifyIfIsExport(string input, bool expected)
     {
-        Assert.AreEqual(expected, Mappers.IsExport(input));
+        Assert.AreEqual(expected, NpwdPrnMapper.IsExport(input));
     }
 }

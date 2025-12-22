@@ -329,7 +329,7 @@ public class PrnServiceTests
     {
         _mockRepository.Setup(s => s.SavePrnDetails(It.IsAny<Eprn>())).ReturnsAsync((Eprn e) => e);
         var dto = CreateValidModelV2();
-        var eprn = await _systemUnderTest.SaveEprnDetails(PrnProfile.CreateMapper().Map<Eprn>(dto));
+        var eprn = await _systemUnderTest.SaveEprnDetails(PrnMapper.CreateMapper().Map<Eprn>(dto));
         dto.Should().BeEquivalentTo(eprn, o => o.ExcludingMissingMembers());
     }
 
@@ -366,7 +366,7 @@ public class PrnServiceTests
         model.GetType().GetProperty(propertyName)!.SetValue(model, expected);
 
         var eprn = await _systemUnderTest.SaveEprnDetails(
-            PrnProfile.CreateMapper().Map<Eprn>(model)
+            PrnMapper.CreateMapper().Map<Eprn>(model)
         );
         eprn.GetType().GetProperty(propertyName).GetValue(eprn)!.ToString().Should().Be(expected);
     }
@@ -391,7 +391,7 @@ public class PrnServiceTests
         model.GetType().GetProperty(propertyName)!.SetValue(model, expected + 1);
 
         var eprn = await _systemUnderTest.SaveEprnDetails(
-            PrnProfile.CreateMapper().Map<Eprn>(model)
+            PrnMapper.CreateMapper().Map<Eprn>(model)
         );
         eprn.GetType().GetProperty(propertyName).GetValue(eprn)!.ToString().Should().Be(expected);
     }
