@@ -1,6 +1,6 @@
-﻿using EPR.PRN.Backend.API.Common.Enums;
+﻿using System.Diagnostics.CodeAnalysis;
+using EPR.PRN.Backend.API.Common.Enums;
 using EPR.PRN.Backend.Data.DataModels;
-using System.Diagnostics.CodeAnalysis;
 
 namespace EPR.PRN.Backend.API.Dto
 {
@@ -67,9 +67,9 @@ namespace EPR.PRN.Backend.API.Dto
         public DateTime LastUpdatedDate { get; set; }
 
         public bool IsExport { get; set; }
-        
+
         public string? SourceSystemId { get; set; }
-        
+
         public static implicit operator PrnDto(Eprn prn)
         {
             return new PrnDto()
@@ -104,9 +104,8 @@ namespace EPR.PRN.Backend.API.Dto
                 ReprocessorExporterAgency = prn.ReprocessorExporterAgency,
                 Signature = prn.Signature,
                 TonnageValue = prn.TonnageValue,
-                SourceSystemId = prn.SourceSystemId
+                SourceSystemId = prn.SourceSystemId,
             };
         }
-
     }
 }

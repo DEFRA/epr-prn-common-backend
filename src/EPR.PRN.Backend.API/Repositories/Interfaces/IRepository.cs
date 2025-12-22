@@ -1,5 +1,4 @@
-﻿
-namespace EPR.PRN.Backend.API.Repositories.Interfaces
+﻿namespace EPR.PRN.Backend.API.Repositories.Interfaces
 {
     using EPR.PRN.Backend.API.Common.Dto;
     using EPR.PRN.Backend.API.Dto;
@@ -13,7 +12,10 @@ namespace EPR.PRN.Backend.API.Repositories.Interfaces
         public IDbContextTransaction BeginTransaction();
         public Task SaveTransaction(IDbContextTransaction transaction);
         void AddPrnStatusHistory(PrnStatusHistory prnStatusHistory);
-        Task<PaginatedResponseDto<PrnDto>> GetSearchPrnsForOrganisation(Guid orgId, PaginatedRequestDto request);
+        Task<PaginatedResponseDto<PrnDto>> GetSearchPrnsForOrganisation(
+            Guid orgId,
+            PaginatedRequestDto request
+        );
         Task<List<PrnUpdateStatus>> GetModifiedPrnsbyDate(DateTime fromDate, DateTime toDate);
         Task<List<PrnStatusSync>> GetSyncStatuses(DateTime fromDate, DateTime toDate);
         Task<Eprn> SavePrnDetails(Eprn entity);
