@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.Reflection;
 using EPR.PRN.Backend.API.Common.Constants;
 using EPR.PRN.Backend.Data.Helpers;
 
@@ -97,19 +96,17 @@ namespace EPR.PRN.Backend.Data.DataModels
         public Eprn CreateCopyWithTruncatedStrings()
         {
             var ret = (Eprn)MemberwiseClone();
-            foreach (var p in typeof(Eprn).GetProperties())
+            var excludeProperties = new List<string>
             {
-                if (p.GetValue(ret) is string s)
-                {
-                    p.SetValue(
-                        ret,
-                        s?.TruncateString(
-                            maxLength: p.GetCustomAttribute<MaxLengthAttribute>()?.Length
-                                ?? int.MaxValue
-                        )
-                    );
-                }
-            }
+                nameof(SourceSystemId),
+                nameof(PrnNumber),
+                nameof(AccreditationYear),
+                nameof(MaterialName),
+                nameof(ReprocessorExporterAgency),
+                nameof(ProcessToBeUsed),
+                nameof(ObligationYear),
+            };
+            ret.TruncateStringsBasedOnMaxLengthAttributes(excludeProperties);
             return ret;
         }
     }
