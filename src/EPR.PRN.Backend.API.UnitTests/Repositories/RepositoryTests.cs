@@ -148,6 +148,105 @@ public class RepositoryTests
     }
 
     [TestMethod]
+    public async Task GetModifiedPrnsbyDate_ReturnsMappedPrnUpdateStatuses()
+    {
+        //Arrange
+        var fromDate = new DateTime(2021, 11, 22, 0, 0, 0, DateTimeKind.Utc);
+        var toDate = new DateTime(2024, 11, 24, 0, 0, 0, DateTimeKind.Utc);
+
+        var data = _fixture.CreateMany<Eprn>().ToList();
+        data[0].PrnNumber = "PRN001";
+        data[0].StatusUpdatedOn = new DateTime(2024, 11, 23, 0, 0, 0, DateTimeKind.Utc);
+        data[0].PrnStatusId = 1;
+        data[0].AccreditationYear = "2023";
+        data[0].SourceSystemId = "a";
+
+        data[1].PrnNumber = "PRN002";
+        data[1].StatusUpdatedOn = new DateTime(2024, 11, 22, 0, 0, 0, DateTimeKind.Utc);
+        data[1].PrnStatusId = 2;
+        data[1].AccreditationYear = "2024";
+        data[1].SourceSystemId = "b";
+
+        data[2].PrnNumber = "PRN003";
+        data[2].StatusUpdatedOn = new DateTime(2024, 12, 12, 0, 0, 0, DateTimeKind.Utc);
+        data[2].PrnStatusId = 2;
+        data[2].AccreditationYear = "2024";
+        data[2].SourceSystemId = "c";
+
+        await using var context = new EprContext(_contextOptions);
+        if (await context.Database.EnsureCreatedAsync(CancellationToken.None))
+        {
+            context.AddRange(data);
+            await context.SaveChangesAsync(CancellationToken.None);
+        }
+
+        //Act
+        var repo = new Repository(context, _mockLogger.Object, _configurationMock.Object);
+        var result = await repo.GetModifiedPrnsbyDate(fromDate, toDate);
+
+        //Assert
+        Assert.IsNotNull(result);
+        Assert.HasCount(2, result);
+
+        var firstPrn = result.Find(r => r.PrnNumber == "PRN001");
+        Assert.AreEqual("PRN001", firstPrn.PrnNumber);
+        Assert.AreEqual("2023", firstPrn.AccreditationYear);
+        Assert.AreEqual(1, firstPrn.PrnStatusId);
+        Assert.AreEqual("a", firstPrn.SourceSystemId);
+
+        var secondPrn = result.Find(r => r.PrnNumber == "PRN002");
+        Assert.AreEqual("PRN002", secondPrn.PrnNumber);
+        Assert.AreEqual("2024", secondPrn.AccreditationYear);
+        Assert.AreEqual(2, secondPrn.PrnStatusId);
+        Assert.AreEqual("b", secondPrn.SourceSystemId);
+    }
+
+    [TestMethod]
+    public async Task GetModifiedPrnsbyDate_ReturnsOnlyNonNpwdPrns()
+    {
+        //Arrange
+        var fromDate = new DateTime(2021, 11, 22, 0, 0, 0, DateTimeKind.Utc);
+        var toDate = new DateTime(2024, 11, 24, 0, 0, 0, DateTimeKind.Utc);
+
+        var data = _fixture.CreateMany<Eprn>().ToList();
+        data[0].PrnNumber = "PRN001";
+        data[0].StatusUpdatedOn = new DateTime(2024, 11, 23, 0, 0, 0, DateTimeKind.Utc);
+        data[0].PrnStatusId = 1;
+        data[0].AccreditationYear = "2023";
+        data[0].SourceSystemId = null;
+
+        data[1].PrnNumber = "PRN002";
+        data[1].StatusUpdatedOn = new DateTime(2024, 11, 23, 0, 0, 0, DateTimeKind.Utc);
+        data[1].PrnStatusId = 1;
+        data[1].AccreditationYear = "2023";
+        data[1].SourceSystemId = null;
+
+        data[2].PrnNumber = "PRN003";
+        data[2].StatusUpdatedOn = new DateTime(2024, 11, 23, 0, 0, 0, DateTimeKind.Utc);
+        data[2].PrnStatusId = 1;
+        data[2].AccreditationYear = "2023";
+        data[2].SourceSystemId = "c";
+
+        await using var context = new EprContext(_contextOptions);
+        if (await context.Database.EnsureCreatedAsync(CancellationToken.None))
+        {
+            context.AddRange(data);
+            await context.SaveChangesAsync(CancellationToken.None);
+        }
+
+        //Act
+        var repo = new Repository(context, _mockLogger.Object, _configurationMock.Object);
+        var result = await repo.GetModifiedPrnsbyDate(fromDate, toDate);
+
+        //Assert
+        Assert.IsNotNull(result);
+        Assert.HasCount(1, result);
+
+        var firstPrn = result[0];
+        Assert.AreEqual("PRN003", firstPrn.PrnNumber);
+    }
+
+    [TestMethod]
     public async Task GetModifiedNpwdPrnsbyDate_ReturnsMappedPrnUpdateStatuses()
     {
         //Arrange

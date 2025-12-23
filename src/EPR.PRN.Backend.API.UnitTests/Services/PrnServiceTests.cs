@@ -271,7 +271,7 @@ public class PrnServiceTests
     }
 
     [TestMethod]
-    public async Task GetModifiedPrnsbyDate_ReturnsModifiedPrns_WhenDataExists()
+    public async Task GetModifiedNpwdPrnsbyDate_ReturnsModifiedPrns_WhenDataExists()
     {
         // Arrange
         var fromDate = DateTime.UtcNow.AddDays(-7);
@@ -309,6 +309,65 @@ public class PrnServiceTests
     }
 
     [TestMethod]
+    public async Task GetModifiedNpwdPrnsbyDate_ReturnsNull_WhenNoDataExists()
+    {
+        // Arrange
+        var fromDate = DateTime.UtcNow.AddDays(-7);
+        var toDate = DateTime.UtcNow;
+
+        _mockRepository
+            .Setup(repo => repo.GetModifiedNpwdPrnsbyDate(fromDate, toDate))
+            .ReturnsAsync(null as List<NpwdPrnUpdateStatus>);
+
+        // Act
+        var result = await _systemUnderTest.GetModifiedNpwdPrnsbyDate(fromDate, toDate);
+
+        // Assert
+        Assert.IsNull(result);
+        _mockRepository.Verify(
+            repo => repo.GetModifiedNpwdPrnsbyDate(fromDate, toDate),
+            Times.Once
+        );
+    }
+
+    [TestMethod]
+    public async Task GetModifiedPrnsbyDate_ReturnsModifiedPrns_WhenDataExists()
+    {
+        // Arrange
+        var fromDate = DateTime.UtcNow.AddDays(-7);
+        var toDate = DateTime.UtcNow;
+        var mockPrns = new List<PrnUpdateStatus>
+        {
+            new()
+            {
+                PrnNumber = "123",
+                PrnStatusId = 1,
+                AccreditationYear = "2014",
+                SourceSystemId = "SystemA",
+            },
+            new()
+            {
+                PrnNumber = "456",
+                PrnStatusId = 2,
+                AccreditationYear = "2014",
+                SourceSystemId = "SystemB",
+            },
+        };
+
+        _mockRepository
+            .Setup(repo => repo.GetModifiedPrnsbyDate(fromDate, toDate))
+            .ReturnsAsync(mockPrns);
+
+        // Act
+        var result = await _systemUnderTest.GetModifiedPrnsbyDate(fromDate, toDate);
+
+        // Assert
+        Assert.IsNotNull(result);
+        CollectionAssert.AreEqual(mockPrns, result);
+        _mockRepository.Verify(repo => repo.GetModifiedPrnsbyDate(fromDate, toDate), Times.Once);
+    }
+
+    [TestMethod]
     public async Task GetModifiedPrnsbyDate_ReturnsNull_WhenNoDataExists()
     {
         // Arrange
@@ -331,7 +390,7 @@ public class PrnServiceTests
     public async Task SaveEprnDetails_SavesValidData()
     {
         _mockRepository.Setup(s => s.SavePrnDetails(It.IsAny<Eprn>())).ReturnsAsync((Eprn e) => e);
-        var dto = CreateValidModelSavePrnDetailsRequest();
+        var dto = DataGenerator.CreateValidSavePrnDetailsRequest();
         var eprn = await _systemUnderTest.SaveEprnDetails(PrnMapper.CreateMapper().Map<Eprn>(dto));
         dto.Should().BeEquivalentTo(eprn, o => o.ExcludingMissingMembers());
     }
@@ -363,7 +422,7 @@ public class PrnServiceTests
     public async Task ShouldNotTruncateFieldsWithLimits(string propertyName, int length)
     {
         _mockRepository.Setup(s => s.SavePrnDetails(It.IsAny<Eprn>())).ReturnsAsync((Eprn e) => e);
-        var model = CreateValidModelSavePrnDetailsRequest();
+        var model = DataGenerator.CreateValidSavePrnDetailsRequest();
         model.SourceSystemId = Guid.NewGuid().ToString();
         var expected = new string('A', length);
         model.GetType().GetProperty(propertyName)!.SetValue(model, expected);
@@ -388,7 +447,7 @@ public class PrnServiceTests
     public async Task ShouldTruncateFieldsThatExceedLimits(string propertyName, int length)
     {
         _mockRepository.Setup(s => s.SavePrnDetails(It.IsAny<Eprn>())).ReturnsAsync((Eprn e) => e);
-        var model = CreateValidModelSavePrnDetailsRequest();
+        var model = DataGenerator.CreateValidSavePrnDetailsRequest();
         model.SourceSystemId = Guid.NewGuid().ToString();
         var expected = new string('A', length - 3) + "...";
         model.GetType().GetProperty(propertyName)!.SetValue(model, expected + 1);
@@ -399,71 +458,13 @@ public class PrnServiceTests
         eprn.GetType().GetProperty(propertyName).GetValue(eprn)!.ToString().Should().Be(expected);
     }
 
-    private static SaveNpwdPrnDetailsRequest CreateValidSaveNpwdPrnDetailsRequest()
-    {
-        return new SaveNpwdPrnDetailsRequest()
-        {
-            AccreditationNo = "ABC",
-            AccreditationYear = 2018,
-            CancelledDate = DateTime.UtcNow.AddDays(-1),
-            DecemberWaste = true,
-            EvidenceMaterial = "Aluminium",
-            EvidenceNo = Guid.NewGuid().ToString(),
-            EvidenceStatusCode = EprnStatus.AWAITINGACCEPTANCE,
-            EvidenceTonnes = 5000,
-            IssueDate = DateTime.UtcNow.AddDays(-5),
-            IssuedByNPWDCode = "NPWD367742",
-            IssuedByOrgName = "ANB",
-            IssuedToEPRId = Guid.NewGuid(),
-            IssuedToNPWDCode = "NPWD557742",
-            IssuedToOrgName = "ZNZ",
-            IssuerNotes = "no notes",
-            IssuerRef = "ANB-1123",
-            MaterialOperationCode = "R-PLA",
-            ObligationYear = 2025,
-            PrnSignatory = "Pat Anderson",
-            PrnSignatoryPosition = "Director",
-            ProducerAgency = "TTL",
-            RecoveryProcessCode = "N11",
-            ReprocessorAgency = "BEX",
-            StatusDate = DateTime.UtcNow,
-        };
-    }
-
-    private static SavePrnDetailsRequest CreateValidModelSavePrnDetailsRequest()
-    {
-        return new SavePrnDetailsRequest()
-        {
-            PrnNumber = "PRN123",
-            OrganisationId = Guid.NewGuid(),
-            OrganisationName = "Org",
-            ReprocessorExporterAgency = RpdReprocessorExporterAgency.EnvironmentAgency,
-            PrnStatusId = (int)EprnStatus.AWAITINGACCEPTANCE,
-            TonnageValue = 0,
-            MaterialName = RpdMaterialName.Aluminium,
-            IssuerNotes = "Notes",
-            PrnSignatory = "Sig",
-            PrnSignatoryPosition = "Role",
-            DecemberWaste = true,
-            StatusUpdatedOn = DateTime.UtcNow,
-            IssuedByOrg = "Issuer",
-            AccreditationNumber = "ACC123",
-            ReprocessingSite = "Site",
-            AccreditationYear = "2024",
-            IsExport = true,
-            SourceSystemId = "SYS",
-            ProcessToBeUsed = RpdProcesses.R3,
-            ObligationYear = "2025",
-        };
-    }
-
     [TestMethod]
     public async Task SavePrnDetails_ReturnsWithoutError_OnSuccessfullySave()
     {
         _mockRepository
             .Setup(s => s.SavePrnDetails(It.IsAny<Eprn>()))
             .Returns(Task.FromResult(_fixture.Create<Eprn>()));
-        var dto = CreateValidSaveNpwdPrnDetailsRequest();
+        var dto = DataGenerator.CreateValidSaveNpwdPrnDetailsRequest();
         await _systemUnderTest.SaveNpwdPrnDetails(dto);
         _mockRepository.Verify(x => x.SavePrnDetails(It.IsAny<Eprn>()), Times.Once());
     }
@@ -473,7 +474,7 @@ public class PrnServiceTests
     {
         _mockRepository.Setup(s => s.SavePrnDetails(It.IsAny<Eprn>())).Throws<Exception>();
 
-        var dto = CreateValidSaveNpwdPrnDetailsRequest();
+        var dto = DataGenerator.CreateValidSaveNpwdPrnDetailsRequest();
 
         var call = () => _systemUnderTest.SaveNpwdPrnDetails(dto);
         await call.Should().ThrowAsync<Exception>();
@@ -495,7 +496,7 @@ public class PrnServiceTests
             .Setup(s => s.SavePrnDetails(It.IsAny<Eprn>()))
             .Callback<Eprn>(x => createdEntity = x);
 
-        var dto = CreateValidSaveNpwdPrnDetailsRequest();
+        var dto = DataGenerator.CreateValidSaveNpwdPrnDetailsRequest();
 
         // OVerride Evidence no with input argument from Test data
         dto.EvidenceNo = evidenceNo;
@@ -517,7 +518,7 @@ public class PrnServiceTests
             .Setup(s => s.SavePrnDetails(It.IsAny<Eprn>()))
             .Callback<Eprn>(x => createdEntity = x);
 
-        var dto = CreateValidSaveNpwdPrnDetailsRequest();
+        var dto = DataGenerator.CreateValidSaveNpwdPrnDetailsRequest();
 
         // OVerride Evidence no with input argument from Test data
         dto.EvidenceNo = evidenceNo;

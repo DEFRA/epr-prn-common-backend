@@ -1,4 +1,6 @@
 using System.Net;
+using Azure.Core;
+using BackendAccountService.Core.Models.Request;
 using EPR.PRN.Backend.API.Common.Constants;
 using EPR.PRN.Backend.API.Common.Dto;
 using EPR.PRN.Backend.API.Common.Enums;
@@ -204,5 +206,114 @@ public class PrnControllerV2Tests
             s => s.SaveEprnDetails(It.Is<Eprn>(e => e.IssuerNotes == model.IssuerNotes)),
             Times.Never
         );
+    }
+
+    [TestMethod]
+    public async Task GetModifiedPrnsbyDate_ReturnsOkWithPrns_WhenPrnsExist()
+    {
+        // Arrange
+        var fromDate = DateTime.UtcNow.AddDays(-7);
+        var toDate = DateTime.UtcNow;
+        var mockPrns = new List<PrnUpdateStatus>
+        {
+            new()
+            {
+                PrnNumber = "123",
+                PrnStatusId = 1,
+                AccreditationYear = "2014",
+                SourceSystemId = "1",
+            },
+            new()
+            {
+                PrnNumber = "456",
+                PrnStatusId = 2,
+                AccreditationYear = "2014",
+                SourceSystemId = "2",
+            },
+        };
+
+        _application
+            .PrnService.Setup(service =>
+                service.GetModifiedPrnsbyDate(
+                    It.Is<DateTime>(d => (d - fromDate) < TimeSpan.FromSeconds(1)),
+                    It.Is<DateTime>(d => (d - toDate) < TimeSpan.FromSeconds(1))
+                )
+            )
+            .ReturnsAsync(mockPrns);
+
+        // Act
+        var result = await _client.CallGetEndpoint<List<PrnUpdateStatus>>(
+            "api/v2/prn/modified-prns",
+            HttpStatusCode.OK,
+            new Dictionary<string, string>
+            {
+                { "From", fromDate.ToString("yyyy-MM-ddTHH:mm:ss") },
+                { "To", toDate.ToString("yyyy-MM-ddTHH:mm:ss") },
+            }
+        );
+
+        // Assert
+        mockPrns.Should().BeEquivalentTo(result);
+    }
+
+    [TestMethod]
+    public async Task GetModifiedPrnsbyDate_ReturnsNoContent_WhenNoPrnsExist()
+    {
+        // Arrange
+        var fromDate = DateTime.UtcNow.AddDays(-7);
+        var toDate = DateTime.UtcNow;
+
+        _application
+            .PrnService.Setup(service =>
+                service.GetModifiedPrnsbyDate(
+                    It.Is<DateTime>(d => (d - fromDate) < TimeSpan.FromSeconds(1)),
+                    It.Is<DateTime>(d => (d - toDate) < TimeSpan.FromSeconds(1))
+                )
+            )
+            .ReturnsAsync([]);
+
+        // Act
+        var result = await _client.CallGetEndpoint<List<PrnUpdateStatus>>(
+            "api/v2/prn/modified-prns",
+            HttpStatusCode.OK,
+            new Dictionary<string, string>
+            {
+                { "From", fromDate.ToString("yyyy-MM-ddTHH:mm:ss") },
+                { "To", toDate.ToString("yyyy-MM-ddTHH:mm:ss") },
+            }
+        );
+
+        // Assert
+        result.Should().BeEmpty();
+    }
+
+    [TestMethod]
+    public async Task GetModifiedPrnsbyDate_ReturnsBadRequest_WhenNoQueryParams()
+    {
+        var result = await _client.CallGetEndpoint<List<PrnUpdateStatus>>(
+            "api/v2/prn/modified-prns",
+            HttpStatusCode.BadRequest
+        );
+        result.Should().BeNull();
+    }
+
+    [TestMethod]
+    public async Task GetModifiedPrnsbyDate_ReturnsBadRequest_WithDefaultDates()
+    {
+        var fromDate = DateTime.UtcNow.AddDays(-7);
+        var toDate = DateTime.UtcNow;
+        var result = await _client.CallGetEndpoint<List<PrnUpdateStatus>>(
+            "api/v2/prn/modified-prns",
+            HttpStatusCode.BadRequest,
+            new Dictionary<string, string> { { "To", toDate.ToString("yyyy-MM-ddTHH:mm:ss") } }
+        );
+        result.Should().BeNull();
+
+        result = await _client.CallGetEndpoint<List<PrnUpdateStatus>>(
+            "api/v2/prn/modified-prns",
+            HttpStatusCode.BadRequest,
+            new Dictionary<string, string> { { "From", fromDate.ToString("yyyy-MM-ddTHH:mm:ss") } }
+        );
+        result.Should().BeNull();
     }
 }

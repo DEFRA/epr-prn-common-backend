@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.Net;
 using AutoMapper;
 using BackendAccountService.Core.Models.Request;
@@ -50,12 +51,13 @@ public class PrnControllerV2(
 
     [HttpGet("modified-prns")]
     [ProducesResponseType(typeof(List<PrnUpdateStatus>), 200)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<List<PrnUpdateStatus>>> GetModifiedPrns(
         [FromQuery] ModifiedPrnsbyDateRequest request
     )
     {
-        if (!ModelState.IsValid)
+        if (request.Validate(new ValidationContext(request)).Any())
             return BadRequest(ModelState);
 
         return Ok(await prnService.GetModifiedPrnsbyDate(request.From, request.To));
