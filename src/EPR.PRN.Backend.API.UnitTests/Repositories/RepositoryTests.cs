@@ -265,7 +265,6 @@ public class RepositoryTests
         data[1].PrnStatusId = 2;
         data[1].AccreditationYear = "2024";
         data[1].SourceSystemId = null;
-        data[1].SourceSystemId = null;
 
         data[2].PrnNumber = "PRN003";
         data[2].StatusUpdatedOn = new DateTime(2024, 12, 12, 0, 0, 0, DateTimeKind.Utc);
