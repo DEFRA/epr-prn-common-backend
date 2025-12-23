@@ -26,7 +26,7 @@ public class PrnController(
     IObligationCalculatorService obligationCalculatorService,
     IOptions<PrnObligationCalculationConfig> config,
     IConfiguration configuration,
-    IValidator<SavePrnDetailsRequest> savePrnDetailsRequestValidator
+    IValidator<SaveNpwdPrnDetailsRequest> savePrnDetailsRequestValidator
 ) : ControllerBase
 {
     private readonly PrnObligationCalculationConfig _config = config.Value;
@@ -142,7 +142,7 @@ public class PrnController(
     }
 
     [HttpGet("ModifiedPrnsbyDate")]
-    [ProducesResponseType(typeof(List<PrnUpdateStatus>), 200)]
+    [ProducesResponseType(typeof(List<NpwdPrnUpdateStatus>), 200)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetModifiedPrnsbyDate(
@@ -154,7 +154,7 @@ public class PrnController(
             return BadRequest(ModelState);
         }
 
-        var prns = await prnService.GetModifiedPrnsbyDate(request.From, request.To);
+        var prns = await prnService.GetModifiedNpwdPrnsbyDate(request.From, request.To);
         if (prns == null || prns.Count == 0)
             return StatusCode(StatusCodes.Status204NoContent);
 
@@ -172,7 +172,7 @@ public class PrnController(
             return BadRequest(ModelState);
         }
 
-        var statusList = await prnService.GetSyncStatuses(request.From, request.To);
+        var statusList = await prnService.GetNpwdSyncStatuses(request.From, request.To);
         return statusList == null || statusList.Count == 0
             ? StatusCode(StatusCodes.Status204NoContent)
             : Ok(statusList);
@@ -417,7 +417,7 @@ public class PrnController(
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> SaveAsync(SavePrnDetailsRequest request)
+    public async Task<IActionResult> SaveAsync(SaveNpwdPrnDetailsRequest request)
     {
         try
         {
@@ -428,7 +428,7 @@ public class PrnController(
                 return new BadRequestObjectResult(validationResult.Errors);
             }
 
-            await prnService.SavePrnDetails(request);
+            await prnService.SaveNpwdPrnDetails(request);
 
             return Ok();
         }

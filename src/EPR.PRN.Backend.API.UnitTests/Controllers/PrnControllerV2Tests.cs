@@ -1,4 +1,6 @@
 using System.Net;
+using Azure.Core;
+using BackendAccountService.Core.Models.Request;
 using EPR.PRN.Backend.API.Common.Constants;
 using EPR.PRN.Backend.API.Common.Dto;
 using EPR.PRN.Backend.API.Common.Enums;
@@ -35,13 +37,13 @@ public class PrnControllerV2Tests
     [TestMethod]
     public async Task ShouldAcceptValidModel()
     {
-        var model = DataGenerator.CreateValidSavePrnDetailsRequestV2();
+        var model = DataGenerator.CreateValidSavePrnDetailsRequest();
         Eprn dbObj = null;
         _application
             .PrnService.Setup(s => s.SaveEprnDetails(It.IsAny<Eprn>()))
             .Callback((Eprn e) => dbObj = e)
             .ReturnsAsync((Eprn e) => e);
-        var (created, location) = await _client.CallPostEndpoint<SavePrnDetailsRequestV2, PrnDto>(
+        var (created, location) = await _client.CallPostEndpoint<SavePrnDetailsRequest, PrnDto>(
             "api/v2/prn",
             model
         );
@@ -98,26 +100,26 @@ public class PrnControllerV2Tests
     }
 
     [TestMethod]
-    [DataRow(nameof(SavePrnDetailsRequestV2.SourceSystemId))]
-    [DataRow(nameof(SavePrnDetailsRequestV2.PrnStatusId))]
-    [DataRow(nameof(SavePrnDetailsRequestV2.PrnSignatory))]
-    [DataRow(nameof(SavePrnDetailsRequestV2.IssuedByOrg))]
-    [DataRow(nameof(SavePrnDetailsRequestV2.OrganisationId))]
-    [DataRow(nameof(SavePrnDetailsRequestV2.OrganisationName))]
-    [DataRow(nameof(SavePrnDetailsRequestV2.AccreditationNumber))]
-    [DataRow(nameof(SavePrnDetailsRequestV2.AccreditationYear))]
-    [DataRow(nameof(SavePrnDetailsRequestV2.ReprocessorExporterAgency))]
-    [DataRow(nameof(SavePrnDetailsRequestV2.DecemberWaste))]
-    [DataRow(nameof(SavePrnDetailsRequestV2.IsExport))]
-    [DataRow(nameof(SavePrnDetailsRequestV2.TonnageValue))]
-    [DataRow(nameof(SavePrnDetailsRequestV2.PrnNumber))]
-    [DataRow(nameof(SavePrnDetailsRequestV2.MaterialName))]
-    [DataRow(nameof(SavePrnDetailsRequestV2.ProcessToBeUsed))]
-    [DataRow(nameof(SavePrnDetailsRequestV2.StatusUpdatedOn))]
-    [DataRow(nameof(SavePrnDetailsRequestV2.ObligationYear))]
+    [DataRow(nameof(SavePrnDetailsRequest.SourceSystemId))]
+    [DataRow(nameof(SavePrnDetailsRequest.PrnStatusId))]
+    [DataRow(nameof(SavePrnDetailsRequest.PrnSignatory))]
+    [DataRow(nameof(SavePrnDetailsRequest.IssuedByOrg))]
+    [DataRow(nameof(SavePrnDetailsRequest.OrganisationId))]
+    [DataRow(nameof(SavePrnDetailsRequest.OrganisationName))]
+    [DataRow(nameof(SavePrnDetailsRequest.AccreditationNumber))]
+    [DataRow(nameof(SavePrnDetailsRequest.AccreditationYear))]
+    [DataRow(nameof(SavePrnDetailsRequest.ReprocessorExporterAgency))]
+    [DataRow(nameof(SavePrnDetailsRequest.DecemberWaste))]
+    [DataRow(nameof(SavePrnDetailsRequest.IsExport))]
+    [DataRow(nameof(SavePrnDetailsRequest.TonnageValue))]
+    [DataRow(nameof(SavePrnDetailsRequest.PrnNumber))]
+    [DataRow(nameof(SavePrnDetailsRequest.MaterialName))]
+    [DataRow(nameof(SavePrnDetailsRequest.ProcessToBeUsed))]
+    [DataRow(nameof(SavePrnDetailsRequest.StatusUpdatedOn))]
+    [DataRow(nameof(SavePrnDetailsRequest.ObligationYear))]
     public async Task ShouldValidateRequiredFields_Missing(string propertyName)
     {
-        var model = DataGenerator.CreateValidSavePrnDetailsRequestV2();
+        var model = DataGenerator.CreateValidSavePrnDetailsRequest();
         model.IssuerNotes = Guid.NewGuid().ToString();
         var json = ToJsonWithoutField(model, propertyName);
         var response = await _client.CallPostEndpointWithJson(
@@ -133,26 +135,26 @@ public class PrnControllerV2Tests
     }
 
     [TestMethod]
-    [DataRow(nameof(SavePrnDetailsRequestV2.SourceSystemId))]
-    [DataRow(nameof(SavePrnDetailsRequestV2.PrnStatusId))]
-    [DataRow(nameof(SavePrnDetailsRequestV2.PrnSignatory))]
-    [DataRow(nameof(SavePrnDetailsRequestV2.IssuedByOrg))]
-    [DataRow(nameof(SavePrnDetailsRequestV2.OrganisationId))]
-    [DataRow(nameof(SavePrnDetailsRequestV2.OrganisationName))]
-    [DataRow(nameof(SavePrnDetailsRequestV2.AccreditationNumber))]
-    [DataRow(nameof(SavePrnDetailsRequestV2.AccreditationYear))]
-    [DataRow(nameof(SavePrnDetailsRequestV2.ReprocessorExporterAgency))]
-    [DataRow(nameof(SavePrnDetailsRequestV2.DecemberWaste))]
-    [DataRow(nameof(SavePrnDetailsRequestV2.IsExport))]
-    [DataRow(nameof(SavePrnDetailsRequestV2.TonnageValue))]
-    [DataRow(nameof(SavePrnDetailsRequestV2.PrnNumber))]
-    [DataRow(nameof(SavePrnDetailsRequestV2.MaterialName))]
-    [DataRow(nameof(SavePrnDetailsRequestV2.ProcessToBeUsed))]
-    [DataRow(nameof(SavePrnDetailsRequestV2.StatusUpdatedOn))]
-    [DataRow(nameof(SavePrnDetailsRequestV2.ObligationYear))]
+    [DataRow(nameof(SavePrnDetailsRequest.SourceSystemId))]
+    [DataRow(nameof(SavePrnDetailsRequest.PrnStatusId))]
+    [DataRow(nameof(SavePrnDetailsRequest.PrnSignatory))]
+    [DataRow(nameof(SavePrnDetailsRequest.IssuedByOrg))]
+    [DataRow(nameof(SavePrnDetailsRequest.OrganisationId))]
+    [DataRow(nameof(SavePrnDetailsRequest.OrganisationName))]
+    [DataRow(nameof(SavePrnDetailsRequest.AccreditationNumber))]
+    [DataRow(nameof(SavePrnDetailsRequest.AccreditationYear))]
+    [DataRow(nameof(SavePrnDetailsRequest.ReprocessorExporterAgency))]
+    [DataRow(nameof(SavePrnDetailsRequest.DecemberWaste))]
+    [DataRow(nameof(SavePrnDetailsRequest.IsExport))]
+    [DataRow(nameof(SavePrnDetailsRequest.TonnageValue))]
+    [DataRow(nameof(SavePrnDetailsRequest.PrnNumber))]
+    [DataRow(nameof(SavePrnDetailsRequest.MaterialName))]
+    [DataRow(nameof(SavePrnDetailsRequest.ProcessToBeUsed))]
+    [DataRow(nameof(SavePrnDetailsRequest.StatusUpdatedOn))]
+    [DataRow(nameof(SavePrnDetailsRequest.ObligationYear))]
     public async Task ShouldValidateRequiredFields_Null(string propertyName)
     {
-        var model = DataGenerator.CreateValidSavePrnDetailsRequestV2();
+        var model = DataGenerator.CreateValidSavePrnDetailsRequest();
         model.GetType().GetProperty(propertyName)!.SetValue(model, null);
         model.IssuerNotes = Guid.NewGuid().ToString();
         var response = await _client.CallPostEndpoint(
@@ -168,12 +170,12 @@ public class PrnControllerV2Tests
     }
 
     [TestMethod]
-    [DataRow(nameof(SavePrnDetailsRequestV2.PrnSignatoryPosition))]
-    [DataRow(nameof(SavePrnDetailsRequestV2.IssuerNotes))]
-    [DataRow(nameof(SavePrnDetailsRequestV2.ReprocessingSite))]
+    [DataRow(nameof(SavePrnDetailsRequest.PrnSignatoryPosition))]
+    [DataRow(nameof(SavePrnDetailsRequest.IssuerNotes))]
+    [DataRow(nameof(SavePrnDetailsRequest.ReprocessingSite))]
     public async Task NonRequiredFieldsCanBeOmmitted(string propertyName)
     {
-        var model = DataGenerator.CreateValidSavePrnDetailsRequestV2();
+        var model = DataGenerator.CreateValidSavePrnDetailsRequest();
         var json = ToJsonWithoutField(model, propertyName);
         _application
             .PrnService.Setup(s => s.SaveEprnDetails(It.IsAny<Eprn>()))
@@ -182,16 +184,16 @@ public class PrnControllerV2Tests
     }
 
     [TestMethod]
-    [DataRow(nameof(SavePrnDetailsRequestV2.SourceSystemId))]
-    [DataRow(nameof(SavePrnDetailsRequestV2.PrnSignatory))]
-    [DataRow(nameof(SavePrnDetailsRequestV2.IssuedByOrg))]
-    [DataRow(nameof(SavePrnDetailsRequestV2.OrganisationName))]
-    [DataRow(nameof(SavePrnDetailsRequestV2.AccreditationNumber))]
-    [DataRow(nameof(SavePrnDetailsRequestV2.AccreditationYear))]
-    [DataRow(nameof(SavePrnDetailsRequestV2.ProcessToBeUsed))]
+    [DataRow(nameof(SavePrnDetailsRequest.SourceSystemId))]
+    [DataRow(nameof(SavePrnDetailsRequest.PrnSignatory))]
+    [DataRow(nameof(SavePrnDetailsRequest.IssuedByOrg))]
+    [DataRow(nameof(SavePrnDetailsRequest.OrganisationName))]
+    [DataRow(nameof(SavePrnDetailsRequest.AccreditationNumber))]
+    [DataRow(nameof(SavePrnDetailsRequest.AccreditationYear))]
+    [DataRow(nameof(SavePrnDetailsRequest.ProcessToBeUsed))]
     public async Task ShouldValidateMinLengthFields(string propertyName)
     {
-        var model = DataGenerator.CreateValidSavePrnDetailsRequestV2();
+        var model = DataGenerator.CreateValidSavePrnDetailsRequest();
         model.IssuerNotes = Guid.NewGuid().ToString();
         model.GetType().GetProperty(propertyName)!.SetValue(model, "");
         var response = await _client.CallPostEndpoint(
@@ -204,5 +206,114 @@ public class PrnControllerV2Tests
             s => s.SaveEprnDetails(It.Is<Eprn>(e => e.IssuerNotes == model.IssuerNotes)),
             Times.Never
         );
+    }
+
+    [TestMethod]
+    public async Task GetModifiedPrnsbyDate_ReturnsOkWithPrns_WhenPrnsExist()
+    {
+        // Arrange
+        var fromDate = DateTime.UtcNow.AddDays(-7);
+        var toDate = DateTime.UtcNow;
+        var mockPrns = new List<PrnUpdateStatus>
+        {
+            new()
+            {
+                PrnNumber = "123",
+                PrnStatusId = 1,
+                AccreditationYear = "2014",
+                SourceSystemId = "1",
+            },
+            new()
+            {
+                PrnNumber = "456",
+                PrnStatusId = 2,
+                AccreditationYear = "2014",
+                SourceSystemId = "2",
+            },
+        };
+
+        _application
+            .PrnService.Setup(service =>
+                service.GetModifiedPrnsbyDate(
+                    It.Is<DateTime>(d => (d - fromDate) < TimeSpan.FromSeconds(1)),
+                    It.Is<DateTime>(d => (d - toDate) < TimeSpan.FromSeconds(1))
+                )
+            )
+            .ReturnsAsync(mockPrns);
+
+        // Act
+        var result = await _client.CallGetEndpoint<List<PrnUpdateStatus>>(
+            "api/v2/prn/modified-prns",
+            HttpStatusCode.OK,
+            new Dictionary<string, string>
+            {
+                { "From", fromDate.ToString("yyyy-MM-ddTHH:mm:ss") },
+                { "To", toDate.ToString("yyyy-MM-ddTHH:mm:ss") },
+            }
+        );
+
+        // Assert
+        mockPrns.Should().BeEquivalentTo(result);
+    }
+
+    [TestMethod]
+    public async Task GetModifiedPrnsbyDate_ReturnsNoContent_WhenNoPrnsExist()
+    {
+        // Arrange
+        var fromDate = DateTime.UtcNow.AddDays(-7);
+        var toDate = DateTime.UtcNow;
+
+        _application
+            .PrnService.Setup(service =>
+                service.GetModifiedPrnsbyDate(
+                    It.Is<DateTime>(d => (d - fromDate) < TimeSpan.FromSeconds(1)),
+                    It.Is<DateTime>(d => (d - toDate) < TimeSpan.FromSeconds(1))
+                )
+            )
+            .ReturnsAsync([]);
+
+        // Act
+        var result = await _client.CallGetEndpoint<List<PrnUpdateStatus>>(
+            "api/v2/prn/modified-prns",
+            HttpStatusCode.OK,
+            new Dictionary<string, string>
+            {
+                { "From", fromDate.ToString("yyyy-MM-ddTHH:mm:ss") },
+                { "To", toDate.ToString("yyyy-MM-ddTHH:mm:ss") },
+            }
+        );
+
+        // Assert
+        result.Should().BeEmpty();
+    }
+
+    [TestMethod]
+    public async Task GetModifiedPrnsbyDate_ReturnsBadRequest_WhenNoQueryParams()
+    {
+        var result = await _client.CallGetEndpoint<List<PrnUpdateStatus>>(
+            "api/v2/prn/modified-prns",
+            HttpStatusCode.BadRequest
+        );
+        result.Should().BeNull();
+    }
+
+    [TestMethod]
+    public async Task GetModifiedPrnsbyDate_ReturnsBadRequest_WithDefaultDates()
+    {
+        var fromDate = DateTime.UtcNow.AddDays(-7);
+        var toDate = DateTime.UtcNow;
+        var result = await _client.CallGetEndpoint<List<PrnUpdateStatus>>(
+            "api/v2/prn/modified-prns",
+            HttpStatusCode.BadRequest,
+            new Dictionary<string, string> { { "To", toDate.ToString("yyyy-MM-ddTHH:mm:ss") } }
+        );
+        result.Should().BeNull();
+
+        result = await _client.CallGetEndpoint<List<PrnUpdateStatus>>(
+            "api/v2/prn/modified-prns",
+            HttpStatusCode.BadRequest,
+            new Dictionary<string, string> { { "From", fromDate.ToString("yyyy-MM-ddTHH:mm:ss") } }
+        );
+        result.Should().BeNull();
     }
 }

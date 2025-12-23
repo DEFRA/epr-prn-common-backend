@@ -1,119 +1,117 @@
-﻿namespace EPR.PRN.Backend.API.Validators
+using EPR.PRN.Backend.API.Common.Constants;
+using EPR.PRN.Backend.API.Common.Dto;
+using EPR.PRN.Backend.API.Common.Enums;
+using EprPrnIntegration.Common.Models.Rpd;
+using FluentValidation;
+
+namespace EPR.PRN.Backend.API.Validators;
+
+public class SavePrnDetailsRequestValidator : AbstractValidator<SavePrnDetailsRequest>
 {
-    using EPR.PRN.Backend.API.Common.Dto;
-    using EPR.PRN.Backend.API.Common.Enums;
-    using FluentValidation;
-
-    public class SavePrnDetailsRequestValidator : AbstractValidator<SavePrnDetailsRequest>
+    public SavePrnDetailsRequestValidator()
     {
-        public SavePrnDetailsRequestValidator()
-        {
-            RuleFor(x => x.AccreditationNo)
-                .NotEmpty()
-                .WithMessage("AccreditationNo is required.")
-                .MaximumLength(20)
-                .WithMessage("AccreditionNo cannot be longer than 20 characters");
+        RuleFor(x => x.SourceSystemId).MandatoryString(PrnConstants.MaxLengthSourceSystemId);
 
-            RuleFor(x => x.AccreditationYear)
-                .NotEmpty()
-                .WithMessage("AccreditationYear is required.")
-                .Must(x => x > 1900 && x <= 9999)
-                .WithMessage("AccreditationYear must be a valid year value");
+        RuleFor(x => x.PrnNumber).MandatoryString(PrnConstants.MaxLengthPrnNumber);
 
-            RuleFor(x => x.DecemberWaste).NotNull().WithMessage("DecemberWaste is required.");
+        RuleFor(x => x.PrnStatusId)
+            .MustBeOneOf([(int)EprnStatus.CANCELLED, (int)EprnStatus.AWAITINGACCEPTANCE]);
 
-            RuleFor(x => x.EvidenceMaterial)
-                .NotEmpty()
-                .WithMessage("EvidenceMaterial is required.")
-                .MaximumLength(20)
-                .WithMessage("EvidenceMaterial cannot be longer than 20 characters");
+        RuleFor(x => x.PrnSignatory).MandatoryString();
 
-            RuleFor(x => x.EvidenceNo)
-                .NotEmpty()
-                .WithMessage("EvidenceNo is required.")
-                .MaximumLength(20)
-                .WithMessage("EvidenceNo cannot be longer than 20 characters");
+        RuleFor(x => x.StatusUpdatedOn).Mandatory();
 
-            RuleFor(x => x.EvidenceStatusCode)
-                .NotNull()
-                .WithMessage("EvidenceStatusCode is required.");
+        RuleFor(x => x.IssuedByOrg).MandatoryString();
 
-            RuleFor(x => x.EvidenceTonnes)
-                .NotNull()
-                .WithMessage("EvidenceTonnes is required.")
-                .Must(x => x != null && x!.Value > 0)
-                .WithMessage("EvidenceTonnes must be greater than 0");
+        RuleFor(x => x.OrganisationId).MandatoryGuid();
 
-            RuleFor(x => x.IssueDate).NotNull().WithMessage("IssueDate is required.");
+        RuleFor(x => x.OrganisationName).MandatoryString();
 
-            RuleFor(x => x.IssuedByOrgName)
-                .NotEmpty()
-                .WithMessage("IssuedByOrgName is required.")
-                .MaximumLength(50)
-                .WithMessage("IssuedByOrgName cannot be longer than 50 characters");
+        RuleFor(x => x.AccreditationNumber).MandatoryString();
 
-            RuleFor(x => x.IssuedToOrgName)
-                .NotEmpty()
-                .WithMessage("IssuedToOrgName is required.")
-                .MaximumLength(160)
-                .WithMessage("IssuedToOrgName cannot be longer than 160 characters");
+        RuleFor(x => x.AccreditationYear).MustBeValidYear();
 
-            RuleFor(x => x.IssuedToEPRId)
-                .NotNull()
-                .WithMessage("IssuedToEPRId is required.")
-                .Must(x => Guid.TryParse(x.ToString(), out _))
-                .WithMessage("Invalid IssuedToEPRId. It must be a valid Guid.");
+        RuleFor(x => x.MaterialName).MustBeOneOf(RpdMaterialName.GetAll());
 
-            RuleFor(x => x.ProducerAgency)
-                .NotEmpty()
-                .WithMessage("ProducerAgency is required.")
-                .MaximumLength(100)
-                .WithMessage("ProducerAgency cannot be longer than 100 characters");
+        RuleFor(x => x.ReprocessorExporterAgency)
+            .MustBeOneOf(RpdReprocessorExporterAgency.GetAll());
 
-            RuleFor(x => x.RecoveryProcessCode)
-                .NotEmpty()
-                .WithMessage("RecoveryProcessCode is required.")
-                .MaximumLength(20)
-                .WithMessage("RecoveryProcessCode cannot be longer than 20 characters");
+        RuleFor(x => x.ReprocessingSite).MandatoryString().When(x => x.IsExport == false);
 
-            RuleFor(x => x.ReprocessorAgency)
-                .NotEmpty()
-                .WithMessage("ReprocessorAgency is required.")
-                .MaximumLength(100)
-                .WithMessage("ReprocessorAgency cannot be longer than 100 characters");
+        RuleFor(x => x.DecemberWaste).Mandatory();
 
-            RuleFor(x => x.StatusDate).NotNull().WithMessage("StatusDate is required.");
+        RuleFor(x => x.IsExport).Mandatory();
 
-            RuleFor(x => x.CancelledDate)
-                .NotNull()
-                .When(x => x.EvidenceStatusCode == EprnStatus.CANCELLED)
-                .WithMessage("CancelledDate is required when the request has cancelled status");
+        RuleFor(x => x.TonnageValue)
+            .Mandatory()
+            .Must(x => x >= 0)
+            .WithMessage("{PropertyName} must be valid positive value.");
 
-            RuleFor(x => x.IssuerNotes)
-                .MaximumLength(200)
-                .WithMessage("IssuerNotes cannot be longer than 200 characters")
-                .When(x => !string.IsNullOrWhiteSpace(x.IssuerNotes));
+        RuleFor(x => x.IssuerNotes).OptionalString();
 
-            RuleFor(x => x.IssuerRef)
-                .MaximumLength(200)
-                .WithMessage("IssuerRef cannot be longer than 200 characters")
-                .When(x => !string.IsNullOrWhiteSpace(x.IssuerRef));
+        RuleFor(x => x.ProcessToBeUsed).MustBeOneOf(RpdProcesses.GetAll());
 
-            RuleFor(x => x.PrnSignatory)
-                .MaximumLength(50)
-                .WithMessage("PrnSignatory cannot be longer than 50 characters")
-                .When(x => !string.IsNullOrWhiteSpace(x.PrnSignatory));
+        RuleFor(x => x.ObligationYear).MustBeValidYear();
+    }
+}
 
-            RuleFor(x => x.PrnSignatoryPosition)
-                .MaximumLength(50)
-                .WithMessage("PrnSignatoryPosition cannot be longer than 50 characters")
-                .When(x => !string.IsNullOrWhiteSpace(x.PrnSignatoryPosition));
+public static class ValidationExtensions
+{
+    public static IRuleBuilderOptions<T, string?> MustBeValidYear<T>(
+        this IRuleBuilder<T, string?> ruleBuilder
+    )
+    {
+        return ruleBuilder
+            .Must(x => int.TryParse(x, out var v) && v is > 1900 and <= 9999)
+            .WithMessage("{PropertyName} must be a valid year value.");
+    }
 
-            RuleFor(x => x.CreatedByUser)
-                .NotNull()
-                .WithMessage("CreatedByUser is required.")
-                .MaximumLength(20)
-                .WithMessage("CreatedByUser cannot be longer than 20 characters");
-        }
+    public static IRuleBuilderOptions<T, TProperty?> MustBeOneOf<T, TProperty>(
+        this IRuleBuilder<T, TProperty?> ruleBuilder,
+        List<TProperty> validValues
+    )
+    {
+        return ruleBuilder
+            .Must(x => x != null && validValues.Contains(x))
+            .WithMessage($"{{PropertyName}} must be one of {string.Join(", ", validValues)}.");
+    }
+
+    public static IRuleBuilderOptions<T, Guid?> MandatoryGuid<T>(
+        this IRuleBuilder<T, Guid?> ruleBuilder
+    )
+    {
+        return ruleBuilder
+            .Mandatory()
+            .Must(x => Guid.TryParse(x.ToString(), out var g) && g != Guid.Empty)
+            .WithMessage("{PropertyName} must be a valid GUID");
+    }
+
+    public static IRuleBuilderOptions<T, string?> MandatoryString<T>(
+        this IRuleBuilder<T, string?> ruleBuilder,
+        int? length = null
+    )
+    {
+        return ruleBuilder
+            .Must(s => !string.IsNullOrWhiteSpace(s))
+            .WithMessage("{PropertyName} is required.")
+            .MaximumLength(length ?? int.MaxValue)
+            .WithMessage($"{{PropertyName}} cannot be longer than {length} characters.");
+    }
+
+    public static IRuleBuilderOptions<T, TProperty?> Mandatory<T, TProperty>(
+        this IRuleBuilder<T, TProperty?> ruleBuilder
+    )
+    {
+        return ruleBuilder.NotNull().WithMessage("{PropertyName} is required.");
+    }
+
+    public static IRuleBuilderOptions<T, string?> OptionalString<T>(
+        this IRuleBuilder<T, string?> ruleBuilder,
+        int? length = null
+    )
+    {
+        return ruleBuilder
+            .MaximumLength(length ?? int.MaxValue)
+            .WithMessage($"{{PropertyName}} cannot be longer than {length} characters.");
     }
 }

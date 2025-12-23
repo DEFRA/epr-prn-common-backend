@@ -9,10 +9,10 @@ using FluentAssertions;
 namespace EPR.PRN.Backend.API.UnitTests.Helpers;
 
 [TestClass]
-public class MapperTests
+public class NpwdPrnMapperTests
 {
     [TestMethod]
-    public void ShouldMapSavePrnDetailsRequestToEprn()
+    public void ShouldMapSaveNpwdPrnDetailsRequestToEprn()
     {
         var prn = new Fixture().Create<SaveNpwdPrnDetailsRequest>();
         prn.EvidenceNo = "EX   ";
@@ -52,7 +52,7 @@ public class MapperTests
     }
 
     [TestMethod]
-    public void ShouldMapSavePrnDetailsequestToEprn_EvidenceStatusCode()
+    public void ShouldMapSaveNpwdPrnDetailsRequestToEprn_EvidenceStatusCode()
     {
         var prn = new Fixture().Create<SaveNpwdPrnDetailsRequest>();
         prn.EvidenceStatusCode = EprnStatus.ACCEPTED;
@@ -61,7 +61,7 @@ public class MapperTests
     }
 
     [TestMethod]
-    public void ShouldMapSavePrnDetailsequestToEprn_ObligationYearNull()
+    public void ShouldMapSaveNpwdPrnDetailsequestToEprn_ObligationYearNull()
     {
         var prn = new Fixture().Create<SaveNpwdPrnDetailsRequest>();
         prn.ObligationYear = null;

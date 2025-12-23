@@ -2,10 +2,10 @@
 {
     public class PrnUpdateStatus
     {
-        public required string EvidenceNo { get; set; }
-        public required string EvidenceStatusCode { get; set; }
+        public required string PrnNumber { get; set; }
+        public required int PrnStatusId { get; set; }
         public DateTime? StatusDate { get; set; }
         public required string AccreditationYear { get; set; }
-        public string? SourceSystemId { get; set; }
+        public required string SourceSystemId { get; set; }
     }
 }

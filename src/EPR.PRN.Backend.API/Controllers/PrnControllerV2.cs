@@ -1,5 +1,7 @@
+using System.ComponentModel.DataAnnotations;
 using System.Net;
 using AutoMapper;
+using BackendAccountService.Core.Models.Request;
 using EPR.PRN.Backend.API.Common.Dto;
 using EPR.PRN.Backend.API.Dto;
 using EPR.PRN.Backend.API.Profiles;
@@ -17,7 +19,7 @@ namespace EPR.PRN.Backend.API.Controllers;
 public class PrnControllerV2(
     IPrnService prnService,
     ILogger<PrnControllerV2> logger,
-    IValidator<SavePrnDetailsRequestV2> savePrnDetailsRequestV2Validator
+    IValidator<SavePrnDetailsRequest> savePrnDetailsRequestV2Validator
 ) : ControllerBase
 {
     private readonly IMapper _mapper = PrnMapper.CreateMapper();
@@ -26,7 +28,7 @@ public class PrnControllerV2(
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult<PrnDto>> SaveAsync([FromBody] SavePrnDetailsRequestV2 requestV2)
+    public async Task<ActionResult<PrnDto>> SaveAsync([FromBody] SavePrnDetailsRequest requestV2)
     {
         var validationResult = await savePrnDetailsRequestV2Validator.ValidateAsync(requestV2);
 
@@ -45,5 +47,19 @@ public class PrnControllerV2(
             logger.LogError(ex, "Recieved Unhandled exception");
             return Problem("Internal Server Error", null, (int)HttpStatusCode.InternalServerError);
         }
+    }
+
+    [HttpGet("modified-prns")]
+    [ProducesResponseType(typeof(List<PrnUpdateStatus>), 200)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<List<PrnUpdateStatus>>> GetModifiedPrns(
+        [FromQuery] ModifiedPrnsbyDateRequest request
+    )
+    {
+        if (request.Validate(new ValidationContext(request)).Any())
+            return BadRequest(ModelState);
+
+        return Ok(await prnService.GetModifiedPrnsbyDate(request.From, request.To));
     }
 }

@@ -56,7 +56,7 @@ public class Repository(
         return prns;
     }
 
-    public async Task<List<PrnUpdateStatus>> GetModifiedPrnsbyDate(
+    public async Task<List<NpwdPrnUpdateStatus>> GetModifiedNpwdPrnsbyDate(
         DateTime fromDate,
         DateTime toDate
     )
@@ -67,6 +67,7 @@ public class Repository(
             where
                 p.StatusUpdatedOn >= fromDate
                 && p.StatusUpdatedOn <= toDate
+                && p.SourceSystemId == null
                 && (p.PrnStatusId == 1 || p.PrnStatusId == 2)
                 && !_eprContext.PEprNpwdSync.Any(s =>
                     p.Id == s.PRNId && p.PrnStatusId == s.PRNStatusId
@@ -77,6 +78,42 @@ public class Repository(
                 ps.StatusName,
                 p.StatusUpdatedOn,
                 p.AccreditationYear,
+            }
+        ).ToListAsync();
+
+        var prnUpdateStatuses = result
+            .Select(p => new NpwdPrnUpdateStatus
+            {
+                EvidenceNo = p.PrnNumber,
+                EvidenceStatusCode = MapStatusCode(
+                    (EprnStatus)Enum.Parse(typeof(EprnStatus), p.StatusName)
+                ),
+                StatusDate = p.StatusUpdatedOn?.ToUniversalTime(),
+                AccreditationYear = p.AccreditationYear,
+            })
+            .ToList();
+
+        return prnUpdateStatuses;
+    }
+
+    public async Task<List<PrnUpdateStatus>> GetModifiedPrnsbyDate(
+        DateTime fromDate,
+        DateTime toDate
+    )
+    {
+        var result = await (
+            from p in _eprContext.Prn
+            where
+                p.StatusUpdatedOn >= fromDate
+                && p.StatusUpdatedOn <= toDate
+                && p.SourceSystemId != null
+                && (p.PrnStatusId == 1 || p.PrnStatusId == 2)
+            select new
+            {
+                p.PrnNumber,
+                p.PrnStatusId,
+                p.StatusUpdatedOn,
+                p.AccreditationYear,
                 p.SourceSystemId,
             }
         ).ToListAsync();
@@ -84,10 +121,8 @@ public class Repository(
         var prnUpdateStatuses = result
             .Select(p => new PrnUpdateStatus
             {
-                EvidenceNo = p.PrnNumber,
-                EvidenceStatusCode = MapStatusCode(
-                    (EprnStatus)Enum.Parse(typeof(EprnStatus), p.StatusName)
-                ),
+                PrnNumber = p.PrnNumber,
+                PrnStatusId = p.PrnStatusId,
                 StatusDate = p.StatusUpdatedOn?.ToUniversalTime(),
                 AccreditationYear = p.AccreditationYear,
                 SourceSystemId = p.SourceSystemId,
@@ -97,11 +132,12 @@ public class Repository(
         return prnUpdateStatuses;
     }
 
-    public async Task<List<PrnStatusSync>> GetSyncStatuses(DateTime fromDate, DateTime toDate)
+    public async Task<List<PrnStatusSync>> GetNpwdSyncStatuses(DateTime fromDate, DateTime toDate)
     {
         var result = await (
             from p in _eprContext.Prn
             join ps in _eprContext.PEprNpwdSync on p.Id equals ps.PRNId
+            where p.SourceSystemId == null
             where ps.CreatedOn >= fromDate && ps.CreatedOn < toDate
             select new
             {
@@ -109,7 +145,6 @@ public class Repository(
                 ps.PRNStatusId,
                 p.OrganisationName,
                 ps.CreatedOn,
-                p.SourceSystemId,
             }
         ).ToListAsync();
 
@@ -120,7 +155,6 @@ public class Repository(
                 StatusName = MapStatusCode((EprnStatus)p.PRNStatusId),
                 OrganisationName = p.OrganisationName,
                 UpdatedOn = p.CreatedOn,
-                SourceSystemId = p.SourceSystemId,
             })
             .ToList();
 

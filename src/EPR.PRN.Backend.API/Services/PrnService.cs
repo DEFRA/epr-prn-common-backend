@@ -8,6 +8,7 @@ using EPR.PRN.Backend.API.Common.Dto;
 using EPR.PRN.Backend.API.Common.Enums;
 using EPR.PRN.Backend.API.Dto;
 using EPR.PRN.Backend.API.Helpers;
+using EPR.PRN.Backend.API.Mappers;
 using EPR.PRN.Backend.API.Models;
 using EPR.PRN.Backend.API.Repositories.Interfaces;
 using EPR.PRN.Backend.API.Services.Interfaces;
@@ -67,14 +68,7 @@ public class PrnService(
         DateTime toDate
     )
     {
-        var modifiedPrns = await repository.GetModifiedPrnsbyDate(fromDate, toDate);
-
-        return modifiedPrns ?? null;
-    }
-
-    public async Task<List<PrnStatusSync>> GetSyncStatuses(DateTime fromDate, DateTime toDate)
-    {
-        return await repository.GetSyncStatuses(fromDate, toDate);
+        return await repository.GetModifiedPrnsbyDate(fromDate, toDate);
     }
 
     public async Task<PaginatedResponseDto<PrnDto>> GetSearchPrnsForOrganisation(
@@ -180,29 +174,6 @@ public class PrnService(
     }
 
     /// <summary>
-    /// This is for NPWD and will be phased out when that system is phased out
-    /// </summary>
-    public async Task SavePrnDetails(SavePrnDetailsRequest prn)
-    {
-        try
-        {
-            await repository.SavePrnDetails(prn.ConvertToEprn());
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(
-                exception: ex,
-                "{Logprefix}: Error Message: {Message}",
-                logPrefix,
-                ex.Message
-            );
-            throw new OperationCanceledException(
-                "Error encountered when attempting to map and save PRN requst. Please see the logs for details."
-            );
-        }
-    }
-
-    /// <summary>
     /// This is for RREPW
     /// </summary>
     public async Task<Eprn> SaveEprnDetails(Eprn prn)
@@ -236,6 +207,31 @@ public class PrnService(
         }
     }
 
+    private void UpdatePrn(Guid userId, PrnUpdateStatusDto prnUpdate, Eprn prn)
+    {
+        var updateDate = DateTime.UtcNow;
+        var prnStatusHistory = new PrnStatusHistory()
+        {
+            PrnIdFk = prn.Id,
+            PrnStatusIdFk = (int)prnUpdate.Status,
+            CreatedOn = updateDate,
+            CreatedByUser = userId,
+        };
+
+        repository.AddPrnStatusHistory(prnStatusHistory);
+        logger.LogInformation(
+            "{Logprefix}: PrnService - UpdateStatus: Added Prn Status History. {PrnStatusHistory}",
+            logPrefix,
+            JsonConvert.SerializeObject(prnStatusHistory)
+        );
+
+        prn.PrnStatusId = (int)prnUpdate.Status;
+        prn.LastUpdatedBy = userId;
+        prn.LastUpdatedDate = updateDate;
+        prn.StatusUpdatedOn = updateDate;
+    }
+
+    #region Npwd Specific
     public async Task InsertPeprNpwdSyncPrns(List<InsertSyncedPrn> syncedPrns)
     {
         List<Eprn> prns = await repository.GetPrnsForPrnNumbers(
@@ -280,27 +276,40 @@ public class PrnService(
         );
     }
 
-    private void UpdatePrn(Guid userId, PrnUpdateStatusDto prnUpdate, Eprn prn)
+    public async Task<List<PrnStatusSync>> GetNpwdSyncStatuses(DateTime fromDate, DateTime toDate)
     {
-        var updateDate = DateTime.UtcNow;
-        var prnStatusHistory = new PrnStatusHistory()
-        {
-            PrnIdFk = prn.Id,
-            PrnStatusIdFk = (int)prnUpdate.Status,
-            CreatedOn = updateDate,
-            CreatedByUser = userId,
-        };
-
-        repository.AddPrnStatusHistory(prnStatusHistory);
-        logger.LogInformation(
-            "{Logprefix}: PrnService - UpdateStatus: Added Prn Status History. {PrnStatusHistory}",
-            logPrefix,
-            JsonConvert.SerializeObject(prnStatusHistory)
-        );
-
-        prn.PrnStatusId = (int)prnUpdate.Status;
-        prn.LastUpdatedBy = userId;
-        prn.LastUpdatedDate = updateDate;
-        prn.StatusUpdatedOn = updateDate;
+        return await repository.GetNpwdSyncStatuses(fromDate, toDate);
     }
+
+    /// <summary>
+    /// This is for NPWD and will be phased out when that system is phased out
+    /// </summary>
+    public async Task SaveNpwdPrnDetails(SaveNpwdPrnDetailsRequest prn)
+    {
+        try
+        {
+            await repository.SavePrnDetails(prn.ConvertToEprn());
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(
+                exception: ex,
+                "{Logprefix}: Error Message: {Message}",
+                logPrefix,
+                ex.Message
+            );
+            throw new OperationCanceledException(
+                "Error encountered when attempting to map and save PRN requst. Please see the logs for details."
+            );
+        }
+    }
+
+    public async Task<List<NpwdPrnUpdateStatus>> GetModifiedNpwdPrnsbyDate(
+        DateTime fromDate,
+        DateTime toDate
+    )
+    {
+        return await repository.GetModifiedNpwdPrnsbyDate(fromDate, toDate);
+    }
+    #endregion
 }

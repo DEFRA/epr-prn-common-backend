@@ -2,7 +2,7 @@
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 namespace EPR.PRN.Backend.API.Common.Dto;
 
-public class SavePrnDetailsRequestV2
+public class SavePrnDetailsRequest
 {
     public string? SourceSystemId { get; set; }
     public string? PrnNumber { get; set; }

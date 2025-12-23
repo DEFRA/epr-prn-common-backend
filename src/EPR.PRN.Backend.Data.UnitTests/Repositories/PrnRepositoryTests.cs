@@ -15,7 +15,7 @@ public class PrnRepositoryTests
 {
     private EprContext _context;
     private PrnRepository _repository;
-    private readonly SavePrnDetailsRequestV2 _validSavePrnDetailsRequestV2 = new()
+    private readonly SavePrnDetailsRequest _validSavePrnDetailsRequestV2 = new()
     {
         PrnNumber = "PRN123",
         OrganisationId = Guid.NewGuid(),

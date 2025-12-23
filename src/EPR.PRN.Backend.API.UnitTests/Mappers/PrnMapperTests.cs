@@ -6,7 +6,7 @@ using FluentAssertions;
 namespace EPR.PRN.Backend.API.UnitTests.Mappers;
 
 [TestClass]
-public class MapperTests
+public class PrnMapperTests
 {
     [TestMethod]
     public void ShouldMapSavePrnDetailsRequestToEprn()

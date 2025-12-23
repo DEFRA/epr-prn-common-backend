@@ -35,13 +35,20 @@ public static class TestUtilsExtensions
         this HttpClient client,
         string url,
         HttpStatusCode expectedResponse = HttpStatusCode.OK,
-        NameValueCollection queryParameters = null
+        Dictionary<string, string> queryParameters = null
     )
     {
         var uriBuilder = new UriBuilder(new Uri(client.BaseAddress!, url));
 
         if (queryParameters is not null)
-            uriBuilder.Query = queryParameters.ToString() ?? "";
+        {
+            uriBuilder.Query = string.Join(
+                "&",
+                queryParameters.Select(p =>
+                    $"{Uri.EscapeDataString(p.Key)}={Uri.EscapeDataString(p.Value)}"
+                )
+            );
+        }
 
         var request = new HttpRequestMessage
         {
@@ -59,7 +66,7 @@ public static class TestUtilsExtensions
         }
 
         response.ShouldHaveStatus(expectedResponse);
-        return await response.GetContent<T>();
+        return response.IsSuccessStatusCode ? await response.GetContent<T>() : default!;
     }
 
     public static async Task<TResponse> CallGetEndpoint<TResponse, TQuery>(
