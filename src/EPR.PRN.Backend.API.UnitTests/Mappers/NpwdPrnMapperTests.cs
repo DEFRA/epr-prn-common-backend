@@ -2,6 +2,7 @@ using AutoFixture;
 using EPR.PRN.Backend.API.Common.Dto;
 using EPR.PRN.Backend.API.Common.Enums;
 using EPR.PRN.Backend.API.Helpers;
+using EPR.PRN.Backend.API.Mappers;
 using EPR.PRN.Backend.Data.DataModels;
 using FluentAssertions;
 
@@ -11,9 +12,9 @@ namespace EPR.PRN.Backend.API.UnitTests.Helpers;
 public class NpwdPrnMapperTests
 {
     [TestMethod]
-    public void ShouldMapSavePrnDetailsRequestToEprn()
+    public void ShouldMapSaveNpwdPrnDetailsRequestToEprn()
     {
-        var prn = new Fixture().Create<SavePrnDetailsRequest>();
+        var prn = new Fixture().Create<SaveNpwdPrnDetailsRequest>();
         prn.EvidenceNo = "EX   ";
         prn.ObligationYear = 2024;
         prn.EvidenceStatusCode = EprnStatus.CANCELLED;
@@ -51,18 +52,18 @@ public class NpwdPrnMapperTests
     }
 
     [TestMethod]
-    public void ShouldMapSavePrnDetailsequestToEprn_EvidenceStatusCode()
+    public void ShouldMapSaveNpwdPrnDetailsRequestToEprn_EvidenceStatusCode()
     {
-        var prn = new Fixture().Create<SavePrnDetailsRequest>();
+        var prn = new Fixture().Create<SaveNpwdPrnDetailsRequest>();
         prn.EvidenceStatusCode = EprnStatus.ACCEPTED;
         var eprn = prn.ConvertToEprn();
         eprn.StatusUpdatedOn.Should().Be(prn.StatusDate);
     }
 
     [TestMethod]
-    public void ShouldMapSavePrnDetailsequestToEprn_ObligationYearNull()
+    public void ShouldMapSaveNpwdPrnDetailsequestToEprn_ObligationYearNull()
     {
-        var prn = new Fixture().Create<SavePrnDetailsRequest>();
+        var prn = new Fixture().Create<SaveNpwdPrnDetailsRequest>();
         prn.ObligationYear = null;
         var eprn = prn.ConvertToEprn();
         eprn.ObligationYear.Should()

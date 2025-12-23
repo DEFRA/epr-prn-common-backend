@@ -11,9 +11,9 @@ public class PrnMapperTests
     [TestMethod]
     public void ShouldMapSavePrnDetailsRequestToEprn()
     {
-        var saveRequest = DataGenerator.CreateValidSavePrnDetailsRequestV2();
+        var saveRequest = DataGenerator.CreateValidSavePrnDetailsRequest();
         var mapper = PrnMapper.CreateMapper();
-        var result = mapper.Map<SavePrnDetailsRequestV2, Eprn>(saveRequest);
+        var result = mapper.Map<SavePrnDetailsRequest, Eprn>(saveRequest);
         result.Should().BeEquivalentTo(saveRequest);
     }
 }

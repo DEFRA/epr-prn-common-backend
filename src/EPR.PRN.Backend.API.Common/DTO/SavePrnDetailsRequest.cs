@@ -6,7 +6,7 @@
 
     //this will be removed when NPWD is decommissioned
     [ExcludeFromCodeCoverage]
-    public class SavePrnDetailsRequest
+    public class SaveNpwdPrnDetailsRequest
     {
         public string? AccreditationNo { get; set; }
         public int? AccreditationYear { get; set; }

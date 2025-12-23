@@ -1,250 +1,395 @@
-﻿using EPR.PRN.Backend.API.Common.Dto;
+using EPR.PRN.Backend.API.Common.Constants;
+using EPR.PRN.Backend.API.Common.Dto;
 using EPR.PRN.Backend.API.Common.Enums;
 using EPR.PRN.Backend.API.Validators;
+using EprPrnIntegration.Common.Models.Rpd;
 using FluentAssertions;
+using FluentValidation.Results;
 
-namespace EPR.PRN.Backend.API.UnitTests.Validators
+namespace EPR.PRN.Backend.API.UnitTests.Validators;
+
+[TestClass]
+public class SavePrnDetailsRequestValidatorV2Tests
 {
-    [TestClass]
-    public class SavePrnDetailsRequestValidatorTests
+    private static List<ValidationFailure> Validate(SavePrnDetailsRequest model)
     {
-        private readonly SavePrnDetailsRequest _validPrn = new SavePrnDetailsRequest()
+        var validator = new SavePrnDetailsRequestValidator();
+        return validator.Validate(model).Errors;
+    }
+
+    [TestMethod]
+    public void ShouldAcceptValidModel()
+    {
+        var model = DataGenerator.CreateValidSavePrnDetailsRequest();
+
+        var results = Validate(model);
+
+        results.Should().BeEmpty();
+    }
+
+    [TestMethod]
+    [DataRow(1000, false)]
+    [DataRow(null, false)]
+    [DataRow((int)EprnStatus.CANCELLED, true)]
+    [DataRow((int)EprnStatus.AWAITINGACCEPTANCE, true)]
+    [DataRow((int)EprnStatus.ACCEPTED, false)]
+    [DataRow((int)EprnStatus.REJECTED, false)]
+    public void ShouldOnlyAcceptValidPrnStatusId(int? value, bool valid)
+    {
+        var model = DataGenerator.CreateValidSavePrnDetailsRequest();
+        model.PrnStatusId = value;
+
+        var results = Validate(model);
+        if (valid)
+            results.Should().BeEmpty();
+        else
         {
-            AccreditationNo = "ABC",
-            AccreditationYear = 2018,
-            DecemberWaste = true,
-            EvidenceMaterial = "Aluminium",
-            EvidenceNo = "123",
-            EvidenceTonnes = 5000,
-            EvidenceStatusCode = EprnStatus.ACCEPTED,
-            IssueDate = DateTime.UtcNow.AddDays(-5),
-            CreatedByUser = "a",
-            IssuedByNPWDCode = "NPWD367742",
-            IssuedByOrgName = "ANB",
-            IssuedToEPRId = Guid.NewGuid(),
-            IssuedToNPWDCode = "NPWD557742",
-            IssuedToOrgName = "ZNZ",
-            IssuerNotes = "no notes",
-            IssuerRef = "ANB-1123",
-            MaterialOperationCode = "R-PLA",
-            ObligationYear = 2025,
-            PrnSignatory = "Pat Anderson",
-            PrnSignatoryPosition = "Director",
-            ProducerAgency = "TTL",
-            RecoveryProcessCode = "N11",
-            ReprocessorAgency = "BEX",
-            StatusDate = DateTime.UtcNow,
-        };
-
-        [TestMethod]
-        [DataRow("AccreditationNo", null)]
-        [DataRow("AccreditationYear", null)]
-        [DataRow("EvidenceMaterial", null)]
-        [DataRow("EvidenceNo", null)]
-        [DataRow("IssuedToEPRId", null)]
-        [DataRow("EvidenceStatusCode", null)]
-        [DataRow("EvidenceTonnes", null)]
-        [DataRow("IssuedByOrgName", null)]
-        [DataRow("IssuedToOrgName", null)]
-        [DataRow("ProducerAgency", null)]
-        [DataRow("RecoveryProcessCode", null)]
-        [DataRow("StatusDate", null)]
-        public void Test_SavePrnDetailsRequestValidator_Returns_Correct_ValidationResultOnNullInput(
-            string propertyName,
-            object propertyValue
-        )
-        {
-            var validator = new SavePrnDetailsRequestValidator();
-
-            var dto = new SavePrnDetailsRequest()
-            {
-                AccreditationNo = "ABC",
-                AccreditationYear = 2018,
-                CancelledDate = DateTime.UtcNow.AddDays(-1),
-                DecemberWaste = true,
-                EvidenceMaterial = "Aluminium",
-                EvidenceNo = Guid.NewGuid().ToString(),
-                EvidenceStatusCode = EprnStatus.AWAITINGACCEPTANCE,
-                EvidenceTonnes = 5000,
-                IssueDate = DateTime.UtcNow.AddDays(-5),
-                IssuedByNPWDCode = "NPWD367742",
-                IssuedByOrgName = "ANB",
-                IssuedToEPRId = Guid.NewGuid(),
-                IssuedToNPWDCode = "NPWD557742",
-                IssuedToOrgName = "ZNZ",
-                IssuerNotes = "no notes",
-                IssuerRef = "ANB-1123",
-                MaterialOperationCode = "R-PLA",
-                ObligationYear = 2025,
-                PrnSignatory = "Pat Anderson",
-                PrnSignatoryPosition = "Director",
-                ProducerAgency = "TTL",
-                RecoveryProcessCode = "N11",
-                ReprocessorAgency = "BEX",
-                StatusDate = DateTime.UtcNow,
-                CreatedByUser = string.Empty,
-            };
-
-            // Get all property names from DTO class
-            var props = typeof(SavePrnDetailsRequest)
-                .GetProperties(
-                    System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance
-                )
-                .ToList();
-
-            var matchingProp = props.Find(x =>
-                string.Equals(x.Name, propertyName, StringComparison.InvariantCulture)
+            var res = results.FirstOrDefault(r =>
+                r.PropertyName == nameof(SavePrnDetailsRequest.PrnStatusId)
             );
-            matchingProp.Should().NotBeNull();
+            res.Should().NotBeNull();
+            res!.ToString().Should().Be("Prn Status Id must be one of 3, 4.");
+        }
+    }
 
-            // Set the value of the property (overriding the default value set above) to the value passed in as the argument to this method
-            matchingProp.SetValue(dto, propertyValue);
+    [TestMethod]
+    [DataRow("1900")]
+    [DataRow("10000")]
+    [DataRow("abdf")]
+    [DataRow(null)]
+    public void ShouldNotAcceptAccreditationYearWhenInvalid(string value)
+    {
+        var model = DataGenerator.CreateValidSavePrnDetailsRequest();
+        model.AccreditationYear = value;
 
-            // Act
-            var result = validator.Validate(dto);
+        var results = Validate(model);
 
-            // Assert
-            result.Should().NotBeNull();
-            result.Errors.Select(x => x.PropertyName).Should().Contain(propertyName);
+        var res = results.FirstOrDefault(r =>
+            r.PropertyName == nameof(SavePrnDetailsRequest.AccreditationYear)
+        );
+        res.Should().NotBeNull();
+        res!.ToString().Should().Be("Accreditation Year must be a valid year value.");
+    }
+
+    [TestMethod]
+    [DataRow("1901")]
+    [DataRow("9999")]
+    [DataRow("2024")]
+    public void ShouldAcceptAccreditationYearWhenValid(string year)
+    {
+        var model = DataGenerator.CreateValidSavePrnDetailsRequest();
+        model.AccreditationYear = year;
+
+        var results = Validate(model);
+
+        results.Should().BeEmpty();
+    }
+
+    [TestMethod]
+    [DataRow("1900")]
+    [DataRow("10000")]
+    [DataRow("abdf")]
+    [DataRow(null)]
+    public void ShouldNotAcceptObligationYearWhenInvalid(string value)
+    {
+        var model = DataGenerator.CreateValidSavePrnDetailsRequest();
+        model.ObligationYear = value;
+
+        var results = Validate(model);
+
+        var res = results.FirstOrDefault(r =>
+            r.PropertyName == nameof(SavePrnDetailsRequest.ObligationYear)
+        );
+        res.Should().NotBeNull();
+        res!.ToString().Should().Be("Obligation Year must be a valid year value.");
+    }
+
+    [TestMethod]
+    [DataRow("1901")]
+    [DataRow("9999")]
+    [DataRow("2024")]
+    public void ShouldAcceptObligationYearWhenValid(string year)
+    {
+        var model = DataGenerator.CreateValidSavePrnDetailsRequest();
+        model.ObligationYear = year;
+
+        var results = Validate(model);
+
+        results.Should().BeEmpty();
+    }
+
+    [TestMethod]
+    public void ShouldNotAcceptRequiredGuidFieldsWhenEmpty()
+    {
+        var model = DataGenerator.CreateValidSavePrnDetailsRequest();
+        model.OrganisationId = Guid.Empty;
+
+        var results = Validate(model);
+
+        var res = results.FirstOrDefault(r =>
+            r.PropertyName == nameof(SavePrnDetailsRequest.OrganisationId)
+        );
+        res.Should().NotBeNull();
+        res!.ToString().Should().EndWith(" must be a valid GUID");
+    }
+
+    [TestMethod]
+    [DataRow(RpdMaterialName.Aluminium, true)]
+    [DataRow(RpdMaterialName.Fibre, true)]
+    [DataRow(RpdMaterialName.GlassRemelt, true)]
+    [DataRow(RpdMaterialName.GlassOther, true)]
+    [DataRow(RpdMaterialName.PaperBoard, true)]
+    [DataRow(RpdMaterialName.Plastic, true)]
+    [DataRow(RpdMaterialName.Steel, true)]
+    [DataRow(RpdMaterialName.Wood, true)]
+    [DataRow("InvalidMaterial", false)]
+    [DataRow(null, false)]
+    public void ShouldOnlyAcceptValidMaterialNames(string materialName, bool valid)
+    {
+        var model = DataGenerator.CreateValidSavePrnDetailsRequest();
+        model.MaterialName = materialName;
+
+        var results = Validate(model);
+        if (valid)
+            results.Should().BeEmpty();
+        else
+        {
+            var res = results.FirstOrDefault(r =>
+                r.PropertyName == nameof(SavePrnDetailsRequest.MaterialName)
+            );
+            res.Should().NotBeNull();
+            res!
+                .ToString()
+                .Should()
+                .Be(
+                    "Material Name must be one of Aluminium, Fibre, Glass Re-melt, Glass Other, Paper/board, Plastic, Steel, Wood."
+                );
+        }
+    }
+
+    [TestMethod]
+    [DataRow(RpdReprocessorExporterAgency.EnvironmentAgency, true)]
+    [DataRow(RpdReprocessorExporterAgency.NaturalResourcesWales, true)]
+    [DataRow(RpdReprocessorExporterAgency.NorthernIrelandEnvironmentAgency, true)]
+    [DataRow(RpdReprocessorExporterAgency.ScottishEnvironmentProtectionAge, true)]
+    [DataRow("Invalid", false)]
+    [DataRow(null, false)]
+    public void ShouldOnlyAcceptValidRpdReprocessorExporterAgency(string rea, bool valid)
+    {
+        var model = DataGenerator.CreateValidSavePrnDetailsRequest();
+        model.ReprocessorExporterAgency = rea;
+
+        var results = Validate(model);
+        if (valid)
+            results.Should().BeEmpty();
+        else
+        {
+            var res = results.FirstOrDefault(r =>
+                r.PropertyName == nameof(SavePrnDetailsRequest.ReprocessorExporterAgency)
+            );
+            res.Should().NotBeNull();
+            res!
+                .ToString()
+                .Should()
+                .Be(
+                    "Reprocessor Exporter Agency must be one of Environment Agency, Natural Resources Wales, Northern Ireland Environment Agency, Scottish Environment Protection Age."
+                );
+        }
+    }
+
+    [TestMethod]
+    [DataRow(RpdProcesses.R3, true)]
+    [DataRow(RpdProcesses.R4, true)]
+    [DataRow(RpdProcesses.R5, true)]
+    [DataRow("Invalid", false)]
+    [DataRow(null, false)]
+    public void ShouldOnlyAcceptValidProcessesToBeUsed(string processToBeUsed, bool valid)
+    {
+        var model = DataGenerator.CreateValidSavePrnDetailsRequest();
+        model.ProcessToBeUsed = processToBeUsed;
+
+        var results = Validate(model);
+        if (valid)
+            results.Should().BeEmpty();
+        else
+        {
+            var res = results.FirstOrDefault(r =>
+                r.PropertyName == nameof(SavePrnDetailsRequest.ProcessToBeUsed)
+            );
+            res.Should().NotBeNull();
+            res!.ToString().Should().Be("Process To Be Used must be one of R3, R4, R5.");
+        }
+    }
+
+    [TestMethod]
+    public void ShouldEnforceReprocessingSiteIfPRN()
+    {
+        var model = DataGenerator.CreateValidSavePrnDetailsRequest();
+        // this means PRN
+        model.IsExport = false;
+        var strings = new List<string> { "", "  ", null };
+        foreach (var s in strings)
+        {
+            model.ReprocessingSite = s;
+            var results = Validate(model);
+            var res = results.FirstOrDefault(r =>
+                r.PropertyName == nameof(SavePrnDetailsRequest.ReprocessingSite)
+            );
+            res.Should().NotBeNull();
+            res!.ToString().Should().Be("Reprocessing Site is required.");
+        }
+        model.ReprocessingSite = "Valid Site";
+        Validate(model).Should().BeEmpty();
+    }
+
+    [TestMethod]
+    public void ShouldNotEnforceReprocessingSiteIfNotPRN()
+    {
+        var model = DataGenerator.CreateValidSavePrnDetailsRequest();
+        // this means not PRN
+        model.IsExport = true;
+        var strings = new List<string> { "", "  ", "Valid Site", null };
+        foreach (var s in strings)
+        {
+            model.ReprocessingSite = s;
+            Validate(model).Should().BeEmpty();
+        }
+    }
+
+    [TestMethod]
+    [DataRow(nameof(SavePrnDetailsRequest.PrnNumber), PrnConstants.MaxLengthPrnNumber)]
+    [DataRow(nameof(SavePrnDetailsRequest.SourceSystemId), PrnConstants.MaxLengthSourceSystemId)]
+    public void ShouldNotAcceptFieldsWithMaxLengthWhenLengthExceeded(
+        string propertyName,
+        int length
+    )
+    {
+        var model = DataGenerator.CreateValidSavePrnDetailsRequest();
+        typeof(SavePrnDetailsRequest)
+            .GetProperty(propertyName)!
+            .SetValue(model, new string('x', length + 1));
+
+        var results = Validate(model);
+
+        var res = results.FirstOrDefault(r => r.PropertyName == propertyName);
+        res.Should().NotBeNull();
+        res!.ToString().Should().EndWith($" cannot be longer than {length} characters.");
+
+        model = DataGenerator.CreateValidSavePrnDetailsRequest();
+        typeof(SavePrnDetailsRequest)
+            .GetProperty(propertyName)!
+            .SetValue(model, new string('2', length));
+
+        results = Validate(model);
+
+        results.Should().BeEmpty();
+    }
+
+    [TestMethod]
+    [DataRow(nameof(SavePrnDetailsRequest.SourceSystemId))]
+    [DataRow(nameof(SavePrnDetailsRequest.PrnNumber))]
+    [DataRow(nameof(SavePrnDetailsRequest.PrnSignatory))]
+    [DataRow(nameof(SavePrnDetailsRequest.StatusUpdatedOn))]
+    [DataRow(nameof(SavePrnDetailsRequest.IssuedByOrg))]
+    [DataRow(nameof(SavePrnDetailsRequest.OrganisationId))]
+    [DataRow(nameof(SavePrnDetailsRequest.OrganisationName))]
+    [DataRow(nameof(SavePrnDetailsRequest.AccreditationNumber))]
+    [DataRow(nameof(SavePrnDetailsRequest.DecemberWaste))]
+    [DataRow(nameof(SavePrnDetailsRequest.TonnageValue))]
+    [DataRow(nameof(SavePrnDetailsRequest.IsExport))]
+    public void ShouldNotAcceptMandatoryFieldsWhenNull(string propertyName)
+    {
+        var model = DataGenerator.CreateValidSavePrnDetailsRequest();
+        typeof(SavePrnDetailsRequest).GetProperty(propertyName)!.SetValue(model, null);
+
+        var results = Validate(model);
+
+        var res = results.FirstOrDefault(r => r.PropertyName == propertyName);
+        res.Should().NotBeNull();
+        res!.ToString().Should().EndWith(" is required.");
+    }
+
+    [TestMethod]
+    [DataRow(nameof(SavePrnDetailsRequest.PrnSignatoryPosition))]
+    [DataRow(nameof(SavePrnDetailsRequest.ReprocessingSite))]
+    [DataRow(nameof(SavePrnDetailsRequest.IssuerNotes))]
+    public void ShouldAcceptOptionalFieldsWhenNull(string propertyName)
+    {
+        var model = DataGenerator.CreateValidSavePrnDetailsRequest();
+        typeof(SavePrnDetailsRequest).GetProperty(propertyName)!.SetValue(model, null);
+
+        Validate(model).Should().BeEmpty();
+    }
+
+    [TestMethod]
+    [DataRow(nameof(SavePrnDetailsRequest.SourceSystemId))]
+    [DataRow(nameof(SavePrnDetailsRequest.PrnSignatory))]
+    [DataRow(nameof(SavePrnDetailsRequest.IssuedByOrg))]
+    [DataRow(nameof(SavePrnDetailsRequest.OrganisationName))]
+    [DataRow(nameof(SavePrnDetailsRequest.AccreditationNumber))]
+    [DataRow(nameof(SavePrnDetailsRequest.PrnNumber))]
+    public void ShouldNotAcceptMandatoryStringFieldsWhenEmpty(string propertyName)
+    {
+        var strings = new List<string> { "", "  " };
+        var model = DataGenerator.CreateValidSavePrnDetailsRequest();
+        foreach (var s in strings)
+        {
+            typeof(SavePrnDetailsRequest).GetProperty(propertyName)!.SetValue(model, s);
+
+            var results = Validate(model);
+
+            var res = results.FirstOrDefault(r => r.PropertyName == propertyName);
+            res.Should().NotBeNull();
+            res!.ToString().Should().EndWith(" is required.");
         }
 
-        [TestMethod]
-        [DataRow(true)]
-        [DataRow(false)]
-        public void Test_SavePrnDetailsRequestValidator_Returns_Error_WhenCancellationDateNotCorrectlySet(
-            bool isCancelledStatus
-        )
+        typeof(SavePrnDetailsRequest).GetProperty(propertyName)!.SetValue(model, "2024");
+
+        var results2 = Validate(model);
+
+        results2.Should().BeEmpty();
+    }
+
+    [TestMethod]
+    [DataRow(nameof(SavePrnDetailsRequest.PrnSignatoryPosition))]
+    [DataRow(nameof(SavePrnDetailsRequest.IssuerNotes))]
+    [DataRow(nameof(SavePrnDetailsRequest.ReprocessingSite))]
+    public void ShouldAcceptOptionalFieldsWhenEmpty(string propertyName)
+    {
+        var strings = new List<string> { "", null, "  " };
+        var model = DataGenerator.CreateValidSavePrnDetailsRequest();
+        foreach (var s in strings)
         {
-            var validator = new SavePrnDetailsRequestValidator();
+            typeof(SavePrnDetailsRequest).GetProperty(propertyName)!.SetValue(model, s);
 
-            var dto = new SavePrnDetailsRequest()
-            {
-                AccreditationNo = "ABC",
-                AccreditationYear = 2018,
-                DecemberWaste = true,
-                EvidenceMaterial = "Aluminium",
-                EvidenceNo = Guid.NewGuid().ToString(),
-                EvidenceTonnes = 5000,
-                IssueDate = DateTime.UtcNow.AddDays(-5),
-                IssuedByNPWDCode = "NPWD367742",
-                IssuedByOrgName = "ANB",
-                IssuedToEPRId = Guid.NewGuid(),
-                IssuedToNPWDCode = "NPWD557742",
-                IssuedToOrgName = "ZNZ",
-                IssuerNotes = "no notes",
-                IssuerRef = "ANB-1123",
-                MaterialOperationCode = "R-PLA",
-                ObligationYear = 2025,
-                PrnSignatory = "Pat Anderson",
-                PrnSignatoryPosition = "Director",
-                ProducerAgency = "TTL",
-                RecoveryProcessCode = "N11",
-                ReprocessorAgency = "BEX",
-                StatusDate = DateTime.UtcNow,
-            };
+            var results = Validate(model);
 
-            // Set Status based on test method parameter
-            if (isCancelledStatus)
-            {
-                dto.EvidenceStatusCode = EprnStatus.CANCELLED;
-                dto.CancelledDate = null;
-            }
-            else
-            {
-                dto.EvidenceStatusCode = EprnStatus.AWAITINGACCEPTANCE;
-                dto.CancelledDate = DateTime.UtcNow.AddDays(-1);
-            }
-
-            // Act
-            var result = validator.Validate(dto);
-
-            // Assert
-            result.Should().NotBeNull();
-
-            var errorPropertyNames = result.Errors.Select(x => x.PropertyName);
-            var cancelledDatePropertyName = nameof(dto.CancelledDate);
-
-            _ = isCancelledStatus
-                ? errorPropertyNames.Should().Contain(cancelledDatePropertyName)
-                : errorPropertyNames.Should().NotContain(cancelledDatePropertyName);
+            results.Should().BeEmpty();
         }
+    }
 
-        [TestMethod]
-        [DataRow("AccreditationNo", "ABC122378123123712381273123123123")]
-        [DataRow("AccreditationYear", 25678)]
-        [DataRow("EvidenceMaterial", "Material201223234234234234234")]
-        [DataRow("EvidenceNo", "EV1231293812931231231231231")]
-        [DataRow(
-            "IssuedByOrgName",
-            "OrgName12313123123123123123123123123123213123123123123OrgName12313123123123123123123123123123213123123123123OrgName12313123123123123123123123123123213123123123123"
-        )]
-        [DataRow(
-            "IssuedToOrgName",
-            "OrgName12313123123123123123123123123123213123123123123OrgName12313123123123123123123123123123213123123123123OrgName12313123123123123123123123123123213123123123123"
-        )]
-        [DataRow(
-            "ProducerAgency",
-            "AgName12313123123123123123123123123123213123123123123OrgName12313123123123123123123123123123213123123123123OrgName12313123123123123123123123123123213123123123123"
-        )]
-        [DataRow("RecoveryProcessCode", "Code123234342342342342342342342")]
-        [DataRow("CreatedByUser", "Code123234342342342342342342342")]
-        public void Test_SavePrnDetailsRequestValidator_Returns_Correct_ValidationResultOnInvalidInput(
-            string propertyName,
-            object propertyValue
-        )
+    [TestMethod]
+    [DataRow(-1)]
+    [DataRow(0)]
+    [DataRow(1)]
+    public void ShouldOnlyAcceptValidTonnages(int tonnageValue)
+    {
+        var model = DataGenerator.CreateValidSavePrnDetailsRequest();
+        model.TonnageValue = tonnageValue;
+
+        var results = Validate(model);
+
+        if (tonnageValue < 0)
         {
-            var validator = new SavePrnDetailsRequestValidator();
-
-            var dto = new SavePrnDetailsRequest()
-            {
-                AccreditationNo = "ABC",
-                AccreditationYear = 2018,
-                CancelledDate = DateTime.UtcNow.AddDays(-1),
-                DecemberWaste = true,
-                EvidenceMaterial = "Aluminium",
-                EvidenceNo = Guid.NewGuid().ToString(),
-                EvidenceStatusCode = EprnStatus.AWAITINGACCEPTANCE,
-                EvidenceTonnes = 5000,
-                IssueDate = DateTime.UtcNow.AddDays(-5),
-                IssuedByNPWDCode = "NPWD367742",
-                IssuedByOrgName = "ANB",
-                IssuedToEPRId = Guid.NewGuid(),
-                IssuedToNPWDCode = "NPWD557742",
-                IssuedToOrgName = "ZNZ",
-                IssuerNotes = "no notes",
-                IssuerRef = "ANB-1123",
-                MaterialOperationCode = "R-PLA",
-                ObligationYear = 2025,
-                PrnSignatory = "Pat Anderson",
-                PrnSignatoryPosition = "Director",
-                ProducerAgency = "TTL",
-                RecoveryProcessCode = "N11",
-                ReprocessorAgency = "BEX",
-                StatusDate = DateTime.UtcNow,
-                CreatedByUser = string.Empty,
-            };
-
-            // Get all property names from DTO class
-            var props = typeof(SavePrnDetailsRequest)
-                .GetProperties(
-                    System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance
-                )
-                .ToList();
-
-            var matchingProp = props.Find(x =>
-                string.Equals(x.Name, propertyName, StringComparison.InvariantCulture)
+            var res = results.FirstOrDefault(r =>
+                r.PropertyName == nameof(SavePrnDetailsRequest.TonnageValue)
             );
-            matchingProp.Should().NotBeNull();
-
-            // Set the value of the property (overriding the default value set above) to the value passed in as the argument to this method
-            matchingProp.SetValue(dto, propertyValue);
-
-            // Act
-            var result = validator.Validate(dto);
-
-            // Assert
-            result.Should().NotBeNull();
-            result.Errors.Select(x => x.PropertyName).Should().Contain(propertyName);
+            res.Should().NotBeNull();
+            res!.ToString().Should().Be("Tonnage Value must be valid positive value.");
+        }
+        else
+        {
+            results.Should().BeEmpty();
         }
     }
 }

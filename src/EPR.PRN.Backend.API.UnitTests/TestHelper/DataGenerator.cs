@@ -4,9 +4,9 @@ using EprPrnIntegration.Common.Models.Rpd;
 
 public class DataGenerator
 {
-    public static SavePrnDetailsRequest CreateValidSavePrnDetailsRequest()
+    public static SaveNpwdPrnDetailsRequest CreateValidSaveNpwdPrnDetailsRequest()
     {
-        return new SavePrnDetailsRequest()
+        return new SaveNpwdPrnDetailsRequest()
         {
             AccreditationNo = "ABC",
             AccreditationYear = 2018,
@@ -35,9 +35,9 @@ public class DataGenerator
         };
     }
 
-    public static SavePrnDetailsRequestV2 CreateValidSavePrnDetailsRequestV2()
+    public static SavePrnDetailsRequest CreateValidSavePrnDetailsRequest()
     {
-        return new SavePrnDetailsRequestV2
+        return new SavePrnDetailsRequest
         {
             PrnNumber = "PRN123",
             OrganisationId = Guid.NewGuid(),

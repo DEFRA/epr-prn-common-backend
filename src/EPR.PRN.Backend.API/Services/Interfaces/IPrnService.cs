@@ -14,10 +14,14 @@ public interface IPrnService
         Guid orgId,
         PaginatedRequestDto request
     );
-    Task<List<NpwdPrnUpdateStatus>?> GetModifiedNpwdPrnsbyDate(DateTime fromDate, DateTime toDate);
     Task<List<PrnUpdateStatus>?> GetModifiedPrnsbyDate(DateTime fromDate, DateTime toDate);
-    Task SavePrnDetails(SavePrnDetailsRequest prn);
     Task<Eprn> SaveEprnDetails(Eprn prn);
+
+    #region Npwd specific
     Task InsertPeprNpwdSyncPrns(List<InsertSyncedPrn> syncedPrns);
-    Task<List<PrnStatusSync>?> GetSyncStatuses(DateTime fromDate, DateTime toDate);
+    Task<List<PrnStatusSync>?> GetNpwdSyncStatuses(DateTime fromDate, DateTime toDate);
+    Task<List<NpwdPrnUpdateStatus>?> GetModifiedNpwdPrnsbyDate(DateTime fromDate, DateTime toDate);
+    Task SaveNpwdPrnDetails(SaveNpwdPrnDetailsRequest prn);
+
+    #endregion
 }

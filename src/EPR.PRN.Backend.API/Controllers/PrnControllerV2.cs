@@ -18,7 +18,7 @@ namespace EPR.PRN.Backend.API.Controllers;
 public class PrnControllerV2(
     IPrnService prnService,
     ILogger<PrnControllerV2> logger,
-    IValidator<SavePrnDetailsRequestV2> savePrnDetailsRequestV2Validator
+    IValidator<SavePrnDetailsRequest> savePrnDetailsRequestV2Validator
 ) : ControllerBase
 {
     private readonly IMapper _mapper = PrnMapper.CreateMapper();
@@ -27,7 +27,7 @@ public class PrnControllerV2(
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult<PrnDto>> SaveAsync([FromBody] SavePrnDetailsRequestV2 requestV2)
+    public async Task<ActionResult<PrnDto>> SaveAsync([FromBody] SavePrnDetailsRequest requestV2)
     {
         var validationResult = await savePrnDetailsRequestV2Validator.ValidateAsync(requestV2);
 

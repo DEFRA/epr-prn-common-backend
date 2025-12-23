@@ -16,14 +16,17 @@
             Guid orgId,
             PaginatedRequestDto request
         );
+        Task<List<PrnUpdateStatus>> GetModifiedPrnsbyDate(DateTime fromDate, DateTime toDate);
+        Task<Eprn> SavePrnDetails(Eprn entity);
+        Task<List<Eprn>> GetPrnsForPrnNumbers(List<string> prnNumbers);
+
+        #region Npwd Specified
         Task<List<NpwdPrnUpdateStatus>> GetModifiedNpwdPrnsbyDate(
             DateTime fromDate,
             DateTime toDate
         );
-        Task<List<PrnUpdateStatus>> GetModifiedPrnsbyDate(DateTime fromDate, DateTime toDate);
-        Task<List<PrnStatusSync>> GetSyncStatuses(DateTime fromDate, DateTime toDate);
-        Task<Eprn> SavePrnDetails(Eprn entity);
+        Task<List<PrnStatusSync>> GetNpwdSyncStatuses(DateTime fromDate, DateTime toDate);
         Task InsertPeprNpwdSyncPrns(List<PEprNpwdSync> syncedPrns);
-        Task<List<Eprn>> GetPrnsForPrnNumbers(List<string> prnNumbers);
+        #endregion
     }
 }

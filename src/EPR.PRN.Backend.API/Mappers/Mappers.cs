@@ -3,12 +3,12 @@ using EPR.PRN.Backend.API.Common.Dto;
 using EPR.PRN.Backend.API.Common.Enums;
 using EPR.PRN.Backend.Data.DataModels;
 
-namespace EPR.PRN.Backend.API.Helpers;
+namespace EPR.PRN.Backend.API.Mappers;
 
 // todo this should use AutoMapper
 public static class NpwdPrnMapper
 {
-    public static Eprn ConvertToEprn(this SavePrnDetailsRequest prn)
+    public static Eprn ConvertToEprn(this SaveNpwdPrnDetailsRequest prn)
     {
         return new Eprn
         {

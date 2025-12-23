@@ -132,11 +132,12 @@ public class Repository(
         return prnUpdateStatuses;
     }
 
-    public async Task<List<PrnStatusSync>> GetSyncStatuses(DateTime fromDate, DateTime toDate)
+    public async Task<List<PrnStatusSync>> GetNpwdSyncStatuses(DateTime fromDate, DateTime toDate)
     {
         var result = await (
             from p in _eprContext.Prn
             join ps in _eprContext.PEprNpwdSync on p.Id equals ps.PRNId
+            where p.SourceSystemId == null
             where ps.CreatedOn >= fromDate && ps.CreatedOn < toDate
             select new
             {
@@ -144,7 +145,6 @@ public class Repository(
                 ps.PRNStatusId,
                 p.OrganisationName,
                 ps.CreatedOn,
-                p.SourceSystemId,
             }
         ).ToListAsync();
 
@@ -155,7 +155,6 @@ public class Repository(
                 StatusName = MapStatusCode((EprnStatus)p.PRNStatusId),
                 OrganisationName = p.OrganisationName,
                 UpdatedOn = p.CreatedOn,
-                SourceSystemId = p.SourceSystemId,
             })
             .ToList();
 
