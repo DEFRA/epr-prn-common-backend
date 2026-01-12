@@ -62,7 +62,6 @@ public class PrnControllerV2Tests
                         .Excluding(e => e.ProducerAgency)
                         .Excluding(e => e.IssuerReference)
                         .Excluding(e => e.Signature)
-                        .Excluding(e => e.IssueDate)
                         .Excluding(e => e.PackagingProducer)
                         .Excluding(e => e.CreatedBy)
                         .Excluding(e => e.IssuerReference)
@@ -74,7 +73,6 @@ public class PrnControllerV2Tests
         dbObj.PrnStatusHistories.Should().BeNull();
         dbObj.ExternalId.Should().Be(Guid.Empty);
         dbObj.Signature.Should().BeNull();
-        dbObj.IssueDate.Should().Be(default);
         dbObj.CreatedBy.Should().BeNull();
         dbObj.IssuerReference.Should().Be("");
         dbObj.PackagingProducer.Should().Be("");
@@ -173,6 +171,7 @@ public class PrnControllerV2Tests
     [DataRow(nameof(SavePrnDetailsRequest.PrnSignatoryPosition))]
     [DataRow(nameof(SavePrnDetailsRequest.IssuerNotes))]
     [DataRow(nameof(SavePrnDetailsRequest.ReprocessingSite))]
+    [DataRow(nameof(SavePrnDetailsRequest.IssueDate))]
     public async Task NonRequiredFieldsCanBeOmmitted(string propertyName)
     {
         var model = DataGenerator.CreateValidSavePrnDetailsRequest();
