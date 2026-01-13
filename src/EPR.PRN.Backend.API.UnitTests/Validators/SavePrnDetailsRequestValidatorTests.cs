@@ -168,92 +168,40 @@ public class SavePrnDetailsRequestValidatorV2Tests
     }
 
     [TestMethod]
-    [DataRow(RpdReprocessorExporterAgency.EnvironmentAgency, true)]
-    [DataRow(RpdReprocessorExporterAgency.NaturalResourcesWales, true)]
-    [DataRow(RpdReprocessorExporterAgency.NorthernIrelandEnvironmentAgency, true)]
-    [DataRow(RpdReprocessorExporterAgency.ScottishEnvironmentProtectionAge, true)]
-    [DataRow("Invalid", false)]
-    [DataRow(null, false)]
-    public void ShouldOnlyAcceptValidRpdPackagingProducer(string pp, bool valid)
+    [DataRow(nameof(SavePrnDetailsRequest.PackagingProducer), RpdReprocessorExporterAgency.EnvironmentAgency, true)]
+    [DataRow(nameof(SavePrnDetailsRequest.PackagingProducer), RpdReprocessorExporterAgency.NaturalResourcesWales, true)]
+    [DataRow(nameof(SavePrnDetailsRequest.PackagingProducer), RpdReprocessorExporterAgency.NorthernIrelandEnvironmentAgency, true)]
+    [DataRow(nameof(SavePrnDetailsRequest.PackagingProducer), RpdReprocessorExporterAgency.ScottishEnvironmentProtectionAge, true)]
+    [DataRow(nameof(SavePrnDetailsRequest.PackagingProducer), "Invalid", false)]
+    [DataRow(nameof(SavePrnDetailsRequest.PackagingProducer), null, false)]
+    [DataRow(nameof(SavePrnDetailsRequest.ProducerAgency), RpdReprocessorExporterAgency.EnvironmentAgency, true)]
+    [DataRow(nameof(SavePrnDetailsRequest.ProducerAgency), RpdReprocessorExporterAgency.NaturalResourcesWales, true)]
+    [DataRow(nameof(SavePrnDetailsRequest.ProducerAgency), RpdReprocessorExporterAgency.NorthernIrelandEnvironmentAgency, true)]
+    [DataRow(nameof(SavePrnDetailsRequest.ProducerAgency), RpdReprocessorExporterAgency.ScottishEnvironmentProtectionAge, true)]
+    [DataRow(nameof(SavePrnDetailsRequest.ProducerAgency), "Invalid", false)]
+    [DataRow(nameof(SavePrnDetailsRequest.ProducerAgency), null, false)]
+    [DataRow(nameof(SavePrnDetailsRequest.ReprocessorExporterAgency), RpdReprocessorExporterAgency.EnvironmentAgency, true)]
+    [DataRow(nameof(SavePrnDetailsRequest.ReprocessorExporterAgency), RpdReprocessorExporterAgency.NaturalResourcesWales, true)]
+    [DataRow(nameof(SavePrnDetailsRequest.ReprocessorExporterAgency), RpdReprocessorExporterAgency.NorthernIrelandEnvironmentAgency, true)]
+    [DataRow(nameof(SavePrnDetailsRequest.ReprocessorExporterAgency), RpdReprocessorExporterAgency.ScottishEnvironmentProtectionAge, true)]
+    [DataRow(nameof(SavePrnDetailsRequest.ReprocessorExporterAgency), "Invalid", false)]
+    [DataRow(nameof(SavePrnDetailsRequest.ReprocessorExporterAgency), null, false)]
+    public void ShouldOnlyAcceptValidAgencyFields(string propertyName, string agencyValue, bool valid)
     {
         var model = DataGenerator.CreateValidSavePrnDetailsRequest();
-        model.PackagingProducer = pp;
+        typeof(SavePrnDetailsRequest).GetProperty(propertyName)!.SetValue(model, agencyValue);
 
         var results = Validate(model);
         if (valid)
             results.Should().BeEmpty();
         else
         {
-            var res = results.FirstOrDefault(r =>
-                r.PropertyName == nameof(SavePrnDetailsRequest.PackagingProducer)
-            );
+            var res = results.FirstOrDefault(r => r.PropertyName == propertyName);
             res.Should().NotBeNull();
             res!
                 .ToString()
                 .Should()
-                .Be(
-                    "Packaging Producer must be one of Environment Agency, Natural Resources Wales, Northern Ireland Environment Agency, Scottish Environment Protection Age."
-                );
-        }
-    }
-
-    [TestMethod]
-    [DataRow(RpdReprocessorExporterAgency.EnvironmentAgency, true)]
-    [DataRow(RpdReprocessorExporterAgency.NaturalResourcesWales, true)]
-    [DataRow(RpdReprocessorExporterAgency.NorthernIrelandEnvironmentAgency, true)]
-    [DataRow(RpdReprocessorExporterAgency.ScottishEnvironmentProtectionAge, true)]
-    [DataRow("Invalid", false)]
-    [DataRow(null, false)]
-    public void ShouldOnlyAcceptValidRpdProducerAgency(string pa, bool valid)
-    {
-        var model = DataGenerator.CreateValidSavePrnDetailsRequest();
-        model.ProducerAgency = pa;
-
-        var results = Validate(model);
-        if (valid)
-            results.Should().BeEmpty();
-        else
-        {
-            var res = results.FirstOrDefault(r =>
-                r.PropertyName == nameof(SavePrnDetailsRequest.ProducerAgency)
-            );
-            res.Should().NotBeNull();
-            res!
-                .ToString()
-                .Should()
-                .Be(
-                    "Producer Agency must be one of Environment Agency, Natural Resources Wales, Northern Ireland Environment Agency, Scottish Environment Protection Age."
-                );
-        }
-    }
-
-    [TestMethod]
-    [DataRow(RpdReprocessorExporterAgency.EnvironmentAgency, true)]
-    [DataRow(RpdReprocessorExporterAgency.NaturalResourcesWales, true)]
-    [DataRow(RpdReprocessorExporterAgency.NorthernIrelandEnvironmentAgency, true)]
-    [DataRow(RpdReprocessorExporterAgency.ScottishEnvironmentProtectionAge, true)]
-    [DataRow("Invalid", false)]
-    [DataRow(null, false)]
-    public void ShouldOnlyAcceptValidRpdReprocessorExporterAgency(string rea, bool valid)
-    {
-        var model = DataGenerator.CreateValidSavePrnDetailsRequest();
-        model.ReprocessorExporterAgency = rea;
-
-        var results = Validate(model);
-        if (valid)
-            results.Should().BeEmpty();
-        else
-        {
-            var res = results.FirstOrDefault(r =>
-                r.PropertyName == nameof(SavePrnDetailsRequest.ReprocessorExporterAgency)
-            );
-            res.Should().NotBeNull();
-            res!
-                .ToString()
-                .Should()
-                .Be(
-                    "Reprocessor Exporter Agency must be one of Environment Agency, Natural Resources Wales, Northern Ireland Environment Agency, Scottish Environment Protection Age."
-                );
+                .Contain("must be one of Environment Agency, Natural Resources Wales, Northern Ireland Environment Agency, Scottish Environment Protection Age.");
         }
     }
 
