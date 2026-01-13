@@ -59,10 +59,8 @@ public class PrnControllerV2Tests
                         .Excluding(e => e.LastUpdatedDate)
                         .Excluding(e => e.PrnStatusHistories)
                         .Excluding(e => e.ExternalId)
-                        .Excluding(e => e.ProducerAgency)
                         .Excluding(e => e.IssuerReference)
                         .Excluding(e => e.Signature)
-                        .Excluding(e => e.PackagingProducer)
                         .Excluding(e => e.CreatedBy)
                         .Excluding(e => e.IssuerReference)
             );
@@ -75,8 +73,6 @@ public class PrnControllerV2Tests
         dbObj.Signature.Should().BeNull();
         dbObj.CreatedBy.Should().BeNull();
         dbObj.IssuerReference.Should().Be("");
-        dbObj.PackagingProducer.Should().Be("");
-        dbObj.ProducerAgency.Should().Be("");
 
         created
             .Should()
