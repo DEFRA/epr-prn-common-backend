@@ -1,6 +1,6 @@
 namespace EprPrnIntegration.Common.Models.Rpd;
 
-public static class RpdReprocessorExporterAgency
+public static class AgencyName
 {
     public const string EnvironmentAgency = "Environment Agency";
     public const string NaturalResourcesWales = "Natural Resources Wales";
