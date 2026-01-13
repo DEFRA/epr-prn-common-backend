@@ -42,6 +42,8 @@ public class DataGenerator
             PrnNumber = "PRN123",
             OrganisationId = Guid.NewGuid(),
             OrganisationName = "Org",
+            PackagingProducer = RpdReprocessorExporterAgency.EnvironmentAgency,
+            ProducerAgency = RpdReprocessorExporterAgency.EnvironmentAgency,
             ReprocessorExporterAgency = RpdReprocessorExporterAgency.EnvironmentAgency,
             PrnStatusId = (int)EprnStatus.AWAITINGACCEPTANCE,
             TonnageValue = 0,

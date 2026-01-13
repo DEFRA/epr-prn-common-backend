@@ -33,6 +33,12 @@ public class SavePrnDetailsRequestValidator : AbstractValidator<SavePrnDetailsRe
 
         RuleFor(x => x.MaterialName).MustBeOneOf(RpdMaterialName.GetAll());
 
+        RuleFor(x => x.PackagingProducer)
+            .MustBeOneOf(RpdReprocessorExporterAgency.GetAll());
+
+        RuleFor(x => x.ProducerAgency)
+            .MustBeOneOf(RpdReprocessorExporterAgency.GetAll());
+
         RuleFor(x => x.ReprocessorExporterAgency)
             .MustBeOneOf(RpdReprocessorExporterAgency.GetAll());
 

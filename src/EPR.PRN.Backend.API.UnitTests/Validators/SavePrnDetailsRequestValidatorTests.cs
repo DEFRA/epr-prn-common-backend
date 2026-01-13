@@ -174,6 +174,66 @@ public class SavePrnDetailsRequestValidatorV2Tests
     [DataRow(RpdReprocessorExporterAgency.ScottishEnvironmentProtectionAge, true)]
     [DataRow("Invalid", false)]
     [DataRow(null, false)]
+    public void ShouldOnlyAcceptValidRpdPackagingProducer(string pp, bool valid)
+    {
+        var model = DataGenerator.CreateValidSavePrnDetailsRequest();
+        model.PackagingProducer = pp;
+
+        var results = Validate(model);
+        if (valid)
+            results.Should().BeEmpty();
+        else
+        {
+            var res = results.FirstOrDefault(r =>
+                r.PropertyName == nameof(SavePrnDetailsRequest.PackagingProducer)
+            );
+            res.Should().NotBeNull();
+            res!
+                .ToString()
+                .Should()
+                .Be(
+                    "Packaging Producer must be one of Environment Agency, Natural Resources Wales, Northern Ireland Environment Agency, Scottish Environment Protection Age."
+                );
+        }
+    }
+
+    [TestMethod]
+    [DataRow(RpdReprocessorExporterAgency.EnvironmentAgency, true)]
+    [DataRow(RpdReprocessorExporterAgency.NaturalResourcesWales, true)]
+    [DataRow(RpdReprocessorExporterAgency.NorthernIrelandEnvironmentAgency, true)]
+    [DataRow(RpdReprocessorExporterAgency.ScottishEnvironmentProtectionAge, true)]
+    [DataRow("Invalid", false)]
+    [DataRow(null, false)]
+    public void ShouldOnlyAcceptValidRpdProducerAgency(string pa, bool valid)
+    {
+        var model = DataGenerator.CreateValidSavePrnDetailsRequest();
+        model.ProducerAgency = pa;
+
+        var results = Validate(model);
+        if (valid)
+            results.Should().BeEmpty();
+        else
+        {
+            var res = results.FirstOrDefault(r =>
+                r.PropertyName == nameof(SavePrnDetailsRequest.ProducerAgency)
+            );
+            res.Should().NotBeNull();
+            res!
+                .ToString()
+                .Should()
+                .Be(
+                    "Producer Agency must be one of Environment Agency, Natural Resources Wales, Northern Ireland Environment Agency, Scottish Environment Protection Age."
+                );
+        }
+    }
+
+    [TestMethod]
+    [DataRow(RpdReprocessorExporterAgency.EnvironmentAgency, true)]
+    [DataRow(RpdReprocessorExporterAgency.NaturalResourcesWales, true)]
+    [DataRow(RpdReprocessorExporterAgency.NorthernIrelandEnvironmentAgency, true)]
+    [DataRow(RpdReprocessorExporterAgency.ScottishEnvironmentProtectionAge, true)]
+    [DataRow("Invalid", false)]
+    [DataRow(null, false)]
     public void ShouldOnlyAcceptValidRpdReprocessorExporterAgency(string rea, bool valid)
     {
         var model = DataGenerator.CreateValidSavePrnDetailsRequest();
