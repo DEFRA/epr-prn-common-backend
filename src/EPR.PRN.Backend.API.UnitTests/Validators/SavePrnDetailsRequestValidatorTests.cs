@@ -171,19 +171,19 @@ public class SavePrnDetailsRequestValidatorV2Tests
     [DataRow(nameof(SavePrnDetailsRequest.PackagingProducer), AgencyName.EnvironmentAgency, true)]
     [DataRow(nameof(SavePrnDetailsRequest.PackagingProducer), AgencyName.NaturalResourcesWales, true)]
     [DataRow(nameof(SavePrnDetailsRequest.PackagingProducer), AgencyName.NorthernIrelandEnvironmentAgency, true)]
-    [DataRow(nameof(SavePrnDetailsRequest.PackagingProducer), AgencyName.ScottishEnvironmentProtectionAge, true)]
+    [DataRow(nameof(SavePrnDetailsRequest.PackagingProducer), AgencyName.ScottishEnvironmentProtectionAgency, true)]
     [DataRow(nameof(SavePrnDetailsRequest.PackagingProducer), "Invalid", false)]
     [DataRow(nameof(SavePrnDetailsRequest.PackagingProducer), null, false)]
     [DataRow(nameof(SavePrnDetailsRequest.ProducerAgency), AgencyName.EnvironmentAgency, true)]
     [DataRow(nameof(SavePrnDetailsRequest.ProducerAgency), AgencyName.NaturalResourcesWales, true)]
     [DataRow(nameof(SavePrnDetailsRequest.ProducerAgency), AgencyName.NorthernIrelandEnvironmentAgency, true)]
-    [DataRow(nameof(SavePrnDetailsRequest.ProducerAgency), AgencyName.ScottishEnvironmentProtectionAge, true)]
+    [DataRow(nameof(SavePrnDetailsRequest.ProducerAgency), AgencyName.ScottishEnvironmentProtectionAgency, true)]
     [DataRow(nameof(SavePrnDetailsRequest.ProducerAgency), "Invalid", false)]
     [DataRow(nameof(SavePrnDetailsRequest.ProducerAgency), null, false)]
     [DataRow(nameof(SavePrnDetailsRequest.ReprocessorExporterAgency), AgencyName.EnvironmentAgency, true)]
     [DataRow(nameof(SavePrnDetailsRequest.ReprocessorExporterAgency), AgencyName.NaturalResourcesWales, true)]
     [DataRow(nameof(SavePrnDetailsRequest.ReprocessorExporterAgency), AgencyName.NorthernIrelandEnvironmentAgency, true)]
-    [DataRow(nameof(SavePrnDetailsRequest.ReprocessorExporterAgency), AgencyName.ScottishEnvironmentProtectionAge, true)]
+    [DataRow(nameof(SavePrnDetailsRequest.ReprocessorExporterAgency), AgencyName.ScottishEnvironmentProtectionAgency, true)]
     [DataRow(nameof(SavePrnDetailsRequest.ReprocessorExporterAgency), "Invalid", false)]
     [DataRow(nameof(SavePrnDetailsRequest.ReprocessorExporterAgency), null, false)]
     public void ShouldOnlyAcceptValidAgencyFields(string propertyName, string agencyValue, bool valid)
@@ -201,7 +201,7 @@ public class SavePrnDetailsRequestValidatorV2Tests
             res!
                 .ToString()
                 .Should()
-                .Contain("must be one of Environment Agency, Natural Resources Wales, Northern Ireland Environment Agency, Scottish Environment Protection Age.");
+                .Contain("must be one of Environment Agency, Natural Resources Wales, Northern Ireland Environment Agency, Scottish Environment Protection Agency.");
         }
     }
 
