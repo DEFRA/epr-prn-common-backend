@@ -46,7 +46,8 @@ public class Repository(EprContext eprContext, ILogger<Repository> logger, IConf
                                 p.PrnNumber,
                                 ps.StatusName,
                                 p.StatusUpdatedOn,
-                                p.AccreditationYear
+                                p.AccreditationYear,
+                                p.ObligationYear
                             }).ToListAsync();
 
         var prnUpdateStatuses = result.Select(p => new PrnUpdateStatus
@@ -54,7 +55,8 @@ public class Repository(EprContext eprContext, ILogger<Repository> logger, IConf
             EvidenceNo = p.PrnNumber,
             EvidenceStatusCode = MapStatusCode((EprnStatus)Enum.Parse(typeof(EprnStatus), p.StatusName)),
             StatusDate = p.StatusUpdatedOn.HasValue ? p.StatusUpdatedOn.Value.ToUniversalTime() : null,
-            AccreditationYear = p.AccreditationYear
+            AccreditationYear = p.AccreditationYear,
+            ObligationYear = p.ObligationYear
         }).ToList();
 
         return prnUpdateStatuses;

@@ -155,16 +155,19 @@ public class RepositoryTests
         data[0].StatusUpdatedOn = new DateTime(2024, 11, 23, 0, 0, 0, DateTimeKind.Utc);
         data[0].PrnStatusId = 1;
         data[0].AccreditationYear = "2023";
+        data[0].ObligationYear = "2024";
 
         data[1].PrnNumber = "PRN002";
         data[1].StatusUpdatedOn = new DateTime(2024, 11, 22, 0, 0, 0, DateTimeKind.Utc);
         data[1].PrnStatusId = 2;
         data[1].AccreditationYear = "2024";
+        data[1].ObligationYear = "2025";
 
 		data[2].PrnNumber = "PRN003";
 		data[2].StatusUpdatedOn = new DateTime(2024, 12, 12, 0, 0, 0, DateTimeKind.Utc);
 		data[2].PrnStatusId = 2;
 		data[2].AccreditationYear = "2024";
+		data[2].ObligationYear = "2025";
 
 		using var context = new EprContext(_contextOptions);
         if (await context.Database.EnsureCreatedAsync(CancellationToken.None))
@@ -184,11 +187,13 @@ public class RepositoryTests
         var firstPrn = result[0];
         Assert.AreEqual("PRN001", firstPrn.EvidenceNo);
         Assert.AreEqual("2023", firstPrn.AccreditationYear);
+        Assert.AreEqual("2024", firstPrn.ObligationYear);
         Assert.AreEqual("EV-ACCEP", firstPrn.EvidenceStatusCode);
 
         var secondPrn = result[1];
         Assert.AreEqual("PRN002", secondPrn.EvidenceNo);
         Assert.AreEqual("2024", secondPrn.AccreditationYear);
+        Assert.AreEqual("2025", secondPrn.ObligationYear);
         Assert.AreEqual("EV-ACANCEL", secondPrn.EvidenceStatusCode);
     }
 
