@@ -71,6 +71,21 @@ public class RepositoryTestsInMemory
         Assert.HasCount(2, result.Items);
         Assert.IsTrue(result.Items.Any(i => i.PrnNumber.Contains("searchTerm")));
     }
+    
+    [TestMethod]
+    public async Task GetSearchPrnsForOrganisation_ObligationYearMapped()
+    {
+        // Arrange
+        var orgId = (await _context.Prn.FirstAsync(CancellationToken.None)).OrganisationId;
+        
+        // Act
+        var result = await _repository.GetSearchPrnsForOrganisation(orgId, new PaginatedRequestDto());
+        
+        // Assert
+        Assert.IsNotNull(result.Items);
+        Assert.HasCount(2, result.Items);
+        Assert.IsTrue(result.Items.All(i => i.ObligationYear == "2023"));
+    }
 
     [TestMethod]
     public async Task GetSearchPrnsForOrganisation_Returns_CorrectResults()
