@@ -1,5 +1,5 @@
-﻿using EPR.PRN.Backend.API.Common.Enums;
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics.CodeAnalysis;
+using EPR.PRN.Backend.API.Common.Enums;
 
 namespace EPR.PRN.Backend.API.Common.Dto
 {
@@ -9,5 +9,7 @@ namespace EPR.PRN.Backend.API.Common.Dto
         public Guid PrnId { get; set; }
 
         public required EprnStatus Status { get; set; }
+
+        public string? ObligationYear { get; set; }
     }
 }

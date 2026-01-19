@@ -241,6 +241,170 @@ public class PrnServiceTests
     }
 
     [TestMethod]
+    public async Task UpdateStatus_WithObligationYear_SetsObligationYearOnPrnAndHistory()
+    {
+        var orgId = Guid.NewGuid();
+        var userId = Guid.NewGuid();
+        var availablePrns = _fixture.CreateMany<Eprn>(1).ToList();
+        var prnUpdates = new List<PrnUpdateStatusDto>
+        {
+            new()
+            {
+                PrnId = availablePrns[0].ExternalId,
+                Status = EprnStatus.ACCEPTED,
+                ObligationYear = "2025",
+            },
+        };
+
+        availablePrns[0].PrnStatusId = (int)EprnStatus.AWAITINGACCEPTANCE;
+        availablePrns[0].ObligationYear = "2024";
+
+        PrnStatusHistory capturedHistory = null;
+        _mockRepository.Setup(r => r.GetAllPrnByOrganisationId(orgId)).ReturnsAsync(availablePrns);
+        _mockRepository
+            .Setup(r => r.AddPrnStatusHistory(It.IsAny<PrnStatusHistory>()))
+            .Callback<PrnStatusHistory>(h => capturedHistory = h);
+
+        await _systemUnderTest.UpdateStatus(orgId, userId, prnUpdates);
+
+        // Verify PRN ObligationYear is updated
+        availablePrns[0].ObligationYear.Should().Be("2025");
+
+        // Verify history ObligationYear is set
+        capturedHistory.Should().NotBeNull();
+        capturedHistory.ObligationYear.Should().Be("2025");
+    }
+
+    [TestMethod]
+    public async Task UpdateStatus_WithNullObligationYear_DoesNotChangePrnObligationYear()
+    {
+        var orgId = Guid.NewGuid();
+        var userId = Guid.NewGuid();
+        var availablePrns = _fixture.CreateMany<Eprn>(1).ToList();
+        var prnUpdates = new List<PrnUpdateStatusDto>
+        {
+            new()
+            {
+                PrnId = availablePrns[0].ExternalId,
+                Status = EprnStatus.REJECTED,
+                ObligationYear = null,
+            },
+        };
+
+        availablePrns[0].PrnStatusId = (int)EprnStatus.AWAITINGACCEPTANCE;
+        availablePrns[0].ObligationYear = "2024";
+
+        PrnStatusHistory capturedHistory = null;
+        _mockRepository.Setup(r => r.GetAllPrnByOrganisationId(orgId)).ReturnsAsync(availablePrns);
+        _mockRepository
+            .Setup(r => r.AddPrnStatusHistory(It.IsAny<PrnStatusHistory>()))
+            .Callback<PrnStatusHistory>(h => capturedHistory = h);
+
+        await _systemUnderTest.UpdateStatus(orgId, userId, prnUpdates);
+
+        // Verify PRN ObligationYear is NOT changed
+        availablePrns[0].ObligationYear.Should().Be("2024");
+
+        // Verify history ObligationYear is set to null
+        capturedHistory.Should().NotBeNull();
+        capturedHistory.ObligationYear.Should().BeNull();
+    }
+
+    [TestMethod]
+    public async Task UpdateStatus_WithEmptyObligationYear_DoesNotChangePrnObligationYear()
+    {
+        var orgId = Guid.NewGuid();
+        var userId = Guid.NewGuid();
+        var availablePrns = _fixture.CreateMany<Eprn>(1).ToList();
+        var prnUpdates = new List<PrnUpdateStatusDto>
+        {
+            new()
+            {
+                PrnId = availablePrns[0].ExternalId,
+                Status = EprnStatus.REJECTED,
+                ObligationYear = string.Empty,
+            },
+        };
+
+        availablePrns[0].PrnStatusId = (int)EprnStatus.AWAITINGACCEPTANCE;
+        availablePrns[0].ObligationYear = "2024";
+
+        PrnStatusHistory capturedHistory = null;
+        _mockRepository.Setup(r => r.GetAllPrnByOrganisationId(orgId)).ReturnsAsync(availablePrns);
+        _mockRepository
+            .Setup(r => r.AddPrnStatusHistory(It.IsAny<PrnStatusHistory>()))
+            .Callback<PrnStatusHistory>(h => capturedHistory = h);
+
+        await _systemUnderTest.UpdateStatus(orgId, userId, prnUpdates);
+
+        // Verify PRN ObligationYear is NOT changed
+        availablePrns[0].ObligationYear.Should().Be("2024");
+
+        // Verify history ObligationYear is set to empty string
+        capturedHistory.Should().NotBeNull();
+        capturedHistory.ObligationYear.Should().Be(string.Empty);
+    }
+
+    [TestMethod]
+    public async Task UpdateStatus_MultipleUpdates_SetsObligationYearCorrectlyPerPrn()
+    {
+        var orgId = Guid.NewGuid();
+        var userId = Guid.NewGuid();
+        var availablePrns = _fixture.CreateMany<Eprn>(3).ToList();
+
+        availablePrns[0].PrnStatusId =
+            availablePrns[1].PrnStatusId =
+            availablePrns[2].PrnStatusId =
+                (int)EprnStatus.AWAITINGACCEPTANCE;
+        availablePrns[0].ObligationYear = "2023";
+        availablePrns[1].ObligationYear = "2023";
+        availablePrns[2].ObligationYear = "2023";
+
+        var prnUpdates = new List<PrnUpdateStatusDto>
+        {
+            new()
+            {
+                PrnId = availablePrns[0].ExternalId,
+                Status = EprnStatus.ACCEPTED,
+                ObligationYear = "2025",
+            },
+            new()
+            {
+                PrnId = availablePrns[1].ExternalId,
+                Status = EprnStatus.REJECTED,
+                ObligationYear = null,
+            },
+            new()
+            {
+                PrnId = availablePrns[2].ExternalId,
+                Status = EprnStatus.ACCEPTED,
+                ObligationYear = "2026",
+            },
+        };
+
+        var capturedHistories = new List<PrnStatusHistory>();
+        _mockRepository.Setup(r => r.GetAllPrnByOrganisationId(orgId)).ReturnsAsync(availablePrns);
+        _mockRepository
+            .Setup(r => r.AddPrnStatusHistory(It.IsAny<PrnStatusHistory>()))
+            .Callback<PrnStatusHistory>(h => capturedHistories.Add(h));
+
+        await _systemUnderTest.UpdateStatus(orgId, userId, prnUpdates);
+
+        // First PRN - ObligationYear updated to 2025
+        availablePrns[0].ObligationYear.Should().Be("2025");
+        // Second PRN - ObligationYear unchanged (null in request)
+        availablePrns[1].ObligationYear.Should().Be("2023");
+        // Third PRN - ObligationYear updated to 2026
+        availablePrns[2].ObligationYear.Should().Be("2026");
+
+        // All histories should have ObligationYear set (even if null)
+        capturedHistories.Should().HaveCount(3);
+        capturedHistories[0].ObligationYear.Should().Be("2025");
+        capturedHistories[1].ObligationYear.Should().BeNull();
+        capturedHistories[2].ObligationYear.Should().Be("2026");
+    }
+
+    [TestMethod]
     public async Task GetSyncStatuses_ReturnsList()
     {
         DateTime fromDate = DateTime.UtcNow;
