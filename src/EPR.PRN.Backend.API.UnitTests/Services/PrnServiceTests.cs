@@ -239,7 +239,7 @@ public class PrnServiceTests
         var toDate = DateTime.UtcNow;
         var mockPrns = new List<PrnUpdateStatus>
         {
-            new() { EvidenceNo = "123", EvidenceStatusCode = "Modified", AccreditationYear= "2014"},
+            new() { EvidenceNo = "123", EvidenceStatusCode = "Modified", AccreditationYear= "2014" },
             new() { EvidenceNo = "456", EvidenceStatusCode = "Unchanged", AccreditationYear= "2014" }
         };
 
