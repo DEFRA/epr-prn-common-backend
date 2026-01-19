@@ -234,7 +234,8 @@ public class Repository(EprContext eprContext, ILogger<Repository> logger, IConf
                     IssuedByOrg = prn.IssuedByOrg,
                     IssueDate = prn.IssueDate,
                     IssuerNotes = prn.IssuerNotes,
-                    DecemberWaste = prn.DecemberWaste
+                    DecemberWaste = prn.DecemberWaste,
+                    ObligationYear = prn.ObligationYear
                 }
             }).ToListAsync();
 
