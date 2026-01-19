@@ -191,6 +191,7 @@ public class PrnService(IRepository repository, ILogger<PrnService> logger, ICon
             PrnStatusIdFk = (int)prnUpdate.Status,
             CreatedOn = updateDate,
             CreatedByUser = userId,
+            ObligationYear = prnUpdate.ObligationYear,
         };
 
         repository.AddPrnStatusHistory(prnStatusHistory);
@@ -200,5 +201,10 @@ public class PrnService(IRepository repository, ILogger<PrnService> logger, ICon
         prn.LastUpdatedBy = userId;
         prn.LastUpdatedDate = updateDate;
         prn.StatusUpdatedOn = updateDate;
+
+        if (!string.IsNullOrEmpty(prnUpdate.ObligationYear))
+        {
+            prn.ObligationYear = prnUpdate.ObligationYear;
+        }
     }
 }
