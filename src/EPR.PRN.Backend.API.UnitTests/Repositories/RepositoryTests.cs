@@ -165,6 +165,7 @@ public class RepositoryTests
 
 		data[2].PrnNumber = "PRN003";
 		data[2].StatusUpdatedOn = new DateTime(2024, 12, 12, 0, 0, 0, DateTimeKind.Utc);
+		data[2].PrnStatusId = 2;
 
 		using var context = new EprContext(_contextOptions);
         if (await context.Database.EnsureCreatedAsync(CancellationToken.None))
