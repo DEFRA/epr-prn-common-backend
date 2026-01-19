@@ -37,3 +37,6 @@ appsettings.Test.json
 **/EPR.PRN.Backend.Obligation.UnitTests/TestResults
 **/EPR.PRN.Backend.API.UnitTests/coveragereport
 **/EPR.PRN.Backend.API.UnitTests/TestResults
+
+# JetBrains IDE
+.idea/

@@ -5939,3 +5939,28 @@ GO
 
 COMMIT;
 GO
+
+BEGIN TRANSACTION;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20260119123206_AddObligationYearToPrnStatusHistory'
+)
+BEGIN
+    ALTER TABLE [PrnStatusHistory] ADD [ObligationYear] nvarchar(10) NULL;
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20260119123206_AddObligationYearToPrnStatusHistory'
+)
+BEGIN
+    INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+    VALUES (N'20260119123206_AddObligationYearToPrnStatusHistory', N'8.0.8');
+END;
+GO
+
+COMMIT;
+GO
