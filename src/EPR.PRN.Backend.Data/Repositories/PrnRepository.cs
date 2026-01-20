@@ -9,11 +9,17 @@ public class PrnRepository(EprContext context) : IPrnRepository
 {
     public IQueryable<EprnResultsDto> GetAcceptedAndAwaitingPrnsByYear(Guid organisationId, int year)
     {
-        return context.Prn.Join(
-                context.PrnStatus, 
-                eprn => eprn.PrnStatusId, 
-                status => status.Id, (eprn, status) => new EprnResultsDto { Eprn = eprn, Status = status }
-                ).Where(joined => joined.Eprn.OrganisationId == organisationId && (joined.Status.StatusName == EprnStatus.ACCEPTED.ToString()
-                || joined.Status.StatusName == EprnStatus.AWAITINGACCEPTANCE.ToString()) && joined.Eprn.ObligationYear == year.ToString()).AsNoTracking();
+        var result = from eprn in context.Prn
+            join status in context.PrnStatus on eprn.PrnStatusId equals status.Id
+            where eprn.OrganisationId == organisationId && (eprn.PrnStatusId == (int)EprnStatus.ACCEPTED ||
+                                                            eprn.PrnStatusId == (int)EprnStatus.AWAITINGACCEPTANCE) &&
+                  eprn.ObligationYear == year.ToString()
+            select new EprnResultsDto
+            {
+                Eprn = eprn,
+                Status = status
+            };
+
+        return result.AsNoTracking();
     }
 }

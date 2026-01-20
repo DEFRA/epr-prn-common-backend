@@ -33,16 +33,16 @@ namespace EPR.PRN.Backend.Data.UnitTests.Repositories
             var fixture = new Fixture();
             var prns = fixture.CreateMany<Eprn>(10).ToList();
             prns[0].OrganisationId = organisationId;
-            prns[0].PrnStatusId = 1; // ACCEPTED
+            prns[0].PrnStatusId = (int)EprnStatus.ACCEPTED;
             prns[0].ObligationYear = year.ToString();
             prns[1].OrganisationId = organisationId;
-            prns[1].PrnStatusId = 2; // AWAITINGACCEPTANCE
+            prns[1].PrnStatusId = (int)EprnStatus.AWAITINGACCEPTANCE;
             prns[1].ObligationYear = year.ToString();
             await _context.Prn.AddRangeAsync(prns, CancellationToken.None);
             var prnStatuses = new[]
             {
-            new PrnStatus { Id = 1, StatusName = EprnStatus.ACCEPTED.ToString() },
-            new PrnStatus { Id = 2, StatusName = EprnStatus.AWAITINGACCEPTANCE.ToString() }
+            new PrnStatus { Id = (int)EprnStatus.ACCEPTED, StatusName = EprnStatus.ACCEPTED.ToString() },
+            new PrnStatus { Id = (int)EprnStatus.AWAITINGACCEPTANCE, StatusName = EprnStatus.AWAITINGACCEPTANCE.ToString() }
             };
             await _context.PrnStatus.AddRangeAsync(prnStatuses, CancellationToken.None);
             await _context.SaveChangesAsync(CancellationToken.None);
