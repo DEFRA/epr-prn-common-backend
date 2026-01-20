@@ -9,17 +9,31 @@ public class PrnRepository(EprContext context) : IPrnRepository
 {
     public IQueryable<EprnResultsDto> GetAcceptedAndAwaitingPrnsByYear(Guid organisationId, int year)
     {
-        var result = from eprn in context.Prn
+        var query = from eprn in context.Prn
             join status in context.PrnStatus on eprn.PrnStatusId equals status.Id
             where eprn.OrganisationId == organisationId && (eprn.PrnStatusId == (int)EprnStatus.ACCEPTED ||
-                                                            eprn.PrnStatusId == (int)EprnStatus.AWAITINGACCEPTANCE) &&
-                  eprn.ObligationYear == year.ToString()
+                                                            eprn.PrnStatusId == (int)EprnStatus.AWAITINGACCEPTANCE)
             select new EprnResultsDto
             {
                 Eprn = eprn,
                 Status = status
             };
 
-        return result.AsNoTracking();
+        if (year == 2026)
+        {
+            // This scenario is a one-off and unique to requesting data for 2026 where 
+            // 2025 December waste PRNs can also be returned
+            query = from eprn in query
+                where eprn.Eprn.ObligationYear == year.ToString() || (eprn.Eprn.ObligationYear == "2025" && eprn.Eprn.DecemberWaste == true)
+                select eprn;
+        }
+        else
+        {
+            query = from eprn in query
+                where eprn.Eprn.ObligationYear == year.ToString()
+                select eprn;
+        }
+
+        return query.AsNoTracking();
     }
 }
