@@ -57,7 +57,7 @@ namespace EPR.PRN.Backend.Data.UnitTests.Repositories
         }
 
         [TestMethod]
-        public async Task GetAcceptedAndAwaitingPrnsByYearAsync_When2026AndDecemberWaste_ReturnsFilteredPrns()
+        public async Task GetAcceptedAndAwaitingPrnsByYearAsync_WhenDecemberWaste_ReturnsFilteredPrns()
         {
             // Arrange
             var organisationId = Guid.NewGuid();
@@ -82,6 +82,14 @@ namespace EPR.PRN.Backend.Data.UnitTests.Repositories
             prns[4].PrnStatusId = (int)EprnStatus.AWAITINGACCEPTANCE;
             prns[4].ObligationYear = "2025";
             prns[4].DecemberWaste = false;
+            prns[5].OrganisationId = organisationId;
+            prns[5].PrnStatusId = (int)EprnStatus.AWAITINGACCEPTANCE;
+            prns[5].ObligationYear = "2027";
+            prns[5].DecemberWaste = true;
+            prns[6].OrganisationId = organisationId;
+            prns[6].PrnStatusId = (int)EprnStatus.AWAITINGACCEPTANCE;
+            prns[6].ObligationYear = "2027";
+            prns[6].DecemberWaste = false;
             await _context.Prn.AddRangeAsync(prns, CancellationToken.None);
             var prnStatuses = new[]
             {
