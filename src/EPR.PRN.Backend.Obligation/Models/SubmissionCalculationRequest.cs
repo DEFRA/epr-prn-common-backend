@@ -10,4 +10,5 @@ public class SubmissionCalculationRequest
     public int PackagingMaterialWeight { get; set; }
 	public Guid SubmitterId { get; set; }
 	public string SubmitterType { get; set; }
+    public int? NumberOfDaysObligated { get; set; }
 }

@@ -30,7 +30,9 @@ public class GeneralCalculationStrategy : IMaterialCalculationStrategy
 
 		var materialObligationValue = _calculationService.Calculate(
 			recyclingTarget[calculationRequest.MaterialType],
-			submission.PackagingMaterialWeight
+			submission.PackagingMaterialWeight,
+			calculationRequest.NumberOfDaysObligated,
+			complianceYear
 		);
 
 		var calculation = new ObligationCalculation

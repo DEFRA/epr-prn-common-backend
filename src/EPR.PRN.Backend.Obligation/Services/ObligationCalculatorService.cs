@@ -59,7 +59,8 @@ namespace EPR.PRN.Backend.Obligation.Services
 					Materials = [.. materials],
 					SubmitterTypeId = submitterTypeId,
 					RecyclingTargets = recyclingTargets,
-					ComplianceYear = complianceYear
+					ComplianceYear = complianceYear,
+					NumberOfDaysObligated = submission.NumberOfDaysObligated
 				};
 
 				calculations.AddRange(strategy?.Calculate(calculationRequest)!);

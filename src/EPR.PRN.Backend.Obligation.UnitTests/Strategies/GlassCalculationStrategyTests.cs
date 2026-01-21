@@ -104,8 +104,11 @@ public class GlassCalculationStrategyTests
 		};
 
         _mockCalculationService.Setup(x => x.CalculateGlass(
-            request.RecyclingTargets[complianceYear][MaterialType.Glass], request.RecyclingTargets[complianceYear][MaterialType.GlassRemelt],
-            request.SubmissionCalculationRequest.PackagingMaterialWeight))
+            request.RecyclingTargets[complianceYear][MaterialType.Glass],
+            request.RecyclingTargets[complianceYear][MaterialType.GlassRemelt],
+            request.SubmissionCalculationRequest.PackagingMaterialWeight,
+            request.SubmissionCalculationRequest.NumberOfDaysObligated,
+            complianceYear))
             .Returns((expectedRemeltObligationValue, expectedGlassObligationValue));  // remelt = 80, remainder = 120
 
         // Act
