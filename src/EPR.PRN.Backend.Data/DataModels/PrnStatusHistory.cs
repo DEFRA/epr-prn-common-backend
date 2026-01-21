@@ -21,5 +21,8 @@ namespace EPR.PRN.Backend.Data.DataModels
 		
 		[MaxLength(1000)]
 		public string? Comment { get; set; }
+
+		[MaxLength(10)]
+		public string? ObligationYear { get; set; }
 	}
 }

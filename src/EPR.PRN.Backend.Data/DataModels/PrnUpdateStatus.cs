@@ -7,5 +7,6 @@
         public DateTime? StatusDate { get; set; }
         public required string AccreditationYear { get; set; }
         public required string SourceSystemId { get; set; }
+        public string? ObligationYear { get; set; }
     }
 }
