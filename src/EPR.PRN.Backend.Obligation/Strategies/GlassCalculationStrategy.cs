@@ -25,7 +25,9 @@ public class GlassCalculationStrategy : IMaterialCalculationStrategy
 		var (glassRemeltValue, glassRemainderValue) = _calculationService.CalculateGlass(
 			recyclingTarget[MaterialType.Glass],
 			recyclingTarget[MaterialType.GlassRemelt],
-			submission.PackagingMaterialWeight
+			submission.PackagingMaterialWeight,
+			submission.NumberOfDaysObligated,
+			complianceYear
 		);
 
 		var materialsByName = calculationRequest.Materials.ToDictionary(m => m.MaterialName, StringComparer.OrdinalIgnoreCase);
