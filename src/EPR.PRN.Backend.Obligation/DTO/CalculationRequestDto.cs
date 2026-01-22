@@ -18,6 +18,8 @@ namespace EPR.PRN.Backend.Obligation.Dto
 
         public int ComplianceYear { get; set; }
 
+        public int? NumberOfDaysObligated { get; set; }
+
 		public Dictionary<int, Dictionary<MaterialType, double>> RecyclingTargets { get; set; } = [];
     }
 }
