@@ -216,6 +216,7 @@ public class PrnService(
             PrnStatusIdFk = (int)prnUpdate.Status,
             CreatedOn = updateDate,
             CreatedByUser = userId,
+            ObligationYear = prnUpdate.ObligationYear,
         };
 
         repository.AddPrnStatusHistory(prnStatusHistory);
@@ -229,6 +230,11 @@ public class PrnService(
         prn.LastUpdatedBy = userId;
         prn.LastUpdatedDate = updateDate;
         prn.StatusUpdatedOn = updateDate;
+
+        if (!string.IsNullOrEmpty(prnUpdate.ObligationYear))
+        {
+            prn.ObligationYear = prnUpdate.ObligationYear;
+        }
     }
 
     #region Npwd Specific
