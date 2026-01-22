@@ -78,6 +78,7 @@ public class Repository(
                 ps.StatusName,
                 p.StatusUpdatedOn,
                 p.AccreditationYear,
+                p.ObligationYear
             }
         ).ToListAsync();
 
@@ -90,6 +91,7 @@ public class Repository(
                 ),
                 StatusDate = p.StatusUpdatedOn?.ToUniversalTime(),
                 AccreditationYear = p.AccreditationYear,
+                ObligationYear = p.ObligationYear,
             })
             .ToList();
 
@@ -115,6 +117,7 @@ public class Repository(
                 p.StatusUpdatedOn,
                 p.AccreditationYear,
                 p.SourceSystemId,
+                p.ObligationYear
             }
         ).ToListAsync();
 
@@ -126,6 +129,7 @@ public class Repository(
                 StatusDate = p.StatusUpdatedOn?.ToUniversalTime(),
                 AccreditationYear = p.AccreditationYear,
                 SourceSystemId = p.SourceSystemId,
+                ObligationYear = p.ObligationYear,
             })
             .ToList();
 
@@ -368,6 +372,7 @@ public class Repository(
                     IssueDate = prn.IssueDate,
                     IssuerNotes = prn.IssuerNotes,
                     DecemberWaste = prn.DecemberWaste,
+                    ObligationYear = prn.ObligationYear
                 },
             })
             .ToListAsync();
