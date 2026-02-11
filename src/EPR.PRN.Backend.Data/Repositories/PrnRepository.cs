@@ -19,7 +19,7 @@ public class PrnRepository(EprContext context) : IPrnRepository
                       (eprn.PrnStatusId == (int)EprnStatus.ACCEPTED && eprn.ObligationYear == currentYear) ||
                       (eprn.PrnStatusId == (int)EprnStatus.AWAITINGACCEPTANCE && (
                           eprn.ObligationYear == currentYear ||
-                          (eprn.AccreditationYear == previousYear && eprn.DecemberWaste == true && eprn.ObligationYear == previousYear)
+                          (eprn.AccreditationYear == previousYear && eprn.DecemberWaste == true)
                       )
                   ))
             select new EprnResultsDto
