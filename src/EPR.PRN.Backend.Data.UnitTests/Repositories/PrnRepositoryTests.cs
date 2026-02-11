@@ -64,11 +64,9 @@ public class PrnRepositoryTests
     [TestMethod]
     public async Task GetAcceptedAndAwaitingPrnsByYearAsync_WhenDecemberWaste_ReturnsFilteredPrns()
     {
-        // Arrange
         var organisationId = Guid.NewGuid();
-        var year = 2026;
         var fixture = new Fixture();
-        var prns = fixture.CreateMany<Eprn>(10).ToList();
+        var prns = fixture.CreateMany<Eprn>(11).ToList();
         
         prns[0].OrganisationId = organisationId;
         prns[0].PrnNumber = "PRN-001-NPWD";
@@ -140,17 +138,32 @@ public class PrnRepositoryTests
         prns[9].ObligationYear = "2027";
         prns[9].DecemberWaste = true;
         
+        prns[10].OrganisationId = organisationId;
+        prns[10].PrnNumber = "PRN-011-OLD-DEC";
+        prns[10].PrnStatusId = (int)EprnStatus.AWAITINGACCEPTANCE;
+        prns[10].AccreditationYear = "2024";
+        prns[10].ObligationYear = "2025";
+        prns[10].DecemberWaste = true;
+        
         await _context.Prn.AddRangeAsync(prns, CancellationToken.None);
         await _context.SaveChangesAsync(CancellationToken.None);
 
-        // Act
-        var result = _repository.GetAcceptedAndAwaitingPrnsByYear(organisationId, year).ToList();
+        var result = _repository.GetAcceptedAndAwaitingPrnsByYear(organisationId, 2026).ToList();
 
-        // Assert
         result.Should().HaveCount(4);
         result.Should().ContainSingle(x => x.Eprn.PrnNumber == "PRN-002-NPWD-DEC");
         result.Should().ContainSingle(x => x.Eprn.PrnNumber == "PRN-003-RREPW");
         result.Should().ContainSingle(x => x.Eprn.PrnNumber == "PRN-004-RREPW-DEC");
         result.Should().ContainSingle(x => x.Eprn.PrnNumber == "PRN-008-CURRENT");
+        
+        result = _repository.GetAcceptedAndAwaitingPrnsByYear(organisationId, 2025).ToList();
+
+        result.Should().HaveCount(6);
+        result.Should().ContainSingle(x => x.Eprn.PrnNumber == "PRN-001-NPWD");
+        result.Should().ContainSingle(x => x.Eprn.PrnNumber == "PRN-002-NPWD-DEC");
+        result.Should().ContainSingle(x => x.Eprn.PrnNumber == "PRN-005-OLD");
+        result.Should().ContainSingle(x => x.Eprn.PrnNumber == "PRN-006-OLD-DEC");
+        result.Should().ContainSingle(x => x.Eprn.PrnNumber == "PRN-007-OLD-DEC");
+        result.Should().ContainSingle(x => x.Eprn.PrnNumber == "PRN-011-OLD-DEC");
     }
 }
