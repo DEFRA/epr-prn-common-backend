@@ -5982,7 +5982,7 @@ IF NOT EXISTS (
 )
 BEGIN
     INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
-    VALUES (N'20260119123206_AddObligationYearToPrnStatusHistory', N'8.0.8');
+    VALUES (N'20260119123206_AddObligationYearToPrnStatusHistory', N'8.0.20');
 END;
 GO
 
