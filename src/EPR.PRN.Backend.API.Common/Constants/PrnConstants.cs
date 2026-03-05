@@ -65,6 +65,7 @@
             public const string Wood = "Wood";
             public const string PaperComposting = "Paper Composting";
             public const string WoodComposting = "Wood Composting";
+            public const string Fibre = "Fibre";
         }
 
         public static class ExporterCodePrefixes

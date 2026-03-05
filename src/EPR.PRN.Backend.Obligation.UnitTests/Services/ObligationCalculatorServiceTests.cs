@@ -66,7 +66,7 @@ public class ObligationCalculatorServiceTests
 			obligationCalculations[i].MaterialId = i + 1;
 		}
 
-		var prnList = _fixture.CreateMany<EprnResultsDto>(9).ToList();
+		var prnList = _fixture.CreateMany<EprnResultsDto>(10).ToList();
 		prnList[0].Eprn.MaterialName = PrnConstants.Materials.Plastic;
 		prnList[1].Eprn.MaterialName = PrnConstants.Materials.PaperFiber;
 		prnList[2].Eprn.MaterialName = PrnConstants.Materials.Steel;
@@ -76,6 +76,7 @@ public class ObligationCalculatorServiceTests
 		prnList[6].Eprn.MaterialName = PrnConstants.Materials.GlassMelt;
 		prnList[7].Eprn.MaterialName = PrnConstants.Materials.PaperComposting;
 		prnList[8].Eprn.MaterialName = PrnConstants.Materials.WoodComposting;
+		prnList[9].Eprn.MaterialName = PrnConstants.Materials.Fibre;
 
 		prnList.ForEach(p => p.Eprn.ObligationYear = obligationCalculationYear.ToString());
 
@@ -110,6 +111,50 @@ public class ObligationCalculatorServiceTests
 			obligationData.TonnageAccepted.Should().Be(acceptedTonnage.Find(t => t.MaterialName == material.MaterialName)?.TotalTonnage ?? 0);
 			obligationData.TonnageAwaitingAcceptance.Should().Be(awaitingTonnage.Find(t => t.MaterialName == material.MaterialName)?.TotalTonnage ?? 0);
 		}
+	}
+	
+	[TestMethod]
+	public async Task GetObligationCalculation_WhenFibre_ShouldReportWithPaper()
+	{
+		const int tonnage = 100;
+		const int materialObligationValue = 101;
+		var materials = GetMaterials();
+		var obligationCalculations = _fixture.CreateMany<ObligationCalculation>(2).ToList();
+		obligationCalculations[0].MaterialId = 5; // Paper
+		obligationCalculations[0].Tonnage = tonnage;
+		obligationCalculations[0].MaterialObligationValue = materialObligationValue;
+		obligationCalculations[1].MaterialId = 8; // Fibre
+		obligationCalculations[1].Tonnage = tonnage;
+		obligationCalculations[1].MaterialObligationValue = materialObligationValue;
+		var prnList = _fixture.CreateMany<EprnResultsDto>(2).ToList();
+		prnList[0].Eprn.MaterialName = PrnConstants.Materials.PaperFiber;
+		prnList[0].Eprn.TonnageValue = 1;
+		prnList[0].Eprn.PrnStatusId = (int)EprnStatus.ACCEPTED;
+		prnList[0].Status.StatusName = nameof(EprnStatus.ACCEPTED);
+		prnList[1].Eprn.MaterialName = PrnConstants.Materials.Fibre;
+		prnList[1].Eprn.TonnageValue = 1;
+		prnList[1].Eprn.PrnStatusId = (int)EprnStatus.ACCEPTED;
+		prnList[1].Status.StatusName = nameof(EprnStatus.ACCEPTED);
+		prnList.ForEach(p => p.Eprn.ObligationYear = obligationCalculationYear.ToString());
+		var prns = prnList.AsQueryable();
+		_mockMaterialRepository.Setup(repo => repo.GetAllMaterials()).ReturnsAsync(materials);
+		_mockObligationCalculationRepository.Setup(repo => repo.GetObligationCalculationBySubmitterIdAndYear(submitterId, obligationCalculationYear)).ReturnsAsync(obligationCalculations);
+		_mockPrnRepository.Setup(repo => repo.GetAcceptedAndAwaitingPrnsByYear(submitterId, obligationCalculationYear)).Returns(prns);
+		_mockRecyclingTargetDataService.Setup(x => x.GetRecyclingTargetsAsync()).ReturnsAsync(GetRecyclingTargets());
+
+		var result = await _service.GetObligationCalculation(submitterId, obligationCalculationYear);
+
+		result.ObligationModel?.ObligationData.Should()
+			.Contain(x =>
+				x.MaterialName == nameof(MaterialType.Paper) &&
+				// Tonnage for Paper and Fibre wrapped together 
+				x.Tonnage == tonnage * 2 &&
+				// Two PRNs - one accepted for Paper and one for Fibre
+				x.TonnageAccepted == 2 &&
+				// MaterialObligationValue from each accepted PRN minus each TonnageAccepted
+				x.TonnageOutstanding == materialObligationValue * 2 - 2); 
+		result.ObligationModel?.ObligationData.Should()
+			.NotContain(x => x.MaterialName == nameof(MaterialType.FibreComposite));
 	}
 
 	private static int CalculateExpectedObligation(Dictionary<int, ObligationCalculation> obligationCalculationDict, Material material, int pcMaterialId, int fcMaterialId)
@@ -1048,6 +1093,15 @@ public class ObligationCalculatorServiceTests
 				Id = 8,
 				MaterialCode = "FC",
 				MaterialName = MaterialType.FibreComposite.ToString(),
+				PrnMaterialMappings =
+				[
+					new PrnMaterialMapping()
+					{
+						Id = 10,
+						PRNMaterialId = 8,
+						NPWDMaterialName = PrnConstants.Materials.Fibre
+					}
+				]
 			}
 		];
 	}
