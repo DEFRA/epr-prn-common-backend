@@ -248,7 +248,7 @@ public class Repository(
 
             Filters.AwaitngPaperFiber => p =>
                 p.PrnStatusId == (int)EprnStatus.AWAITINGACCEPTANCE
-                && p.MaterialName == Common.Constants.PrnConstants.Materials.PaperFiber,
+                && (p.MaterialName == Common.Constants.PrnConstants.Materials.PaperFiber || p.MaterialName == Common.Constants.PrnConstants.Materials.Fibre),
 
             Filters.AwaitngPlastic => p =>
                 p.PrnStatusId == (int)EprnStatus.AWAITINGACCEPTANCE
