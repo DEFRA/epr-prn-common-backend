@@ -225,6 +225,11 @@ public class RepositoryTestsInMemory
         PrnConstants.Materials.PaperFiber
     )]
     [DataRow(
+        PrnConstants.Filters.AwaitngPaperFiber,
+        EprnStatus.AWAITINGACCEPTANCE,
+        PrnConstants.Materials.Fibre
+    )]
+    [DataRow(
         PrnConstants.Filters.AwaitngPlastic,
         EprnStatus.AWAITINGACCEPTANCE,
         PrnConstants.Materials.Plastic

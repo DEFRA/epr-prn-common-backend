@@ -236,31 +236,31 @@ public class Repository(
 
             Filters.AwaitingAluminium => p =>
                 p.PrnStatusId == (int)EprnStatus.AWAITINGACCEPTANCE
-                && p.MaterialName == Common.Constants.PrnConstants.Materials.Aluminium,
+                && p.MaterialName == Materials.Aluminium,
 
             Filters.AwaitingGlassOther => p =>
                 p.PrnStatusId == (int)EprnStatus.AWAITINGACCEPTANCE
-                && p.MaterialName == Common.Constants.PrnConstants.Materials.GlassOther,
+                && p.MaterialName == Materials.GlassOther,
 
             Filters.AwaitingGlassMelt => p =>
                 p.PrnStatusId == (int)EprnStatus.AWAITINGACCEPTANCE
-                && p.MaterialName == Common.Constants.PrnConstants.Materials.GlassMelt,
+                && p.MaterialName == Materials.GlassMelt,
 
             Filters.AwaitngPaperFiber => p =>
                 p.PrnStatusId == (int)EprnStatus.AWAITINGACCEPTANCE
-                && p.MaterialName == Common.Constants.PrnConstants.Materials.PaperFiber,
+                && (p.MaterialName == Materials.PaperFiber || p.MaterialName == Materials.Fibre),
 
             Filters.AwaitngPlastic => p =>
                 p.PrnStatusId == (int)EprnStatus.AWAITINGACCEPTANCE
-                && p.MaterialName == Common.Constants.PrnConstants.Materials.Plastic,
+                && p.MaterialName == Materials.Plastic,
 
             Filters.AwaitngSteel => p =>
                 p.PrnStatusId == (int)EprnStatus.AWAITINGACCEPTANCE
-                && p.MaterialName == Common.Constants.PrnConstants.Materials.Steel,
+                && p.MaterialName == Materials.Steel,
 
             Filters.AwaitngWood => p =>
                 p.PrnStatusId == (int)EprnStatus.AWAITINGACCEPTANCE
-                && p.MaterialName == Common.Constants.PrnConstants.Materials.Wood,
+                && p.MaterialName == Materials.Wood,
 
             _ => sm => true,
         };
