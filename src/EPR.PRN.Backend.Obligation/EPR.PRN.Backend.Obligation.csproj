@@ -11,6 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="16.1.1" />
     <ProjectReference Include="..\EPR.PRN.Backend.API.Common\EPR.PRN.Backend.API.Common.csproj" />
     <ProjectReference Include="..\EPR.PRN.Backend.Data\EPR.PRN.Backend.Data.csproj" />
   </ItemGroup>
