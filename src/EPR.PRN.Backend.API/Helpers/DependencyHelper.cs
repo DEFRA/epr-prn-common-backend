@@ -34,7 +34,6 @@ namespace EPR.PRN.Backend.API.Helpers
                 .AddScoped<IObligationCalculatorService, ObligationCalculatorService>()
                 .AddScoped<IMaterialService, MaterialService>()
                 .AddScoped<IObligationCalculationRepository, ObligationCalculationRepository>()
-                .AddScoped<IObligationCalculationUpdater, EfObligationCalculationUpdater>()
                 .AddScoped<IRecyclingTargetDataService, RecyclingTargetDataService>()
                 .AddScoped<IRecyclingTargetRepository, RecyclingTargetRepository>()
                 .AddScoped<

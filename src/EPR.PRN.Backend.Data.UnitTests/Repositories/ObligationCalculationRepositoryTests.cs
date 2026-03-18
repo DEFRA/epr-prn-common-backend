@@ -1,95 +1,89 @@
 ﻿using EPR.PRN.Backend.Data.DataModels;
-using EPR.PRN.Backend.Data.Interfaces;
 using EPR.PRN.Backend.Data.Repositories;
-using FakeItEasy;
 using FluentAssertions;
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Storage;
-using Microsoft.Extensions.Logging;
-using Moq;
-using Moq.EntityFrameworkCore;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace EPR.PRN.Backend.Data.UnitTests.Repositories;
 
 [TestClass]
 public class ObligationCalculationRepositoryTests
 {
-    private Mock<EprContext> _mockEprContext;
-    private IObligationCalculationUpdater _mockUpdater;
+    private readonly Guid _drOrganisationId1 = Guid.NewGuid();
+    private readonly Guid _subOrganisationId1 = Guid.NewGuid();
+    private readonly Guid _drOrganisationId2 = Guid.NewGuid();
+    private readonly Guid _subOrganisationId2 = Guid.NewGuid();
+    private readonly Guid _drOrganisationId3 = Guid.NewGuid();
+    private readonly Guid _csSubmitterId = Guid.NewGuid();
+    private readonly int _currentYear = DateTime.UtcNow.Year;
+    private readonly int _nextYear = DateTime.UtcNow.Year + 1;
+
+    private List<ObligationCalculation> _obligationCalculations;
+    
+    private EprContext _context;
     private ObligationCalculationRepository _repository;
-    private ILogger<ObligationCalculationRepository> _logger;
-
-    private readonly Guid drOrganisationId1 = Guid.NewGuid();
-    private readonly Guid subOrganisationId1 = Guid.NewGuid();
-    private readonly Guid drOrganisationId2 = Guid.NewGuid();
-    private readonly Guid subOrganisationId2 = Guid.NewGuid();
-    private readonly Guid drOrganisationId3 = Guid.NewGuid();
-    private readonly Guid csSubmitterId = Guid.NewGuid();
-    private readonly int currentYear = DateTime.UtcNow.Year;
-
-    // This list will be used to mock the ObligationCalculation DbSet
-    private List<ObligationCalculation> obligationCalculations;
 
     [TestInitialize]
     public void TestInitialize()
     {
-        obligationCalculations =
+        _obligationCalculations =
         [
-            new ObligationCalculation { OrganisationId = drOrganisationId1, MaterialId = 5, MaterialObligationValue = 15, Year = currentYear, SubmitterId = csSubmitterId, SubmitterTypeId = 1, IsDeleted = false },
-            new ObligationCalculation { OrganisationId = drOrganisationId1, MaterialId = 6, MaterialObligationValue = 25, Year = currentYear, SubmitterId = csSubmitterId, SubmitterTypeId = 1, IsDeleted = false  },
-            new ObligationCalculation { OrganisationId = subOrganisationId1, MaterialId = 3, MaterialObligationValue = 35, Year = currentYear, SubmitterId = csSubmitterId, SubmitterTypeId = 1, IsDeleted = false  },
-            new ObligationCalculation { OrganisationId = subOrganisationId1, MaterialId = 4, MaterialObligationValue = 45, Year = currentYear, SubmitterId = csSubmitterId, SubmitterTypeId = 1, IsDeleted = false  },
-            new ObligationCalculation { OrganisationId = subOrganisationId1, MaterialId = 1, MaterialObligationValue = 55, Year = currentYear, SubmitterId = csSubmitterId, SubmitterTypeId = 1, IsDeleted = false  },
-            new ObligationCalculation { OrganisationId = subOrganisationId1, MaterialId = 1, MaterialObligationValue = 55, Year = currentYear, SubmitterId = csSubmitterId, SubmitterTypeId = 1, IsDeleted = true  },
-            new ObligationCalculation { OrganisationId = drOrganisationId2, MaterialId = 5, MaterialObligationValue = 15, Year = currentYear, SubmitterId = drOrganisationId2, SubmitterTypeId = 2, IsDeleted = false  },
-            new ObligationCalculation { OrganisationId = drOrganisationId2, MaterialId = 6, MaterialObligationValue = 35, Year = currentYear, SubmitterId = drOrganisationId2, SubmitterTypeId = 2, IsDeleted = false  },
-            new ObligationCalculation { OrganisationId = drOrganisationId2, MaterialId = 3, MaterialObligationValue = 45, Year = currentYear, SubmitterId = drOrganisationId2, SubmitterTypeId = 2, IsDeleted = false  },
-            new ObligationCalculation { OrganisationId = subOrganisationId2, MaterialId = 4, MaterialObligationValue = 65, Year = currentYear, SubmitterId = drOrganisationId2, SubmitterTypeId = 2, IsDeleted = false  },
-            new ObligationCalculation { OrganisationId = subOrganisationId2, MaterialId = 2, MaterialObligationValue = 85, Year = currentYear, SubmitterId = drOrganisationId2, SubmitterTypeId = 2, IsDeleted = false  },
-            new ObligationCalculation { OrganisationId = subOrganisationId2, MaterialId = 1, MaterialObligationValue = 85, Year = currentYear, SubmitterId = drOrganisationId2, SubmitterTypeId = 2, IsDeleted = false  },
-            new ObligationCalculation { OrganisationId = drOrganisationId3, MaterialId = 1, MaterialObligationValue = 175, Year = currentYear, SubmitterId = drOrganisationId3, SubmitterTypeId = 2, IsDeleted = false  },
-            new ObligationCalculation { OrganisationId = drOrganisationId3, MaterialId = 1, MaterialObligationValue = 175, Year = currentYear, SubmitterId = drOrganisationId3, SubmitterTypeId = 2, IsDeleted = true  },
-            new ObligationCalculation { OrganisationId = drOrganisationId3, MaterialId = 2, MaterialObligationValue = 175, Year = currentYear, SubmitterId = drOrganisationId3, SubmitterTypeId = 2, IsDeleted = true  },
+	        // The .Id values of all records below will be sequential starting from 1
+	        // ID values are used in some of these tests
+	        
+	        // submitter: csSubmitterId
+            new ObligationCalculation { OrganisationId = _drOrganisationId1, MaterialId = 5, MaterialObligationValue = 15, Year = _currentYear, SubmitterId = _csSubmitterId, SubmitterTypeId = 1, IsDeleted = false },
+            new ObligationCalculation { OrganisationId = _drOrganisationId1, MaterialId = 6, MaterialObligationValue = 25, Year = _currentYear, SubmitterId = _csSubmitterId, SubmitterTypeId = 1, IsDeleted = false  },
+            new ObligationCalculation { OrganisationId = _subOrganisationId1, MaterialId = 3, MaterialObligationValue = 35, Year = _currentYear, SubmitterId = _csSubmitterId, SubmitterTypeId = 1, IsDeleted = false  },
+            new ObligationCalculation { OrganisationId = _subOrganisationId1, MaterialId = 4, MaterialObligationValue = 45, Year = _currentYear, SubmitterId = _csSubmitterId, SubmitterTypeId = 1, IsDeleted = false  },
+            new ObligationCalculation { OrganisationId = _subOrganisationId1, MaterialId = 1, MaterialObligationValue = 55, Year = _currentYear, SubmitterId = _csSubmitterId, SubmitterTypeId = 1, IsDeleted = false  },
+            new ObligationCalculation { OrganisationId = _subOrganisationId1, MaterialId = 1, MaterialObligationValue = 55, Year = _currentYear, SubmitterId = _csSubmitterId, SubmitterTypeId = 1, IsDeleted = true  },
+	        new ObligationCalculation { OrganisationId = _drOrganisationId1, MaterialId = 5, MaterialObligationValue = 15, Year = _nextYear, SubmitterId = _csSubmitterId, SubmitterTypeId = 1, IsDeleted = false },
+	        
+	        // submitter: drOrganisationId2
+            new ObligationCalculation { OrganisationId = _drOrganisationId2, MaterialId = 5, MaterialObligationValue = 15, Year = _currentYear, SubmitterId = _drOrganisationId2, SubmitterTypeId = 2, IsDeleted = false  },
+            new ObligationCalculation { OrganisationId = _drOrganisationId2, MaterialId = 6, MaterialObligationValue = 35, Year = _currentYear, SubmitterId = _drOrganisationId2, SubmitterTypeId = 2, IsDeleted = false  },
+            new ObligationCalculation { OrganisationId = _drOrganisationId2, MaterialId = 3, MaterialObligationValue = 45, Year = _currentYear, SubmitterId = _drOrganisationId2, SubmitterTypeId = 2, IsDeleted = false  },
+            new ObligationCalculation { OrganisationId = _subOrganisationId2, MaterialId = 4, MaterialObligationValue = 65, Year = _currentYear, SubmitterId = _drOrganisationId2, SubmitterTypeId = 2, IsDeleted = false  },
+            new ObligationCalculation { OrganisationId = _subOrganisationId2, MaterialId = 2, MaterialObligationValue = 85, Year = _currentYear, SubmitterId = _drOrganisationId2, SubmitterTypeId = 2, IsDeleted = false  },
+            new ObligationCalculation { OrganisationId = _subOrganisationId2, MaterialId = 1, MaterialObligationValue = 85, Year = _currentYear, SubmitterId = _drOrganisationId2, SubmitterTypeId = 2, IsDeleted = false  },
+	        
+	        // submitter: drOrganisationId3
+            new ObligationCalculation { OrganisationId = _drOrganisationId3, MaterialId = 1, MaterialObligationValue = 175, Year = _currentYear, SubmitterId = _drOrganisationId3, SubmitterTypeId = 2, IsDeleted = false  },
+            new ObligationCalculation { OrganisationId = _drOrganisationId3, MaterialId = 1, MaterialObligationValue = 175, Year = _currentYear, SubmitterId = _drOrganisationId3, SubmitterTypeId = 2, IsDeleted = true  },
+            new ObligationCalculation { OrganisationId = _drOrganisationId3, MaterialId = 2, MaterialObligationValue = 175, Year = _currentYear, SubmitterId = _drOrganisationId3, SubmitterTypeId = 2, IsDeleted = true  },
         ];
+        
+        var connection = new SqliteConnection("DataSource=:memory:");
+        connection.Open();
 
-        _logger = new LoggerFactory().CreateLogger<ObligationCalculationRepository>();
+        var options = new DbContextOptionsBuilder<EprContext>().UseSqlite(connection).Options;
 
-        var options = new DbContextOptionsBuilder<EprContext>().Options;
-        _mockEprContext = new Mock<EprContext>(options);
-        _mockEprContext.Setup(c => c.ObligationCalculations).ReturnsDbSet(obligationCalculations);
-        _mockEprContext.Setup(c => c.SaveChangesAsync(It.IsAny<CancellationToken>())).ReturnsAsync(1);
+        using (var context = new EprContext(options))
+        {
+	        context.Database.EnsureCreated();
+	        context.ObligationCalculations.AddRange(_obligationCalculations);
+	        context.SaveChanges();
+        }
 
-        _mockUpdater = A.Fake<IObligationCalculationUpdater>();
-
-        var mockDatabase = new Mock<DatabaseFacade>(_mockEprContext.Object);
-
-        var mockTransaction = new Mock<IDbContextTransaction>();
-        mockDatabase.Setup(d => d.BeginTransactionAsync(It.IsAny<CancellationToken>()))
-            .ReturnsAsync(mockTransaction.Object);
-        mockTransaction.Setup(t => t.DisposeAsync()).Returns(ValueTask.CompletedTask);
-
-        _mockEprContext.Setup(c => c.Database).Returns(mockDatabase.Object);
-        _repository = new ObligationCalculationRepository(_mockEprContext.Object, _logger, _mockUpdater);
+        _context = new EprContext(options);
+        _repository = new ObligationCalculationRepository(_context, NullLogger<ObligationCalculationRepository>.Instance);
     }
 
     [TestMethod]
     public async Task GetObligationCalculationBySubmitterIdAndYear_ReturnsEmpty_WhenCalledWithInvalidId()
     {
-        // Act
-        var result = await _repository.GetObligationCalculationBySubmitterIdAndYear(Guid.NewGuid(), currentYear);
+        var result = await _repository.GetObligationCalculationBySubmitterIdAndYear(Guid.NewGuid(), _currentYear);
 
-        // Assert
         result.Should().BeEmpty();
     }
 
     [TestMethod]
     public async Task GetObligationCalculationBySubmitterIdAndYear_ReturnsObligationCalculation_WhenCalledWithComplianceSchemeId()
     {
-        // Act
-        var result = await _repository.GetObligationCalculationBySubmitterIdAndYear(csSubmitterId, currentYear);
+        var result = await _repository.GetObligationCalculationBySubmitterIdAndYear(_csSubmitterId, _currentYear);
 
-        // Assert
         result.Should().NotBeNull();
         result.Count.Should().Be(5);
     }
@@ -97,10 +91,8 @@ public class ObligationCalculationRepositoryTests
     [TestMethod]
     public async Task GetObligationCalculationBySubmitterIdAndYear_ReturnsResults_WithSubsidiaries_WhenCalledWithDirectRegistrantId()
     {
-        // Act
-        var result = await _repository.GetObligationCalculationBySubmitterIdAndYear(drOrganisationId2, currentYear);
+        var result = await _repository.GetObligationCalculationBySubmitterIdAndYear(_drOrganisationId2, _currentYear);
 
-        // Assert
         result.Should().NotBeNull();
         result.Count.Should().Be(6);
     }
@@ -108,96 +100,122 @@ public class ObligationCalculationRepositoryTests
     [TestMethod]
     public async Task GetObligationCalculationBySubmitterIdAndYear_ReturnsResults_WithNoSubsidiaries_WhenCalledWithDirectRegistrantId()
     {
-        // Act
-        var result = await _repository.GetObligationCalculationBySubmitterIdAndYear(drOrganisationId3, currentYear);
+        var result = await _repository.GetObligationCalculationBySubmitterIdAndYear(_drOrganisationId3, _currentYear);
 
-        // Assert
         result.Should().NotBeNull();
         result.Count.Should().Be(1);
     }
 
-	[TestMethod]
-	public async Task SoftDeleteAndAddObligationCalculationBySubmitterIdAsync_ShouldCallUpdaterAndAddNewCalculations()
-	{
-		// Arrange
-		var newCalculations = new List<ObligationCalculation>
+    [TestMethod]
+    public async Task UpsertObligationCalculationsForSubmitterYearAsync_NoNewCalculation_ShouldRetainExistingRecords()
+    {
+	    await _repository.UpsertObligationCalculationsForSubmitterYearAsync(_csSubmitterId, _currentYear, []);
+
+	    _context.ObligationCalculations.Count().Should().Be(_obligationCalculations.Count);
+    }
+
+    [TestMethod]
+    public async Task UpsertObligationCalculationsForSubmitterYearAsync_MatchingCalculation_ShouldUpdateRecord()
+    {
+	    var newCalculations = new List<ObligationCalculation>
 	    {
-		    new() { SubmitterId = csSubmitterId, Year = currentYear, MaterialId = 4 },
-		    new() { SubmitterId = csSubmitterId, Year = currentYear, MaterialId = 5 }
+		    new()
+		    {
+			    OrganisationId = _subOrganisationId1, 
+			    MaterialId = 4,
+			    MaterialObligationValue = 100, 
+			    Year = _currentYear,
+			    CalculatedOn = new DateTime(2026, 3, 18),
+			    Tonnage = 200,
+			    SubmitterId = _csSubmitterId,
+			    SubmitterTypeId = 1
+		    }
 	    };
 
-		var mockTransaction = new Mock<IDbContextTransaction>();
-		_mockEprContext.Setup(c => c.Database.BeginTransactionAsync(It.IsAny<CancellationToken>()))
-			.ReturnsAsync(mockTransaction.Object);
+	    await _repository.UpsertObligationCalculationsForSubmitterYearAsync(_csSubmitterId, _currentYear, newCalculations);
 
-		var obligationCalculationRepository = new ObligationCalculationRepository(_mockEprContext.Object, _logger, _mockUpdater);
+	    var calculation = await GetCalculation(_obligationCalculations[3].Id);
 
-		// Act
-		await obligationCalculationRepository.UpsertObligationCalculationsForSubmitterYearAsync(csSubmitterId, currentYear, newCalculations);
-
-		// Assert
-
-		A.CallTo(() => _mockUpdater.SoftDeleteBySubmitterAndYearAsync(csSubmitterId, currentYear))
-			.MustHaveHappenedOnceExactly();
-		_mockEprContext.Verify(c => c.ObligationCalculations.AddRangeAsync(newCalculations, It.IsAny<CancellationToken>()), Moq.Times.Once);
-		_mockEprContext.Verify(c => c.SaveChangesAsync(It.IsAny<CancellationToken>()), Moq.Times.Once);
-		mockTransaction.Verify(t => t.CommitAsync(It.IsAny<CancellationToken>()), Moq.Times.Once);
-	}
-
-	[TestMethod]
-	public async Task SoftDeleteAndAddObligationCalculationBySubmitterIdAsync_ShouldWork_WhenNoExistingCalculations()
-	{
-		// Arrange
-		var newSubmitterId = Guid.NewGuid();
-		var newCalculations = new List<ObligationCalculation>
+	    calculation.Should().BeEquivalentTo(new
 	    {
-		    new() { SubmitterId = newSubmitterId, Year = currentYear, MaterialId = 10 }
+		    OrganisationId = _subOrganisationId1,
+		    MaterialId = 4,
+		    MaterialObligationValue = 100, 
+		    Year = _currentYear,
+		    CalculatedOn = new DateTime(2026, 3, 18),
+		    Tonnage = 200,
+		    SubmitterId = _csSubmitterId,
+		    SubmitterTypeId = 1
+	    });
+
+	    await CalculationIsDeletedShouldBe([
+		    _obligationCalculations[0].Id, 
+		    _obligationCalculations[1].Id, 
+		    _obligationCalculations[2].Id, 
+		    _obligationCalculations[4].Id, 
+		    _obligationCalculations[5].Id], true);
+    }
+
+    [TestMethod]
+    public async Task UpsertObligationCalculationsForSubmitterYearAsync_NoMatchingCalculation_ShouldCreateRecord()
+    {
+	    var newCalculations = new List<ObligationCalculation>
+	    {
+		    new()
+		    {
+			    OrganisationId = _subOrganisationId1, 
+			    MaterialId = 4,
+			    MaterialObligationValue = 100, 
+			    Year = _nextYear,
+			    CalculatedOn = new DateTime(2026, 3, 18),
+			    Tonnage = 200,
+			    SubmitterId = _csSubmitterId,
+			    SubmitterTypeId = 1
+		    }
 	    };
 
-		var mockTransaction = new Mock<IDbContextTransaction>();
-		_mockEprContext.Setup(c => c.Database.BeginTransactionAsync(It.IsAny<CancellationToken>()))
-			.ReturnsAsync(mockTransaction.Object);
+	    await _repository.UpsertObligationCalculationsForSubmitterYearAsync(_csSubmitterId, _nextYear, newCalculations);
 
-		var obligationCalculationRepository = new ObligationCalculationRepository(_mockEprContext.Object, _logger, _mockUpdater);
+	    var newRecordId = _obligationCalculations.Count + 1;
+	    var calculation = await GetCalculation(newRecordId);
 
-		// Act
-		await obligationCalculationRepository.UpsertObligationCalculationsForSubmitterYearAsync(newSubmitterId, currentYear, newCalculations);
-
-		// Assert
-		A.CallTo(() => _mockUpdater.SoftDeleteBySubmitterAndYearAsync(newSubmitterId, currentYear))
-			.MustHaveHappenedOnceExactly();
-		_mockEprContext.Verify(c => c.ObligationCalculations.AddRangeAsync(newCalculations, It.IsAny<CancellationToken>()), Moq.Times.Once);
-		_mockEprContext.Verify(c => c.SaveChangesAsync(It.IsAny<CancellationToken>()), Moq.Times.Once);
-		mockTransaction.Verify(t => t.CommitAsync(It.IsAny<CancellationToken>()), Moq.Times.Once);
-	}
-
-	[TestMethod]
-	public async Task SoftDeleteAndAddObligationCalculationBySubmitterIdAsync_ShouldRollback_WhenExceptionOccurs()
-	{
-		// Arrange
-		var newCalculations = new List<ObligationCalculation>
+	    calculation.Should().NotBeNull();
+	    calculation.Should().BeEquivalentTo(new
 	    {
-		    new() { SubmitterId = csSubmitterId, Year = currentYear, MaterialId = 99 }
-	    };
+		    OrganisationId = _subOrganisationId1,
+		    MaterialId = 4,
+		    MaterialObligationValue = 100, 
+		    Year = _nextYear,
+		    CalculatedOn = new DateTime(2026, 3, 18),
+		    Tonnage = 200,
+		    SubmitterId = _csSubmitterId,
+		    SubmitterTypeId = 1
+	    });
 
-		var mockTransaction = new Mock<IDbContextTransaction>();
-		_mockEprContext.Setup(c => c.Database.BeginTransactionAsync(It.IsAny<CancellationToken>()))
-			.ReturnsAsync(mockTransaction.Object);
+	    // IsDeleted state should be unchanged from initial seed
+	    await CalculationIsDeletedShouldBe([
+		    _obligationCalculations[0].Id, 
+		    _obligationCalculations[1].Id, 
+		    _obligationCalculations[2].Id, 
+		    _obligationCalculations[3].Id, 
+		    _obligationCalculations[4].Id], false);
+	    await CalculationIsDeletedShouldBe(
+		    _obligationCalculations[5].Id, true);
+    }
 
-		// Simulate exception on SaveChangesAsync
-		_mockEprContext.Setup(c => c.SaveChangesAsync(It.IsAny<CancellationToken>()))
-			.ThrowsAsync(new InvalidOperationException("Database Errror"));
+    private async Task<ObligationCalculation> GetCalculation(int id)
+    {
+	    return await _context.ObligationCalculations.FirstOrDefaultAsync(x => x.Id == id, CancellationToken.None);
+    }
 
-		var obligationCalculationRepository = new ObligationCalculationRepository(_mockEprContext.Object, _logger, _mockUpdater);
+    private async Task CalculationIsDeletedShouldBe(int id, bool isDeleted)
+    {
+	    (await GetCalculation(id)).IsDeleted.Should().Be(isDeleted, $"Record id {id}");
+    }
 
-		// Act & Assert
-		await Assert.ThrowsExactlyAsync<InvalidOperationException>(async () =>
-			await obligationCalculationRepository.UpsertObligationCalculationsForSubmitterYearAsync(csSubmitterId, currentYear, newCalculations));
-
-		// Verify rollback called
-		mockTransaction.Verify(t => t.RollbackAsync(It.IsAny<CancellationToken>()), Moq.Times.Once);
-
-		// Verify commit NOT called
-		mockTransaction.Verify(t => t.CommitAsync(It.IsAny<CancellationToken>()), Moq.Times.Never);
-	}
+    private async Task CalculationIsDeletedShouldBe(int[] ids, bool isDeleted)
+    {
+	    foreach (var id in ids)
+		    await CalculationIsDeletedShouldBe(id, isDeleted);
+    }
 }
