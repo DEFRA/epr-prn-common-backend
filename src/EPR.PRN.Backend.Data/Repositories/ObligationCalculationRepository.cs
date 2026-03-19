@@ -74,7 +74,6 @@ public class ObligationCalculationRepository(EprContext context, ILogger<Obligat
 				logger.LogInformation("soft delete {Records}", records);
 
 				await transaction.CommitAsync();
-				logger.LogInformation("commit");
 			}
 			catch (Exception ex)
 			{
