@@ -6018,3 +6018,28 @@ GO
 
 COMMIT;
 GO
+
+BEGIN TRANSACTION;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20260319122432_AddObligationCalculationIndex'
+)
+BEGIN
+CREATE INDEX [IX_ObligationCalculations_Calculate] ON [ObligationCalculations] ([Year], [IsDeleted], [SubmitterId]);
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20260319122432_AddObligationCalculationIndex'
+)
+BEGIN
+INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+VALUES (N'20260319122432_AddObligationCalculationIndex', N'8.0.20');
+END;
+GO
+
+COMMIT;
+GO
