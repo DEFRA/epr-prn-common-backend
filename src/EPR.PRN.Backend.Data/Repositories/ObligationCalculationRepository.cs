@@ -26,15 +26,13 @@ public class ObligationCalculationRepository(EprContext context, ILogger<Obligat
 		try
 		{
 			var existingIds = new List<int>();
-			
+			var existingCalculations = await context.ObligationCalculations
+				.Where(x => x.SubmitterId == submitterId && x.Year == year && !x.IsDeleted)
+				.ToListAsync();
+
 			foreach (var calculation in calculations)
 			{
-				// index: Year, OrganisationId, SubmitterId, MaterialId, IsDeleted
-				var existing = await context.ObligationCalculations.FirstOrDefaultAsync(x =>
-					x.Year == calculation.Year &&
-					x.SubmitterId == calculation.SubmitterId && 
-					x.MaterialId == calculation.MaterialId && 
-					!x.IsDeleted);
+				var existing = existingCalculations.FirstOrDefault(x => x.MaterialId == calculation.MaterialId);
 
 				if (existing is null)
 				{
@@ -52,16 +50,16 @@ public class ObligationCalculationRepository(EprContext context, ILogger<Obligat
 				}
 			}
 
+			var idsForDeletion = existingCalculations
+				.Where(x => !existingIds.Contains(x.Id))
+				.Select(x => x.Id)
+				.ToList();
+			
 			var records = await context.SaveChangesAsync();
 			logger.LogInformation("{LogPrefix}: UpsertObligationCalculationsForSubmitterYearAsync - SaveChangesAsync {Records}", _logPrefix, records);
-
-			// index: will use the one above
+			
 			records = await context.ObligationCalculations
-				.Where(oc =>
-					oc.SubmitterId == submitterId &&
-					oc.Year == year &&
-					!oc.IsDeleted &&
-					!existingIds.Contains(oc.Id))
+				.Where(x => idsForDeletion.Contains(x.Id))
 				.ExecuteUpdateAsync(c => c.SetProperty(x => x.IsDeleted, true));
 			logger.LogInformation("{LogPrefix}: UpsertObligationCalculationsForSubmitterYearAsync - ExecuteUpdateAsync {Records}", _logPrefix, records);
 

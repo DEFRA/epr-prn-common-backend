@@ -205,7 +205,7 @@ public class ObligationCalculationRepositoryTests
 
     private async Task<ObligationCalculation> GetCalculation(int id)
     {
-	    return await _context.ObligationCalculations.FirstOrDefaultAsync(x => x.Id == id, CancellationToken.None);
+	    return await _context.ObligationCalculations.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id, CancellationToken.None);
     }
 
     private async Task CalculationIsDeletedShouldBe(int id, bool isDeleted)
