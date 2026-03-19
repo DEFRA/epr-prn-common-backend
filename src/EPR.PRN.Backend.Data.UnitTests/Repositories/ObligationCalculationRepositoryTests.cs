@@ -3,7 +3,7 @@ using EPR.PRN.Backend.Data.Repositories;
 using FluentAssertions;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Extensions.Logging.Testing;
 
 namespace EPR.PRN.Backend.Data.UnitTests.Repositories;
 
@@ -19,9 +19,12 @@ public class ObligationCalculationRepositoryTests
     private readonly int _currentYear = DateTime.UtcNow.Year;
     private readonly int _nextYear = DateTime.UtcNow.Year + 1;
 
+    private const int MaterialSteel = 4;
+
     private List<ObligationCalculation> _obligationCalculations;
     
     private EprContext _context;
+    private FakeLogger<ObligationCalculationRepository> _logger;
     private ObligationCalculationRepository _repository;
 
     [TestInitialize]
@@ -36,7 +39,7 @@ public class ObligationCalculationRepositoryTests
             new ObligationCalculation { OrganisationId = _drOrganisationId1, MaterialId = 5, MaterialObligationValue = 15, Year = _currentYear, SubmitterId = _csSubmitterId, SubmitterTypeId = 1, IsDeleted = false },
             new ObligationCalculation { OrganisationId = _drOrganisationId1, MaterialId = 6, MaterialObligationValue = 25, Year = _currentYear, SubmitterId = _csSubmitterId, SubmitterTypeId = 1, IsDeleted = false  },
             new ObligationCalculation { OrganisationId = _subOrganisationId1, MaterialId = 3, MaterialObligationValue = 35, Year = _currentYear, SubmitterId = _csSubmitterId, SubmitterTypeId = 1, IsDeleted = false  },
-            new ObligationCalculation { OrganisationId = _subOrganisationId1, MaterialId = 4, MaterialObligationValue = 45, Year = _currentYear, SubmitterId = _csSubmitterId, SubmitterTypeId = 1, IsDeleted = false  },
+            new ObligationCalculation { OrganisationId = _subOrganisationId1, MaterialId = MaterialSteel, MaterialObligationValue = 45, CalculatedOn = new DateTime(2026, 3, 18), Tonnage = 200, Year = _currentYear, SubmitterId = _csSubmitterId, SubmitterTypeId = 1, IsDeleted = false  },
             new ObligationCalculation { OrganisationId = _subOrganisationId1, MaterialId = 1, MaterialObligationValue = 55, Year = _currentYear, SubmitterId = _csSubmitterId, SubmitterTypeId = 1, IsDeleted = false  },
             new ObligationCalculation { OrganisationId = _subOrganisationId1, MaterialId = 1, MaterialObligationValue = 55, Year = _currentYear, SubmitterId = _csSubmitterId, SubmitterTypeId = 1, IsDeleted = true  },
 	        new ObligationCalculation { OrganisationId = _drOrganisationId1, MaterialId = 5, MaterialObligationValue = 15, Year = _nextYear, SubmitterId = _csSubmitterId, SubmitterTypeId = 1, IsDeleted = false },
@@ -45,7 +48,7 @@ public class ObligationCalculationRepositoryTests
             new ObligationCalculation { OrganisationId = _drOrganisationId2, MaterialId = 5, MaterialObligationValue = 15, Year = _currentYear, SubmitterId = _drOrganisationId2, SubmitterTypeId = 2, IsDeleted = false  },
             new ObligationCalculation { OrganisationId = _drOrganisationId2, MaterialId = 6, MaterialObligationValue = 35, Year = _currentYear, SubmitterId = _drOrganisationId2, SubmitterTypeId = 2, IsDeleted = false  },
             new ObligationCalculation { OrganisationId = _drOrganisationId2, MaterialId = 3, MaterialObligationValue = 45, Year = _currentYear, SubmitterId = _drOrganisationId2, SubmitterTypeId = 2, IsDeleted = false  },
-            new ObligationCalculation { OrganisationId = _subOrganisationId2, MaterialId = 4, MaterialObligationValue = 65, Year = _currentYear, SubmitterId = _drOrganisationId2, SubmitterTypeId = 2, IsDeleted = false  },
+            new ObligationCalculation { OrganisationId = _subOrganisationId2, MaterialId = MaterialSteel, MaterialObligationValue = 65, Year = _currentYear, SubmitterId = _drOrganisationId2, SubmitterTypeId = 2, IsDeleted = false  },
             new ObligationCalculation { OrganisationId = _subOrganisationId2, MaterialId = 2, MaterialObligationValue = 85, Year = _currentYear, SubmitterId = _drOrganisationId2, SubmitterTypeId = 2, IsDeleted = false  },
             new ObligationCalculation { OrganisationId = _subOrganisationId2, MaterialId = 1, MaterialObligationValue = 85, Year = _currentYear, SubmitterId = _drOrganisationId2, SubmitterTypeId = 2, IsDeleted = false  },
 	        
@@ -68,7 +71,8 @@ public class ObligationCalculationRepositoryTests
         }
 
         _context = new EprContext(options);
-        _repository = new ObligationCalculationRepository(_context, NullLogger<ObligationCalculationRepository>.Instance);
+        _logger = new FakeLogger<ObligationCalculationRepository>();
+        _repository = new ObligationCalculationRepository(_context, _logger);
     }
 
     [TestMethod]
@@ -113,17 +117,72 @@ public class ObligationCalculationRepositoryTests
 
 	    _context.ObligationCalculations.Count().Should().Be(_obligationCalculations.Count);
     }
-
+    
     [TestMethod]
-    public async Task UpsertObligationCalculationsForSubmitterYearAsync_MatchingCalculation_ShouldUpdateRecord()
+    [DataRow(100, 0, 200, 1)] // materialObligationValue is changing
+    [DataRow(45, 1, 200, 1)]  // calculatedOn is changing
+    [DataRow(45, 0, 201, 1)]  // tonnage is changing
+    [DataRow(45, 0, 200, 2)]  // submitterTypeId is changing
+    public async Task UpsertObligationCalculationsForSubmitterYearAsync_MatchingCalculation_ShouldUpdateRecord(
+	    int materialObligationValue,
+	    int calculatedOnOffset,
+	    int tonnage,
+	    int submitterTypeId)
     {
 	    var newCalculations = new List<ObligationCalculation>
 	    {
 		    new()
 		    {
 			    OrganisationId = _subOrganisationId1, 
-			    MaterialId = 4,
-			    MaterialObligationValue = 100, 
+			    MaterialId = MaterialSteel,
+			    MaterialObligationValue = materialObligationValue, 
+			    Year = _currentYear,
+			    CalculatedOn = new DateTime(2026, 3, 18).AddSeconds(calculatedOnOffset),
+			    Tonnage = tonnage,
+			    SubmitterId = _csSubmitterId,
+			    SubmitterTypeId = submitterTypeId
+		    }
+	    };
+
+	    await _repository.UpsertObligationCalculationsForSubmitterYearAsync(_csSubmitterId, _currentYear, newCalculations);
+
+	    var calculation = await GetCalculation(_obligationCalculations[3].Id);
+
+	    calculation.Should().BeEquivalentTo(new
+	    {
+		    OrganisationId = _subOrganisationId1,
+		    MaterialId = MaterialSteel,
+		    MaterialObligationValue = materialObligationValue, 
+		    Year = _currentYear,
+		    CalculatedOn = new DateTime(2026, 3, 18).AddSeconds(calculatedOnOffset),
+		    Tonnage = tonnage,
+		    SubmitterId = _csSubmitterId,
+		    SubmitterTypeId = submitterTypeId
+	    });
+
+	    _logger.Collector.GetSnapshot().Should().Contain(x => x.Message.Contains($"changed {_subOrganisationId1}_{MaterialSteel}"));
+
+	    // IsDeleted state should be true for all but one record that was updated
+	    await CalculationIsDeletedShouldBe([
+		    _obligationCalculations[0].Id, 
+		    _obligationCalculations[1].Id, 
+		    _obligationCalculations[2].Id, 
+		    _obligationCalculations[4].Id, 
+		    _obligationCalculations[5].Id], true);
+	    await CalculationIsDeletedShouldBe(
+		    _obligationCalculations[3].Id, false);
+    }
+    
+    [TestMethod]
+    public async Task UpsertObligationCalculationsForSubmitterYearAsync_MatchingCalculation_NotChanged_ShouldNotUpdateRecord()
+    {
+	    var newCalculations = new List<ObligationCalculation>
+	    {
+		    new()
+		    {
+			    OrganisationId = _subOrganisationId1, 
+			    MaterialId = MaterialSteel,
+			    MaterialObligationValue = 45, 
 			    Year = _currentYear,
 			    CalculatedOn = new DateTime(2026, 3, 18),
 			    Tonnage = 200,
@@ -139,8 +198,8 @@ public class ObligationCalculationRepositoryTests
 	    calculation.Should().BeEquivalentTo(new
 	    {
 		    OrganisationId = _subOrganisationId1,
-		    MaterialId = 4,
-		    MaterialObligationValue = 100, 
+		    MaterialId = MaterialSteel,
+		    MaterialObligationValue = 45, 
 		    Year = _currentYear,
 		    CalculatedOn = new DateTime(2026, 3, 18),
 		    Tonnage = 200,
@@ -148,12 +207,17 @@ public class ObligationCalculationRepositoryTests
 		    SubmitterTypeId = 1
 	    });
 
+	    _logger.Collector.GetSnapshot().Should().NotContain(x => x.Message.Contains($"changed {_subOrganisationId1}_{MaterialSteel}"));
+
+	    // IsDeleted state should be true for all but one record (despite it not having changed)
 	    await CalculationIsDeletedShouldBe([
 		    _obligationCalculations[0].Id, 
 		    _obligationCalculations[1].Id, 
 		    _obligationCalculations[2].Id, 
 		    _obligationCalculations[4].Id, 
 		    _obligationCalculations[5].Id], true);
+	    await CalculationIsDeletedShouldBe(
+		    _obligationCalculations[3].Id, false);
     }
 
     [TestMethod]
@@ -164,7 +228,7 @@ public class ObligationCalculationRepositoryTests
 		    new()
 		    {
 			    OrganisationId = _subOrganisationId1, 
-			    MaterialId = 4,
+			    MaterialId = MaterialSteel,
 			    MaterialObligationValue = 100, 
 			    Year = _nextYear,
 			    CalculatedOn = new DateTime(2026, 3, 18),
@@ -183,7 +247,7 @@ public class ObligationCalculationRepositoryTests
 	    calculation.Should().BeEquivalentTo(new
 	    {
 		    OrganisationId = _subOrganisationId1,
-		    MaterialId = 4,
+		    MaterialId = MaterialSteel,
 		    MaterialObligationValue = 100, 
 		    Year = _nextYear,
 		    CalculatedOn = new DateTime(2026, 3, 18),

@@ -20,57 +20,78 @@ public class ObligationCalculationRepository(EprContext context, ILogger<Obligat
 
 	public async Task UpsertObligationCalculationsForSubmitterYearAsync(Guid submitterId, int year, List<ObligationCalculation> calculations)
 	{
-		logger.LogInformation("{LogPrefix}: UpsertObligationCalculationsForSubmitterYearAsync - BeginTransactionAsync", _logPrefix);
-		await using var transaction = await context.Database.BeginTransactionAsync();
-
-		try
+		using (logger.BeginScope("{LogPrefix} {Method} {SubmitterId} {Year}", _logPrefix, nameof(UpsertObligationCalculationsForSubmitterYearAsync), submitterId, year))
 		{
-			var existingIds = new List<int>();
-			var existingCalculations = await context.ObligationCalculations
-				.Where(x => x.SubmitterId == submitterId && x.Year == year && !x.IsDeleted)
-				.ToListAsync();
+			await using var transaction = await context.Database.BeginTransactionAsync();
 
-			foreach (var calculation in calculations)
+			try
 			{
-				var existing = existingCalculations.FirstOrDefault(x => x.MaterialId == calculation.MaterialId);
+				var existingIds = new List<int>();
+				var existingCalculations = await context.ObligationCalculations
+					.Where(x => x.SubmitterId == submitterId && x.Year == year && !x.IsDeleted)
+					.ToDictionaryAsync(CalculationKey, x => x);
+				var calculationsToAdd = new List<ObligationCalculation>();
 
-				if (existing is null)
+				var records = existingCalculations.Count;
+				logger.LogInformation("existing records {Records}", records);
+
+				foreach (var calculation in calculations)
 				{
-					await context.ObligationCalculations.AddAsync(calculation);
+					var key = CalculationKey(calculation);
+					if (existingCalculations.TryGetValue(key, out var existing))
+					{
+						if (HasChanged(existing, calculation))
+						{
+							existing.MaterialObligationValue = calculation.MaterialObligationValue;
+							existing.CalculatedOn = calculation.CalculatedOn;
+							existing.Tonnage = calculation.Tonnage;
+							existing.SubmitterTypeId = calculation.SubmitterTypeId;
+
+							logger.LogInformation("changed {Key}", key);
+						}
+
+						existingIds.Add(existing.Id);
+					}
+					else
+					{
+						calculationsToAdd.Add(calculation);
+					}
 				}
-				else
-				{
-					existing.OrganisationId = calculation.OrganisationId;
-					existing.MaterialObligationValue = calculation.MaterialObligationValue;
-					existing.CalculatedOn = calculation.CalculatedOn;
-					existing.Tonnage = calculation.Tonnage;
-					existing.SubmitterTypeId = calculation.SubmitterTypeId;
-					
-					existingIds.Add(existing.Id);
-				}
+
+				await context.ObligationCalculations.AddRangeAsync(calculationsToAdd);
+
+				var idsForDeletion = existingCalculations.Values
+					.Where(x => !existingIds.Contains(x.Id))
+					.Select(x => x.Id)
+					.ToList();
+
+				records = await context.SaveChangesAsync();
+				logger.LogInformation("save changes {Records}", records);
+
+				records = await context.ObligationCalculations
+					.Where(x => idsForDeletion.Contains(x.Id))
+					.ExecuteUpdateAsync(c => c.SetProperty(x => x.IsDeleted, true));
+				logger.LogInformation("soft delete {Records}", records);
+
+				await transaction.CommitAsync();
+				logger.LogInformation("commit");
 			}
-
-			var idsForDeletion = existingCalculations
-				.Where(x => !existingIds.Contains(x.Id))
-				.Select(x => x.Id)
-				.ToList();
-			
-			var records = await context.SaveChangesAsync();
-			logger.LogInformation("{LogPrefix}: UpsertObligationCalculationsForSubmitterYearAsync - SaveChangesAsync {Records}", _logPrefix, records);
-			
-			records = await context.ObligationCalculations
-				.Where(x => idsForDeletion.Contains(x.Id))
-				.ExecuteUpdateAsync(c => c.SetProperty(x => x.IsDeleted, true));
-			logger.LogInformation("{LogPrefix}: UpsertObligationCalculationsForSubmitterYearAsync - ExecuteUpdateAsync {Records}", _logPrefix, records);
-
-			await transaction.CommitAsync();
-			logger.LogInformation("{LogPrefix}: UpsertObligationCalculationsForSubmitterYearAsync - Transaction Committed", _logPrefix);
+			catch (Exception ex)
+			{
+				logger.LogError(ex, "rolling back - {Message}", ex.Message);
+				await transaction.RollbackAsync();
+				throw;
+			}
 		}
-		catch (Exception ex)
-		{
-			logger.LogError(ex, "{LogPrefix}: UpsertObligationCalculationsForSubmitterYearAsync - Exception occurred, rolling back - {Message}", _logPrefix, ex.Message);
-			await transaction.RollbackAsync();
-			throw;
-		}
+
+		return;
+
+		string CalculationKey(ObligationCalculation x) => $"{x.OrganisationId}_{x.MaterialId}";
+
+		bool HasChanged(ObligationCalculation existing, ObligationCalculation calculation) =>
+			existing.MaterialObligationValue != calculation.MaterialObligationValue ||
+			existing.CalculatedOn != calculation.CalculatedOn || 
+			existing.Tonnage != calculation.Tonnage ||
+			existing.SubmitterTypeId != calculation.SubmitterTypeId;
 	}
 }
