@@ -11,7 +11,7 @@
 		<Exec Condition="$(Configuration) == Release" Command="dotnet-ef migrations script --configuration Release --verbose --no-build --context EPR.PRN.Backend.Data.EprContext --idempotent --output Scripts/migrations.sql" />
 	</Target>
 	<ItemGroup>
-		<PackageReference Include="AutoMapper" Version="14.0.0" />
+		<PackageReference Include="MagicMapper" Version="14.0.1" />
 		<PackageReference Include="Azure.Identity" Version="1.16.0" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.20" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.20">
