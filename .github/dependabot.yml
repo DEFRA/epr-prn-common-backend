@@ -40,10 +40,3 @@ updates:
       # Minor updates will be created individually (ungrouped)
       # Major updates will be created individually (ungrouped)
       # No specific configuration needed for major updates as they'll be handled separately
-
-  - package-ecosystem: github-actions
-    directory: /
-    schedule:
-      interval: weekly
-      time: '10:30'
-      timezone: 'Europe/London'
