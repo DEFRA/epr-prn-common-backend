@@ -1,7 +1,7 @@
 ﻿using EPR.PRN.Backend.API.Controllers.Accreditation;
 using EPR.PRN.Backend.API.Dto.Accreditation;
 using EPR.PRN.Backend.API.Services.Interfaces;
-using FluentAssertions;
+using AwesomeAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 

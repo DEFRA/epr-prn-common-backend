@@ -3,7 +3,7 @@ using EPR.PRN.Backend.API.Dto.ExporterJourney;
 using EPR.PRN.Backend.API.Handlers.ExporterJourney;
 using EPR.PRN.Backend.Data.DataModels.Registrations;
 using EPR.PRN.Backend.Data.Interfaces;
-using FluentAssertions;
+using AwesomeAssertions;
 using Moq;
 
 namespace EPR.PRN.Backend.API.UnitTests.Handlers.ExporterJourney;

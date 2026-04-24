@@ -3,7 +3,7 @@ using EPR.PRN.Backend.API.Common.Dto;
 using EPR.PRN.Backend.API.Common.Enums;
 using EPR.PRN.Backend.API.Validators;
 using EprPrnIntegration.Common.Models.Rpd;
-using FluentAssertions;
+using AwesomeAssertions;
 using FluentValidation.Results;
 
 namespace EPR.PRN.Backend.API.UnitTests.Validators;

@@ -3,7 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using EPR.PRN.Backend.API.Controllers;
 using EPR.PRN.Backend.API.Queries;
-using FluentAssertions;
+using AwesomeAssertions;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualStudio.TestTools.UnitTesting;

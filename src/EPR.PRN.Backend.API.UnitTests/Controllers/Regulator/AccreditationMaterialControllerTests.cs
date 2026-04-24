@@ -3,10 +3,10 @@ using EPR.PRN.Backend.API.Controllers.Regulator;
 using EPR.PRN.Backend.API.Dto.Regulator;
 using EPR.PRN.Backend.API.Queries;
 
-using FluentAssertions;
+using AwesomeAssertions;
 using FluentValidation;
 using FluentValidation.Results;
-using FluentAssertions.Execution;
+using AwesomeAssertions.Execution;
 
 using MediatR;
 using Microsoft.AspNetCore.Mvc;

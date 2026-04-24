@@ -11,7 +11,7 @@ using EPR.PRN.Backend.API.Repositories.Interfaces;
 using EPR.PRN.Backend.API.Services;
 using EPR.PRN.Backend.Data.DataModels;
 using EprPrnIntegration.Common.Models.Rpd;
-using FluentAssertions;
+using AwesomeAssertions;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;

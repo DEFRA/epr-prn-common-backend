@@ -3,7 +3,7 @@ using EPR.PRN.Backend.Data;
 using EPR.PRN.Backend.Data.Repositories;
 using EPR.PRN.Backend.Data.DTO.Registration;
 using EPR.PRN.Backend.Data.DataModels;
-using FluentAssertions;
+using AwesomeAssertions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;

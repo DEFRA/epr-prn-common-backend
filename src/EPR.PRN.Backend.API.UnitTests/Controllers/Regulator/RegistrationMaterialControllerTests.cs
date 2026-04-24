@@ -2,8 +2,8 @@
 using EPR.PRN.Backend.API.Controllers.Regulator;
 using EPR.PRN.Backend.API.Dto.Regulator;
 using EPR.PRN.Backend.API.Queries;
-using FluentAssertions;
-using FluentAssertions.Execution;
+using AwesomeAssertions;
+using AwesomeAssertions.Execution;
 using FluentValidation;
 using FluentValidation.Results;
 

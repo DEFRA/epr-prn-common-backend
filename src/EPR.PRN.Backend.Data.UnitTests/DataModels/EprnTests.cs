@@ -3,7 +3,7 @@ using AutoFixture;
 using EPR.PRN.Backend.API.Common.Constants;
 using EPR.PRN.Backend.Data.DataModels;
 using EPR.PRN.Backend.Data.Helpers;
-using FluentAssertions;
+using AwesomeAssertions;
 
 namespace EPR.PRN.Backend.Data.UnitTests.Helpers;
 

@@ -1,5 +1,5 @@
 ﻿using EPR.PRN.Backend.API.Services;
-using FluentAssertions;
+using AwesomeAssertions;
 using FluentValidation;
 using FluentValidation.Results;
 using Moq;

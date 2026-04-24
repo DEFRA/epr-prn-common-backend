@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using EPR.PRN.Backend.Obligation.Services;
-using FluentAssertions;
+using AwesomeAssertions;
 
 namespace EPR.PRN.Backend.Obligation.UnitTests.Services;
 

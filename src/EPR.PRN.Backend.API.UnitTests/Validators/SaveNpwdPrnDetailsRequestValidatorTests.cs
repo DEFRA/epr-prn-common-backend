@@ -1,7 +1,7 @@
 ﻿using EPR.PRN.Backend.API.Common.Dto;
 using EPR.PRN.Backend.API.Common.Enums;
 using EPR.PRN.Backend.API.Validators;
-using FluentAssertions;
+using AwesomeAssertions;
 
 namespace EPR.PRN.Backend.API.UnitTests.Validators
 {

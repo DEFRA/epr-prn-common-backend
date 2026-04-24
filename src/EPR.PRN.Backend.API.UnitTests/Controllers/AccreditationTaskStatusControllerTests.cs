@@ -6,7 +6,7 @@ using AutoFixture;
 using EPR.PRN.Backend.API.Commands;
 using EPR.PRN.Backend.API.Common.Enums;
 using EPR.PRN.Backend.API.Controllers.Accreditation;
-using FluentAssertions;
+using AwesomeAssertions;
 using FluentValidation;
 using FluentValidation.Results;
 using MediatR;

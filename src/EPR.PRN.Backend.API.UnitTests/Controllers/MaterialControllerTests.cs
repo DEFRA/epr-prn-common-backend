@@ -1,8 +1,8 @@
 ﻿using EPR.PRN.Backend.API.Controllers;
 using EPR.PRN.Backend.API.Dto;
 using EPR.PRN.Backend.API.Queries;
-using FluentAssertions;
-using FluentAssertions.Execution;
+using AwesomeAssertions;
+using AwesomeAssertions.Execution;
 using MediatR;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
