@@ -1,7 +1,7 @@
 using EPR.PRN.Backend.API.Common.Dto;
 using EPR.PRN.Backend.API.Profiles;
 using EPR.PRN.Backend.Data.DataModels;
-using FluentAssertions;
+using AwesomeAssertions;
 
 namespace EPR.PRN.Backend.API.UnitTests.Mappers;
 

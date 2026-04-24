@@ -12,7 +12,7 @@ using EPR.PRN.Backend.Data.DataModels.Accreditations;
 using EPR.PRN.Backend.Data.DataModels.Registrations;
 using EPR.PRN.Backend.Data.Interfaces;
 using EPR.PRN.Backend.Data.Interfaces.Accreditation;
-using FluentAssertions;
+using AwesomeAssertions;
 using Moq;
 
 namespace EPR.PRN.Backend.API.UnitTests.Handlers

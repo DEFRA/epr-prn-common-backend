@@ -3,7 +3,7 @@ using EPR.PRN.Backend.API.Handlers;
 using EPR.PRN.Backend.API.Profiles.Regulator;
 using EPR.PRN.Backend.Data.DataModels.Registrations;
 using EPR.PRN.Backend.Data.DTO;
-using FluentAssertions;
+using AwesomeAssertions;
 
 namespace EPR.PRN.Backend.API.UnitTests.Mapper.Registration;
 

@@ -4,7 +4,7 @@ using EPR.PRN.Backend.API.Common.Exceptions;
 using EPR.PRN.Backend.API.Handlers.Regulator;
 using EPR.PRN.Backend.Data.DataModels.Registrations;
 using EPR.PRN.Backend.Data.Interfaces.Regulator;
-using FluentAssertions;
+using AwesomeAssertions;
 using MediatR;
 using Moq;
 

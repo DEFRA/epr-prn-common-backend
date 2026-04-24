@@ -1,7 +1,7 @@
 ﻿using EPR.PRN.Backend.API.Dto.Accreditation;
 using EPR.PRN.Backend.API.Services;
 using EPR.PRN.Backend.Data.DataModels.Accreditations;
-using FluentAssertions;
+using AwesomeAssertions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Moq;

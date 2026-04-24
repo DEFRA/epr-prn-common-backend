@@ -6,7 +6,7 @@ using EPR.PRN.Backend.API.Profiles;
 using EPR.PRN.Backend.API.Services;
 using EPR.PRN.Backend.Data.DataModels.Registrations;
 using EPR.PRN.Backend.Data.Interfaces.Accreditation;
-using FluentAssertions;
+using AwesomeAssertions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Moq;

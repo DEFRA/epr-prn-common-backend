@@ -8,7 +8,7 @@ using EPR.PRN.Backend.API.Handlers;
 using EPR.PRN.Backend.API.Queries;
 using EPR.PRN.Backend.API.Services.Interfaces;
 using EPR.PRN.Backend.Data.DTO;
-using FluentAssertions;
+using AwesomeAssertions;
 using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;

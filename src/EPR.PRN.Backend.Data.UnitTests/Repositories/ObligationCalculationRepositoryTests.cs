@@ -2,7 +2,7 @@
 using EPR.PRN.Backend.Data.Interfaces;
 using EPR.PRN.Backend.Data.Repositories;
 using FakeItEasy;
-using FluentAssertions;
+using AwesomeAssertions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage;

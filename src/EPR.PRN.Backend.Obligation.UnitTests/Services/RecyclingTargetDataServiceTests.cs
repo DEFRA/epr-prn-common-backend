@@ -3,7 +3,7 @@ using EPR.PRN.Backend.API.Common.Enums;
 using EPR.PRN.Backend.Data.DataModels;
 using EPR.PRN.Backend.Data.Interfaces;
 using EPR.PRN.Backend.Obligation.Services;
-using FluentAssertions;
+using AwesomeAssertions;
 using Moq;
 
 namespace EPR.PRN.Backend.Obligation.UnitTests.Services;

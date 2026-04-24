@@ -6,7 +6,7 @@ using EPR.PRN.Backend.API.Controllers.Regulator;
 using EPR.PRN.Backend.API.Dto.ExporterJourney;
 using EPR.PRN.Backend.API.Dto.Regulator;
 using EPR.PRN.Backend.API.Queries.ExporterJourney;
-using FluentAssertions;
+using AwesomeAssertions;
 using FluentValidation;
 using FluentValidation.Results;
 using MediatR;

@@ -7,7 +7,7 @@ using EPR.PRN.Backend.API.Common.Enums;
 using EPR.PRN.Backend.API.Dto;
 using EPR.PRN.Backend.Data.DataModels;
 using EprPrnIntegration.Common.Models.Rpd;
-using FluentAssertions;
+using AwesomeAssertions;
 using Moq;
 using Newtonsoft.Json.Linq;
 

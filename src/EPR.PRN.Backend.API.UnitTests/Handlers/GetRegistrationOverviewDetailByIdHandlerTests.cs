@@ -2,7 +2,7 @@
 using EPR.PRN.Backend.API.Queries;
 using EPR.PRN.Backend.Data.DataModels.Registrations;
 using EPR.PRN.Backend.Data.Interfaces.Regulator;
-using FluentAssertions;
+using AwesomeAssertions;
 using Moq;
 using EPR.PRN.Backend.API.Common.Enums;
 using EPR.PRN.Backend.API.Handlers.Regulator;

@@ -4,7 +4,7 @@ using EPR.PRN.Backend.API.Common.Enums;
 using EPR.PRN.Backend.API.Helpers;
 using EPR.PRN.Backend.API.Mappers;
 using EPR.PRN.Backend.Data.DataModels;
-using FluentAssertions;
+using AwesomeAssertions;
 
 namespace EPR.PRN.Backend.API.UnitTests.Helpers;
 

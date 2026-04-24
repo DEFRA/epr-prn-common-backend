@@ -3,7 +3,7 @@ using EPR.PRN.Backend.API.Handlers;
 using EPR.PRN.Backend.API.Queries;
 using EPR.PRN.Backend.API.Services.Interfaces;
 using EPR.PRN.Backend.Data.Interfaces;
-using FluentAssertions;
+using AwesomeAssertions;
 using Moq;
 
 namespace EPR.PRN.Backend.API.UnitTests.Handlers;

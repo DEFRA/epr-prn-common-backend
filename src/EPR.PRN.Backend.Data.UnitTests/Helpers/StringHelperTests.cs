@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using EPR.PRN.Backend.Data.Helpers;
-using FluentAssertions;
+using AwesomeAssertions;
 
 namespace EPR.PRN.Backend.Data.UnitTests.Helpers;
 

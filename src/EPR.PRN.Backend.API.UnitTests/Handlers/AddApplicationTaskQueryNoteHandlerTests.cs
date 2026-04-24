@@ -2,7 +2,7 @@ using AutoFixture;
 using EPR.PRN.Backend.API.Commands;
 using EPR.PRN.Backend.API.Handlers.Regulator;
 using EPR.PRN.Backend.Data.Interfaces.Regulator;
-using FluentAssertions;
+using AwesomeAssertions;
 using Moq;
 
 namespace EPR.PRN.Backend.API.UnitTests.Handlers;
