@@ -11,14 +11,12 @@ updates:
     ignore:
       # Should we update the target framework of projects in the future, these
       # ignores will also need to change
-      - dependency-name: "HealthChecks.SqlServer"
-        versions: [">=9.0.0"]
-      - dependency-name: "HealthChecks.UI.Client"
+      - dependency-name: "AspNetCore.HealthChecks.*"
         versions: [">=9.0.0"]
       - dependency-name: "coverlet.*"
         versions: [">=8.0.0"]
       - dependency-name: "MediatR"
-        versions: [">=14.0.0"]
+        versions: [">=13.0.0"]
       - dependency-name: "Microsoft.AspNetCore.*"
         versions: [">=9.0.0"]
       - dependency-name: "Microsoft.EntityFrameworkCore*"
@@ -30,6 +28,8 @@ updates:
       - dependency-name: "Swashbuckle.AspNetCore*"
         versions: [">=9.0.0"]
       - dependency-name: "System.Formats.Asn1"
+        versions: [">=9.0.0"]
+      - dependency-name: "dotnet-ef"
         versions: [">=9.0.0"]
     groups:
       # Group all patch updates into a single PR
