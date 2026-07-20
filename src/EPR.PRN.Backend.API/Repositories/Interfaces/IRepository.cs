@@ -16,6 +16,10 @@
             Guid orgId,
             PaginatedRequestDto request
         );
+        Task<PaginatedResponseDto<PrnRawDataDto>> GetRawPrnData(
+            string? sourceSystemId,
+            PaginatedRequestDto request
+        );
         Task<List<PrnUpdateStatus>> GetModifiedPrnsbyDate(DateTime fromDate, DateTime toDate);
         Task<Eprn> SavePrnDetails(Eprn entity);
         Task<List<Eprn>> GetPrnsForPrnNumbers(List<string> prnNumbers);

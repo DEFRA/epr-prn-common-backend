@@ -92,6 +92,30 @@ public class PrnService(
         return prns;
     }
 
+    public async Task<PaginatedResponseDto<PrnRawDataDto>> GetRawPrnData(
+        string sourceSystemId,
+        PaginatedRequestDto request
+    )
+    {
+        logger.LogInformation(
+            "{Logprefix}: PrnService - GetRawPrnData: request for source system {SourceSystemId} with criteria {Request}",
+            logPrefix,
+            sourceSystemId,
+            JsonConvert.SerializeObject(request)
+        );
+        var prns = await repository.GetRawPrnData(sourceSystemId, request);
+        logger.LogInformation(
+            "{Logprefix}: PrnService - GetRawPrnData: fetched {ItemCount} Prns out of {TotalItems} matching records for page {CurrentPage} with page size {PageSize}",
+            logPrefix,
+            prns.Items?.Count ?? 0,
+            prns.TotalItems,
+            prns.CurrentPage,
+            prns.PageSize
+        );
+
+        return prns;
+    }
+
     public async Task UpdateStatus(Guid orgId, Guid userId, List<PrnUpdateStatusDto> prnUpdates)
     {
         logger.LogInformation(

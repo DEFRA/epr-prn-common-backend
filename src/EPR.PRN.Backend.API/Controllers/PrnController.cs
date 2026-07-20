@@ -141,6 +141,37 @@ public class PrnController(
         return Ok(prns);
     }
 
+    [HttpGet("raw-data")]
+    [ProducesResponseType(typeof(PaginatedResponseDto<PrnRawDataDto>), 200)]
+    public async Task<IActionResult> GetRawPrnData(
+        [FromQuery] string? sourceSystemId,
+        [FromQuery] PaginatedRequestDto request
+    )
+    {
+        logger.LogInformation(
+            "{Logprefix}: PrnController - GetRawPrnData: Api Route api/v1/prn/raw-data",
+            logPrefix
+        );
+        logger.LogInformation(
+            "{Logprefix}: PrnController - GetRawPrnData: request for source system {SourceSystemId} and Search criteria {Searchcriteria}",
+            logPrefix,
+            sourceSystemId,
+            JsonConvert.SerializeObject(request)
+        );
+
+        var result = await prnService.GetRawPrnData(sourceSystemId, request);
+        logger.LogInformation(
+            "{Logprefix}: PrnController - GetRawPrnData: returned {ItemCount} Prns out of {TotalItems} matching records for page {CurrentPage} with page size {PageSize}",
+            logPrefix,
+            result.Items?.Count ?? 0,
+            result.TotalItems,
+            result.CurrentPage,
+            result.PageSize
+        );
+
+        return Ok(result);
+    }
+
     [HttpGet("ModifiedPrnsbyDate")]
     [ProducesResponseType(typeof(List<NpwdPrnUpdateStatus>), 200)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]

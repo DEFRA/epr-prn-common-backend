@@ -271,6 +271,22 @@ public class PrnServiceTests
     }
 
     [TestMethod]
+    public async Task GetRawPrnData_ReturnsResponseGotFromRepo()
+    {
+        var sourceSystemId = "SystemA";
+        var request = _fixture.Create<PaginatedRequestDto>();
+        var repoResponse = _fixture.Create<PaginatedResponseDto<PrnRawDataDto>>();
+
+        _mockRepository.Setup(s => s.GetRawPrnData(sourceSystemId, request))
+            .ReturnsAsync(repoResponse);
+
+        var result = await _systemUnderTest.GetRawPrnData(sourceSystemId, request);
+
+        result.Should().Be(repoResponse);
+        _mockRepository.Verify(s => s.GetRawPrnData(sourceSystemId, request), Times.Once);
+    }
+
+    [TestMethod]
     public async Task GetModifiedNpwdPrnsbyDate_ReturnsModifiedPrns_WhenDataExists()
     {
         // Arrange
