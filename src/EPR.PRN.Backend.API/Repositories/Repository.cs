@@ -33,9 +33,9 @@ public class Repository(
         );
         var prns = _eprContext.Prn.Where(x => x.OrganisationId == orgId);
         logger.LogInformation(
-            "{Logprefix}: PrnService - GetAllPrnsForOrganisation: Prns fetched {Prns}",
+            "{Logprefix}: Repository - GetAllPrnsForOrganisation: PRN query prepared for organisation {Organisation}",
             logPrefix,
-            JsonConvert.SerializeObject(prns)
+            orgId
         );
         return prns;
     }
@@ -49,7 +49,7 @@ public class Repository(
         );
         var prns = await GetAllPrnsForOrganisation(orgId).ToListAsync();
         logger.LogInformation(
-            "{Logprefix}: PrnService - GetAllPrnByOrganisationId: Prns fetched {Prns}",
+            "{Logprefix}: Repository - GetAllPrnByOrganisationId: Prns fetched {Prns}",
             logPrefix,
             JsonConvert.SerializeObject(prns)
         );
@@ -298,10 +298,9 @@ public class Repository(
         );
         var prns = GetAllPrnsForOrganisation(orgId);
         logger.LogInformation(
-            "{Logprefix}: Repository - GetSearchPrnsForOrganisation: GetAllPrnsForOrganisation for Organisation: {OrgId}, Fetched: {PaginatedRequest}",
+            "{Logprefix}: Repository - GetSearchPrnsForOrganisation: GetAllPrnsForOrganisation query prepared for Organisation: {OrgId}",
             logPrefix,
-            orgId,
-            JsonConvert.SerializeObject(prns)
+            orgId
         );
 
         var prnNumbers = prns.Select(prn => prn.PrnNumber)
@@ -569,7 +568,7 @@ public class Repository(
         {
             logger.LogError(
                 exception: ex,
-                "{Logprefix}: Error Message: {Message}",
+                "{Logprefix}: Repository - SavePrnDetails: Error Message: {Message}",
                 logPrefix,
                 ex.Message
             );
