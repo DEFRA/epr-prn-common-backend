@@ -99,20 +99,53 @@ public class RepositoryTestsInMemory
         Assert.HasCount(2, result.Items);
         Assert.IsTrue(result.Items.Any(i => i.PrnNumber.Contains("searchTerm")));
     }
-    
+
     [TestMethod]
-    public async Task GetSearchPrnsForOrganisation_ObligationYearMapped()
+    public async Task GetSearchPrnsForOrganisation_MapsAllProjectedFields()
     {
-        // Arrange
-        var orgId = (await _context.Prn.FirstAsync(CancellationToken.None)).OrganisationId;
-        
-        // Act
-        var result = await _repository.GetSearchPrnsForOrganisation(orgId, new PaginatedRequestDto());
-        
-        // Assert
-        Assert.IsNotNull(result.Items);
-        Assert.HasCount(2, result.Items);
-        Assert.IsTrue(result.Items.All(i => i.ObligationYear == "2023"));
+        var sourcePrn = await _context.Prn.FirstAsync(CancellationToken.None);
+        sourcePrn.TonnageValue = 100;
+        sourcePrn.PrnStatusId = (int)EprnStatus.ACCEPTED;
+        sourcePrn.PrnSignatory = "Signatory";
+        sourcePrn.PrnSignatoryPosition = "Director";
+        sourcePrn.IssueDate = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+        sourcePrn.ProcessToBeUsed = "R3";
+        sourcePrn.IssuerNotes = "Issuer notes";
+        sourcePrn.DecemberWaste = true;
+        sourcePrn.CreatedOn = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+        sourcePrn.LastUpdatedDate = new DateTime(2026, 1, 2, 0, 0, 0, DateTimeKind.Utc);
+        sourcePrn.IsExport = true;
+        await _context.SaveChangesAsync(CancellationToken.None);
+
+        var result = await _repository.GetSearchPrnsForOrganisation(
+            sourcePrn.OrganisationId,
+            new PaginatedRequestDto { Page = 1, PageSize = 10 }
+        );
+        var prn = result.Items.Single(x => x.ExternalId == sourcePrn.ExternalId);
+
+        prn.ExternalId.Should().Be(sourcePrn.ExternalId);
+        prn.PrnNumber.Should().Be(sourcePrn.PrnNumber);
+        prn.OrganisationId.Should().Be(sourcePrn.OrganisationId);
+        prn.MaterialName.Should().Be(sourcePrn.MaterialName);
+        prn.OrganisationName.Should().Be(sourcePrn.OrganisationName);
+        prn.CreatedOn.Should().Be(sourcePrn.CreatedOn);
+        prn.TonnageValue.Should().Be(sourcePrn.TonnageValue);
+        prn.PrnStatusId.Should().Be(sourcePrn.PrnStatusId);
+        prn.PrnStatus.Should().Be((EprnStatus)sourcePrn.PrnStatusId);
+        prn.PrnSignatory.Should().Be(sourcePrn.PrnSignatory);
+        prn.PrnSignatoryPosition.Should().Be(sourcePrn.PrnSignatoryPosition);
+        prn.IssuedByOrg.Should().Be(sourcePrn.IssuedByOrg);
+        prn.IssueDate.Should().Be(sourcePrn.IssueDate);
+        prn.ProcessToBeUsed.Should().Be(sourcePrn.ProcessToBeUsed);
+        prn.IssuerNotes.Should().Be(sourcePrn.IssuerNotes);
+        prn.DecemberWaste.Should().Be(sourcePrn.DecemberWaste);
+        prn.AccreditationNumber.Should().Be(sourcePrn.AccreditationNumber);
+        prn.ReprocessingSite.Should().Be(sourcePrn.ReprocessingSite);
+        prn.AccreditationYear.Should().Be(sourcePrn.AccreditationYear);
+        prn.ObligationYear.Should().Be(sourcePrn.ObligationYear);
+        prn.LastUpdatedDate.Should().Be(sourcePrn.LastUpdatedDate);
+        prn.IsExport.Should().Be(sourcePrn.IsExport);
+        prn.ReprocessorExporterAgency.Should().Be(sourcePrn.ReprocessorExporterAgency);
     }
 
     [TestMethod]
