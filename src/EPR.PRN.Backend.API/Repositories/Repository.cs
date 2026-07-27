@@ -362,16 +362,26 @@ public class Repository(
                 {
                     ExternalId = prn.ExternalId,
                     PrnNumber = prn.PrnNumber,
+                    OrganisationId = prn.OrganisationId,
                     MaterialName = prn.MaterialName,
                     OrganisationName = prn.OrganisationName,
                     CreatedOn = prn.CreatedOn,
                     TonnageValue = prn.TonnageValue,
                     PrnStatusId = prn.PrnStatusId,
+                    PrnSignatory = prn.PrnSignatory,
+                    PrnSignatoryPosition = prn.PrnSignatoryPosition,
                     IssuedByOrg = prn.IssuedByOrg,
                     IssueDate = prn.IssueDate,
+                    ProcessToBeUsed = prn.ProcessToBeUsed,
                     IssuerNotes = prn.IssuerNotes,
                     DecemberWaste = prn.DecemberWaste,
-                    ObligationYear = prn.ObligationYear
+                    AccreditationNumber = prn.AccreditationNumber,
+                    ReprocessingSite = prn.ReprocessingSite,
+                    AccreditationYear = prn.AccreditationYear,
+                    ObligationYear = prn.ObligationYear,
+                    LastUpdatedDate = prn.LastUpdatedDate,
+                    IsExport = prn.IsExport,
+                    ReprocessorExporterAgency = prn.ReprocessorExporterAgency,
                 },
             })
             .ToListAsync();
