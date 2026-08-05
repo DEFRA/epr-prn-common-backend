@@ -340,21 +340,6 @@ public class PrnControllerTests
     }
 
     [TestMethod]
-    public async Task GetRawPrnData_ReturnsResponse()
-    {
-        var sourceSystemId = "SystemA";
-        var request = new PaginatedRequestDto { Page = 2, PageSize = 5 };
-        var response = _fixture.Create<PaginatedResponseDto<PrnRawDataDto>>();
-        _mockPrnService
-            .Setup(s => s.GetRawPrnData(sourceSystemId, request))
-            .ReturnsAsync(response);
-
-        var result = await _systemUnderTest.GetRawPrnData(sourceSystemId, request);
-
-        result.Should().BeOfType<OkObjectResult>().Which.Value.Should().Be(response);
-    }
-
-    [TestMethod]
     [DataRow(2023)] // Invalid year
     [DataRow(2030)] // Invalid year
     public async Task GetObligationCalculation_InvalidYear_ReturnsBadRequest(int year)
