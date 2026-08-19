@@ -14,10 +14,6 @@ public interface IPrnService
         Guid orgId,
         PaginatedRequestDto request
     );
-    Task<PaginatedResponseDto<PrnRawDataDto>> GetRawPrnData(
-        string? sourceSystemId,
-        PaginatedRequestDto request
-    );
     Task<List<PrnUpdateStatus>?> GetModifiedPrnsbyDate(DateTime fromDate, DateTime toDate);
     Task<Eprn> SaveEprnDetails(Eprn prn);
 

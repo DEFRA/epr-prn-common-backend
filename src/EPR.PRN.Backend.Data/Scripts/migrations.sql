@@ -6043,37 +6043,3 @@ GO
 
 COMMIT;
 GO
-
-BEGIN TRANSACTION;
-GO
-
-IF NOT EXISTS (
-    SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20260720120000_AddPrnRawDataIndexes'
-)
-BEGIN
-    CREATE INDEX [IX_Prn_SourceSystemId_Id] ON [Prn] ([SourceSystemId], [Id]);
-END;
-GO
-
-IF NOT EXISTS (
-    SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20260720120000_AddPrnRawDataIndexes'
-)
-BEGIN
-    CREATE INDEX [IX_PrnStatusHistory_PrnIdFk_CreatedOn_Id] ON [PrnStatusHistory] ([PrnIdFk], [CreatedOn], [Id]);
-END;
-GO
-
-IF NOT EXISTS (
-    SELECT * FROM [__EFMigrationsHistory]
-    WHERE [MigrationId] = N'20260720120000_AddPrnRawDataIndexes'
-)
-BEGIN
-    INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
-    VALUES (N'20260720120000_AddPrnRawDataIndexes', N'8.0.28');
-END;
-GO
-
-COMMIT;
-GO
