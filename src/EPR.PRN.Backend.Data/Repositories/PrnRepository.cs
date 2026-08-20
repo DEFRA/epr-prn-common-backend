@@ -7,27 +7,42 @@ namespace EPR.PRN.Backend.Data.Repositories;
 
 public class PrnRepository(EprContext context) : IPrnRepository
 {
-    public IQueryable<EprnResultsDto> GetAcceptedAndAwaitingPrnsByYear(Guid organisationId, int year)
+    public async Task<List<PrnObligationSummaryDto>> GetObligationSummary(
+        Guid organisationId,
+        int year
+    )
     {
         var currentYear = year.ToString();
         var previousYear = (year - 1).ToString();
 
-        var query = from eprn in context.Prn
-            join status in context.PrnStatus on eprn.PrnStatusId equals status.Id
-            where eprn.OrganisationId == organisationId &&
-                  (
-                      (eprn.PrnStatusId == (int)EprnStatus.ACCEPTED && eprn.ObligationYear == currentYear) ||
-                      (eprn.PrnStatusId == (int)EprnStatus.AWAITINGACCEPTANCE && (
-                          eprn.ObligationYear == currentYear ||
-                          (eprn.AccreditationYear == previousYear && eprn.DecemberWaste == true)
-                      )
-                  ))
-            select new EprnResultsDto
-            {
-                Eprn = eprn,
-                Status = status
-            };
-
-        return query.AsNoTracking();
+        return await context
+            .Prn.Where(prn =>
+                prn.OrganisationId == organisationId
+                && (
+                    (
+                        prn.PrnStatusId == (int)EprnStatus.ACCEPTED
+                        && prn.ObligationYear == currentYear
+                    )
+                    || (
+                        prn.PrnStatusId == (int)EprnStatus.AWAITINGACCEPTANCE
+                        && (
+                            prn.ObligationYear == currentYear
+                            || (prn.AccreditationYear == previousYear && prn.DecemberWaste)
+                        )
+                    )
+                )
+            )
+            .GroupBy(prn => prn.MaterialName)
+            .Select(group => new PrnObligationSummaryDto(
+                group.Key,
+                group
+                    .Where(prn => prn.PrnStatusId == (int)EprnStatus.ACCEPTED)
+                    .Sum(prn => prn.TonnageValue),
+                group
+                    .Where(prn => prn.PrnStatusId == (int)EprnStatus.AWAITINGACCEPTANCE)
+                    .Sum(prn => prn.TonnageValue),
+                group.Count(prn => prn.PrnStatusId == (int)EprnStatus.AWAITINGACCEPTANCE)
+            ))
+            .ToListAsync();
     }
 }

@@ -172,11 +172,8 @@ namespace EPR.PRN.Backend.Obligation.Services
 
 			var obligationCalculations = await obligationCalculationRepository.GetObligationCalculationBySubmitterIdAndYear(organisationId, year);
 
-			var prns = prnRepository.GetAcceptedAndAwaitingPrnsByYear(organisationId, year);
-
-			var acceptedTonnageForPrns = GetSumOfTonnageForMaterials(prns, EprnStatus.ACCEPTED.ToString());
-			var awaitingAcceptanceForPrns = GetSumOfTonnageForMaterials(prns, EprnStatus.AWAITINGACCEPTANCE.ToString());
-			var awaitingAcceptanceCount = GetPrnStatusCount(prns, EprnStatus.AWAITINGACCEPTANCE.ToString());
+			var prnSummary = await prnRepository.GetObligationSummary(organisationId, year);
+			var awaitingAcceptanceCount = prnSummary.Sum(summary => summary.AwaitingAcceptanceCount);
 			var recyclingTargets = await recyclingTargetDataService.GetRecyclingTargetsAsync();
 
 			var responseObligationData = new List<ObligationData>();
@@ -186,8 +183,8 @@ namespace EPR.PRN.Backend.Obligation.Services
 			{
 				var npwdMaterialNames = material.PrnMaterialMappings?.Select(npwdm => npwdm.NPWDMaterialName) ?? [];
 				var recyclingTarget = GetRecyclingTarget(year, material.MaterialName, recyclingTargets);
-				var tonnageAccepted = GetTonnage(npwdMaterialNames, acceptedTonnageForPrns);
-				var tonnageAwaitingAcceptance = GetTonnage(npwdMaterialNames, awaitingAcceptanceForPrns);
+				var tonnageAccepted = GetTonnage(npwdMaterialNames, prnSummary, summary => summary.AcceptedTonnage);
+				var tonnageAwaitingAcceptance = GetTonnage(npwdMaterialNames, prnSummary, summary => summary.AwaitingAcceptanceTonnage);
 				var obligationMaterialCalculations = obligationCalculations.FindAll(x => x.MaterialId == material.Id);
 
 				// Segregate Paper and FibreComposite materials to combine later
@@ -250,24 +247,6 @@ namespace EPR.PRN.Backend.Obligation.Services
 			return obligationData;
 		}
 
-		private static List<EprnTonnageResultsDto> GetSumOfTonnageForMaterials(IQueryable<EprnResultsDto> prns, string status)
-		{
-			return [.. prns
-						.Where(joined => joined.Status.StatusName == status)
-						.GroupBy(joined => new { joined.Eprn.MaterialName, joined.Status.StatusName })
-						.Select(g => new EprnTonnageResultsDto
-						{
-							MaterialName = g.Key.MaterialName,
-							StatusName = g.Key.StatusName,
-							TotalTonnage = g.Sum(x => x.Eprn.TonnageValue)
-						})];
-		}
-
-		private static int GetPrnStatusCount(IQueryable<EprnResultsDto> prns, string status)
-		{
-			return prns.Where(joined => joined.Status.StatusName == status).Count();
-		}
-
 		private static double? GetRecyclingTarget(int year, string materialName, Dictionary<int, Dictionary<MaterialType, double>> recyclingTargets)
 		{
 			var materialType = EnumHelper.ConvertStringToEnum<MaterialType>(materialName);
@@ -292,11 +271,11 @@ namespace EPR.PRN.Backend.Obligation.Services
 			return ObligationConstants.Statuses.NotMet;
 		}
 
-		private static int? GetTonnage(IEnumerable<string> npwdMaterialNames, List<EprnTonnageResultsDto> acceptedTonnageForMaterials)
+		private static int? GetTonnage(IEnumerable<string> npwdMaterialNames, IEnumerable<PrnObligationSummaryDto> prnSummary, Func<PrnObligationSummaryDto, int> getTonnage)
 		{
-			return acceptedTonnageForMaterials
-				.Where(x => npwdMaterialNames.Contains(x.MaterialName))
-				.Select(x => x.TotalTonnage)
+			return prnSummary
+				.Where(summary => npwdMaterialNames.Contains(summary.MaterialName))
+				.Select(getTonnage)
 				.FirstOrDefault();
 		}
 
