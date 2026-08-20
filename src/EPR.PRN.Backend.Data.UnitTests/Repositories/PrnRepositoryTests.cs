@@ -1,10 +1,11 @@
 ﻿using AutoFixture;
+using AwesomeAssertions;
 using EPR.PRN.Backend.API.Common.Dto;
 using EPR.PRN.Backend.API.Common.Enums;
 using EPR.PRN.Backend.API.Profiles;
 using EPR.PRN.Backend.Data.DataModels;
+using EPR.PRN.Backend.Data.Dto;
 using EPR.PRN.Backend.Data.Repositories;
-using AwesomeAssertions;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 
@@ -52,7 +53,7 @@ public class PrnRepositoryTests
 
         _repository = new PrnRepository(_context);
     }
-    
+
     [TestMethod]
     public async Task CanAddValidSavePrnDetailsRequestV2()
     {
@@ -62,108 +63,208 @@ public class PrnRepositoryTests
     }
 
     [TestMethod]
-    public async Task GetAcceptedAndAwaitingPrnsByYearAsync_WhenDecemberWaste_ReturnsFilteredPrns()
+    public async Task GetObligationSummary_ReturnsExpectedAggregationForSelectionDecisionTable()
     {
         var organisationId = Guid.NewGuid();
+        var otherOrganisationId = Guid.NewGuid();
+        var testCases = CreateSelectionTestCases(organisationId, otherOrganisationId);
         var fixture = new Fixture();
-        var prns = fixture.CreateMany<Eprn>(11).ToList();
-        
-        prns[0].OrganisationId = organisationId;
-        prns[0].PrnNumber = "PRN-001-NPWD";
-        prns[0].PrnStatusId = (int)EprnStatus.AWAITINGACCEPTANCE;
-        prns[0].AccreditationYear = "2025";
-        prns[0].ObligationYear = "2025";
-        prns[0].DecemberWaste = false;
-        
-        prns[1].OrganisationId = organisationId;
-        prns[1].PrnNumber = "PRN-002-NPWD-DEC";
-        prns[1].PrnStatusId = (int)EprnStatus.AWAITINGACCEPTANCE;
-        prns[1].AccreditationYear = "2025";
-        prns[1].ObligationYear = "2025";
-        prns[1].DecemberWaste = true;
-        
-        prns[2].OrganisationId = organisationId;
-        prns[2].PrnNumber = "PRN-003-RREPW";
-        prns[2].PrnStatusId = (int)EprnStatus.AWAITINGACCEPTANCE;
-        prns[2].AccreditationYear = "2026";
-        prns[2].ObligationYear = "2026";
-        prns[2].DecemberWaste = false;
-        
-        prns[3].OrganisationId = organisationId;
-        prns[3].PrnNumber = "PRN-004-RREPW-DEC";
-        prns[3].PrnStatusId = (int)EprnStatus.AWAITINGACCEPTANCE;
-        prns[3].AccreditationYear = "2026";
-        prns[3].ObligationYear = "2026";
-        prns[3].DecemberWaste = true;
-        
-        prns[4].OrganisationId = organisationId;
-        prns[4].PrnNumber = "PRN-005-OLD";
-        prns[4].PrnStatusId = (int)EprnStatus.ACCEPTED;
-        prns[4].AccreditationYear = "2024";
-        prns[4].ObligationYear = "2025";
-        prns[4].DecemberWaste = false;
-        
-        prns[5].OrganisationId = organisationId;
-        prns[5].PrnNumber = "PRN-006-OLD-DEC";
-        prns[5].PrnStatusId = (int)EprnStatus.ACCEPTED;
-        prns[5].AccreditationYear = "2024";
-        prns[5].ObligationYear = "2025";
-        prns[5].DecemberWaste = true;
-        
-        prns[6].OrganisationId = organisationId;
-        prns[6].PrnNumber = "PRN-007-OLD-DEC";
-        prns[6].PrnStatusId = (int)EprnStatus.ACCEPTED;
-        prns[6].AccreditationYear = "2025";
-        prns[6].ObligationYear = "2025";
-        prns[6].DecemberWaste = true;
-        
-        prns[7].OrganisationId = organisationId;
-        prns[7].PrnNumber = "PRN-008-CURRENT";
-        prns[7].PrnStatusId = (int)EprnStatus.ACCEPTED;
-        prns[7].AccreditationYear = "2026";
-        prns[7].ObligationYear = "2026";
-        prns[7].DecemberWaste = false;
-        
-        prns[8].OrganisationId = organisationId;
-        prns[8].PrnNumber = "PRN-009-RREPW";
-        prns[8].PrnStatusId = (int)EprnStatus.AWAITINGACCEPTANCE;
-        prns[8].AccreditationYear = "2027";
-        prns[8].ObligationYear = "2027";
-        prns[8].DecemberWaste = false;
-        
-        prns[9].OrganisationId = organisationId;
-        prns[9].PrnNumber = "PRN-010-RREPW-DEC";
-        prns[9].PrnStatusId = (int)EprnStatus.AWAITINGACCEPTANCE;
-        prns[9].AccreditationYear = "2027";
-        prns[9].ObligationYear = "2027";
-        prns[9].DecemberWaste = true;
-        
-        prns[10].OrganisationId = organisationId;
-        prns[10].PrnNumber = "PRN-011-OLD-DEC";
-        prns[10].PrnStatusId = (int)EprnStatus.AWAITINGACCEPTANCE;
-        prns[10].AccreditationYear = "2024";
-        prns[10].ObligationYear = "2025";
-        prns[10].DecemberWaste = true;
-        
+        var prns = CreatePrns(fixture, testCases, testCase => testCase.PrnNumber);
+
         await _context.Prn.AddRangeAsync(prns, CancellationToken.None);
         await _context.SaveChangesAsync(CancellationToken.None);
 
-        var result = _repository.GetAcceptedAndAwaitingPrnsByYear(organisationId, 2026).ToList();
+        var result = await _repository.GetObligationSummary(organisationId, 2026);
 
-        result.Should().HaveCount(4);
-        result.Should().ContainSingle(x => x.Eprn.PrnNumber == "PRN-002-NPWD-DEC");
-        result.Should().ContainSingle(x => x.Eprn.PrnNumber == "PRN-003-RREPW");
-        result.Should().ContainSingle(x => x.Eprn.PrnNumber == "PRN-004-RREPW-DEC");
-        result.Should().ContainSingle(x => x.Eprn.PrnNumber == "PRN-008-CURRENT");
-        
-        result = _repository.GetAcceptedAndAwaitingPrnsByYear(organisationId, 2025).ToList();
-
-        result.Should().HaveCount(6);
-        result.Should().ContainSingle(x => x.Eprn.PrnNumber == "PRN-001-NPWD");
-        result.Should().ContainSingle(x => x.Eprn.PrnNumber == "PRN-002-NPWD-DEC");
-        result.Should().ContainSingle(x => x.Eprn.PrnNumber == "PRN-005-OLD");
-        result.Should().ContainSingle(x => x.Eprn.PrnNumber == "PRN-006-OLD-DEC");
-        result.Should().ContainSingle(x => x.Eprn.PrnNumber == "PRN-007-OLD-DEC");
-        result.Should().ContainSingle(x => x.Eprn.PrnNumber == "PRN-011-OLD-DEC");
+        result
+            .Select(summary => summary.MaterialName)
+            .Should()
+            .BeEquivalentTo(
+                testCases
+                    .Where(testCase => testCase.IsSelected)
+                    .Select(testCase => testCase.PrnNumber)
+            );
+        result
+            .Should()
+            .BeEquivalentTo(
+                [
+                    new PrnObligationSummaryDto("PRN-001", 1, 0, 0),
+                    new PrnObligationSummaryDto("PRN-003", 0, 3, 1),
+                    new PrnObligationSummaryDto("PRN-004", 0, 4, 1),
+                    new PrnObligationSummaryDto("PRN-005", 0, 5, 1),
+                    new PrnObligationSummaryDto("PRN-008", 0, 8, 1),
+                ]
+            );
     }
+
+    [TestMethod]
+    public async Task GetObligationSummary_AggregatesTheSelectionDecisionTableWithoutDuplicates()
+    {
+        var organisationId = Guid.NewGuid();
+        var testCases = CreateSelectionTestCases(organisationId, Guid.NewGuid());
+        var prns = CreatePrns(new Fixture(), testCases, _ => "Plastic");
+
+        await _context.Prn.AddRangeAsync(prns, CancellationToken.None);
+        await _context.SaveChangesAsync(CancellationToken.None);
+
+        var result = await _repository.GetObligationSummary(organisationId, 2026);
+
+        result.Should().BeEquivalentTo([new PrnObligationSummaryDto("Plastic", 1, 20, 4)]);
+    }
+
+    private static PrnSelectionCase[] CreateSelectionTestCases(
+        Guid organisationId,
+        Guid otherOrganisationId
+    )
+    {
+        const string currentYear = "2026";
+        const string previousYear = "2025";
+        const string otherYear = "2024";
+
+        return
+        [
+            new(
+                "PRN-001",
+                organisationId,
+                (int)EprnStatus.ACCEPTED,
+                currentYear,
+                previousYear,
+                false,
+                true
+            ),
+            new(
+                "PRN-002",
+                organisationId,
+                (int)EprnStatus.ACCEPTED,
+                previousYear,
+                previousYear,
+                true,
+                false
+            ),
+            new(
+                "PRN-003",
+                organisationId,
+                (int)EprnStatus.AWAITINGACCEPTANCE,
+                currentYear,
+                otherYear,
+                false,
+                true
+            ),
+            new(
+                "PRN-004",
+                organisationId,
+                (int)EprnStatus.AWAITINGACCEPTANCE,
+                currentYear,
+                previousYear,
+                true,
+                true
+            ),
+            new(
+                "PRN-005",
+                organisationId,
+                (int)EprnStatus.AWAITINGACCEPTANCE,
+                previousYear,
+                previousYear,
+                true,
+                true
+            ),
+            new(
+                "PRN-006",
+                organisationId,
+                (int)EprnStatus.AWAITINGACCEPTANCE,
+                previousYear,
+                previousYear,
+                false,
+                false
+            ),
+            new(
+                "PRN-007",
+                organisationId,
+                (int)EprnStatus.AWAITINGACCEPTANCE,
+                previousYear,
+                currentYear,
+                true,
+                false
+            ),
+            new(
+                "PRN-008",
+                organisationId,
+                (int)EprnStatus.AWAITINGACCEPTANCE,
+                otherYear,
+                previousYear,
+                true,
+                true
+            ),
+            new(
+                "PRN-009",
+                organisationId,
+                (int)EprnStatus.REJECTED,
+                currentYear,
+                previousYear,
+                true,
+                false
+            ),
+            new(
+                "PRN-010",
+                organisationId,
+                (int)EprnStatus.CANCELLED,
+                currentYear,
+                previousYear,
+                true,
+                false
+            ),
+            new(
+                "PRN-011",
+                otherOrganisationId,
+                (int)EprnStatus.ACCEPTED,
+                currentYear,
+                previousYear,
+                false,
+                false
+            ),
+            new(
+                "PRN-012",
+                otherOrganisationId,
+                (int)EprnStatus.AWAITINGACCEPTANCE,
+                currentYear,
+                previousYear,
+                true,
+                false
+            ),
+        ];
+    }
+
+    private static List<Eprn> CreatePrns(
+        Fixture fixture,
+        IEnumerable<PrnSelectionCase> testCases,
+        Func<PrnSelectionCase, string> getMaterialName
+    )
+    {
+        return testCases
+            .Select(
+                (testCase, index) =>
+                    fixture
+                        .Build<Eprn>()
+                        .With(prn => prn.OrganisationId, testCase.OrganisationId)
+                        .With(prn => prn.PrnNumber, testCase.PrnNumber)
+                        .With(prn => prn.PrnStatusId, testCase.PrnStatusId)
+                        .With(prn => prn.ObligationYear, testCase.ObligationYear)
+                        .With(prn => prn.AccreditationYear, testCase.AccreditationYear)
+                        .With(prn => prn.DecemberWaste, testCase.DecemberWaste)
+                        .With(prn => prn.MaterialName, getMaterialName(testCase))
+                        .With(prn => prn.TonnageValue, index + 1)
+                        .Create()
+            )
+            .ToList();
+    }
+
+    private sealed record PrnSelectionCase(
+        string PrnNumber,
+        Guid OrganisationId,
+        int PrnStatusId,
+        string ObligationYear,
+        string AccreditationYear,
+        bool DecemberWaste,
+        bool IsSelected
+    );
 }

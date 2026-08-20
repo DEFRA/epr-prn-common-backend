@@ -80,10 +80,9 @@ public class ObligationCalculatorServiceTests
 
 		prnList.ForEach(p => p.Eprn.ObligationYear = obligationCalculationYear.ToString());
 
-		var prns = prnList.AsQueryable();
 		_mockMaterialRepository.Setup(repo => repo.GetAllMaterials()).ReturnsAsync(materials);
 		_mockObligationCalculationRepository.Setup(repo => repo.GetObligationCalculationBySubmitterIdAndYear(submitterId, obligationCalculationYear)).ReturnsAsync(obligationCalculations);
-		_mockPrnRepository.Setup(repo => repo.GetAcceptedAndAwaitingPrnsByYear(submitterId, obligationCalculationYear)).Returns(prns);
+		_mockPrnRepository.Setup(repo => repo.GetObligationSummary(submitterId, obligationCalculationYear)).ReturnsAsync(CreatePrnObligationSummary(prnList));
 
 		var acceptedTonnage = _fixture.CreateMany<EprnTonnageResultsDto>(7).ToList();
 		var awaitingTonnage = _fixture.CreateMany<EprnTonnageResultsDto>(7).ToList();
@@ -136,10 +135,9 @@ public class ObligationCalculatorServiceTests
 		prnList[1].Eprn.PrnStatusId = (int)EprnStatus.ACCEPTED;
 		prnList[1].Status.StatusName = nameof(EprnStatus.ACCEPTED);
 		prnList.ForEach(p => p.Eprn.ObligationYear = obligationCalculationYear.ToString());
-		var prns = prnList.AsQueryable();
 		_mockMaterialRepository.Setup(repo => repo.GetAllMaterials()).ReturnsAsync(materials);
 		_mockObligationCalculationRepository.Setup(repo => repo.GetObligationCalculationBySubmitterIdAndYear(submitterId, obligationCalculationYear)).ReturnsAsync(obligationCalculations);
-		_mockPrnRepository.Setup(repo => repo.GetAcceptedAndAwaitingPrnsByYear(submitterId, obligationCalculationYear)).Returns(prns);
+		_mockPrnRepository.Setup(repo => repo.GetObligationSummary(submitterId, obligationCalculationYear)).ReturnsAsync(CreatePrnObligationSummary(prnList));
 		_mockRecyclingTargetDataService.Setup(x => x.GetRecyclingTargetsAsync()).ReturnsAsync(GetRecyclingTargets());
 
 		var result = await _service.GetObligationCalculation(submitterId, obligationCalculationYear);
@@ -202,10 +200,9 @@ public class ObligationCalculatorServiceTests
 		prnList[1].Eprn.TonnageValue = 1;
 		prnList[1].Eprn.ObligationYear = obligationCalculationYear.ToString();
 
-		var prns = prnList.AsQueryable();
 		_mockMaterialRepository.Setup(repo => repo.GetAllMaterials()).ReturnsAsync(materials);
 		_mockObligationCalculationRepository.Setup(repo => repo.GetObligationCalculationBySubmitterIdAndYear(submitterId, obligationCalculationYear)).ReturnsAsync(obligationCalculations);
-		_mockPrnRepository.Setup(repo => repo.GetAcceptedAndAwaitingPrnsByYear(submitterId, obligationCalculationYear)).Returns(prns);
+		_mockPrnRepository.Setup(repo => repo.GetObligationSummary(submitterId, obligationCalculationYear)).ReturnsAsync(CreatePrnObligationSummary(prnList));
 		_mockRecyclingTargetDataService.Setup(x => x.GetRecyclingTargetsAsync()).ReturnsAsync(GetRecyclingTargets());
 
 		// Act
@@ -260,10 +257,9 @@ public class ObligationCalculatorServiceTests
 		prnList[1].Eprn.TonnageValue = remeltAcceptedPRNs;
 		prnList[1].Eprn.ObligationYear = obligationCalculationYear.ToString();
 
-		var prns = prnList.AsQueryable();
 		_mockMaterialRepository.Setup(repo => repo.GetAllMaterials()).ReturnsAsync(materials);
 		_mockObligationCalculationRepository.Setup(repo => repo.GetObligationCalculationBySubmitterIdAndYear(submitterId, obligationCalculationYear)).ReturnsAsync(obligationCalculations);
-		_mockPrnRepository.Setup(repo => repo.GetAcceptedAndAwaitingPrnsByYear(submitterId, obligationCalculationYear)).Returns(prns);
+		_mockPrnRepository.Setup(repo => repo.GetObligationSummary(submitterId, obligationCalculationYear)).ReturnsAsync(CreatePrnObligationSummary(prnList));
 		_mockRecyclingTargetDataService.Setup(x => x.GetRecyclingTargetsAsync()).ReturnsAsync(GetRecyclingTargets());
 
 		// Act
@@ -351,10 +347,9 @@ public class ObligationCalculatorServiceTests
 		prnList[7].Eprn.TonnageValue = 10;
 		prnList[7].Eprn.ObligationYear = obligationCalculationYear.ToString();
 
-		var prns = prnList.AsQueryable();
 		_mockMaterialRepository.Setup(repo => repo.GetAllMaterials()).ReturnsAsync(materials);
 		_mockObligationCalculationRepository.Setup(repo => repo.GetObligationCalculationBySubmitterIdAndYear(submitterId, obligationCalculationYear)).ReturnsAsync(obligationCalculations);
-		_mockPrnRepository.Setup(repo => repo.GetAcceptedAndAwaitingPrnsByYear(submitterId, obligationCalculationYear)).Returns(prns);
+		_mockPrnRepository.Setup(repo => repo.GetObligationSummary(submitterId, obligationCalculationYear)).ReturnsAsync(CreatePrnObligationSummary(prnList));
 		_mockRecyclingTargetDataService.Setup(x => x.GetRecyclingTargetsAsync()).ReturnsAsync(GetRecyclingTargets());
 
 		// Act
@@ -390,10 +385,9 @@ public class ObligationCalculatorServiceTests
 
 		var prnList = _fixture.CreateMany<EprnResultsDto>(2).ToList();
 
-		var prns = prnList.AsQueryable();
 		_mockMaterialRepository.Setup(repo => repo.GetAllMaterials()).ReturnsAsync(materials);
 		_mockObligationCalculationRepository.Setup(repo => repo.GetObligationCalculationBySubmitterIdAndYear(submitterId, obligationCalculationYear)).ReturnsAsync(obligationCalculations);
-		_mockPrnRepository.Setup(repo => repo.GetAcceptedAndAwaitingPrnsByYear(submitterId, obligationCalculationYear)).Returns(prns);
+		_mockPrnRepository.Setup(repo => repo.GetObligationSummary(submitterId, obligationCalculationYear)).ReturnsAsync(CreatePrnObligationSummary(prnList));
 		_mockRecyclingTargetDataService.Setup(x => x.GetRecyclingTargetsAsync()).ReturnsAsync(GetRecyclingTargets());
 
 		// Act
@@ -427,10 +421,9 @@ public class ObligationCalculatorServiceTests
 
 		var prnList = _fixture.CreateMany<EprnResultsDto>().ToList();
 
-		var prns = prnList.AsQueryable();
 		_mockMaterialRepository.Setup(repo => repo.GetAllMaterials()).ReturnsAsync(materials);
 		_mockObligationCalculationRepository.Setup(repo => repo.GetObligationCalculationBySubmitterIdAndYear(submitterId, obligationCalculationYear)).ReturnsAsync(obligationCalculations);
-		_mockPrnRepository.Setup(repo => repo.GetAcceptedAndAwaitingPrnsByYear(submitterId, obligationCalculationYear)).Returns(prns);
+		_mockPrnRepository.Setup(repo => repo.GetObligationSummary(submitterId, obligationCalculationYear)).ReturnsAsync(CreatePrnObligationSummary(prnList));
 		_mockRecyclingTargetDataService.Setup(x => x.GetRecyclingTargetsAsync()).ReturnsAsync(GetRecyclingTargets());
 
 		// Act
@@ -481,10 +474,9 @@ public class ObligationCalculatorServiceTests
 		prnList[4].Eprn.PrnStatusId = 4;
 		prnList[4].Status.Id = 4;
 		prnList[4].Status.StatusName = EprnStatus.AWAITINGACCEPTANCE.ToString();
-		var prns = prnList.AsQueryable();
 		_mockMaterialRepository.Setup(repo => repo.GetAllMaterials()).ReturnsAsync(materials);
 		_mockObligationCalculationRepository.Setup(repo => repo.GetObligationCalculationBySubmitterIdAndYear(submitterId, obligationCalculationYear)).ReturnsAsync(obligationCalculations);
-		_mockPrnRepository.Setup(repo => repo.GetAcceptedAndAwaitingPrnsByYear(submitterId, obligationCalculationYear)).Returns(prns);
+		_mockPrnRepository.Setup(repo => repo.GetObligationSummary(submitterId, obligationCalculationYear)).ReturnsAsync(CreatePrnObligationSummary(prnList));
 		_mockRecyclingTargetDataService.Setup(x => x.GetRecyclingTargetsAsync()).ReturnsAsync(GetRecyclingTargets());
 
 		// Act
@@ -966,6 +958,18 @@ public class ObligationCalculatorServiceTests
 		}
 
 		return dictionary;
+	}
+
+	private static List<PrnObligationSummaryDto> CreatePrnObligationSummary(IEnumerable<EprnResultsDto> prns)
+	{
+		return prns
+			.GroupBy(prn => prn.Eprn.MaterialName)
+			.Select(group => new PrnObligationSummaryDto(
+				group.Key,
+				group.Where(prn => prn.Status.StatusName == EprnStatus.ACCEPTED.ToString()).Sum(prn => prn.Eprn.TonnageValue),
+				group.Where(prn => prn.Status.StatusName == EprnStatus.AWAITINGACCEPTANCE.ToString()).Sum(prn => prn.Eprn.TonnageValue),
+				group.Count(prn => prn.Status.StatusName == EprnStatus.AWAITINGACCEPTANCE.ToString())))
+			.ToList();
 	}
 
 	private static List<Material> GetMaterials()

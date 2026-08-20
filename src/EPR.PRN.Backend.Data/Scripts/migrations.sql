@@ -6043,3 +6043,37 @@ GO
 
 COMMIT;
 GO
+
+BEGIN TRANSACTION;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20260820100427_AddPrnObligationCalculationIndexes'
+)
+BEGIN
+    CREATE INDEX [IX_Prn_ObligationCalculation_CurrentYear] ON [Prn] ([OrganisationId], [ObligationYear], [PrnStatusId]) INCLUDE ([MaterialName], [TonnageValue]);
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20260820100427_AddPrnObligationCalculationIndexes'
+)
+BEGIN
+    CREATE INDEX [IX_Prn_ObligationCalculation_PreviousDecemberWaste] ON [Prn] ([OrganisationId], [AccreditationYear], [PrnStatusId], [DecemberWaste]) INCLUDE ([ObligationYear], [MaterialName], [TonnageValue]);
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20260820100427_AddPrnObligationCalculationIndexes'
+)
+BEGIN
+    INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+    VALUES (N'20260820100427_AddPrnObligationCalculationIndexes', N'8.0.28');
+END;
+GO
+
+COMMIT;
+GO
