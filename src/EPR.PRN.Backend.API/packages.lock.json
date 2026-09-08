@@ -76,33 +76,33 @@
       },
       "Microsoft.EntityFrameworkCore.Design": {
         "type": "Direct",
-        "requested": "[8.0.28, )",
-        "resolved": "8.0.28",
-        "contentHash": "WKAI6l+sX59/VzirT2nyjzXLu+btRX9GEXokd9Fdx3ONU3Cvi2Mj1zwcx2esLwKXYyng6ExaVwhiab/0+bN4mg==",
+        "requested": "[8.0.30, )",
+        "resolved": "8.0.30",
+        "contentHash": "0LopmLD4AR9PaheF4hE4slhndDBEI/qmT1B1QcQGdKsIaxbUfSvdug2J25iJNfPGZkezvNhL6W1Rng6kEncNdA==",
         "dependencies": {
           "Humanizer.Core": "2.14.1",
           "Microsoft.CodeAnalysis.CSharp.Workspaces": "4.5.0",
-          "Microsoft.EntityFrameworkCore.Relational": "8.0.28",
+          "Microsoft.EntityFrameworkCore.Relational": "8.0.30",
           "Microsoft.Extensions.DependencyModel": "8.0.2",
           "Mono.TextTemplating": "2.2.1"
         }
       },
       "Microsoft.EntityFrameworkCore.SqlServer": {
         "type": "Direct",
-        "requested": "[8.0.28, )",
-        "resolved": "8.0.28",
-        "contentHash": "zSYtCXjWYOAEt14mzlL3KN2g+v1RtQCRvpBFNKuxl2AofhdZggRHvETG/lPqTP3bcyyUACgWpdkj9KL0PmF4nA==",
+        "requested": "[8.0.30, )",
+        "resolved": "8.0.30",
+        "contentHash": "qboxXr70cqioVdxLv31LduMuVc5dJd8Q3aPRUkN29OheFS4ncfaRZ8yRPMy82imKz/ALm+GM4LhVydkqE9pwag==",
         "dependencies": {
-          "Microsoft.Data.SqlClient": "5.1.7",
-          "Microsoft.EntityFrameworkCore.Relational": "8.0.28",
+          "Microsoft.Data.SqlClient": "5.1.9",
+          "Microsoft.EntityFrameworkCore.Relational": "8.0.30",
           "System.Formats.Asn1": "8.0.2"
         }
       },
       "Microsoft.Extensions.Http.Polly": {
         "type": "Direct",
-        "requested": "[8.0.28, )",
-        "resolved": "8.0.28",
-        "contentHash": "rmSjAUsx1jtt/e5SUnLMdbtk9yOmNHiuR56pRqqSvoRnUtKY3U/YEpSP/+FQNh7Wgw6d9UPxbkHl8BuHxdjo0w==",
+        "requested": "[8.0.30, )",
+        "resolved": "8.0.30",
+        "contentHash": "FoSisgkIkTkn5SsofdglK0SqIxGEeAl9gcGGjKwg2R/5sOSRH2UCrisWdTiHuxuHkSsYEIm/6IiZIFmtiA2bVQ==",
         "dependencies": {
           "Microsoft.Extensions.Http": "8.0.1",
           "Polly": "7.2.4",
@@ -283,39 +283,39 @@
       },
       "Microsoft.EntityFrameworkCore": {
         "type": "Transitive",
-        "resolved": "8.0.28",
-        "contentHash": "rC28OvTXi/6+C8cisqZ/dr69aP8d0suvkFkGu2dBHa4UFwPZVt9cqni4pYwp9Hd3CuJ+NRDCn7YtwSexoBn/Hw==",
+        "resolved": "8.0.30",
+        "contentHash": "Y6GP16iuqAUkcXSgMqjgao9w0UHSz8x04LRDadsi++sn7yBI9C/sy61xNLzPKM+6DZEbyPRHGq3M58f6DhB25g==",
         "dependencies": {
-          "Microsoft.EntityFrameworkCore.Abstractions": "8.0.28",
-          "Microsoft.EntityFrameworkCore.Analyzers": "8.0.28",
+          "Microsoft.EntityFrameworkCore.Abstractions": "8.0.30",
+          "Microsoft.EntityFrameworkCore.Analyzers": "8.0.30",
           "Microsoft.Extensions.Caching.Memory": "8.0.1",
           "Microsoft.Extensions.Logging": "8.0.1"
         }
       },
       "Microsoft.EntityFrameworkCore.Abstractions": {
         "type": "Transitive",
-        "resolved": "8.0.28",
-        "contentHash": "hz/S8QO8W6J1fhaYca+HU9SV9ITJ3X2qNuP12ShSfWkp+0rSQSrkBuDFATRONTTqUOvvg8T7XLnylzKjBWPLTQ=="
+        "resolved": "8.0.30",
+        "contentHash": "JoVu3708PrMcA3BUeo1+gTcD4nRI8o3g3kwNXwgTPUDhe0dqN2CQmHmEPDD0uZlI1v2oq3F7tR46VycUHzP9ng=="
       },
       "Microsoft.EntityFrameworkCore.Analyzers": {
         "type": "Transitive",
-        "resolved": "8.0.28",
-        "contentHash": "OVp8TMfKp1ZNSLXeyZOlEITzHkQzJ9XDx0Mbf7bRfUE46mLRFsxBJEFxqTQieIu18Sg7sP0tX9K+PxvyVC8aqA=="
+        "resolved": "8.0.30",
+        "contentHash": "+ZVRBR3CzGu0AGWTbewOWTzV+UG//yDrA0gdvb9i1dTidSvwG9qRRggEI9fie0MPC0LAcS9Z8X5HRYWWxefutg=="
       },
       "Microsoft.EntityFrameworkCore.InMemory": {
         "type": "Transitive",
-        "resolved": "8.0.28",
-        "contentHash": "t3ArqvxU1OFjQwOeppdyyBvy2lJM2Ax8uDywp6ft2lzvjQF6xbullkM5+/c5+ANldBfl6yEct6CM4RyU1pbbDQ==",
+        "resolved": "8.0.30",
+        "contentHash": "hz732mmVGGuZn7WwW+LnekYw42ai+ZSPiMiBOx/C8fb4kgVieqYg5NL0Vsktgl8aiiBTdIQ+nJRdmIZRxHXDJQ==",
         "dependencies": {
-          "Microsoft.EntityFrameworkCore": "8.0.28"
+          "Microsoft.EntityFrameworkCore": "8.0.30"
         }
       },
       "Microsoft.EntityFrameworkCore.Relational": {
         "type": "Transitive",
-        "resolved": "8.0.28",
-        "contentHash": "caorpMYCkoRsL/lQuoK1lZwHIuaf+i0SBdQ19O/nIdblS8mFMakMrGo6NaglRZq5B209XMTOCw02L0zxBXt2hg==",
+        "resolved": "8.0.30",
+        "contentHash": "uGWv6fvDUvJDKAYXfVwPVLmit2i6WCmfdzwrHHuw4OJ30s9GDVLsvV62Gi8TIgFSUlTVgSVW/c+hAvDwmY1TDw==",
         "dependencies": {
-          "Microsoft.EntityFrameworkCore": "8.0.28",
+          "Microsoft.EntityFrameworkCore": "8.0.30",
           "Microsoft.Extensions.Configuration.Abstractions": "8.0.0"
         }
       },
@@ -866,9 +866,9 @@
           "Azure.Identity": "[1.21.0, )",
           "EPR.PRN.Backend.API.Common": "[1.0.0, )",
           "MagicMapper": "[14.0.1, )",
-          "Microsoft.EntityFrameworkCore": "[8.0.28, )",
-          "Microsoft.EntityFrameworkCore.InMemory": "[8.0.28, )",
-          "Microsoft.EntityFrameworkCore.SqlServer": "[8.0.28, )",
+          "Microsoft.EntityFrameworkCore": "[8.0.30, )",
+          "Microsoft.EntityFrameworkCore.InMemory": "[8.0.30, )",
+          "Microsoft.EntityFrameworkCore.SqlServer": "[8.0.30, )",
           "Microsoft.Extensions.Configuration.UserSecrets": "[8.0.1, )",
           "System.Formats.Asn1": "[8.0.2, )"
         }
@@ -878,10 +878,10 @@
         "dependencies": {
           "EPR.PRN.Backend.API.Common": "[1.0.0, )",
           "EPR.PRN.Backend.Data": "[1.0.0, )",
-          "Microsoft.EntityFrameworkCore": "[8.0.28, )",
-          "Microsoft.EntityFrameworkCore.InMemory": "[8.0.28, )",
-          "Microsoft.EntityFrameworkCore.Relational": "[8.0.28, )",
-          "Microsoft.EntityFrameworkCore.SqlServer": "[8.0.28, )"
+          "Microsoft.EntityFrameworkCore": "[8.0.30, )",
+          "Microsoft.EntityFrameworkCore.InMemory": "[8.0.30, )",
+          "Microsoft.EntityFrameworkCore.Relational": "[8.0.30, )",
+          "Microsoft.EntityFrameworkCore.SqlServer": "[8.0.30, )"
         }
       }
     }
