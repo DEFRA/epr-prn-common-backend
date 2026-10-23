@@ -27,7 +27,16 @@ public class PrnServiceTests
     private Mock<IRepository> _mockRepository;
     private Mock<ILogger<PrnService>> _mockLogger;
     private Mock<IConfiguration> _configurationMock;
-    private static readonly IFixture _fixture = new Fixture();
+    private static readonly IFixture _fixture = CreateFixture();
+
+    // Generated updates are unconditional unless a test sets ExpectedStatus.
+    private static Fixture CreateFixture()
+    {
+        var fixture = new Fixture();
+        fixture.Customize<PrnUpdateStatusDto>(c => c.Without(x => x.ExpectedStatus));
+        return fixture;
+    }
+
 
     [TestInitialize]
     public void Init()
@@ -193,6 +202,141 @@ public class PrnServiceTests
             .Invoking(x => x.UpdateStatus(orgId, Guid.NewGuid(), prnUpdates))
             .Should()
             .ThrowAsync<ConflictException>();
+    }
+
+    [TestMethod]
+    public async Task UpdateStatus_WithExpectedStatus_UpdatesOnlyWhileStillExpected()
+    {
+        var orgId = Guid.NewGuid();
+        var userId = Guid.NewGuid();
+        var availablePrns = _fixture.CreateMany<Eprn>(1).ToList();
+        var prnUpdates = new List<PrnUpdateStatusDto>
+        {
+            new PrnUpdateStatusDto
+            {
+                PrnId = availablePrns[0].ExternalId,
+                Status = EprnStatus.ACCEPTED,
+                ObligationYear = "2026",
+                ExpectedStatus = EprnStatus.AWAITINGACCEPTANCE,
+            },
+        };
+
+        availablePrns[0].PrnStatusId = (int)EprnStatus.AWAITINGACCEPTANCE;
+
+        _mockRepository.Setup(r => r.GetAllPrnByOrganisationId(orgId)).ReturnsAsync(availablePrns);
+        _mockRepository
+            .Setup(r =>
+                r.UpdatePrnStatusIfCurrent(
+                    availablePrns[0].Id,
+                    EprnStatus.AWAITINGACCEPTANCE,
+                    EprnStatus.ACCEPTED,
+                    userId,
+                    It.IsAny<DateTime>(),
+                    "2026"
+                )
+            )
+            .ReturnsAsync(1);
+
+        await _systemUnderTest.UpdateStatus(orgId, userId, prnUpdates);
+
+        _mockRepository.Verify(
+            x => x.AddPrnStatusHistory(It.Is<PrnStatusHistory>(h => h.ObligationYear == "2026")),
+            Times.Once()
+        );
+        _mockRepository.Verify(
+            x => x.SaveTransaction(It.IsAny<IDbContextTransaction>()),
+            Times.Once()
+        );
+    }
+
+    [TestMethod]
+    public async Task UpdateStatus_WithExpectedStatus_ConflictsWithoutCommittingWhenPrnHasMoved()
+    {
+        var orgId = Guid.NewGuid();
+        var userId = Guid.NewGuid();
+        var availablePrns = _fixture.CreateMany<Eprn>(2).ToList();
+        var prnUpdates = availablePrns
+            .Select(prn => new PrnUpdateStatusDto
+            {
+                PrnId = prn.ExternalId,
+                Status = EprnStatus.ACCEPTED,
+                ObligationYear = "2026",
+                ExpectedStatus = EprnStatus.AWAITINGACCEPTANCE,
+            })
+            .ToList();
+
+        availablePrns.ForEach(prn => prn.PrnStatusId = (int)EprnStatus.AWAITINGACCEPTANCE);
+
+        _mockRepository.Setup(r => r.GetAllPrnByOrganisationId(orgId)).ReturnsAsync(availablePrns);
+        _mockRepository
+            .Setup(r =>
+                r.UpdatePrnStatusIfCurrent(
+                    availablePrns[0].Id,
+                    It.IsAny<EprnStatus>(),
+                    It.IsAny<EprnStatus>(),
+                    It.IsAny<Guid>(),
+                    It.IsAny<DateTime>(),
+                    It.IsAny<string>()
+                )
+            )
+            .ReturnsAsync(1);
+        _mockRepository
+            .Setup(r =>
+                r.UpdatePrnStatusIfCurrent(
+                    availablePrns[1].Id,
+                    It.IsAny<EprnStatus>(),
+                    It.IsAny<EprnStatus>(),
+                    It.IsAny<Guid>(),
+                    It.IsAny<DateTime>(),
+                    It.IsAny<string>()
+                )
+            )
+            .ReturnsAsync(0);
+
+        await _systemUnderTest
+            .Invoking(x => x.UpdateStatus(orgId, userId, prnUpdates))
+            .Should()
+            .ThrowAsync<ConflictException>();
+
+        _mockRepository.Verify(
+            x => x.SaveTransaction(It.IsAny<IDbContextTransaction>()),
+            Times.Never()
+        );
+    }
+
+    [TestMethod]
+    public async Task UpdateStatus_WithoutExpectedStatus_DoesNotUseTheGuardedUpdate()
+    {
+        var orgId = Guid.NewGuid();
+        var availablePrns = _fixture.CreateMany<Eprn>(1).ToList();
+        var prnUpdates = new List<PrnUpdateStatusDto>
+        {
+            new PrnUpdateStatusDto
+            {
+                PrnId = availablePrns[0].ExternalId,
+                Status = EprnStatus.ACCEPTED,
+                ExpectedStatus = null,
+            },
+        };
+
+        availablePrns[0].PrnStatusId = (int)EprnStatus.AWAITINGACCEPTANCE;
+
+        _mockRepository.Setup(r => r.GetAllPrnByOrganisationId(orgId)).ReturnsAsync(availablePrns);
+
+        await _systemUnderTest.UpdateStatus(orgId, Guid.NewGuid(), prnUpdates);
+
+        _mockRepository.Verify(
+            x =>
+                x.UpdatePrnStatusIfCurrent(
+                    It.IsAny<int>(),
+                    It.IsAny<EprnStatus>(),
+                    It.IsAny<EprnStatus>(),
+                    It.IsAny<Guid>(),
+                    It.IsAny<DateTime>(),
+                    It.IsAny<string>()
+                ),
+            Times.Never()
+        );
     }
 
     [TestMethod]
@@ -776,5 +920,246 @@ public class PrnServiceTests
         capturedHistories[0].ObligationYear.Should().Be("2025");
         capturedHistories[1].ObligationYear.Should().BeNull();
         capturedHistories[2].ObligationYear.Should().Be("2026");
+    }
+    [TestMethod]
+    public async Task UpdateStatus_WithExpectedStatusAndEmptyObligationYear_PassesNullYearToRepositoryAndHistory()
+    {
+        var orgId = Guid.NewGuid();
+        var userId = Guid.NewGuid();
+        var availablePrns = _fixture.CreateMany<Eprn>(1).ToList();
+        var prnUpdates = new List<PrnUpdateStatusDto>
+        {
+            new PrnUpdateStatusDto
+            {
+                PrnId = availablePrns[0].ExternalId,
+                Status = EprnStatus.ACCEPTED,
+                ObligationYear = string.Empty,
+                ExpectedStatus = EprnStatus.AWAITINGACCEPTANCE,
+            },
+        };
+
+        availablePrns[0].PrnStatusId = (int)EprnStatus.AWAITINGACCEPTANCE;
+
+        _mockRepository.Setup(r => r.GetAllPrnByOrganisationId(orgId)).ReturnsAsync(availablePrns);
+        _mockRepository
+            .Setup(r =>
+                r.UpdatePrnStatusIfCurrent(
+                    availablePrns[0].Id,
+                    EprnStatus.AWAITINGACCEPTANCE,
+                    EprnStatus.ACCEPTED,
+                    userId,
+                    It.IsAny<DateTime>(),
+                    null
+                )
+            )
+            .ReturnsAsync(1);
+
+        await _systemUnderTest.UpdateStatus(orgId, userId, prnUpdates);
+
+        _mockRepository.Verify(
+            x => x.AddPrnStatusHistory(It.Is<PrnStatusHistory>(h => h.ObligationYear == null)),
+            Times.Once()
+        );
+    }
+
+    [TestMethod]
+    public async Task UpdateStatus_WithExpectedStatus_HistoryUsesTheSameTimestampAndUserAsTheUpdate()
+    {
+        var orgId = Guid.NewGuid();
+        var userId = Guid.NewGuid();
+        var availablePrns = _fixture.CreateMany<Eprn>(1).ToList();
+        var prnUpdates = new List<PrnUpdateStatusDto>
+        {
+            new PrnUpdateStatusDto
+            {
+                PrnId = availablePrns[0].ExternalId,
+                Status = EprnStatus.ACCEPTED,
+                ObligationYear = "2026",
+                ExpectedStatus = EprnStatus.AWAITINGACCEPTANCE,
+            },
+        };
+
+        availablePrns[0].PrnStatusId = (int)EprnStatus.AWAITINGACCEPTANCE;
+
+        DateTime? updateDate = null;
+        _mockRepository.Setup(r => r.GetAllPrnByOrganisationId(orgId)).ReturnsAsync(availablePrns);
+        _mockRepository
+            .Setup(r =>
+                r.UpdatePrnStatusIfCurrent(
+                    It.IsAny<int>(),
+                    It.IsAny<EprnStatus>(),
+                    It.IsAny<EprnStatus>(),
+                    It.IsAny<Guid>(),
+                    It.IsAny<DateTime>(),
+                    It.IsAny<string>()
+                )
+            )
+            .Callback<int, EprnStatus, EprnStatus, Guid, DateTime, string>((_, _, _, _, date, _) => updateDate = date)
+            .ReturnsAsync(1);
+
+        await _systemUnderTest.UpdateStatus(orgId, userId, prnUpdates);
+
+        updateDate.Should().NotBeNull();
+        _mockRepository.Verify(
+            x =>
+                x.AddPrnStatusHistory(
+                    It.Is<PrnStatusHistory>(h =>
+                        h.CreatedOn == updateDate
+                        && h.CreatedByUser == userId
+                        && h.PrnStatusIdFk == (int)EprnStatus.ACCEPTED
+                        && h.PrnIdFk == availablePrns[0].Id
+                    )
+                ),
+            Times.Once()
+        );
+    }
+
+    [TestMethod]
+    public async Task UpdateStatus_WithExpectedStatusThatNoLongerMatches_ConflictNamesThePrnAndExpectedStatus()
+    {
+        var orgId = Guid.NewGuid();
+        var availablePrns = _fixture.CreateMany<Eprn>(1).ToList();
+        var prnUpdates = new List<PrnUpdateStatusDto>
+        {
+            new PrnUpdateStatusDto
+            {
+                PrnId = availablePrns[0].ExternalId,
+                Status = EprnStatus.ACCEPTED,
+                ObligationYear = "2026",
+                ExpectedStatus = EprnStatus.AWAITINGACCEPTANCE,
+            },
+        };
+
+        availablePrns[0].PrnStatusId = (int)EprnStatus.AWAITINGACCEPTANCE;
+
+        _mockRepository.Setup(r => r.GetAllPrnByOrganisationId(orgId)).ReturnsAsync(availablePrns);
+        _mockRepository
+            .Setup(r =>
+                r.UpdatePrnStatusIfCurrent(
+                    It.IsAny<int>(),
+                    It.IsAny<EprnStatus>(),
+                    It.IsAny<EprnStatus>(),
+                    It.IsAny<Guid>(),
+                    It.IsAny<DateTime>(),
+                    It.IsAny<string>()
+                )
+            )
+            .ReturnsAsync(0);
+
+        var act = () => _systemUnderTest.UpdateStatus(orgId, Guid.NewGuid(), prnUpdates);
+
+        await act.Should()
+            .ThrowAsync<ConflictException>()
+            .WithMessage($"{availablePrns[0].ExternalId} is no longer AWAITINGACCEPTANCE*");
+    }
+
+    [TestMethod]
+    public async Task UpdateStatus_MixedBatch_GuardsOnlyThePrnThatHasExpectedStatus()
+    {
+        var orgId = Guid.NewGuid();
+        var userId = Guid.NewGuid();
+        var availablePrns = _fixture.CreateMany<Eprn>(2).ToList();
+        var guarded = availablePrns[0];
+        var unguarded = availablePrns[1];
+        var prnUpdates = new List<PrnUpdateStatusDto>
+        {
+            new PrnUpdateStatusDto
+            {
+                PrnId = guarded.ExternalId,
+                Status = EprnStatus.ACCEPTED,
+                ObligationYear = "2026",
+                ExpectedStatus = EprnStatus.AWAITINGACCEPTANCE,
+            },
+            new PrnUpdateStatusDto
+            {
+                PrnId = unguarded.ExternalId,
+                Status = EprnStatus.REJECTED,
+                ExpectedStatus = null,
+            },
+        };
+
+        guarded.PrnStatusId = (int)EprnStatus.AWAITINGACCEPTANCE;
+        unguarded.PrnStatusId = (int)EprnStatus.AWAITINGACCEPTANCE;
+
+        _mockRepository.Setup(r => r.GetAllPrnByOrganisationId(orgId)).ReturnsAsync(availablePrns);
+        _mockRepository
+            .Setup(r =>
+                r.UpdatePrnStatusIfCurrent(
+                    guarded.Id,
+                    EprnStatus.AWAITINGACCEPTANCE,
+                    EprnStatus.ACCEPTED,
+                    userId,
+                    It.IsAny<DateTime>(),
+                    "2026"
+                )
+            )
+            .ReturnsAsync(1);
+
+        await _systemUnderTest.UpdateStatus(orgId, userId, prnUpdates);
+
+        _mockRepository.Verify(
+            x =>
+                x.UpdatePrnStatusIfCurrent(
+                    It.IsAny<int>(),
+                    It.IsAny<EprnStatus>(),
+                    It.IsAny<EprnStatus>(),
+                    It.IsAny<Guid>(),
+                    It.IsAny<DateTime>(),
+                    It.IsAny<string>()
+                ),
+            Times.Once()
+        );
+        _mockRepository.Verify(
+            x => x.AddPrnStatusHistory(It.Is<PrnStatusHistory>(h => h.PrnIdFk == unguarded.Id)),
+            Times.Once()
+        );
+        _mockRepository.Verify(
+            x => x.SaveTransaction(It.IsAny<IDbContextTransaction>()),
+            Times.Once()
+        );
+    }
+
+    [TestMethod]
+    public async Task UpdateStatus_WithExpectedStatusWhenPrnAlreadyHasTheTargetStatus_StillConflicts()
+    {
+        // The guard must not fall back to the unguarded rule, which accepts a PRN already in the requested status.
+        var orgId = Guid.NewGuid();
+        var availablePrns = _fixture.CreateMany<Eprn>(1).ToList();
+        var prnUpdates = new List<PrnUpdateStatusDto>
+        {
+            new PrnUpdateStatusDto
+            {
+                PrnId = availablePrns[0].ExternalId,
+                Status = EprnStatus.ACCEPTED,
+                ObligationYear = "2026",
+                ExpectedStatus = EprnStatus.AWAITINGACCEPTANCE,
+            },
+        };
+
+        availablePrns[0].PrnStatusId = (int)EprnStatus.ACCEPTED;
+
+        _mockRepository.Setup(r => r.GetAllPrnByOrganisationId(orgId)).ReturnsAsync(availablePrns);
+        _mockRepository
+            .Setup(r =>
+                r.UpdatePrnStatusIfCurrent(
+                    It.IsAny<int>(),
+                    It.IsAny<EprnStatus>(),
+                    It.IsAny<EprnStatus>(),
+                    It.IsAny<Guid>(),
+                    It.IsAny<DateTime>(),
+                    It.IsAny<string>()
+                )
+            )
+            .ReturnsAsync(0);
+
+        await _systemUnderTest
+            .Invoking(x => x.UpdateStatus(orgId, Guid.NewGuid(), prnUpdates))
+            .Should()
+            .ThrowAsync<ConflictException>();
+
+        _mockRepository.Verify(
+            x => x.AddPrnStatusHistory(It.IsAny<PrnStatusHistory>()),
+            Times.Never()
+        );
     }
 }

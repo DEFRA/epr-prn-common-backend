@@ -1,6 +1,7 @@
 ﻿namespace EPR.PRN.Backend.API.Repositories.Interfaces
 {
     using EPR.PRN.Backend.API.Common.Dto;
+    using EPR.PRN.Backend.API.Common.Enums;
     using EPR.PRN.Backend.API.Dto;
     using EPR.PRN.Backend.Data.DataModels;
     using Microsoft.EntityFrameworkCore.Storage;
@@ -12,6 +13,14 @@
         public IDbContextTransaction BeginTransaction();
         public Task SaveTransaction(IDbContextTransaction transaction);
         void AddPrnStatusHistory(PrnStatusHistory prnStatusHistory);
+        Task<int> UpdatePrnStatusIfCurrent(
+            int prnId,
+            EprnStatus expectedStatus,
+            EprnStatus status,
+            Guid userId,
+            DateTime updateDate,
+            string? obligationYear
+        );
         Task<PaginatedResponseDto<PrnDto>> GetSearchPrnsForOrganisation(
             Guid orgId,
             PaginatedRequestDto request
