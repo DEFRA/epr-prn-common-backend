@@ -30,7 +30,7 @@ public class PrnServiceTests
     private static readonly IFixture _fixture = CreateFixture();
 
     // Generated updates are unconditional unless a test sets ExpectedStatus.
-    private static IFixture CreateFixture()
+    private static Fixture CreateFixture()
     {
         var fixture = new Fixture();
         fixture.Customize<PrnUpdateStatusDto>(c => c.Without(x => x.ExpectedStatus));
