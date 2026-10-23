@@ -101,6 +101,17 @@ public class PrnService(
             orgId,
             prnUpdates
         );
+        // A PRN may appear only once in a batch. Two entries for one PRN would be applied to the
+        // same tracked entity in turn, so reject the whole batch before any write.
+        if (prnUpdates.Select(x => x.PrnId).Distinct().Count() != prnUpdates.Count)
+        {
+            logger.LogError(
+                "{Logprefix}: PrnService - UpdateStatus: Rejected a batch that names a PRN more than once",
+                logPrefix
+            );
+            throw new ConflictException("A batch cannot name the same PRN more than once. No PRNs were updated.");
+        }
+
         using var transaction = repository.BeginTransaction();
 
         logger.LogInformation(
