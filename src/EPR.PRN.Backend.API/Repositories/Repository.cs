@@ -208,6 +208,38 @@ public class Repository(
         _eprContext.PrnStatusHistory.Add(prnStatusHistory);
     }
 
+    // One guarded UPDATE: the database re-checks the status under the row lock, so a
+    // concurrent change cannot land between a read and this write. Returns the
+    // number of PRNs updated (0 when the PRN was not in expectedStatus).
+    public async Task<int> UpdatePrnStatusIfCurrent(
+        int prnId,
+        EprnStatus expectedStatus,
+        EprnStatus status,
+        Guid userId,
+        DateTime updateDate,
+        string? obligationYear
+    )
+    {
+        logger.LogInformation(
+            "{Logprefix}: Repository - UpdatePrnStatusIfCurrent: PRN {PrnId} from {ExpectedStatus} to {Status}",
+            logPrefix,
+            prnId,
+            expectedStatus,
+            status
+        );
+
+        return await _eprContext
+            .Prn.Where(x => x.Id == prnId && x.PrnStatusId == (int)expectedStatus)
+            .ExecuteUpdateAsync(setters =>
+                setters
+                    .SetProperty(x => x.PrnStatusId, (int)status)
+                    .SetProperty(x => x.LastUpdatedBy, userId)
+                    .SetProperty(x => x.LastUpdatedDate, updateDate)
+                    .SetProperty(x => x.StatusUpdatedOn, updateDate)
+                    .SetProperty(x => x.ObligationYear, x => obligationYear ?? x.ObligationYear)
+            );
+    }
+
     private static string MapStatusCode(EprnStatus status)
     {
         string result = string.Empty;

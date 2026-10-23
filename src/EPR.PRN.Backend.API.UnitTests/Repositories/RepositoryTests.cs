@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using AutoFixture;
+using EPR.PRN.Backend.API.Common.Enums;
 using EPR.PRN.Backend.API.Repositories;
 using EPR.PRN.Backend.Data;
 using EPR.PRN.Backend.Data.DataModels;
@@ -452,5 +453,120 @@ public class RepositoryTests
         await _repository.InsertPeprNpwdSyncPrns(syncPepr);
 
         context.PEprNpwdSync.Count().Should().Be(syncPepr.Count);
+    }
+
+    [TestMethod]
+    public async Task UpdatePrnStatusIfCurrent_WhenStatusMatches_UpdatesThePrnAndReturnsOne()
+    {
+        var prn = await SeedPrnAsync(EprnStatus.AWAITINGACCEPTANCE);
+        var userId = Guid.NewGuid();
+        var updateDate = new DateTime(2026, 3, 1, 10, 0, 0);
+
+        int updated;
+        await using (var context = new EprContext(_contextOptions))
+        {
+            var repository = new Repository(context, _mockLogger.Object, _configurationMock.Object);
+            updated = await repository.UpdatePrnStatusIfCurrent(
+                prn.Id,
+                EprnStatus.AWAITINGACCEPTANCE,
+                EprnStatus.ACCEPTED,
+                userId,
+                updateDate,
+                "2026"
+            );
+        }
+
+        updated.Should().Be(1);
+        await using var check = new EprContext(_contextOptions);
+        var stored = await check.Prn.SingleAsync(x => x.Id == prn.Id);
+        stored.PrnStatusId.Should().Be((int)EprnStatus.ACCEPTED);
+        stored.LastUpdatedBy.Should().Be(userId);
+        stored.LastUpdatedDate.Should().Be(updateDate);
+        stored.StatusUpdatedOn.Should().Be(updateDate);
+        stored.ObligationYear.Should().Be("2026");
+    }
+
+    [TestMethod]
+    public async Task UpdatePrnStatusIfCurrent_WhenStatusDiffers_ReturnsZeroAndLeavesThePrnUnchanged()
+    {
+        var prn = await SeedPrnAsync(EprnStatus.ACCEPTED);
+
+        int updated;
+        await using (var context = new EprContext(_contextOptions))
+        {
+            var repository = new Repository(context, _mockLogger.Object, _configurationMock.Object);
+            updated = await repository.UpdatePrnStatusIfCurrent(
+                prn.Id,
+                EprnStatus.AWAITINGACCEPTANCE,
+                EprnStatus.REJECTED,
+                Guid.NewGuid(),
+                new DateTime(2026, 3, 1, 10, 0, 0),
+                "2027"
+            );
+        }
+
+        updated.Should().Be(0);
+        await using var check = new EprContext(_contextOptions);
+        var stored = await check.Prn.SingleAsync(x => x.Id == prn.Id);
+        stored.PrnStatusId.Should().Be((int)EprnStatus.ACCEPTED);
+        stored.ObligationYear.Should().Be(prn.ObligationYear);
+    }
+
+    [TestMethod]
+    public async Task UpdatePrnStatusIfCurrent_WithNoObligationYear_KeepsTheExistingYear()
+    {
+        var prn = await SeedPrnAsync(EprnStatus.AWAITINGACCEPTANCE);
+
+        await using (var context = new EprContext(_contextOptions))
+        {
+            var repository = new Repository(context, _mockLogger.Object, _configurationMock.Object);
+            await repository.UpdatePrnStatusIfCurrent(
+                prn.Id,
+                EprnStatus.AWAITINGACCEPTANCE,
+                EprnStatus.REJECTED,
+                Guid.NewGuid(),
+                new DateTime(2026, 3, 1, 10, 0, 0),
+                null
+            );
+        }
+
+        await using var check = new EprContext(_contextOptions);
+        var stored = await check.Prn.SingleAsync(x => x.Id == prn.Id);
+        stored.PrnStatusId.Should().Be((int)EprnStatus.REJECTED);
+        stored.ObligationYear.Should().Be(prn.ObligationYear);
+    }
+
+    [TestMethod]
+    public async Task UpdatePrnStatusIfCurrent_WhenPrnDoesNotExist_ReturnsZero()
+    {
+        await using var seed = new EprContext(_contextOptions);
+        await seed.Database.EnsureCreatedAsync(CancellationToken.None);
+
+        await using var context = new EprContext(_contextOptions);
+        var repository = new Repository(context, _mockLogger.Object, _configurationMock.Object);
+
+        var updated = await repository.UpdatePrnStatusIfCurrent(
+            int.MaxValue,
+            EprnStatus.AWAITINGACCEPTANCE,
+            EprnStatus.ACCEPTED,
+            Guid.NewGuid(),
+            new DateTime(2026, 3, 1, 10, 0, 0),
+            "2026"
+        );
+
+        updated.Should().Be(0);
+    }
+
+    private async Task<Eprn> SeedPrnAsync(EprnStatus status)
+    {
+        var prn = _fixture.Build<Eprn>().Without(x => x.PrnStatusHistories).Create();
+        prn.PrnStatusId = (int)status;
+        prn.ObligationYear = "2026";
+
+        await using var context = new EprContext(_contextOptions);
+        await context.Database.EnsureCreatedAsync(CancellationToken.None);
+        context.Prn.Add(prn);
+        await context.SaveChangesAsync();
+        return prn;
     }
 }
