@@ -991,10 +991,10 @@ public class PrnServiceTests
                     It.IsAny<EprnStatus>(),
                     It.IsAny<Guid>(),
                     It.IsAny<DateTime>(),
-                    It.IsAny<string?>()
+                    It.IsAny<string>()
                 )
             )
-            .Callback<int, EprnStatus, EprnStatus, Guid, DateTime, string?>((_, _, _, _, date, _) => updateDate = date)
+            .Callback<int, EprnStatus, EprnStatus, Guid, DateTime, string>((_, _, _, _, date, _) => updateDate = date)
             .ReturnsAsync(1);
 
         await _systemUnderTest.UpdateStatus(orgId, userId, prnUpdates);
@@ -1041,7 +1041,7 @@ public class PrnServiceTests
                     It.IsAny<EprnStatus>(),
                     It.IsAny<Guid>(),
                     It.IsAny<DateTime>(),
-                    It.IsAny<string?>()
+                    It.IsAny<string>()
                 )
             )
             .ReturnsAsync(0);
@@ -1105,7 +1105,7 @@ public class PrnServiceTests
                     It.IsAny<EprnStatus>(),
                     It.IsAny<Guid>(),
                     It.IsAny<DateTime>(),
-                    It.IsAny<string?>()
+                    It.IsAny<string>()
                 ),
             Times.Once()
         );
@@ -1147,7 +1147,7 @@ public class PrnServiceTests
                     It.IsAny<EprnStatus>(),
                     It.IsAny<Guid>(),
                     It.IsAny<DateTime>(),
-                    It.IsAny<string?>()
+                    It.IsAny<string>()
                 )
             )
             .ReturnsAsync(0);
