@@ -151,7 +151,11 @@ public class PrnService(
         {
             var prn = prns.Find(x => x.ExternalId == prnUpdate.PrnId);
 
-            if (
+            if (prnUpdate.ExpectedStatus is { } expectedStatus)
+            {
+                await UpdatePrnIfCurrent(userId, prnUpdate, prn!, expectedStatus);
+            }
+            else if (
                 prn!.PrnStatusId == (int)EprnStatus.AWAITINGACCEPTANCE
                 || prn!.PrnStatusId == (int)prnUpdate.Status
             )
@@ -205,6 +209,54 @@ public class PrnService(
                 "Error encountered when attempting to map and save PRN requst. Please see the logs for details."
             );
         }
+    }
+
+    // The status check and the write are one statement in the repository, so a PRN
+    // that has moved on since the caller read it is never overwritten.
+    private async Task UpdatePrnIfCurrent(
+        Guid userId,
+        PrnUpdateStatusDto prnUpdate,
+        Eprn prn,
+        EprnStatus expectedStatus
+    )
+    {
+        var updateDate = DateTime.UtcNow;
+        var obligationYear = string.IsNullOrEmpty(prnUpdate.ObligationYear)
+            ? null
+            : prnUpdate.ObligationYear;
+
+        var updated = await repository.UpdatePrnStatusIfCurrent(
+            prn.Id,
+            expectedStatus,
+            prnUpdate.Status,
+            userId,
+            updateDate,
+            obligationYear
+        );
+
+        if (updated == 0)
+        {
+            logger.LogError(
+                "{Logprefix}: PrnService - UpdateStatus: Conflict with {Prn}, it is no longer {ExpectedStatus}",
+                logPrefix,
+                prnUpdate.PrnId,
+                expectedStatus
+            );
+            throw new ConflictException(
+                $"{prnUpdate.PrnId} is no longer {expectedStatus} and cannot be updated. Please refresh and try again"
+            );
+        }
+
+        repository.AddPrnStatusHistory(
+            new PrnStatusHistory()
+            {
+                PrnIdFk = prn.Id,
+                PrnStatusIdFk = (int)prnUpdate.Status,
+                CreatedOn = updateDate,
+                CreatedByUser = userId,
+                ObligationYear = obligationYear,
+            }
+        );
     }
 
     private void UpdatePrn(Guid userId, PrnUpdateStatusDto prnUpdate, Eprn prn)
