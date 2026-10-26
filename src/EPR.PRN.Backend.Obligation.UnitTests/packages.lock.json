@@ -12,17 +12,6 @@
           "System.ComponentModel.Annotations": "4.3.0"
         }
       },
-      "AutоFiхture.MSTеst": {
-        "type": "Direct",
-        "requested": "[1.0.0, )",
-        "resolved": "1.0.0",
-        "contentHash": "4UKLC5wMMnM6B1s57iOGY6HwODF9aUKGz+AO6fAuvZlxuRWR0xnNVl/W72uJdgLeYZrMZQrAqvsgXEt5+g/gkA==",
-        "dependencies": {
-          "AutoFixture": "4.8.0",
-          "MSTest.TestAdapter": "1.4.0",
-          "MSTest.TestFramework": "1.4.0"
-        }
-      },
       "AwesomeAssertions": {
         "type": "Direct",
         "requested": "[9.4.0, )",
