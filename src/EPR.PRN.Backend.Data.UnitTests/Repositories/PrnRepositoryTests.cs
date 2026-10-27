@@ -112,6 +112,73 @@ public class PrnRepositoryTests
         result.Should().BeEquivalentTo([new PrnObligationSummaryDto("Plastic", 1, 20, 4)]);
     }
 
+    [TestMethod]
+    [DataRow(2026, 3)]
+    [DataRow(2027, 1)]
+    [DataRow(2025, 0)]
+    public async Task GetAwaitingAcceptanceCount_CountsOnlyNotesAcceptableIntoTheYearNow(int year, int expected)
+    {
+        var organisationId = Guid.NewGuid();
+        var repository = new PrnRepository(
+            _context,
+            new FixedTimeProvider(new DateTimeOffset(2026, 12, 15, 12, 0, 0, TimeSpan.Zero))
+        );
+        var prns = new[]
+        {
+            CreateAwaitingPrn("STD-2026", organisationId, "2026", false),
+            CreateAwaitingPrn("STD-2025", organisationId, "2025", false),
+            CreateAwaitingPrn("DEC-2026", organisationId, "2026", true),
+            CreateAwaitingPrn("DEC-2025", organisationId, "2025", true),
+            CreateAwaitingPrn("OTHER-ORG", Guid.NewGuid(), "2026", false),
+            CreateAwaitingPrn("ACCEPTED", organisationId, "2026", false, EprnStatus.ACCEPTED),
+        };
+        await _context.Prn.AddRangeAsync(prns, CancellationToken.None);
+        await _context.SaveChangesAsync(CancellationToken.None);
+
+        var result = await repository.GetAwaitingAcceptanceCount(organisationId, year);
+
+        result.Should().Be(expected);
+    }
+
+    [TestMethod]
+    public async Task GetAwaitingAcceptanceCount_BeforeTheDecemberWindow_ExcludesNextYearDecemberWaste()
+    {
+        var organisationId = Guid.NewGuid();
+        var repository = new PrnRepository(
+            _context,
+            new FixedTimeProvider(new DateTimeOffset(2026, 6, 15, 12, 0, 0, TimeSpan.Zero))
+        );
+        await _context.Prn.AddAsync(CreateAwaitingPrn("DEC-2026", organisationId, "2026", true), CancellationToken.None);
+        await _context.SaveChangesAsync(CancellationToken.None);
+
+        (await repository.GetAwaitingAcceptanceCount(organisationId, 2026)).Should().Be(1);
+        (await repository.GetAwaitingAcceptanceCount(organisationId, 2027)).Should().Be(0);
+    }
+
+    private static readonly Fixture AwaitingPrnFixture = new();
+
+    private static Eprn CreateAwaitingPrn(
+        string prnNumber,
+        Guid organisationId,
+        string obligationYear,
+        bool decemberWaste,
+        EprnStatus status = EprnStatus.AWAITINGACCEPTANCE
+    ) =>
+        AwaitingPrnFixture
+            .Build<Eprn>()
+            .With(prn => prn.OrganisationId, organisationId)
+            .With(prn => prn.PrnNumber, prnNumber)
+            .With(prn => prn.PrnStatusId, (int)status)
+            .With(prn => prn.ObligationYear, obligationYear)
+            .With(prn => prn.AccreditationYear, obligationYear)
+            .With(prn => prn.DecemberWaste, decemberWaste)
+            .Create();
+
+    private sealed class FixedTimeProvider(DateTimeOffset now) : TimeProvider
+    {
+        public override DateTimeOffset GetUtcNow() => now;
+    }
+
     private static PrnSelectionCase[] CreateSelectionTestCases(
         Guid organisationId,
         Guid otherOrganisationId
