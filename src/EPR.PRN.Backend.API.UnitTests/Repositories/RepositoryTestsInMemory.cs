@@ -576,6 +576,99 @@ public class RepositoryTestsInMemory
         result.Items[0].ExternalId.Should().Be(data[2].ExternalId);
     }
 
+    [TestMethod]
+    public async Task GetSearchPrnsForOrganisation_WithAcceptableIntoYear_FiltersBeforePaging()
+    {
+        var orgId = Guid.NewGuid();
+        var repository = new Repository(
+            _context,
+            _mockLogger.Object,
+            _configurationMock.Object,
+            new FixedTimeProvider(new DateTimeOffset(2026, 12, 15, 12, 0, 0, TimeSpan.Zero))
+        );
+        _context.Prn.AddRange(
+            CreateAwaitingEprn(orgId, "STD-2026", 2026, false),
+            CreateAwaitingEprn(orgId, "STD-2025", 2025, false),
+            CreateAwaitingEprn(orgId, "DEC-2026", 2026, true),
+            CreateAwaitingEprn(orgId, "DEC-2025", 2025, true)
+        );
+        _context.SaveChanges();
+
+        var for2026 = await repository.GetSearchPrnsForOrganisation(
+            orgId,
+            new PaginatedRequestDto
+            {
+                Page = 2,
+                PageSize = 2,
+                FilterBy = "awaiting-all",
+                SortBy = "tonnage-asc",
+                AcceptableIntoYear = 2026,
+            }
+        );
+        var for2027 = await repository.GetSearchPrnsForOrganisation(
+            orgId,
+            new PaginatedRequestDto
+            {
+                Page = 1,
+                PageSize = 20,
+                FilterBy = "awaiting-all",
+                AcceptableIntoYear = 2027,
+            }
+        );
+
+        for2026.TotalItems.Should().Be(3);
+        for2026.Items.Should().HaveCount(1);
+        for2027.TotalItems.Should().Be(1);
+        for2027.Items.Select(x => x.PrnNumber).Should().Equal("DEC-2026");
+    }
+
+    [TestMethod]
+    public async Task GetSearchPrnsForOrganisation_WithoutAcceptableIntoYear_DoesNotFilterByYear()
+    {
+        var orgId = Guid.NewGuid();
+        _context.Prn.AddRange(
+            CreateAwaitingEprn(orgId, "STD-2026", 2026, false),
+            CreateAwaitingEprn(orgId, "STD-2020", 2020, false)
+        );
+        _context.SaveChanges();
+
+        var result = await _repository.GetSearchPrnsForOrganisation(
+            orgId,
+            new PaginatedRequestDto { Page = 1, PageSize = 20, FilterBy = "awaiting-all" }
+        );
+
+        result.TotalItems.Should().Be(2);
+    }
+
+    private static Eprn CreateAwaitingEprn(Guid orgId, string prnNumber, int obligationYear, bool decemberWaste)
+    {
+        var eprn = CreateEprn(
+            orgId,
+            prnNumber,
+            "Issuer",
+            "OrgName",
+            "Plastic",
+            "ProducerAgency",
+            "ReprocessorExporterAgency",
+            "IssuerReference",
+            "AccreditationNumber",
+            "ReprocessingSite",
+            obligationYear,
+            obligationYear,
+            "PackagingProducer"
+        );
+        eprn.PrnStatusId = (int)EprnStatus.AWAITINGACCEPTANCE;
+        eprn.DecemberWaste = decemberWaste;
+        eprn.TonnageValue = obligationYear + (decemberWaste ? 1 : 0);
+
+        return eprn;
+    }
+
+    private sealed class FixedTimeProvider(DateTimeOffset now) : TimeProvider
+    {
+        public override DateTimeOffset GetUtcNow() => now;
+    }
+
     private static Eprn CreateEprn(
         Guid orgId,
         string prnNumber,

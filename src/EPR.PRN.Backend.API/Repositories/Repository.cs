@@ -8,6 +8,7 @@ using EPR.PRN.Backend.API.Dto;
 using EPR.PRN.Backend.API.Repositories.Interfaces;
 using EPR.PRN.Backend.Data;
 using EPR.PRN.Backend.Data.DataModels;
+using EPR.PRN.Backend.Data.Helpers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using Newtonsoft.Json;
@@ -16,9 +17,11 @@ using static EPR.PRN.Backend.API.Common.Constants.PrnConstants;
 public class Repository(
     EprContext eprContext,
     ILogger<Repository> logger,
-    IConfiguration configuration
+    IConfiguration configuration,
+    TimeProvider? timeProvider = null
 ) : IRepository
 {
+    private readonly TimeProvider _timeProvider = timeProvider ?? TimeProvider.System;
     protected readonly EprContext _eprContext = eprContext;
     private readonly string? logPrefix = string.IsNullOrEmpty(configuration["LogPrefix"])
         ? "[EPR.PRN.Backend]"
@@ -372,6 +375,14 @@ public class Repository(
             request.FilterBy
         );
         prns = prns.Where(filterByWhereCondition);
+
+        // only notes that can be accepted into the year, so the total and the pages agree with the count
+        if (request.AcceptableIntoYear is { } acceptableIntoYear)
+        {
+            prns = prns.Where(
+                AcceptanceYearRule.IsAcceptableInto(acceptableIntoYear, _timeProvider.GetUtcNow())
+            );
+        }
 
         // get the count BEFORE paging and sorting
         var totalRecords = await prns.CountAsync();

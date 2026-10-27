@@ -477,6 +477,7 @@ public class ObligationCalculatorServiceTests
 		_mockMaterialRepository.Setup(repo => repo.GetAllMaterials()).ReturnsAsync(materials);
 		_mockObligationCalculationRepository.Setup(repo => repo.GetObligationCalculationBySubmitterIdAndYear(submitterId, obligationCalculationYear)).ReturnsAsync(obligationCalculations);
 		_mockPrnRepository.Setup(repo => repo.GetObligationSummary(submitterId, obligationCalculationYear)).ReturnsAsync(CreatePrnObligationSummary(prnList));
+		_mockPrnRepository.Setup(repo => repo.GetAwaitingAcceptanceCount(submitterId, obligationCalculationYear)).ReturnsAsync(7);
 		_mockRecyclingTargetDataService.Setup(x => x.GetRecyclingTargetsAsync()).ReturnsAsync(GetRecyclingTargets());
 
 		// Act
@@ -484,7 +485,7 @@ public class ObligationCalculatorServiceTests
 
 		// Assert
 		result.IsSuccess.Should().BeTrue();
-		result.ObligationModel.NumberOfPrnsAwaitingAcceptance.Should().Be(3);
+		result.ObligationModel.NumberOfPrnsAwaitingAcceptance.Should().Be(7);
 	}
 
     [TestMethod]

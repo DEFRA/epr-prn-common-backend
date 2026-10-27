@@ -28,6 +28,7 @@ namespace EPR.PRN.Backend.API.Helpers
         public static IServiceCollection AddDependencies(this IServiceCollection services)
         {
             services
+                .AddSingleton(TimeProvider.System)
                 .AddScoped<IRepository, Repository>()
                 .AddScoped<IPrnService, PrnService>()
                 .AddScoped<IValidationService, ValidationService>()
