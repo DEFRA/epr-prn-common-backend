@@ -19,6 +19,7 @@ using EPR.PRN.Backend.Obligation.Interfaces;
 using EPR.PRN.Backend.Obligation.Services;
 using EPR.PRN.Backend.Obligation.Strategies;
 using FluentValidation;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace EPR.PRN.Backend.API.Helpers
 {
@@ -27,8 +28,10 @@ namespace EPR.PRN.Backend.API.Helpers
     {
         public static IServiceCollection AddDependencies(this IServiceCollection services)
         {
+            // Startup registers the (possibly shifted) clock first; this is the fallback.
+            services.TryAddSingleton(TimeProvider.System);
+
             services
-                .AddSingleton(TimeProvider.System)
                 .AddScoped<IRepository, Repository>()
                 .AddScoped<IPrnService, PrnService>()
                 .AddScoped<IValidationService, ValidationService>()
