@@ -1,3 +1,4 @@
+#nullable enable
 using AwesomeAssertions;
 using EPR.PRN.Backend.API.Helpers;
 using Microsoft.Extensions.Configuration;
