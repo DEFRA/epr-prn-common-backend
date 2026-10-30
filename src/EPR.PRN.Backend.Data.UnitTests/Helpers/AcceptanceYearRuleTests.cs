@@ -77,4 +77,40 @@ public class AcceptanceYearRuleTests
         AcceptanceYearRule.ObligationYearsFor(2026, true, DecemberChoiceWindow).Should().BeEquivalentTo([2025, 2026]);
         AcceptanceYearRule.ObligationYearsFor(2027, true, BeforeChoiceWindow).Should().BeEmpty();
     }
+
+    [TestMethod]
+    [DataRow(0)]
+    [DataRow(-5)]
+    [DataRow(10000)]
+    public void ObligationYearsFor_WhenTheYearIsOutsideWhatADateCanHold_OffersNoYearsAndDoesNotThrow(int year)
+    {
+        // December waste is the path that builds dates, so it is the one that used to throw.
+        var act = () => AcceptanceYearRule.ObligationYearsFor(year, true, DecemberChoiceWindow);
+
+        act.Should().NotThrow();
+        act().Should().BeEmpty();
+    }
+
+    [TestMethod]
+    [DataRow(0)]
+    [DataRow(-5)]
+    [DataRow(10000)]
+    public void AvailableYears_WhenTheObligationYearIsOutsideWhatADateCanHold_OffersNoYearsAndDoesNotThrow(int obligationYear)
+    {
+        var act = () => AcceptanceYearRule.AvailableYears(obligationYear, true, DecemberChoiceWindow);
+
+        act.Should().NotThrow();
+        act().Should().BeEmpty();
+    }
+
+    [TestMethod]
+    [DataRow(0)]
+    [DataRow(-5)]
+    [DataRow(10000)]
+    public void IsAcceptableInto_WhenTheYearIsOutsideWhatADateCanHold_BuildsAConditionAndDoesNotThrow(int year)
+    {
+        var act = () => AcceptanceYearRule.IsAcceptableInto(year, DecemberChoiceWindow);
+
+        act.Should().NotThrow();
+    }
 }

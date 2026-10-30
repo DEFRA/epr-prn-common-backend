@@ -13,6 +13,8 @@ public static class AcceptanceYearRule
 {
     private const int DecemberWasteNoChoiceYear = 2025;
     private const int DecemberWasteNoChoiceUntilYear = 2026;
+    private const int MinimumSupportedYear = 1;
+    private const int MaximumSupportedYear = 9998;
     private static readonly TimeZoneInfo UkZone = TimeZoneInfo.FindSystemTimeZoneById("Europe/London");
 
     /// <summary>The compliance year runs February to January, judged on the UK calendar.</summary>
@@ -26,6 +28,12 @@ public static class AcceptanceYearRule
     /// <summary>The years a note with this obligation year may be accepted into right now.</summary>
     public static IReadOnlyList<int> AvailableYears(int obligationYear, bool decemberWaste, DateTimeOffset now)
     {
+        // The rule builds dates for the year and the one after it, which a DateTimeOffset cannot hold outside these years.
+        if (obligationYear < MinimumSupportedYear || obligationYear > MaximumSupportedYear)
+        {
+            return [];
+        }
+
         var thisComplianceYear = ComplianceYear(now);
 
         if (obligationYear > thisComplianceYear)
