@@ -24,12 +24,10 @@ namespace EPR.PRN.Backend.API
 	public class Startup
 	{
 		private readonly IConfiguration _config;
-		private readonly bool _isDevelopment;
 
 		public Startup(IHostEnvironment env, IConfiguration config)
 		{
 			_config = config;
-			_isDevelopment = env.IsDevelopment();
 		}
 
         public void ConfigureServices(IServiceCollection services)
@@ -81,7 +79,6 @@ namespace EPR.PRN.Backend.API
 
 			services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
-            services.AddSingleton(ClockFactory.Create(_config, _isDevelopment));
             services.AddDependencies();
 
             services.Configure<PrnObligationCalculationConfig>(_config.GetSection(PrnObligationCalculationConfig.SectionName));
