@@ -28,7 +28,7 @@ namespace EPR.PRN.Backend.API.Helpers
     {
         public static IServiceCollection AddDependencies(this IServiceCollection services)
         {
-            // Startup registers the (possibly shifted) clock first; this is the fallback.
+            // The clock the repositories read. Tests supply their own TimeProvider in its place.
             services.TryAddSingleton(TimeProvider.System);
 
             services
