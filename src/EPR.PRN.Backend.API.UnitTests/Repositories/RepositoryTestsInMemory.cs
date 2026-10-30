@@ -6,6 +6,7 @@ using EPR.PRN.Backend.API.Dto;
 using EPR.PRN.Backend.API.Repositories;
 using EPR.PRN.Backend.Data;
 using EPR.PRN.Backend.Data.DataModels;
+using EPR.PRN.Backend.Data.Repositories;
 using AwesomeAssertions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -638,6 +639,54 @@ public class RepositoryTestsInMemory
         );
 
         result.TotalItems.Should().Be(2);
+    }
+
+    // Notes: STD-n is a standard note and DEC-n a December waste note with obligation year n, all awaiting acceptance.
+    // The expected lists are written out by hand from the rule's documented behaviour, not computed by the rule.
+    [TestMethod]
+    [DataRow("2026-11-15T12:00:00Z", 2026, "STD-2026,DEC-2025,DEC-2026")]
+    [DataRow("2026-11-15T12:00:00Z", 2027, "")]
+    [DataRow("2026-12-15T12:00:00Z", 2026, "STD-2026,DEC-2025,DEC-2026")]
+    [DataRow("2026-12-15T12:00:00Z", 2027, "DEC-2026")]
+    [DataRow("2027-01-31T12:00:00Z", 2026, "STD-2026,DEC-2025,DEC-2026")]
+    [DataRow("2027-01-31T12:00:00Z", 2027, "DEC-2026")]
+    [DataRow("2027-02-01T12:00:00Z", 2026, "")]
+    [DataRow("2027-02-01T12:00:00Z", 2027, "STD-2027,DEC-2026,DEC-2027")]
+    [DataRow("2027-12-15T12:00:00Z", 2027, "STD-2027,DEC-2026,DEC-2027")]
+    [DataRow("2027-12-15T12:00:00Z", 2028, "DEC-2027")]
+    public async Task AcceptableIntoYear_ListAndCount_AgreeForEveryNoteTypeAndYear(
+        string now,
+        int year,
+        string expectedNotes
+    )
+    {
+        var orgId = Guid.NewGuid();
+        var timeProvider = new FixedTimeProvider(DateTimeOffset.Parse(now, System.Globalization.CultureInfo.InvariantCulture));
+        var repository = new Repository(_context, _mockLogger.Object, _configurationMock.Object, timeProvider);
+        var prnRepository = new PrnRepository(_context, timeProvider);
+        foreach (var obligationYear in new[] { 2025, 2026, 2027 })
+        {
+            _context.Prn.Add(CreateAwaitingEprn(orgId, $"STD-{obligationYear}", obligationYear, false));
+            _context.Prn.Add(CreateAwaitingEprn(orgId, $"DEC-{obligationYear}", obligationYear, true));
+        }
+        _context.SaveChanges();
+        var expected = expectedNotes.Length == 0 ? [] : expectedNotes.Split(',');
+
+        var list = await repository.GetSearchPrnsForOrganisation(
+            orgId,
+            new PaginatedRequestDto
+            {
+                Page = 1,
+                PageSize = 20,
+                FilterBy = "awaiting-all",
+                AcceptableIntoYear = year,
+            }
+        );
+        var count = await prnRepository.GetAwaitingAcceptanceCount(orgId, year);
+
+        list.Items.Select(x => x.PrnNumber).Should().BeEquivalentTo(expected);
+        list.TotalItems.Should().Be(expected.Length);
+        count.Should().Be(list.TotalItems);
     }
 
     private static Eprn CreateAwaitingEprn(Guid orgId, string prnNumber, int obligationYear, bool decemberWaste)
