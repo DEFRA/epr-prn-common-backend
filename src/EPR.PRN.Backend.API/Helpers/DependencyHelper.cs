@@ -19,6 +19,7 @@ using EPR.PRN.Backend.Obligation.Interfaces;
 using EPR.PRN.Backend.Obligation.Services;
 using EPR.PRN.Backend.Obligation.Strategies;
 using FluentValidation;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace EPR.PRN.Backend.API.Helpers
 {
@@ -27,6 +28,9 @@ namespace EPR.PRN.Backend.API.Helpers
     {
         public static IServiceCollection AddDependencies(this IServiceCollection services)
         {
+            // The clock the repositories read. Tests supply their own TimeProvider in its place.
+            services.TryAddSingleton(TimeProvider.System);
+
             services
                 .AddScoped<IRepository, Repository>()
                 .AddScoped<IPrnService, PrnService>()

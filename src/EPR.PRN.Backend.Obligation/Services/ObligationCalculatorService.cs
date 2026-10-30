@@ -173,7 +173,7 @@ namespace EPR.PRN.Backend.Obligation.Services
 			var obligationCalculations = await obligationCalculationRepository.GetObligationCalculationBySubmitterIdAndYear(organisationId, year);
 
 			var prnSummary = await prnRepository.GetObligationSummary(organisationId, year);
-			var awaitingAcceptanceCount = prnSummary.Sum(summary => summary.AwaitingAcceptanceCount);
+			var awaitingAcceptanceCount = await prnRepository.GetAwaitingAcceptanceCount(organisationId, year);
 			var recyclingTargets = await recyclingTargetDataService.GetRecyclingTargetsAsync();
 
 			var responseObligationData = new List<ObligationData>();
