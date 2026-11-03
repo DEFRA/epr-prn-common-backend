@@ -63,7 +63,8 @@ namespace EPR.PRN.Backend.Obligation.Services
 					NumberOfDaysObligated = submission.NumberOfDaysObligated
 				};
 
-				calculations.AddRange(strategy?.Calculate(calculationRequest)!);
+				// TryResolveStrategy skips this row if no strategy is available.
+				calculations.AddRange(strategy!.Calculate(calculationRequest));
 			}
 
 			result.Calculations = calculations;
