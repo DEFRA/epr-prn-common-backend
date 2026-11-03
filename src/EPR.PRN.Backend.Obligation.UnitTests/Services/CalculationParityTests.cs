@@ -158,6 +158,42 @@ public class CalculationParityTests
     }
 
     [TestMethod]
+    public async Task Direct_registrant_general_rounding_at_and_just_above_an_integer()
+    {
+        // PL target 0.55: 20 tonnes produces exactly 11; 21 produces 11.55, rounded to 12.
+        var exact = Row("PL", 20, submitterType: "DirectRegistrant");
+        var fractional = Row("PL", 21, submitterType: "DirectRegistrant");
+        exact.OrganisationId = fractional.OrganisationId = Submitter;
+        var result = await CreateService().CalculateAsync(Submitter, [exact, fractional]);
+        result.Success.Should().BeTrue();
+        result.Calculations.Select(x => (x.Tonnage, x.MaterialObligationValue)).Should().Equal((20, 11), (21, 12));
+    }
+
+    [TestMethod]
+    public async Task Direct_registrant_glass_remelt_uses_unrounded_glass_target()
+    {
+        // 3 tonnes × 0.74 = 2.22; remelt ceil(2.22 × 0.75) = 2.
+        // Total ceil(2.22) = 3, leaving 1. Rounding total before remelt would give 3 and 0.
+        var row = Row("GL", 3, submitterType: "DirectRegistrant");
+        row.OrganisationId = Submitter;
+        var result = await CreateService().CalculateAsync(Submitter, [row]);
+        result.Success.Should().BeTrue();
+        result.Calculations.Select(x => (x.MaterialId, x.Tonnage, x.MaterialObligationValue))
+            .Should().Equal((4, 3, 1), (5, 3, 2));
+    }
+
+    [TestMethod]
+    public async Task Compliance_scheme_rounds_glass_components_separately_after_scaling()
+    {
+        // 101 tonnes at glass 0.74 and remelt 0.75 gives 18 remainder and 57 remelt.
+        // With one day of 365, each positive component rounds up to 1; rounding their sum gives 1 instead of 2.
+        var result = await CreateService().CalculateAsync(Submitter, [Row("GL", 101, days: 1)]);
+        result.Success.Should().BeTrue();
+        result.Calculations.Select(x => (x.MaterialId, x.Tonnage, x.MaterialObligationValue))
+            .Should().Equal((4, 101, 1), (5, 101, 1));
+    }
+
+    [TestMethod]
     public async Task Compliance_scheme_calculates_each_member_and_preserves_identity()
     {
         // Submission 2024, obligation year 2025. Targets: PL 0.55, PC 0.75,
