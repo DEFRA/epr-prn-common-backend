@@ -116,6 +116,91 @@ public class CalculationParityTests
         result.Calculations[0].CalculatedOn.Should().Be(result.Calculations[1].CalculatedOn);
     }
 
+    // Direct registrant: obligation year 2025, PL target 0.55, weight 2, 183 days.
+    // ceil(2 × 0.55) = 2, then ceil(2 × 183/365) = 2; scaling before rounding gives 1.
+    [TestMethod]
+    public async Task Direct_registrant_rounds_before_applying_partial_year()
+    {
+        var row = Row("PL", 2, "2024", 183, "DirectRegistrant");
+        row.OrganisationId = Submitter;
+        var result = await CreateService().CalculateAsync(Submitter, [row]);
+        result.Success.Should().BeTrue();
+        var record = result.Calculations.Should().ContainSingle().Subject;
+        (record.OrganisationId, record.SubmitterId, record.SubmitterTypeId, record.MaterialId,
+            record.Year, record.Tonnage, record.MaterialObligationValue).Should()
+            .Be((Submitter, Submitter, 2, 1, 2025, 2, 2));
+    }
+
+    // 2024 is a leap year: ceil(550 × 365/366) = 549, not 550.
+    [TestMethod]
+    public async Task Direct_registrant_uses_leap_year_denominator()
+    {
+        var row = Row("PL", 1000, "2023", 365, "DirectRegistrant");
+        row.OrganisationId = Submitter;
+        var result = await CreateService().CalculateAsync(Submitter, [row]);
+        result.Success.Should().BeTrue();
+        var record = result.Calculations.Should().ContainSingle().Subject;
+        (record.Year, record.Tonnage, record.MaterialObligationValue).Should().Be((2024, 1000, 549));
+    }
+
+    [TestMethod]
+    public async Task Direct_registrant_selects_target_for_obligation_year()
+    {
+        // Identical PL weights, distinct targets: 2024 = 0.55, 2025 = 0.70.
+        var targets = Targets();
+        targets[2025][MaterialType.Plastic] = 0.70;
+        var first = Row("PL", 100, "2023", submitterType: "DirectRegistrant");
+        var second = Row("PL", 100, "2024", submitterType: "DirectRegistrant");
+        first.OrganisationId = second.OrganisationId = Submitter;
+        var result = await CreateService(targets).CalculateAsync(Submitter, [first, second]);
+        result.Success.Should().BeTrue();
+        result.Calculations.Select(x => (x.Year, x.MaterialObligationValue)).Should().Equal((2024, 55), (2025, 70));
+    }
+
+    [TestMethod]
+    public async Task Compliance_scheme_calculates_each_member_and_preserves_identity()
+    {
+        // Submission 2024, obligation year 2025. Targets: PL 0.55, PC 0.75,
+        // GL 0.74 and remelt 0.75. A: PL 2 for 183 days. B: PC 100 and GL 101.
+        var memberB = Guid.Parse("33333333-3333-3333-3333-333333333333");
+        var plastic = Row("PL", 2, days: 183);
+        var paper = Row("PC", 100); paper.OrganisationId = memberB;
+        var glass = Row("GL", 101); glass.OrganisationId = memberB;
+        var before = DateTime.UtcNow;
+        var result = await CreateService().CalculateAsync(Submitter, [plastic, paper, glass]);
+        var after = DateTime.UtcNow;
+        result.Success.Should().BeTrue();
+        result.Calculations.Select(x => (x.OrganisationId, x.SubmitterId, x.SubmitterTypeId,
+            x.MaterialId, x.Year, x.Tonnage, x.MaterialObligationValue)).Should().Equal(
+                (Producer, Submitter, 1, 1, 2025, 2, 2),
+                (memberB, Submitter, 1, 2, 2025, 100, 75),
+                (memberB, Submitter, 1, 4, 2025, 101, 18),
+                (memberB, Submitter, 1, 5, 2025, 101, 57));
+        result.Calculations.Should().OnlyContain(x => !x.IsDeleted && x.CalculatedOn >= before && x.CalculatedOn <= after);
+    }
+
+    [TestMethod]
+    public async Task Missing_year_or_glass_targets_throw_instead_of_skipping()
+    {
+        var missingYear = Targets();
+        missingYear.Remove(2025);
+        await Assert.ThrowsExactlyAsync<KeyNotFoundException>(() => CreateService(missingYear).CalculateAsync(Submitter, [Row("PL", 100)]));
+        foreach (var material in new[] { MaterialType.Glass, MaterialType.GlassRemelt })
+        {
+            var missingTarget = Targets();
+            missingTarget[2025].Remove(material);
+            await Assert.ThrowsExactlyAsync<KeyNotFoundException>(() => CreateService(missingTarget).CalculateAsync(Submitter, [Row("GL", 100)]));
+        }
+    }
+
+    [TestMethod]
+    public async Task General_material_name_validation_is_case_insensitive_but_reference_lookup_is_not()
+    {
+        var materials = Materials.Select(m => m.MaterialCode == "PL"
+            ? new Material { Id = m.Id, MaterialCode = m.MaterialCode, MaterialName = "plastic" } : m);
+        await Assert.ThrowsExactlyAsync<InvalidOperationException>(() => CreateService(materials: materials).CalculateAsync(Submitter, [Row("PL", 100)]));
+    }
+
     [TestMethod]
     public async Task Invalid_rows_are_skipped_when_another_row_succeeds()
     {
