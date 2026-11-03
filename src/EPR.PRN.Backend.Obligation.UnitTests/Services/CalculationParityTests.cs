@@ -116,26 +116,30 @@ public class CalculationParityTests
         result.Calculations[0].CalculatedOn.Should().Be(result.Calculations[1].CalculatedOn);
     }
 
-    // Direct registrant: obligation year 2025, PL target 0.55, weight 2, 183 days.
+    // Obligation year 2025, PL target 0.55, weight 2, 183 days.
     // ceil(2 × 0.55) = 2, then ceil(2 × 183/365) = 2; scaling before rounding gives 1.
     [TestMethod]
-    public async Task Direct_registrant_rounds_before_applying_partial_year()
+    [DataRow("DirectRegistrant")]
+    [DataRow("ComplianceScheme")]
+    public async Task Rounding_before_partial_year_is_independent_of_submitter_type(string submitterType)
     {
-        var row = Row("PL", 2, "2024", 183, "DirectRegistrant");
+        var row = Row("PL", 2, "2024", 183, submitterType);
         row.OrganisationId = Submitter;
         var result = await CreateService().CalculateAsync(Submitter, [row]);
         result.Success.Should().BeTrue();
         var record = result.Calculations.Should().ContainSingle().Subject;
         (record.OrganisationId, record.SubmitterId, record.SubmitterTypeId, record.MaterialId,
             record.Year, record.Tonnage, record.MaterialObligationValue).Should()
-            .Be((Submitter, Submitter, 2, 1, 2025, 2, 2));
+            .Be((Submitter, Submitter, submitterType == "DirectRegistrant" ? 2 : 1, 1, 2025, 2, 2));
     }
 
     // 2024 is a leap year: ceil(550 × 365/366) = 549, not 550.
     [TestMethod]
-    public async Task Direct_registrant_uses_leap_year_denominator()
+    [DataRow("DirectRegistrant")]
+    [DataRow("ComplianceScheme")]
+    public async Task Leap_year_denominator_is_independent_of_submitter_type(string submitterType)
     {
-        var row = Row("PL", 1000, "2023", 365, "DirectRegistrant");
+        var row = Row("PL", 1000, "2023", 365, submitterType);
         row.OrganisationId = Submitter;
         var result = await CreateService().CalculateAsync(Submitter, [row]);
         result.Success.Should().BeTrue();
@@ -144,13 +148,15 @@ public class CalculationParityTests
     }
 
     [TestMethod]
-    public async Task Direct_registrant_selects_target_for_obligation_year()
+    [DataRow("DirectRegistrant")]
+    [DataRow("ComplianceScheme")]
+    public async Task Target_selection_is_independent_of_submitter_type(string submitterType)
     {
         // Identical PL weights, distinct targets: 2024 = 0.55, 2025 = 0.70.
         var targets = Targets();
         targets[2025][MaterialType.Plastic] = 0.70;
-        var first = Row("PL", 100, "2023", submitterType: "DirectRegistrant");
-        var second = Row("PL", 100, "2024", submitterType: "DirectRegistrant");
+        var first = Row("PL", 100, "2023", submitterType: submitterType);
+        var second = Row("PL", 100, "2024", submitterType: submitterType);
         first.OrganisationId = second.OrganisationId = Submitter;
         var result = await CreateService(targets).CalculateAsync(Submitter, [first, second]);
         result.Success.Should().BeTrue();
@@ -158,11 +164,13 @@ public class CalculationParityTests
     }
 
     [TestMethod]
-    public async Task Direct_registrant_general_rounding_at_and_just_above_an_integer()
+    [DataRow("DirectRegistrant")]
+    [DataRow("ComplianceScheme")]
+    public async Task General_rounding_at_and_just_above_an_integer_for_both_submitter_types(string submitterType)
     {
         // PL target 0.55: 20 tonnes produces exactly 11; 21 produces 11.55, rounded to 12.
-        var exact = Row("PL", 20, submitterType: "DirectRegistrant");
-        var fractional = Row("PL", 21, submitterType: "DirectRegistrant");
+        var exact = Row("PL", 20, submitterType: submitterType);
+        var fractional = Row("PL", 21, submitterType: submitterType);
         exact.OrganisationId = fractional.OrganisationId = Submitter;
         var result = await CreateService().CalculateAsync(Submitter, [exact, fractional]);
         result.Success.Should().BeTrue();
@@ -170,11 +178,13 @@ public class CalculationParityTests
     }
 
     [TestMethod]
-    public async Task Direct_registrant_glass_remelt_uses_unrounded_glass_target()
+    [DataRow("DirectRegistrant")]
+    [DataRow("ComplianceScheme")]
+    public async Task Glass_remelt_uses_unrounded_glass_target_for_both_submitter_types(string submitterType)
     {
         // 3 tonnes × 0.74 = 2.22; remelt ceil(2.22 × 0.75) = 2.
         // Total ceil(2.22) = 3, leaving 1. Rounding total before remelt would give 3 and 0.
-        var row = Row("GL", 3, submitterType: "DirectRegistrant");
+        var row = Row("GL", 3, submitterType: submitterType);
         row.OrganisationId = Submitter;
         var result = await CreateService().CalculateAsync(Submitter, [row]);
         result.Success.Should().BeTrue();
@@ -183,11 +193,13 @@ public class CalculationParityTests
     }
 
     [TestMethod]
-    public async Task Compliance_scheme_rounds_glass_components_separately_after_scaling()
+    [DataRow("DirectRegistrant")]
+    [DataRow("ComplianceScheme")]
+    public async Task Glass_components_are_rounded_separately_for_both_submitter_types(string submitterType)
     {
         // 101 tonnes at glass 0.74 and remelt 0.75 gives 18 remainder and 57 remelt.
         // With one day of 365, each positive component rounds up to 1; rounding their sum gives 1 instead of 2.
-        var result = await CreateService().CalculateAsync(Submitter, [Row("GL", 101, days: 1)]);
+        var result = await CreateService().CalculateAsync(Submitter, [Row("GL", 101, days: 1, submitterType: submitterType)]);
         result.Success.Should().BeTrue();
         result.Calculations.Select(x => (x.MaterialId, x.Tonnage, x.MaterialObligationValue))
             .Should().Equal((4, 101, 1), (5, 101, 1));
