@@ -30,15 +30,25 @@ public class CalculationParityTests
         new() { Id = 8, MaterialCode = "WD", MaterialName = "Wood" }
     ];
 
-    // Explicit target values are identical in each year to isolate the year/day boundary.
-    private static Dictionary<int, Dictionary<MaterialType, double>> Targets() =>
-        new[] { 2024, 2025 }.ToDictionary(year => year, _ => new Dictionary<MaterialType, double>
-        {
-            [MaterialType.Plastic] = 0.55, [MaterialType.Paper] = 0.75,
-            [MaterialType.FibreComposite] = 0.55, [MaterialType.Aluminium] = 0.61,
-            [MaterialType.Steel] = 0.8, [MaterialType.Wood] = 0.45,
-            [MaterialType.Glass] = 0.74, [MaterialType.GlassRemelt] = 0.75
-        });
+    // Seeded by RecreateRecyclingTargetTable and AddFiberCompositetothelistofmaterialsandrecyclingtargets.
+    // Database decimals become doubles at this boundary; each row is an obligation year.
+    private static Dictionary<int, Dictionary<MaterialType, double>> Targets() => new()
+    {
+        [2025] = YearTargets(0.75, 0.74, 0.61, 0.80, 0.55, 0.45, 0.75, 0.75),
+        [2026] = YearTargets(0.77, 0.76, 0.62, 0.81, 0.57, 0.46, 0.76, 0.77),
+        [2027] = YearTargets(0.79, 0.78, 0.63, 0.82, 0.59, 0.47, 0.77, 0.79),
+        [2028] = YearTargets(0.81, 0.80, 0.64, 0.83, 0.61, 0.48, 0.78, 0.81),
+        [2029] = YearTargets(0.83, 0.82, 0.65, 0.84, 0.63, 0.49, 0.79, 0.83),
+        [2030] = YearTargets(0.85, 0.85, 0.67, 0.85, 0.65, 0.50, 0.80, 0.85)
+    };
+
+    private static Dictionary<MaterialType, double> YearTargets(double paper, double glass, double aluminium,
+        double steel, double plastic, double wood, double remelt, double fibreComposite) => new()
+    {
+        [MaterialType.Paper] = paper, [MaterialType.Glass] = glass, [MaterialType.Aluminium] = aluminium,
+        [MaterialType.Steel] = steel, [MaterialType.Plastic] = plastic, [MaterialType.Wood] = wood,
+        [MaterialType.GlassRemelt] = remelt, [MaterialType.FibreComposite] = fibreComposite
+    };
 
     private static ObligationCalculatorService CreateService(Dictionary<int, Dictionary<MaterialType, double>> targets = null, IEnumerable<Material> materials = null)
     {
@@ -70,9 +80,9 @@ public class CalculationParityTests
     [TestMethod]
     [DataRow("PL", 101, "2024", null, 56)]
     [DataRow("PL", 101, "2024", 182, 28)]
-    [DataRow("PL", 101, "2023", 183, 28)]
+    [DataRow("PL", 101, "2027", 183, 31)]
     [DataRow("PL", 101, "2024", 0, 0)]
-    [DataRow("FC", 101, "2024", null, 56)]
+    [DataRow("FC", 101, "2024", null, 76)]
     [DataRow("PC", 100, "2024", null, 75)]
     [DataRow("AL", 100, "2024", null, 61)]
     [DataRow("ST", 100, "2024", null, 80)]
@@ -100,7 +110,7 @@ public class CalculationParityTests
     [TestMethod]
     [DataRow("2024", null, 18, 57)]
     [DataRow("2024", 182, 9, 29)]
-    [DataRow("2023", 183, 9, 29)]
+    [DataRow("2027", 183, 9, 32)]
     [DataRow("2024", 0, 0, 0)]
     public async Task Glass_examples(string period, int? days, int remainder, int remelt)
     {
@@ -133,18 +143,18 @@ public class CalculationParityTests
             .Be((row.OrganisationId, Submitter, submitterType == "DirectRegistrant" ? 2 : 1, 1, 2025, 2, 2));
     }
 
-    // 2024 is a leap year: ceil(550 × 365/366) = 549, not 550.
+    // 2028 is a leap year: ceil(610 × 365/366) = 609, not 610.
     [TestMethod]
     [DataRow("DirectRegistrant")]
     [DataRow("ComplianceScheme")]
     public async Task Same_leap_year_result_for_both_submitter_types(string submitterType)
     {
-        var row = Row("PL", 1000, "2023", 365, submitterType);
+        var row = Row("PL", 1000, "2027", 365, submitterType);
         row.OrganisationId = submitterType == "DirectRegistrant" ? Submitter : Producer;
         var result = await CreateService().CalculateAsync(Submitter, [row]);
         result.Success.Should().BeTrue();
         var record = result.Calculations.Should().ContainSingle().Subject;
-        (record.Year, record.Tonnage, record.MaterialObligationValue).Should().Be((2024, 1000, 549));
+        (record.Year, record.Tonnage, record.MaterialObligationValue).Should().Be((2028, 1000, 609));
     }
 
     [TestMethod]
@@ -152,15 +162,14 @@ public class CalculationParityTests
     [DataRow("ComplianceScheme")]
     public async Task Same_target_year_results_for_both_submitter_types(string submitterType)
     {
-        // Identical PL weights, distinct targets: 2024 = 0.55, 2025 = 0.70.
+        // Identical PL weights, seeded targets: 2025 = 0.55, 2026 = 0.57.
         var targets = Targets();
-        targets[2025][MaterialType.Plastic] = 0.70;
-        var first = Row("PL", 100, "2023", submitterType: submitterType);
-        var second = Row("PL", 100, "2024", submitterType: submitterType);
+        var first = Row("PL", 100, "2024", submitterType: submitterType);
+        var second = Row("PL", 100, "2025", submitterType: submitterType);
         first.OrganisationId = second.OrganisationId = submitterType == "DirectRegistrant" ? Submitter : Producer;
         var result = await CreateService(targets).CalculateAsync(Submitter, [first, second]);
         result.Success.Should().BeTrue();
-        result.Calculations.Select(x => (x.Year, x.MaterialObligationValue)).Should().Equal((2024, 55), (2025, 70));
+        result.Calculations.Select(x => (x.Year, x.MaterialObligationValue)).Should().Equal((2025, 55), (2026, 57));
     }
 
     [TestMethod]
@@ -227,6 +236,28 @@ public class CalculationParityTests
                 (memberB, Submitter, 1, 4, 2025, 101, 18),
                 (memberB, Submitter, 1, 5, 2025, 101, 57));
         result.Calculations.Should().OnlyContain(x => !x.IsDeleted && x.CalculatedOn >= before && x.CalculatedOn <= after);
+    }
+
+    // Each seeded year uses 100 tonnes of each input material. Glass produces a
+    // remainder and remelt record from the two glass targets.
+    [TestMethod]
+    [DataRow(2025, 55, 75, 75, 61, 80, 45, 18, 56)]
+    [DataRow(2026, 57, 77, 77, 62, 81, 46, 18, 58)]
+    [DataRow(2027, 59, 79, 79, 63, 82, 47, 17, 61)]
+    [DataRow(2028, 61, 81, 81, 64, 83, 48, 17, 63)]
+    [DataRow(2029, 63, 83, 83, 65, 84, 49, 17, 65)]
+    [DataRow(2030, 65, 85, 85, 67, 85, 50, 17, 68)]
+    public async Task Seeded_targets_produce_expected_records_for_each_year(int year, int plastic, int paper,
+        int fibre, int aluminium, int steel, int wood, int glass, int remelt)
+    {
+        var rows = new[] { "PL", "PC", "FC", "AL", "ST", "WD", "GL" }
+            .Select(code => Row(code, 100, (year - 1).ToString())).ToList();
+        var result = await CreateService().CalculateAsync(Submitter, rows);
+        result.Success.Should().BeTrue();
+        result.Calculations.Select(x => (x.MaterialId, x.Year, x.Tonnage, x.MaterialObligationValue)).Should().Equal(
+            (1, year, 100, plastic), (2, year, 100, paper), (3, year, 100, fibre),
+            (6, year, 100, aluminium), (7, year, 100, steel), (8, year, 100, wood),
+            (4, year, 100, glass), (5, year, 100, remelt));
     }
 
     [TestMethod]
@@ -305,6 +336,7 @@ public class CalculationParityTests
         var result = await CreateService().CalculateAsync(Submitter, [Row("ST", int.MaxValue)]);
         result.Calculations.Should().ContainSingle().Which.MaterialObligationValue.Should().Be(1717986918);
         var targets = Targets();
+        // Deliberately synthetic target to characterise overflow; not a database seed.
         targets[2025][MaterialType.Steel] = 2.0;
         await Assert.ThrowsExactlyAsync<OverflowException>(() => CreateService(targets)
             .CalculateAsync(Submitter, [Row("ST", int.MaxValue)]));

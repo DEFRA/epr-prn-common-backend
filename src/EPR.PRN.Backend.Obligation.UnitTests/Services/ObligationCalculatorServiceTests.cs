@@ -932,12 +932,12 @@ public class ObligationCalculatorServiceTests
 			new() { Id = 42, MaterialNameRT = MaterialType.GlassRemelt.ToString(), Target = 0.80, Year = 2030 },
 
             // Fibre Composite
-			new() { Id = 43, MaterialNameRT = MaterialType.FibreComposite.ToString(), Target = 0.55, Year = 2025 },
-			new() { Id = 44, MaterialNameRT = MaterialType.FibreComposite.ToString(), Target = 0.56, Year = 2026 },
-			new() { Id = 45, MaterialNameRT = MaterialType.FibreComposite.ToString(), Target = 0.77, Year = 2027 },
-			new() { Id = 46, MaterialNameRT = MaterialType.FibreComposite.ToString(), Target = 0.88, Year = 2028 },
-			new() { Id = 47, MaterialNameRT = MaterialType.FibreComposite.ToString(), Target = 0.79, Year = 2029 },
-			new() { Id = 48, MaterialNameRT = MaterialType.FibreComposite.ToString(), Target = 0.80, Year = 2030 }
+			new() { Id = 43, MaterialNameRT = MaterialType.FibreComposite.ToString(), Target = 0.75, Year = 2025 },
+			new() { Id = 44, MaterialNameRT = MaterialType.FibreComposite.ToString(), Target = 0.77, Year = 2026 },
+			new() { Id = 45, MaterialNameRT = MaterialType.FibreComposite.ToString(), Target = 0.79, Year = 2027 },
+			new() { Id = 46, MaterialNameRT = MaterialType.FibreComposite.ToString(), Target = 0.81, Year = 2028 },
+			new() { Id = 47, MaterialNameRT = MaterialType.FibreComposite.ToString(), Target = 0.83, Year = 2029 },
+			new() { Id = 48, MaterialNameRT = MaterialType.FibreComposite.ToString(), Target = 0.85, Year = 2030 }
 		};
 
 		return targets
