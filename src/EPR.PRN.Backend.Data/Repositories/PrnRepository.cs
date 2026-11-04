@@ -28,6 +28,10 @@ public class PrnRepository(EprContext context, TimeProvider? timeProvider = null
     {
         var obligationYear = year.ToString();
 
+        // The accepted and awaiting totals are read in two statements because they use different predicates: the
+        // obligation year for accepted notes and the acceptance year rule for awaiting ones. Each is an index seek on
+        // the organisation. A note accepted between the two reads can be missing from both totals in one response,
+        // and the next refresh corrects it.
         var accepted = await context
             .Prn.Where(prn =>
                 prn.OrganisationId == organisationId
