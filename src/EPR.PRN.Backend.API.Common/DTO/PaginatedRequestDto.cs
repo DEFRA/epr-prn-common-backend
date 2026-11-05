@@ -1,5 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics.CodeAnalysis;
 
 namespace EPR.PRN.Backend.API.Common.Dto
 {
@@ -21,8 +20,7 @@ namespace EPR.PRN.Backend.API.Common.Dto
 
         public const int MaximumAcceptableIntoYear = 2050;
 
-        /// <summary>Only notes that can be accepted into this obligation year now. Out of range is a 400, not a search.</summary>
-        [Range(MinimumAcceptableIntoYear, MaximumAcceptableIntoYear)]
+        /// <summary>Only notes that can be accepted into this obligation year now. Out of range is a 400, enforced by PaginatedRequestDtoValidator, not a search.</summary>
         public int? AcceptableIntoYear { get; set; }
     }
 }

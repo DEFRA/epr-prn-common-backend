@@ -6,8 +6,10 @@ using EPR.PRN.Backend.API.Configs;
 using EPR.PRN.Backend.API.Controllers;
 using EPR.PRN.Backend.API.Dto;
 using EPR.PRN.Backend.API.Services.Interfaces;
+using EPR.PRN.Backend.API.Validators;
 using EPR.PRN.Backend.Obligation.Interfaces;
 using FluentValidation;
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
@@ -19,7 +21,7 @@ namespace EPR.PRN.Backend.API.UnitTests.Controllers;
 
 /// <summary>
 /// The search endpoint over HTTP, on a host that runs only MVC and the real PrnController (its dependencies mocked),
-/// so the framework's model validation is exercised without the application's database.
+/// configured for validation the way Startup does it, so the checks run without the application's database.
 /// </summary>
 [TestClass]
 public class PrnSearchRequestTests
@@ -45,6 +47,9 @@ public class PrnSearchRequestTests
             var builder = WebApplication.CreateBuilder();
             builder.WebHost.UseTestServer();
             builder.Services.AddControllers().AddApplicationPart(typeof(PrnController).Assembly);
+            // As in Startup: DataAnnotations validation is off, so the request is checked by its FluentValidation validator.
+            builder.Services.AddFluentValidationAutoValidation(options => options.DisableDataAnnotationsValidation = true);
+            builder.Services.AddScoped<IValidator<PaginatedRequestDto>, PaginatedRequestDtoValidator>();
             builder.Services.AddApiVersioning();
             builder.Services.AddSingleton(prnService.Object);
             builder.Services.AddSingleton(new Mock<IObligationCalculatorService>().Object);
