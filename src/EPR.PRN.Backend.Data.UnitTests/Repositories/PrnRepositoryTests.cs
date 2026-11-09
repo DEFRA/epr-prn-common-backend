@@ -74,7 +74,7 @@ public class PrnRepositoryTests
         await _context.Prn.AddRangeAsync(prns, CancellationToken.None);
         await _context.SaveChangesAsync(CancellationToken.None);
 
-        var result = await _repository.GetObligationSummary(organisationId, 2026);
+        var result = await new PrnRepository(_context, DecemberFifteenth2026).GetObligationSummary(organisationId, 2026);
 
         result
             .Select(summary => summary.MaterialName)
@@ -92,7 +92,7 @@ public class PrnRepositoryTests
                     new PrnObligationSummaryDto("PRN-003", 0, 3, 1),
                     new PrnObligationSummaryDto("PRN-004", 0, 4, 1),
                     new PrnObligationSummaryDto("PRN-005", 0, 5, 1),
-                    new PrnObligationSummaryDto("PRN-008", 0, 8, 1),
+                    new PrnObligationSummaryDto("PRN-007", 0, 7, 1),
                 ]
             );
     }
@@ -107,9 +107,127 @@ public class PrnRepositoryTests
         await _context.Prn.AddRangeAsync(prns, CancellationToken.None);
         await _context.SaveChangesAsync(CancellationToken.None);
 
-        var result = await _repository.GetObligationSummary(organisationId, 2026);
+        var result = await new PrnRepository(_context, DecemberFifteenth2026).GetObligationSummary(organisationId, 2026);
 
-        result.Should().BeEquivalentTo([new PrnObligationSummaryDto("Plastic", 1, 20, 4)]);
+        result.Should().BeEquivalentTo([new PrnObligationSummaryDto("Plastic", 1, 19, 4)]);
+    }
+
+    [TestMethod]
+    [DataRow(2026, 3)]
+    [DataRow(2027, 1)]
+    [DataRow(2025, 0)]
+    public async Task GetAwaitingAcceptanceCount_CountsOnlyNotesAcceptableIntoTheYearNow(int year, int expected)
+    {
+        var organisationId = Guid.NewGuid();
+        var repository = new PrnRepository(
+            _context,
+            new FixedTimeProvider(new DateTimeOffset(2026, 12, 15, 12, 0, 0, TimeSpan.Zero))
+        );
+        var prns = new[]
+        {
+            CreateAwaitingPrn("STD-2026", organisationId, "2026", false),
+            CreateAwaitingPrn("STD-2025", organisationId, "2025", false),
+            CreateAwaitingPrn("DEC-2026", organisationId, "2026", true),
+            CreateAwaitingPrn("DEC-2025", organisationId, "2025", true),
+            CreateAwaitingPrn("OTHER-ORG", Guid.NewGuid(), "2026", false),
+            CreateAwaitingPrn("ACCEPTED", organisationId, "2026", false, EprnStatus.ACCEPTED),
+        };
+        await _context.Prn.AddRangeAsync(prns, CancellationToken.None);
+        await _context.SaveChangesAsync(CancellationToken.None);
+
+        var result = await repository.GetAwaitingAcceptanceCount(organisationId, year);
+
+        result.Should().Be(expected);
+    }
+
+    [TestMethod]
+    public async Task GetAwaitingAcceptanceCount_BeforeTheDecemberWindow_ExcludesNextYearDecemberWaste()
+    {
+        var organisationId = Guid.NewGuid();
+        var repository = new PrnRepository(
+            _context,
+            new FixedTimeProvider(new DateTimeOffset(2026, 6, 15, 12, 0, 0, TimeSpan.Zero))
+        );
+        await _context.Prn.AddAsync(CreateAwaitingPrn("DEC-2026", organisationId, "2026", true), CancellationToken.None);
+        await _context.SaveChangesAsync(CancellationToken.None);
+
+        (await repository.GetAwaitingAcceptanceCount(organisationId, 2026)).Should().Be(1);
+        (await repository.GetAwaitingAcceptanceCount(organisationId, 2027)).Should().Be(0);
+    }
+
+    [TestMethod]
+    [DataRow(2026, 12, 15, 2026, 18, 4)]
+    [DataRow(2026, 12, 15, 2027, 5, 1)]
+    [DataRow(2027, 2, 1, 2026, 0, 0)]
+    [DataRow(2027, 2, 1, 2027, 5, 1)]
+    [DataRow(2026, 11, 15, 2027, 0, 0)]
+    public async Task GetObligationSummary_AwaitingTonnageCoversOnlyTheNotesTheCountCounts(
+        int nowYear,
+        int nowMonth,
+        int nowDay,
+        int year,
+        int expectedTonnage,
+        int expectedCount
+    )
+    {
+        var organisationId = Guid.NewGuid();
+        var repository = new PrnRepository(
+            _context,
+            new FixedTimeProvider(new DateTimeOffset(nowYear, nowMonth, nowDay, 12, 0, 0, TimeSpan.Zero))
+        );
+        var prns = new[]
+        {
+            CreateAwaitingPrn("STD-2026", organisationId, "2026", false, tonnage: 10),
+            CreateAwaitingPrn("DEC-2026", organisationId, "2026", true, tonnage: 5),
+            CreateAwaitingPrn("STD-2025", organisationId, "2025", false, tonnage: 3),
+            CreateAwaitingPrn("DEC-2025", organisationId, "2025", true, tonnage: 2),
+            // Accredited in 2026 for an obligation year of 2025: the old rule picked it up for 2027, the year rule does not.
+            CreateAwaitingPrn("DEC-2025-ACCREDITED-2026", organisationId, "2025", true, tonnage: 1),
+        };
+        prns[4].AccreditationYear = "2026";
+        foreach (var prn in prns)
+        {
+            prn.MaterialName = "Plastic";
+        }
+        await _context.Prn.AddRangeAsync(prns, CancellationToken.None);
+        await _context.SaveChangesAsync(CancellationToken.None);
+
+        var summary = await repository.GetObligationSummary(organisationId, year);
+        var count = await repository.GetAwaitingAcceptanceCount(organisationId, year);
+
+        summary.Sum(item => item.AwaitingAcceptanceTonnage).Should().Be(expectedTonnage);
+        summary.Sum(item => item.AwaitingAcceptanceCount).Should().Be(expectedCount);
+        count.Should().Be(expectedCount);
+    }
+
+    private static readonly FixedTimeProvider DecemberFifteenth2026 = new(
+        new DateTimeOffset(2026, 12, 15, 12, 0, 0, TimeSpan.Zero)
+    );
+
+    private static readonly Fixture AwaitingPrnFixture = new();
+
+    private static Eprn CreateAwaitingPrn(
+        string prnNumber,
+        Guid organisationId,
+        string obligationYear,
+        bool decemberWaste,
+        EprnStatus status = EprnStatus.AWAITINGACCEPTANCE,
+        int tonnage = 1
+    ) =>
+        AwaitingPrnFixture
+            .Build<Eprn>()
+            .With(prn => prn.OrganisationId, organisationId)
+            .With(prn => prn.PrnNumber, prnNumber)
+            .With(prn => prn.PrnStatusId, (int)status)
+            .With(prn => prn.ObligationYear, obligationYear)
+            .With(prn => prn.AccreditationYear, obligationYear)
+            .With(prn => prn.DecemberWaste, decemberWaste)
+            .With(prn => prn.TonnageValue, tonnage)
+            .Create();
+
+    private sealed class FixedTimeProvider(DateTimeOffset now) : TimeProvider
+    {
+        public override DateTimeOffset GetUtcNow() => now;
     }
 
     private static PrnSelectionCase[] CreateSelectionTestCases(
@@ -184,7 +302,7 @@ public class PrnRepositoryTests
                 previousYear,
                 currentYear,
                 true,
-                false
+                true
             ),
             new(
                 "PRN-008",
@@ -193,7 +311,7 @@ public class PrnRepositoryTests
                 otherYear,
                 previousYear,
                 true,
-                true
+                false
             ),
             new(
                 "PRN-009",
