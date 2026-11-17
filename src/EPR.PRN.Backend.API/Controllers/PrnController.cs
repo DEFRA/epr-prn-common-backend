@@ -182,6 +182,19 @@ public class PrnController(
 
     #region Post Methods
 
+    [HttpGet("organisation/{submitterId:guid}/obligation-calculations/{year:int}")]
+    [ProducesResponseType(typeof(List<ObligationCalculationRecord>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> GetCalculationRecords([FromRoute] Guid submitterId, [FromRoute] int year)
+    {
+        if (submitterId == Guid.Empty || year < 1 || year > 9999)
+        {
+            return BadRequest("A valid submitter ID and year are required.");
+        }
+
+        return Ok(await obligationCalculatorService.GetCalculationRecords(submitterId, year));
+    }
+
     [HttpGet("obligationcalculation/{year}")]
     [ProducesResponseType(typeof(List<ObligationData>), 200)]
     [ProducesResponseType(400)]

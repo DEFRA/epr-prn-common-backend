@@ -73,6 +73,44 @@ public class PrnControllerTests
     }
 
     [TestMethod]
+    public async Task GetCalculationRecords_ReturnsRecordsForRequestedSubmitterAndYear()
+    {
+        var records = new List<ObligationCalculationRecord>
+        {
+            new() { SubmitterId = submitterId, OrganisationId = organisationId, Year = 2026, MaterialCode = "PL", Tonnage = 100, MaterialObligationValue = 57 }
+        };
+        _mockObligationCalculatorService.Setup(x => x.GetCalculationRecords(submitterId, 2026)).ReturnsAsync(records);
+
+        var result = await _systemUnderTest.GetCalculationRecords(submitterId, 2026) as OkObjectResult;
+
+        result.Should().NotBeNull();
+        result.Value.Should().BeEquivalentTo(records);
+    }
+
+    [TestMethod]
+    public async Task GetCalculationRecords_NoRecords_ReturnsEmptyList()
+    {
+        _mockObligationCalculatorService.Setup(x => x.GetCalculationRecords(submitterId, 2026)).ReturnsAsync([]);
+        var result = await _systemUnderTest.GetCalculationRecords(submitterId, 2026) as OkObjectResult;
+        result.Should().NotBeNull();
+        result.Value.Should().BeEquivalentTo(Array.Empty<ObligationCalculationRecord>());
+    }
+
+    [TestMethod]
+    [DataRow(0)]
+    [DataRow(10000)]
+    public async Task GetCalculationRecords_InvalidYear_ReturnsBadRequest(int year)
+    {
+        (await _systemUnderTest.GetCalculationRecords(submitterId, year)).Should().BeOfType<BadRequestObjectResult>();
+    }
+
+    [TestMethod]
+    public async Task GetCalculationRecords_EmptySubmitter_ReturnsBadRequest()
+    {
+        (await _systemUnderTest.GetCalculationRecords(Guid.Empty, 2026)).Should().BeOfType<BadRequestObjectResult>();
+    }
+
+    [TestMethod]
     public async Task GetPrn_ReturnsOkWithPrn_WhenValidPrnId()
     {
         var expectedPrn = _fixture.Create<PrnDto>();

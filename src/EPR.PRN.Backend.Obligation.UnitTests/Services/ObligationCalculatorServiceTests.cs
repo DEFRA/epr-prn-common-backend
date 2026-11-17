@@ -53,7 +53,32 @@ public class ObligationCalculatorServiceTests
 	}
 
 	[TestMethod]
-	public async Task GetObligationCalculation_ShouldReturnSuccess_WithExpectedData()
+	public async Task GetCalculationRecords_ReturnsStoredFieldsWithMaterialAndSubmitterType()
+    {
+        var producerId = Guid.NewGuid();
+        var calculatedOn = new DateTime(2026, 2, 3, 10, 0, 0, DateTimeKind.Utc);
+        _mockObligationCalculationRepository.Setup(x => x.GetCalculationRecords(submitterId, 2026)).ReturnsAsync(
+        [
+            new ObligationCalculation
+            {
+                SubmitterId = submitterId, OrganisationId = producerId, Year = 2026, Tonnage = 100,
+                MaterialObligationValue = 57, CalculatedOn = calculatedOn,
+                Material = new Material { MaterialCode = "PL", MaterialName = "Plastic" },
+                ObligationCalculationOrganisationSubmitterType = new() { TypeName = "DirectRegistrant" }
+            }
+        ]);
+
+        var result = await _service.GetCalculationRecords(submitterId, 2026);
+
+        result.Should().BeEquivalentTo(new[] { new ObligationCalculationRecord
+        {
+            SubmitterId = submitterId, OrganisationId = producerId, Year = 2026, Tonnage = 100,
+            MaterialObligationValue = 57, CalculatedOn = calculatedOn, MaterialCode = "PL", SubmitterType = "DirectRegistrant"
+        }});
+    }
+
+[TestMethod]
+    public async Task GetObligationCalculation_ShouldReturnSuccess_WithExpectedData()
 	{
 		// Arrange
 		var pcMaterialId = 5;

@@ -19,6 +19,22 @@ namespace EPR.PRN.Backend.Obligation.Services
 		IMaterialRepository materialRepository,
 		IObligationCalculationOrganisationSubmitterTypeRepository submitterTypeRepository) : IObligationCalculatorService
 	{
+        public async Task<List<ObligationCalculationRecord>> GetCalculationRecords(Guid submitterId, int year)
+        {
+            var records = await obligationCalculationRepository.GetCalculationRecords(submitterId, year);
+            return records.Select(x => new ObligationCalculationRecord
+            {
+                SubmitterId = x.SubmitterId,
+                SubmitterType = x.ObligationCalculationOrganisationSubmitterType.TypeName,
+                OrganisationId = x.OrganisationId,
+                Year = x.Year,
+                MaterialCode = x.Material.MaterialCode,
+                Tonnage = x.Tonnage,
+                MaterialObligationValue = x.MaterialObligationValue,
+                CalculatedOn = x.CalculatedOn
+            }).ToList();
+        }
+
 		public async Task<CalculationResult> CalculateAsync(Guid submitterId, List<SubmissionCalculationRequest> request)
 		{
 			var recyclingTargets = await recyclingTargetDataService.GetRecyclingTargetsAsync();
