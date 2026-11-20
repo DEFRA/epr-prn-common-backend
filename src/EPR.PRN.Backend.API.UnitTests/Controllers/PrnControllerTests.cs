@@ -97,11 +97,20 @@ public class PrnControllerTests
     }
 
     [TestMethod]
-    [DataRow(0)]
-    [DataRow(10000)]
+    [DataRow(2023)]
+    [DataRow(2030)]
     public async Task GetCalculationRecords_InvalidYear_ReturnsBadRequest(int year)
     {
         (await _systemUnderTest.GetCalculationRecords(submitterId, year)).Should().BeOfType<BadRequestObjectResult>();
+    }
+
+    [TestMethod]
+    [DataRow(2024)]
+    [DataRow(2029)]
+    public async Task GetCalculationRecords_ConfiguredBoundaryYear_ReturnsOk(int year)
+    {
+        _mockObligationCalculatorService.Setup(x => x.GetCalculationRecords(submitterId, year)).ReturnsAsync([]);
+        (await _systemUnderTest.GetCalculationRecords(submitterId, year)).Should().BeOfType<OkObjectResult>();
     }
 
     [TestMethod]

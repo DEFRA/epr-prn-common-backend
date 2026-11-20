@@ -187,7 +187,7 @@ public class PrnController(
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetCalculationRecords([FromRoute] Guid submitterId, [FromRoute] int year)
     {
-        if (submitterId == Guid.Empty || year < 1 || year > 9999)
+        if (submitterId == Guid.Empty || year < _config.StartYear || year > _config.EndYear)
         {
             return BadRequest("A valid submitter ID and year are required.");
         }
