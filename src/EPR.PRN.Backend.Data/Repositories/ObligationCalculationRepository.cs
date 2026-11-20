@@ -18,6 +18,16 @@ public class ObligationCalculationRepository(EprContext context, ILogger<Obligat
                             .ToListAsync();
     }
 
+    public async Task<List<ObligationCalculation>> GetCalculationRecords(Guid submitterId, int year)
+    {
+        return await context.ObligationCalculations
+            .AsNoTracking()
+            .Where(x => x.SubmitterId == submitterId && x.Year == year && !x.IsDeleted)
+            .Include(x => x.Material)
+            .Include(x => x.ObligationCalculationOrganisationSubmitterType)
+            .ToListAsync();
+    }
+
 	public async Task UpsertObligationCalculationsForSubmitterYearAsync(Guid submitterId, int year, List<ObligationCalculation> calculations)
 	{
 		logger.LogInformation("{Logprefix}: ExecuteSoftDeleteAndCalculationsAsync - BeginTransactionAsync", logPrefix);

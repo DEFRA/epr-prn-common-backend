@@ -74,6 +74,15 @@ public class ObligationCalculationRepositoryTests
     }
 
     [TestMethod]
+    public async Task GetCalculationRecords_ReturnsOnlyActiveRowsForSubmitterAndYear()
+    {
+        obligationCalculations.Add(new ObligationCalculation { SubmitterId = csSubmitterId, Year = currentYear - 1 });
+        var result = await _repository.GetCalculationRecords(csSubmitterId, currentYear);
+        result.Should().HaveCount(5);
+        result.Should().OnlyContain(x => x.SubmitterId == csSubmitterId && x.Year == currentYear && !x.IsDeleted);
+    }
+
+    [TestMethod]
     public async Task GetObligationCalculationBySubmitterIdAndYear_ReturnsEmpty_WhenCalledWithInvalidId()
     {
         // Act
