@@ -423,6 +423,7 @@ public class Repository(
                     AccreditationYear = prn.AccreditationYear,
                     ObligationYear = prn.ObligationYear,
                     LastUpdatedDate = prn.LastUpdatedDate,
+                    StatusUpdatedOn = prn.StatusUpdatedOn,
                     IsExport = prn.IsExport,
                     ReprocessorExporterAgency = prn.ReprocessorExporterAgency,
                 },
