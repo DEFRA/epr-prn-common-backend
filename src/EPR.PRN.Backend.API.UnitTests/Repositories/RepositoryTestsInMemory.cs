@@ -115,6 +115,7 @@ public class RepositoryTestsInMemory
         sourcePrn.DecemberWaste = true;
         sourcePrn.CreatedOn = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc);
         sourcePrn.LastUpdatedDate = new DateTime(2026, 1, 2, 0, 0, 0, DateTimeKind.Utc);
+        sourcePrn.StatusUpdatedOn = new DateTime(2026, 1, 3, 0, 0, 0, DateTimeKind.Utc);
         sourcePrn.IsExport = true;
         await _context.SaveChangesAsync(CancellationToken.None);
 
@@ -145,6 +146,7 @@ public class RepositoryTestsInMemory
         prn.AccreditationYear.Should().Be(sourcePrn.AccreditationYear);
         prn.ObligationYear.Should().Be(sourcePrn.ObligationYear);
         prn.LastUpdatedDate.Should().Be(sourcePrn.LastUpdatedDate);
+        prn.StatusUpdatedOn.Should().Be(sourcePrn.StatusUpdatedOn);
         prn.IsExport.Should().Be(sourcePrn.IsExport);
         prn.ReprocessorExporterAgency.Should().Be(sourcePrn.ReprocessorExporterAgency);
     }
